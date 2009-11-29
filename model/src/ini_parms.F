@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.226 2009/11/23 16:15:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.227 2009/11/29 03:12:32 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -187,7 +187,7 @@ C--   Continuous equation parameters
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicSurfPress, implicDiv2Dflow,
+     & implicSurfPress, implicDiv2Dflow, implicitNHPress,
      & implicitFreeSurface, rigidLid, freeSurfFac,
      & hFacMin, hFacMinDz, hFacMinDp, hFacMinDr,
      & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
@@ -413,6 +413,7 @@ C--   Set default "physical" parameters
       convertFW2Salt = UNSET_RL
       tAlpha              = UNSET_RL
       sBeta               = UNSET_RL
+      implicitNHPress     = UNSET_RL
       tempVertAdvScheme = 0
       saltVertAdvScheme = 0
 C--   z,p,r coord input switching.
@@ -481,6 +482,8 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
       IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
       IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
       IF ( rhoConstFresh .EQ. UNSET_RL ) rhoConstFresh=rhoConst
+      IF ( implicitNHPress.EQ.UNSET_RL )
+     &     implicitNHPress = implicSurfPress
       IF ( omega .EQ. UNSET_RL ) THEN
         omega = 0. _d 0
         IF ( rotationPeriod .NE. 0. _d 0 )

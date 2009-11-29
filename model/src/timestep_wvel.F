@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.4 2007/03/12 23:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.5 2009/11/29 03:12:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,6 +65,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         DO k=2,Nr
 
+         IF ( implicitNHPress.NE.1. _d 0 ) THEN
+C--   add explicit part of NH pressure gradient:
+          tmpFac = pfFacMom*(1. _d 0 - implicitNHPress)
+     &                     *wUnit2rVel(k)*wUnit2rVel(k)
+     &                     *recip_rhoFacF(k)
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
+     &             - tmpFac*rkSign*recip_drC(k)
+     &             *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j,k-1,bi,bj) )
+           ENDDO
+          ENDDO
+         ENDIF
 C     apply mask to gW and keep a copy of wVel in gW:
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx

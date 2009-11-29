@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.24 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.25 2009/11/29 03:12:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: CORRECTION_STEP
 C     !INTERFACE:
       SUBROUTINE CORRECTION_STEP( bi, bj, iMin, iMax, jMin, jMax,
-     I                       K, phiSurfX, phiSurfY,
+     I                       k, phiSurfX, phiSurfY,
      I                       myTime, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -31,47 +31,46 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     phiSurfX, phiSurfY           - Surface Potential gradient
-C     bi,bj,iMin,iMax,jMin,jMax, K - Loop counters
-C     myThid                       - Instance number for
-C                                    this call to S/R CORRECTION_STEP
-C     myTime                       - Current simulation time for this instance.
-      _RL  phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER K
+C     bi, bj              :: Tile indices
+C     iMin,iMax,jMin,jMax :: Loop counters range
+C     k                   :: Level index
+C     phiSurfX, phiSurfY  :: Surface Potential gradient
+C     myTime              :: Current time in simulation
+C     myThid              :: my Thread Id number
+      _RL     phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER bi,bj
+      INTEGER iMin,iMax,jMin,jMax
+      INTEGER k
+      _RL     myTime
       INTEGER myThid
-      _RL myTime
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     i,j             :: Loop counters
-C     hxFac, hyFac    :: Tracer parameters for supressing gradients
-C     hx3dFac,hy3dFac
+C     i,j          :: Loop counters
+C     psFac, nhFac :: Scaling parameters for supressing gradients
       INTEGER i,j
-      _RL hxFac,hyFac
-      _RL hx3dFac,hy3dFac
+      _RL     psFac, nhFac
 CEOP
 
 C     On/off scaling parameters (including anelastic & deep-model factors)
-      hxFac = pfFacMom*recip_deepFacC(k)*recip_rhoFacC(k)
-      hyFac = pfFacMom*recip_deepFacC(k)*recip_rhoFacC(k)
+      psFac = pfFacMom*implicSurfPress
+     &       *recip_deepFacC(k)*recip_rhoFacC(k)
       IF ( use3Dsolver ) THEN
-        hx3dFac = pfFacMom*recip_deepFacC(k)*recip_rhoFacC(k)
-        hy3dFac = pfFacMom*recip_deepFacC(k)*recip_rhoFacC(k)
+        nhFac = pfFacMom*implicitNHPress
+     &         *recip_deepFacC(k)*recip_rhoFacC(k)
       ELSE
-        hx3dFac = 0.
-        hy3dFac = 0.
+        nhFac = 0.
       ENDIF
 
 C     Step forward zonal velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
         uVel(i,j,k,bi,bj)=( gU(i,j,k,bi,bj)
-     &       -deltaTmom*hxFac*implicSurfPress*phiSurfX(i,j)
+     &       -deltaTmom*psFac*phiSurfX(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
-     &       -deltaTmom*hx3dFac*_recip_dxC(i,j,bi,bj)*
-     &          (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+     &       -deltaTmom*nhFac*_recip_dxC(i,j,bi,bj)
+     &         *(phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
 #endif
      &                    )*_maskW(i,j,k,bi,bj)
        ENDDO
@@ -81,10 +80,10 @@ C     Step forward meridional velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
         vVel(i,j,k,bi,bj)=( gV(i,j,k,bi,bj)
-     &       -deltaTmom*hyFac*implicSurfPress*phiSurfY(i,j)
+     &       -deltaTmom*psFac*phiSurfY(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
-     &       -deltaTmom*hy3dFac*_recip_dyC(i,j,bi,bj)*
-     &          (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+     &       -deltaTmom*nhFac*_recip_dyC(i,j,bi,bj)
+     &         *(phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
 #endif
      &                    )*_maskS(i,j,k,bi,bj)
        ENDDO

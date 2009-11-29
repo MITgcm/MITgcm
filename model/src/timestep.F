@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.48 2009/11/19 22:30:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.49 2009/11/29 03:12:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,12 +25,15 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "RESTART.h"
 #include "SURFACE.h"
+#include "RESTART.h"
+#include "DYNVARS.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "NH_VARS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -57,6 +60,9 @@ C     == Local variables ==
       _RL phxFac,phyFac, psFac
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_NONHYDROSTATIC
+      _RL     nhFac
+#endif
 #ifdef ALLOW_DIAGNOSTICS
 C    Allow diagnosis of external forcing
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -75,6 +81,7 @@ CEOP
 
 C-- explicit part of the surface potential gradient is added in this S/R
       psFac = pfFacMom*(1. _d 0 - implicSurfPress)
+     &       *recip_deepFacC(k)*recip_rhoFacC(k)
 
 C--  factors for gradient (X & Y directions) of Hydrostatic Potential
       phxFac = pfFacMom
@@ -321,6 +328,24 @@ C--   Dissipation term outside the Adams-Bashforth:
          ENDDO
         ENDDO
       ENDIF
+
+#ifdef ALLOW_NONHYDROSTATIC
+C-- explicit part of the NH pressure gradient is added here
+      IF ( use3Dsolver .AND. implicitNHPress.NE.1. _d 0 ) THEN
+        nhFac = pfFacMom*(1. _d 0 - implicitNHPress)
+     &         *recip_deepFacC(k)*recip_rhoFacC(k)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUtmp(i,j) = gUtmp(i,j)
+     &               - nhFac*_recip_dxC(i,j,bi,bj)*
+     &                (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+          gVtmp(i,j) = gVtmp(i,j)
+     &               - nhFac*_recip_dyC(i,j,bi,bj)*
+     &                (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+         ENDDO
+        ENDDO
+      ENDIF
+#endif ALLOW_NONHYDROSTATIC
 
 C     Step forward zonal velocity (store in Gu)
       DO j=jMin,jMax
