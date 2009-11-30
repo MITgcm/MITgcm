@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.71 2009/11/29 03:17:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.72 2009/11/30 19:20:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,9 +80,9 @@ c       zeroPsNH = use3Dsolver .AND. exactConserv
 c    &                         .AND. select_rStar.EQ.0
         zeroMeanPnh = .FALSE.
 c       zeroMeanPnh = use3Dsolver .AND. select_rStar.NE.0
-        oldFreeSurfTerm = use3Dsolver .AND. select_rStar.EQ.0
-     &                                .AND. .NOT.zeroPsNH
-c       oldFreeSurfTerm = use3Dsolver .AND. .NOT.exactConserv
+c       oldFreeSurfTerm = use3Dsolver .AND. select_rStar.EQ.0
+c    &                                .AND. .NOT.zeroPsNH
+        oldFreeSurfTerm = use3Dsolver .AND. .NOT.exactConserv
 #else
         cg3d_b(1) = 0.
 #endif
