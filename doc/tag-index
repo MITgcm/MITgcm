@@ -1,9 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1201 2009/11/25 21:52:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1202 2009/11/30 20:32:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o nonHydrostatic:
+  Fix missing vertical flux of vert. momentum near surface (k=1). This fixes
+    a spurious source of energy in simple baroclinic adjusment test case.
+  Update all non-hydrostatic exp output.
+o model/src (3-d solver):
+  Change again 3-D solver free-surface RHS term when exactConserv=T:
+    simpler, consistent with exactConserv, and works with implicDiv2Dflow < 1
+    (which was not the case with previous formulation).
+  To recover previous version, just reset "oldFreeSurfTerm" to previous value.
+  Affects results of exp. global_ocean.cs32x15.viscA4 & hs94.cs-32x32x5.impIGW.
+o nonHydrostatic:
+  - compatible with implicDiv2Dflow < 1 ; + implement implicit factor
+    for Non-Hydrostatic pressure gradient (similar to implicSurfPress).
+  - change 3-D solver to work with r* (for now, only with linear free-surf.)
+  - add few debug diagnostics (cg3d_x, residual)
 o model/src:
   fix missing EmPmR in 3-D solver RHS (was in cg2d_b but missing in cg3d_b).
     update output of exp. global_ocean.cs32x15.viscA4
