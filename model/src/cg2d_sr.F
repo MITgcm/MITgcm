@@ -1,7 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.1 2009/11/23 16:15:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.2 2009/11/30 13:21:28 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef TARGET_NEC_SX
+C     set a sensible default for the outer loop unrolling parameter that can
+C     be overriden in the Makefile with the DEFINES macro or in CPP_OPTIONS.h
+#ifndef CG2D_OUTERLOOPITERS
+# define CG2D_OUTERLOOPITERS 10
+#endif
+#endif /* TARGET_NEC_SX */
+
 CBOP
 C     !ROUTINE: CG2D_SR
 C     !INTERFACE:
@@ -151,6 +159,9 @@ C--   Initial residual calculation
         ENDDO
         sumRHStile(bi,bj) = 0. _d 0
         errTile(bi,bj)    = 0. _d 0
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
         DO J=1,sNy
          DO I=1,sNx
           cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
@@ -194,6 +205,9 @@ C--    conjugate direction vector "s".
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         eta_qrNtile(bi,bj) = 0. _d 0
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
         DO J=1,sNy
          DO I=1,sNx
            cg2d_y(I,J,bi,bj) =
@@ -221,6 +235,9 @@ C==    q = A.s
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         alphaTile(bi,bj) = 0. _d 0
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
         DO J=1,sNy
          DO I=1,sNx
           cg2d_q(I,J,bi,bj) =
@@ -264,6 +281,9 @@ C--    conjugate direction vector "s".
 C--    z = M^-1 r
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
          DO J=1,sNy
           DO I=1,sNx
            cg2d_y(I,J,bi,bj) =
@@ -291,6 +311,9 @@ C--    Do the error calcuation here to consolidate global reductions
          eta_qrNtile(bi,bj) = 0. _d 0
          deltaTile(bi,bj)   = 0. _d 0
          errTile(bi,bj) = 0. _d 0
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
          DO J=1,sNy
           DO I=1,sNx
            cg2d_v(I,J,bi,bj) =
@@ -310,9 +333,9 @@ C--    Do the error calcuation here to consolidate global reductions
         ENDDO
        ENDDO
        
-!        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
-!        CALL GLOBAL_SUM_TILE_RL( deltaTile,delta,myThid )
-!        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+C      CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
+C      CALL GLOBAL_SUM_TILE_RL( deltaTile,delta,myThid )
+C      CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          sumPhi(1,bi,bj) = eta_qrNtile(bi,bj)
