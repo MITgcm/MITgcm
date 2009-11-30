@@ -1,7 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.21 2009/11/29 03:16:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.22 2009/11/30 15:18:21 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef TARGET_NEC_SX
+C     set a sensible default for the outer loop unrolling parameter that can
+C     be overriden in the Makefile with the DEFINES macro or in CPP_OPTIONS.h
+#ifndef CG3D_OUTERLOOPITERS
+# define CG3D_OUTERLOOPITERS 10
+#endif
+#endif /* TARGET_NEC_SX */
 
 CBOP
 C     !ROUTINE: CG3D
@@ -198,7 +205,9 @@ C--   Initial residual calculation (with free-Surface term)
          maskP1 = 1. _d 0
          IF ( k .EQ. 1 ) maskM1 = 0. _d 0
          IF ( k .EQ. Nr) maskP1 = 0. _d 0
-
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
          DO j=1,sNy
           DO i=1,sNx
            cg3d_r(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
@@ -258,7 +267,7 @@ CcnhDebugEnds
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
-C      Note. On the next to loops over all tiles the inner loop ranges
+C      Note. On the next two loops over all tiles the inner loop ranges
 C            in sNx and sNy are expanded by 1 to avoid a communication
 C            step. However this entails a bit of gynamastics because we only
 C            want eta_qrN for the interior points.
@@ -267,6 +276,9 @@ C            want eta_qrN for the interior points.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          eta_qrNtile(bi,bj) = 0. _d 0
          DO k=1,1
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1-1,sNy+1
            DO i=1-1,sNx+1
             cg3d_q(i,j,k,bi,bj) = zMC(i,j,k,bi,bj)
@@ -275,6 +287,9 @@ C            want eta_qrN for the interior points.
           ENDDO
          ENDDO
          DO k=2,Nr
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1-1,sNy+1
            DO i=1-1,sNx+1
             cg3d_q(i,j,k,bi,bj) = zMC(i,j,k,bi,bj)
@@ -285,6 +300,9 @@ C            want eta_qrN for the interior points.
           ENDDO
          ENDDO
          DO k=Nr,Nr
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
@@ -293,12 +311,18 @@ C            want eta_qrN for the interior points.
           ENDDO
          ENDDO
          DO k=Nr-1,1,-1
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1-1,sNy+1
            DO i=1-1,sNx+1
             cg3d_q(i,j,k,bi,bj) = cg3d_q(i,j,k,bi,bj)
      &                         -zMU(i,j,k,bi,bj)*cg3d_q(i,j,k+1,bi,bj)
            ENDDO
           ENDDO
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
@@ -366,6 +390,9 @@ C==    q = A.s
 #endif /* NONLIN_FRSURF */
          IF ( Nr .GT. 1 ) THEN
           k=1
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             cg3d_q(i,j,k,bi,bj) =
@@ -384,6 +411,9 @@ C==    q = A.s
           ENDDO
          ELSE
           k=1
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             cg3d_q(i,j,k,bi,bj) =
@@ -401,6 +431,9 @@ C==    q = A.s
           ENDDO
          ENDIF
          DO k=2,Nr-1
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             cg3d_q(i,j,k,bi,bj) =
@@ -421,6 +454,9 @@ C==    q = A.s
          ENDDO
          IF ( Nr .GT. 1 ) THEN
           k=Nr
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             cg3d_q(i,j,k,bi,bj) =
@@ -456,6 +492,9 @@ C      Now compute "interior" points.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          errTile(bi,bj) = 0. _d 0
          DO k=1,Nr
+#ifdef TARGET_NEC_SX
+!CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
+#endif /* TARGET_NEC_SX */
           DO j=1,sNy
            DO i=1,sNx
             cg3d_x(i,j,k,bi,bj)=cg3d_x(i,j,k,bi,bj)
