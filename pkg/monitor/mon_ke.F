@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.18 2009/11/28 20:52:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.19 2009/11/30 03:58:22 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -30,7 +30,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j,k,kp1
-      _RL numPnts,theVol,tmpVal,mskp1
+      _RL numPnts,theVol,tmpVal, mskp1, msk_1
       _RL theMax,theMean,theVolMean,potEnMean
       _RL tileMean(nSx,nSy)
       _RL tileVlAv(nSx,nSy)
@@ -56,7 +56,11 @@ C     !LOCAL VARIABLES:
         DO k=1,Nr
          kp1 = MIN(k+1,Nr)
          mskp1 = 1.
-         IF ( k.GE.Nr) mskp1 = 0.
+         IF ( k.GE.Nr ) mskp1 = 0.
+C- Note: Present NH implementation does not account for D.w/dt at k=1.
+C        Consequently, wVel(k=1) does not contribute to NH KE (msk_1=0).
+         msk_1 = 1.
+         IF ( k.EQ. 1 ) msk_1 = 0.
          DO j=1,sNy
           DO i=1,sNx
            tileVol(bi,bj) = tileVol(bi,bj)
@@ -91,7 +95,7 @@ C    with no assumption on how grid spacing & area are defined.
 #ifdef ALLOW_NONHYDROSTATIC
            IF ( nonHydrostatic ) THEN
             tmpWke = 0.25*
-     &        ( wVel(i,j, k, bi,bj)*wVel(i,j, k, bi,bj)
+     &        ( wVel(i,j, k, bi,bj)*wVel(i,j, k, bi,bj)*msk_1
      &                             *deepFac2F( k )*rhoFacF( k )
      &         +wVel(i,j,kp1,bi,bj)*wVel(i,j,kp1,bi,bj)*mskp1
      &                             *deepFac2F(kp1)*rhoFacF(kp1)
