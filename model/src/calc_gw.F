@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.40 2009/02/27 01:47:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.41 2009/11/30 19:22:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,7 +90,7 @@ C     i,j,k         :: Loop counters
       _RL    del2w (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,k, kp1
-      _RL  wOverride
+      _RL  wOverride, surfFac
       _RL  tmp_WbarZ
       _RL  uTrans, vTrans, rTrans
       _RL  viscLoc
@@ -143,13 +143,10 @@ C-    Initialize del2w to zero:
         ENDDO
       ENDIF
 
-C--   Boundaries condition at top
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-         flxAdvUp(i,j) = 0.
-         flxDisUp(i,j) = 0.
-       ENDDO
-      ENDDO
+C--   Boundaries condition at top (vertical advection of vertical momentum):
+C     Setting surfFac=0 ignores surface wVel (as if wVel_k=1 = 0)
+      surfFac = 1. _d 0
+c     surfFac = 0. _d 0
 
 C---  Sweep down column
       DO k=2,Nr
@@ -370,6 +367,27 @@ C     Interpolate vert viscosity to center of tracer-cell (level k):
      &                   *deepFac2C(k)*rhoFacC(k)
            ENDDO
           ENDDO
+          IF ( k.EQ.2 ) THEN
+C Viscous Flux on Upper face of W-Cell (= at tracer-cell center, level k-1)
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+C     Interpolate horizontally (but not vertically) vert viscosity to center:
+C     Although background visc. might be defined at k=1, this is not
+C     generally true when using variable visc. (from vertical mixing scheme).
+C     Therefore, no vert. interp. and only horizontal interpolation.
+             viscLoc = ( KappaRU(i,j,k) + KappaRU(i+1,j,k)
+     &                  +KappaRV(i,j,k) + KappaRV(i,j+1,k)
+     &                 )*0.25 _d 0
+             flxDisUp(i,j) =
+     &          - viscLoc*( wVel(i,j, k ,bi,bj)
+     &                     -wVel(i,j,k-1,bi,bj) )*rkSign
+     &                   *recip_drF(k-1)*rA(i,j,bi,bj)
+     &                   *deepFac2C(k-1)*rhoFacC(k-1)
+C to recover old (before 2009/11/30) results (since flxDisUp(k=2) was zero)
+c            flxDisUp(i,j) = 0.
+            ENDDO
+           ENDDO
+          ENDIF
 C     Tendency is minus divergence of viscous fluxes:
 C     anelastic: vert.visc.flx is scaled by rhoFac but hor.visc.fluxes are not
           DO j=jMin,jMax
@@ -450,6 +468,24 @@ C     transport through Lower face area:
              flx_Dn(i,j) = rTrans*tmp_WbarZ
            ENDDO
           ENDDO
+          IF ( k.EQ.2 ) THEN
+C Advective Flux on Upper face of W-Cell (= at tracer-cell center, level k-1)
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             tmp_WbarZ = halfRL*
+     &              ( wVel(i,j,k-1,bi,bj)*rVel2wUnit(k-1)*surfFac
+     &               +wVel(i,j, k, bi,bj)*rVel2wUnit( k ) )
+             rTrans = halfRL*
+     &              ( wVel(i,j,k-1,bi,bj)*deepFac2F(k-1)*rhoFacF(k-1)
+     &                                   *surfFac
+     &               +wVel(i,j, k ,bi,bj)*deepFac2F( k )*rhoFacF( k )
+     &              )*rA(i,j,bi,bj)
+             flxAdvUp(i,j) = rTrans*tmp_WbarZ
+C to recover old (before 2009/11/30) results (since flxAdvUp(k=2) was zero)
+c            flxAdvUp(i,j) = 0.
+            ENDDO
+           ENDDO
+          ENDIF
 C     Tendency is minus divergence of advective fluxes:
 C     anelastic: all transports & advect. fluxes are scaled by rhoFac
           DO j=jMin,jMax
