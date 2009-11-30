@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.25 2009/09/27 23:18:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.26 2009/11/30 16:26:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -126,7 +126,7 @@ c#endif
       IF (use3Dsolver) THEN
        DO j=1,sNy
         DO i=1,sNx
-         cg3d_b(i,j,k,bi,bj) = pf(i+1,j)-pf(i,j)
+         cg3d_b(i,j,k,bi,bj) = ( pf(i+1,j)-pf(i,j) )
         ENDDO
        ENDDO
       ENDIF
@@ -169,8 +169,8 @@ C     Explicit+Implicit part of the Barotropic Flow Divergence
       IF (use3Dsolver) THEN
        DO j=1,sNy
         DO i=1,sNx
-         cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj) +
-     &    pf(i,j+1)-pf(i,j)
+         cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
+     &                       + ( pf(i,j+1)-pf(i,j) )
         ENDDO
        ENDDO
       ENDIF
