@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.128 2009/06/10 21:36:52 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.129 2009/12/02 19:16:15 jmc Exp $
 #  $Name:  $
 #
 
@@ -1359,9 +1359,9 @@ else
 	    echo "An email containing results was sent to the following addresses:"
 	    echo "  \"$ADDRESSES\""
 	    echo
+	    test -f $DRESULTS".tar"  &&  rm -f $DRESULTS".tar"
+	    test -f $DRESULTS".tar.gz"  &&  rm -f $DRESULTS".tar.gz"
 	fi
-	test -f $DRESULTS".tar"  &&  rm -f $DRESULTS".tar"
-	test -f $DRESULTS".tar.gz"  &&  rm -f $DRESULTS".tar.gz"
     fi
 fi
 
