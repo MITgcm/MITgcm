@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.27 2008/04/24 21:35:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.28 2009/12/03 05:49:46 dimitri Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -207,7 +207,7 @@ C endif for DIC_forcingCycle
          IF ( useSEAICE ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-             FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+             FIce(i,j,bi,bj) = AREA(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
