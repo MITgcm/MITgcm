@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.53 2009/11/09 16:13:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.54 2009/12/04 11:10:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -117,9 +117,6 @@ C     part of the overlap, because the overlap of u/vTmp is used
       PARAMETER ( iMin = 0, iMax = sNx+1, jMin = 0, jMax = sNy+1 )
 #else
       PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
-#endif
-#ifdef ALLOW_DEBUG
-      _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
@@ -492,16 +489,7 @@ C     contribution to the rhs part of grad(sigma)_x
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=UICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL DEBUG_STATS_RL(1,ARR,'UICE before iter. (SEAICE_LSR)',
+        CALL DEBUG_STATS_RL(1,UICE,'UICE before iter. (SEAICE_LSR)',
      &                      myThid)
       ENDIF
 #endif /* ALLOW_DEBUG */
@@ -624,16 +612,7 @@ C ITERATION END -----------------------------------------------------
         WRITE(standardMessageUnit,'(A,I6,1P2E22.14)')
      &      ' U lsr iters, error = ',ICOUNT1,S1
        _END_MASTER( myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=UICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL DEBUG_STATS_RL(1,ARR,'UICE after  iter. (SEAICE_LSR)',
+        CALL DEBUG_STATS_RL(1,UICE,'UICE after  iter. (SEAICE_LSR)',
      &                      myThid)
         IF (S1.EQ.0.D0.AND.ICOUNT1.GT.SOLV_NCHECK)
      &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (uIce)'
@@ -768,16 +747,7 @@ C     contribution to the rhs part of grad(sigma)_y
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=VICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL DEBUG_STATS_RL(1,ARR,'VICE before iter. (SEAICE_LSR)',
+        CALL DEBUG_STATS_RL(1,VICE,'VICE before iter. (SEAICE_LSR)',
      &                      myThid)
       ENDIF
 #endif /* ALLOW_DEBUG */
@@ -887,16 +857,7 @@ C ITERATION END -----------------------------------------------------
         WRITE(standardMessageUnit,'(A,I6,1P2E22.14)')
      &      ' V lsr iters, error = ',ICOUNT2,S2
        _END_MASTER( myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=VICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL DEBUG_STATS_RL(1,ARR,'VICE after  iter. (SEAICE_LSR)',
+        CALL DEBUG_STATS_RL(1,VICE,'VICE after  iter. (SEAICE_LSR)',
      &                      myThid)
         IF (S2.EQ.0.D0.AND.ICOUNT2.GT.SOLV_NCHECK)
      &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (vIce)'
@@ -981,9 +942,6 @@ C     part of the overlap, because the overlap of u/vTmp is used
       PARAMETER ( iMin = 0, iMax = sNx+1, jMin = 0, jMax = sNy+1 )
 #else
       PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
-#endif
-#ifdef ALLOW_DEBUG
-      _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
@@ -1353,16 +1311,7 @@ C     end bi/bj-loops
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=UICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       CALL DEBUG_STATS_RL(1,ARR,'UICE before iteration (SEAICE_LSR)',
+       CALL DEBUG_STATS_RL(1,UICE,'UICE before iteration (SEAICE_LSR)',
      &      myThid)
       ENDIF
 #endif /* ALLOW_DEBUG */
@@ -1485,16 +1434,7 @@ C ITERATION END -----------------------------------------------------
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
        _END_MASTER( myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=UICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       CALL DEBUG_STATS_RL(1,ARR,'UICE after iteration (SEAICE_LSR)',
+       CALL DEBUG_STATS_RL(1,UICE,'UICE after iteration (SEAICE_LSR)',
      &      myThid)
        IF (S1.EQ.0.D0)STOP'u-iteration did not converge'
       ENDIF
@@ -1662,16 +1602,7 @@ C     end bi/bj-loops
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=VICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       CALL DEBUG_STATS_RL(1,ARR,'VICE before iteration (SEAICE_LSR)',
+       CALL DEBUG_STATS_RL(1,VICE,'VICE before iteration (SEAICE_LSR)',
      &      myThid)
       ENDIF
 #endif /* ALLOW_DEBUG */
@@ -1793,16 +1724,7 @@ C ITERATION END -----------------------------------------------------
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
        _END_MASTER( myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            ARR(i,j,bi,bj)=VICE(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       CALL DEBUG_STATS_RL(1,ARR,'VICE after iteration (SEAICE_LSR)',
+       CALL DEBUG_STATS_RL(1,VICE,'VICE after iteration (SEAICE_LSR)',
      &      myThid)
        IF (S2.EQ.0.D0)STOP'v-iteration did not converge'
       ENDIF
