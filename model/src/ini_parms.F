@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.227 2009/11/29 03:12:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.228 2009/12/08 00:31:25 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -192,6 +192,7 @@ C--   Continuous equation parameters
      & hFacMin, hFacMinDz, hFacMinDp, hFacMinDr,
      & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
      & nonlinFreeSurf, hFacInf, hFacSup, select_rStar,
+     & nonHydrostatic, selectNHfreeSurf, quasiHydrostatic,
      & implicitIntGravWave, staggerTimeStep,
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,
@@ -203,7 +204,7 @@ C--   Continuous equation parameters
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
+     & globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, ivdc_kappa,
      & hMixCriteria, dRhoSmall, hMixSmooth,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
@@ -414,6 +415,7 @@ C--   Set default "physical" parameters
       tAlpha              = UNSET_RL
       sBeta               = UNSET_RL
       implicitNHPress     = UNSET_RL
+      selectNHfreeSurf  = 0
       tempVertAdvScheme = 0
       saltVertAdvScheme = 0
 C--   z,p,r coord input switching.

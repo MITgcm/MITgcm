@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.233 2009/11/29 03:06:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.234 2009/12/08 00:29:32 jmc Exp $
 C $Name:  $
 C
 
@@ -143,6 +143,8 @@ C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
+C     selectNHfreeSurf    :: option for Non-Hydrostatic (free-)Surface formulation:
+C                           =0 (default) hydrostatic surf. ; > 0 add NH effects.
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
@@ -169,6 +171,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        writeStatePrec,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
+     &        selectNHfreeSurf,
      &        selectAddFluid,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
@@ -188,6 +191,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER readBinaryPrec
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
+      INTEGER selectNHfreeSurf
       INTEGER selectAddFluid
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme

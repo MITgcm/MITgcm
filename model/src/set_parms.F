@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.5 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.6 2009/12/08 00:31:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,15 +23,13 @@ C     !USES:
 #include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid - Number of this instance of SET_PARMS
+C     myThid :: My Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-c     INTEGER IL, iUnit
 c     INTEGER  ILNBLNK
 c     EXTERNAL ILNBLNK
-
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -62,6 +60,18 @@ C--   On/Off flags for each terms of the momentum equation
       momImplVertAdv   = momAdvection .AND. momImplVertAdv
       implicitViscosity= momViscosity .AND. implicitViscosity
       use3Dsolver      = nonHydrostatic.OR. implicitIntGravWave
+
+C--   Free-surface & pressure method
+      IF ( selectNHfreeSurf.NE.0 .AND.
+     &      ( .NOT.nonHydrostatic .OR. usingPCoords
+     &        .OR. .NOT.exactConserv
+     &      ) ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SET_PARMS: ',
+     &                       'reset selectNHfreeSurf to zero'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        selectNHfreeSurf = 0
+      ENDIF
 C--   Set default Vorticity-Term Scheme:
       IF ( vectorInvariantMomentum ) THEN
         IF ( selectVortScheme.EQ.UNSET_I ) THEN
@@ -72,43 +82,44 @@ C--   Set default Vorticity-Term Scheme:
       ELSEIF ( selectVortScheme.NE.UNSET_I ) THEN
         WRITE(msgBuf,'(A,A)') '** WARNING ** SET_PARMS: ',
      &   'Vector-Invariant Momentum unused => ignore selectVortScheme'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, SQUEEZE_RIGHT, 1 )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 C--   Momentum viscosity on/off flag.
       IF ( momViscosity        ) THEN
-       vfFacMom = 1.D0
+       vfFacMom = 1. _d 0
       ELSE
-       vfFacMom = 0.D0
+       vfFacMom = 0. _d 0
       ENDIF
 C--   Momentum advection on/off flag.
       IF ( momAdvection        ) THEN
-       afFacMom = 1.D0
+       afFacMom = 1. _d 0
       ELSE
-       afFacMom = 0.D0
+       afFacMom = 0. _d 0
       ENDIF
 C--   Momentum forcing on/off flag.
       IF ( momForcing ) THEN
-       foFacMom = 1.D0
+       foFacMom = 1. _d 0
       ELSE
-       foFacMom = 0.D0
+       foFacMom = 0. _d 0
       ENDIF
 C--   Coriolis term on/off flag.
       IF ( useCoriolis ) THEN
-       cfFacMom = 1.D0
+       cfFacMom = 1. _d 0
       ELSE
-       cfFacMom = 0.D0
+       cfFacMom = 0. _d 0
       ENDIF
 C--   Pressure term on/off flag.
       IF ( momPressureForcing ) THEN
-       pfFacMom = 1.D0
+       pfFacMom = 1. _d 0
       ELSE
-       pfFacMom = 0.D0
+       pfFacMom = 0. _d 0
       ENDIF
 C--   Metric terms on/off flag.
       IF ( metricTerms ) THEN
-       mTFacMom = 1.D0
+       mTFacMom = 1. _d 0
       ELSE
-       mTFacMom = 0.D0
+       mTFacMom = 0. _d 0
       ENDIF
 
 C--   Advection and Forcing for Temp and salt  on/off flags
