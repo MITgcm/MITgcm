@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_grid_factors.F,v 1.1 2008/09/05 20:15:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_grid_factors.F,v 1.2 2009/12/08 21:50:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,10 +31,10 @@ C     myThid   :: my Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     k        :: loop index
-C     msgBuf   :: Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       INTEGER k
-      _RL     tmpRatio, checkRatio1, checkRatio2
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     _RL     tmpRatio, checkRatio1, checkRatio2
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       _BEGIN_MASTER(myThid)

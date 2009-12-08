@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.121 2009/12/08 00:31:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.122 2009/12/08 21:47:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,13 +44,11 @@ C     !LOCAL VARIABLES:
 C     msgBuf :: Temp. for building output string.
 C     rUnits :: vertical coordinate units
 C     ioUnit :: Temp. for fortran I/O unit
-C     I,J,K  :: Loop counters.
-C     bi,bj  :: Tile loop counters.
+C     i, k   :: Loop counters.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 rUnits
       INTEGER ioUnit
-      INTEGER I,J,K
-      INTEGER bi, bj
+      INTEGER i, k
       _RL     bufRL(Nr+1)
       INTEGER buffI(1)
       INTEGER coordLine
@@ -194,9 +192,9 @@ C     bi,bj  :: Tile loop counters.
       IF ( eosType .EQ. 'POLY3' ) THEN
         WRITE(msgBuf,'(A)')
      &   '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
-        DO K = 1, Nr
+        DO k = 1, Nr
          WRITE(msgBuf,'(I3,13F8.3)')
-     &   K,eosRefT(K),eosRefS(K),eosSig0(K), (eosC(I,K),I=1,9)
+     &   k,eosRefT(k),eosRefS(k),eosSig0(k), (eosC(i,k),i=1,9)
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDDO
       ENDIF
@@ -504,8 +502,8 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_RL( epsAB_CD, INDEX_NONE,'epsAB_CD =',
      &  ' /* AB-2 stabilizing weight for CD-scheme*/')
       ENDIF
-      I = ILNBLNK(pickupSuff)
-      IF ( I.GT.0 ) THEN
+      i = ILNBLNK(pickupSuff)
+      IF ( i.GT.0 ) THEN
         CALL WRITE_0D_C( pickupSuff, 0, INDEX_NONE,
      & 'pickupSuff =', ' /* Suffix of pickup-file to restart from */')
       ENDIF
@@ -705,9 +703,9 @@ C     Grid along selected grid lines
       CALL WRITE_0D_RL( globalArea, INDEX_NONE, 'globalArea =',
      & ' /* Integrated horizontal Area (m^2) */')
 
-      I = ILNBLNK(the_run_name)
-      IF ( I.GT.0 ) THEN
-        CALL WRITE_0D_C( the_run_name, I, INDEX_NONE,
+      i = ILNBLNK(the_run_name)
+      IF ( i.GT.0 ) THEN
+        CALL WRITE_0D_C( the_run_name, i, INDEX_NONE,
      &    'the_run_name = ', '/* Name of this simulation */' )
       ENDIF
 

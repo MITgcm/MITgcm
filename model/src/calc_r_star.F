@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.13 2007/10/29 18:15:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.14 2009/12/08 21:46:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,10 +44,10 @@ C     etaFld :: current eta field used to update the hFactor
 
 C     !LOCAL VARIABLES:
 C     Local variables
-C     i,j,k,bi,bj  :: loop counter
+C     i,j, bi,bj   :: loop counter
 C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
-      INTEGER i,j,k,bi,bj
+      INTEGER i,j,bi,bj
       INTEGER numbWrite, numbWrMax
       INTEGER icntc1, icntc2, icntw, icnts
       INTEGER iic, jjc, iic2, jjc2, iiw, jjw, iis, jjs
