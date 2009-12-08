@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.49 2009/11/29 03:12:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.50 2009/12/08 21:49:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -345,7 +345,7 @@ C-- explicit part of the NH pressure gradient is added here
          ENDDO
         ENDDO
       ENDIF
-#endif ALLOW_NONHYDROSTATIC
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C     Step forward zonal velocity (store in Gu)
       DO j=jMin,jMax
