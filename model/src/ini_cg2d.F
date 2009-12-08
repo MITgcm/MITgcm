@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.48 2009/11/23 16:15:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.49 2009/12/08 00:10:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,13 +40,13 @@ C     myThid - Thread no. that called this routine.
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     bi,bj  :: tile indices
-C     I,J,K  :: Loop counters
+C     i,j,k  :: Loop counters
 C     faceArea - Temporary used to hold cell face areas.
 C     myNorm - Work variable used in calculating normalisation factor
 C     sumArea - Work variable used to compute the total Domain Area
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
-      INTEGER I, J, K, ks
+      INTEGER i, j, k, ks
       _RL     faceArea
       _RS     myNorm
       _RS     aC, aCw, aCs
@@ -56,27 +56,27 @@ C--   Initialize arrays in common blocs (CG2D.h) ; not really necessary
 C     but safer when EXCH do not fill all the overlap regions.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          aW2d(I,J,bi,bj) = 0. _d 0
-          aS2d(I,J,bi,bj) = 0. _d 0
-          aC2d(I,J,bi,bj) = 0. _d 0
-          pW(I,J,bi,bj) = 0. _d 0
-          pS(I,J,bi,bj) = 0. _d 0
-          pC(I,J,bi,bj) = 0. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          aW2d(i,j,bi,bj) = 0. _d 0
+          aS2d(i,j,bi,bj) = 0. _d 0
+          aC2d(i,j,bi,bj) = 0. _d 0
+          pW(i,j,bi,bj) = 0. _d 0
+          pS(i,j,bi,bj) = 0. _d 0
+          pC(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO J=1-1,sNy+1
-         DO I=1-1,sNx+1
-          cg2d_q(I,J,bi,bj) = 0. _d 0
-          cg2d_r(I,J,bi,bj) = 0. _d 0
-          cg2d_s(I,J,bi,bj) = 0. _d 0
+        DO j=1-1,sNy+1
+         DO i=1-1,sNx+1
+          cg2d_q(i,j,bi,bj) = 0. _d 0
+          cg2d_r(i,j,bi,bj) = 0. _d 0
+          cg2d_s(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_CG2D_NSA
-          cg2d_z(I,J,bi,bj) = 0. _d 0
+          cg2d_z(i,j,bi,bj) = 0. _d 0
 #endif /* ALLOW_CG2D_NSA */
 #ifdef ALLOW_SRCG
-          cg2d_y(I,J,bi,bj) = 0. _d 0
-          cg2d_v(I,J,bi,bj) = 0. _d 0
+          cg2d_y(i,j,bi,bj) = 0. _d 0
+          cg2d_v(i,j,bi,bj) = 0. _d 0
 #endif /*  ALLOW_SRCG */
          ENDDO
         ENDDO
@@ -89,49 +89,49 @@ C     aS2d: integral in Z Ay/dY
       myNorm = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          aW2d(I,J,bi,bj) = 0. _d 0
-          aS2d(I,J,bi,bj) = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          aW2d(i,j,bi,bj) = 0. _d 0
+          aS2d(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO K=1,Nr
-         DO J=1,sNy
-          DO I=1,sNx
+        DO k=1,Nr
+         DO j=1,sNy
+          DO i=1,sNx
 C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
-           faceArea = _dyG(I,J,bi,bj)*drF(K)
-     &               *_hFacW(I,J,K,bi,bj)
-           aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)
+           faceArea = _dyG(i,j,bi,bj)*drF(k)
+     &               *_hFacW(i,j,k,bi,bj)
+           aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
      &              + implicSurfPress*implicDiv2DFlow
-     &               *faceArea*recip_dxC(I,J,bi,bj)
-           faceArea = _dxG(I,J,bi,bj)*drF(K)
-     &               *_hFacS(I,J,K,bi,bj)
-           aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)
+     &               *faceArea*recip_dxC(i,j,bi,bj)
+           faceArea = _dxG(i,j,bi,bj)*drF(k)
+     &               *_hFacS(i,j,k,bi,bj)
+           aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
      &              + implicSurfPress*implicDiv2DFlow
-     &               *faceArea*recip_dyC(I,J,bi,bj)
+     &               *faceArea*recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
 #ifdef ALLOW_OBCS
         IF (useOBCS) THEN
-         DO I=1,sNx
-          IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj),bi,bj)=0.
-          IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj)+1,bi,bj)=0.
-          IF (OB_Js(I,bi,bj).NE.0) aS2d(I,OB_Js(I,bi,bj)+1,bi,bj)=0.
-          IF (OB_Js(I,bi,bj).NE.0) aS2d(I,OB_Js(I,bi,bj),bi,bj)=0.
+         DO i=1,sNx
+          IF (OB_Jn(i,bi,bj).NE.0) aS2d(i, OB_Jn(i,bi,bj), bi,bj)=0.
+          IF (OB_Jn(i,bi,bj).NE.0) aS2d(i,OB_Jn(i,bi,bj)+1,bi,bj)=0.
+          IF (OB_Js(i,bi,bj).NE.0) aS2d(i,OB_Js(i,bi,bj)+1,bi,bj)=0.
+          IF (OB_Js(i,bi,bj).NE.0) aS2d(i, OB_Js(i,bi,bj), bi,bj)=0.
          ENDDO
-         DO J=1,sNy
-          IF (OB_Ie(J,bi,bj).NE.0) aW2d(OB_Ie(J,bi,bj),J,bi,bj)=0.
-          IF (OB_Ie(J,bi,bj).NE.0) aW2d(OB_Ie(J,bi,bj)+1,J,bi,bj)=0.
-          IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj)+1,J,bi,bj)=0.
-          IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj),J,bi,bj)=0.
+         DO j=1,sNy
+          IF (OB_Ie(j,bi,bj).NE.0) aW2d(OB_Ie(j,bi,bj), j, bi,bj)=0.
+          IF (OB_Ie(j,bi,bj).NE.0) aW2d(OB_Ie(j,bi,bj)+1,j,bi,bj)=0.
+          IF (OB_Iw(j,bi,bj).NE.0) aW2d(OB_Iw(j,bi,bj)+1,j,bi,bj)=0.
+          IF (OB_Iw(j,bi,bj).NE.0) aW2d(OB_Iw(j,bi,bj), j, bi,bj)=0.
          ENDDO
         ENDIF
 #endif
-        DO J=1,sNy
-         DO I=1,sNx
-          myNorm = MAX(ABS(aW2d(I,J,bi,bj)),myNorm)
-          myNorm = MAX(ABS(aS2d(I,J,bi,bj)),myNorm)
+        DO j=1,sNy
+         DO i=1,sNx
+          myNorm = MAX(ABS(aW2d(i,j,bi,bj)),myNorm)
+          myNorm = MAX(ABS(aS2d(i,j,bi,bj)),myNorm)
          ENDDO
         ENDDO
        ENDDO
@@ -144,10 +144,10 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
       ENDIF
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)*myNorm
-          aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)*myNorm
+        DO j=1,sNy
+         DO i=1,sNx
+          aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)*myNorm
+          aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)*myNorm
          ENDDO
         ENDDO
        ENDDO
@@ -210,50 +210,43 @@ C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          ks = ksurfC(I,J,bi,bj)
-          pC(I,J,bi,bj) = 1. _d 0
-          aC = -(
-     &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
-     &    +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*recip_Bo(I,J,bi,bj)*deepFac2F(ks)
-     &                *rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
-     &    )
-          aCs = -(
-     &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
-     &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
-     &    +freeSurfFac*myNorm*recip_Bo(I,J-1,bi,bj)*deepFac2F(ks)
-     &                *rA(I,J-1,bi,bj)/deltaTMom/deltaTfreesurf
-     &    )
-          aCw = -(
-     &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
-     &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*recip_Bo(I-1,J,bi,bj)*deepFac2F(ks)
-     &                *rA(I-1,J,bi,bj)/deltaTMom/deltaTfreesurf
-     &    )
-          IF ( aC .EQ. 0. ) THEN
-            pC(I,J,bi,bj) = 1. _d 0
-          ELSE
-           pC(I,J,bi,bj) =  1. _d 0 / aC
-          ENDIF
-          IF ( aC + aCw .EQ. 0. ) THEN
-           pW(I,J,bi,bj) = 0.
-          ELSE
-           pW(I,J,bi,bj) =
-     &     -aW2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCw+aC))**2 )
-          ENDIF
-          IF ( aC + aCs .EQ. 0. ) THEN
-           pS(I,J,bi,bj) = 0.
-          ELSE
-           pS(I,J,bi,bj) =
-     &     -aS2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
-          ENDIF
-C-    store solver main diagonal :
-          aC2d(I,J,bi,bj) = aC
-C         pC(I,J,bi,bj) = 1.
-C         pW(I,J,bi,bj) = 0.
-C         pS(I,J,bi,bj) = 0.
+C-    calculate and store solver main diagonal :
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+           ks = ksurfC(i,j,bi,bj)
+           aC2d(i,j,bi,bj) = -(
+     &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
+     &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+     &      +freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
+     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &                        )
+         ENDDO
+        ENDDO
+        DO j=1,sNy
+         DO i=1,sNx
+           aC  = aC2d( i, j, bi,bj)
+           aCs = aC2d( i,j-1,bi,bj)
+           aCw = aC2d(i-1,j, bi,bj)
+           IF ( aC .EQ. 0. ) THEN
+            pC(i,j,bi,bj) = 1. _d 0
+           ELSE
+            pC(i,j,bi,bj) =  1. _d 0 / aC
+           ENDIF
+           IF ( aC + aCw .EQ. 0. ) THEN
+            pW(i,j,bi,bj) = 0.
+           ELSE
+            pW(i,j,bi,bj) =
+     &         -aW2d(i,j,bi,bj)/((cg2dpcOffDFac *(aCw+aC))**2 )
+           ENDIF
+           IF ( aC + aCs .EQ. 0. ) THEN
+            pS(i,j,bi,bj) = 0.
+           ELSE
+            pS(i,j,bi,bj) =
+     &         -aS2d(i,j,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
+           ENDIF
+C          pC(i,j,bi,bj) = 1.
+C          pW(i,j,bi,bj) = 0.
+C          pS(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
