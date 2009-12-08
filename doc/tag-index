@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1203 2009/12/02 02:21:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1204 2009/12/08 00:35:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/obcs:
+  add files & OB-variables for wVel (Non-Hydrostatic) with useOBCSprescribe
+o model/src: 
+  fix 2-D solver initialisation for deep-atmosphere (p-coord) with topography
 
 checkpoint61z (2009/12/01)
 o nonHydrostatic:
@@ -42,7 +47,7 @@ o pkg/cd_code:
    lab_sea (3 Fwd +3 AD), natl_box (x2), tutorial_global_oce_biogeo (Fwd+AD),
    tutorial_global_oce_latlon, tutorial_global_oce_optim & tutorial_tracer_adjsens.
   Keep old results by adding CD_CODE_OPTIONS.h in exp: cfc_example, exp2,
-       lobal_ocean.90x40x15(+AD), global_ocean_ebm(+AD) and OpenAD.
+       global_ocean.90x40x15(+AD), global_ocean_ebm(+AD) and OpenAD.
 o pkg/obcs:
  - fix bug in initialisation (broken since Oct 1rst modification)
    for useOBCSprescribe without useEXF.
