@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.28 2007/07/31 22:46:46 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.29 2009/12/08 21:44:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -20,21 +20,22 @@ C--   Routines marked "U" contain UNIX OS calls.
 CGG   Modified following A. Biastoch for use with SP3. Is backwards
 CGG   compatible. G. Gebbie, gebbie@mit.edu, 20 Oct 2001, Scripps.
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: TIMER_INDEX
 
 C     !INTERFACE:
-      INTEGER FUNCTION TIMER_INDEX ( 
+      INTEGER FUNCTION TIMER_INDEX (
      I        name,timerNames,maxTimers,nTimers )
       IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | FUNCTION TIMER\_INDEX                                      
-C     | o Timing support routine.                                 
+C     | FUNCTION TIMER\_INDEX
+C     | o Timing support routine.
 C     *==========================================================*
-C     | Return index in timer data structure of timer named       
-C     | by the function argument "name".                          
+C     | Return index in timer data structure of timer named
+C     | by the function argument "name".
 C     *==========================================================*
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -68,6 +69,7 @@ C
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: TIMER_CONTROL
 
@@ -114,13 +116,13 @@ C     maxString :: Max length of a timer name
       PARAMETER ( maxTimers = 50 )
       PARAMETER ( maxString = 80 )
 C     timerStarts :: Timer counters for each timer and each thread
-C     timerStops 
+C     timerStops
 C     timerUser
 C     timerWall
 C     timerSys
 C     timerT0User
 C     timerT0Wall
-C     timerT0Sys 
+C     timerT0Sys
 C     timerStatus  :: START/STOP/RUNNING Status of the timer
 C     timerNameLen :: Length of timer name
 C     timerNames   :: Table of timer names
@@ -128,19 +130,19 @@ C     nTimers      :: Number of active timers
       INTEGER timerStarts( maxTimers , MAX_NO_THREADS)
       SAVE    timerStarts
       INTEGER timerStops ( maxTimers , MAX_NO_THREADS)
-      SAVE    timerStops 
+      SAVE    timerStops
       Real*8 timerUser  ( maxTimers , MAX_NO_THREADS)
-      SAVE timerUser 
+      SAVE timerUser
       Real*8 timerWall  ( maxTimers , MAX_NO_THREADS)
-      SAVE timerWall 
+      SAVE timerWall
       Real*8 timerSys   ( maxTimers , MAX_NO_THREADS)
-      SAVE timerSys    
+      SAVE timerSys
       Real*8 timerT0User( maxTimers , MAX_NO_THREADS)
-      SAVE timerT0User   
+      SAVE timerT0User
       Real*8 timerT0Wall( maxTimers , MAX_NO_THREADS)
-      SAVE timerT0Wall 
+      SAVE timerT0Wall
       Real*8 timerT0Sys ( maxTimers , MAX_NO_THREADS)
-      SAVE timerT0Sys 
+      SAVE timerT0Sys
       INTEGER timerStatus( maxTimers , MAX_NO_THREADS)
       SAVE    timerStatus
       INTEGER timerNameLen( maxTimers , MAX_NO_THREADS)
@@ -183,6 +185,7 @@ C     nTimers      :: Number of active timers
       INTEGER Check, EventSet
       INTEGER papiunit
       SAVE EventCode, EventSet
+      INTEGER j
 #else
 #if defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
 #include <pclh.f>
@@ -197,6 +200,7 @@ C     nTimers      :: Number of active timers
       INTEGER*8 i_result1(nmaxevents, maxTimers, MAX_NO_THREADS)
       INTEGER*8 i_result2(nmaxevents, maxTimers, MAX_NO_THREADS)
       REAL*8 fp_result(nmaxevents, maxTimers, MAX_NO_THREADS)
+      INTEGER j
 #else
       INTEGER pcl_counter_list(5), alt_counter_list(5)
       INTEGER*8 i_result(5)
@@ -212,7 +216,7 @@ C     nTimers      :: Number of active timers
 #endif
 #endif
 #endif
-      INTEGER I, J
+      INTEGER I
       Real*8 userTime
       Real*8 systemTime
       Real*8 wallClockTime
@@ -246,7 +250,7 @@ C
             nTimers(myThreadId) = nTimers(myThreadId) + 1
             iTimer  = nTimers(myThreadId)
             timerNames(iTimer,myThreadId)    = tmpName
-            timerNameLen(iTimer,myThreadId)  = 
+            timerNameLen(iTimer,myThreadId)  =
      &       ILNBLNK(tmpName)-IFNBLNK(tmpName)+1
             timerUser(iTimer,myThreadId)     = 0.
             timerSys (iTimer,myThreadId)     = 0.
@@ -261,7 +265,7 @@ C
           timerT0Sys(iTimer,myThreadId)  = systemTime
           timerT0Wall(iTimer,myThreadId) = wallClockTime
           timerStatus(iTimer,myThreadId) = RUNNING
-          timerStarts(iTimer,myThreadId) = 
+          timerStarts(iTimer,myThreadId) =
      &       timerStarts(iTimer,myThreadId)+1
 #ifdef USE_PAPI
 CCE107 PAPI - Read event counts
@@ -302,16 +306,16 @@ CCE107 PCL - Read event counts
 #endif
 #endif
           CALL TIMER_GET_TIME( userTime, systemTime, wallClockTime )
-          timerUser(iTimer,myThreadId)    = 
-     &       timerUser(iTimer,myThreadId) + 
+          timerUser(iTimer,myThreadId)    =
+     &       timerUser(iTimer,myThreadId) +
      &                           userTime          -
      &                           timerT0User(iTimer,myThreadId)
-          timerSys (iTimer,myThreadId)    = 
-     &       timerSys(iTimer,myThreadId) + 
+          timerSys (iTimer,myThreadId)    =
+     &       timerSys(iTimer,myThreadId) +
      &                           systemTime -
      &                           timerT0Sys(iTimer,myThreadId)
-          timerWall(iTimer,myThreadId)    = 
-     &       timerWall(iTimer,myThreadId) + 
+          timerWall(iTimer,myThreadId)    =
+     &       timerWall(iTimer,myThreadId) +
      &                           wallClockTime -
      &                           timerT0Wall(iTimer,myThreadId)
 #ifdef USE_PAPI
@@ -329,14 +333,14 @@ CCE107 PCL - Read event counts
 #endif
 #endif
           timerStatus(iTimer,myThreadId)  = STOPPED
-          timerStops (iTimer,myThreadId)  = 
+          timerStops (iTimer,myThreadId)  =
      &    timerStops (iTimer,myThreadId)+1
         ENDIF
 #if defined (USE_PAPI) || defined (USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
       ELSEIF ( tmpAction .EQ. INIT ) THEN
 #ifdef USE_PAPI
-CCE107 PAPI - Check PAPI version, find the maximum number of events and 
-C      initialize the library, read the suggested events and create 
+CCE107 PAPI - Check PAPI version, find the maximum number of events and
+C      initialize the library, read the suggested events and create
 C      EventSet, prepare counter for use
          Check = PAPI_VER_CURRENT
          call PAPIF_library_init(Check)
@@ -349,7 +353,7 @@ C      EventSet, prepare counter for use
          call PAPIF_num_counters(neventsmax)
          if (neventsmax .GT. nmaxevents) then
             WRITE(msgBuffer,*) "Fix the nmaxevents in the code to ",
-     $           neventsmax 
+     $           neventsmax
             CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &           SQUEEZE_RIGHT,myThreadId)
             CALL ABORT
@@ -362,7 +366,7 @@ C       reset to reasonable values
         if (nevents .gt. neventsmax) then
            nevents = neventsmax
            WRITE(msgBuffer,*)
-     $          "resetting the number of PAPI events to the maximum" 
+     $          "resetting the number of PAPI events to the maximum"
            CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &          SQUEEZE_RIGHT,myThreadId)
         endif
@@ -412,7 +416,7 @@ C     reset to reasonable values
         if (nevents .gt. nmaxevents) then
            nevents = nmaxevents
            WRITE(msgBuffer,*)
-     $          "resetting the number of PCL events to the maximum" 
+     $          "resetting the number of PCL events to the maximum"
            CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &          SQUEEZE_RIGHT,myThreadId)
         endif
@@ -565,7 +569,7 @@ CCE107 - Start counting events
            WRITE(msgBuffer,71) Eventname,
      $          values(j,I,myThreadId)/timerUser(I,myThreadId),
      $          values(j,I,myThreadId)/timerWall(I,myThreadId),
-     $          1.D0*values(j,I,myThreadId) 
+     $          1.D0*values(j,I,myThreadId)
            CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &          SQUEEZE_RIGHT,myThreadId)
         enddo
@@ -575,7 +579,7 @@ CCE107 - Start counting events
            WRITE(msgBuffer,71) pcl_counter_name(pcl_counter_list(j)),
      $          i_result(j,I,myThreadId)/timerUser(I,myThreadId)
      $          ,i_result(j,I,myThreadId)/timerWall(I,myThreadId),1.D0
-     $          *i_result(j,I,myThreadId) 
+     $          *i_result(j,I,myThreadId)
            CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &          SQUEEZE_RIGHT,myThreadId)
         enddo
@@ -732,25 +736,26 @@ C
  72   FORMAT(A,D13.7)
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: TIMER_GET_TIME
 
 C     !INTERFACE:
-      SUBROUTINE TIMER_GET_TIME(     
-     O                           userTime,     
-     O                           systemTime,     
+      SUBROUTINE TIMER_GET_TIME(
+     O                           userTime,
+     O                           systemTime,
      O                           wallClockTime )
       IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE TIMER\_GET\_TIME                                 
-C     | o Query system timer routines.                            
+C     | SUBROUTINE TIMER\_GET\_TIME
+C     | o Query system timer routines.
 C     *==========================================================*
-C     | Routine returns total elapsed time for program so far.    
-C     | Three times are returned that conventionally are used as  
-C     | user time, system time and wall-clock time. Not all these 
-C     | numbers are available on all machines.                    
+C     | Routine returns total elapsed time for program so far.
+C     | Three times are returned that conventionally are used as
+C     | user time, system time and wall-clock time. Not all these
+C     | numbers are available on all machines.
 C     *==========================================================*
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -783,7 +788,7 @@ C     executable code below.
       Real*4 actual, tarray(2)
 # elif (defined TARGET_T3E || defined TARGET_CRAY_VECTOR)
       real second, secondr
-      external second, secondr 
+      external second, secondr
 # else
 #  ifdef HAVE_ETIME
       Real*4 etime
@@ -830,7 +835,7 @@ CCE107 Fixed for AIX and UNICOS
       wallClockTime = wtime
 #  elif (defined (ALLOW_USE_MPI) && defined (USE_MPI_WTIME))
       wallClockTime = MPI_Wtime()
-#  else      
+#  else
       wallClockTime = timenow()
 #  endif
 # endif
@@ -838,12 +843,9 @@ CCE107 Fixed for AIX and UNICOS
 
       RETURN
       END
-     
 
-
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-
 C     !ROUTINE: TIMER_PRINTALL
 
 C     !INTERFACE:
@@ -852,10 +854,10 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE TIMER\_PRINTALL                                 
-C     | o Print timer information                                 
+C     | SUBROUTINE TIMER\_PRINTALL
+C     | o Print timer information
 C     *==========================================================*
-C     | Request print out of table of timing from all timers.     
+C     | Request print out of table of timing from all timers.
 C     *==========================================================*
 
 C     !INPUT PARAMETERS:
@@ -863,12 +865,13 @@ C     myThreadId :: This threads number
       INTEGER myThreadId
 CEOP
 
-      CALL TIMER_CONTROL( ' ', 'PRINTALL', 'TIMER_PRINTALL' , 
+      CALL TIMER_CONTROL( ' ', 'PRINTALL', 'TIMER_PRINTALL' ,
      &                   myThreadId )
 C
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: TIMER_START
 
@@ -890,6 +893,8 @@ C
 C
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: TIMER_STOP
 
@@ -911,7 +916,8 @@ C
 C
       RETURN
       END
-C***********************************************************************
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef USE_PAPI
 CCE107 Initialization of common block for PAPI timers
@@ -927,7 +933,7 @@ CCE107 Initialization of common block for PAPI timers
      $     values1(nmaxevents, maxTimers, MAX_NO_THREADS),
      $     values2(nmaxevents, maxTimers, MAX_NO_THREADS)
       COMMON /papivalues/ values, values1, values2
-      DATA values, values1, values2 /size*0/ 
+      DATA values, values1, values2 /size*0/
       END
 #endif
 #if defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.41 2009/11/13 08:07:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.42 2009/12/08 21:43:43 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -103,7 +103,9 @@ C     == Local variables ==
 #ifdef ALLOW_NONHYDROSTATIC
       INTEGER kp1
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER lockey_1, lockey_2
+#endif
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
       _RL leithD2fac, leithD4fac

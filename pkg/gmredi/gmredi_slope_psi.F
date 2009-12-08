@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.11 2008/05/30 21:10:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.12 2009/12/08 21:42:22 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -47,7 +47,6 @@ C
       _RL dSigmaDrS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL slopeTmpSpec,slopeMaxSpec
       _RS depthZ
       INTEGER K,bi,bj,myThid
 CEndOfInterface
@@ -63,6 +62,11 @@ C     == Local variables ==
       _RL fpi
       PARAMETER(fpi=3.141592653589793047592d0)
       INTEGER i,j
+#ifdef GMREDI_WITH_STABLE_ADJOINT
+      _RL slopeTmpSpec,slopeMaxSpec
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       slopeCutoff = SQRT( GM_slopeSqCutoff )
 
@@ -186,7 +190,7 @@ CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
-C- Compute the slope, no clipping, but avoid reverse slope in negatively 
+C- Compute the slope, no clipping, but avoid reverse slope in negatively
 C                                  stratified (Sigma_Z > 0) region :
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
@@ -269,7 +273,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
          DO i=1-Olx,sNx+Olx
           Smod = ABS(SlopeY(i,j))
           IF ( Smod .GT. GM_maxSlope .AND.
-     &           Smod .LT. slopeCutoff ) 
+     &           Smod .LT. slopeCutoff )
      &           taperY(i,j)=GM_maxSlope/(Smod+GM_Small_Number)
          ENDDO
         ENDDO
@@ -281,7 +285,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           IF ( ABS(SlopeX(i,j)) .GT. GM_maxSlope .AND.
-     &           ABS(SlopeX(i,j)) .LT. slopeCutoff ) 
+     &           ABS(SlopeX(i,j)) .LT. slopeCutoff )
      &           taperX(i,j)=maxSlopeSqr/
      &           ( SlopeX(i,j)*SlopeX(i,j) + GM_Small_Number )
          ENDDO
