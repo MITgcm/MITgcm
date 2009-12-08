@@ -1,15 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.32 2009/11/19 02:24:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.33 2009/12/08 00:21:34 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_INIT_VARIABLES( myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_INIT_VARIABLES                           |
-C     | o Initialise OBCs variable data                          |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE OBCS_INIT_VARIABLES
+C     | o Initialise OBCs variable data
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -52,9 +51,6 @@ C     == Local variables ==
           OBNv(I,K,bi,bj)=0. _d 0
           OBNt(I,K,bi,bj)=0. _d 0
           OBNs(I,K,bi,bj)=0. _d 0
-# ifdef ALLOW_NONHYDROSTATIC
-          OBNw(I,K,bi,bj)=0. _d 0
-# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
           OBNu0(I,K,bi,bj)=0. _d 0
           OBNv0(I,K,bi,bj)=0. _d 0
@@ -72,9 +68,6 @@ C     == Local variables ==
           OBSv(I,K,bi,bj)=0. _d 0
           OBSt(I,K,bi,bj)=0. _d 0
           OBSs(I,K,bi,bj)=0. _d 0
-# ifdef ALLOW_NONHYDROSTATIC
-          OBSw(I,K,bi,bj)=0. _d 0
-# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
           OBSu0(I,K,bi,bj)=0. _d 0
           OBSv0(I,K,bi,bj)=0. _d 0
@@ -94,9 +87,6 @@ C     == Local variables ==
           OBEv(J,K,bi,bj)=0. _d 0
           OBEt(J,K,bi,bj)=0. _d 0
           OBEs(J,K,bi,bj)=0. _d 0
-# ifdef ALLOW_NONHYDROSTATIC
-          OBEw(J,K,bi,bj)=0. _d 0
-# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
           OBEu0(J,K,bi,bj)=0. _d 0
           OBEv0(J,K,bi,bj)=0. _d 0
@@ -114,9 +104,6 @@ C     == Local variables ==
           OBWv(J,K,bi,bj)=0. _d 0
           OBWt(J,K,bi,bj)=0. _d 0
           OBWs(J,K,bi,bj)=0. _d 0
-# ifdef ALLOW_NONHYDROSTATIC
-          OBWw(J,K,bi,bj)=0. _d 0
-# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
           OBWu0(J,K,bi,bj)=0. _d 0
           OBWv0(J,K,bi,bj)=0. _d 0
@@ -130,6 +117,56 @@ C     == Local variables ==
 #endif /* ALLOW_OBCS_WEST */
          ENDDO
         ENDDO
+
+#ifdef ALLOW_NONHYDROSTATIC
+        DO K=1,Nr
+         DO I=1-Olx,sNx+Olx
+          OBNw (I,K,bi,bj) = 0. _d 0
+          OBSw (I,K,bi,bj) = 0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBNw0(I,K,bi,bj) = 0. _d 0
+          OBSw0(I,K,bi,bj) = 0. _d 0
+          OBNw1(I,K,bi,bj) = 0. _d 0
+          OBSw1(I,K,bi,bj) = 0. _d 0
+# endif
+         ENDDO
+         DO J=1-Oly,sNy+Oly
+          OBEw (J,K,bi,bj) = 0. _d 0
+          OBWw (J,K,bi,bj) = 0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBEw0(J,K,bi,bj) = 0. _d 0
+          OBWw0(J,K,bi,bj) = 0. _d 0
+          OBEw1(J,K,bi,bj) = 0. _d 0
+          OBWw1(J,K,bi,bj) = 0. _d 0
+# endif
+         ENDDO
+        ENDDO
+#endif /* ALLOW_NONHYDROSTATIC */
+
+#ifdef NONLIN_FRSURF
+        DO I=1-Olx,sNx+Olx
+          OBNeta (I,bi,bj) = 0. _d 0
+          OBSeta (I,bi,bj) = 0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBNeta0(I,bi,bj) = 0. _d 0
+          OBSeta0(I,bi,bj) = 0. _d 0
+          OBNeta1(I,bi,bj) = 0. _d 0
+          OBSeta1(I,bi,bj) = 0. _d 0
+# endif
+        ENDDO
+        DO J=1-Oly,sNy+Oly
+          OBEeta (J,bi,bj) = 0. _d 0
+          OBWeta (J,bi,bj) = 0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBEeta0(J,bi,bj) = 0. _d 0
+          OBWeta0(J,bi,bj) = 0. _d 0
+          OBEeta1(J,bi,bj) = 0. _d 0
+          OBWeta1(J,bi,bj) = 0. _d 0
+# endif
+        ENDDO
+#endif /* NONLIN_FRSURF */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_SEAICE
         DO I=1-Olx,sNx+Olx
@@ -266,16 +303,7 @@ C     == Local variables ==
 #endif
 #endif /* ALLOW_PTRACERS */
 
-#ifdef NONLIN_FRSURF
-        DO I=1-Olx,sNx+Olx
-          OBNeta(I,bi,bj)=0.
-          OBSeta(I,bi,bj)=0.
-        ENDDO
-        DO J=1-Oly,sNy+Oly
-          OBEeta(J,bi,bj)=0.
-          OBWeta(J,bi,bj)=0.
-        ENDDO
-#endif /* NONLIN_FRSURF */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_ORLANSKI
         IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.

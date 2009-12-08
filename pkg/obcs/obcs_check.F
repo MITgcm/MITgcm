@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.13 2009/04/24 01:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.14 2009/12/08 00:21:34 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_CHECK( myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_CHECK                                    |
-C     | o Check dependences with other packages                  |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE OBCS_CHECK
+C     | o Check dependences with other packages
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -18,31 +18,31 @@ C     === Global variables ===
 #include "OBCS.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instances
+C     myThid   :: My thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_OBCS
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j,bi,bj
 
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &                   SQUEEZE_RIGHT,myThid)
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,
+     &                    SQUEEZE_RIGHT,myThid )
 
 #ifdef ALLOW_CD_CODE
       IF ( useCDscheme ) THEN
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: useCDscheme = .TRUE.'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: The CD-scheme does not work with OBCS.'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: Sorry, not yet implemented.'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 #endif /* ALLOW_CD_CODE */
@@ -56,11 +56,11 @@ C     msgBuf      - Informational/error meesage buffer
      &    useOrlanskiEast.OR.useOrlanskiWest) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: #undef OBCS_RADIATE_ORLANSKI  and'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: one of useOrlanski* logicals is true'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 #endif /* ALLOW_ORLANSKI */
 
@@ -69,29 +69,29 @@ C     msgBuf      - Informational/error meesage buffer
        IF (nonlinFreeSurf.GT.0) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (usePTracers) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: pTracers not yet implemented'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (useSEAICE) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: SEAICE not yet implemented'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
       ENDIF
 
@@ -100,20 +100,41 @@ C     msgBuf      - Informational/error meesage buffer
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: useOBCSprescribe = .TRUE. for'
        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE'
        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 #endif
 
+      IF ( .NOT.nonHydrostatic .AND.
+     &         ( OBNwFile.NE.' ' .OR. OBSwFile.NE.' ' .OR.
+     &           OBEwFile.NE.' ' .OR. OBWwFile.NE.' ' )
+     &   ) THEN
+        WRITE(msgBuf,'(2A)')
+     &  'OBCS_CHECK: OB*wFile only allowed with nonHydrostatic'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+      IF ( nonlinFreeSurf.EQ.0 .AND.
+     &         ( OBNetaFile.NE.' ' .OR. OBSetaFile.NE.' ' .OR.
+     &           OBEetaFile.NE.' ' .OR. OBWetaFile.NE.' ' )
+     &   ) THEN
+        WRITE(msgBuf,'(2A)')
+     &  'OBCS_CHECK: OB*etaFile(s) only allowed with nonlinFreeSurf'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+
       IF (useSEAICE .AND. .NOT. useEXF) THEN
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: for SEAICE OBCS, use'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: pkg/exf to read input files'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 
@@ -131,8 +152,8 @@ C     msgBuf      - Informational/error meesage buffer
       ENDIF
 
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: OK'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &                   SQUEEZE_RIGHT,myThid)
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,
+     &                    SQUEEZE_RIGHT,myThid )
 
 #endif /* ALLOW_OBCS */
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.14 2009/10/04 21:52:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.15 2009/12/08 00:21:34 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
 
@@ -71,7 +71,7 @@ C     external fields is done by exf
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     aWght, bWght :: Interpolation weights
-C     msgBuf       :: Informational/error meesage buffer
+C     msgBuf       :: Informational/error message buffer
 #ifdef NONLIN_FRSURF
       INTEGER i,j,bi,bj
 #endif /* NONLIN_FRSURF */
@@ -139,6 +139,12 @@ C     Eastern boundary
        CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs0,iRec0,myIter,myThid )
        CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs1,iRec1,myIter,myThid )
       ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+      IF ( OBEwFile .NE. ' '  ) THEN
+       CALL READ_REC_YZ_RL( OBEwFile, fp,Nr,OBEw0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEwFile, fp,Nr,OBEw1,iRec1,myIter,myThid )
+      ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBEetaFile .NE. ' '  ) THEN
        CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta0,iRec0,myIter,myThid)
@@ -164,6 +170,12 @@ C     Western boundary
        CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs0,iRec0,myIter,myThid )
        CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs1,iRec1,myIter,myThid )
       ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+      IF ( OBWwFile .NE. ' '  ) THEN
+       CALL READ_REC_YZ_RL( OBWwFile, fp,Nr,OBWw0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWwFile, fp,Nr,OBWw1,iRec1,myIter,myThid )
+      ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBWetaFile .NE. ' '  ) THEN
        CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta0,iRec0,myIter,myThid)
@@ -189,6 +201,12 @@ C     Northern boundary
        CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs0,iRec0,myIter,myThid )
        CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs1,iRec1,myIter,myThid )
       ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+      IF ( OBNwFile .NE. ' '  ) THEN
+       CALL READ_REC_XZ_RL( OBNwFile, fp,Nr,OBNw0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNwFile, fp,Nr,OBNw1,iRec1,myIter,myThid )
+      ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBNetaFile .NE. ' '  ) THEN
        CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta0,iRec0,myIter,myThid)
@@ -214,6 +232,12 @@ C     Southern boundary
        CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs0,iRec0,myIter,myThid )
        CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs1,iRec1,myIter,myThid )
       ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+      IF ( OBSwFile .NE. ' '  ) THEN
+       CALL READ_REC_XZ_RL( OBSwFile, fp,Nr,OBSw0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSwFile, fp,Nr,OBSw1,iRec1,myIter,myThid )
+      ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBSetaFile .NE. ' '  ) THEN
        CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta0,iRec0,myIter,myThid)
@@ -310,6 +334,11 @@ C     Eastern boundary
         IF ( OBEsFile .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBEsFile,fp,Nr,OBEs0,iRec0,myIter,myThid )
         ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+        IF ( OBEwFile .NE. ' '  ) THEN
+         CALL READ_REC_YZ_RL( OBEwFile,fp,Nr,OBEw0,iRec0,myIter,myThid )
+        ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBEetaFile .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBEetaFile, fp, 1, OBEeta0, iRec0,
@@ -331,6 +360,11 @@ C     Western boundary
         IF ( OBWsFile .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBWsFile,fp,Nr,OBWs0,iRec0,myIter,myThid )
         ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+        IF ( OBWwFile .NE. ' '  ) THEN
+         CALL READ_REC_YZ_RL( OBWwFile,fp,Nr,OBWw0,iRec0,myIter,myThid )
+        ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBWetaFile .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBWetaFile, fp, 1, OBWeta0, iRec0,
@@ -352,6 +386,11 @@ C     Northern boundary
         IF ( OBNsFile .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBNsFile,fp,Nr,OBNs0,iRec0,myIter,myThid )
         ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+        IF ( OBNwFile .NE. ' '  ) THEN
+         CALL READ_REC_YZ_RL( OBNwFile,fp,Nr,OBNw0,iRec0,myIter,myThid )
+        ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBNetaFile .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBNetaFile, fp, 1, OBNeta0, iRec0,
@@ -373,6 +412,11 @@ C     Southern boundary
         IF ( OBSsFile .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBSsFile,fp,Nr,OBSs0,iRec0,myIter,myThid )
         ENDIF
+# ifdef ALLOW_NONHYDROSTATIC
+        IF ( OBSwFile .NE. ' '  ) THEN
+         CALL READ_REC_YZ_RL( OBSwFile,fp,Nr,OBSw0,iRec0,myIter,myThid )
+        ENDIF
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBSetaFile .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBSetaFile, fp, 1, OBSeta0, iRec0,
@@ -436,6 +480,10 @@ C--   forcing field OBSu0 to OBSu
      &      OBEt, OBEt0, OBEt1, aWght, bWght, myThid )
        IF ( OBEsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
      &      OBEs, OBEs0, OBEs1, aWght, bWght, myThid )
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( OBEwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+     &      OBEw, OBEw0, OBEw1, aWght, bWght, myThid )
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
        IF ( OBEetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -458,6 +506,10 @@ C--   forcing field OBSu0 to OBSu
      &      OBWt, OBWt0, OBWt1, aWght, bWght, myThid )
        IF ( OBWsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
      &      OBWs, OBWs0, OBWs1, aWght, bWght, myThid )
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( OBWwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+     &      OBWw, OBWw0, OBWw1, aWght, bWght, myThid )
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
        IF ( OBWetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -480,6 +532,10 @@ C--   forcing field OBSu0 to OBSu
      &      OBNt, OBNt0, OBNt1, aWght, bWght, myThid )
        IF ( OBNsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
      &      OBNs, OBNs0, OBNs1, aWght, bWght, myThid )
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( OBNwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+     &      OBNw, OBNw0, OBNw1, aWght, bWght, myThid )
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
        IF ( OBNetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -502,6 +558,10 @@ C--   forcing field OBSu0 to OBSu
      &      OBSt, OBSt0, OBSt1, aWght, bWght, myThid )
        IF ( OBSsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
      &      OBSs, OBSs0, OBSs1, aWght, bWght, myThid )
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( OBSwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+     &      OBSw, OBSw0, OBSw1, aWght, bWght, myThid )
+# endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
        IF ( OBSetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)

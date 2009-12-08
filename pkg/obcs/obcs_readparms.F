@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.24 2009/10/05 18:49:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.25 2009/12/08 00:21:34 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_READPARMS                                |
-C     | o Routine to initialize OBCS variables and constants.    |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE OBCS_READPARMS
+C     | o Routine to initialize OBCS variables and constants.
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -30,7 +30,7 @@ C     === Routine arguments ===
 #ifdef ALLOW_OBCS
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
@@ -49,14 +49,13 @@ C     iUnit       - Work variable for IO unit number
      &          OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
      &          OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
      &          OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile,
+     &          OBNetaFile, OBSetaFile, OBEetaFile, OBWetaFile,
+     &          OBNwFile, OBSwFile, OBEwFile, OBWwFile,
+#ifdef ALLOW_PTRACERS
+     &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
+#endif
      &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
      &          OBCSprintDiags, useOBCSYearlyFields, OBCSfixTopo
-#ifdef NONLIN_FRSURF
-     &        , OBNetaFile, OBSetaFile, OBEetaFile, OBWetaFile
-#endif /* NONLIN_FRSURF */
-#ifdef ALLOW_PTRACERS
-     &        , OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile
-#endif
 
 #ifdef ALLOW_ORLANSKI
       NAMELIST /OBCS_PARM02/
@@ -74,7 +73,7 @@ C     iUnit       - Work variable for IO unit number
 
 C--   OBCS_READPARMS has been called so we know that
 C     the package is active.
-      OBCSIsOn=.TRUE.
+c     OBCSIsOn=.TRUE.
 
       IF ( debugLevel .GE. debLevB ) THEN
        WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
@@ -151,6 +150,10 @@ C--   Default flags and values for OBCS
       OBSetaFile = ' '
       OBEetaFile = ' '
       OBWetaFile = ' '
+      OBNwFile = ' '
+      OBSwFile = ' '
+      OBEwFile = ' '
+      OBWwFile = ' '
 #ifdef ALLOW_PTRACERS
       DO iTracer = 1, PTRACERS_num
        OBNptrFile(iTracer) = ' '

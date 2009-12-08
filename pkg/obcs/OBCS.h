@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.21 2009/08/11 15:46:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.22 2009/12/08 00:21:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
 
 C--   Private logical flag to record active status of package
-      LOGICAL OBCSisON
-      COMMON /OBCS_PACKAGE/ OBCSisON
+c     LOGICAL OBCSisON
+c     COMMON /OBCS_PACKAGE/ OBCSisON
 
 C These are input arrays (of integers) that contain the *absolute*
 C computational index of an open-boundary (OB) point.
@@ -41,16 +41,16 @@ C U/Vrelaxobcsinner/bound :: relaxation time scale (in seconds) for U/V-points
 C                     on the boundary (bound) and at the innermost grid point
 C                     of the sponge layer (inner); relaxation time scales
 C                     in-between are linearly interpolated from these values
-C useOBCSbalance   :: balance the volume flux through boundary 
+C useOBCSbalance   :: balance the volume flux through boundary
 C                     at every time step
-C useOBCSprescribe :: read boundary conditions from a file 
+C useOBCSprescribe :: read boundary conditions from a file
 C                      (overrides Orlanski and other boundary values)
 C OBCSprintDiags   :: print boundary values to STDOUT (def=true)
-C useOBCSYearlyFields :: when reading boundary values by exf, assume yearly 
+C useOBCSYearlyFields :: when reading boundary values by exf, assume yearly
 C                     climatology (def=false)
 C OBCSfixTopo      :: check and adjust topography for problematic gradients
 C                     across boundaries (def=true)
-C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary 
+C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary
 C                     conditons, the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
 C                     u/v/t/s   :: ocean u/v velocities, temperature/salinity
@@ -95,7 +95,7 @@ C--   COMMON /GRID_OB/ Open boudary related stuff
 C     OBNu is the U value imposed at the Northern OB
 C     OBNv is the V value imposed at the Northern OB
 C     OBNt is the T value imposed at the Northern OB
-C     OBNu is the S value imposed at the Northern OB
+C     OBNs is the S value imposed at the Northern OB
 C     OBNa is the ice AREA value imposed at the Northern OB
 C     OBNh is the ice HEFF value imposed at the Northern OB
 C     OBNsl is the ice HSALT value imposed at the Northern OB
@@ -112,14 +112,14 @@ C
       INTEGER OB_Iw(1-Oly:sNy+Oly,nSx,nSy)
 
 #ifdef ALLOW_OBCS_NORTH
-      COMMON /GRID_N_OB/ 
+      COMMON /GRID_N_OB/
      &      OBNu,OBNv,OBNt,OBNs
       _RL OBNu (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBNv (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBNt (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBNs (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #ifdef ALLOW_OBCS_PRESCRIBE
-      COMMON /GRID_N_OB_AUX/ 
+      COMMON /GRID_N_OB_AUX/
      &      OBNu0,OBNv0,OBNt0,OBNs0,
      &      OBNu1,OBNv1,OBNt1,OBNs1
       _RL OBNu0 (1-Olx:sNx+Olx,Nr,nSx,nSy)
@@ -157,14 +157,14 @@ C
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
-      COMMON /GRID_S_OB/ 
+      COMMON /GRID_S_OB/
      &      OBSu,OBSv,OBSt,OBSs
       _RL OBSu (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSv (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSt (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSs (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #ifdef ALLOW_OBCS_PRESCRIBE
-      COMMON /GRID_S_OB_AUX/ 
+      COMMON /GRID_S_OB_AUX/
      &      OBSu0,OBSv0,OBSt0,OBSs0,
      &      OBSu1,OBSv1,OBSt1,OBSs1
       _RL OBSu0 (1-Olx:sNx+Olx,Nr,nSx,nSy)
@@ -202,14 +202,14 @@ C
 #endif /* ALLOW_OBCS_SOUTH */
 
 #ifdef ALLOW_OBCS_EAST
-      COMMON /GRID_E_OB/ 
+      COMMON /GRID_E_OB/
      &      OBEu,OBEv,OBEt,OBEs
       _RL OBEu (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBEv (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBEt (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBEs (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #ifdef ALLOW_OBCS_PRESCRIBE
-      COMMON /GRID_E_OB_AUX/ 
+      COMMON /GRID_E_OB_AUX/
      &      OBEu0,OBEv0,OBEt0,OBEs0,
      &      OBEu1,OBEv1,OBEt1,OBEs1
       _RL OBEu0 (1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -247,14 +247,14 @@ C
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
-      COMMON /GRID_W_OB/ 
+      COMMON /GRID_W_OB/
      &      OBWu,OBWv,OBWt,OBWs
       _RL OBWu (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWv (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWt (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWs (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #ifdef ALLOW_OBCS_PRESCRIBE
-      COMMON /GRID_W_OB_AUX/ 
+      COMMON /GRID_W_OB_AUX/
      &      OBWu0,OBWv0,OBWt0,OBWs0,
      &      OBWu1,OBWv1,OBWt1,OBWs1
       _RL OBWu0 (1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -293,6 +293,7 @@ C
 
       COMMON /OB_FILES/
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
+     &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
@@ -303,6 +304,7 @@ C
      &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
       CHARACTER*(MAX_LEN_FNAM)
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
+     &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
@@ -313,12 +315,25 @@ C
      &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
 
 #ifdef ALLOW_NONHYDROSTATIC
-      COMMON /GRID_OBNH/ 
-     &  OBNw,OBSw,OBEw,OBWw
+      COMMON /GRID_OBNH/
+     &      OBNw, OBSw, OBEw, OBWw
       _RL OBNw (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSw (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBEw (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWw (1-Oly:sNy+Oly,Nr,nSx,nSy)
+#ifdef ALLOW_OBCS_PRESCRIBE
+      COMMON /GRID_OBNH_AUX/
+     &      OBNw0, OBSw0, OBEw0, OBWw0,
+     &      OBNw1, OBSw1, OBEw1, OBWw1
+      _RL OBNw0(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBSw0(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBEw0(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBWw0(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBNw1(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBSw1(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBEw1(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBWw1(1-Oly:sNy+Oly,Nr,nSx,nSy)
+#endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* ALLOW_NONHYDROSTATIC */
 
 #ifdef NONLIN_FRSURF
@@ -349,9 +364,7 @@ C
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* NONLIN_FRSURF */
 
-#ifdef ALLOW_OBCS
-       common /gg_volflux/ shiftvel
+       COMMON /GG_VOLFLUX/ shiftvel
        _RL shiftvel(2)
-#endif
 
 #endif /* ALLOW_OBCS */
