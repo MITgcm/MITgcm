@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.72 2009/11/30 19:20:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.73 2009/12/11 04:31:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,20 +55,17 @@ C     myThid :: Thread number for this instance of SOLVE_FOR_PRESSURE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
+      INTEGER ks
+      INTEGER numIters
       _RL firstResidual,lastResidual
       _RL tmpFac
       _RL sumEmP, tileEmP(nSx,nSy)
       LOGICAL putPmEinXvector
-      INTEGER numIters, ks, ioUnit
+      INTEGER ioUnit
       CHARACTER*10 sufx
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_NONHYDROSTATIC
-      INTEGER kp1
-      _RL     wFacKm, wFacKp
       LOGICAL zeroPsNH, zeroMeanPnh, oldFreeSurfTerm
-      _RL     tmpVar(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL     uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL     vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #else
       _RL     cg3d_b(1)
 #endif
@@ -183,28 +180,11 @@ C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }  / deltaT
        ENDDO
       ENDDO
 
-C--   Add source term arising from w=d/dt (p_s + p_nh)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_NONHYDROSTATIC
-C--   Add EmPmR contribution to top level cg3d_b:
-C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
-        IF ( use3Dsolver .AND.
-     &       useRealFreshWaterFlux.AND.fluidIsWater ) THEN
-          tmpFac = freeSurfFac*mass2rUnit
-          IF (exactConserv)
-     &     tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
-          ks = 1
-          IF ( usingPCoords ) ks = Nr
-          DO j=1,sNy
-           DO i=1,sNx
-            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &        + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
-           ENDDO
-          ENDDO
-        ENDIF
-
         IF ( oldFreeSurfTerm ) THEN
+C--   Add source term arising from w=d/dt (p_s + p_nh)
          DO j=1,sNy
           DO i=1,sNx
            ks = ksurfC(i,j,bi,bj)
@@ -224,6 +204,7 @@ C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
          ENDDO
         ELSEIF ( exactConserv ) THEN
 #else
+C--   Add source term arising from w=d/dt (p_s)
         IF ( exactConserv ) THEN
 #endif /* ALLOW_NONHYDROSTATIC */
          DO j=1,sNy
@@ -376,276 +357,67 @@ C--   Transfert the 2D-solution to "etaN" :
 
 C--   Solve for a three-dimensional pressure term (NH or IGW or both ).
 C     see CG3D.h for the interface to this routine.
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C--   Update or Add free-surface contribution to cg3d_b:
-c        IF ( select_rStar.EQ.0 .AND. exactConserv ) THEN
-         IF ( select_rStar.EQ.0 .AND. .NOT.oldFreeSurfTerm ) THEN
-           tmpFac = 0.
-           DO j=1,sNy
-            DO i=1,sNx
-              ks = ksurfC(i,j,bi,bj)
-              IF ( ks.LE.Nr ) THEN
-               cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &                  +freeSurfFac*(etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &                              *_rA(i,j,bi,bj)*deepFac2F(ks)
-     &                              /deltaTMom/deltaTfreesurf
-              ENDIF
-            ENDDO
-           ENDDO
-#ifdef NONLIN_FRSURF
-         ELSEIF ( select_rStar.NE.0 ) THEN
-           tmpFac = 0.
-           DO j=1,sNy
-            DO i=1,sNx
-              ks = ksurfC(i,j,bi,bj)
-              tmpVar(i,j) = freeSurfFac
-     &                    *( etaN(i,j,bi,bj) - etaH(i,j,bi,bj) )
-     &                    *_rA(i,j,bi,bj)*deepFac2F(ks)
-     &                    /deltaTMom/deltaTfreesurf
-     &                    *recip_Rcol(i,j,bi,bj)
-            ENDDO
-           ENDDO
-           DO k=1,Nr
-            DO j=1,sNy
-             DO i=1,sNx
-              cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &          + tmpVar(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-             ENDDO
-            ENDDO
-           ENDDO
-#endif /* NONLIN_FRSURF */
-         ELSEIF ( usingZCoords ) THEN
-C-       Z coordinate: assume surface @ level k=1
-           tmpFac = freeSurfFac*deepFac2F(1)
-         ELSE
-C-       Other than Z coordinate: no assumption on surface level index
-           tmpFac = 0.
-           DO j=1,sNy
-            DO i=1,sNx
-              ks = ksurfC(i,j,bi,bj)
-              IF ( ks.LE.Nr ) THEN
-               cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &              +freeSurfFac*etaN(i,j,bi,bj)/deltaTfreesurf
-     &                  *_rA(i,j,bi,bj)*deepFac2F(ks)/deltaTmom
-              ENDIF
-            ENDDO
-           ENDDO
-         ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Finish updating cg3d_b: 1) increment in horiz velocity due to new cg2d_x
-C                             2) add vertical velocity contribution.
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           uf(i,j) = -_recip_dxC(i,j,bi,bj)
-     &             * implicSurfPress*implicDiv2DFlow
-     &             *(cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj))
-           vf(i,j) = -_recip_dyC(i,j,bi,bj)
-     &             * implicSurfPress*implicDiv2DFlow
-     &             *(cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj))
-          ENDDO
-         ENDDO
-
-#ifdef ALLOW_OBCS
-         IF (useOBCS) THEN
-          DO i=1,sNx+1
-C Northern boundary
-           IF (OB_Jn(i,bi,bj).NE.0)
-     &      vf(i,OB_Jn(i,bi,bj)) = 0.
-C Southern boundary
-           IF (OB_Js(i,bi,bj).NE.0)
-     &      vf(i,OB_Js(i,bi,bj)+1) = 0.
-          ENDDO
-          DO j=1,sNy+1
-C Eastern boundary
-           IF (OB_Ie(j,bi,bj).NE.0)
-     &      uf(OB_Ie(j,bi,bj),j) = 0.
-C Western boundary
-           IF (OB_Iw(j,bi,bj).NE.0)
-     &      uf(OB_Iw(j,bi,bj)+1,j) = 0.
-          ENDDO
-         ENDIF
-#endif /* ALLOW_OBCS */
-
-C Note: with implicDiv2DFlow < 1, wVel contribution to cg3d_b is similar to
-C       uVel,vVel contribution to cg2d_b when exactConserv=T, since wVel is
-C       always recomputed from continuity eq (like eta when exactConserv=T)
-         k=1
-         kp1 = MIN(k+1,Nr)
-         wFacKp = implicDiv2DFlow*deepFac2F(kp1)*rhoFacF(kp1)
-         IF (k.GE.Nr) wFacKp = 0.
-         DO j=1,sNy
-          DO i=1,sNx
-            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(k)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(k)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(k)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(k)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( tmpFac*etaN(i,j,bi,bj)/deltaTfreesurf
-     &         -wVel(i,j,kp1,bi,bj)*wFacKp
-     &        )*_rA(i,j,bi,bj)/deltaTmom
-          ENDDO
-         ENDDO
-         DO k=2,Nr
-          kp1 = MIN(k+1,Nr)
-C-       deepFac & rhoFac cancel with the ones in uf[=del_i(Phi)/dx],vf ;
-C        both appear in wVel term, but at 2 different levels
-          wFacKm = implicDiv2DFlow*deepFac2F( k )*rhoFacF( k )
-          wFacKp = implicDiv2DFlow*deepFac2F(kp1)*rhoFacF(kp1)
-          IF (k.GE.Nr) wFacKp = 0.
-          DO j=1,sNy
-           DO i=1,sNx
-            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(k)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(k)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(k)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(k)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( wVel(i,j, k ,bi,bj)*wFacKm*maskC(i,j,k-1,bi,bj)
-     &         -wVel(i,j,kp1,bi,bj)*wFacKp
-     &        )*_rA(i,j,bi,bj)/deltaTmom
-
-           ENDDO
-          ENDDO
-         ENDDO
-
-#ifdef ALLOW_OBCS
-         IF (useOBCS) THEN
-          DO k=1,Nr
-           DO i=1,sNx
-C Northern boundary
-            IF (OB_Jn(i,bi,bj).NE.0)
-     &       cg3d_b(i,OB_Jn(i,bi,bj),k,bi,bj) = 0.
-C Southern boundary
-            IF (OB_Js(i,bi,bj).NE.0)
-     &       cg3d_b(i,OB_Js(i,bi,bj),k,bi,bj) = 0.
-           ENDDO
-           DO j=1,sNy
-C Eastern boundary
-            IF (OB_Ie(j,bi,bj).NE.0)
-     &       cg3d_b(OB_Ie(j,bi,bj),j,k,bi,bj) = 0.
-C Western boundary
-            IF (OB_Iw(j,bi,bj).NE.0)
-     &       cg3d_b(OB_Iw(j,bi,bj),j,k,bi,bj) = 0.
-           ENDDO
-          ENDDO
-         ENDIF
-#endif /* ALLOW_OBCS */
-C-    end bi,bj loops
-        ENDDO
-       ENDDO
+C--   Finish updating cg3d_b: 1) Add EmPmR contribution to top level cg3d_b:
+C                             2) Update or Add free-surface contribution
+C                             3) increment in horiz velocity due to new cg2d_x
+C                             4) add vertical velocity contribution.
+       CALL PRE_CG3D(
+     I                oldFreeSurfTerm,
+     I                cg2d_x,
+     U                cg3d_b,
+     I                myTime, myIter, myThid )
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-       CALL DEBUG_STATS_RL(Nr,cg3d_b,'cg3d_b (SOLVE_FOR_PRESSURE)',
-     &                        myThid)
-      ENDIF
-#endif
-      IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
-       WRITE(sufx,'(I10.10)') myIter
-       CALL WRITE_FLD_XYZ_RL( 'cg3d_b.',sufx, cg3d_b, myIter, myThid )
-      ENDIF
-
-      firstResidual=0.
-      lastResidual=0.
-      numIters=cg3dMaxIters
-      CALL TIMER_START('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
-      CALL CG3D(
-     U           cg3d_b,
-     U           phi_nh,
-     O           firstResidual,
-     O           lastResidual,
-     U           numIters,
-     I           myIter, myThid )
-      _EXCH_XYZ_RL( phi_nh, myThid )
-      CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
-
-      IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-     &   ) THEN
-       IF ( debugLevel .GE. debLevA ) THEN
-        _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER( myThid )
+       IF ( debugLevel .GE. debLevB ) THEN
+        CALL DEBUG_STATS_RL(Nr,cg3d_b,'cg3d_b (SOLVE_FOR_PRESSURE)',
+     &                         myThid)
        ENDIF
-      ENDIF
-
-C--   Update surface pressure (account for NH-p @ surface level) and NH pressure:
-      IF ( zeroPsNH .OR. zeroMeanPnh ) THEN
+#endif
        IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
         WRITE(sufx,'(I10.10)') myIter
-        CALL WRITE_FLD_XYZ_RL( 'cg3d_x.',sufx, phi_nh, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL('cg3d_b.',sufx, cg3d_b, myIter,myThid )
        ENDIF
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-         IF ( zeroPsNH .AND. usingZCoords ) THEN
-C-       Z coordinate: assume surface @ level k=1
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = phi_nh(i,j,1,bi,bj)
-           ENDDO
-          ENDDO
-         ELSEIF ( zeroPsNH ) THEN
-C-       Other than Z coordinate: no assumption on surface level index
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            ks = ksurfC(i,j,bi,bj)
-            IF ( ks.LE.Nr ) THEN
-             tmpVar(i,j) = phi_nh(i,j,ks,bi,bj)
-            ELSE
-             tmpVar(i,j) = 0.
-            ENDIF
-           ENDDO
-          ENDDO
-#ifdef NONLIN_FRSURF
-         ELSE
-C        zeroMeanPnh : transfert vertical average of P_NH to EtaN
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = 0.
-           ENDDO
-          ENDDO
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = tmpVar(i,j)
-     &         + phi_nh(i,j,k,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = tmpVar(i,j)*recip_Rcol(i,j,bi,bj)
-           ENDDO
-          ENDDO
-#endif /* NONLIN_FRSURF */
-         ENDIF
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            phi_nh(i,j,k,bi,bj) = ( phi_nh(i,j,k,bi,bj)
-     &                            - tmpVar(i,j)
-     &                            )*maskC(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            etaN(i,j,bi,bj) = recip_Bo(i,j,bi,bj)
-     &                      *( cg2d_x(i,j,bi,bj) + tmpVar(i,j) )
-          ENDDO
-         ENDDO
+       firstResidual=0.
+       lastResidual=0.
+       numIters=cg3dMaxIters
+       CALL TIMER_START('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
+       CALL CG3D(
+     U            cg3d_b,
+     U            phi_nh,
+     O            firstResidual,
+     O            lastResidual,
+     U            numIters,
+     I            myIter, myThid )
+       _EXCH_XYZ_RL( phi_nh, myThid )
+       CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
 
-        ENDDO
-       ENDDO
-      ENDIF
+       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
+     &    ) THEN
+        IF ( debugLevel .GE. debLevA ) THEN
+         _BEGIN_MASTER( myThid )
+         WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+         WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+         WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+         _END_MASTER( myThid )
+        ENDIF
+       ENDIF
+
+C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
+C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution)
+       IF ( nonHydrostatic .AND. exactConserv ) THEN
+        IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
+         WRITE(sufx,'(I10.10)') myIter
+         CALL WRITE_FLD_XYZ_RL('cg3d_x.',sufx, phi_nh, myIter,myThid )
+        ENDIF
+        CALL POST_CG3D(
+     I                  zeroPsNH, zeroMeanPnh,
+     I                  myTime, myIter, myThid )
+       ENDIF
 
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
