@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.34 2009/07/08 22:10:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.35 2009/12/11 13:53:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,6 +127,8 @@ C             not correspond to what is actually needed.
       IF ( startFromPickupAB2 ) tempStartAB = MIN( nIter0 , 1 )
       saltStartAB = tempStartAB
       mom_StartAB = tempStartAB
+      nHydStartAB = tempStartAB
+      dPhiNHstatus= 0
 
 C-    Initialise Alternating pickup-suffix
       nCheckLev         = 1

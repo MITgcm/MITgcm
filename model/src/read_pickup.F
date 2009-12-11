@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.5 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.6 2009/12/11 13:53:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -240,9 +240,16 @@ C---   Old way to read model fields:
          IF ( use3Dsolver ) THEN
           WRITE(fn,'(A,A10)') 'pickup_nh.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, phi_nh,  1, myIter,myThid )
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,1),
+     &                                              2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,2),
+     &                                              2, myIter,myThid )
+#else /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL READ_REC_3D_RL( fn, fp, Nr, gwNm1,   2, myIter,myThid )
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
         ENDIF
-#endif
+#endif /* ALLOW_NONHYDROSTATIC */
        ELSE
 C---   New way to read model fields:
           nj = 0
@@ -319,6 +326,19 @@ C--     Salinity:
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+C--     W velocity:
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GwNm1   ',gwNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GwNm2   ',gwNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+        ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
         IF ( momStepping ) THEN
 C--     U velocity:
@@ -338,6 +358,12 @@ C--     Salinity
           CALL READ_MFLDS_3D_RL( 'GsNm1   ', gsNm1,
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+          CALL READ_MFLDS_3D_RL( 'GwNm1   ', gwNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
 C-      read Full Pressure for EOS in pressure:
@@ -350,11 +376,7 @@ C-      read Full Pressure for EOS in pressure:
           CALL READ_MFLDS_3D_RL( 'Phi_NHyd', phi_nh,
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
-        IF ( nonHydrostatic ) THEN
-          CALL READ_MFLDS_3D_RL( 'GwNm1   ', gwNm1,
-     &                                     nj, fp, Nr, myIter, myThid )
-        ENDIF
-#endif
+#endif /* ALLOW_NONHYDROSTATIC */
 #ifdef ALLOW_ADDFLUID
 C-    read mass source/sink of fluid
         IF ( selectAddFluid.GE.1 ) THEN
@@ -367,6 +389,12 @@ C---    read 2-D fields, starting with Eta:
           nj = nj*Nr
           CALL READ_MFLDS_3D_RL( 'EtaN    ', etaN,
      &                                     nj, fp, 1 , myIter, myThid )
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( selectNHfreeSurf.GE.1 ) THEN
+          CALL READ_MFLDS_3D_RL( 'dPhiNH  ', dPhiNH,
+     &                                     nj, fp, 1 , myIter, myThid )
+        ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 #ifdef EXACT_CONSERV
         IF ( exactConserv ) THEN
           CALL READ_MFLDS_3D_RL( 'dEtaHdt ', dEtaHdt,
@@ -376,7 +404,7 @@ C---    read 2-D fields, starting with Eta:
           CALL READ_MFLDS_3D_RL( 'EtaH    ', etaH,
      &                                     nj, fp, 1 , myIter, myThid )
         ENDIF
-#endif
+#endif /* EXACT_CONSERV */
 C--    end: new way to read pickup file
        ENDIF
 
@@ -433,7 +461,9 @@ C#endif
         IF (use3Dsolver) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
 c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
+#ifndef ALLOW_ADAMSBASHFORTH_3
           CALL MNC_CW_RL_R('D',fn,0,0,'gWnm1', gwNm1, myThid)
+#endif
         ENDIF
 #endif
         IF ( useDynP_inEos_Zc ) THEN
@@ -451,11 +481,11 @@ C     Fill in edge regions
 #ifdef ALLOW_ADAMSBASHFORTH_3
       CALL EXCH_UV_3D_RL( guNm(1-Olx,1-Oly,1,1,1,1),
      &                    gvNm(1-Olx,1-Oly,1,1,1,1),.TRUE.,Nr,myThid )
-      CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
-      CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
       CALL EXCH_UV_3D_RL( guNm(1-Olx,1-Oly,1,1,1,2),
      &                    gvNm(1-Olx,1-Oly,1,1,1,2),.TRUE.,Nr,myThid )
+      CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
       CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
+      CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
       CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL EXCH_UV_3D_RL( guNm1, gvNm1, .TRUE., Nr, myThid )
@@ -474,9 +504,19 @@ C     Fill in edge regions
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( use3Dsolver ) THEN
         CALL EXCH_3D_RL( phi_nh, Nr, myThid )
-        CALL EXCH_3D_RL( gwNm1,  Nr, myThid )
       ENDIF
-#endif
+      IF ( nonHydrostatic ) THEN
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        CALL EXCH_3D_RL( gwNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
+        CALL EXCH_3D_RL( gwNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+        CALL EXCH_3D_RL( gwNm1,  Nr, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+      ENDIF
+      IF ( selectNHfreeSurf.GE.1 ) THEN
+        CALL EXCH_XY_RL( dPhiNH, myThid )
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.8 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.9 2009/12/11 13:53:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -195,6 +195,23 @@ C--   Salinity:
         ENDIF
        ENDIF
       ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+C--   W velocity:
+      IF ( nonHydrostatic ) THEN
+       IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GwNm1   '
+       ENDIF
+       IF ( beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GwNm2   '
+       ENDIF
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
        IF ( momStepping ) THEN
         j = j + 1
@@ -214,6 +231,13 @@ C--   Salinity:
         CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm1,  -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GsNm1   '
        ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+       IF ( nonHydrostatic ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm1,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GwNm1   '
+       ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
 C-    write Full Pressure for EOS in pressure:
@@ -227,11 +251,6 @@ C-    write Full Pressure for EOS in pressure:
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, phi_nh, -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Phi_NHyd'
-       ENDIF
-       IF ( nonHydrostatic ) THEN
-        j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm1,  -j, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'GwNm1   '
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 #ifdef ALLOW_ADDFLUID
@@ -249,6 +268,14 @@ C---  Write 2-D fields, starting with Eta:
         nj = -( n3D*(Nr-1) + j )
         CALL WRITE_REC_3D_RL( fn, fp, 1 , etaN,   nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'EtaN    '
+#ifdef ALLOW_NONHYDROSTATIC
+       IF ( selectNHfreeSurf.GE.1 ) THEN
+        j = j + 1
+        nj = -( n3D*(Nr-1) + j )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, dPhiNH,  nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'dPhiNH  '
+       ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 #ifdef EXACT_CONSERV
 c      IF ( exactConserv ) THEN
         j = j + 1
@@ -328,7 +355,9 @@ C       Then set the actual unlimited dimension
         IF ( use3Dsolver ) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
 c         CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
+#ifndef ALLOW_ADAMSBASHFORTH_3
           CALL MNC_CW_RL_W('D',fn,0,0,'gWnm1', gwNm1, myThid)
+#endif
         ENDIF
 #endif
         IF ( useDynP_inEos_Zc ) THEN

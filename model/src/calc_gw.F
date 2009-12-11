@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.41 2009/11/30 19:22:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.42 2009/12/11 13:53:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -555,17 +555,17 @@ C--   Dissipation term inside the Adams-Bashforth:
 
 C-    Compute effective gW_[n+1/2] terms (including Adams-Bashforth weights)
 C     and save gW_[n] into gwNm1 for the next time step.
-c#ifdef ALLOW_ADAMSBASHFORTH_3
-c       CALL ADAMS_BASHFORTH3(
-c    I                         bi, bj, k,
-c    U                         gW, gwNm,
-c    I                         nHydStartAB, myIter, myThid )
-c#else /* ALLOW_ADAMSBASHFORTH_3 */
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        CALL ADAMS_BASHFORTH3(
+     I                         bi, bj, k,
+     U                         gW, gwNm,
+     I                         nHydStartAB, myIter, myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL ADAMS_BASHFORTH2(
      I                         bi, bj, k,
      U                         gW, gwNm1,
      I                         nHydStartAB, myIter, myThid )
-c#endif /* ALLOW_ADAMSBASHFORTH_3 */
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 C--   Dissipation term outside the Adams-Bashforth:
         IF ( momViscosity .AND. .NOT.momDissip_In_AB ) THEN

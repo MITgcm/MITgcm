@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.3 2008/08/24 21:38:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.4 2009/12/11 13:53:07 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
@@ -24,16 +24,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "RESTART.h"
-c#include "DYNVARS.h"
-c#include "SURFACE.h"
 c#ifdef ALLOW_GENERIC_ADVDIFF
 c# include "GAD.h"
-c#endif
-c#ifdef ALLOW_NONHYDROSTATIC
-c#include "NH_VARS.h"
-c#endif
-c#ifdef ALLOW_MNC
-c#include "MNC_PARAMS.h"
 c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -74,6 +66,16 @@ C      start-AB parameters:
          mom_StartAB = nIter0
          nHydStartAB = nIter0
        ENDIF
+       IF ( selectNHfreeSurf.GE.1 ) THEN
+         IF ( nbFields.EQ.0 ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+     &      'restart like hydrostatic free-surf (dPhiNH missing)'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         ELSE
+C-     assume reading dPhiNH was OK (otherwise expected in missing field list)
+           dPhiNHstatus = 1
+         ENDIF
+       ENDIF
 
        IF ( nMissing.GE.1 ) THEN
         stopFlag = .FALSE.
@@ -86,6 +88,15 @@ C-    Case where missing field is not essential or can be recomputed
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') ' CHECK_PICKUP: ',
      &      'no RealFreshWaterFlux => can restart without "dEtaHdt "'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+         ELSEIF ( missFldList(j).EQ.'dPhiNH  '
+     &        .AND. implicitNHPress.EQ.1. _d 0 ) THEN
+          warnCnts = warnCnts - 1
+          dPhiNHstatus = 0
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') ' CHECK_PICKUP: ',
+     &      'fully Implic.NH-Press => can restart without "dPhiNH  "'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
 C-    Old pickup for which special code takes care of missing fields
@@ -117,8 +128,15 @@ C     (no serious problems expected if missing, but get a non-perfect restart)
      &      'restart with 1rst guess == 0 for CG3D solver'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
+         ELSEIF ( missFldList(j).EQ.'dPhiNH  ' ) THEN
+          dPhiNHstatus = 0
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+     &      'restart like hydrostatic free-surf (dPhiNH missing)'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
          ELSEIF ( missFldList(j).EQ.'AddMass '
-     &               .AND. selectAddFluid.EQ.2 ) THEN 
+     &               .AND. selectAddFluid.EQ.2 ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
      &      'restart with AddMass == 0'
@@ -168,6 +186,8 @@ C-    (but get a non-perfect restart)
            saltStartAB = MIN( saltStartAB, 1 )
          ELSEIF ( missFldList(j).EQ.'GwNm1   ' ) THEN
            nHydStartAB = 0
+         ELSEIF ( missFldList(j).EQ.'GwNm2   ' ) THEN
+           nHydStartAB = MIN( nHydStartAB, 1 )
 
          ELSE
 C-    not recognized fields:

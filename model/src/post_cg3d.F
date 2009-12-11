@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.1 2009/12/11 04:31:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.2 2009/12/11 13:53:07 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -30,8 +29,8 @@ c#include "FFIELDS.h"
 #endif
 
 C     === Functions ====
-c     LOGICAL  DIFFERENT_MULTIPLE
-c     EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -51,64 +50,80 @@ C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks
 c     INTEGER ioUnit
-c     CHARACTER*10 sufx
+      CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     tmpVar(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+c     _RL     tmpVar(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 CEOP
 
-c     IF ( use3Dsolver ) THEN
-C--   Update surface pressure (account for NH-p @ surface level) and NH pressure:
-      IF ( zeroPsNH .OR. zeroMeanPnh ) THEN
+C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
+C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution)
+      IF ( nonHydrostatic .AND. exactConserv ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-
-         IF ( zeroPsNH .AND. usingZCoords ) THEN
+         IF ( select_rStar.EQ.0 .AND. usingZCoords ) THEN
 C-       Z coordinate: assume surface @ level k=1
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = phi_nh(i,j,1,bi,bj)
+             dPhiNH(i,j,bi,bj) = phi_nh(i,j,1,bi,bj)
            ENDDO
           ENDDO
-         ELSEIF ( zeroPsNH ) THEN
+         ELSEIF ( select_rStar.EQ.0 ) THEN
 C-       Other than Z coordinate: no assumption on surface level index
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             ks = ksurfC(i,j,bi,bj)
             IF ( ks.LE.Nr ) THEN
-             tmpVar(i,j) = phi_nh(i,j,ks,bi,bj)
+             dPhiNH(i,j,bi,bj) = phi_nh(i,j,ks,bi,bj)
             ELSE
-             tmpVar(i,j) = 0.
+             dPhiNH(i,j,bi,bj) = 0.
             ENDIF
            ENDDO
           ENDDO
 #ifdef NONLIN_FRSURF
          ELSE
-C        zeroMeanPnh : transfert vertical average of P_NH to EtaN
+C        rStar : take vertical average of P_NH as Hyd.Surf.Press adjustment
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = 0.
+             dPhiNH(i,j,bi,bj) = 0.
            ENDDO
           ENDDO
           DO k=1,Nr
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = tmpVar(i,j)
+             dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)
      &         + phi_nh(i,j,k,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-             tmpVar(i,j) = tmpVar(i,j)*recip_Rcol(i,j,bi,bj)
+             dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
            ENDDO
           ENDDO
 #endif /* NONLIN_FRSURF */
          ENDIF
+        ENDDO
+       ENDDO
+       IF ( DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock) ) THEN
+        WRITE(sufx,'(I10.10)') myIter
+        CALL WRITE_FLD_XY_RL( 'dPhiNH.',sufx, dPhiNH, myIter, myThid )
+       ENDIF
+      ENDIF
+
+C--   Update surface pressure (account for NH-p @ surface level) and NH pressure:
+      IF ( zeroPsNH .OR. zeroMeanPnh ) THEN
+       IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
+        WRITE(sufx,'(I10.10)') myIter
+        CALL WRITE_FLD_XYZ_RL( 'cg3d_x.',sufx, phi_nh, myIter, myThid )
+       ENDIF
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             phi_nh(i,j,k,bi,bj) = ( phi_nh(i,j,k,bi,bj)
-     &                            - tmpVar(i,j)
+     &                            - dPhiNH(i,j,bi,bj)
      &                            )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -116,15 +131,13 @@ C        zeroMeanPnh : transfert vertical average of P_NH to EtaN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             etaN(i,j,bi,bj) = etaN(i,j,bi,bj)
-     &                      + recip_Bo(i,j,bi,bj)*tmpVar(i,j)
+     &                      + recip_Bo(i,j,bi,bj)*dPhiNH(i,j,bi,bj)
           ENDDO
          ENDDO
 
         ENDDO
        ENDDO
       ENDIF
-
-c     ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
       RETURN
