@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/RESTART.h,v 1.1 2007/10/19 14:34:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/RESTART.h,v 1.2 2009/12/11 13:49:56 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -28,23 +28,27 @@ C     Alternating pickup
 
 C--   COMMON / RESTART_I / Integer   valued parameters used for restart
 C     nCheckLev     :: Holds current checkpoint level (alternating pickup)
-C     tempStartAB   :: number of previous time level gT/Temp that are
-C                      available to start (or restart) Adams-Bashforth
-C     saltStartAB   :: number of previous time level gS/Salt that are
-C                      available to start (or restart) Adams-Bashforth
-C     mom_StartAB   :: number of previous time level gU,gV   that are
-C                      available to start (or restart) Adams-Bashforth
-C     nHydStartAB   :: number of previous time level gW      that are
-C                      available to start (or restart) Adams-Bashforth
+C     tempStartAB   :: number of previous gT/Temp time levels which are
+C                      available to start (or restart) Adams-Bashforth.
+C     saltStartAB   :: number of previous gS/Salt time levels which are
+C                      available to start (or restart) Adams-Bashforth.
+C     mom_StartAB   :: number of previous gU,gV   time levels which are
+C                      available to start (or restart) Adams-Bashforth.
+C     nHydStartAB   :: number of previous gW      time levels which are
+C                      available to start (or restart) Adams-Bashforth.
+C     dPhiNHstatus  :: status of field dPhiNH: 1= loaded from pickup
+C                      0= not available in pickup
       COMMON / RESTART_I /
      &  nCheckLev,
      &  tempStartAB, saltStartAB,
-     &  mom_StartAB, nHydStartAB
+     &  mom_StartAB, nHydStartAB,
+     &  dPhiNHstatus
       INTEGER nCheckLev
       INTEGER tempStartAB
       INTEGER saltStartAB
       INTEGER mom_StartAB
       INTEGER nHydStartAB
+      INTEGER dPhiNHstatus
 
 C--   COMMON / RESTART_C / Character valued parameters used for restart
 C     checkPtSuff   :: List of checkpoint file suffices
