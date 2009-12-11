@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1204 2009/12/08 00:35:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1205 2009/12/11 16:00:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o nonHydrostatic:
+  - Implement AB-3 for non-hydrostatic vertical momentum ;
+    (change ordering of var. stored in pickup file when using NH)
+  - move NH code from solve_for_pressure.F to 2 new S/R: PRE_CG3D & POST_CG3D.
+  - add 2-D field to store Hydrostatic Surface Pressure adjusment from cg3d_x
+    (in prep. for new NH free surface form).
 o pkg/obcs:
   add files & OB-variables for wVel (Non-Hydrostatic) with useOBCSprescribe
 o model/src: 
