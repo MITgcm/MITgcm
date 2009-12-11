@@ -1,0 +1,135 @@
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.1 2009/12/11 13:56:28 jmc Exp $
+C $Name:  $
+
+#include "CPP_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: INI_NH_FIELDS
+C     !INTERFACE:
+      SUBROUTINE INI_NH_FIELDS( myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_NH_FIELDS
+C     | o Set model initial non-hydrostatic fields.
+C     *==========================================================*
+C     | Note: If using NH form,
+C     |  call this S/R whether starting or restarting simulation.
+C     | This is different from other "true" ini_fields type S/R
+C     |  (e.g., INI_VEL) which are called only when starting.
+C     | Reason: no real physical field to initialise (since wVel
+C     |  is diagnose from continuity) but needs to set few arrays
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "RESTART.h"
+#include "NH_VARS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid  :: My Thread Id number
+      INTEGER myThid
+
+#ifdef ALLOW_NONHYDROSTATIC
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER ks
+CEOP
+
+      IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ' ) THEN
+C--   Case where starting from initial conditions
+
+C--   Read an initial non-hydrostatic pressure field
+c       IF (phiNHinitFile .NE. ' ') THEN
+c        CALL READ_FLD_XYZ_RL( phiNHinitFile, ' ', phi_nh, 0, myThid )
+c        _EXCH_XYZ_RL(phi_nh, myThid)
+c       ENDIF
+
+      ELSE
+C--   Case where restarting from a pickup
+
+       write(0,*) 'INI_NH_FIELDS: dPhiNHstatus=',dPhiNHstatus
+       IF ( exactConserv .AND. dPhiNHstatus.EQ.0 ) THEN
+c      IF ( exactConserv ) THEN
+C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
+C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          IF ( select_rStar.EQ.0 .AND. usingZCoords ) THEN
+C-       Z coordinate: assume surface @ level k=1
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              dPhiNH(i,j,bi,bj) = phi_nh(i,j,1,bi,bj)
+c             dPhiNH(i,j,bi,bj) = 0.
+            ENDDO
+           ENDDO
+          ELSEIF ( select_rStar.EQ.0 ) THEN
+C-       Other than Z coordinate: no assumption on surface level index
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             ks = ksurfC(i,j,bi,bj)
+             IF ( ks.LE.Nr ) THEN
+              dPhiNH(i,j,bi,bj) = phi_nh(i,j,ks,bi,bj)
+             ELSE
+              dPhiNH(i,j,bi,bj) = 0.
+             ENDIF
+            ENDDO
+           ENDDO
+#ifdef NONLIN_FRSURF
+          ELSE
+C        rStar : take vertical average of P_NH as Hyd.Surf.Press adjustment
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              dPhiNH(i,j,bi,bj) = 0.
+            ENDDO
+           ENDDO
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)
+     &          + phi_nh(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)
+     &                           *recip_Rcol(i,j,bi,bj)
+            ENDDO
+           ENDDO
+#endif /* NONLIN_FRSURF */
+          ENDIF
+         ENDDO
+        ENDDO
+C-     end of if-block: dPhiNH_status
+       ENDIF
+
+      ENDIF
+
+C--   Set the variable viscosities to default value.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           viscAh_W(i,j,k,bi,bj) = viscAhW
+           viscA4_W(i,j,k,bi,bj) = viscA4W
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_NONHYDROSTATIC */
+      RETURN
+      END

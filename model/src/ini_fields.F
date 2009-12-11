@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.23 2009/05/17 20:15:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.24 2009/12/11 13:56:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,7 +37,6 @@ C     Set model variables to initial/restart conditions
 #ifdef INCLUDE_EP_FORCING_CODE
         CALL INI_EP( myThid )
 #endif
-        IF (nonHydrostatic) CALL INI_PNH( myThid )
       ELSEIF ( .NOT.useOffLine ) THEN
         CALL READ_PICKUP( nIter0, myThid )
 
@@ -47,6 +46,12 @@ c    I                       .TRUE., startTime, nIter0, myThid )
 c       ENDIF
 
       ENDIF
+
+#ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
+        CALL INI_NH_FIELDS( myThid )
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 
       RETURN
       END
