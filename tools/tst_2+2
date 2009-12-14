@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.6 2009/03/23 23:28:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.7 2009/12/14 20:36:30 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -355,16 +355,26 @@ fi
 
 if test $flag = '2' -o $flag = 'All' ; then
 #----------------------------------------------------------------------
-echo ' ' ; echo '== compare cg2d_init_res :'
-echo ' run 1iA:'
- grep "cg2d_init_res" std_outp.1iA \
-      | sed 's/.* cg2d_init_res =//'
-echo ' run 1iB:'
- grep "cg2d_init_res" std_outp.1iB \
-      | sed 's/.* cg2d_init_res =//'
-echo ' run 2it:'
- grep "cg2d_init_res" std_outp.2it \
-      | sed 's/.* cg2d_init_res =//'
+listCGini="2"
+#-- check if using 3-D solver
+  nn=`grep -i -c "^ *nonHydrostatic *= *\.TRUE\." data.tst`
+ if [ $nn -eq 0 ] ; then 
+  nn=`grep -i -c "^ *implicitIntGravWave *= *\.TRUE\." data.tst`
+ fi
+if [ $nn -ge 1 ] ; then listCGini="$listCGini 3"; fi
+for nn in $listCGini
+do
+  echo ' ' ; echo "== compare cg${nn}d_init_res :"
+  echo ' run 1iA:'
+   grep "cg${nn}d_init_res" std_outp.1iA \
+        | sed "s/.* cg${nn}d_init_res =//"
+  echo ' run 1iB:'
+   grep "cg${nn}d_init_res" std_outp.1iB \
+        | sed "s/.* cg${nn}d_init_res =//"
+  echo ' run 2it:'
+   grep "cg${nn}d_init_res" std_outp.2it \
+        | sed "s/.* cg${nn}d_init_res =//"
+done
 #----------------------------------------------------------------------
 fi
 
