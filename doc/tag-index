@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1205 2009/12/11 16:00:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1206 2009/12/15 17:03:28 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - move bi,bj loops into obcs_calc, so obcs_prescribe_read is called only once.
+    Fixes bug in obcs+exf with nSx*nSy.GT.1
+  - fix multi-tile handling in obcs balance code
 o nonHydrostatic:
   - Implement AB-3 for non-hydrostatic vertical momentum ;
     (change ordering of var. stored in pickup file when using NH)

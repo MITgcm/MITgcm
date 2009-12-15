@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.3 2008/03/02 23:25:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.4 2009/12/15 17:03:29 jahn Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_CALC( bi, bj, futureTime, futureIter,
+      SUBROUTINE OBCS_CALC( futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
 C     /==========================================================\
@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "EOS.h"
 
 C     == Routine arguments ==
-      INTEGER bi, bj
       INTEGER futureIter
       _RL futureTime
       _RL uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -36,6 +35,7 @@ C     == Routine arguments ==
 #ifdef ALLOW_OBCS
 
 C     == Local variables ==
+      INTEGER bi, bj
       INTEGER I, J ,K, I_obc, J_obc
 
 #include "GRID.h"
@@ -83,6 +83,9 @@ C          in AJAs head
 c     ramptime for velocity
       rampTime2 = 4. _d 0*44567. _d 0
       rexpt=1. _d 0/exp(futureTime/rampTime2)
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+      DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C     Eastern OB
       IF (useOrlanskiEast) THEN
@@ -215,6 +218,10 @@ C         Southern OB, template for forcing
           ENDDO
         ENDDO
       ENDIF
+
+C--   end bi,bj loops.
+      ENDDO
+      ENDDO
 
 #endif /* ALLOW_OBCS */
       RETURN

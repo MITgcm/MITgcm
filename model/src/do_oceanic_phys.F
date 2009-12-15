@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.82 2009/10/02 19:19:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.83 2009/12/15 17:03:28 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,12 +139,8 @@ C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
        IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL OBCS_CALC( bi, bj, myTime+deltaTclock, myIter+1,
-     I                    uVel, vVel, wVel, theta, salt, myThid )
-        ENDDO
-       ENDDO
+       CALL OBCS_CALC( myTime+deltaTclock, myIter+1,
+     I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
 

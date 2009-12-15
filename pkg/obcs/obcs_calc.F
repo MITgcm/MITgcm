@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.23 2009/10/04 22:36:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.24 2009/12/15 17:03:28 jahn Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_CALC( bi, bj, futureTime, futureIter,
+      SUBROUTINE OBCS_CALC( futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
 C     |==========================================================|
@@ -29,7 +29,6 @@ C     === Global variables ===
 #endif /* ALLOW_PTRACERS */
 
 C     == Routine arguments ==
-      INTEGER bi, bj
       INTEGER futureIter
       _RL futureTime
       _RL uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -42,9 +41,11 @@ C     == Routine arguments ==
 #ifdef ALLOW_OBCS
 
 C     == Local variables ==
+C     bi, bj        :: tile indices
 C     I,J,K        - loop indices
 C     I_obc, J_obc - local index of open boundary
 C     msgBuf       - Informational/error meesage buffer
+      INTEGER bi, bj
       INTEGER I, J , K, I_obc, J_obc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_OBCS_BALANCE
@@ -59,6 +60,9 @@ C     msgBuf       - Informational/error meesage buffer
       IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_ENTER('OBCS_CALC',myThid)
 #endif
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+      DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_OBCS_EAST
 C     Eastern OB
@@ -351,6 +355,10 @@ C     end if (usePTracers)
       ENDIF
 #endif /* ALLOW_PTRACERS */
 
+C--   end bi,bj loops.
+      ENDDO 
+      ENDDO
+
 C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_PRESCRIBE
@@ -368,12 +376,6 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance) THEN
-       IF ( nSx.NE.1 .OR. nSy.NE.1 ) THEN
-         WRITE(msgBuf,'(A)')
-     &       'OBCS_CALC: Wrong Multi-tile coding of OBCSbalance'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R OBCS_CALC'
-       ENDIF
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB )
      &      CALL DEBUG_MSG('useOBCSbalance=.TRUE.',myThid)
@@ -382,27 +384,35 @@ C ------------------------------------------------------------------------------
 #ifdef ALLOW_OBCS_EAST
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
-       DO K=1,Nr
-        DO J=1,sNy
-         I_obc=OB_Ie(J,bi,bj)
-         IF (I_obc.ne.0) THEN
-          Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-          Ar_T = Ar_T + Ar
-          Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
-         ENDIF
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,Nr
+          DO J=1,sNy
+           I_obc=OB_Ie(J,bi,bj)
+           IF (I_obc.ne.0) THEN
+            Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
+            Ar_T = Ar_T + Ar
+            Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
         ENDDO
        ENDDO
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          I_obc=OB_Ie(J,bi,bj)
-          IF (I_obc.ne.0) THEN
-           OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
-c          OBEv(J,K,bi,bj) = 0.
-          ENDIF
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K=1,Nr
+           DO J=1-Oly,sNy+Oly
+            I_obc=OB_Ie(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+             OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
+c            OBEv(J,K,bi,bj) = 0.
+            ENDIF
+           ENDDO
+          ENDDO
          ENDDO
         ENDDO
        ENDIF
@@ -411,27 +421,35 @@ c          OBEv(J,K,bi,bj) = 0.
 #ifdef ALLOW_OBCS_WEST
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
-       DO K=1,Nr
-        DO J=1,sNy
-         I_obc=OB_Iw(J,bi,bj)
-         IF (I_obc.ne.0) THEN
-          Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-          Ar_T = Ar_T + Ar
-          Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
-         ENDIF
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,Nr
+          DO J=1,sNy
+           I_obc=OB_Iw(J,bi,bj)
+           IF (I_obc.ne.0) THEN
+            Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
+            Ar_T = Ar_T + Ar
+            Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
         ENDDO
        ENDDO
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          I_obc=OB_Iw(J,bi,bj)
-          IF (I_obc.ne.0) THEN
-           OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
-c          OBWv(J,K,bi,bj) = 0.
-          ENDIF
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K=1,Nr
+           DO J=1-Oly,sNy+Oly
+            I_obc=OB_Iw(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+             OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
+c            OBWv(J,K,bi,bj) = 0.
+            ENDIF
+           ENDDO
+          ENDDO
          ENDDO
         ENDDO
        ENDIF
@@ -440,27 +458,35 @@ c          OBWv(J,K,bi,bj) = 0.
 #ifdef ALLOW_OBCS_NORTH
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
-       DO K=1,Nr
-        DO I=1,sNx
-         J_obc=OB_Jn(I,bi,bj)
-         IF (J_obc.ne.0) THEN
-          Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-          Ar_T = Ar_T + Ar
-          Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
-         ENDIF
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,Nr
+          DO I=1,sNx
+           J_obc=OB_Jn(I,bi,bj)
+           IF (J_obc.ne.0) THEN
+            Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
+            Ar_T = Ar_T + Ar
+            Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
         ENDDO
        ENDDO
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
-        DO K=1,Nr
-         DO I=1-Olx,sNx+Olx
-          J_obc=OB_Jn(I,bi,bj)
-          IF (J_obc.ne.0) THEN
-c          OBNu(I,K,bi,bj) = 0.
-           OBNv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
-          ENDIF
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K=1,Nr
+           DO I=1-Olx,sNx+Olx
+            J_obc=OB_Jn(I,bi,bj)
+            IF (J_obc.ne.0) THEN
+c            OBNu(I,K,bi,bj) = 0.
+             OBNv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
+            ENDIF
+           ENDDO
+          ENDDO
          ENDDO
         ENDDO
        ENDIF
@@ -469,27 +495,35 @@ c          OBNu(I,K,bi,bj) = 0.
 #ifdef ALLOW_OBCS_SOUTH
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
-       DO K=1,Nr
-        DO I=1,sNx
-         J_obc=OB_Js(I,bi,bj)
-         IF (J_obc.ne.0) THEN
-          Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-          Ar_T = Ar_T + Ar
-          Tr_T = Tr_T + Ar * OBSv(I,K,bi,bj)
-         ENDIF
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,Nr
+          DO I=1,sNx
+           J_obc=OB_Js(I,bi,bj)
+           IF (J_obc.ne.0) THEN
+            Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
+            Ar_T = Ar_T + Ar
+            Tr_T = Tr_T + Ar * OBSv(I,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
         ENDDO
        ENDDO
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
-        DO K=1,Nr
-         DO I=1-Olx,sNx+Olx
-          J_obc=OB_Js(I,bi,bj)
-          IF (J_obc.ne.0) THEN
-c          OBSu(I,K,bi,bj) = 0.
-           OBSv(I,K,bi,bj) = OBSv(I,K,bi,bj) + Tr_T
-          ENDIF
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K=1,Nr
+           DO I=1-Olx,sNx+Olx
+            J_obc=OB_Js(I,bi,bj)
+            IF (J_obc.ne.0) THEN
+c            OBSu(I,K,bi,bj) = 0.
+             OBSv(I,K,bi,bj) = OBSv(I,K,bi,bj) + Tr_T
+            ENDIF
+           ENDDO
+          ENDDO
          ENDDO
         ENDDO
        ENDIF

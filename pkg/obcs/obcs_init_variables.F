@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.33 2009/12/08 00:21:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.34 2009/12/15 17:03:28 jahn Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -330,12 +330,8 @@ C--   Load/compute OBCS values (initial conditions only)
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL OBCS_CALC( bi, bj, startTime, nIter0,
+       CALL OBCS_CALC( startTime, nIter0,
      &              uVel, vVel, wVel, theta, salt, myThid )
-        ENDDO
-       ENDDO
 
 C--   Apply OBCS values to initial conditions for consistency
 C      (but initial conditions only)
