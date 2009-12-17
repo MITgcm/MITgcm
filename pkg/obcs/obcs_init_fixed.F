@@ -1,15 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.7 2008/04/24 07:57:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.8 2009/12/17 23:51:41 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_INIT_FIXED( myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_INIT_FIXED                               |
-C     | o Initialise OBCs fixed arrays                           |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE OBCS_INIT_FIXED
+C     | o Initialise OBCs fixed arrays
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,69 +16,113 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "OBCS.h"
-#ifdef NONLIN_FRSURF
 #include "GRID.h"
+#ifdef NONLIN_FRSURF
 #include "SURFACE.h"
 #endif
 
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_DEPTHS
+C     myThid :: my Thread Id. number
       INTEGER myThid
 
 #ifdef ALLOW_OBCS
-
 C     == Local variables ==
       INTEGER bi, bj
-      INTEGER I, J
+      INTEGER i, j
 #ifdef NONLIN_FRSURF
       INTEGER k
 #endif
 
-#ifdef NONLIN_FRSURF
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C- save the initial hFacS at the N & S boundaries :
-        DO i=1-Olx,sNx+Olx
+C--   Set Interior mask to zero beyond OB
+        DO j=1-OLy,sNy+OLy
+C-    Eastern boundary
+         IF ( OB_Ie(j,bi,bj).NE.0 ) THEN
+          DO i=OB_Ie(j,bi,bj),sNx+OLx
+            maskInC(i,j,bi,bj) = 0.
+            maskInW(i,j,bi,bj) = 0.
+            maskInS(i,j,bi,bj) = 0.
+            IF (j.LT.sNy+OLy) maskInS(i,j+1,bi,bj) = 0.
+          ENDDO
+         ENDIF
+C-    Western boundary
+         IF ( OB_Iw(j,bi,bj).NE.0 ) THEN
+          DO i=1-OLx,OB_Iw(j,bi,bj)
+            maskInC(i,j,bi,bj) = 0.
+            maskInS(i,j,bi,bj) = 0.
+            IF (j.LT.sNy+OLy) maskInS(i,j+1,bi,bj) = 0.
+          ENDDO
+          DO i=1-OLx,OB_Iw(j,bi,bj)+1
+            maskInW(i,j,bi,bj) = 0.
+          ENDDO
+         ENDIF
+        ENDDO
+        DO i=1-OLx,sNx+OLx
+C-    Northern boundary
+         IF ( OB_Jn(i,bi,bj).NE.0 ) THEN
+          DO j=OB_Jn(i,bi,bj),sNy+OLy
+            maskInC(i,j,bi,bj) = 0.
+            maskInW(i,j,bi,bj) = 0.
+            IF (i.LT.sNx+OLx) maskInW(i+1,j,bi,bj) = 0.
+            maskInS(i,j,bi,bj) = 0.
+          ENDDO
+         ENDIF
+C-    Southern boundary
+         IF ( OB_Js(i,bi,bj).NE.0 ) THEN
+          DO j=1-OLy,OB_Js(i,bi,bj)
+            maskInC(i,j,bi,bj) = 0.
+            maskInW(i,j,bi,bj) = 0.
+            IF (i.LT.sNx+OLx) maskInW(i+1,j,bi,bj) = 0.
+          ENDDO
+          DO j=1-OLy,OB_Js(i,bi,bj)+1
+            maskInS(i,j,bi,bj) = 0.
+          ENDDO
+         ENDIF
+        ENDDO
+
+#ifdef NONLIN_FRSURF
+C--   Save the initial hFacS at the N & S boundaries :
+        DO i=1-OLx,sNx+OLx
           OBNhFac0(i,bi,bj)=0.
           OBShFac0(i,bi,bj)=0.
-C  Northern boundary
+C-    Northern boundary
           IF ( OB_Jn(i,bi,bj).NE.0 ) THEN
             j = OB_Jn(i,bi,bj)
-            k = ksurfS(i,j,bi,bj) 
+            k = ksurfS(i,j,bi,bj)
             IF (k.LE.Nr) OBNhFac0(i,bi,bj)=hFacS(i,j,k,bi,bj)
           ENDIF
-C  Southern boundary
+C-    Southern boundary
           IF ( OB_Js(i,bi,bj).NE.0 ) THEN
             j = OB_Js(i,bi,bj)+1
-            k = ksurfS(i,j,bi,bj) 
+            k = ksurfS(i,j,bi,bj)
             IF (k.LE.Nr) OBShFac0(i,bi,bj)=hFacS(i,j,k,bi,bj)
           ENDIF
-        ENDDO     
+        ENDDO
 
-C- save the initial hFacW at the E & W boundaries :
-        DO j=1-Oly,sNy+Oly
+C--   Save the initial hFacW at the E & W boundaries :
+        DO j=1-OLy,sNy+OLy
           OBEhFac0(j,bi,bj)=0.
           OBWhFac0(j,bi,bj)=0.
-C  Eastern boundary
+C-    Eastern boundary
           IF ( OB_Ie(j,bi,bj).NE.0 ) THEN
             i = OB_Ie(j,bi,bj)
-            k = ksurfW(i,j,bi,bj) 
+            k = ksurfW(i,j,bi,bj)
             IF (k.LE.Nr) OBEhFac0(j,bi,bj)=hFacW(i,j,k,bi,bj)
           ENDIF
-C  Western boundary
+C-    Western boundary
           IF ( OB_Iw(j,bi,bj).NE.0 ) THEN
             i = OB_Iw(j,bi,bj)+1
-            k = ksurfW(i,j,bi,bj) 
+            k = ksurfW(i,j,bi,bj)
             IF (k.LE.Nr) OBWhFac0(j,bi,bj)=hFacW(i,j,k,bi,bj)
           ENDIF
-        ENDDO     
+        ENDDO
+#endif /* NONLIN_FRSURF */
 
+C--   end bi,bj loops
        ENDDO
       ENDDO
-
-#endif /* NONLIN_FRSURF */    
 
 #endif /* ALLOW_OBCS */
       RETURN
