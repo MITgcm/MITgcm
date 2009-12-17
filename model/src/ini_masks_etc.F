@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.43 2009/06/28 01:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.44 2009/12/17 23:47:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,10 +29,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_EXCH2
-# include "W2_EXCH2_SIZE.h"
-# include "W2_EXCH2_TOPOLOGY.h"
-#endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -49,10 +45,6 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
       INTEGER I, J, K
       _RL hFacCtmp
       _RL hFacMnSz
-      _RL tileArea(nSx,nSy), threadArea
-C     put tileArea in (local) common block to print from master-thread:
-      COMMON / LOCAL_INI_MASKS_ETC / tileArea
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
@@ -145,14 +137,14 @@ C       Note: if no fluid (continent) ==> ksurf = Nr+1
          DO I=1-Olx,sNx+Olx
           tmpfld(I,J,bi,bj) = 0.
           ksurfC(I,J,bi,bj) = Nr+1
-          maskH(I,J,bi,bj) = 0.
+          maskH(I,J,bi,bj)  = 0.
           Ro_surf(I,J,bi,bj) = R_low(I,J,bi,bj)
           DO K=Nr,1,-1
            Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)
      &                        + drF(k)*hFacC(I,J,K,bi,bj)
            IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
             ksurfC(I,J,bi,bj) = k
-            maskH(I,J,bi,bj) = 1.
+            maskH(I,J,bi,bj)  = 1.
             tmpfld(I,J,bi,bj) = tmpfld(I,J,bi,bj) + 1.
            ENDIF
           ENDDO
@@ -162,6 +154,8 @@ C       Note: if no fluid (continent) ==> ksurf = Nr+1
               kLowC(I,J,bi,bj) = K
            ENDIF
           ENDDO
+          maskInC(I,J,bi,bj)= 0.
+          IF ( ksurfC(I,J,bi,bj).LE.Nr ) maskInC(I,J,bi,bj)= 1.
          ENDDO
         ENDDO
 C - end bi,bj loops.
@@ -176,7 +170,6 @@ C    &         'Model Depths K Index' , 1, myThid )
      &         'Model Ro_surf (ini_masks_etc)', 1, myThid)
 
 C     Calculate quantities derived from XY depth map
-      threadArea = 0. _d 0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
@@ -192,48 +185,9 @@ C         Inverse of fluid column thickness (1/r_unit)
           ENDIF
          ENDDO
         ENDDO
-C-      Compute the domain Area:
-        tileArea(bi,bj) = 0. _d 0
-        DO j=1,sNy
-         DO i=1,sNx
-          tileArea(bi,bj) = tileArea(bi,bj)
-     &                    + rA(i,j,bi,bj)*maskH(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        threadArea = threadArea + tileArea(bi,bj)
        ENDDO
       ENDDO
 C     _EXCH_XY_RS(   recip_Rcol, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
-C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
-      _GLOBAL_SUM_RL( threadArea, myThid )
-#else
-      CALL GLOBAL_SUM_TILE_RL( tileArea, threadArea, myThid )
-#endif
-      _BEGIN_MASTER( myThid )
-      globalArea = threadArea
-C-    list empty tiles:
-      msgBuf(1:1) = ' '
-      DO bj = 1,nSy
-       DO bi = 1,nSx
-        IF ( tileArea(bi,bj).EQ.0. _d 0 ) THEN
-#ifdef ALLOW_EXCH2
-         WRITE(msgBuf,'(A,I6,A,2I4,A)')
-     &    'Empty tile: #', W2_myTileList(bi,bj), ' (bi,bj=',bi,bj,' )'
-#else
-         WRITE(msgBuf,'(A,I6,I6)') 'Empty tile bi,bj=', bi, bj
-#endif
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-        ENDIF
-       ENDDO
-      ENDDO
-      IF ( msgBuf(1:1).NE.' ' ) THEN
-         WRITE(msgBuf,'(A)') ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-      ENDIF
-      _END_MASTER( myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -362,6 +316,10 @@ C-    Calculate surface k index for interface W & S (U & V points)
            IF (hFacW(I,J,K,bi,bj).NE.0.) ksurfW(I,J,bi,bj) = k
            IF (hFacS(I,J,K,bi,bj).NE.0.) ksurfS(I,J,bi,bj) = k
           ENDDO
+          maskInW(I,J,bi,bj)= 0.
+          IF ( ksurfW(i,j,bi,bj).LE.Nr ) maskInW(I,J,bi,bj)= 1.
+          maskInS(I,J,bi,bj)= 0.
+          IF ( ksurfS(i,j,bi,bj).LE.Nr ) maskInS(I,J,bi,bj)= 1.
          ENDDO
         ENDDO
 C - end bi,bj loops.

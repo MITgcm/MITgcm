@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.16 2009/06/14 21:50:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.17 2009/12/17 23:47:06 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -13,6 +14,7 @@ C     *==========================================================*
 C     | SUBROUTINE INI_LINEAR_PHISURF
 C     | o Initialise the Linear Relation Phi_surf(eta)
 C     *==========================================================*
+C     | Compute global domain Area ;
 C     | Initialise -Boyancy at surface level (Bo_surf)
 C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta
 C     | Initialise phi0surf = starting point for integrating
@@ -28,6 +30,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+#endif /* ALLOW_EXCH2 */
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -35,13 +42,15 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
 C     == Local variables in common ==
-C     Hloc  :: Temporary array used to write surface topography
-C              has to be in common for multi threading
-C     no longer needed since MDSIO now allows (2009/06/07) to write local arrays
-c     COMMON / LOCAL_INI_PHISURF / topoHloc
+C     topoHloc had to be in common for multi threading but no longer
+C     needed since MDSIO now allows (2009/06/07) to write local arrays
+      _RL tileArea(nSx,nSy), threadArea
+C     put tileArea in (local) common block to print from master-thread:
+      COMMON / LOCAL_INI_PHISURF / tileArea
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     topoHloc  :: Temporary array used to write surface topography
 C     bi,bj  :: tile indices
 C     I,J,K  :: Loop counters
       _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -49,6 +58,7 @@ C     I,J,K  :: Loop counters
       INTEGER I, J, K
       _RL     pLoc, rhoLoc
       _RL     dPIdp
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -63,6 +73,57 @@ CEOP
        ENDDO
       ENDDO
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Calculate global domain area:
+C     use to be in ini_masks_etc.F but has been move after packages_init_fixed
+C     in case 1 pkg (e.g., OBCS) modifies the domain size.
+      threadArea = 0. _d 0
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+C-      Compute the domain Area:
+        tileArea(bi,bj) = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          tileArea(bi,bj) = tileArea(bi,bj)
+     &                    + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+c    &                    + rA(i,j,bi,bj)*maskH(i,j,bi,bj)
+         ENDDO
+        ENDDO
+c       threadArea = threadArea + tileArea(bi,bj)
+       ENDDO
+      ENDDO
+c#ifdef ALLOW_AUTODIFF_TAMC
+C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
+c      _GLOBAL_SUM_RL( threadArea, myThid )
+c#else
+      CALL GLOBAL_SUM_TILE_RL( tileArea, threadArea, myThid )
+c#endif
+      _BEGIN_MASTER( myThid )
+      globalArea = threadArea
+C-    list empty tiles:
+      msgBuf(1:1) = ' '
+      DO bj = 1,nSy
+       DO bi = 1,nSx
+        IF ( tileArea(bi,bj).EQ.0. _d 0 ) THEN
+#ifdef ALLOW_EXCH2
+         WRITE(msgBuf,'(A,I6,A,2I4,A)')
+     &    'Empty tile: #', W2_myTileList(bi,bj), ' (bi,bj=',bi,bj,' )'
+#else
+         WRITE(msgBuf,'(A,I6,I6)') 'Empty tile bi,bj=', bi, bj
+#endif
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( msgBuf(1:1).NE.' ' ) THEN
+         WRITE(msgBuf,'(A)') ' '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+      _END_MASTER( myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
