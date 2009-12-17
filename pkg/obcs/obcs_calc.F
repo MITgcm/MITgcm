@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.24 2009/12/15 17:03:28 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.25 2009/12/17 23:52:11 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -41,17 +41,17 @@ C     == Routine arguments ==
 #ifdef ALLOW_OBCS
 
 C     == Local variables ==
-C     bi, bj        :: tile indices
-C     I,J,K        - loop indices
-C     I_obc, J_obc - local index of open boundary
-C     msgBuf       - Informational/error meesage buffer
+C     bi, bj       :: tile indices
+C     I,J,K        :: loop indices
+C     I_obc, J_obc :: local index of open boundary
+C     msgBuf       :: Informational/error message buffer
       INTEGER bi, bj
-      INTEGER I, J , K, I_obc, J_obc
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER I, J, K, I_obc, J_obc
 #ifdef ALLOW_OBCS_BALANCE
       _RL Tr_T, Ar_T, Tr, Ar
 #endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_PTRACERS
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iTracer
 #endif /* ALLOW_PTRACERS */
 
@@ -225,7 +225,6 @@ C     Eastern OB
      &      CALL DEBUG_MSG('OBCS_CALC: East, pTracers',myThid)
 #  endif
        IF (useOrlanskiEast) THEN
-#  ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiEast Rad OBC with'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -233,7 +232,6 @@ C     Eastern OB
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
-#  endif
        ELSE
         DO iTracer=1,PTRACERS_numInUse
          DO K=1,Nr
@@ -259,7 +257,6 @@ C     Western OB
      &      CALL DEBUG_MSG('OBCS_CALC: West, pTracers',myThid)
 #  endif
        IF (useOrlanskiWest) THEN
-#  ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiWest Rad OBC with'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -267,7 +264,6 @@ C     Western OB
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
-#  endif
        ELSE
         DO iTracer=1,PTRACERS_numInUse
          DO K=1,Nr
@@ -293,7 +289,6 @@ C         Northern OB
      &     CALL DEBUG_MSG('OBCS_CALC: North, pTracers',myThid)
 #  endif
        IF (useOrlanskiNorth) THEN
-#  ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiNorth Rad OBC with'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -301,7 +296,6 @@ C         Northern OB
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
-#  endif
        ELSE
         DO iTracer=1,PTRACERS_numInUse
          DO K=1,Nr
@@ -327,7 +321,6 @@ C         Southern OB
      &      CALL DEBUG_MSG('OBCS_CALC: South, pTracers',myThid)
 #endif
        IF (useOrlanskiSouth) THEN
-#ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiSouth Rad OBC with'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -335,7 +328,6 @@ C         Southern OB
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
-#endif
        ELSE
         DO iTracer=1,PTRACERS_numInUse
          DO K=1,Nr
@@ -356,7 +348,7 @@ C     end if (usePTracers)
 #endif /* ALLOW_PTRACERS */
 
 C--   end bi,bj loops.
-      ENDDO 
+      ENDDO
       ENDDO
 
 C ------------------------------------------------------------------------------
