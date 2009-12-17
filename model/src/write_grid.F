@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.30 2009/12/04 15:08:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.31 2009/12/17 23:48:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -100,6 +100,11 @@ C     Write 3D geometry arrays
         CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS, 0,myThid)
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
      &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,-1,myThid)
+        IF ( useOBCS ) THEN
+          CALL WRITE_FLD_XY_RS( 'maskInC',' ', maskInC, -1, myThid )
+          CALL WRITE_FLD_XY_RS( 'maskInW',' ', maskInW, -1, myThid )
+          CALL WRITE_FLD_XY_RS( 'maskInS',' ', maskInS, -1, myThid )
+        ENDIF
 
 C     Write vertical grid arrays
         CALL WRITE_GLVEC_RS( 'RC', ' ', rC,  Nr, -1, myThid )
@@ -177,8 +182,8 @@ c       CALL MNC_CW_RS_W('D',bfname,0,0,'YV',yG,myThid)
 
       IF ( useMNC .AND. (usingCurvilinearGrid .OR. rotateGrid) ) THEN
 C     If the grid is not simply cartesian, cylindrical or spherical,
-C     include additional coordinate information to the following files 
-       IF ( snapshot_mnc .AND. 
+C     include additional coordinate information to the following files
+       IF ( snapshot_mnc .AND.
      &      ( dumpFreq .GT. 0. .OR. dumpInitAndLast ) )
      &      CALL MNC_CW_WRITE_GRID_COORD('state', myThid)
 #if (defined ALLOW_AUTODIFF) && \
@@ -189,7 +194,7 @@ C     include additional coordinate information to the following files
 #ifdef ALLOW_EXF
         IF (useEXF) CALL MNC_CW_WRITE_GRID_COORD('adexf',myThid)
 #endif /* ALLOW_EXF */
-#ifdef ALLOW_SEAICE 
+#ifdef ALLOW_SEAICE
         IF (useSEAICE) CALL MNC_CW_WRITE_GRID_COORD('adseaice',myThid)
 #endif /* ALLOW_SEAICE */
        ENDIF
