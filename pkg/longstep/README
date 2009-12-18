@@ -1,0 +1,57 @@
+Package longstep
+================
+
+This package allows the passive tracer time step to be longer than that for
+dynamical fields: the ptracers are updated only every LS_nIter time step. 
+Dynamical fields are averaged over LS_nIter time steps and are available as
+fields LS_* (declared in LONGSTEP.h):
+
+original fld.  averaged fld.
+------------------------------               
+UVEL           LS_uVel
+VVEL           LS_vVel
+WVEL           LS_wVel
+THETA          LS_theta
+SALT           LS_salt
+IVDConvCount   LS_IVDConvCount
+Qsw            LS_Qsw
+               
+Kwx            LS_Kwx
+Kwy            LS_Kwy
+Kwz            LS_Kwz
+               
+KPPdiffKzS     LS_KPPdiffKzS
+KPPghat        LS_KPPghat
+
+The T and S time step remains the same as that for u,v,...
+
+
+Packages that use ptracers (like DIC) need to be adapted:
+
+1. replace dtTracerLev by PTRACERS_dTLev
+2. replace THETA, SALT, etc. by their longstep averages from the table above.
+   This should be made between #ifdef ALLOW_LONGSTEP ... #endif.
+   (You need to #include "LONGSTEP.h")
+
+The package is activated by including "longstep" in packages.conf.  There is
+no "use_LONGSTEP", the package is always on when compiled.
+
+
+The run-time parameters are set in data.longstep.  The default is:
+
+ &LONGSTEP_PARM01
+ LS_nIter=1,
+ LS_afterTS=.FALSE.,
+ LS_staggerTimeStep=.FALSE.,
+ &
+
+LS_nIter   :: number of dynamical time steps per ptracer time step.
+LS_afterTS :: sample dynamical fields after updating T and S (after thermodynamics),
+              i.e. at the same time as gchem_forcing_sep is called.
+              This reproduces runs without longstep when LS_nIter == 1
+LS_staggerTimeStep :: same as LS_afterTS for staggerTimeStep == .TRUE.
+
+Default is to sample dynamical fields at the beginning of the time step.  This
+reproduces results from offline runs (with straight time averages used for the
+dynamical fields).
+
