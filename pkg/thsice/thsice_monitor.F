@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.15 2009/09/02 22:23:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.16 2009/12/21 00:20:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -27,9 +27,9 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance of INI_FORCING
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -128,7 +128,7 @@ C--   make a local copy of iceMask into "RS" array:
 C-- Ice area and Ice thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                iceHeight, locMask, maskH, rA, yC, locDr,
+     I                iceHeight, locMask, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -150,7 +150,7 @@ C-- Ice area and Ice thickness :
 C-- Snow thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                snowHeight, locMask, maskH, rA, yC, locDr,
+     I                snowHeight, locMask, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -169,7 +169,7 @@ C-- Snow thickness :
 C-- Surface Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tsrf, locMask, maskH, rA, yC, locDr,
+     I                Tsrf, locMask, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -201,7 +201,7 @@ C--   make a local copy of iceMask*iceHeight into "RS" array:
 C-- 1rst level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tice1, locMask, maskH, rA, yC, locDr,
+     I                Tice1, locMask, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = theVol(1)+theVol(2)
@@ -226,7 +226,7 @@ c       CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
 C-- 2nd  level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tice2, locMask, maskH, rA, yC, locDr,
+     I                Tice2, locMask, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
@@ -244,12 +244,12 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
 C-- Total Energy :
-        CALL  MON_STATS_RL(
-     I                1, Qice1, locMask, maskH, rA, locDr,
+        CALL  MON_CALC_STATS_RL(
+     I                1, Qice1, locMask, maskInC, rA, locDr,
      O                theMin0,theMax0,theMean1,theSD,theDel2,theVolG,
      I                myThid )
-        CALL  MON_STATS_RL(
-     I                1, Qice2, locMask, maskH, rA, locDr,
+        CALL  MON_CALC_STATS_RL(
+     I                1, Qice2, locMask, maskInC, rA, locDr,
      O                theMin0,theMax0,theMean2,theSD,theDel2,theVolG,
      I                myThid )
         theEnergy = theEnergy -rhoi*(theMean1+theMean2)*theVolG/2

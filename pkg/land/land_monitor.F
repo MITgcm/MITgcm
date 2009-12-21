@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.12 2009/09/02 21:42:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.13 2009/12/21 00:15:57 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -45,7 +45,7 @@ C     === Functions ====
 
 C     == Local variables ==
 C     nLatBnd    :: Number of latitude bands
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     mon_var    :: Variable sufix name
 C     mon_sufx   :: Latitude band sufix
 C     n, k       :: loop counter
@@ -70,7 +70,7 @@ C     theEnergy  :: total energy
       _RS yBand(nLatBnd), locDr(land_nLev)
       _RL theMin(nLatBnd), theMax(nLatBnd)
       _RL theMean(nLatBnd), theVar(nLatBnd), theVol(nLatBnd)
-      _RL theMeanG, theVarG, theVolG
+      _RL theMeanG, theVolG
       _RL theEng(nLatBnd), theEnergy
 
       DATA yBand /  0. , -24. , 24. /
@@ -131,7 +131,7 @@ C--   endif master cpu io
 C-- Snow thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, nLatBnd, yBand,
-     I                land_hSnow, land_frc, maskH, rA, yC, locDr,
+     I                land_hSnow, land_frc, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = 0.
@@ -167,7 +167,7 @@ C-- Snow thickness :
 C-- Surface Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, nLatBnd, yBand,
-     I                land_skinT, land_frc, maskH, rA, yC, locDr,
+     I                land_skinT, land_frc, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = 0.
@@ -195,7 +195,7 @@ C-- Surface Temp. :
 C-- 1rst level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 1, nLatBnd, yBand,
-     I                land_groundT, land_frc, maskH, rA, yC, locDr,
+     I                land_groundT, land_frc, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = 0.
@@ -223,7 +223,7 @@ C-- 1rst level (volume-mean) Temp. :
 C-- 2nd  level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 2, nLatBnd, yBand,
-     I                land_groundT, land_frc, maskH, rA, yC, locDr,
+     I                land_groundT, land_frc, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = 0.
@@ -254,7 +254,7 @@ C-- Total Energy :
         ENDDO
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 0, nLatBnd, yBand,
-     I                land_enthalp, land_frc, maskH, rA, yC, locDr,
+     I                land_enthalp, land_frc, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theEnergy = 0.
@@ -271,7 +271,7 @@ C-- Total Energy :
 C-- Soil water content (level 1+2):
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 0, nLatBnd, yBand,
-     I                land_groundW, land_frc, maskH, rA, yC, locDr,
+     I                land_groundW, land_frc, maskInC, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = 0.
