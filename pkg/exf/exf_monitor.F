@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.19 2009/03/03 14:05:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.20 2009/12/21 00:14:31 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -44,6 +44,7 @@ C     === Functions ====
       EXTERNAL MASTER_CPU_IO
 
 C     == Local variables ==
+      _RL dummyRL(6)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_MNC
       INTEGER k
@@ -97,67 +98,74 @@ C--   endif master cpu io
         CALL MON_OUT_RL('_time_sec', myTime,mon_string_none,myThid)
 
 C       Print some statistics about input forcing fields
-        CALL MON_PRINTSTATS_RL(1,ustress,'_ustress',
-     &       maskH,maskH,rAw,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,vstress,'_vstress',
-     &       maskH,maskH,rAs,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,hflux,'_hflux',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,sflux,'_sflux',
-     &       maskH,maskH,rA ,drF,myThid)
+        IF ( stressIsOnCgrid ) THEN
+          CALL MON_WRITESTATS_RL( 1, ustress, '_ustress',
+     &             maskInW, maskInW, rAw, drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( 1, vstress, '_vstress',
+     &             maskInS, maskInS, rAs, drF, dummyRL, myThid )
+        ELSE
+          CALL MON_WRITESTATS_RL( 1, ustress, '_ustress',
+     &             maskInC, maskInC, rA , drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( 1, vstress, '_vstress',
+     &             maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
+        CALL MON_WRITESTATS_RL( 1, hflux,   '_hflux',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, sflux,   '_sflux',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #ifdef ALLOW_ATM_WIND
-        CALL MON_PRINTSTATS_RL(1,uwind,'_uwind',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,vwind,'_vwind',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, uwind,   '_uwind',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, vwind,   '_vwind',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* ALLOW_ATM_WIND */
-        CALL MON_PRINTSTATS_RL(1,wspeed,'_wspeed',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, wspeed,  '_wspeed',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #ifdef ALLOW_ATM_TEMP
-        CALL MON_PRINTSTATS_RL(1,atemp,'_atemp',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,aqh,'_aqh',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,lwflux,'_lwflux',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,precip,'_precip',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,snowprecip,'_snowprecip',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, atemp,   '_atemp',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, aqh,     '_aqh',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, lwflux,  '_lwflux',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, precip,  '_precip',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL(1,snowprecip,'_snowprecip',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* ALLOW_ATM_TEMP */
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-        CALL MON_PRINTSTATS_RL(1,swflux,'_swflux',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, swflux,  '_swflux',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-        CALL MON_PRINTSTATS_RL(1,evap,'_evap',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, evap,    '_evap',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ALLOW_DOWNWARD_RADIATION
-        CALL MON_PRINTSTATS_RL(1,swdown,'_swdown',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,lwdown,'_lwdown',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, swdown,  '_swdown',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, lwdown,  '_lwdown',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-        CALL MON_PRINTSTATS_RL(1,apressure,'_apressure',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1,apressure,'_apressure',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ALLOW_RUNOFF
-        CALL MON_PRINTSTATS_RL(1,runoff,'_runoff',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, runoff,  '_runoff',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ALLOW_ICE_AREAMASK
-        CALL MON_PRINTSTATS_RL(1,areamask,'_areamask',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ALLOW_CLIMSST_RELAXATION
-        CALL MON_PRINTSTATS_RL(1,climsst,'_climsst',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, climsst, '_climsst',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ALLOW_CLIMSSS_RELAXATION
-        CALL MON_PRINTSTATS_RL(1,climsss,'_climsss',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, climsss, '_climsss',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
