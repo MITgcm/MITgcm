@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1207 2009/12/21 02:11:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1208 2009/12/21 18:49:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o switch on useOBCSbalance in tutorial_plume_on_slope exp. and update output.
+    (was not previously tested in any other exp.)
 o pkg/monitor:
   - clean-up _RL/_RS version: add specific S/R for statistics with mask & volume:
     mon_writestats_rl/s,F mon_calc_stats_rl/s.F ; will keep the old one 
