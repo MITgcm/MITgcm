@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.19 2009/11/30 03:58:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.20 2009/12/21 00:06:03 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -126,27 +126,20 @@ C       not sure for atmos/ocean in P ; or atmos. loading in ocean-Z
            tmpVal = tmpVal
      &            + phi0surf(i,j,bi,bj)*etaN(i,j,bi,bj)
            tilePEav(bi,bj) = tilePEav(bi,bj)
-     &            + tmpVal*rA(i,j,bi,bj)*deepFac2F(1)*maskH(i,j,bi,bj)
+     &            + tmpVal*rA(i,j,bi,bj)*deepFac2F(1)
+     &                    *maskInC(i,j,bi,bj)
 c          tmpVal = etaN(i,j,bi,bj)
 c    &            + phi0surf(i,j,bi,bj)*recip_Bo(i,j,bi,bj)
 c          tilePEav(bi,bj) = tilePEav(bi,bj)
 c    &        + 0.5 _d 0*Bo_surf(i,j,bi,bj)*tmpVal*tmpVal
-c    &                  *rA(i,j,bi,bj)*maskH(i,j,bi,bj)
+c    &                  *rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
-c        theMean    = theMean    + tileMean(bi,bj)
-c        theVol     = theVol     + tileVol(bi,bj)
-c        theVolMean = theVolMean + tileVlAv(bi,bj)
-c        potEnMean  = potEnMean  + tilePEav(bi,bj)
 C- end bi,bj loops
        ENDDO
       ENDDO
       _GLOBAL_SUM_RL(numPnts,myThid)
       _GLOBAL_MAX_RL(theMax,myThid)
-c     _GLOBAL_SUM_RL(theMean,myThid)
-c     _GLOBAL_SUM_RL(theVol,myThid)
-c     _GLOBAL_SUM_RL(theVolMean,myThid)
-c     _GLOBAL_SUM_RL(potEnMean, myThid)
       CALL GLOBAL_SUM_TILE_RL( tileMean, theMean   , myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVol , theVol    , myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVlAv, theVolMean, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.8 2009/09/03 20:37:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.9 2009/12/21 00:10:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -81,7 +81,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     i,j    :: loop indices
-      INTEGER i, n, km, kFr, kRegMsk
+      INTEGER i, n, kFr, kRegMsk
       INTEGER im, ix, iv
       PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
       LOGICAL exclSpVal
@@ -162,7 +162,7 @@ c    I            drLoc, k,bi,bj, parsFld, myThid )
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskH(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
+     I            maskInC(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
      I            specialVal, exclSpVal,
      I            k,bi,bj, parsFld, myThid )
          ELSEIF ( useLand .AND.
@@ -182,8 +182,6 @@ c        ELSEIF ( parsFld(10:10) .EQ. 'I' ) THEN
 c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
          ELSE
 
-          km = 1
-          IF ( usingPCoords ) km = Nr
           drLoc = 1. _d 0
           IF     ( parsFld(2:2).EQ.'U' ) THEN
            CALL  DIAGSTATS_CALC(
@@ -193,8 +191,8 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskW(1-Olx,1-Oly,km,bi,bj),
-     I            maskW(1-Olx,1-Oly,km,bi,bj),rAw(1-Olx,1-Oly,bi,bj),
+     I            maskInW(1-Olx,1-Oly,bi,bj),
+     I            maskInW(1-Olx,1-Oly,bi,bj),rAw(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSEIF ( parsFld(2:2).EQ.'V' ) THEN
            CALL  DIAGSTATS_CALC(
@@ -204,8 +202,8 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskS(1-Olx,1-Oly,km,bi,bj),
-     I            maskS(1-Olx,1-Oly,km,bi,bj),rAs(1-Olx,1-Oly,bi,bj),
+     I            maskInS(1-Olx,1-Oly,bi,bj),
+     I            maskInS(1-Olx,1-Oly,bi,bj),rAs(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSE
            CALL  DIAGSTATS_CALC(
@@ -215,8 +213,8 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskH(1-Olx,1-Oly,bi,bj),
-     I            maskH(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
+     I            maskInC(1-Olx,1-Oly,bi,bj),
+     I            maskInC(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ENDIF
 
