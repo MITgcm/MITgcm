@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.5 2009/07/01 14:45:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.6 2009/12/21 00:05:42 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+c#include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
@@ -54,11 +54,8 @@ C     === Functions ====
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dT
-      _RL statsTemp(6)
-c     INTEGER time_as_int
-#ifdef ALLOW_MNC
-      INTEGER i
-#endif
+      _RL dummyRL(6)
+      INTEGER k
 
       IF ( DIFFERENT_MULTIPLE(adjmonitorFreq,myTime,deltaTClock) ) THEN
 
@@ -74,10 +71,10 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
           mon_write_mnc = .FALSE.
 #ifdef ALLOW_MNC
           IF (useMNC .AND. monitor_mnc) THEN
-            DO i = 1,MAX_LEN_MBUF
-              mon_fname(i:i) = ' '
+            DO k = 1,MAX_LEN_MBUF
+              mon_fname(k:k) = ' '
             ENDDO
-            mon_fname(1:7) = 'g_monitor'
+            mon_fname(1:9) = 'g_monitor'
             CALL MNC_CW_APPEND_VNAME(
      &           'T', '-_-_--__-__t', 0,0, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
@@ -108,53 +105,57 @@ C       Print the time to make grepping the stdout easier
         CALL MON_SET_PREF('g__time',myThid)
         CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
         CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
-C       - cause floating point error on some platform (cf Martin Losch)
-C       time_as_int = NINT( myTime )
-C       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
 
 C       Print the basic statistics of model state variables
         CALL MON_SET_PREF('g__dynstat',myThid)
-        CALL MON_PRINTSTATS_RL(1,g_EtaN,'_g_eta',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,g_uVel,'_g_uvel',
-     &       maskW,hFacW,rAw,drF,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,g_vVel,'_g_vvel',
-     &       maskS,hFacS,rAs,drF,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,g_wVel,'_g_wvel',
-     &       maskC,maskC,rA ,drC,myThid)
-        CALL MON_WRITESTATS_RL(Nr,g_theta,'_g_theta',
-     &       maskC,hFacC,rA ,drF,
-     &       statsTemp, myThid)
-        CALL MON_PRINTSTATS_RL(Nr,g_salt,'_g_salt',
-     &       maskC,hFacC,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,g_theta(1-olx,1-oly,1,1,1),'_g_sst',
-     &       maskC,hFacC,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,g_salt(1-olx,1-oly,1,1,1),'_g_sss',
-     &       maskC,hFacC,rA ,drF,myThid)
+
+        CALL MON_WRITESTATS_RL(  1, g_etaN, '_g_eta',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, g_uVel, '_g_uvel',
+     &           hFacW, maskInW, rAw, drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, g_vVel, '_g_vvel',
+     &           hFacS, maskInS, rAs, drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, g_wVel, '_g_wvel',
+     &           maskC, maskInC, rA , drC, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, g_theta,'_g_theta',
+     &           hFacC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, g_salt, '_g_salt',
+     &           hFacC, maskInC, rA , drF, dummyRL, myThid )
+        IF ( nSx.EQ.1 .AND. nSy.EQ.1 ) THEN
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+         k = 1
+         IF ( usingPCoords ) k = Nr
+         CALL MON_WRITESTATS_RL( 1,g_theta(1-OLx,1-OLy,k,1,1),'_g_sst',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RL( 1, g_salt(1-OLx,1-OLy,k,1,1),'_g_sss',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
 
 C       Print the basic statistics of external forcing
-        CALL MON_SET_PREF('g__extforcing',myThid)
-        CALL MON_PRINTSTATS_RL(1,g_Qnet,'_g_qnet',
-     &       maskH,maskH,rA ,drF,myThid)
+c       IF ( monitorSelect.GE.3 ) THEN
+         CALL MON_SET_PREF('g__forcing',myThid)
+         CALL MON_WRITESTATS_RS( 1, g_Qnet, '_g_qnet',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
 #ifdef SHORTWAVE_HEATING
-        CALL MON_PRINTSTATS_RL(1,g_Qsw,'_g_qsw',
-     &       maskH,maskH,rA ,drF,myThid)
+         CALL MON_WRITESTATS_RS( 1, g_Qsw , '_g_qsw',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
-        CALL MON_PRINTSTATS_RL(1,g_EmPmR,'_g_empmr',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,g_fu,'_g_fu',
-     &       maskW,hFacW,rAw,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,g_fv,'_g_fv',
-     &       maskS,hFacS,rAs,drF,myThid)
+         CALL MON_WRITESTATS_RS( 1, g_EmPmR,'_g_empmr',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RS( 1, g_fu ,  '_g_fu',
+     &            maskInW, maskInW, rAw, drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RS( 1, g_fv ,  '_g_fv',
+     &            maskInS, maskInS, rAs, drF, dummyRL, myThid )
+c       ENDIF
 
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('g__g_vcfl',myThid)
-        dT=MAX(dTtracerLev(1),deltaTmom)
-        CALL MON_ADVCFL('_g_uvel',g_uVel,recip_dxc,dT,myThid)
-        CALL MON_ADVCFL('_g_vvel',g_vVel,recip_dyc,dT,myThid)
-        CALL MON_ADVCFLW('_g_wvel',g_wVel,recip_drc,dT,myThid)
+        dT = MAX(dTtracerLev(1),deltaTmom)
+        CALL MON_ADVCFL( '_g_uvel', g_uVel,recip_dxC,dT,myThid )
+        CALL MON_ADVCFL( '_g_vvel', g_vVel,recip_dyC,dT,myThid )
+        CALL MON_ADVCFLW( '_g_wvel',g_wVel,recip_drC,dT,myThid )
         CALL MON_ADVCFLW2('_g_W_hf',g_wVel,recip_hFacC,
-     &       recip_drC,dT,myThid)
+     &                                     recip_drF,dT,myThid )
 
 C       Dynamics field monitor finish
         IF ( MASTER_CPU_IO(myThid) ) THEN

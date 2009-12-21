@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.47 2009/07/01 14:45:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.48 2009/12/21 00:05:42 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -44,6 +44,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dT
       _RL statsTemp(6)
+      _RL dummyRL(6)
       _RS thickFacC(Nr), thickFacF(Nr)
       INTEGER k
 
@@ -98,74 +99,58 @@ C-      Set mass weighted thickness factor
         ENDDO
 
 C       Print the time to make grepping the stdout easier
-        CALL MON_SET_PREF('time',myThid)
-        CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
-        CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
+        CALL MON_SET_PREF( 'time', myThid )
+        CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid )
+        CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid )
 
 C       Print the basic statistics of model state variables
-        CALL MON_SET_PREF('dynstat',myThid)
-        CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,uVel,'_uvel',
-     &       maskW,hFacW,rAw,thickFacC,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,vVel,'_vvel',
-     &       maskS,hFacS,rAs,thickFacC,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,wVel,'_wvel',
-     &       maskC,maskC,rA ,thickFacF,myThid)
-        CALL MON_WRITESTATS_RL(Nr,theta,'_theta',
-     &       maskC,hFacC,rA ,thickFacC,
-     &       statsTemp, myThid)
-        CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
-     &       maskC,hFacC,rA ,thickFacC,myThid)
+        CALL MON_SET_PREF( 'dynstat', myThid )
+        CALL MON_WRITESTATS_RL(  1, etaN, '_eta',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, uVel, '_uvel',
+     &           hFacW, maskInW, rAw, thickFacC, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, vVel, '_vvel',
+     &           hFacS, maskInS, rAs, thickFacC, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, wVel, '_wvel',
+     &           maskC, maskInC, rA , thickFacF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( Nr, theta,'_theta',
+     &           hFacC, maskInC, rA , thickFacC, statsTemp, myThid )
+        CALL MON_WRITESTATS_RL( Nr, salt, '_salt',
+     &           hFacC, maskInC, rA , thickFacC, dummyRL, myThid )
         IF ( monitorSelect.GE.3 .AND.
      &       nSx.EQ.1 .AND. nSy.EQ.1 ) THEN
 C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
          k = 1
          IF ( usingPCoords ) k = Nr
-         CALL MON_PRINTSTATS_RL(1,theta(1-Olx,1-Oly,k,1,1),'_sst',
-     &        maskH,maskH,rA ,drF,myThid)
-         CALL MON_PRINTSTATS_RL(1, salt(1-Olx,1-Oly,k,1,1),'_sss',
-     &        maskH,maskH,rA ,drF,myThid)
+         CALL MON_WRITESTATS_RL( 1, theta(1-OLx,1-OLy,k,1,1), '_sst',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RL( 1,  salt(1-OLx,1-OLy,k,1,1), '_sss',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
 
 C       Print the basic statistics of external forcing
         IF ( monitorSelect.GE.3 ) THEN
-         CALL MON_SET_PREF('extforcing',myThid)
-#ifdef REAL4_IS_SLOW
-         CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
-     &        maskH,maskH,rA ,drF,myThid)
-         CALL MON_PRINTSTATS_RL(1,Qsw,'_qsw',
-     &        maskH,maskH,rA ,drF,myThid)
-         CALL MON_PRINTSTATS_RL(1,EmPmR,'_empmr',
-     &        maskH,maskH,rA ,drF,myThid)
-         IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. usingZCoords ) THEN
-C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
-          CALL MON_PRINTSTATS_RL(1,fu,'_fu',
-     &         maskW,maskW,rAw,drF,myThid)
-          CALL MON_PRINTSTATS_RL(1,fv,'_fv',
-     &         maskS,maskS,rAs,drF,myThid)
-         ENDIF
-#else
-C     in this case the forcing fields are single precision reals
-         CALL MON_PRINTSTATS_RS(1,Qnet,'_qnet',myThid)
-         CALL MON_PRINTSTATS_RS(1,Qsw,'_qsw',myThid)
-         CALL MON_PRINTSTATS_RS(1,EmPmR,'_empmr',myThid)
-         IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. usingZCoords ) THEN
-C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
-          CALL MON_PRINTSTATS_RS(1,fu,'_fu',myThid)
-          CALL MON_PRINTSTATS_RS(1,fv,'_fv',myThid)
-         ENDIF
-#endif /* REAL4_IS_SLOW */
+         CALL MON_SET_PREF( 'forcing', myThid )
+         CALL MON_WRITESTATS_RS( 1, Qnet, '_qnet',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RS( 1, Qsw , '_qsw',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RS( 1, EmPmR,'_empmr',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RS( 1, fu ,  '_fu',
+     &            maskInW, maskInW, rAw, drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RS( 1, fv ,  '_fv',
+     &            maskInS, maskInS, rAs, drF, dummyRL, myThid )
         ENDIF
 
 C       Print the numerical stablility parameters for current state
-        CALL MON_SET_PREF('advcfl',myThid)
-        dT=MAX(dTtracerLev(1),deltaTmom)
-        CALL MON_ADVCFL( '_uvel', uVel,recip_dxC,dT,myThid )
-        CALL MON_ADVCFL( '_vvel', vVel,recip_dyC,dT,myThid )
-        CALL MON_ADVCFLW('_wvel', wVel,recip_drC,dT,myThid )
-        CALL MON_ADVCFLW2('_W_hf',wVel,recip_hFacC,
-     &                                 recip_drF,dT,myThid )
+        CALL MON_SET_PREF( 'advcfl', myThid )
+        dT = MAX(dTtracerLev(1),deltaTmom)
+        CALL MON_ADVCFL(  '_uvel', uVel, recip_dxC, dT, myThid )
+        CALL MON_ADVCFL(  '_vvel', vVel, recip_dyC, dT, myThid )
+        CALL MON_ADVCFLW( '_wvel', wVel, recip_drC, dT, myThid )
+        CALL MON_ADVCFLW2('_W_hf', wVel, recip_hFacC,
+     &                                   recip_drF, dT, myThid )
 
 C       Print stats for KE
         CALL MON_KE(myIter, myThid)

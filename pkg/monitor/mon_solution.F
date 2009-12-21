@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.8 2009/07/01 14:49:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.9 2009/12/21 00:05:42 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -41,9 +41,9 @@ C     Take statistics from the input argument "statsTemp":
         tMax = statsTemp(2)
       ELSE
 C     Statistics for T
-        CALL MON_STATS_RL(
-     I                Nr, theta, maskC,hFacC,rA,drF,
-     O                tMin,tMax,tMean,tSD,tDel2,tVol,
+        CALL MON_CALC_STATS_RL(
+     I                Nr, theta, hFacC, maskInC, rA, drF,
+     O                tMin, tMax, tMean, tSD, tDel2, tVol,
      I                myThid )
       ENDIF
 
