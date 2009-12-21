@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.2 2009/06/24 13:47:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.3 2009/12/21 00:27:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -220,7 +220,7 @@ C      (needed for SSH forcing, whether or not exactConserv is used)
       IF ( useRealFreshWaterFlux ) THEN
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskH(i,j,bi,bj)
+           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
       ENDIF
