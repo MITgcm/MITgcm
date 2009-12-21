@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.5 2008/02/01 15:45:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.6 2009/12/21 00:11:50 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 
 C     === Global variables ===
 #include "EEPARAMS.h"
+#include "EXF_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -64,21 +65,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
       diagName  = 'EXFswnet'
       diagTitle = 'Net upward shortwave radiation, >0 decreases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
       diagName  = 'EXFlwdn '
       diagTitle = 'Downward longwave radiation, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
       diagName  = 'EXFswdn '
       diagTitle = 'Downward shortwave radiation, >0 increases theta'
       diagUnits = 'W/m^2           '
@@ -92,33 +93,41 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
 C--   surface fluxes:
       diagName  = 'EXFtaux '
       diagTitle = 'zonal surface wind stress, >0 increases uVel    '
       diagUnits = 'N/m^2           '
-      diagCode  = 'SU      U1      '
+      IF ( stressIsOnCgrid ) THEN
+       diagCode = 'UU      U1      '
+      ELSE
+       diagCode = 'UM      U1      '
+      ENDIF
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'EXFtauy '
       diagTitle = 'meridional surface wind stress, >0 increases vVel'
       diagUnits = 'N/m^2           '
-      diagCode  = 'SV      U1      '
+      IF ( stressIsOnCgrid ) THEN
+       diagCode = 'VV      U1      '
+      ELSE
+       diagCode = 'VM      U1      '
+      ENDIF
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'EXFuwind'
       diagTitle = 'zonal 10-m wind speed, >0 increases uVel'
       diagUnits = 'm/s             '
-      diagCode  = 'SM      U1      '
+      diagCode  = 'UM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'EXFvwind'
       diagTitle = 'meridional 10-m wind speed, >0 increases uVel'
       diagUnits = 'm/s             '
-      diagCode  = 'SM      U1      '
+      diagCode  = 'VM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
