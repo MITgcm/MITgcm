@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.73 2009/12/11 04:31:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.74 2009/12/21 00:24:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,7 +146,7 @@ C--   Save previous solution & Initialise Vector solution and source term :
           DO i=1,sNx
             tileEmP(bi,bj) = tileEmP(bi,bj)
      &                     + rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
-     &                                    *maskH(i,j,bi,bj)
+     &                                    *maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
