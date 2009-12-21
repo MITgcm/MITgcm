@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.14 2009/12/08 21:46:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.15 2009/12/21 00:21:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,7 @@ C-- copy rStarFacX -> rStarExpX
 C-- Compute the new column thikness :
         DO j=0,sNy+1
          DO i=0,sNx+1
-          IF (maskH(i,j,bi,bj).EQ.1. ) THEN
+          IF (kSurfC(i,j,bi,bj).LE.Nr ) THEN
            rStarFacC(i,j,bi,bj) =
      &      (etaFld(i,j,bi,bj)+Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj))
      &      *recip_Rcol(i,j,bi,bj)
@@ -93,7 +93,7 @@ C-- Compute the new column thikness :
         ENDDO
         DO j=1,sNy
          DO i=1,sNx+1
-          IF ( ksurfW(i,j,bi,bj).LE.Nr ) THEN
+          IF ( kSurfW(i,j,bi,bj).LE.Nr ) THEN
            tmpfldW = MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
      &             - MAX( R_low(i-1,j,bi,bj), R_low(i,j,bi,bj) )
            rStarFacW(i,j,bi,bj) =
@@ -108,7 +108,7 @@ C-- Compute the new column thikness :
         ENDDO
         DO j=1,sNy+1
          DO i=1,sNx
-          IF ( ksurfS(i,j,bi,bj).LE.Nr ) THEN
+          IF ( kSurfS(i,j,bi,bj).LE.Nr ) THEN
            tmpfldS = MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
      &             - MAX( R_low(i,j-1,bi,bj), R_low(i,j,bi,bj) )
            rStarFacS(i,j,bi,bj) =
@@ -232,20 +232,20 @@ C       => need to add those lines (or to fix exch2):
           ii = sNx+i
           jj = sNy+j
 
-          IF (ksurfC(1-i,1-j,bi,bj).GT.Nr) rStarFacC(1-i,1-j,bi,bj)= 1.
-          IF (ksurfC(ii, 1-j,bi,bj).GT.Nr) rStarFacC(ii, 1-j,bi,bj)= 1.
-          IF (ksurfC(1-i,jj, bi,bj).GT.Nr) rStarFacC(1-i,jj, bi,bj)= 1.
-          IF (ksurfC(ii, jj, bi,bj).GT.Nr) rStarFacC(ii, jj, bi,bj)= 1.
+          IF (kSurfC(1-i,1-j,bi,bj).GT.Nr) rStarFacC(1-i,1-j,bi,bj)= 1.
+          IF (kSurfC(ii, 1-j,bi,bj).GT.Nr) rStarFacC(ii, 1-j,bi,bj)= 1.
+          IF (kSurfC(1-i,jj, bi,bj).GT.Nr) rStarFacC(1-i,jj, bi,bj)= 1.
+          IF (kSurfC(ii, jj, bi,bj).GT.Nr) rStarFacC(ii, jj, bi,bj)= 1.
 
-          IF (ksurfW(1-i,1-j,bi,bj).GT.Nr) rStarFacW(1-i,1-j,bi,bj)= 1.
-          IF (ksurfW(ii, 1-j,bi,bj).GT.Nr) rStarFacW(ii, 1-j,bi,bj)= 1.
-          IF (ksurfW(1-i,jj, bi,bj).GT.Nr) rStarFacW(1-i,jj, bi,bj)= 1.
-          IF (ksurfW(ii, jj, bi,bj).GT.Nr) rStarFacW(ii, jj, bi,bj)= 1.
+          IF (kSurfW(1-i,1-j,bi,bj).GT.Nr) rStarFacW(1-i,1-j,bi,bj)= 1.
+          IF (kSurfW(ii, 1-j,bi,bj).GT.Nr) rStarFacW(ii, 1-j,bi,bj)= 1.
+          IF (kSurfW(1-i,jj, bi,bj).GT.Nr) rStarFacW(1-i,jj, bi,bj)= 1.
+          IF (kSurfW(ii, jj, bi,bj).GT.Nr) rStarFacW(ii, jj, bi,bj)= 1.
 
-          IF (ksurfS(1-i,1-j,bi,bj).GT.Nr) rStarFacS(1-i,1-j,bi,bj)= 1.
-          IF (ksurfS(ii, 1-j,bi,bj).GT.Nr) rStarFacS(ii, 1-j,bi,bj)= 1.
-          IF (ksurfS(1-i,jj, bi,bj).GT.Nr) rStarFacS(1-i,jj, bi,bj)= 1.
-          IF (ksurfS(ii, jj, bi,bj).GT.Nr) rStarFacS(ii, jj, bi,bj)= 1.
+          IF (kSurfS(1-i,1-j,bi,bj).GT.Nr) rStarFacS(1-i,1-j,bi,bj)= 1.
+          IF (kSurfS(ii, 1-j,bi,bj).GT.Nr) rStarFacS(ii, 1-j,bi,bj)= 1.
+          IF (kSurfS(1-i,jj, bi,bj).GT.Nr) rStarFacS(1-i,jj, bi,bj)= 1.
+          IF (kSurfS(ii, jj, bi,bj).GT.Nr) rStarFacS(ii, jj, bi,bj)= 1.
 
          ENDDO
         ENDDO
