@@ -9,6 +9,7 @@
  viscA4=0.0E4,
  viscAh=1.E-2,
  viscAz=1.E-3,
+ bottomDragLinear=0.E-4,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
  diffK4T=0.E4,
@@ -19,17 +20,16 @@
  diffKzS=1.E-5,
  f0=0.e-4,
  beta=0.E-11,
+ eosType='LINEAR',
  tAlpha=2.E-4,
  sBeta =0.E-4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
  hFacMin=0.05,
  nonHydrostatic=.TRUE.,
  readBinaryPrec=64,
 #- not safe to use globalFiles in multi-processors runs
 #globalFiles=.TRUE.,
- bottomDragLinear=0.E-4,
  tempAdvScheme=33,
  &
 
@@ -43,7 +43,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=20,
 #nTimeSteps=8640,
  deltaT=20.0,
@@ -52,13 +52,13 @@
  chkptFreq=0.0,
  dumpFreq=6000.0,
 #taveFreq=864000.0,
+ monitorSelect=2,
  monitorFreq=1.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
  delXfile='dx.bin',
  dYspacing=200.,
  delZ=60*3.33333333333333333333333,

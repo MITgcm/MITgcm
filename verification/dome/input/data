@@ -67,6 +67,7 @@
  dumpFreq=30000.,
 #cAdjFreq=30.,
 #monitorFreq=6000.,
+ monitorSelect=2,
  monitorFreq=300.,
  &
 

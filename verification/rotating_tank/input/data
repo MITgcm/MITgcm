@@ -15,6 +15,7 @@
  diffKhS=1.0E-6,
  diffKzS=1.0E-6,
  f0=0.5,
+ eosType='LINEAR',
  sBeta =0.,
  gravity=9.81,
  rhoConst=1000.0,
@@ -22,7 +23,6 @@
 #heatCapacity_Cp=3900.0,
  rigidLid=.TRUE.,
  implicitFreeSurface=.FALSE.,
- eosType='LINEAR',
  nonHydrostatic=.TRUE.,
  readBinaryPrec=32,
  &
@@ -45,6 +45,7 @@
  pChkptFreq=2.0,
 #chkptFreq=2.0,
  dumpFreq=2.0,
+ monitorSelect=2,
  monitorFreq=0.1,
  &
 

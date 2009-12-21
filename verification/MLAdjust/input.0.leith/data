@@ -92,6 +92,7 @@
 #taveFreq=7200.,
 #dumpFreq=7200.,
 #diagFreq=7200.,
+ monitorSelect=2,
  monitorFreq=1200.,
  cadjfreq=0.,
  &

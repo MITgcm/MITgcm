@@ -39,6 +39,7 @@
  abEps=0.1,
  dumpFreq=432000.,
  monitorFreq=3600.,
+ monitorSelect=1,
  monitorFreq=1.,
  &
 

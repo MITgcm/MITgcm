@@ -48,6 +48,7 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=10800.0,
+ monitorSelect=2,
  monitorFreq=1.,
 # for time dependent open boundary conditions comment 
 # in the following three lines

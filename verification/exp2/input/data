@@ -54,6 +54,7 @@
  dumpFreq=2592000.0,
  tauThetaClimRelax=2592000.0,
  tauSaltClimRelax=2592000.0,
+ monitorSelect=2,
  monitorFreq=1.,
  &
 

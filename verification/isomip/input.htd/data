@@ -19,15 +19,14 @@
  rhoConst=1030.,
  rhoNil=1030.,
  gravity=9.81,
- gBaro=9.81,
  convertFW2Salt = 33.4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- exactConserv=.true.,
+ exactConserv=.TRUE.,
  hFacMin=0.05,
- nonHydrostatic=.false.,
+ nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
- useCDScheme = .true.,
+ useCDScheme = .TRUE.,
  &
 
 # Elliptic solver parameters
@@ -40,7 +39,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=20,
  deltaT=1800.0,
  abEps=0.1,
@@ -51,6 +50,7 @@
  dumpFreq=0.0,
  taveFreq=0.0,
  monitorFreq=1.,
+ monitorSelect=2,
  &
 
 # Gridding parameters

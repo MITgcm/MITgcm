@@ -6,19 +6,18 @@
  &PARM01
  tRef=26*1.,
  sRef=26*35.,
- viscA4=0.0E4,
  viscAh=0.E-2,
  viscAz=1.E-4,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
- diffK4T=0.E4,
+ bottomDragLinear=0.E-4,
  diffKhT=0.E-2,
 #diffKzT=1.E-5,
- diffK4S=0.E4,
  diffKhS=0.E-2,
 #diffKzS=1.E-5,
  f0=1.4e-4,
  beta=0.E-11,
+ eosType='LINEAR',
  tAlpha=2.E-4,
  sBeta =7.E-4,
  rigidLid=.FALSE.,
@@ -26,10 +25,8 @@
 #ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
- eosType='LINEAR',
  hFacMin=0.05,
  readBinaryPrec=64,
- bottomDragLinear=0.E-4,
  debugLevel=1,
  tempAdvection=.FALSE.,
  tempAdvScheme=33,
@@ -56,17 +53,17 @@
  taveFreq=0.,
  dumpFreq=0.,
  monitorFreq=86400.,
+ monitorSelect=1,
  monitorFreq=1.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
- dXspacing=5000,
+ dXspacing=5000.,
  dYspacing=5000.,
- delZ=10, 10, 10, 10, 10, 12, 12, 15, 15, 18, 18, 22, 22,
-      26, 32, 38, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
+ delZ=10., 10., 10., 10., 10., 12., 12., 15., 15., 18., 18., 22., 22.,
+      26., 32., 38., 46., 46., 46., 46., 46., 46., 46., 46., 46., 46.,
  &
 
 # Input datasets

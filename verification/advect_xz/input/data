@@ -33,6 +33,7 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=24000.0,
+ monitorSelect=1,
  monitorFreq=12000.,
  &
 

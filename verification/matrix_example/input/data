@@ -15,6 +15,8 @@
  rhonil=1035.,
  gravity=9.81,
  eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
 # ivdc_kappa=50.,
 # implicitViscosity=.TRUE., 
 # implicitDiffusion=.TRUE.,
@@ -24,21 +26,17 @@
 # turn on looped cells
 # hFacMin=.2,
 # hFacMindr=50.,
-# set precision of data files
-# readBinaryPrec=32,
- globalFiles=.TRUE., 
- useSingleCpuIO=.TRUE. 
  beta=1.E-11,
 # f0=1.e-4,
- tAlpha=2.E-4,
- sBeta =0.E-4,
-# gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
-# tempAdvScheme       = 2
-# saltAdvScheme       = 2
+# tempAdvScheme     = 2,
+# saltAdvScheme     = 2,
+# set precision of data files
+# readBinaryPrec=32,
  writeBinaryPrec=64,
- multiDimAdvection   = .TRUE.
+ globalFiles=.TRUE., 
+ useSingleCpuIO=.TRUE. 
  &
 
 # Elliptic solver parameters
@@ -52,9 +50,9 @@
 #startTime = 0.,
  nIter0  = 200000,
  nTimeSteps = 10,
- deltaTmom = 20000.0,
+ deltaTmom   = 20000.0,
 # tauCD = 172800.,
- deltaTtracer = 20000.0,
+ deltaTtracer= 20000.0,
  deltaTClock = 20000.0,
  abEps = 0.1,
 #cAdjFreq = -1,
@@ -64,6 +62,7 @@
  taveFreq=   0.,
 # taveDumpFreq=155520000.,
  monitorFreq=2.,
+ monitorSelect=2,
 # tauThetaClimRelax = 864000.0,
 # tauSaltClimRelax = 0.0,
 # periodicExternalForcing=.FALSE.,

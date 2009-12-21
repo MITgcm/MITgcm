@@ -11,37 +11,32 @@
        -0.0331295, -0.0382263, -0.0433231, -0.04842,
  sRef= 20*35.,
  viscAz=1.E-3,
- viscAh=1.0E-2,
+ viscAh=1.E-2,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- viscA4=0.E12,
- diffKhT=1.0E-2
+ diffKhT=1.E-2
  diffKzT=1.E-3,
- diffKhS=1.E3,
- diffKzS=1.E-5,
  f0=0.0,
  beta=0.E-11,
+ eosType='LINEAR',
  tAlpha=2.E-4,
  sBeta =0.E-4,
  gravity=9.81,
- gBaro=9.81,
- rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
+ exactConserv=.TRUE.
  nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
-#- not safe to use globalFiles in multi-processors runs
-#globalFiles=.TRUE.,
- writeBinaryPrec=64,
- writeStatePrec=64,
- saltStepping=.FALSE.,
  hFacMin=0.2,
  implicSurfPress=0.5,
  implicDiv2DFlow=0.5,
  nonlinFreeSurf=3,
  hFacInf=0.2,
  hFacSup=1.8,
- exactConserv=.TRUE.
+ saltStepping=.FALSE.,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ writeStatePrec=64,
  &
 
 # Elliptic solver parameters
@@ -54,23 +49,23 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=100,
  deltaT=500.,
  abEps=0.1,
- pChkptFreq=0.0,
- chkptFreq=0.0,
+ pChkptFreq=0.,
+ chkptFreq=0.,
  dumpFreq=50000.,
  monitorFreq=2500.,
+ monitorSelect=2,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
- delXfile='delXvar'
- delY=5.e3,
- delZ=20*10.000000,
+ delXfile='delXvar',
+ delY=5.E3,
+ delZ=20*10.,
  &
 
 # Input datasets
