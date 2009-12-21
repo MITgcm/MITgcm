@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.18 2009/09/02 22:29:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.19 2009/12/21 00:18:35 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,6 +42,7 @@ C     === Functions ====
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j,bi,bj
+      _RL dummyRL(6)
 
       IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
      &   ) THEN
@@ -92,40 +93,36 @@ C--   endif master cpu io
 
 C       Print some statistics about input forcing fields
 #ifdef SEAICE_CGRID
-C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
-        IF ( nSx.EQ.1 .AND. nSy.EQ.1 )
-     &  CALL MON_PRINTSTATS_RL(1,UICE,'_uice',
-     &       maskW,maskW,rAw,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, UICE, '_uice',
+     &           maskInW, maskInW, rAw, drF, dummyRL, myThid )
 #else
 # ifdef REAL4_IS_SLOW
-        CALL MON_PRINTSTATS_RL(1,UICE,'_uice',
-     &       UVM,UVM,rAz,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, UICE, '_uice',
+     &                   UVM, UVM, rAz, drF, dummyRL, myThid )
 # endif
 #endif
 #ifdef SEAICE_CGRID
-C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
-        IF ( nSx.EQ.1 .AND. nSy.EQ.1 )
-     &  CALL MON_PRINTSTATS_RL(1,VICE,'_vice',
-     &       maskS,maskS,rAs,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, VICE, '_vice',
+     &           maskInS, maskInS, rAs, drF, dummyRL, myThid )
 #else
 # ifdef REAL4_IS_SLOW
-        CALL MON_PRINTSTATS_RL(1,VICE,'_vice',
-     &       UVM,UVM,rAz,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, VICE, '_vice',
+     &                   UVM, UVM, rAz, drF, dummyRL, myThid )
 # endif
 #endif
-        CALL MON_PRINTSTATS_RL(1,AREA,'_area',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,HEFF,'_heff',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,HSNOW,'_hsnow',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, AREA, '_area',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, HEFF, '_heff',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, HSNOW,'_hsnow',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #ifdef SEAICE_SALINITY
-        CALL MON_PRINTSTATS_RL(1,HSALT,'_hsalt',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1, HSALT,'_hsalt',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* SEAICE_SALINITY */
 #ifdef SEAICE_AGE
-        CALL MON_PRINTSTATS_RL(1,ICEAGE,'_iceage',
-     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL( 1,ICEAGE,'_iceage',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* SEAICE_AGE */
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
