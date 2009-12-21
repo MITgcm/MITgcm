@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.129 2009/12/02 19:16:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.130 2009/12/21 00:01:06 jmc Exp $
 #  $Name:  $
 #
 
@@ -264,10 +264,10 @@ testoutput_run()
 	   testoutput_var $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3; yy=$? ;;
 	'pt1sd'|'pt2sd'|'pt3sd'|'pt4sd'|'pt5sd') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
 	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_StDv"  $2 $3; yy=$? ;;
-	 'Qntmn') testoutput_var $1 "extforcing_qnet_min" "Qnet minimum"  $2 $3; yy=$? ;;
-	 'Qntmx') testoutput_var $1 "extforcing_qnet_max" "Qnet maximum"  $2 $3; yy=$? ;;
-	 'Qntav') testoutput_var $1 "extforcing_qnet_mean" "Qnet mean"	  $2 $3; yy=$? ;;
-	 'Qntsd') testoutput_var $1 "extforcing_qnet_sd"  "Qnet Std.Dev"  $2 $3; yy=$? ;;
+	 'Qntmn') testoutput_var $1 "forcing_qnet_min" "Qnet minimum"  $2 $3; yy=$? ;;
+	 'Qntmx') testoutput_var $1 "forcing_qnet_max" "Qnet maximum"  $2 $3; yy=$? ;;
+	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	  $2 $3; yy=$? ;;
+	 'Qntsd') testoutput_var $1 "forcing_qnet_sd"  "Qnet Std.Dev"  $2 $3; yy=$? ;;
 	 'aSImn') testoutput_var $1 "seaice_area_min"   "SIce Area min"	  $2 $3; yy=$? ;;
 	 'aSImx') testoutput_var $1 "seaice_area_max"   "SIce Area max"	  $2 $3; yy=$? ;;
 	 'aSIav') testoutput_var $1 "seaice_area_mean"  "SIce Area mean"  $2 $3; yy=$? ;;
