@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1206 2009/12/15 17:03:28 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1207 2009/12/21 02:11:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/monitor:
+  - clean-up _RL/_RS version: add specific S/R for statistics with mask & volume:
+    mon_writestats_rl/s,F mon_calc_stats_rl/s.F ; will keep the old one 
+    (mon_printstats_rl/s,F mon_stats_rl/s.F) just for bare statistics.
+  - use hFac & 2-D mask (instead of 3-D mask + hFac in previous mon_stats_rl.F).
+  - change del2 calculation.
+  - use interior masks (instead of maskH, <- to be remove).
+  - shorter monitor suffix for forcing stats ("forcing" instead of "extforcing").
+o mask & obcs:
+  - define 2-D "interior" masks (i.e., zero beyond OB) at 3 locations (C, W & S).
+  - move global area computation from ini_masks_etc.F to ini_linear_phisurf.F 
+    (called after packages_init_fixed)
 o pkg/obcs:
   - move bi,bj loops into obcs_calc, so obcs_prescribe_read is called only once.
     Fixes bug in obcs+exf with nSx*nSy.GT.1
