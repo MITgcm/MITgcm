@@ -2,6 +2,7 @@
  &OBCS_PARM01
  OB_Ieast=1*-1,
  useOrlanskiEast=.TRUE.,
+ useOBCSbalance=.TRUE.,
  &
 
 # Orlanski parameters
