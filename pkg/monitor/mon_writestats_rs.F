@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_writestats_rl.F,v 1.2 2009/12/21 00:03:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_writestats_rs.F,v 1.1 2009/12/21 00:03:40 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: MON_WRITESTATS_RL
+C     !ROUTINE: MON_WRITESTATS_RS
 
 C     !INTERFACE:
-      SUBROUTINE MON_WRITESTATS_RL(
+      SUBROUTINE MON_WRITESTATS_RS(
      I     myNr, arr, arrName,
      I     arrhFac, arrMask, arrArea, arrDr,
      O     arrStats,
      I     myThid )
 
 C     !DESCRIPTION:
-C     Compute the statistics of global array "\_RL arr" (account for
+C     Compute the statistics of global array "\_RS arr" (account for
 C     volume and mask) and write them to STDOUT with label "arrName".
 
 C     !USES:
@@ -26,7 +26,7 @@ C     !USES:
 
 C     !INPUT PARAMETERS:
       INTEGER myNr
-      _RL arr    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RS arr    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -42,10 +42,10 @@ CEOP
 C     !LOCAL VARIABLES:
       _RL theMin, theMax, theMean, theSD, theDel2, theVol
 
-      CALL MON_CALC_STATS_RL(
-     I         myNr, arr, arrhFac, arrMask, arrArea, arrDr,
-     O         theMin, theMax, theMean, theSD, theDel2, theVol,
-     I         myThid )
+      CALL MON_CALC_STATS_RS(
+     I     myNr, arr, arrhFac, arrMask, arrArea, arrDr,
+     O     theMin, theMax, theMean, theSD, theDel2, theVol,
+     I     myThid )
 
       arrStats(1) = theMin
       arrStats(2) = theMax
