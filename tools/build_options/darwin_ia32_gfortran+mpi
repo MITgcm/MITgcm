@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia32_gfortran+mpi,v 1.1 2009/12/23 12:52:32 mlosch Exp $
+#
+# tested on MacBook Pro with Leopard
+# on 23-Dec-2009
+# gfortran (version 4.3.1) obtained via fink
+# OpenMPI (version 1.4) obtained from http://www.open.mpi.org
+
+CPP='/usr/bin/cpp -traditional -P'
+FC=mpif90
+#CC=gcc
+# Following flag is needed when using 32-bit gfortran with 64-bit gcc,
+# as can be the case right after switching to Snow Leopard.
+#CFLAGS='-arch i386'
+LINK=mpif90
+NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+MPI='true'
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+#EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
+#EH3 MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+#INCLUDES='-I/sw/include  -I/opt/openmpi/include''
+#LIBS='-L/sw/lib'
+INCLUDES='-I/usr/local/include -I/opt/openmpi/include'
+LIBS='-L/usr/local/lib'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wunused -Wuninitialized -fsecond-underscore -fconvert=big-endian'
+    FOPTIM='-O3 -funroll-loops'
+    NOOPTFLAGS='-O2 -funroll-loops'
+    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
+else
+    FFLAGS='-Wunused -ffloat-store -fsecond-underscore -fconvert=big-endian'
+    FOPTIM='-O0'
+fi
