@@ -1,30 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_import_ocnconfig.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_import_ocnconfig.F,v 1.3 2009/12/24 16:49:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE ATM_IMPORT_OCNCONFIG( myThid )
-C     /==========================================================\
-C     | SUBROUTINE ATM_IMPORT_OCNCONFIG                          |
-C     | o Routine for importing ocean config into atmos.         |
-C     |   component.                                             |
-C     |==========================================================|
-C     | This version talks to the MIT Coupler. It uses the       |
-C     | MIT Coupler "checkpoint 1" library calls.                |
-C     \==========================================================/
-      IMPLICIT NONE
+CBOP 0
+C !ROUTINE: ATM_IMPORT_OCNCONFIG
 
+C !INTERFACE:
+      SUBROUTINE ATM_IMPORT_OCNCONFIG( myThid )
+
+C !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE ATM_IMPORT_OCNCONFIG
+C     | o Routine for importing ocean config into atmos.
+C     |   component.
+C     *==========================================================*
+C     | This version talks to the MIT Coupler. It uses the
+C     | MIT Coupler "checkpoint 1" library calls.
+C     *==========================================================*
+
+C !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "ATMIDS.h"
 #include "ATMCPL.h"
 
+C !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine
+C     myThid :: Thread number for this instance of the routine
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef COMPONENT_MODULE
 C     == Local variables ==
@@ -44,9 +51,13 @@ C-    Initialise mixed-layer depth
 
 C     Receive ocean model configuration info.
 C     o Import ocean model mixed-layer depth
-      CALL COMPRECV_R8TILES( atmMxlDName,
-     I     sNx, OLx, sNy, OLy, 1, nSx, nSy,
-     O     ocMxlD )
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+      CALL COMPRECV_R8TILES(
+     I              atmMxlDName, sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O              ocMxlD )
+      _END_MASTER( myThid )
+      _BARRIER
 
 #endif /* COMPONENT_MODULE */
 

@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_exch_configs.F,v 1.1 2003/12/15 02:49:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_exch_configs.F,v 1.2 2009/12/24 16:48:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP 0
+C !ROUTINE: CPL_EXCH_CONFIGS
+
+C !INTERFACE:
       SUBROUTINE CPL_EXCH_CONFIGS( myThid )
+
+C !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE CPL_EXCH_CONFIGS                              |
 C     | o Controlling routine for initial config exchange between|
@@ -25,18 +30,20 @@ C     | model CPL_EXCH_CONFIG may require changes in other       |
 C     | component models CPL_EXCH_CONFIG routines as well        |
 C     | as in the CPL_MASTER_EXCH_CONFIG routine.                |
 C     *==========================================================*
-      IMPLICIT NONE
 
+C !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "OCNCPL.h"
 
+C !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine
+C     myThid :: Thread number for this instance of the routine
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 C     == Local variables ==
       INTEGER I,J,K,bi,bj
@@ -51,14 +58,14 @@ C     == Local variables ==
 C     Post my configuration information to the coupler "layer".
       CALL OCN_EXPORT_OCNCONFIG( myThid )
 
-C     Import other component model(s) configuration(s) from the 
+C     Import other component model(s) configuration(s) from the
 C     coupler "layer".
 C     o Get atmospheric model configuration
       CALL OCN_IMPORT_ATMCONFIG( myThid )
 
 C     Summarise fields that were imported.
 C     o Plot atmosphere orography
-      CALL PLOT_FIELD_XYRL( Hatm, 
+      CALL PLOT_FIELD_XYRL( Hatm,
      &                      'Atmosphere orography on ocean grid',
      &                      1, myThid )
 
@@ -75,8 +82,8 @@ C       Wherever there is ocean check the atmos extends to the sea-surface.
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          IF ( R_low(I,J,bi,bj)    .NE. seaSurface_ocn .AND.
-     &         Hatm(I,J,bi,bj) .NE. groundLevel_atm ) THEN
+          IF ( R_low(I,J,bi,bj) .NE. seaSurface_ocn .AND.
+     &          Hatm(I,J,bi,bj) .NE. groundLevel_atm ) THEN
            iDiff  = I
            jDiff  = J
            biDiff = bi
@@ -84,13 +91,13 @@ C       Wherever there is ocean check the atmos extends to the sea-surface.
            WRITE(msgBuf,'(A,I4,A,I4,A,I4,A,I4,A)')
      &     'Inconsistent land/sea mask @ (i=',iDiff,
      &     ',j=',jDiff,',bi=',biDiff,',bj=',bjDiff,')'
-           CALL PRINT_ERROR( msgBuf, 1 )
+           CALL PRINT_ERROR( msgBuf, myThid )
            WRITE(msgBuf,'(A,E30.15)')
      &     'H (atmosphere) ==',Hatm(I,J,bi,bj)
-           CALL PRINT_ERROR( msgBuf, 1 )
+           CALL PRINT_ERROR( msgBuf, myThid )
            WRITE(msgBuf,'(A,E30.15)')
      &     'H (ocean)      ==',R_low(I,J,bi,bj)
-           CALL PRINT_ERROR( msgBuf, 1 )
+           CALL PRINT_ERROR( msgBuf, myThid )
           ENDIF
          ENDDO
         ENDDO
