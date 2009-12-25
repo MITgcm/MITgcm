@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_export_fld.F,v 1.1 2006/07/02 22:47:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_export_fld.F,v 1.2 2009/12/25 19:44:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,6 +21,8 @@ C     |   - reset time and field to zero
 C     *==========================================================*
 C     | This version talks to the MIT Coupler. It uses the MIT
 C     | Coupler "checkpoint1" library calls.
+C     | Note: requires arg. array "atmFld" to be shared
+C     |       (in common block) to work in multi-threaded.
 C     *==========================================================*
 C     \ev
 
@@ -42,6 +44,8 @@ C     myThid     :: my Thread Id number
       INTEGER myThid
 CEOP
 
+#ifdef COMPONENT_MODULE
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     recipAvT  :: Temp. for holding reciprocal of averaging period.
 C     i,j,bi,bj :: Loop counters
@@ -67,8 +71,13 @@ C     Convert time integrated heatflux to mean value ready for export.
       ENDDO
 
 C     Send atmos. field to coupling layer.
-      CALL COMPSEND_R8TILES( atmFldName,
-     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, atmFld )
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+      CALL COMPSEND_R8TILES(
+     I              atmFldName, sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     I              atmFld )
+      _END_MASTER( myThid )
+      _BARRIER
 
 C     Reset atmos. field & integrated time before accumulating again.
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -81,6 +90,8 @@ C     Reset atmos. field & integrated time before accumulating again.
         ENDDO
        ENDDO
       ENDDO
+
+#endif /* COMPONENT_MODULE */
 
       RETURN
       END

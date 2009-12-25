@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_import_fields.F,v 1.2 2007/06/18 21:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_import_fields.F,v 1.3 2009/12/25 19:44:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,11 +35,15 @@ C     myThid :: my Thread Id number
 CEOP
 
 #ifdef COMPONENT_MODULE
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 
 C     Fetch data from coupling layer. Note MIT Coupler checkpoint1
 C     does not allow asynchronous extraction of data, so ordering
 C     has to be consistent with ordering coupling layer.
+
+      _BARRIER
+      _BEGIN_MASTER( myThid )
 
 C-    Receive ocean mixed-layer thickness from coupling layer.
       CALL COMPRECV_R8TILES( atmMxlDName,
@@ -62,6 +66,9 @@ C-    Receive air-sea flux of CO2
         CALL COMPRECV_R8TILES( atmFCO2Name,
      I       sNx, OLx, sNy, OLy, 1, nSx, nSy, flxCO2ocn )
       ENDIF
+
+      _END_MASTER( myThid )
+      _BARRIER
 
 #endif /* COMPONENT_MODULE */
 

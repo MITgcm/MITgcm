@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.11 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.12 2009/12/25 19:45:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,22 +36,24 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     myThid -  Number of this instance
+C     myThid     :: my Thread Id. number
       INTEGER myThid
 CEOP
 
 #ifdef COMPONENT_MODULE
 
-C Functions
-      INTEGER ILNBLNK
+C     !FUNCTIONS:
+c     INTEGER ILNBLNK
 
+C     !LOCAL VARIABLES:
 C     == Local Variables ==
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
 C     iL         :: Work variable for length of file-name
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, k, iL
+      INTEGER iUnit
+c     INTEGER k, iL
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -74,6 +76,15 @@ C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
      &    cpl_taveFreq, cpl_snapshot_mnc, cpl_timeave_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER(myThid)
+
+C--   Open the data file
+      WRITE(msgBuf,'(A)') ' CPL_READPARMS: opening data.cpl'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+
+      CALL OPEN_COPY_DATA_FILE( 'data.cpl', 'CPL_READPARMS',
+     O                          iUnit, myThid )
 
 C-    Set default value:
       cpl_earlyExpImpCall = .TRUE.
@@ -99,14 +110,6 @@ C-    Set default value:
       cpl_snapshot_mnc = .FALSE.
       cpl_timeave_mnc  = .FALSE.
 #endif
-
-      _BEGIN_MASTER(myThid)
-
-      WRITE(msgBuf,'(A)') ' CPL_READPARMS: opening data.cpl'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-
-      CALL OPEN_COPY_DATA_FILE( 'data.cpl', 'CPL_READPARMS',
-     O                          iUnit, myThid )
 
 C--   Read parameters from open data file:
 
