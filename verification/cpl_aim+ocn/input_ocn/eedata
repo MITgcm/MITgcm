@@ -5,9 +5,11 @@
  &EEPARMS
  useCoupler=.TRUE.,
  useCubedSphereExchange=.TRUE.,
+# Activate one line below to support 2, 3 or 6 way multi-threading
  nTx=1,
- nTy=1,
+#nTx=2,
+#nTx=3,
+#nTx=6,
  &
-# Note: Some systems use & as the
-# namelist terminator. Other systems
-# use a / character (as shown here).
+# Note: Some systems use & as the namelist terminator (as shown here).
+#       Other systems use a / character.
