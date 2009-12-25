@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.174 2009/12/08 21:51:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.175 2009/12/25 19:41:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -298,8 +298,8 @@ c--   Add control vector for forcing and parameter fields
 C      Post coupling data that I export.
 C      Read in coupling data that I import.
          CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
-         CALL CPL_EXPORT_MY_DATA(       myIter, myTime, myThid )
-         CALL CPL_IMPORT_EXTERNAL_DATA( myIter, myTime, myThid )
+         CALL CPL_EXPORT_MY_DATA(       myTime, myIter, myThid )
+         CALL CPL_IMPORT_EXTERNAL_DATA( myTime, myIter, myThid )
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* COMPONENT_MODULE */
@@ -549,8 +549,8 @@ C      Post coupling data that I export.
 C      Read in coupling data that I import.
          myItP1 = myIter + 1
          CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
-         CALL CPL_EXPORT_MY_DATA(       myItP1, myTime, myThid )
-         CALL CPL_IMPORT_EXTERNAL_DATA( myItP1, myTime, myThid )
+         CALL CPL_EXPORT_MY_DATA(       myTime, myItP1, myThid )
+         CALL CPL_IMPORT_EXTERNAL_DATA( myTime, myItP1, myThid )
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
 # ifdef ALLOW_OCN_COMPON_INTERF
         IF ( useRealFreshWaterFlux ) THEN
