@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/cpl_export_my_data.F,v 1.4 2007/06/18 21:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/cpl_export_my_data.F,v 1.5 2009/12/25 19:42:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: CPL_EXPORT_MY_DATA
 C     !INTERFACE:
       SUBROUTINE CPL_EXPORT_MY_DATA(
-     I               myIter, myTime, myThid )
+     I                      myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -32,22 +32,26 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime  :: Current internal time.
+C     myTime  :: Current time in simulation.
 C     myIter  :: Current timestep number.
-C     myThid  :: my Thread Id number
+C     myThid  :: Thread number for this instance of the routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
 
 #ifdef COMPONENT_MODULE
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 
 C     Send data to coupling layer. Note MIT Coupler checkpoint1
-C     does not allow asynchronous posting of data, so ordering has to be
-C     consistent with coupling layer ordering.
+C     does not allow asynchronous posting of data, so ordering
+C     has to be consistent with coupling layer ordering.
       IF ( MOD(myIter,cplSendFrq_iter).EQ.0 ) THEN
-       WRITE(0,*) ' Exporting atmospheric fluxes at iter. ', myIter
+       _BEGIN_MASTER( myThid )
+       WRITE(0,'(A,I5,A,I10)') '  Exporting (pid=', myProcId,
+     &            ' ) atmospheric fluxes at iter.', myIter
+       _END_MASTER( myThid )
 
 C-     export Sea-Level pressure:
        CALL ATM_EXPORT_FLD( atmSLPrName,
