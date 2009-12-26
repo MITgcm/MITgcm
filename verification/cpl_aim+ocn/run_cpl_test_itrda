@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.12 2009/07/07 00:55:51 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.13 2009/12/26 01:58:17 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -19,8 +19,9 @@ fi
 kpr=$1
 dir=`pwd`
 
-#- only works from a 3 (or more) nodes PBS bach session ( qsub -I -l nodes=3 )
-#  on ACES cluster (tested on itrda).
+#- only works from a 3 (or more) nodes PBS bach session on ACES cluster
+#  (tested on ao)  ( qsub -I -l nodes=3   -or-
+#                    qsub -I -l nodes=3:ppn=2  )
 # need to be on one computer node, 
 #  and with the correct module loaded (i.e, one of the 3):
 # > module load mpich/gnu
@@ -32,9 +33,9 @@ then
   echo ' $PBS_NODEFILE not defined'
   echo "for now, works only from a (at least) $Np nodes PBS bach session"
   exit 8
-else ncpus=`wc -l $PBS_NODEFILE | awk '{print $1}'`
- if [ $ncpus -lt $Np ] ; then
-  echo ' Nb of nodes from $PBS_NODEFILE =' $ncpus
+else nprc=`wc -l $PBS_NODEFILE | awk '{print $1}'`
+ if [ $nprc -lt $Np ] ; then
+  echo ' Nb of nodes from $PBS_NODEFILE =' $nprc
   echo "for now, works only from a (at least) $Np nodes PBS bach session"
   exit 8
  fi
@@ -68,7 +69,7 @@ then
 #- find the optfile that corresponds to the currently loaded mpich module
  . /etc/profile.d/modules.sh
  module list -t >& tmp_compiler
- compiler=`sed -n 's/mpich\///p' tmp_compiler`
+ compiler=`sed -n 's/mpich.*\///p' tmp_compiler`
  case $compiler in
   'gnu')   OPTFILE="../../tools/build_options/linux_ia32_g77+mpi_aces" ;;
   'intel') OPTFILE="../../tools/build_options/linux_ia32_ifort+mpi_aces" ;;
@@ -152,7 +153,12 @@ then
  tmpfil=TTT.$$
 
  echo $PBS_NODEFILE
- list=`cat $PBS_NODEFILE | head -$Np`
+ nprc=`cat $PBS_NODEFILE | uniq | wc -l`
+ if [ $nprc -ge $Np ] ; then
+  list=`cat $PBS_NODEFILE | uniq | head -$Np`
+ else
+  list=`cat $PBS_NODEFILE | head -$Np`
+ fi
  rm -f pr_group ; touch pr_group 
  nc=0 ; dd1=cpl ; 
  for xx in $list
@@ -192,7 +198,7 @@ then
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000 I
     mv -f comp_res.log comp_res.sice
     echo ' '
- else echo 'No Atmos output file in rank_1' ; fi
+ else echo 'No Atmos output file in rank_2' ; fi
 
 fi
 
