@@ -1,30 +1,30 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.13 2009/12/26 01:59:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.14 2009/12/26 23:44:03 jmc Exp $
 # $Name:  $
 
 Np=3
+#- parse options:
 MTH=
 MTHo=
 MTHa=
-if [ $# -lt 1 ]
+if test $1 = '-mth' ; then
+  MTH='-omp' ; shift
+  if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
+  if test -f input_atm/eedata.mth ; then MTHa=$MTH ; fi
+fi
+if [ $# -ne 1 ]
 then
-  echo 'Usage:'`basename $0`' step [-mth]'
+  echo 'Usage:'`basename $0`' [opt] step'
   echo ' => test coupled set-up on linux box (1.cpu)'
-  echo 'step = 0 : clean all directories'
-  echo 'step = 1 : compile the 3 executables (cpl,ocn,atm)'
-  echo 'step = 2 : copy input files and dir(s)'
-  echo "step = 3 : run with $Np mpi processes"
-  echo 'step = 4 : check the results'
-  echo 'step = 5 : remove output files in rank_0,1,2 dir.'
-  echo '  -mth   : compile and run 2 threads for ocn & atm'
+  echo 'opt = -mth : compile and run (if eedata.mth) 2-threads for ocn & atm'
+  echo ' step = 0 : clean all directories'
+  echo ' step = 1 : compile the 3 executables (cpl,ocn,atm)'
+  echo ' step = 2 : copy input files and dir(s)'
+  echo " step = 3 : run with $Np mpi processes"
+  echo ' step = 4 : check the results'
+  echo ' step = 5 : remove output files in rank_0,1,2 dir.'
   exit
-elif [ $# -eq 2 ] ; then
-  if test $2 = '-mth' ; then
-    MTH='-omp'
-    if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
-    if test -f input_atm/eedata.mth ; then MTHa=$MTH ; fi
-  fi
 fi
 kpr=$1
 dir=`pwd`
