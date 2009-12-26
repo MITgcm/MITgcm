@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1209 2009/12/24 01:14:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1210 2009/12/26 02:15:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ocn,aim_compon_interf
+  - changes for multi-threaded coupled run. (tested with ifort-11 on danton)
 
 checkpoint62  (2009/12/23)
 o switch on useOBCSbalance in tutorial_plume_on_slope exp. and update output.
