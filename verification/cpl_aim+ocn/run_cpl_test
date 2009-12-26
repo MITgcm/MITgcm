@@ -1,12 +1,15 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.12 2009/04/29 19:25:29 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.13 2009/12/26 01:59:17 jmc Exp $
 # $Name:  $
 
 Np=3
+MTH=
+MTHo=
+MTHa=
 if [ $# -lt 1 ]
 then
-  echo 'Usage:'`basename $0`' step '
+  echo 'Usage:'`basename $0`' step [-mth]'
   echo ' => test coupled set-up on linux box (1.cpu)'
   echo 'step = 0 : clean all directories'
   echo 'step = 1 : compile the 3 executables (cpl,ocn,atm)'
@@ -14,7 +17,14 @@ then
   echo "step = 3 : run with $Np mpi processes"
   echo 'step = 4 : check the results'
   echo 'step = 5 : remove output files in rank_0,1,2 dir.'
+  echo '  -mth   : compile and run 2 threads for ocn & atm'
   exit
+elif [ $# -eq 2 ] ; then
+  if test $2 = '-mth' ; then
+    MTH='-omp'
+    if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
+    if test -f input_atm/eedata.mth ; then MTHa=$MTH ; fi
+  fi
 fi
 kpr=$1
 dir=`pwd`
@@ -50,7 +60,7 @@ then
  then 
    OPTFILE=`ls ../linux_*+mpi`
    zz=`grep '^FC=' $OPTFILE`
-   echo " Using optfile: $OPTFILE  (compiler=$zz)"
+   echo " Using optfile: $OPTFILE  (compiler=$zz) $MTH"
  else echo 'Pb in finding optfile' ; exit;
  fi
  zz=`echo $OPTFILE | grep -c '^\/'`
@@ -72,7 +82,7 @@ then
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of $OPTFILE -mpi -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (ocn):'
  make depend > TTT.mkdepend.$$
@@ -85,7 +95,7 @@ then
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of $OPTFILE -mpi -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (atm):'
  make depend > TTT.mkdepend.$$
@@ -109,12 +119,20 @@ then
   cp -p -r input_ocn rank_1
   cd rank_1
   ./prepare_run
+  if test "x$MTHo" != x ; then
+    echo " MTH run: mv -f eedata.mth eedata"
+    mv -f eedata.mth eedata
+  fi
   cd $dir
 
   echo 'CP dir:' input_atm '->' rank_2
   cp -p -r input_atm rank_2
   cd rank_2
   ./prepare_run
+  if test "x$MTHa" != x ; then
+    echo " MTH run: mv -f eedata.mth eedata"
+    mv -f eedata.mth eedata
+  fi
   cd $dir
 
 fi
@@ -135,6 +153,16 @@ then
  done
 
  cd $ROOTDIR
+ if test "x$MTH" != x ; then
+   export OMP_NUM_THREADS=2 ; export KMP_STACKSIZE=400m
+   if test "x$MTHo" != x ; then
+     echo -n " run OCN ($MTHo) with $OMP_NUM_THREADS threads ;"
+   fi
+   if test "x$MTHa" != x ; then
+     echo -n " run ATM ($MTHa) with $OMP_NUM_THREADS threads ;"
+   fi
+   echo ""
+ fi
 # /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
  mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
  tail -20 std_outp
@@ -164,7 +192,7 @@ then
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000 I
     mv -f comp_res.log comp_res.sice
     echo ' '
- else echo 'No Atmos output file in rank_1' ; fi
+ else echo 'No Atmos output file in rank_2' ; fi
 
 fi
 
