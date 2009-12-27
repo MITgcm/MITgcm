@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.4 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.5 2009/12/27 23:40:03 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -25,11 +25,10 @@ C     myThid   :: my Thread Id number
       INTEGER myThid
 CEOP
 
-C     !LOCAL VARIABLES:
-C     msgBuf   :: Informational/error meesage buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 #ifdef ALLOW_MYPACKAGE
+C     !LOCAL VARIABLES:
+C     msgBuf   :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _BEGIN_MASTER(myThid)
 
