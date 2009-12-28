@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.1 2009/09/16 21:25:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.2 2009/12/28 02:39:11 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -55,6 +55,7 @@ C     Loop through 3D variables:
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
+        layers_TimeAve(bi,bj) = 0. _d 0
 
 #ifdef LAYERS_UFLUX
         CALL TIMEAVE_RESET(layers_UFlux_T,Nlayers,bi,bj,myThid)
@@ -70,9 +71,6 @@ C     Initialize averages to zero
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
-        DO kg=1,Nlayers
-         layers_TimeAve(kg,bi,bj)=0. _d 0
-        ENDDO
 #endif /* ALLOW_TIMEAVE */
 
 C- end bi,bj loops

@@ -1,36 +1,44 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.3 2009/09/30 15:58:29 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.4 2009/12/28 02:39:11 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: LAYERS_CALC
 
+C !INTERFACE:
       SUBROUTINE LAYERS_CALC(
-     I    myTime, myIter, myThid )
+     I                  myTime, myIter, myThid )
 
+C !DESCRIPTION:
 C ===================================================================
 C     Calculate the transport in isopycnal layers.
 C     This is the meat of the LAYERS package.
 C ===================================================================
 
+C !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
 #include "LAYERS_SIZE.h"
 #include "LAYERS.h"
 
-C  INPUT PARAMETERS:
-C     bi, bj - array indices on which to apply calculations
-C     myTime - Current time in simulati
-C     myThid ::  my Thread Id number
-      INTEGER bi, bj, myTime, myIter, myThid
+C !INPUT PARAMETERS:
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number
+C     myThid :: my Thread Id number
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_LAYERS
 
-C     === Local variables ===
+C !LOCAL VARIABLES:
+C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
 C     k        :: vertical index for model grid
 C     kci      :: index from CellIndex
@@ -40,14 +48,17 @@ C     kgu,kgv  :: vertical index for isopycnal grid
 C     TatV     :: temperature at U point
 C     TatV     :: temperature at V point
 
+      INTEGER bi, bj
       INTEGER i,j,k,kk,kg,kci
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU, TatV
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C --- The thread loop
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C --- The tile loops
       DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+      DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C     Initialize the serach indices
       DO j = 1,sNy+1
@@ -190,7 +201,7 @@ C ------ Augment the bin values
 #endif /* LAYERS_THICKNESS */
 
 #endif /* LAYERS_VFLUX */
-        
+
         ENDDO
        ENDDO
       ENDDO
@@ -216,9 +227,7 @@ C--   Time-average
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
-       DO kg=1,Nlayers
-         layers_TimeAve(kg,bi,bj)=layers_TimeAve(kg,bi,bj)+deltaTclock
-       ENDDO
+         layers_TimeAve(bi,bj)=layers_TimeAve(bi,bj)+deltaTclock
 
       ENDIF
 #endif /* ALLOW_TIMEAVE */
