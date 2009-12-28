@@ -1,8 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.3 2009/09/30 15:58:29 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.4 2009/12/28 02:37:52 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
 
+CBOP 0
+C     !ROUTINE: LAYERS_OUTPUT
+
+C     !INTERFACE:
       SUBROUTINE LAYERS_OUTPUT( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -40,15 +44,23 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, K
       CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_TIMEAVE
+      INTEGER bi, bj
+#endif
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_MNC
       IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
         pf(1:1) = 'D'
       ELSE
         pf(1:1) = 'R'
       ENDIF
+#endif /* ALLOW_MNC */
 
       IF ( DIFFERENT_MULTIPLE(layers_diagFreq,myTime,deltaTClock)
      &  .AND. myIter .GT. 0 ) THEN
@@ -56,19 +68,19 @@ C     == Local variables ==
         IF ( layers_MDSIO ) THEN
           WRITE(suff,'(I10.10)') myIter
 #ifdef LAYERS_UFLUX
-            CALL WRITE_FLD_XYG_RL(
-     &       'layers_UFlux.',suff,layers_UFlux,myIter,myThid)
+            CALL WRITE_FLD_3D_RL( 'layers_UFlux.', suff, Nlayers,
+     &                             layers_UFlux, myIter, myThid )
 #ifdef LAYERS_THICKNESS
-            CALL WRITE_FLD_XYG_RL(
-     &       'layers_HU.',suff,layers_HU,myIter,myThid)
+            CALL WRITE_FLD_3D_RL( 'layers_HU.', suff, Nlayers,
+     &                             layers_HU, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYESR_UFLUX */
 #ifdef LAYERS_VFLUX
-            CALL WRITE_FLD_XYG_RL(
-     &       'layers_VFlux.',suff,layers_VFlux,myIter,myThid)
+            CALL WRITE_FLD_3D_RL( 'layers_VFlux.', suff, Nlayers,
+     &                             layers_VFlux, myIter, myThid )
 #ifdef LAYERS_THICKNESS
-            CALL WRITE_FLD_XYG_RL(
-     &       'layers_HV.',suff,layers_HV,myIter,myThid)
+            CALL WRITE_FLD_3D_RL( 'layers_HV.', suff, Nlayers,
+     &                             layers_HV, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYESR_VFLUX */
           ENDIF
@@ -84,11 +96,12 @@ C           But how?
 #endif /* ALLOW_MNC */
 
 #ifdef ALLOW_TIMEAVE
+      IF ( layers_taveFreq.GT.0. ) THEN
 
 c set arrays to zero if first timestep
-      IF ( myIter.EQ.nIter0 ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+       IF ( myIter.EQ.nIter0 ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef LAYERS_UFLUX
           CALL TIMEAVE_RESET(layers_UFlux_T,Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
@@ -102,69 +115,67 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(layers_HV_T,Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
-         DO k=1,Nlayers
-          layers_TimeAve(k,bi,bj)=0.
+          layers_TimeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
 
 C     Dump files and restart average computation if needed
-      ELSEIF (
+       ELSEIF (
      &  DIFFERENT_MULTIPLE(layers_taveFreq,myTime,deltaTClock)
-     &       ) THEN
+     &        ) THEN
 
 C      Normalize by integrated time
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef LAYERS_UFLUX
-         CALL TIMEAVE_NORMALIZ(layers_UFlux_T,layers_timeave,Nlayers,
-     &                 bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE( layers_UFlux_T, layers_timeave,
+     &                            Nlayers, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
-         CALL TIMEAVE_NORMALIZ(layers_HU_T,layers_timeave,Nlayers,
-     &                 bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE( layers_HU_T, layers_timeave,
+     &                            Nlayers, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
-         CALL TIMEAVE_NORMALIZ(layers_VFlux_T,layers_timeave,Nlayers,
-     &                 bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE( layers_VFlux_T, layers_timeave,
+     &                            Nlayers, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
-         CALL TIMEAVE_NORMALIZ(layers_HV_T,layers_timeave,Nlayers,
-     &                 bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE( layers_HV_T, layers_timeave,
+     &                            Nlayers, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
+         ENDDO
         ENDDO
-       ENDDO
 
-       IF ( layers_MDSIO ) THEN
+        IF ( layers_MDSIO ) THEN
          WRITE(suff,'(I10.10)') myIter
 #ifdef LAYERS_UFLUX
-         CALL WRITE_FLD_XYG_RL(
-     &    'layers_UFlux-tave.',suff,layers_UFlux_T,myIter,myThid)
+         CALL WRITE_FLD_3D_RL( 'layers_UFlux-tave.', suff, Nlayers,
+     &                          layers_UFlux_T, myIter, myThid )
 #ifdef LAYERS_THICKNESS
-         CALL WRITE_FLD_XYG_RL(
-     &    'layers_HU-tave.',suff,layers_HU_T,myIter,myThid)
+         CALL WRITE_FLD_3D_RL( 'layers_HU-tave.', suff, Nlayers,
+     &                          layers_HU_T, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 #ifdef LAYERS_VFLUX
-         CALL WRITE_FLD_XYG_RL(
-     &    'layers_VFlux-tave.',suff,layers_VFlux_T,myIter,myThid)
+         CALL WRITE_FLD_3D_RL( 'layers_VFlux-tave.', suff, Nlayers,
+     &                          layers_VFlux_T, myIter, myThid )
 #ifdef LAYERS_THICKNESS
-         CALL WRITE_FLD_XYG_RL(
-     &    'layers_HV-tave.',suff,layers_HV_T,myIter,myThid)
+         CALL WRITE_FLD_3D_RL( 'layers_HV-tave.', suff, Nlayers,
+     &                          layers_HV_T, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
-       ENDIF
+        ENDIF
 
 #ifdef ALLOW_MNC
 C     Do MNC output.
 #endif
 
 C      Reset averages to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef LAYERS_UFLUX
           CALL TIMEAVE_RESET(layers_UFlux_T,Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
@@ -178,15 +189,14 @@ C      Reset averages to zero
           CALL TIMEAVE_RESET(layers_HV_T,Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
-         DO k=1,Nlayers
-          layers_TimeAve(k,bi,bj)=0.
+          layers_TimeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
+
+C--   end of bloc: if time is a multiple of layers_taveFreq
+       ENDIF
 
       ENDIF
-
-
 #endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_LAYERS */

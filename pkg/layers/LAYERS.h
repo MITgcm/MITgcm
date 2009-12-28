@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.3 2009/09/30 15:58:29 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.4 2009/12/28 02:37:52 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -42,12 +42,11 @@ C      layers_HV    :: Layer thickness at the V point (m)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
+#ifdef ALLOW_TIMEAVE
 C-- The same variables, time-averaged
 
-#ifdef ALLOW_TIMEAVE
-
 C     Keep track of time
-      _RL layers_TimeAve(Nlayers,nSx,nSy)
+      _RL layers_TimeAve(nSx,nSy)
       COMMON /LAYERS_TAVE/ layers_TimeAve
 
 #ifdef LAYERS_UFLUX
@@ -73,7 +72,6 @@ C     Keep track of time
 #endif /* LAYERS_VFLUX */
 
 #endif /* ALLOW_TIMEAVE */
-
 
 C     Isopycnal grid parameters:
 C      layers_G :: boundaries of isopycnal layers
