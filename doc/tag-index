@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1210 2009/12/26 02:15:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1211 2009/12/28 02:46:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - use standard RW pkg S/R to write the output
+    and remove local write_fld version (which had a problem).
+  - use simple cumulative-time array (no level index) to fix time-ave S/R calls.
+  - fix LAYERS_CALC argument list.
+o pkg/timeave:
+  - store cumulative-time in a simple tiled array (drop the level index)
+  - add new S/R (TIMEAVE_NORMALIZE) which uses simple cumulative-time array.
 o pkg/ocn,aim_compon_interf
   - changes for multi-threaded coupled run. (tested with ifort-11 on danton)
 
