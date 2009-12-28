@@ -1,16 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.24 2006/03/20 15:15:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.25 2009/12/28 02:43:52 jmc Exp $
 C $Name:  $
+
 #include "TIMEAVE_OPTIONS.h"
 
-      SUBROUTINE TIMEAVE_STATVARS(
-     I     myTime, myIter, bi, bj, myThid)
-C     /==========================================================\
-C     | SUBROUTINE TIMEAVE_STATVARS                              |
-C     | o Time averaging routine for eta, U, V, W, T, S, UT, VT  |
-C     |   in model main time-stepping                            |
-C     \==========================================================/
-      IMPLICIT NONE
+CBOP
+C     !ROUTINE: TIMEAVE_STATV_WRITE
 
+C     !INTERFACE:
+      SUBROUTINE TIMEAVE_STATVARS(
+     I                   myTime, myIter, bi, bj, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE TIMEAVE_STATVARS
+C     | o Time averaging routine for eta, U, V, W, T, S, UT, VT
+C     |   in model main time-stepping
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -19,23 +27,26 @@ C     == Global variables ===
 #include "GRID.h"
 #include "TIMEAVE_STATV.h"
 
+C     !INPUT PARAMETERS:
+C     == Routine arguments ==
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter, bi, bj
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_TIMEAVE
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
-C     myIter - Iteration number
-C     myTime - Current time of simulation ( s )
-      INTEGER myThid
-      INTEGER myIter, bi, bj
-      _RL     myTime
-
-#ifdef ALLOW_TIMEAVE
-
-C     == Local variables ==
-      INTEGER k
+C     !LOCAL VARIABLES:
       LOGICAL dumpFiles
       _RL DDTT
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Initialize fields for the first call ever
       IF ( myIter .EQ. nIter0 ) THEN
@@ -77,10 +88,8 @@ c       CALL TIMEAVE_RESET(hFacCtave, Nr, bi, bj, myThid)
 c       CALL TIMEAVE_RESET(hFacWtave, Nr, bi, bj, myThid)
 c       CALL TIMEAVE_RESET(hFacStave, Nr, bi, bj, myThid)
 #endif /* NONLIN_FRSURF */
-        DO k=1,Nr
-         TimeAve_half(k,bi,bj)=0.
-         TimeAve_full(k,bi,bj)=0.
-        ENDDO
+        timeAve_half(bi,bj) = 0. _d 0
+        timeAve_full(bi,bj) = 0. _d 0
       ENDIF
 
 C--   Cumulate state-variables with Half or Full time step :
@@ -162,9 +171,7 @@ c     CALL TIMEAVE_CUMUL_2V(VStave, salt, vVel, Nr, 2,
 c    &     DDTT, bi, bj, myThid)
 
 C-    Keep record of how much time has been integrated over
-      DO K=1,Nr
-        TimeAve_half(k,bi,bj)=TimeAve_half(k,bi,bj)+DDTT
-      ENDDO
+      timeAve_half(bi,bj) = timeAve_half(bi,bj)+DDTT
 
 C-- end if DDTT ...
       ENDIF
@@ -181,9 +188,7 @@ C     <- moved to external_forcing_surf
      &                                   deltaTclock, bi, bj, myThid)
         CALL TIMEAVE_CUMUL_2V(phiHydLow2Tave,
      &       phiHydLow,phiHydLow, 1,  0, deltaTclock, bi, bj, myThid)
-        DO K=1,Nr
-         TimeAve_full(k,bi,bj)=TimeAve_full(k,bi,bj)+deltaTclock
-        ENDDO
+        timeAve_full(bi,bj) = timeAve_full(bi,bj)+deltaTclock
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */

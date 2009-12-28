@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.17 2005/08/24 23:17:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.18 2009/12/28 02:43:52 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -12,20 +12,20 @@ C     include "TIMEAVE_STATV.h"
 C     !DESCRIPTION: \bw
 C     *================================================================*
 C     | TIMEAVE_STATV.h
-C     | o Time averages of model state-variables 
+C     | o Time averages of model state-variables
 C     |   (common block TAVE_STATEVARS)
 C     *================================================================*
 C     | Time average of state variables is (generally) centered on the
-C     |  middle of the time step (time average interval = TimeAve_half)
-C     | Time average of intermediate and tendency variables is centered 
-C     |  on the time step (time average interval=TimeAve_full)
+C     |  middle of the time step (time average interval = timeAve_half)
+C     | Time average of intermediate and tendency variables is centered
+C     |  on the time step (time average interval=timeAve_full)
 C     *================================================================*
 C     \ev
 CEOP
 
 C     TimeAve_*    :: time of temporal integration (s) *** for each thread ***
-C     TimeAve_half :: half time_step multiple (used for state variables)
-C     TimeAve_full :: full time_step multiple (used for for intermediate var.) 
+C     timeAve_half :: half time_step multiple (used for state variables)
+C     timeAve_full :: full time_step multiple (used for for intermediate var.)
 C     uFluxtave    :: zonal surface wind stress (N/m^2,
 C                     >0 for increase in uVel, i=1 held at western face)
 C     vFluxtave    :: meridional surface wind stress (N/m^2,
@@ -59,9 +59,9 @@ C                     at the fixed boundary: (ocean) bottom pressure
 C                     (atmos) geo- Potential
 C     ConvectCountTave :: Average number of convective adjustment event
 
-      COMMON /TAVE_TIME/ TimeAve_half,TimeAve_full
-      _RL TimeAve_half(Nr,nSx,nSy)
-      _RL TimeAve_full(Nr,nSx,nSy)
+      COMMON /TAVE_TIME/ timeAve_half, timeAve_full
+      _RL timeAve_half(nSx,nSy)
+      _RL timeAve_full(nSx,nSy)
 
       COMMON /TAVE_STATEVARS/
      &                  uFluxtave,vFluxtave,tFluxtave,sFluxtave
@@ -114,9 +114,9 @@ C     hFacCtave    :: average thickness fraction of open water, Center
 C     hFacWtave    :: average thickness fraction of open water, West side
 C     hFacStave    :: average thickness fraction of open water, South side
 
-      COMMON /TAVE_THICKNESS/ 
+      COMMON /TAVE_THICKNESS/
      &              hUtave, hVtave
-c    &            , hFacCtave, hFacWtave, hFacStave 
+c    &            , hFacCtave, hFacWtave, hFacStave
       _RL  hUtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  hVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacCtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -124,4 +124,4 @@ c     _RL  hFacWtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacStave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* NONLIN_FRSURF */
 
-#endif /* ALLOW_TIMEAVE */ 
+#endif /* ALLOW_TIMEAVE */

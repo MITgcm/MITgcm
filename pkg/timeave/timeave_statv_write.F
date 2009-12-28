@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.39 2009/02/19 03:06:52 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.40 2009/12/28 02:43:52 jmc Exp $
 C $Name:  $
+
 #include "TIMEAVE_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: TIMEAVE_STATV_WRITE
 
@@ -26,16 +26,16 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
-C     myThid - Thread number for this instance of the routine.
-C     myIter - Iteration number
-C     myTime - Current time of simulation ( s )
-      INTEGER myThid
-      INTEGER myIter
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid :: Thread number for this instance of the routine.
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 #ifdef ALLOW_TIMEAVE
-C     Functions:
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
@@ -56,6 +56,8 @@ C     useVariableK :: T when vertical diffusion is not constant
       CHARACTER*(1) pf
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C     Final Time Averages and Dump Files if needed
       dumpFiles = DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
@@ -75,50 +77,50 @@ C     Final Time Averages and Dump Files if needed
          DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C         Normalize by integrated time
-          CALL TIMEAVE_NORMALIZ(uFluxtave,TimeAve_full,1 ,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(vFluxtave,TimeAve_full,1 ,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(tFluxtave,TimeAve_full,1 ,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(sFluxtave,TimeAve_full,1 ,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(etatave,  TimeAve_half,1 ,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(thetatave,TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(salttave, TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(uVeltave, TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(vVeltave, TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(wVeltave, TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(phiHydLowtave,TimeAve_full,1,
+          CALL TIMEAVE_NORMALIZE(uFluxtave,timeAve_full,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(vFluxtave,timeAve_full,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(tFluxtave,timeAve_full,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(sFluxtave,timeAve_full,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(etatave,  timeAve_half,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(thetatave,timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(salttave, timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(uVeltave, timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(vVeltave, timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(wVeltave, timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(phiHydLowtave,timeAve_full,1,
      &         bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(UStave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(VStave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(WStave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(Eta2tave, TimeAve_half,1 ,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(UUtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(VVtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(UVtave,   TimeAve_half,Nr,bi,bj,myThid)
-C         CALL TIMEAVE_NORMALIZ(KEtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(UTtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(VTtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(WTtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(UStave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(VStave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(WStave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(Eta2tave, timeAve_half,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(TTtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(UUtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(VVtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(UVtave,   timeAve_half,Nr,bi,bj,myThid)
+C         CALL TIMEAVE_NORMALIZE(KEtave,   timeAve_half,Nr,bi,bj,myThid)
 #ifdef NONLIN_FRSURF
 C         Normalize by integrated time
-          CALL TIMEAVE_NORMALIZ(hUtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(hVtave,   TimeAve_half,Nr,bi,bj,myThid)
-C         CALL TIMEAVE_NORMALIZ(hFacCtave,TimeAve_half,Nr,bi,bj,myThid)
-C         CALL TIMEAVE_NORMALIZ(hFacWtave,TimeAve_half,Nr,bi,bj,myThid)
-C         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(hUtave,   timeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(hVtave,   timeAve_half,Nr,bi,bj,myThid)
+C         CALL TIMEAVE_NORMALIZE(hFacCtave,timeAve_half,Nr,bi,bj,myThid)
+C         CALL TIMEAVE_NORMALIZE(hFacWtave,timeAve_half,Nr,bi,bj,myThid)
+C         CALL TIMEAVE_NORMALIZE(hFacStave,timeAve_half,Nr,bi,bj,myThid)
 #endif /* NONLIN_FRSURF */
 
-          CALL TIMEAVE_NORMALIZ(TdiffRtave,TimeAve_full,Nr,
+          CALL TIMEAVE_NORMALIZE(TdiffRtave,timeAve_full,Nr,
      &         bi,bj,myThid)
 #ifdef ALLOW_MOM_VECINV
-          CALL TIMEAVE_NORMALIZ(uZetatave,TimeAve_full,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(vZetatave,TimeAve_full,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(uZetatave,timeAve_full,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(vZetatave,timeAve_full,Nr,bi,bj,myThid)
 #endif
-          CALL TIMEAVE_NORMALIZ(phiHydtave,TimeAve_full,Nr,
+          CALL TIMEAVE_NORMALIZE(phiHydtave,timeAve_full,Nr,
      &         bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(phiHydLow2Tave,TimeAve_full,1,
+          CALL TIMEAVE_NORMALIZE(phiHydLow2Tave,timeAve_full,1,
      &         bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(ConvectCountTave,TimeAve_full,Nr,
+          CALL TIMEAVE_NORMALIZE(ConvectCountTave,timeAve_full,Nr,
      &         bi,bj,myThid)
          ENDDO
         ENDDO
