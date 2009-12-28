@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.2 2009/09/20 20:54:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.3 2009/12/28 02:33:49 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -21,7 +21,7 @@ C     myThid   :: my Thread Id number
       INTEGER myThid
 
 C     LOCAL VARIABLES:
-C     msgBuf   :: Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_LAYERS
@@ -46,20 +46,19 @@ C--  Check parameters:
 
 
 C     For now the package will only work if density ~ temperature
-       IF ( (eosType .EQ. 'LINEAR')
+      IF ( (eosType .EQ. 'LINEAR')
      &  .AND. (sBeta .EQ. 0.0 _d 0) ) THEN
 C        we're good
-       ELSE
+      ELSE
         WRITE(msgBuf,'(2A)') 'eosType must be eosType=''LINEAR''',
      &   ' and sBeta must = 0.0'
         CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R LAYERS_CHECK'
-       ENDIF
-
+      ENDIF
 
       _END_MASTER(myThid)
 
-#endif /* ALLOW_MYPACKAGE */
+#endif /* ALLOW_LAYERS */
 
       RETURN
       END
