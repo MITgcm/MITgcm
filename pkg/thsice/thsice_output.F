@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.11 2007/11/05 15:21:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.12 2009/12/29 23:07:43 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -73,7 +73,7 @@ c set arrays to zero if first timestep
          CALL TIMEAVE_RESET(ice_albedo_Ave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_tMxL_Ave,   1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_sMxL_Ave,   1, bi, bj, myThid)
-         ice_timeAve(1,bi,bj)=0.
+         ice_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
 
@@ -102,36 +102,36 @@ C-     area weighted average (with ice-fraction)
      &                          ice_fract_Ave, 1, bi, bj, myThid )
 
 C-     simple time average :
-         CALL TIMEAVE_NORMALIZ(ice_fract_Ave,ice_timeAve,1 ,
+         CALL TIMEAVE_NORMALIZE(ice_fract_Ave,ice_timeAve,1 ,
      &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ice_iceH_Ave,   ice_timeAve, 1 ,
+c        CALL TIMEAVE_NORMALIZE(ice_iceH_Ave,   ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ice_snowH_Ave,  ice_timeAve, 1 ,
+c        CALL TIMEAVE_NORMALIZE(ice_snowH_Ave,  ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ice_Tsrf_Ave,   ice_timeAve, 1 ,
+c        CALL TIMEAVE_NORMALIZE(ice_Tsrf_Ave,   ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ice_Tice1_Ave,  ice_timeAve, 1 ,
+c        CALL TIMEAVE_NORMALIZE(ice_Tice1_Ave,  ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ice_Tice2_Ave,  ice_timeAve, 1 ,
+c        CALL TIMEAVE_NORMALIZE(ice_Tice2_Ave,  ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ice_snowPr_Ave, ice_timeAve, 1 ,
+c        CALL TIMEAVE_NORMALIZE(ice_snowPr_Ave, ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ice_flx2oc_Ave, ice_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(ice_flx2oc_Ave, ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ice_frw2oc_Ave, ice_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(ice_frw2oc_Ave, ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ice_salFx_Ave,  ice_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(ice_salFx_Ave,  ice_timeAve, 1 ,
      &                 bi,bj,myThid)
          IF ( fluidIsWater ) THEN
-          CALL TIMEAVE_NORMALIZ(ice_flxAtm_Ave,ice_timeAve, 1 ,
+          CALL TIMEAVE_NORMALIZE(ice_flxAtm_Ave,ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(ice_frwAtm_Ave,ice_timeAve, 1 ,
+          CALL TIMEAVE_NORMALIZE(ice_frwAtm_Ave,ice_timeAve, 1 ,
      &                 bi,bj,myThid)
          ENDIF
          IF ( stepFwd_oceMxL ) THEN
-          CALL TIMEAVE_NORMALIZ(ice_tMxL_Ave,  ice_timeAve, 1 ,
+          CALL TIMEAVE_NORMALIZE(ice_tMxL_Ave,  ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(ice_sMxL_Ave,  ice_timeAve, 1 ,
+          CALL TIMEAVE_NORMALIZE(ice_sMxL_Ave,  ice_timeAve, 1 ,
      &                 bi,bj,myThid)
          ENDIF
         ENDDO
@@ -178,7 +178,6 @@ c      ENDIF
 
 
 C--    Write all time-average variables in 1 file :
-       _BARRIER
 
        IF ( thSIce_tave_mdsio ) THEN
 
@@ -213,6 +212,7 @@ C--    Write all time-average variables in 1 file :
 
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. thSIce_tave_mnc ) THEN
+       _BARRIER
 c      _BEGIN_MASTER( myThid )
          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
            pf(1:1) = 'D'
@@ -259,10 +259,10 @@ C        C             123456789 1
            CALL MNC_CW_RL_W(pf,mncf,0,0,'sMxL_ave',ice_sMxL_Ave,myThid)
          ENDIF
 c      _END_MASTER( myThid )
+       _BARRIER
        ENDIF
 #endif
 
-       _BARRIER
 
 C--    Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -282,7 +282,7 @@ C--    Reset averages to zero
          CALL TIMEAVE_RESET(ice_albedo_Ave, 1, bi,bj, myThid)
          CALL TIMEAVE_RESET(ice_tMxL_Ave,   1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_sMxL_Ave,   1, bi, bj, myThid)
-         ice_timeAve(1,bi,bj) = 0.
+         ice_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
 
@@ -367,7 +367,6 @@ C         C             123456789 12345
           ENDIF
         ENDIF
 #endif  /* ALLOW_MNC */
-
 
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.3 2005/06/24 04:36:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.4 2009/12/29 23:07:43 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -14,12 +14,10 @@ C     *==========================================================*
 C     \ev
 CEOP
 
-
 #ifdef ALLOW_THSICE
-
 #ifdef ALLOW_TIMEAVE
 
-C--   COMMON /THSICE_TAVE_ARRAYS/ Cumulative Arrays for Time-Average Diag.
+C--   COMMON /THSICE_TAVE_VARS/ Time average THermodynamic-SeaICE variables
 C     ice_timeAve    :: cumulated time [s]
 C     ice_fract_Ave  :: cumulated Ice fraction  [0-1]
 C     ice_iceH_Ave   :: cumulated Ice thickness [m]
@@ -32,12 +30,12 @@ C     ice_flx2oc_Ave :: cumulated heat flux out of the ocean (+=up) [W/m2]
 C     ice_frw2oc_Ave :: cumulated fresh-water flux out off the ocean (E-P) [m/s]
 C     ice_salFx_Ave  :: cumulated salt flux out of the ocean (+=up) [psu.kg/m2]
 C     ice_flxAtm_Ave :: cumulated net heat flux from Atmosphere (+=down) [W/m2]
-C     ice_frwAtm_Ave :: cumulated fresh-water flux from Atmos. (+=up) [kg/m2/s] 
+C     ice_frwAtm_Ave :: cumulated fresh-water flux from Atmos. (+=up) [kg/m2/s]
 C     ice_albedo_Ave :: cumulated sea-ice albedo [0-1]
 C     ICE_tMxL_Ave   :: cumulated ocean mixed-layer Temp. [oC]
 C     ICE_sMxL_Ave   :: cumulated ocean mixed-layer salinity [psu]
 
-      _RL ice_timeAve(Nr, nSx,nSy)
+      _RL ice_timeAve(nSx,nSy)
       _RL ice_fract_Ave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ice_iceH_Ave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ice_snowH_Ave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -63,7 +61,6 @@ C     ICE_sMxL_Ave   :: cumulated ocean mixed-layer salinity [psu]
      &                 ICE_tMxL_Ave, ICE_sMxL_Ave
 
 #endif /* ALLOW_TIMEAVE */
-
 #endif /* ALLOW_THSICE */
 
 CEH3 ;;; Local Variables: ***
