@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.3 2007/11/05 15:40:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.4 2009/12/29 23:05:52 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -177,9 +177,7 @@ C      Initialize time-average arrays to zero
          CALL TIMEAVE_RESET(land_sAtave,         1, bi, bj, myThid)
          CALL TIMEAVE_RESET(land_ROftave,        1, bi, bj, myThid)
          CALL TIMEAVE_RESET(land_eROtave,        1, bi, bj, myThid)
-         DO k=1,Nr
-           land_timeAve(k,bi,bj)=0.
-         ENDDO
+         land_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
 
@@ -191,20 +189,24 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(land_grTtave,land_timeAve,land_nLev,
-     &                         bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_entave, land_timeAve,land_nLev,
-     &                         bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_grWtave,land_timeAve,land_nLev,
-     &                         bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_sTtave, land_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_hStave, land_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_sAtave, land_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_ROftave,land_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(land_eROtave,land_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE( land_grTtave, land_timeAve,
+     &                           land_nLev, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_entave,  land_timeAve,
+     &                           land_nLev, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_grWtave, land_timeAve,
+     &                           land_nLev, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_sTtave,  land_timeAve,
+     &                                   1, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_hStave,  land_timeAve,
+     &                                   1, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_sAtave,  land_timeAve,
+     &                                   1, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_ROftave, land_timeAve,
+     &                                   1, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( land_eROtave, land_timeAve,
+     &                                   1, bi, bj, myThid )
         ENDDO
        ENDDO
-       _BARRIER
 
        IF ( land_timeave_mdsio ) THEN
 
@@ -226,6 +228,7 @@ C      Normalize by integrated time
 
 #ifdef ALLOW_MNC
        IF ( land_timeave_mnc ) THEN
+         _BARRIER
 
          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
            pf(1:1) = 'D'
@@ -259,6 +262,7 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_enRnOf', land_eROtave, myThid)
 
+         _BARRIER
        ENDIF
 #endif
 
@@ -271,7 +275,6 @@ C      Normalize by integrated time
      &                     SQUEEZE_RIGHT, myThid )
 
 C      Reset averages to zero
-       _BARRIER
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_RESET(land_grTtave,land_nLev, bi, bj, myThid)
@@ -282,9 +285,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(land_sAtave,         1, bi, bj, myThid)
          CALL TIMEAVE_RESET(land_ROftave,        1, bi, bj, myThid)
          CALL TIMEAVE_RESET(land_eROtave,        1, bi, bj, myThid)
-         DO k=1,Nr
-           land_timeAve(k,bi,bj)=0.
-         ENDDO
+         land_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
 
