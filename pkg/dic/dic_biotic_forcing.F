@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.23 2009/08/04 18:33:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.24 2009/12/29 01:13:47 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -30,6 +30,8 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_VARS.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -259,20 +261,20 @@ C update
          DO j=jmin,jmax
           DO i=imin,imax
            PTR_DIC(i,j,k)=
-     &      PTR_DIC(i,j,k)+GDIC(i,j,k)*dTtracerLev(k)
+     &      PTR_DIC(i,j,k)+GDIC(i,j,k)*PTRACERS_dTLev(k)
            PTR_ALK(i,j,k)=
-     &      PTR_ALK(i,j,k)+GALK(i,j,k)*dTtracerLev(k)
+     &      PTR_ALK(i,j,k)+GALK(i,j,k)*PTRACERS_dTLev(k)
            PTR_PO4(i,j,k)=
-     &      PTR_PO4(i,j,k)+GPO4(i,j,k)*dTtracerLev(k)
+     &      PTR_PO4(i,j,k)+GPO4(i,j,k)*PTRACERS_dTLev(k)
            PTR_DOP(i,j,k)=
-     &      PTR_DOP(i,j,k)+GDOP(i,j,k)*dTtracerLev(k)
+     &      PTR_DOP(i,j,k)+GDOP(i,j,k)*PTRACERS_dTLev(k)
 #ifdef ALLOW_O2
            PTR_O2(i,j,k)=
-     &      PTR_O2(i,j,k)+GO2(i,j,k)*dTtracerLev(k)
+     &      PTR_O2(i,j,k)+GO2(i,j,k)*PTRACERS_dTLev(k)
 #endif
 #ifdef ALLOW_FE
            PTR_FE(i,j,k)=
-     &      PTR_FE(i,j,k)+GFE(i,j,k)*dTtracerLev(k)
+     &      PTR_FE(i,j,k)+GFE(i,j,k)*PTRACERS_dTLev(k)
 #endif
           ENDDO
          ENDDO
