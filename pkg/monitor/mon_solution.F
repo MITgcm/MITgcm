@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.9 2009/12/21 00:05:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.10 2009/12/29 19:51:43 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -60,8 +60,7 @@ C     Statistics for T
         CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,SQUEEZE_RIGHT,myThid)
         _END_MASTER(myThid)
 
-C jmc: add this "if not ..." to avoid beeing stuck when using coupler;
-        IF ( .NOT.useCoupler ) CALL ALL_PROC_DIE( myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP
      &  'ABNORMAL END: S/R MON_SOLUTION, stops due to EXTREME Pot.Temp'
       ENDIF
