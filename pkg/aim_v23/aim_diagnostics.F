@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.21 2006/10/05 15:20:23 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.22 2009/12/29 23:02:21 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -21,7 +21,7 @@ C-- size for MITgcm & Physics package :
 
 #include "AIM_PARAMS.h"
 c #include "AIM2DYN.h"
-#include "AIM_DIAGS.h"
+#include "AIM_TAVE.h"
 #include "com_physvar.h"
 #include "com_forcing.h"
 
@@ -342,9 +342,7 @@ C-      Relative Humidity :
         ENDDO
 
 C-    Keep record of how much time has been integrated over
-        DO K=1,Nr
-          aim_timeAve(k,bi,bj)=aim_timeAve(k,bi,bj)+DDTT
-        ENDDO
+        aim_timeAve(bi,bj) = aim_timeAve(bi,bj)+DDTT
 
       ENDIF
 

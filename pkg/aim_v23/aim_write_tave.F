@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.12 2007/11/05 15:27:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.13 2009/12/29 23:02:21 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -22,7 +22,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AIM_PARAMS.h"
-#include "AIM_DIAGS.h"
+#include "AIM_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -41,7 +41,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER bi, bj, K
+      INTEGER bi, bj
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -79,9 +79,7 @@ C     Initialize average arrays to zero
          CALL TIMEAVE_RESET(albedotave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(dTsurftave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(aimRHtave,Nr, bi, bj, myThid)
-         DO k=1,Nr
-           aim_timeAve(k,bi,bj)=0.
-         ENDDO
+         aim_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
       ENDIF
@@ -94,35 +92,34 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(USTRtave,  aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(VSTRtave,  aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(TSRtave,   aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(OLRtave,   aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SSRtave,   aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SLRtave,   aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SHFtave,   aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(EVAPtave,  aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(PRECNVtave,aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(PRECLStave,aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(CLOUDCtave,aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(CLTOPtave, aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(CBMFtave,  aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(DRAGtave,  aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(aimV0tave, aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(aimT0tave, aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(aimQ0tave, aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(EnFxPrtave,aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(albedotave,aim_timeAve,1,bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(dTsurftave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(USTRtave,  aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(VSTRtave,  aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(TSRtave,   aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(OLRtave,   aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(SSRtave,   aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(SLRtave,   aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(SHFtave,   aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(EVAPtave,  aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(PRECNVtave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(PRECLStave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(CLOUDCtave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(CLTOPtave, aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(CBMFtave,  aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(DRAGtave,  aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(aimV0tave, aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(aimT0tave, aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(aimQ0tave, aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(EnFxPrtave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(albedotave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(dTsurftave,aim_timeAve,1,bi,bj,myThid)
 
-         CALL TIMEAVE_NORMALIZ(aimRHtave,aim_timeAve,Nr,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE(aimRHtave,aim_timeAve,Nr,bi,bj,myThid)
         ENDDO
        ENDDO
 
-       _BARRIER
-
 #ifdef ALLOW_MNC
        IF (useMNC .AND. aim_timeave_mnc) THEN
+       _BARRIER
 c      _BEGIN_MASTER( myThid )
          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
            pf(1:1) = 'D'
@@ -158,6 +155,7 @@ C        C             12345678
          CALL MNC_CW_RL_W(pf,mncfn,0,0,'dTsurftave',dTsurftave,myThid)
          CALL MNC_CW_RL_W(pf,mncfn,0,0,'aimRHtave', aimRHtave, myThid)
 c      _END_MASTER( myThid )
+       _BARRIER
        ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -199,8 +197,6 @@ c      _END_MASTER( myThid )
 
        ENDIF
 
-       _BARRIER
-
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -225,9 +221,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(albedotave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(dTsurftave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(aimRHtave,Nr, bi, bj, myThid)
-         DO k=1,Nr
-           aim_timeAve(k,bi,bj)=0.
-         ENDDO
+         aim_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
 
