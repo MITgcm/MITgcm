@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.2 2009/06/18 22:38:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.3 2009/12/29 19:43:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -56,12 +56,19 @@ C--   Finishes
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
 #endif
+C     better to avoid this call if multi-components set-up ; otherwise will
+C     hang here since procs of other comp. are not calling MPI_finalize now.
+       IF ( .NOT.( useCoupler
+     &        .OR. useNEST_PARENT
+     &        .OR. useNEST_CHILD )
+     &    ) THEN
          CALL MPI_FINALIZE  ( mpiRC )
          IF ( mpiRC .NE. MPI_SUCCESS ) THEN
           WRITE(msgBuf,'(A,I5)')
      &     'S/R FIN_PROCS: MPI_FINALIZE return code', mpiRC
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
+       ENDIF
 #ifndef ALWAYS_USE_MPI
       ENDIF
 #endif
