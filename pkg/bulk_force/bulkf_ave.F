@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.8 2006/05/09 18:59:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.9 2010/01/02 22:46:29 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -40,35 +40,34 @@ CEOP
 C--     Time-average
       DO j = 1,sNy
         DO i = 1,sNx
-             BULK_Qnet_AVE(i,j,bi,bj)=BULK_Qnet_AVE(i,j,bi,bj)
-     &                       +Qnet(i,j,bi,bj)*deltaTclock
+          BULK_Qnet_Ave(i,j,bi,bj)     = BULK_Qnet_Ave(i,j,bi,bj)
+     &                   +Qnet(i,j,bi,bj)*deltaTclock
 c    &          +lambdaThetaClimRelax*
 c    &           (theta(i,j,1,bi,bj)-SST(i,j,bi,bj))/
 c    &           (recip_Cp*recip_rhoNil*recip_dRf(1))*deltaTclock
-             BULK_EmPmR_AVE(i,j,bi,bj)=BULK_EmPmR_AVE(i,j,bi,bj)
-     &                       +EmPmR(i,j,bi,bj)*deltaTclock
-             BULK_fu_AVE(i,j,bi,bj)=BULK_fu_AVE(i,j,bi,bj)
-     &                       +fu(i,j,bi,bj)*deltaTclock
-             BULK_fv_AVE(i,j,bi,bj)=BULK_fv_AVE(i,j,bi,bj)
-     &                       +fv(i,j,bi,bj)*deltaTclock
-             BULK_latent_AVE(i,j,bi,bj)=BULK_latent_AVE(i,j,bi,bj)
-     &                       +flh(i,j,bi,bj)*deltaTclock
-             BULK_sensible_AVE(i,j,bi,bj)=BULK_sensible_AVE(i,j,bi,bj)
-     &                       +fsh(i,j,bi,bj)*deltaTclock
-             BULK_evap_AVE(i,j,bi,bj)=BULK_evap_AVE(i,j,bi,bj)
-     &                       +evap(i,j,bi,bj)*deltaTclock
-             BULK_flwup_AVE(i,j,bi,bj)=BULK_flwup_AVE(i,j,bi,bj)
-     &                       +flwup(i,j,bi,bj)*deltaTclock
-             BULK_flwupnet_AVE(i,j,bi,bj)=BULK_flwupnet_AVE(i,j,bi,bj)
-     &                       +flwupnet(i,j,bi,bj)*deltaTclock
-             BULK_solar_AVE(i,j,bi,bj)=BULK_solar_AVE(i,j,bi,bj)
-     &                       +fswnet(i,j,bi,bj)*deltaTclock
-             BULK_ssq_AVE(i,j,bi,bj)=BULK_ssq_AVE(i,j,bi,bj)
-     &                       +savssq(i,j,bi,bj)*deltaTclock
+          BULK_EmPmR_Ave(i,j,bi,bj)    = BULK_EmPmR_Ave(i,j,bi,bj)
+     &                   +EmPmR(i,j,bi,bj)*deltaTclock
+          BULK_fu_Ave(i,j,bi,bj)       = BULK_fu_Ave(i,j,bi,bj)
+     &                   +fu(i,j,bi,bj)*deltaTclock
+          BULK_fv_Ave(i,j,bi,bj)       = BULK_fv_Ave(i,j,bi,bj)
+     &                   +fv(i,j,bi,bj)*deltaTclock
+          BULK_latent_Ave(i,j,bi,bj)   = BULK_latent_Ave(i,j,bi,bj)
+     &                   +flh(i,j,bi,bj)*deltaTclock
+          BULK_sensible_Ave(i,j,bi,bj) = BULK_sensible_Ave(i,j,bi,bj)
+     &                   +fsh(i,j,bi,bj)*deltaTclock
+          BULK_evap_Ave(i,j,bi,bj)     = BULK_evap_Ave(i,j,bi,bj)
+     &                   +evap(i,j,bi,bj)*deltaTclock
+          BULK_flwup_Ave(i,j,bi,bj)    = BULK_flwup_Ave(i,j,bi,bj)
+     &                   +flwup(i,j,bi,bj)*deltaTclock
+          BULK_flwupnet_Ave(i,j,bi,bj) = BULK_flwupnet_Ave(i,j,bi,bj)
+     &                   +flwupnet(i,j,bi,bj)*deltaTclock
+          BULK_solar_Ave(i,j,bi,bj)    = BULK_solar_Ave(i,j,bi,bj)
+     &                   +fswnet(i,j,bi,bj)*deltaTclock
+          BULK_ssq_Ave(i,j,bi,bj)      = BULK_ssq_Ave(i,j,bi,bj)
+     &                   +savssq(i,j,bi,bj)*deltaTclock
         ENDDO
       ENDDO
-      BULKF_timeave(1,bi,bj)=BULKF_timeave(1,bi,bj)+deltaTclock
-
+      BULK_timeAve(bi,bj) = BULK_timeAve(bi,bj)+deltaTclock
 
 #endif  /*ALLOW_TIMEAVE*/
 #endif  /*ALLOW_BULK_FORCE*/
