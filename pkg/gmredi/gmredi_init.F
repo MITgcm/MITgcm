@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.10 2005/01/04 00:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.11 2010/01/02 23:10:47 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -71,9 +71,7 @@ C     Initialize averages to zero
         CALL TIMEAVE_RESET(GM_Kwx_T,Nr, bi,bj,myThid)
         CALL TIMEAVE_RESET(GM_Kwy_T,Nr, bi,bj,myThid)
         CALL TIMEAVE_RESET(GM_Kwz_T,Nr, bi,bj,myThid)
-        DO k=1,Nr
-         GM_TimeAve(k,bi,bj)=0. _d 0
-        ENDDO
+        GM_timeAve(bi,bj) = 0. _d 0
 #ifdef GM_VISBECK_VARIABLE_K
         CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)
 #endif

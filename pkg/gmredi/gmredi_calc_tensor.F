@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.34 2008/10/27 22:13:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.35 2010/01/02 23:10:47 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -930,9 +930,7 @@ C--   Time-average
      &                          deltaTclock, bi, bj, myThid )
        ENDIF
 #endif
-       DO k=1,Nr
-         GM_TimeAve(k,bi,bj)=GM_TimeAve(k,bi,bj)+deltaTclock
-       ENDDO
+       GM_timeAve(bi,bj) = GM_timeAve(bi,bj)+deltaTclock
 
       ENDIF
 #endif /* ALLOW_TIMEAVE */
@@ -948,6 +946,7 @@ C--   Time-average
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE GMREDI_CALC_TENSOR_DUMMY(
      I             iMin, iMax, jMin, jMax,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.5 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.6 2010/01/02 23:10:47 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -39,24 +39,24 @@ C     myThid :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_GMREDI
-C     !LOCAL VARIABLES:
-C     == Local variables ==
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, K
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_TIMEAVE
+      INTEGER bi, bj
+#endif
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif
 
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
-      ELSE
-        pf(1:1) = 'R'
-      ENDIF
-
-#if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) ) 
+#if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
 
       IF ( DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
-     &   ) THEN 
+     &   ) THEN
 
         IF ( GM_MDSIO ) THEN
           WRITE(suff,'(I10.10)') myIter
@@ -74,6 +74,11 @@ C     == Local variables ==
 
 #ifdef ALLOW_MNC
         IF ( GM_MNC ) THEN
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+          ELSE
+           pf(1:1) = 'R'
+          ENDIF
           CALL MNC_CW_SET_UDIM('gm_inst', -1, myThid)
           CALL MNC_CW_RL_W_S('D','gm_inst',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('gm_inst', 0, myThid)
@@ -86,47 +91,46 @@ C     == Local variables ==
           IF (GM_ExtraDiag) THEN
             CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kuz',Kuz,myThid)
             CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kvz',Kvz,myThid)
-          ENDIF 
+          ENDIF
 #endif
         ENDIF
 #endif
 
-      ENDIF 
+      ENDIF
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
 
 
 #ifdef ALLOW_TIMEAVE
-
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
+      IF ( DIFFERENT_MULTIPLE( taveFreq, myTime, deltaTClock )
      &     ) THEN
-         
+
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(GM_Kwx_T,GM_timeave, Nr,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(GM_Kwy_T,GM_timeave, Nr,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(GM_Kwz_T,GM_timeave, Nr,
-     &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE( GM_Kwx_T, GM_timeAve,
+     &                           Nr, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( GM_Kwy_T, GM_timeAve,
+     &                           Nr, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( GM_Kwz_T, GM_timeAve,
+     &                           Nr, bi, bj, myThid )
 #ifdef GM_VISBECK_VARIABLE_K
         IF (GM_Visbeck_alpha.NE.0.)
-     &   CALL TIMEAVE_NORMALIZ(Visbeck_K_T,GM_timeave, 1,
-     &                 bi,bj,myThid)
+     &   CALL TIMEAVE_NORMALIZE( Visbeck_K_T, GM_timeAve,
+     &                           1 , bi, bj, myThid )
 #endif
 #ifdef GM_BOLUS_ADVEC
         IF (GM_AdvForm) THEN
-         CALL TIMEAVE_NORMALIZ(GM_PsiXtave,GM_timeave, Nr,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(GM_PsiYtave,GM_timeave, Nr,
-     &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZE( GM_PsiXtave, GM_timeAve,
+     &                           Nr, bi, bj, myThid )
+         CALL TIMEAVE_NORMALIZE( GM_PsiYtave, GM_timeAve,
+     &                           Nr, bi, bj, myThid )
         ENDIF
 #endif
         ENDDO
        ENDDO
-         
+
        IF ( GM_MDSIO ) THEN
          WRITE(suff,'(I10.10)') myIter
          CALL WRITE_FLD_XYZ_RL('GM_Kwx-T.',suff,GM_Kwx_T,myIter,myThid)
@@ -146,9 +150,14 @@ C      Normalize by integrated time
          ENDIF
 #endif
        ENDIF
-       
+
 #ifdef ALLOW_MNC
        IF ( GM_MNC ) THEN
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+         ELSE
+           pf(1:1) = 'R'
+         ENDIF
          CALL MNC_CW_SET_UDIM('gm_tave', -1, myThid)
          CALL MNC_CW_RL_W_S('D','gm_tave',0,0,'T',myTime,myThid)
          CALL MNC_CW_SET_UDIM('gm_tave', 0, myThid)
@@ -158,7 +167,7 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'Kwz',GM_Kwz_T,myThid)
 #ifdef GM_VISBECK_VARIABLE_K
          IF (GM_Visbeck_alpha.NE.0.) THEN
-           CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'VisbK', 
+           CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'VisbK',
      &          Visbeck_K_T, myThid)
          ENDIF
 #endif
@@ -172,34 +181,31 @@ C      Normalize by integrated time
 #endif
        ENDIF
 #endif
-         
+
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(GM_Kwx_T,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(GM_Kwy_T,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(GM_Kwz_T,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET( GM_Kwx_T, Nr, bi, bj, myThid )
+         CALL TIMEAVE_RESET( GM_Kwy_T, Nr, bi, bj, myThid )
+         CALL TIMEAVE_RESET( GM_Kwz_T, Nr, bi, bj, myThid )
 #ifdef GM_VISBECK_VARIABLE_K
          IF (GM_Visbeck_alpha.NE.0.)
-     &    CALL TIMEAVE_RESET(Visbeck_K_T,1,bi,bj,myThid)
+     &    CALL TIMEAVE_RESET( Visbeck_K_T, 1, bi, bj, myThid )
 #endif
 #ifdef GM_BOLUS_ADVEC
          IF (GM_AdvForm) THEN
-          CALL TIMEAVE_RESET(GM_PsiXtave,Nr,bi,bj,myThid)
-          CALL TIMEAVE_RESET(GM_PsiYtave,Nr,bi,bj,myThid)
+          CALL TIMEAVE_RESET( GM_PsiXtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GM_PsiYtave, Nr, bi, bj, myThid )
          ENDIF
 #endif
-         DO k=1,Nr
-          GM_TimeAve(k,bi,bj)=0.
-         ENDDO
+         GM_timeAve(bi,bj) = 0.
         ENDDO
        ENDDO
-         
-      ENDIF
 
+      ENDIF
 #endif /* ALLOW_TIMEAVE */
-      
+
 #endif /* ALLOW_GMREDI */
-      
+
       RETURN
       END
