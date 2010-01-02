@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver.F,v 1.9 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver.F,v 1.10 2010/01/02 23:07:39 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -7,9 +7,9 @@ CStartOfInterFace
       SUBROUTINE DIC_AVER(
      I           myTime,myIter,myThid)
 
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE DIC_AVER
-C     |==========================================================|
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -27,8 +27,8 @@ C     == GLobal variables ==
 #endif
 
 C     == Routine arguments ==
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_DIC_COST
@@ -38,14 +38,13 @@ C     == Local variables ==
       _RL rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 
-cswddmonth -- end-
-c
-c averages
+Cswddmonth -- end-
+
+C averages
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+        OBS_timetave(bi,bj) = OBS_timetave(bi,bj)+deltaTclock
         DO k=1,Nr
-         OBS_timetave(bi,bj,k)=OBS_timetave(bi,bj,k)+
-     &                         deltaTclock
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             po4ann(i,j,k,bi,bj)=po4ann(i,j,k,bi,bj)+
@@ -57,7 +56,7 @@ c averages
         ENDDO
        ENDDO
       ENDDO
-cswdmonth-add--
+Cswdmonth-add--
       rdt=1. _d 0 / deltaTclock
       nForcingPeriods=int(externForcingCycle/externForcingPeriod+0.5)
       Imytm=int(myTime*rdt+0.5)
@@ -68,8 +67,7 @@ cswdmonth-add--
 c     print*,'QQ timing check', mytime, myIter, it
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         OBSM_timetave(bi,bj,it)=OBSM_timetave(bi,bj,it)+
-     &                         deltaTclock
+         OBSM_timetave(it,bi,bj) = OBSM_timetave(it,bi,bj)+deltaTclock
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             po4lev1(i,j,it,bi,bj)=po4lev1(i,j,it,bi,bj)+
@@ -93,11 +91,9 @@ cQQ  &               PTRACER(i,j,4,bi,bj,5)*deltaTclock
        ENDDO
       ENDDO
 
-cswdmonth-end--
+Cswdmonth-end--
 
+#endif /* ALLOW_DIC_COST */
 
-#endif
-c
       RETURN
       END
-cswd -- end added subroutine --

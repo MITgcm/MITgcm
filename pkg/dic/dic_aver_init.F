@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.12 2009/10/14 20:12:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.13 2010/01/02 23:07:39 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -7,9 +7,9 @@ CStartOfInterFace
       SUBROUTINE DIC_AVER_INIT(
      I           myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_AVER_INIT  i                            |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE DIC_AVER_INIT
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -30,27 +30,25 @@ C     == Routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_DIC_COST
+#ifdef ALLOW_TIMEAVE
 
 C     == Local variables ==
       INTEGER i, j, bi, bj, k, it
       _RL po4av(Nr)
       _RL o2av(Nr)
       _RL volvar(Nr)
-cswdmonth -add-
+Cswdmonth -add-
       _RL po4avm(12,4)
       _RL o2avm(12,4)
-      _RL rdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+Cswddmonth -- end-
 
-cswddmonth -- end-
-c
-c initialize to zero
-cph        totcost=0.d0
+C initialize to zero
+cph        totcost=0. _d 0
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_RESET(PO4obs,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(O2obs,   Nr,  bi, bj, myThid)
-cswdmonth
+Cswdmonth
           CALL TIMEAVE_RESET(PO4obsl1,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(PO4obsl2,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(PO4obsl3,   Nr,  bi, bj, myThid)
@@ -59,23 +57,23 @@ cQQ       CALL TIMEAVE_RESET(PO4obsl4,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(O2obsl2,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(O2obsl3,   Nr,  bi, bj, myThid)
 cQQ       CALL TIMEAVE_RESET(O2obsl4,   Nr,  bi, bj, myThid)
-cswdmonth -end-
+Cswdmonth -end-
+          OBS_timetave(bi,bj) = 0. _d 0
           do k=1,Nr
-            OBS_Timetave(bi,bj,k)=0.d0
-            po4av(k)=0.d0
-            o2av(k)=0.d0
-            po4var(k)=0.d0
-            o2var(k)=0.d0
-            volvar(k)=0.d0
+            po4av(k)  = 0. _d 0
+            o2av(k)   = 0. _d 0
+            po4var(k) = 0. _d 0
+            o2var(k)  = 0. _d 0
+            volvar(k) = 0. _d 0
           enddo
-cswdmonth
+Cswdmonth
           do k=1,3
            do it=1,12
-            OBSM_Timetave(bi,bj,it)=0.d0
-            po4avm(it,k)=0.d0
-            o2avm(it,k)=0.d0
-            po4varm(it,k)=0.d0
-            o2varm(it,k)=0.d0
+            OBSM_Timetave(it,bi,bj) = 0. _d 0
+            po4avm(it,k) = 0. _d 0
+            o2avm(it,k)  = 0. _d 0
+            po4varm(it,k)= 0. _d 0
+            o2varm(it,k) = 0. _d 0
            enddo
           enddo
          ENDDO
@@ -84,7 +82,7 @@ cswdmonth
      &                          po4obs, 0, myThid )
         CALL READ_FLD_XYZ_RL( 'input/o2obs.bin', ' ',
      &                          o2obs, 0, myThid )
-cswdmonth
+Cswdmonth
         CALL READ_FLD_XYZ_RL( 'input/po4lev1.bin', ' ',
      &                          po4obsl1, 0, myThid )
         CALL READ_FLD_XYZ_RL( 'input/po4lev2.bin', ' ',
@@ -101,10 +99,10 @@ cQQ  &                          po4obsl4, 0, myThid )
      &                          o2obsl3, 0, myThid )
 cQQ     CALL READ_FLD_XYZ_RL( 'input/o2lev4.bin', ' ',
 cQQ  &                          o2obsl4, 0, myThid )
-cswdmonth -end-
+Cswdmonth -end-
        _EXCH_XYZ_RL(po4obs  , myThid )
        _EXCH_XYZ_RL(o2obs  , myThid )
-cswdmonth -add-
+Cswdmonth -add-
        _EXCH_XYZ_RL(po4obsl1  , myThid )
        _EXCH_XYZ_RL(po4obsl2  , myThid )
        _EXCH_XYZ_RL(po4obsl3  , myThid )
@@ -113,9 +111,9 @@ cQQ    _EXCH_XYZ_RL(po4obsl4  , myThid )
        _EXCH_XYZ_RL(o2obsl2  , myThid )
        _EXCH_XYZ_RL(o2obsl3  , myThid )
 cQQ    _EXCH_XYZ_RL(o2obsl4  , myThid )
-cswdmonth -end-
+Cswdmonth -end-
 
-c calculate layer means
+C calculate layer means
         do k=1,Nr
          call tracer_meanarea(po4obs, k,
      &                    po4av(k),myThid)
@@ -123,7 +121,7 @@ c calculate layer means
      &                    o2av(k),myThid)
 c        print*,po4av(k), o2av(k)
         enddo
-cswdmonth -add-
+Cswdmonth -add-
         do it=1,MIN(12,Nr)
          call tracer_meanarea(po4obsl1,it,
      &                    po4avm(it,1),myThid)
@@ -156,7 +154,7 @@ c calculate layer variance
             o2var(k)=o2var(k)+(o2obs(i,j,k,bi,bj)-o2av(k))**2
      &                *rA(i,j,bi,bj)*drF(k)*maskC(i,j,k,bi,bj)
           ENDDO
-cswdmonth -add-
+Cswdmonth -add-
           DO it=1,12
            po4varm(it,1)=po4varm(it,1)+
      &                (po4obsl1(i,j,it,bi,bj)-po4avm(it,1))**2
@@ -193,15 +191,15 @@ cQQ  &                *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj)
             o2var(k)=o2var(k)/volvar(k)
 cQQ         print*,po4var(k),o2var(k)
         ENDDO
-cswdmonth- add-
+Cswdmonth- add-
         DO k=1,3
          Do it=1,12
            po4varm(it,k)=po4varm(it,k)/volvar(k)
            o2varm(it,k)=o2varm(it,k)/volvar(k)
          ENDDO
         ENDDO
-cswdmonth -end-
-C
+Cswdmonth -end-
+
 C Reset averages to zero
        print*,'QQ dic_aver_init, set to zero'
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -217,16 +215,15 @@ cQQ       CALL TIMEAVE_RESET(PO4lev4,    12,  bi, bj, myThid)
          CALL TIMEAVE_RESET(O2lev3,    12,  bi, bj, myThid)
 cQQ       CALL TIMEAVE_RESET(O2lev4,    12,  bi, bj, myThid)
 
-         do k=1,Nr
-           OBS_Timetave(bi,bj,k)=0.d0
-         enddo
+         OBS_timetave(bi,bj) = 0. _d 0
          do it=1,12
-           OBSM_Timetave(bi,bj,it)=0.d0
+           OBSM_Timetave(it,bi,bj) = 0. _d 0
          enddo
         ENDDO
        ENDDO
-c
-#endif
-c
+
+#endif /* ALLOW_TIMEAVE */
+#endif /* ALLOW_DIC_COST */
+
       RETURN
       END
