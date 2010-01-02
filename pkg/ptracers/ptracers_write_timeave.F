@@ -1,14 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.9 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.10 2010/01/02 23:45:46 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C     !ROUTINE: PTRACERS_WRITE_TIMEAVE
 
 C     !INTERFACE:
-      SUBROUTINE PTRACERS_WRITE_TIMEAVE(myTime, myIter, myThid)
+      SUBROUTINE PTRACERS_WRITE_TIMEAVE( myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     At the end of average period, write the time-average
@@ -21,17 +20,18 @@ C     !USES:
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_STATV.h"
-C     Functions
+#include "PTRACERS_TAVE.h"
+
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
 C     !INPUT PARAMETERS:
-C     myTime  ::  Current time of simulation ( s )
-C     myIter  ::  Iteration number
-C     myThid  ::  Thread number for this instance of the routine.
+C     myTime  :: Current time of simulation ( s )
+C     myIter  :: Iteration number
+C     myThid  :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -41,18 +41,20 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     suff    ::  Hold suffix part of a filename
-C     TimeAve ::  total time over average
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER bi,bj, iTracer
+      INTEGER bi, bj, iTr
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_MNC
-      INTEGER ii,jj, ilnb
+      INTEGER jj, ilnb
 C     Functions
-      INTEGER ILNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
       CHARACTER*(1) pf
 #endif /*  ALLOW_MNC  */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     Final Time Averages and Dump Files if needed
       IF ( DIFFERENT_MULTIPLE( PTRACERS_taveFreq, myTime, deltaTClock )
@@ -60,20 +62,19 @@ C     Final Time Averages and Dump Files if needed
 
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-C           Normalize by integrated time
-            DO iTracer=1,PTRACERS_numInUse
-              CALL TIMEAVE_NORMALIZ(
-     &             ptracerFluxtave(1-Olx,1-Oly,  1,1,iTracer),
-     &             ptracer_full, 1,bi,bj,myThid)
-              CALL TIMEAVE_NORMALIZ(
-     &             ptracertave    (1-Olx,1-Oly,1,1,1,iTracer),
-     &             ptracer_half,Nr,bi,bj,myThid)
+C--         Normalize by integrated time
+            DO iTr=1,PTRACERS_numInUse
+              CALL TIMEAVE_NORMALIZE(
+     &                     ptracerFluxtave(1-Olx,1-Oly,  1,1,iTr),
+     &                     ptracer_full,  1, bi, bj, myThid )
+              CALL TIMEAVE_NORMALIZE(
+     &                     ptracertave    (1-Olx,1-Oly,1,1,1,iTr),
+     &                     ptracer_half, Nr, bi, bj, myThid )
             ENDDO
           ENDDO
         ENDDO
 
-C       Write to files
-        _BARRIER
+C--     Write to files
 
 #ifdef ALLOW_MNC
         IF ( PTRACERS_timeave_mnc ) THEN
@@ -94,41 +95,36 @@ C       Write to files
           CALL MNC_CW_I_W_S('I','ptr_flux_tave',0,0,'iter',myIter,
      &         myThid)
 
-          DO ii = 1,PTRACERS_numInUse
-            CALL MNC_CW_RL_W(pf,'ptr_tave',0,0,PTRACERS_names(ii),
-     &           ptracertave(1-OLx,1-OLy,1,1,1,ii),myThid)
+          DO iTr = 1,PTRACERS_numInUse
+            CALL MNC_CW_RL_W(pf,'ptr_tave',0,0,PTRACERS_names(iTr),
+     &           ptracertave(1-OLx,1-OLy,1,1,1,iTr),myThid)
             DO jj = 1,MAX_LEN_FNAM
               suff(jj:jj) = ' '
             ENDDO
-            ilnb = ILNBLNK(PTRACERS_names(ii))
-            WRITE(suff,'(a,a)') 'surf_',PTRACERS_names(ii)(1:ilnb)
+            ilnb = ILNBLNK(PTRACERS_names(iTr))
+            WRITE(suff,'(A,A)') 'surf_',PTRACERS_names(iTr)(1:ilnb)
             CALL MNC_CW_RL_W(pf,'ptr_flux_tave',0,0,suff,
-     &           ptracerFluxtave(1-OLx,1-OLy,1,1,ii),myThid)
+     &           ptracerFluxtave(1-OLx,1-OLy,1,1,iTr),myThid)
           ENDDO
         ENDIF
 #endif /*  ALLOW_MNC  */
 
         IF ( PTRACERS_timeave_mdsio ) THEN
 
-C         Set IO "context" for writing state
-#ifdef USE_DFILE
-          CALL DFILE_SET_RW
-          CALL DFILE_SET_CONT_ON_ERROR
-#endif
 C         Read IO error counter
           beginIOErrCount = IO_ERRCOUNT(myThid)
 
-          DO iTracer=1,PTRACERS_numInUse
+          DO iTr=1,PTRACERS_numInUse
             WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PtrFluxtave',
-     &           iTracer,'.',myIter
-            CALL WRITE_FLD_XY_RL (suff,' ',
-     &           ptracerFluxtave(1-Olx,1-Oly,  1,1,iTracer),
-     &           myIter,myThid)
+     &                                         iTr, '.', myIter
+            CALL WRITE_FLD_XY_RL ( suff, ' ',
+     &                 ptracerFluxtave(1-Olx,1-Oly,  1,1,iTr),
+     &                 myIter, myThid )
             WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PTRtave',
-     &           iTracer,'.',myIter
-            CALL WRITE_FLD_XYZ_RL(suff,' ',
-     &           ptracertave    (1-Olx,1-Oly,1,1,1,iTracer),
-     &           myIter,myThid)
+     &                                         iTr, '.', myIter
+            CALL WRITE_FLD_XYZ_RL( suff, ' ',
+     &                 ptracertave    (1-Olx,1-Oly,1,1,1,iTr),
+     &                 myIter, myThid )
           ENDDO
 
 C         Reread IO error counter
@@ -158,17 +154,15 @@ C-          normal case: 1 message is enough
 
         ENDIF
 
-        _BARRIER
-
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C           Like before the 1rst iteration,
-C           ==> call TIMEAVE_STATVARS with myIter=nIter0 :
+C           ==> call TIMEAVE_TIMEAVE with myIter=nIter0 :
 C           1) Reset the averages to zero ;
 C           2) Start to cumulate state-variables with Half time step.
 
-            CALL PTRACERS_STATVARS(myTime, nIter0, bi, bj, myThid)
+            CALL PTRACERS_TIMEAVE( myTime, nIter0, bi, bj, myThid )
 
           ENDDO
         ENDDO
