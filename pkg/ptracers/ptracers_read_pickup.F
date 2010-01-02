@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.13 2009/09/03 22:13:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.14 2010/01/02 23:42:51 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PTRACERS_READ_PICKUP
 
@@ -49,7 +48,7 @@ C     j           :: loop index
 C     nj          :: record number
 C     ioUnit      :: temp for writing msg unit
 C     msgBuf      :: Informational/error message buffer
-      INTEGER iTracer, iRec, prec, n
+      INTEGER iTracer, iRec, prec
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
       INTEGER nj, ioUnit
@@ -57,9 +56,12 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) fldName, missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef PTRACERS_ALLOW_DYN_STATE
+      INTEGER n
+#endif
 CEOP
 
-      _BARRIER
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC
       IF ( PTRACERS_pickup_read_mnc ) THEN
@@ -286,7 +288,6 @@ C        Read 2nd Order moments as consecutive records
         ENDIF
        ENDDO
 #endif /* PTRACERS_ALLOW_DYN_STATE */
-       _BARRIER
 
 C--   end: pickup_read_mdsio
       ENDIF

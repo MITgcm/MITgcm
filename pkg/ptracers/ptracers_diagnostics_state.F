@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.4 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.5 2010/01/02 23:42:51 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C     !ROUTINE: PTRACERS_DIAGNOSTICS_STATE
 
@@ -42,7 +41,11 @@ C     !LOCAL VARIABLES:
       INTEGER i,j,k,bi,bj,iTr
       CHARACTER*8 diagName
       INTEGER km1
+#ifdef ALLOW_LONGSTEP
       INTEGER trIter
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_LONGSTEP
 C     fill only once every long time step

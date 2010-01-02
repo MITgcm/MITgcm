@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.9 2009/09/03 22:13:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.10 2010/01/02 23:42:51 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -57,13 +57,16 @@ C     nWrFlds     :: number of fields being written
 C     listDim     :: dimension of "wrFldList" local array
 C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
-      INTEGER iTracer, j, prec, lChar, n, iRec
+      INTEGER iTracer, j, prec, lChar
       LOGICAL glf
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 3*PTRACERS_num )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef PTRACERS_ALLOW_DYN_STATE
+      INTEGER n, iRec
+#endif
 CEOP
 
 #ifdef ALLOW_MNC
