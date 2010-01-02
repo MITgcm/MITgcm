@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.2 2005/11/05 01:00:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.3 2010/01/02 23:49:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,6 +9,7 @@ CBOP
 C     !ROUTINE: DO_STATEVARS_TAVE
 C     !INTERFACE:
       SUBROUTINE DO_STATEVARS_TAVE( myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DO_STATEVARS_TAVE                                
@@ -45,23 +46,24 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER bi,bj
 
+      IF ( taveFreq.GT.0. ) THEN
 C--   Fill-in TimeAve pkg diagnostics (for state-variables)
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-        IF ( taveFreq.GT.0. ) THEN
-          CALL TIMEAVE_STATVARS(myTime, myIter, bi, bj, myThid)
+          CALL TIMEAVE_STATVARS( myTime, myIter, bi, bj, myThid )
 # ifdef ALLOW_PTRACERS
-          IF ( usePTRACERS ) THEN	
-           CALL PTRACERS_STATVARS(myTime, myIter, bi, bj, myThid)
-          ENDIF	
+          IF ( usePTRACERS ) THEN
+           CALL PTRACERS_TIMEAVE( myTime, myIter, bi, bj, myThid )
+          ENDIF
 # endif /* ALLOW_PTRACERS */
-        ENDIF
 
 C--    End of bi,bj loop
+        ENDDO
        ENDDO
-      ENDDO
+
+      ENDIF
 #endif /* ALLOW_TIMEAVE */
 
       RETURN
