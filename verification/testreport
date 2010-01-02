@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.130 2009/12/21 00:01:06 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.131 2010/01/02 01:53:49 jmc Exp $
 #  $Name:  $
 #
 
@@ -463,6 +463,7 @@ makemodel()
 		tail make.log
 		echo failed 1>&2
 		cp make.log $CDIR"/make.log"
+		rm -f $EXECUTABLE
 		return 1
 	    else
 		echo successful 1>&2
