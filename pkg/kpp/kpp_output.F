@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.1 2009/06/17 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.2 2010/01/02 23:19:59 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
-
 #undef  MULTIPLE_RECORD_KPP_STATE_FILES
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 CBOP
 C     !ROUTINE: KPP_OUTPUT
 
@@ -62,20 +61,33 @@ C     myThid :: my Thread Id number
 
 #ifdef ALLOW_KPP
 
-C     !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_MBUF) suff
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, K
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_TIMEAVE
+      INTEGER bi, bj
       _RL DDTT
       LOGICAL dumpFiles
+#endif
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif
 CEOP
 
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
-      ELSE
-        pf(1:1) = 'R'
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Initialize record numbers in KPP_TAVE
+      IF ( myIter.EQ.nIter0 ) THEN
+        _BEGIN_MASTER( myThid )
+        kpp_drctrec = 1
+#ifdef ALLOW_TIMEAVE
+        kpp_drctrecTave = 1
+#endif
+        _END_MASTER( myThid )
+        _BARRIER
       ENDIF
 
 C----------------------------------------------------------------
@@ -126,6 +138,11 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
 
 #ifdef ALLOW_MNC
         IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc) THEN
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
           CALL MNC_CW_SET_UDIM('kpp_state', -1, myThid)
           CALL MNC_CW_RL_W_S('D','kpp_state',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_state', 0, myThid)
@@ -149,9 +166,10 @@ C----------------------------------------------------------------
 C     Do KPP time averaging.
 
 #ifdef ALLOW_TIMEAVE
+      IF ( KPP_taveFreq .GT. 0. _d 0 ) THEN
 
 C     Initialize averages to zero
-      IF ( myIter.EQ.nIter0 ) THEN
+       IF ( myIter.EQ.nIter0 ) THEN
 
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -160,18 +178,16 @@ C     Initialize averages to zero
             CALL TIMEAVE_RESET(KPPghattave,   Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPdiffKzStave,Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPhbltave,    1, bi,bj,myThid)
-            DO k=1,Nr
-              kpp_TimeAve(k,bi,bj)=0.
-            ENDDO
+            KPP_timeAve(bi,bj) = 0.
           ENDDO
         ENDDO
 
-      ELSE
+       ELSE
 
 C     Time Average KPP fields
-       DDTT=deltaTclock
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DDTT=deltaTclock
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_CUMULATE(
      &         KPPviscAztave, KPPviscAz, Nr,DDTT,bi,bj,myThid)
           CALL TIMEAVE_CUMULATE(
@@ -183,17 +199,15 @@ C     Time Average KPP fields
           CALL TIMEAVE_CUMULATE(
      &         KPPhbltave,    KPPhbl,    1, DDTT,bi,bj,myThid)
 C         Keep record of how much time has been integrated over
-          DO k=1,Nr
-            kpp_TimeAve(k,bi,bj)=kpp_TimeAve(k,bi,bj)+DDTT
-          ENDDO
+          KPP_timeAve(bi,bj) = KPP_timeAve(bi,bj)+DDTT
+         ENDDO
         ENDDO
-       ENDDO
 
-      ENDIF
+       ENDIF
 
 C     Dump files and restart average computation if needed
-      dumpFiles = .FALSE.
-      IF ( myIter .NE. nIter0 ) THEN
+       dumpFiles = .FALSE.
+       IF ( myIter .NE. nIter0 ) THEN
         dumpFiles =
      &     DIFFERENT_MULTIPLE(KPP_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
@@ -203,22 +217,22 @@ C     Dump files and restart average computation if needed
      I                        myTime, myIter, myThid )
         ENDIF
 #endif
-      ENDIF
+       ENDIF
 
-      IF (dumpFiles) THEN
+       IF (dumpFiles) THEN
 C       Normalize by integrated time
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            CALL TIMEAVE_NORMALIZ(KPPviscAztave,kpp_timeave,
-     &           Nr, bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(KPPdiffKzTtave,kpp_timeave,
-     &           Nr, bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(KPPghattave,kpp_timeave,
-     &           Nr, bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(KPPdiffKzStave,kpp_timeave,
-     &           Nr, bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(KPPhbltave,kpp_timeave,
-     &           1,  bi,bj,myThid)
+            CALL TIMEAVE_NORMALIZE( KPPviscAztave,
+     &                              KPP_timeAve, Nr, bi, bj, myThid )
+            CALL TIMEAVE_NORMALIZE( KPPdiffKzTtave,
+     &                              KPP_timeAve, Nr, bi, bj, myThid )
+            CALL TIMEAVE_NORMALIZE( KPPghattave,
+     &                              KPP_timeAve, Nr, bi, bj, myThid )
+            CALL TIMEAVE_NORMALIZE( KPPdiffKzStave,
+     &                              KPP_timeAve, Nr, bi, bj, myThid )
+            CALL TIMEAVE_NORMALIZE( KPPhbltave,
+     &                              KPP_timeAve, 1 , bi, bj, myThid )
           ENDDO
         ENDDO
 
@@ -263,6 +277,11 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
 
 #ifdef ALLOW_MNC
         IF (KPPwriteState .AND. useMNC .AND. timeave_mnc) THEN
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
           CALL MNC_CW_SET_UDIM('kpp_timeave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','kpp_timeave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)
@@ -288,14 +307,15 @@ C       Reset averages to zero
             CALL TIMEAVE_RESET(KPPghattave,   Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPdiffKzStave,Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPhbltave,    1, bi,bj,myThid)
-            DO k=1,Nr
-              kpp_TimeAve(k,bi,bj)=0.
-            ENDDO
+            KPP_timeAve(bi,bj) = 0.
           ENDDO
         ENDDO
 
-      ENDIF
+C--   end if dumpFiles
+       ENDIF
 
+C--   end if KPP_taveFreq > 0
+      ENDIF
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
