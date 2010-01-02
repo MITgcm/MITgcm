@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.24 2009/12/29 01:13:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.25 2010/01/02 22:59:16 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -99,8 +99,10 @@ C  freefe                 :: iron not bound to ligand
       _RL  GFE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-       INTEGER I,J,k
+       INTEGER i,j,k
+#ifdef CAR_DISS
        INTEGER nCALCITEstep
+#endif
 CEOP
 
        DO k=1,Nr
@@ -135,31 +137,31 @@ CEOP
           ENDDO
          ENDDO
 
-c carbon air-sea interaction
+C carbon air-sea interaction
        CALL DIC_SURFFORCING( PTR_DIC, PTR_ALK, PTR_PO4, SURC,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
-c alkalinity air-sea interaction
+C alkalinity air-sea interaction
        CALL ALK_SURFFORCING( PTR_ALK, SURA,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
 #ifdef ALLOW_O2
-c oxygen air-sea interaction
+C oxygen air-sea interaction
        CALL O2_SURFFORCING( PTR_O2, SURO,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 #endif
 
 #ifdef ALLOW_FE
-c find free iron
+C find free iron
        CALL FE_CHEM(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
      &                myIter, mythid)
 #endif
 
 
-c biological activity
+C biological activity
        CALL BIO_EXPORT( PTR_PO4 ,
 #ifdef ALLOW_FE
      I           PTR_FE,
@@ -168,7 +170,7 @@ c biological activity
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
-c flux of po4 from layers with biological activity
+C flux of po4 from layers with biological activity
        CALL PHOS_FLUX( BIOac, pflux, exportflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
@@ -183,10 +185,10 @@ C- Carbonate sink
          ENDDO
        ENDDO
 
-c carbonate
+C carbonate
 #ifdef CAR_DISS
-c dissolution only below saturation horizon
-c code following methid by Karsten Friis
+C dissolution only below saturation horizon
+C code following methid by Karsten Friis
          nCALCITEstep = 3600
          IF(myIter .lt. (nIter0+5) .or.
      &               mod(myIter,nCALCITEstep) .eq. 0)THEN
@@ -199,13 +201,13 @@ c
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 #else
-c old OCMIP way
+C old OCMIP way
         CALL CAR_FLUX( CAR_S, cflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 #endif
 
-c add all tendencies for PO4, DOP, ALK, DIC
+C add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
@@ -290,7 +292,7 @@ c find free iron and get rid of insoluble part
 
 
 #ifdef ALLOW_TIMEAVE
-c save averages
+C save averages
        IF ( taveFreq.GT.0. ) THEN
         DO k=1,Nr
          DO j=jmin,jmax
@@ -326,9 +328,7 @@ c save averages
      &                           fluxCO2(i,j,bi,bj)*deltaTclock
           ENDDO
          ENDDO
-         DO k=1,Nr
-          DIC_timeAve(k,bi,bj) = DIC_timeAve(k,bi,bj)+deltaTclock
-         ENDDO
+         DIC_timeAve(bi,bj) = DIC_timeAve(bi,bj)+deltaTclock
        ENDIF
 #endif /* ALLOW_TIMEAVE*/
 
@@ -355,6 +355,5 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* DIC_BIOTIC */
 #endif /* ALLOW_PTRACERS */
 
-c
        RETURN
        END

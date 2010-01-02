@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.9 2009/08/04 18:33:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.10 2010/01/02 22:59:16 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,17 +22,16 @@ C !USES: ===============================================================
 c!INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
-
-
-C !LOCAL VARIABLES: ====================================================
-      INTEGER bi, bj, k
-      CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
 
 #ifdef DIC_BIOTIC
 #ifdef ALLOW_TIMEAVE
 
-c set arrays to zero if first timestep
+C !LOCAL VARIABLES: ====================================================
+      INTEGER bi, bj
+c     CHARACTER*(MAX_LEN_MBUF) suff
+
+C set arrays to zero if first timestep
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_RESET(BIOave,   Nr,  bi, bj, myThid)
@@ -46,15 +45,12 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(pfluxave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(epfluxave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(cfluxave,   Nr,  bi, bj, myThid)
-          print*,'QQ start timeave'
-          DO k=1,Nr
-            DIC_timeAve(k,bi,bj) = 0. _d 0
-          ENDDO
+c         print*,'QQ start timeave'
+          DIC_timeAve(bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
 #endif /* ALLOW_TIMEAVE */
-
 #endif /* DIC_BIOTIC   */
 
       RETURN

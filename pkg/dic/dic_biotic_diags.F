@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.15 2009/08/04 18:33:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.16 2010/01/02 22:59:16 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -30,23 +30,17 @@ C     myThid -  Number of this instance of INI_FORCING
       INTEGER myThid
 CEndOfInterface
 
+#ifdef DIC_BIOTIC
+#ifdef ALLOW_TIMEAVE
 
 C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, k
+      INTEGER bi, bj
       CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
-
-#ifdef DIC_BIOTIC
-
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
-      ELSE
-        pf(1:1) = 'R'
-      ENDIF
-
-#ifdef ALLOW_TIMEAVE
+#endif
 
 C     Dump files and restart average computation if needed
       IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock) ) THEN
@@ -54,27 +48,27 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(BIOave, DIC_timeAve, Nr ,
+         CALL TIMEAVE_NORMALIZE(BIOave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(CARave, DIC_timeAve, Nr ,
+         CALL TIMEAVE_NORMALIZE(CARave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SURave,dic_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(SURave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SUROave,dic_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(SUROave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pCO2ave,dic_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(pCO2ave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pHave,dic_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(pHave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(fluxCO2ave,dic_timeAve, 1 ,
+         CALL TIMEAVE_NORMALIZE(fluxCO2ave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(OmegaCave, DIC_timeAve, Nr ,
+         CALL TIMEAVE_NORMALIZE(OmegaCave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pfluxave,dic_timeAve, Nr ,
+         CALL TIMEAVE_NORMALIZE(pfluxave,DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(epfluxave,dic_timeAve, Nr ,
+         CALL TIMEAVE_NORMALIZE(epfluxave,DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(cfluxave,dic_timeAve, Nr ,
+         CALL TIMEAVE_NORMALIZE(cfluxave,DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
@@ -107,6 +101,11 @@ C      Normalize by integrated time
 
 #ifdef ALLOW_MNC
        IF ( PTRACERS_timeave_mnc ) THEN
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+          pf(1:1) = 'D'
+         ELSE
+          pf(1:1) = 'R'
+         ENDIF
          CALL MNC_CW_SET_UDIM('dic_tave', -1, myThid)
          CALL MNC_CW_RL_W_S('D','dic_tave',0,0,'T',myTime,myThid)
          CALL MNC_CW_SET_UDIM('dic_tave', 0, myThid)
@@ -150,16 +149,13 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(epfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(cfluxave,Nr,bi,bj,myThid)
-         DO k=1,Nr
-           DIC_timeAve(k,bi,bj) = 0. _d 0
-         ENDDO
+         DIC_timeAve(bi,bj) = 0. _d 0
         ENDDO
        ENDDO
 
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-
 #endif /* DIC_BIOTIC   */
 
       RETURN
