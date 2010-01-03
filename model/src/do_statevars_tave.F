@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.3 2010/01/02 23:49:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.4 2010/01/03 00:00:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,14 +12,14 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE DO_STATEVARS_TAVE                                
+C     | SUBROUTINE DO_STATEVARS_TAVE
 C     | o Controlling routine for state variables time-averaging
 C     *==========================================================*
-C     | Computing statistics of the model state (state-variables) 
+C     | Computing statistics of the model state (state-variables)
 C     | is done at this level (after updating the halo region),
 C     | as opposed to other diagnostic calls (fluxes, tendencies)
-C     | that remain within the computation sequence.  
-C     | Note: IO are not supposed to be done at this level 
+C     | that remain within the computation sequence.
+C     | Note: IO are not supposed to be done at this level
 C     |       but later (in DO_THE_MODEL_IO)
 C     *==========================================================*
 C     \ev
@@ -46,24 +46,23 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER bi,bj
 
-      IF ( taveFreq.GT.0. ) THEN
 C--   Fill-in TimeAve pkg diagnostics (for state-variables)
 
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
-          CALL TIMEAVE_STATVARS( myTime, myIter, bi, bj, myThid )
+         IF ( taveFreq.GT.0. ) THEN
+           CALL TIMEAVE_STATVARS( myTime, myIter, bi, bj, myThid )
+         ENDIF
 # ifdef ALLOW_PTRACERS
-          IF ( usePTRACERS ) THEN
+         IF ( usePTRACERS .AND. PTRACERS_taveFreq.GT.0. ) THEN
            CALL PTRACERS_TIMEAVE( myTime, myIter, bi, bj, myThid )
-          ENDIF
+         ENDIF
 # endif /* ALLOW_PTRACERS */
 
 C--    End of bi,bj loop
-        ENDDO
        ENDDO
-
-      ENDIF
+      ENDDO
 #endif /* ALLOW_TIMEAVE */
 
       RETURN
