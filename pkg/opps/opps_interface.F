@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.4 2007/11/05 19:15:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.5 2010/01/03 19:11:43 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -62,13 +62,15 @@ C     msgBuf      - Informational/error meesage buffer
       INTEGER nTracer
 #ifdef ALLOW_PTRACERS
       PARAMETER( nTracer = 2+PTRACERS_num )
+      INTEGER itr
 #else /* not ALLOW_PTRACERS */
       PARAMETER( nTracer = 2 )
 #endif /* ALLOW_PTRACERS */
-      INTEGER i, j, K, kSurface, kMax, ktr, nTracerInUse
+      INTEGER I, J, K, kMax
+      INTEGER nTracerInUse
       _RL tMin, tMax, sMin, sMax
       _RL tMinNew, tMaxNew, sMinNew, sMaxNew
-      _RL thetaLoc(Nr), saltLoc(Nr), wVelLoc(Nr)
+      _RL wVelLoc(Nr)
       _RL tracerLoc(Nr,nTracer)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -88,17 +90,8 @@ C     initialization
       sMaxNew = -1. _d 23
       sMinNew =  1. _d 23
       tMinNew =  1. _d 23
-      IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
-       kSurface = 1
-      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
-       kSurface = Nr
-      ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-       kSurface = Nr
-      ELSE
-       STOP 'OPPS_INTERFACE: We should never reach this point'
-      ENDIF
 C     re-initialize convection counter
-      DO k=1,Nr
+      DO K=1,Nr
        DO J=1-Oly,sNy+Oly
         DO I=1-Olx,sNx+Olx
          OPPSconvectCount(I,J,K,bi,bj) = 0. _d 0
@@ -109,7 +102,7 @@ C     re-initialize convection counter
 C
       DO J=jMin,jMax
        DO I=iMin,iMax
-        IF ( hFacC(I,J,kSurface,bi,bj) .gt. 0. _d 0 ) THEN
+        IF ( kSurfC(I,J,bi,bj) .LE. Nr ) THEN
          IF ( useGCMwVel ) THEN
           DO K=1,Nr
            tracerLoc(K,1) = theta(I,J,K,bi,bj)
@@ -124,9 +117,9 @@ C
           ENDDO
          ENDIF
 #ifdef ALLOW_PTRACERS
-         DO ktr = 3, nTracerInUse
+         DO itr = 3, nTracerInUse
           DO K=1,Nr
-           tracerLoc(K,ktr) = ptracer(I,J,K,bi,bj,ktr-2)
+           tracerLoc(K,itr) = ptracer(I,J,K,bi,bj,itr-2)
           ENDDO
          ENDDO
 #endif /* ALLOW_PTRACERS */
@@ -168,10 +161,10 @@ C     determine range of temperature and salinity
            WRITE(msgBuf,'(A,A)') 'OPPS_INTERFACE: theta or S-range is',
      &          ' larger than before mixing'
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
+     &          SQUEEZE_RIGHT , myThid )
            WRITE(msgBuf,'(A,2I5)') '                for (i,j) = ', I,J
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
+     &          SQUEEZE_RIGHT , myThid )
           ENDIF
          ENDIF
 #endif /* ALLOW_OPPS_DEBUG */
@@ -180,9 +173,9 @@ C     determine range of temperature and salinity
           salt(I,J,K,bi,bj)  = tracerLoc(K,2)
          ENDDO
 #ifdef ALLOW_PTRACERS
-         DO ktr = 3, nTracerInUse
+         DO itr = 3, nTracerInUse
           DO K=1,Nr
-           ptracer(I,J,K,bi,bj,ktr-2) = tracerLoc(K,ktr)
+           ptracer(I,J,K,bi,bj,itr-2) = tracerLoc(K,itr)
           ENDDO
          ENDDO
 #endif /* ALLOW_PTRACERS */
