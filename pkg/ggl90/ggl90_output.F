@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_output.F,v 1.1 2009/06/17 14:15:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_output.F,v 1.2 2010/01/03 18:55:06 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
 
-#undef  MULTIPLE_RECORD_GGL90_STATE_FILES
 CBOP
 C     !ROUTINE: GGL90_OUTPUT
 C     !INTERFACE:
       SUBROUTINE GGL90_OUTPUT( myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE GGL90_OUTPUT
@@ -58,13 +58,17 @@ C     myThid :: my Thread Id number
 
 #ifdef ALLOW_GGL90
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, K
+#ifdef ALLOW_TIMEAVE
+      INTEGER bi, bj
       _RL DDTT
+#endif
 CEOP
 
 C----------------------------------------------------------------
@@ -76,32 +80,17 @@ C----------------------------------------------------------------
      &     ) THEN
 
        IF (GGL90writeState) THEN
-#ifdef MULTIPLE_RECORD_GGL90_STATE_FILES
-C       Write each snap-shot as a new record in one file per variable
-C       - creates relatively few files but these files can become huge
-        STOP 'un-initialised ggl90_drctrec'
-        CALL WRITE_REC_XYZ_RL('GGL90viscAr',GGL90viscAr,ggl90_drctrec,
-     &       myIter,myThid)
-        CALL WRITE_REC_XYZ_RL('GGL90diffKr',GGL90diffKr,ggl90_drctrec,
-     &       myIter,myThid)
-        CALL WRITE_REC_XYZ_RL('GGL90TKE'   ,GGL90TKE   ,ggl90_drctrec,
-     &       myIter,myThid)
-#else /* MULTIPLE_RECORD_GGL90_STATE_FILES */
 C       Write each snap-shot as a new file
-C       - creates many files but for large configurations is easier to
-C         transfer analyse a particular snap-shots
         WRITE(suff,'(I10.10)') myIter
-        CALL WRITE_FLD_XYZ_RL('GGL90viscAr.',suff,GGL90viscAr,
-     &       myIter,myThid)
-        CALL WRITE_FLD_XYZ_RL('GGL90diffKr.',suff,GGL90diffKr,
-     &       myIter,myThid)
-        CALL WRITE_FLD_XYZ_RL('GGL90TKE.'   ,suff,GGL90TKE,
-     &       myIter,myThid)
-#endif /* MULTIPLE_RECORD_GGL90_STATE_FILES */
+        IF ( myIter.NE.nIter0 ) THEN
+         CALL WRITE_FLD_XYZ_RL( 'GGL90viscAr.', suff,
+     &                           GGL90viscAr, myIter, myThid )
+         CALL WRITE_FLD_XYZ_RL( 'GGL90diffKr.', suff,
+     &                           GGL90diffKr, myIter, myThid )
+        ENDIF
+        CALL WRITE_FLD_XYZ_RL(  'GGL90TKE.',    suff,
+     &                           GGL90TKE,    myIter, myThid )
        ENDIF
-
-C--   Increment record counter
-       ggl90_drctrec = ggl90_drctrec + 1
 
       ENDIF
 
@@ -110,121 +99,80 @@ C     Do GGL90 time averaging.
 C----------------------------------------------------------------
 
 #ifdef ALLOW_TIMEAVE
+      IF ( GGL90taveFreq .GT. 0. _d 0 ) THEN
 
+       IF ( myIter.EQ.nIter0 ) THEN
 C     Initialize averages to zero
-      IF ( myIter.EQ.nIter0 ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(GGL90viscArtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(GGL90diffKrtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(GGL90TKEtave,   Nr,bi,bj,myThid)
-          DO k=1,Nr
-          ggl90_TimeAve(k,bi,bj)=0.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( GGL90viscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90diffKrtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90TKEtave,    Nr, bi, bj, myThid )
+          GGL90_timeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
-      ENDIF
 
-C     Time Average GGL90 fields
-      IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(GGL90taveFreq,myTime,deltaTClock)
-     &   ) THEN
-       DDTT=0.5*deltaTclock
-      ELSE
-       DDTT=deltaTclock
-      ENDIF
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       GGL90viscArtave,GGL90viscAr,Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       GGL90diffKrtave,GGL90diffKr,Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       GGL90TKEtave,   GGL90TKE,   Nr,DDTT,bi,bj,myThid)
+       ELSE
+C     Cumulate GGL90 fields (for Time Average)
+        DDTT=deltaTclock
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_CUMULATE( GGL90viscArtave, GGL90viscAr,
+     &                           Nr, DDTT, bi, bj, myThid )
+          CALL TIMEAVE_CUMULATE( GGL90diffKrtave, GGL90diffKr,
+     &                           Nr, DDTT, bi, bj, myThid )
+          CALL TIMEAVE_CUMULATE( GGL90TKEtave,    GGL90TKE,
+     &                           Nr, DDTT, bi, bj, myThid )
 C     Keep record of how much time has been integrated over
-        DO k=1,Nr
-         ggl90_TimeAve(k,bi,bj)=ggl90_TimeAve(k,bi,bj)+DDTT
+          GGL90_timeAve(bi,bj) = GGL90_timeAve(bi,bj)+DDTT
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+       ENDIF
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND.
-     &     DIFFERENT_MULTIPLE(GGL90taveFreq,myTime,deltaTClock)
-     &     ) THEN
+       IF ( myIter.NE.nIter0 .AND.
+     &      DIFFERENT_MULTIPLE(GGL90taveFreq,myTime,deltaTClock)
+     &    ) THEN
 
 C     Normalize by integrated time
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(GGL90viscArtave,ggl90_timeave,
-     &        Nr, bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(GGL90diffKrtave,ggl90_timeave,
-     &        Nr, bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(GGL90TKEtave   ,ggl90_timeave,
-     &        Nr, bi,bj,myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_NORMALIZE( GGL90viscArtave,
+     &                            GGL90_timeAve, Nr, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( GGL90diffKrtave,
+     &                            GGL90_timeAve, Nr, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( GGL90TKEtave,
+     &                            GGL90_timeAve, Nr, bi, bj, myThid )
+         ENDDO
         ENDDO
-       ENDDO
-
-#ifdef MULTIPLE_RECORD_GGL90_STATE_FILES
-C     Write each snap-shot as a new record in one file per variable
-C     - creates relatively few files but these files can become huge
-       STOP 'un-initialised ggl90_drctrecTave'
-       CALL WRITE_REC_XYZ_RL('GGL90viscAr-T',GGL90viscArTave,
-     &      ggl90_drctrecTave,myIter,myThid)
-       CALL WRITE_REC_XYZ_RL('GGL90diffKr-T',GGL90diffKrTave,
-     &      ggl90_drctrecTave,myIter,myThid)
-       CALL WRITE_REC_XYZ_RL('GGL90TKE-T',   GGL90TKETave,
-     &      ggl90_drctrecTave,myIter,myThid)
-C--   Increment record counter
-       ggl90_drctrecTave = ggl90_drctrecTave + 1
-
-#else /* MULTIPLE_RECORD_GGL90_STATE_FILES */
 
 C     Write each snap-shot as a new file
-C     - creates many files but for large configurations is easier to
-C     transfer analyse a particular snap-shots
-       WRITE(suff,'(I10.10)') myIter
-       CALL WRITE_FLD_XYZ_RL('GGL90viscAr-T.',suff,GGL90viscArTave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('GGL90diffKr-T.',suff,GGL90diffKrTave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('GGL90TKE-T.',   suff,GGL90TKETave,
-     &      myIter,myThid)
-#endif /* MULTIPLE_RECORD_GGL90_STATE_FILES */
+        WRITE(suff,'(I10.10)') myIter
+        CALL WRITE_FLD_XYZ_RL( 'GGL90viscAr-T.', suff,
+     &                          GGL90viscArTave, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL( 'GGL90diffKr-T.', suff,
+     &                          GGL90diffKrTave, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL( 'GGL90TKE-T.',    suff,
+     &                          GGL90TKETave,    myIter, myThid )
 
 C     Reset averages to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(GGL90viscArtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(GGL90diffKrtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(GGL90TKEtave,   Nr,bi,bj,myThid)
-         DO k=1,Nr
-          ggl90_TimeAve(k,bi,bj)=0.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( GGL90viscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90diffKrtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90TKEtave,    Nr, bi, bj, myThid )
+          GGL90_timeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
 
-C     Time Average GGL90 fields
-       DDTT=0.5*deltaTclock
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        GGL90viscArtave,GGL90viscAr,Nr,DDTT,bi,bj,myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        GGL90diffKrtave,GGL90diffKr,Nr,DDTT,bi,bj,myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        GGL90TKEtave,   GGL90TKE,   Nr,DDTT,bi,bj,myThid)
-C     Keep record of how much time has been integrated over
-         DO k=1,Nr
-          ggl90_TimeAve(k,bi,bj)=ggl90_TimeAve(k,bi,bj)+DDTT
-         ENDDO
-        ENDDO
-       ENDDO
+C-    end dump-files block
+       ENDIF
+
+C-    end if GGL90taveFreq > 0
       ENDIF
+#endif /* ALLOW_TIMEAVE */
 
-#endif
-
-#endif
+#endif /* ALLOW_GGL90 */
 
       RETURN
       END
