@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.12 2009/12/29 23:07:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.13 2010/01/03 21:09:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -41,11 +41,16 @@ CEOP
 
 #ifdef ALLOW_THSICE
 
-C     == Local variables ==
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_TIMEAVE
+      CHARACTER*(MAX_LEN_MBUF) fn
       INTEGER bi, bj, kl
-      CHARACTER*(MAX_LEN_MBUF) suff, fn
+#endif
 #ifdef ALLOW_MNC
       INTEGER i
       CHARACTER*(MAX_LEN_MBUF) mncf
@@ -212,8 +217,7 @@ C--    Write all time-average variables in 1 file :
 
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. thSIce_tave_mnc ) THEN
-       _BARRIER
-c      _BEGIN_MASTER( myThid )
+         _BARRIER
          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
            pf(1:1) = 'D'
          ELSE
@@ -258,8 +262,7 @@ C        C             123456789 1
            CALL MNC_CW_RL_W(pf,mncf,0,0,'tMxL_ave',ice_tMxL_Ave,myThid)
            CALL MNC_CW_RL_W(pf,mncf,0,0,'sMxL_ave',ice_sMxL_Ave,myThid)
          ENDIF
-c      _END_MASTER( myThid )
-       _BARRIER
+         _BARRIER
        ENDIF
 #endif
 
@@ -338,6 +341,7 @@ C     Dump a snap-shot of main state variables:
 
 #ifdef ALLOW_MNC
         IF ( thSIce_snapshot_mnc ) THEN
+          _BARRIER
           IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
             pf(1:1) = 'D'
           ELSE
@@ -365,6 +369,7 @@ C         C             123456789 12345
             CALL MNC_CW_RL_W(pf,mncf,0,0,'tOceMxL',tOceMxL,myThid)
             CALL MNC_CW_RL_W(pf,mncf,0,0,'sOceMxL',sOceMxL,myThid)
           ENDIF
+          _BARRIER
         ENDIF
 #endif  /* ALLOW_MNC */
 

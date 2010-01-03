@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diffusion.F,v 1.1 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diffusion.F,v 1.2 2010/01/03 21:09:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -51,16 +51,15 @@ C     myThid    :: My Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
 
 #ifdef ALLOW_THSICE
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,      :: Loop counters
 C     iceFld    :: sea-ice + snow mass density
-C     msgBuf    :: Informational/error meesage buffer
+C     msgBuf    :: Informational/error message buffer
       INTEGER i, j
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     iceFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tmpFld, hIceEpsil
       LOGICAL dBugFlag
