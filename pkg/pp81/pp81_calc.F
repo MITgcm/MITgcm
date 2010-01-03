@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.4 2009/10/08 20:08:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.5 2010/01/03 19:17:01 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -36,8 +36,6 @@ C !USES: ============================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
-#else /* ALLOW_AUTODIFF_TAMC */
-      integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
@@ -93,8 +91,8 @@ CML     &        PPviscAr(I,J,K,bi,bj), PPdiffKr(I,J,K,bi,bj)
 #ifdef ALLOW_PP81_LOWERBOUND
 CRT   This is where the lower limit for subsurface layers
 CRT   (BRIOS special) is set.
-       IF ( (buoyancyRelation .EQ. 'OCEANIC' .AND. K .EQ. 2) .OR.
-     &      (buoyancyRelation .EQ. 'OCEANICP' .AND. K .EQ. Nr) ) THEN
+       IF ( (usingZCoords .AND. K .EQ. 2) .OR.
+     &      (usingPCoords .AND. K .EQ. Nr) ) THEN
         DO J=jMin,jMax
          DO I=iMin,iMax
           PPviscAr(I,J,K,bi,bj) = MAX(PPviscMin,PPviscAr(I,J,K,bi,bj))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_ri_number.F,v 1.3 2008/08/11 22:28:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_ri_number.F,v 1.4 2010/01/03 19:17:01 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -34,8 +34,6 @@ C !USES: ===============================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
-#else /* ALLOW_AUTODIFF_TAMC */
-      integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
