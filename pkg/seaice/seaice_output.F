@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.5 2009/10/04 22:30:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.6 2010/01/03 00:27:36 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -23,9 +23,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TAVE.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
@@ -40,32 +40,26 @@ C     myThid :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 C     == Local variables in common block :
 
 C     == Local variables ==
       CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_FNAM) fName
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 #if ( defined (ALLOW_TIMEAVE) || defined (ALLOW_MNC) )
-      INTEGER i, j, k, bi, bj
+c     INTEGER i, j, bi, bj
 #endif
 #ifdef ALLOW_TIMEAVE
+      INTEGER i, j, bi, bj
       LOGICAL dumpFiles
 #endif /* ALLOW_TIMEAVE */
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif /* ALLOW_MNC */
 CEOP
-
-#ifdef ALLOW_MNC
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
-      ELSE
-        pf(1:1) = 'R'
-      ENDIF
-#endif /* ALLOW_MNC */
 
       IF (SEAICEwriteState) THEN
 
@@ -76,6 +70,11 @@ CEOP
 
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
+            IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+              pf(1:1) = 'D'
+            ELSE
+              pf(1:1) = 'R'
+            ENDIF
             CALL MNC_CW_SET_UDIM('sice', -1, myThid)
             CALL MNC_CW_RL_W_S('D','sice',0,0,'T', myTime, myThid)
             CALL MNC_CW_SET_UDIM('sice', 0, myThid)
@@ -148,41 +147,41 @@ C     Do SEAICE time averaging.
 C----------------------------------------------------------------
 
 #ifdef ALLOW_TIMEAVE
+      IF ( SEAICE_taveFreq.GT.0. _d 0 ) THEN
 
 C--   Time-cumulations
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          FUtave(i,j,bi,bj)   =
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+C- note(jmc): surf.Fluxes have not yet been computed when called @ nIter0
+           FUtave(i,j,bi,bj)   =
      &         FUtave(i,j,bi,bj)   +FU(i,j,bi,bj)    *deltaTclock
-          FVtave(i,j,bi,bj)   =
+           FVtave(i,j,bi,bj)   =
      &         FVtave(i,j,bi,bj)   +FV(i,j,bi,bj)    *deltaTclock
-          EmPmRtave(i,j,bi,bj)=
+           EmPmRtave(i,j,bi,bj)=
      &         EmPmRtave(i,j,bi,bj)+EmPmR(i,j,bi,bj) *deltaTclock
-          QNETtave(i,j,bi,bj) =
+           QNETtave(i,j,bi,bj) =
      &         QNETtave(i,j,bi,bj) +QNET(i,j,bi,bj)  *deltaTclock
-          QSWtave(i,j,bi,bj)  =
+           QSWtave(i,j,bi,bj)  =
      &         QSWtave(i,j,bi,bj)  +QSW(i,j,bi,bj)   *deltaTclock
-          UICEtave(i,j,bi,bj) =
+           UICEtave(i,j,bi,bj) =
      &         UICEtave(i,j,bi,bj) +UICE(i,j,bi,bj)*deltaTclock
-          VICEtave(i,j,bi,bj) =
+           VICEtave(i,j,bi,bj) =
      &         VICEtave(i,j,bi,bj) +VICE(i,j,bi,bj)*deltaTclock
-          HEFFtave(i,j,bi,bj) =
+           HEFFtave(i,j,bi,bj) =
      &         HEFFtave(i,j,bi,bj) +HEFF(i,j,bi,bj)*deltaTclock
-          AREAtave(i,j,bi,bj) =
+           AREAtave(i,j,bi,bj) =
      &         AREAtave(i,j,bi,bj) +AREA(i,j,bi,bj)*deltaTclock
+          ENDDO
          ENDDO
-        ENDDO
-        DO k=1,Nr
-         SEAICE_TimeAve(k,bi,bj)=SEAICE_TimeAve(k,bi,bj)+deltaTclock
+         SEAICE_timeAve(bi,bj) = SEAICE_timeAve(bi,bj)+deltaTclock
         ENDDO
        ENDDO
-      ENDDO
 
 C     Dump files and restart average computation if needed
-      dumpFiles = .FALSE.
-      IF ( myIter .NE. nIter0 ) THEN
+       dumpFiles = .FALSE.
+       IF ( myIter .NE. nIter0 ) THEN
         dumpFiles =
      &     DIFFERENT_MULTIPLE(SEAICE_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
@@ -192,36 +191,41 @@ C     Dump files and restart average computation if needed
      I                        myTime, myIter, myThid )
         ENDIF
 #endif
-      ENDIF
+       ENDIF
 
-      IF (dumpFiles) THEN
+       IF (dumpFiles) THEN
 C      Normalize by integrated time
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(FUtave   ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(FVtave   ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(EmPmRtave,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(QNETtave ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(QSWtave  ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(UICEtave ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(VICEtave ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(HEFFtave ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(AREAtave ,SEAICE_timeave, 1,
-     &                 bi,bj,myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_NORMALIZE( FUtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( FVtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( EmPmRtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( QNETtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( QSWtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( UICEtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( VICEtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( HEFFtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( AREAtave,
+     &                            SEAICE_timeAve, 1, bi, bj, myThid )
+         ENDDO
         ENDDO
-       ENDDO
-c      IF (myIter.EQ.10) WRITE(0,*) myThid, dumpFiles
+c       IF (myIter.EQ.10) WRITE(0,*) myThid, dumpFiles
 
 #ifdef ALLOW_MNC
-       IF (useMNC .AND. SEAICE_tave_mnc) THEN
+        IF (useMNC .AND. SEAICE_tave_mnc) THEN
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+         ELSE
+           pf(1:1) = 'R'
+         ENDIF
          CALL MNC_CW_SET_UDIM('sice_tave', -1, myThid)
          CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'T', myTime, myThid)
          CALL MNC_CW_SET_UDIM('sice_tave', 0, myThid)
@@ -246,9 +250,9 @@ C    &        myTime,myThid)
      &        'si_HEFFtave',HEFFtave,myThid)
          CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_AREAtave',AREAtave,myThid)
-       ENDIF
+        ENDIF
 #endif
-       IF (SEAICE_tave_mdsio) THEN
+        IF (SEAICE_tave_mdsio) THEN
          WRITE(suff,'(I10.10)') myIter
          CALL WRITE_FLD_XY_RL('FUtave.'   ,suff,FUtave   ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('FVtave.'   ,suff,FVtave   ,myIter,myThid)
@@ -259,29 +263,29 @@ C    &        myTime,myThid)
          CALL WRITE_FLD_XY_RL('VICEtave.' ,suff,VICEtave ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('HEFFtave.' ,suff,HEFFtave ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('AREAtave.' ,suff,AREAtave ,myIter,myThid)
-       ENDIF
+        ENDIF
 
 C      Reset averages to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(FUtave   ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(FVtave   ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(EmPmRtave,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(QNETtave ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(QSWtave  ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(UICEtave ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(VICEtave ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(HEFFtave ,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(AREAtave ,1,bi,bj,myThid)
-         DO k=1,Nr
-          SEAICE_TimeAve(k,bi,bj)=ZERO
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( FUtave   , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( FVtave   , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( EmPmRtave, 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( QNETtave , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( QSWtave  , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( UICEtave , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( VICEtave , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( HEFFtave , 1, bi, bj, myThid )
+          CALL TIMEAVE_RESET( AREAtave , 1, bi, bj, myThid )
+          SEAICE_timeAve(bi,bj) = ZERO
          ENDDO
         ENDDO
-       ENDDO
 
 C--   end dumpFiles block
-      ENDIF
+       ENDIF
 
+C--   end if SEAICE_taveFreq > 0
+      ENDIF
 #endif /* ALLOW_TIMEAVE */
 
 C--   do SEAICE monitor output : print some statistics about seaice fields
