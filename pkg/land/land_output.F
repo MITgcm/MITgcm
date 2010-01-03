@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.4 2009/12/29 23:05:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.5 2010/01/03 21:08:22 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -43,9 +43,11 @@ CEOP
 
 #ifdef ALLOW_LAND
 
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi, bj, k
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -72,8 +74,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Write snap-shot
 C jmc: previously done from LAND_DO_DIAGS, but much better here.
-
-        _BARRIER
 
         IF ( land_snapshot_mdsio ) THEN
 
@@ -112,6 +112,7 @@ C--   fluxes (2-D map):
 
 #ifdef ALLOW_MNC
         IF ( land_snapshot_mnc ) THEN
+          _BARRIER
 
           IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
             pf(1:1) = 'D'
@@ -153,9 +154,9 @@ C--   fluxes (2-D map):
           CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_EnWaFx', land_EnWFlux, myThid)
 
+          _BARRIER
         ENDIF
 #endif
-        _BARRIER
 
       ENDIF
 
