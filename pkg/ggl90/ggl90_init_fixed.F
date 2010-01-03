@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.2 2009/01/30 02:23:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.3 2010/01/03 18:48:53 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -27,8 +27,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-      INTEGER bi,bj
-      INTEGER  I, J
+#ifdef ALLOW_GGL90_SMOOTH
+      INTEGER i, j, bi, bj
+#endif
 
 C#ifdef ALLOW_MNC
 C      IF (useMNC) THEN

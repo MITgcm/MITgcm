@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.1 2008/10/07 19:33:09 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.2 2010/01/03 18:48:53 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -35,7 +35,7 @@ C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
-      INTEGER       diagMate
+c     INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
