@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.4 2010/01/03 00:00:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.5 2010/01/03 00:07:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ C--   Fill-in TimeAve pkg diagnostics (for state-variables)
            CALL TIMEAVE_STATVARS( myTime, myIter, bi, bj, myThid )
          ENDIF
 # ifdef ALLOW_PTRACERS
-         IF ( usePTRACERS .AND. PTRACERS_taveFreq.GT.0. ) THEN
+         IF ( usePTRACERS ) THEN
            CALL PTRACERS_TIMEAVE( myTime, myIter, bi, bj, myThid )
          ENDIF
 # endif /* ALLOW_PTRACERS */
