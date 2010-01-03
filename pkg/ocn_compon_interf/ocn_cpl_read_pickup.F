@@ -1,16 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.7 2010/01/03 19:22:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: OCN_CPL_READ_PICKUP
+C     !INTERFACE:
       SUBROUTINE OCN_CPL_READ_PICKUP( myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OCN_CPL_READ_PICKUP
 C     | o Reads fields from a pickup file for a restart
 C     *==========================================================*
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -25,19 +32,27 @@ C     == Global variables ==
 #include "PTRACERS_PARAMS.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter  :: time-step number
-C     myThid  :: Thread number for this instance of the routine
+C     myIter :: Iteration number
+C     myThid :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef COMPONENT_MODULE
-C     == Local variables ==
+
+C     !LOCAL VARIABLES:
       INTEGER prec, rec_ind
       CHARACTER*(MAX_LEN_FNAM) fn
 
-       WRITE(fn,'(A,I10.10)') 'pickup_cpl.',myIter
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+       IF ( pickupSuff.EQ.' ' ) THEN
+         WRITE(fn,'(A,I10.10)') 'pickup_cpl.',myIter
+       ELSE
+         WRITE(fn,'(A,A10)') 'pickup_cpl.', pickupSuff
+       ENDIF
        prec = precFloat64
        rec_ind=0
 
