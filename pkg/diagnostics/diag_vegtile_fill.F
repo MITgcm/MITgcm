@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.11 2009/09/03 20:46:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.12 2010/01/03 00:42:45 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -67,7 +67,9 @@ C ===============
       INTEGER region2fill(0:nRegions)
       _RL     scaleFact
       _RL     gridField(sNx*sNy,nlevs), gridFrac(sNx*sNy)
+#ifndef REAL4_IS_SLOW
       _RS     dummyRS(1)
+#endif
 
 #ifdef ALLOW_FIZHI
       _RL   getcon

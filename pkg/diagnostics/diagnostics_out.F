@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.42 2009/08/04 18:00:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.43 2010/01/03 00:42:45 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -62,7 +62,7 @@ C              diagnostic storage qdiag into it.
       COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
 
-      INTEGER i, j, k, lm, klev
+      INTEGER i, j, k, lm
       INTEGER bi, bj
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
@@ -82,7 +82,7 @@ C              diagnostic storage qdiag into it.
 #endif
 #ifdef ALLOW_MNC
       INTEGER ll, llMx, jj, jjMx
-      INTEGER ii
+      INTEGER ii, klev
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
       INTEGER CW_DIMS, NLEN
       PARAMETER ( CW_DIMS = 10 )
@@ -512,7 +512,7 @@ C     and now use the missing values for masking out the land points
                 klev = NINT(levs(k,listId))
                 DO j = 1-OLy,sNy+OLy
                  DO i = 1-OLx,sNx+OLx
-                  IF ( _hFacC(I,J,klev,bi,bj) .EQ. 0. )
+                  IF ( maskC(i,j,klev,bi,bj) .EQ. 0. )
      &                 qtmp1(i,j,k,bi,bj) = misvalLoc
                  ENDDO
                 ENDDO
