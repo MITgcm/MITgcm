@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.1 2009/06/17 14:18:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.2 2010/01/03 19:10:46 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
 
-#undef  MULTIPLE_RECORD_MY82_STATE_FILES
 CBOP
 C     !ROUTINE: MY82_OUTPUT
 C     !INTERFACE:
       SUBROUTINE MY82_OUTPUT( myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE MY82_OUTPUT
@@ -61,43 +61,33 @@ C     myThid :: my Thread Id number
 
 #ifdef ALLOW_MY82
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, K
+#ifdef ALLOW_TIMEAVE
+      INTEGER bi, bj
       _RL DDTT
+#endif
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif
 CEOP
 
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-       pf(1:1) = 'D'
-      ELSE
-       pf(1:1) = 'R'
-      ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C----------------------------------------------------------------
 C     Dump snapshot of MY82 variables.
 C----------------------------------------------------------------
 
-      IF (
-     &     DIFFERENT_MULTIPLE(MYdumpFreq,
-     &                        myTime,deltaTClock)
-     &     ) THEN
+      IF ( myIter.NE.nIter0 .AND.
+     &     DIFFERENT_MULTIPLE( MYdumpFreq, myTime, deltaTClock )
+     &   ) THEN
 
        IF (MYwriteState .AND. snapshot_mdsio) THEN
-#ifdef MULTIPLE_RECORD_MY82_STATE_FILES
-C       Write each snap-shot as a new record in one file per variable
-C       - creates relatively few files but these files can become huge
-        STOP 'un-initialised my_drctrec'
-        CALL WRITE_REC_XYZ_RL('MYviscAr',MYviscAr,my_drctrec,
-     &       myIter,myThid)
-        CALL WRITE_REC_XYZ_RL('MYdiffKr',MYdiffKr,my_drctrec,
-     &       myIter,myThid)
-        CALL WRITE_REC_XY_RL('MYhbl',MYhbl,my_drctrec,
-     &       myIter,myThid)
-#else /* MULTIPLE_RECORD_MY82_STATE_FILES */
 C       Write each snap-shot as a new file
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
@@ -108,11 +98,15 @@ C         transfer analyse a particular snap-shots
      &       myIter,myThid)
         CALL WRITE_FLD_XY_RL('MYhbl.',suff,MYhbl,
      &       myIter,myThid)
-#endif /* MULTIPLE_RECORD_MY82_STATE_FILES */
        ENDIF
 
 #ifdef ALLOW_MNC
        IF (MYwriteState .AND. useMNC .AND. snapshot_mnc ) THEN
+        IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+         pf(1:1) = 'D'
+        ELSE
+         pf(1:1) = 'R'
+        ENDIF
         CALL MNC_CW_SET_UDIM('my_state', -1, myThid)
         CALL MNC_CW_RL_W_S('D','my_state',0,0,'T',myTime,myThid)
         CALL MNC_CW_SET_UDIM('my_state', 0, myThid)
@@ -126,9 +120,6 @@ C         transfer analyse a particular snap-shots
        ENDIF
 #endif /*  ALLOW_MNC  */
 
-C--   Increment record counter
-       my_drctrec = my_drctrec + 1
-
       ENDIF
 
 C----------------------------------------------------------------
@@ -136,135 +127,99 @@ C     Do MY82 time averaging.
 C----------------------------------------------------------------
 
 #ifdef ALLOW_TIMEAVE
+      IF ( MYtaveFreq.GT.0. _d 0 ) THEN
 
+       IF ( myIter.EQ.nIter0 ) THEN
 C     Initialize averages to zero
-      IF ( myIter.EQ.nIter0 ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(MYviscArtave, Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(MYdiffKrtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(MYhbltave,    1, bi,bj,myThid)
-          DO k=1,Nr
-          my_TimeAve(k,bi,bj)=0.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( MYviscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( MYdiffKrtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( MYhbltave,    1 , bi, bj, myThid )
+          MY_timeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
-      ENDIF
 
-C     Time Average MY82 fields
-      IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(MYtaveFreq,myTime,deltaTClock)
-     &   ) THEN
-       DDTT=0.5*deltaTclock
-      ELSE
-       DDTT=deltaTclock
-      ENDIF
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       MYviscArtave,MYviscAr,Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       MYdiffKrtave,MYdiffKr,Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       MYhbltave,   MYhbl,    1, DDTT,bi,bj,myThid)
+       ELSE
+C     Cumulate MY82 fields (for Time Average)
+        DDTT=deltaTclock
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_CUMULATE( MYviscArtave, MYviscAr,
+     &                           Nr, DDTT, bi, bj, myThid )
+          CALL TIMEAVE_CUMULATE( MYdiffKrtave, MYdiffKr,
+     &                           Nr, DDTT, bi, bj, myThid )
+          CALL TIMEAVE_CUMULATE( MYhbltave,    MYhbl,
+     &                           1 , DDTT, bi, bj, myThid )
 C     Keep record of how much time has been integrated over
-        DO k=1,Nr
-         my_TimeAve(k,bi,bj)=my_TimeAve(k,bi,bj)+DDTT
+          MY_timeAve(bi,bj) = MY_timeAve(bi,bj)+DDTT
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+       ENDIF
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND.
-     &     DIFFERENT_MULTIPLE(MYtaveFreq,myTime,deltaTClock)
-     &     ) THEN
+       IF ( myIter.NE.nIter0 .AND.
+     &      DIFFERENT_MULTIPLE( MYtaveFreq, myTime, deltaTClock )
+     &    ) THEN
 
 C     Normalize by integrated time
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(MYviscArtave,my_timeave,
-     &        Nr, bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(MYdiffKrtave,my_timeave,
-     &        Nr, bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(MYhbltave   ,my_timeave,
-     &        1,  bi,bj,myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_NORMALIZE( MYviscArtave,
+     &                            MY_timeAve, Nr, bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE( MYdiffKrtave,
+     &                            MY_timeAve, Nr, bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE( MYhbltave,
+     &                            MY_timeAve, 1 , bi,bj,myThid)
+         ENDDO
         ENDDO
-       ENDDO
 
-      IF (MYwriteState .AND. timeave_mdsio) THEN
-#ifdef MULTIPLE_RECORD_MY82_STATE_FILES
-C     Write each snap-shot as a new record in one file per variable
-C     - creates relatively few files but these files can become huge
-       STOP 'un-initialised my_drctrecTave'
-       CALL WRITE_REC_XYZ_RL('MYviscAr-T',MYviscArTave,
-     &      my_drctrecTave,myIter,myThid)
-       CALL WRITE_REC_XYZ_RL('MYdiffKr-T',MYdiffKrTave,
-     &      my_drctrecTave,myIter,myThid)
-       CALL WRITE_REC_XY_RL('MYhbl-T',    MYhblTave,
-     &      my_drctrecTave,myIter,myThid)
-C--   Increment record counter
-       my_drctrecTave = my_drctrecTave + 1
-
-#else /* MULTIPLE_RECORD_MY82_STATE_FILES */
-
+        IF (MYwriteState .AND. timeave_mdsio) THEN
 C     Write each snap-shot as a new file
-C     - creates many files but for large configurations is easier to
-C     transfer analyse a particular snap-shots
-       WRITE(suff,'(I10.10)') myIter
-       CALL WRITE_FLD_XYZ_RL('MYviscAr-T.',suff,MYviscArTave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('MYdiffKr-T.',suff,MYdiffKrTave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XY_RL('MYhbl-T.',    suff,MYhblTave,
-     &      myIter,myThid)
-#endif /* MULTIPLE_RECORD_MY82_STATE_FILES */
-      ENDIF
+         WRITE(suff,'(I10.10)') myIter
+         CALL WRITE_FLD_XYZ_RL('MYviscAr-T.', suff,
+     &                          MYviscArTave, myIter, myThid )
+         CALL WRITE_FLD_XYZ_RL('MYdiffKr-T.', suff,
+     &                          MYdiffKrTave, myIter, myThid )
+         CALL WRITE_FLD_XY_RL( 'MYhbl-T.',    suff,
+     &                          MYhblTave,    myIter, myThid )
+        ENDIF
 
 #ifdef ALLOW_MNC
-      IF (MYwriteState .AND. useMNC .AND. timeave_mnc) THEN
-       CALL MNC_CW_SET_UDIM('my_timeave', -1, myThid)
-       CALL MNC_CW_RL_W_S('D','my_timeave',0,0,'T',myTime,myThid)
-       CALL MNC_CW_SET_UDIM('my_timeave', 0, myThid)
-       CALL MNC_CW_I_W_S('I','my_timeave',0,0,'iter',myIter,myThid)
-       CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
-     &      'MYviscAr', MYviscArTave, myThid)
-       CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
-     &      'MYdiffKr', MYdiffKrTave, myThid)
-       CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
-     &      'MYhbl', MYhblTave, myThid)
-      ENDIF
+        IF (MYwriteState .AND. useMNC .AND. timeave_mnc) THEN
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+          pf(1:1) = 'D'
+         ELSE
+          pf(1:1) = 'R'
+         ENDIF
+         CALL MNC_CW_SET_UDIM('my_timeave', -1, myThid)
+         CALL MNC_CW_RL_W_S('D','my_timeave',0,0,'T',myTime,myThid)
+         CALL MNC_CW_SET_UDIM('my_timeave', 0, myThid)
+         CALL MNC_CW_I_W_S('I','my_timeave',0,0,'iter',myIter,myThid)
+         CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &        'MYviscAr', MYviscArTave, myThid)
+         CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &        'MYdiffKr', MYdiffKrTave, myThid)
+         CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &        'MYhbl', MYhblTave, myThid)
+        ENDIF
 #endif /*  ALLOW_MNC  */
 
 C     Reset averages to zero
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_RESET(MYviscArtave,Nr,bi,bj,myThid)
-        CALL TIMEAVE_RESET(MYdiffKrtave,Nr,bi,bj,myThid)
-        CALL TIMEAVE_RESET(MYhbltave,    1,bi,bj,myThid)
-        DO k=1,Nr
-         my_TimeAve(k,bi,bj)=0.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( MYviscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( MYdiffKrtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( MYhbltave,    1 , bi, bj, myThid )
+          MY_timeAve(bi,bj) = 0.
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
 
-C     Time Average MY fields
-      DDTT=0.5*deltaTclock
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       MYviscArtave,MYviscAr,Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       MYdiffKrtave,MYdiffKr,Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       MYhbltave,    MYhbl,    1, DDTT,bi,bj,myThid)
-C     Keep record of how much time has been integrated over
-        DO k=1,Nr
-         my_TimeAve(k,bi,bj)=my_TimeAve(k,bi,bj)+DDTT
-        ENDDO
-       ENDDO
-      ENDDO
+C-    end dump-files block
+       ENDIF
+
+C-    end if MYtaveFreq > 0
       ENDIF
-
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
