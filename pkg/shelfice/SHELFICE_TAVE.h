@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_TAVE.h,v 1.3 2009/08/04 16:43:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_TAVE.h,v 1.4 2010/01/03 00:39:46 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -9,15 +9,15 @@ C     *==========================================================*
 #ifdef ALLOW_TIMEAVE
 
 C     Keep track of time
-      _RL SHELFICE_TimeAve(Nr,nSx,nSy)
-      COMMON /SHELFICE_TAVE/ SHELFICE_TimeAve
+      _RL SHELFICE_timeAve(nSx,nSy)
+      COMMON /SHELFICE_TAVE_COUNT/ SHELFICE_timeAve
 
 C     Storage arrays for time-averages
       _RL shelfice_heatFluxtave
      &     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL shelfice_frshFluxtave
      &     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      COMMON /SHELFICE_TAVE_DIAGS/
+      COMMON /SHELFICE_TAVE_VARS/
      &     shelfice_heatFluxtave,
      &     shelfice_frshFluxtave
 
