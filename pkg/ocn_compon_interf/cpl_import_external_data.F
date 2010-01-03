@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_import_external_data.F,v 1.3 2009/12/25 19:43:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_import_external_data.F,v 1.4 2010/01/03 19:26:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,6 +26,7 @@ C     !USES
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "CPL_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -39,8 +40,6 @@ CEOP
 
 #ifdef COMPONENT_MODULE
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi,bj
 
 C-    Fetch data from coupling layer. Note MIT Coupler checkpoint1
 C     does not allow asynchronous extraction of data, so ordering
@@ -50,11 +49,11 @@ C     has to be consistent with ordering coupling layer.
 C-    Modify forcing according to Imported fields from coupler
 c     CALL OCN_APPLY_IMPORT( myTime, myIter, myThid )
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        CALL OCN_CPL_DIAGS( bi, bj, myTime, myThid )
-       ENDDO
-      ENDDO
+      IF ( cpl_taveFreq.GT.0. _d 0 ) THEN
+C--   note: will move this "if" inside OCN_CPL_DIAGS when other diags
+C           than time-ave are computed within OCN_CPL_DIAGS.
+        CALL OCN_CPL_DIAGS( myTime, myIter, myThid )
+      ENDIF
 
 #endif /* COMPONENT_MODULE */
 

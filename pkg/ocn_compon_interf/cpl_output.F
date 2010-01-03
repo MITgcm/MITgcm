@@ -1,16 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.1 2009/06/17 14:53:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.2 2010/01/03 19:26:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C     !ROUTINE: CPL_OUTPUT
+C     !INTERFACE:
       SUBROUTINE CPL_OUTPUT( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CPL_OUTPUT
+C     | S/R CPL_OUTPUT
 C     | o Write CPL time-average output
 C     | - Oceanic version -
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -20,23 +27,26 @@ C     === Global variables ===
 #include "CPL_PARAMS.h"
 #include "OCNIDS.h"
 #include "OCNCPL.h"
-#include "CPL_DIAGS.h"
+#include "CPL_TAVE.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime :: my time in simulation ( s )
+C     myTime :: Current time in simulation
 C     myIter :: my Iteration number
 C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef COMPONENT_MODULE
 #ifdef ALLOW_TIMEAVE
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  :: Tile index
 C     fn     :: File name suffix
@@ -46,45 +56,37 @@ C     fn     :: File name suffix
       CHARACTER*(1) pf
 #endif /*  ALLOW_MNC  */
 
-#ifdef ALLOW_MNC
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
-      ELSE
-        pf(1:1) = 'R'
-      ENDIF
-#endif /*  ALLOW_MNC  */
-
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND.
      &     DIFFERENT_MULTIPLE(cpl_taveFreq,myTime,deltaTClock)
-     &     ) THEN
+     &   ) THEN
 
 C       Normalize by integrated time
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-           CALL TIMEAVE_NORMALIZ(SLPtave,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(HFtave ,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(QSWtave,CPL_TimeAve,1,bi,bj,myThid)
-c          CALL TIMEAVE_NORMALIZ(QLTtave,CPL_TimeAve,1,bi,bj,myThid)
-c          CALL TIMEAVE_NORMALIZ(QSNtave,CPL_TimeAve,1,bi,bj,myThid)
-c          CALL TIMEAVE_NORMALIZ(QLWtave,CPL_TimeAve,1,bi,bj,myThid)
-c          CALL TIMEAVE_NORMALIZ(UGtave ,CPL_TimeAve,1,bi,bj,myThid)
-c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(TXtave ,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(TYtave ,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(FWtave ,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(SFxtave,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(SICtave,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(MXLtave,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(SSTtave,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(SSStave,CPL_TimeAve,1,bi,bj,myThid)
-           CALL TIMEAVE_NORMALIZ(vSqtave,CPL_TimeAve,1,bi,bj,myThid)
-           IF ( ocnCpl_exchange_DIC ) THEN
-            CALL TIMEAVE_NORMALIZ(aCO2tave, CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(sWSpdtave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(iceftave, CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(fCO2tave, CPL_TimeAve,1,bi,bj,myThid)
-           ENDIF
+          CALL TIMEAVE_NORMALIZE(SLPtave,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(HFtave ,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(QSWtave,CPL_timeAve,1,bi,bj,myThid)
+c         CALL TIMEAVE_NORMALIZE(QLTtave,CPL_timeAve,1,bi,bj,myThid)
+c         CALL TIMEAVE_NORMALIZE(QSNtave,CPL_timeAve,1,bi,bj,myThid)
+c         CALL TIMEAVE_NORMALIZE(QLWtave,CPL_timeAve,1,bi,bj,myThid)
+c         CALL TIMEAVE_NORMALIZE(UGtave ,CPL_timeAve,1,bi,bj,myThid)
+c         CALL TIMEAVE_NORMALIZE(VGtave ,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(TXtave ,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(TYtave ,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(FWtave ,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(SFxtave,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(SICtave,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(MXLtave,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(SSTtave,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(SSStave,CPL_timeAve,1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZE(vSqtave,CPL_timeAve,1,bi,bj,myThid)
+          IF ( ocnCpl_exchange_DIC ) THEN
+           CALL TIMEAVE_NORMALIZE(aCO2tave, CPL_timeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZE(sWSpdtave,CPL_timeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZE(iceftave, CPL_timeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZE(fCO2tave, CPL_timeAve,1,bi,bj,myThid)
+          ENDIF
          ENDDO
         ENDDO
 
@@ -112,6 +114,11 @@ c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
 
 #ifdef ALLOW_MNC
         IF ( useMNC.AND.cpl_timeave_mnc ) THEN
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
           CALL MNC_CW_SET_UDIM('cpl_tave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','cpl_tave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('cpl_tave', 0, myThid)
@@ -156,30 +163,30 @@ c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
 C       Reset diagnostic counters
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            CALL TIMEAVE_RESET(SLPtave,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(HFtave ,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(QSWtave,1,bi,bj,myThid)
-c           CALL TIMEAVE_RESET(QLTtave,1,bi,bj,myThid)
-c           CALL TIMEAVE_RESET(QSNtave,1,bi,bj,myThid)
-c           CALL TIMEAVE_RESET(QLWtave,1,bi,bj,myThid)
-c           CALL TIMEAVE_RESET(UGtave ,1,bi,bj,myThid)
-c           CALL TIMEAVE_RESET(VGtave ,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(TXtave ,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(TYtave ,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(FWtave ,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(SFxtave,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(SICtave,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(MXLtave,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(SSTtave,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(SSStave,1,bi,bj,myThid)
-            CALL TIMEAVE_RESET(vSqtave,1,bi,bj,myThid)
+            CALL TIMEAVE_RESET( SLPtave, 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( HFtave , 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( QSWtave, 1, bi, bj, myThid )
+c           CALL TIMEAVE_RESET( QLTtave, 1, bi, bj, myThid )
+c           CALL TIMEAVE_RESET( QSNtave, 1, bi, bj, myThid )
+c           CALL TIMEAVE_RESET( QLWtave, 1, bi, bj, myThid )
+c           CALL TIMEAVE_RESET( UGtave , 1, bi, bj, myThid )
+c           CALL TIMEAVE_RESET( VGtave , 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( TXtave , 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( TYtave , 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( FWtave , 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( SFxtave, 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( SICtave, 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( MXLtave, 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( SSTtave, 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( SSStave, 1, bi, bj, myThid )
+            CALL TIMEAVE_RESET( vSqtave, 1, bi, bj, myThid )
             IF ( ocnCpl_exchange_DIC ) THEN
-              CALL TIMEAVE_RESET(aCO2tave ,1,bi,bj,myThid)
-              CALL TIMEAVE_RESET(sWSpdtave,1,bi,bj,myThid)
-              CALL TIMEAVE_RESET(iceftave ,1,bi,bj,myThid)
-              CALL TIMEAVE_RESET(fCO2tave ,1,bi,bj,myThid)
+              CALL TIMEAVE_RESET( aCO2tave , 1, bi, bj, myThid )
+              CALL TIMEAVE_RESET( sWSpdtave, 1, bi, bj, myThid )
+              CALL TIMEAVE_RESET( iceftave , 1, bi, bj, myThid )
+              CALL TIMEAVE_RESET( fCO2tave , 1, bi, bj, myThid )
             ENDIF
-            CPL_TimeAve(1,bi,bj) = 0.
+            CPL_timeAve(bi,bj) = 0.
           ENDDO
         ENDDO
 
