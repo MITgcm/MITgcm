@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_timeave.F,v 1.1 2010/01/02 23:45:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_timeave.F,v 1.2 2010/01/03 03:11:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -67,35 +67,39 @@ C-    Initialize fields for the first call ever
         ptracer_full(bi,bj) = 0.
       ENDIF
 
+      IF ( PTRACERS_taveFreq.GT.0. _d 0 ) THEN
 C--   Cumulate state-variables with Half or Full time step :
-      IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE( PTRACERS_taveFreq, myTime, deltaTClock )
-     &   ) THEN
+       IF ( myIter .EQ. nIter0 .OR.
+     &    DIFFERENT_MULTIPLE( PTRACERS_taveFreq, myTime, deltaTClock )
+     &    ) THEN
         DDTT = 0.5*deltaTclock
-      ELSE
+       ELSE
         DDTT = deltaTclock
-      ENDIF
+       ENDIF
 
 C-    Time Averages of state variables
-      DO iTr=1,PTRACERS_numInUse
-        CALL TIMEAVE_CUMULATE( ptracertave(1-Olx,1-Oly,1,1,1,iTr),
-     &                         pTracer(1-Olx,1-Oly,1,1,1,iTr),
-     &                         Nr, DDTT, bi, bj, myThid )
-      ENDDO
+       DO iTr=1,PTRACERS_numInUse
+         CALL TIMEAVE_CUMULATE( ptracertave(1-Olx,1-Oly,1,1,1,iTr),
+     &                          pTracer(1-Olx,1-Oly,1,1,1,iTr),
+     &                          Nr, DDTT, bi, bj, myThid )
+       ENDDO
 C-    Keep record of how much time has been integrated over
-      ptracer_half(bi,bj) = ptracer_half(bi,bj)+DDTT
+        ptracer_half(bi,bj) = ptracer_half(bi,bj)+DDTT
 
 C-    Time Averages of "intermediate" fields
-      IF ( myIter .NE. nIter0 ) THEN
+       IF ( myIter .NE. nIter0 ) THEN
 
 C-    Time Averages of surface fluxes
-       DO iTr=1,PTRACERS_numInUse
-        CALL TIMEAVE_CUMULATE( ptracerFluxtave(1-Olx,1-Oly,1,1,iTr),
-     &                       surfaceForcingPTr(1-Olx,1-Oly,1,1,iTr),
-     &                         1, deltaTclock, bi, bj, myThid )
-       ENDDO
-       ptracer_full(bi,bj) = ptracer_full(bi,bj)+deltaTclock
+        DO iTr=1,PTRACERS_numInUse
+         CALL TIMEAVE_CUMULATE( ptracerFluxtave(1-Olx,1-Oly,1,1,iTr),
+     &                        surfaceForcingPTr(1-Olx,1-Oly,1,1,iTr),
+     &                          1, deltaTclock, bi, bj, myThid )
+        ENDDO
+        ptracer_full(bi,bj) = ptracer_full(bi,bj)+deltaTclock
 
+       ENDIF
+
+C-    end block if PTRACERS_taveFreq > 0
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
