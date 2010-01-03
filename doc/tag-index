@@ -1,9 +1,30 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1211 2009/12/28 02:46:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1212 2010/01/03 21:12:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/timeave:
+  - S/R TIMEAVE_NORMALIZ: change size of cumulated-time array (was previously
+    always Nr), now assumed to be equal to number of levels of averaged field;
+    only used for DIC_COST monthly mean arrays: this fixes dic_aver_final.F
+o pkg/sbo:
+  - fix ocean bottom pressure global-average & 2-D time-ave output (was
+    neither initialised nor filled).
+  - add starting iteration in suffix of global-average output file
+    (to avoid over-writing the file after a restart)
+  - use standard MDSIO pkg S/R instead of SBO_WRITEVECTOR (fix byte-swap Pb).
+o time-average:
+  - use simple cumulative-time array (no k index) in all pkgs: {PKG}_timeAve(bi,bj)
+    (pkgs: aim_v23, bulk_force, dic, gmredi, kpp, land, ocn_compon_interf,
+     ggl90, my82, opps, pp81, ptracers, sbo, seaice, shelfice, thsice)
+    this fix DIC_COST cumulative-time array (previously: bi,bj,k)
+  - fix 1rst call (nIter0) snap-shot output and accumulation (pkg/shelfice)
+  - fix missing accumulation for pkg/opps.
+  - cumulate fields only if doing time-ave output ({PKG}_taveFreq > 0)
+     (pkgs: ptracers, kpp, ocn_compon_interf, ggl90, my82, pp81);
+  - fix initialisation of time-ave vars and do only full time-step increment
+    (i.e.: no first & last "half time-step") (pkgs: ggl90, my82, opps, pp81);
 o pkg/layers:
   - use standard RW pkg S/R to write the output
     and remove local write_fld version (which had a problem).
