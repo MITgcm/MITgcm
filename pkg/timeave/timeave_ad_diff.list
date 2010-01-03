@@ -1,12 +1,10 @@
 timeave_cumul_1k1t.f
-timeave_cumul_1k.f
 timeave_cumul_1t.f
 timeave_cumul_1vfc.f
 timeave_cumul_2v.f
 timeave_cumul_2vfc.f
 timeave_cumulate.f
 timeave_cumul_dif_1t.f
-timeave_cumul_fc.f
 timeave_norma_2v.f
 timeave_normaliz.f
 timeave_normalize.f
