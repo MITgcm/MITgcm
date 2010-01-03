@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.1 2009/06/17 14:24:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.2 2010/01/03 19:19:59 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
 
-#undef  MULTIPLE_RECORD_PP81_STATE_FILES
 CBOP
 C     !ROUTINE: PP81_OUTPUT
 C     !INTERFACE:
       SUBROUTINE PP81_OUTPUT( myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE PP81_OUTPUT
@@ -58,46 +58,35 @@ C     myThid :: my Thread Id number
 
 #ifdef ALLOW_PP81
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj, K
+#ifdef ALLOW_TIMEAVE
+      INTEGER bi, bj
       _RL DDTT
+#endif
 CEOP
 
 C----------------------------------------------------------------
 C     Dump snapshot of PP variables.
 C----------------------------------------------------------------
 
-      IF (
-     &     DIFFERENT_MULTIPLE(PPdumpFreq,myTime,deltaTClock)
-     &     ) THEN
+      IF ( myIter.NE.nIter0 .AND.
+     &     DIFFERENT_MULTIPLE( PPdumpFreq, myTime, deltaTClock )
+     &   ) THEN
 
-       if (PPwriteState) then
-#ifdef MULTIPLE_RECORD_PP81_STATE_FILES
-C       Write each snap-shot as a new record in one file per variable
-C       - creates relatively few files but these files can become huge
-        STOP 'un-initialised pp_drctrec'
-        CALL WRITE_REC_XYZ_RL('PPviscAr',PPviscAr,pp_drctrec,
-     &       myIter,myThid)
-        CALL WRITE_REC_XYZ_RL('PPdiffKr',PPdiffKr,pp_drctrec,
-     &       myIter,myThid)
-#else /* MULTIPLE_RECORD_PP81_STATE_FILES */
+       IF (PPwriteState) THEN
 C       Write each snap-shot as a new file
-C       - creates many files but for large configurations is easier to
-C         transfer analyse a particular snap-shots
         WRITE(suff,'(I10.10)') myIter
         CALL WRITE_FLD_XYZ_RL('PPviscAr.',suff,PPviscAr,
      &       myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('PPdiffKr.',suff,PPdiffKr,
      &       myIter,myThid)
-#endif /* MULTIPLE_RECORD_PP81_STATE_FILES */
-       endif
-
-C--   Increment record counter
-       pp_drctrec = pp_drctrec + 1
+       ENDIF
 
       ENDIF
 
@@ -106,106 +95,69 @@ C     Do PP time averaging.
 C----------------------------------------------------------------
 
 #ifdef ALLOW_TIMEAVE
+      IF ( PPtaveFreq.GT.0. _d 0 ) THEN
 
+       IF ( myIter.EQ.nIter0 ) THEN
 C     Initialize averages to zero
-      IF ( myIter.EQ.nIter0 ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(PPviscArtave, Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(PPdiffKrtave,Nr,bi,bj,myThid)
-         DO k=1,Nr
-          pp_TimeAve(k,bi,bj)=0.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( PPviscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( PPdiffKrtave, Nr, bi, bj, myThid )
+          PP_timeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
-      ENDIF
 
-C     Time Average PP fields
-      IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(PPtaveFreq,myTime,deltaTClock)
-     &   ) THEN
-       DDTT=0.5*deltaTclock
-      ELSE
-       DDTT=deltaTclock
-      ENDIF
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       PPviscArtave, PPviscAr, Nr,DDTT,bi,bj,myThid)
-        CALL TIMEAVE_CUMULATE(
-     &       PPdiffKrtave,PPdiffKr,Nr,DDTT,bi,bj,myThid)
+       ELSE
+C     Cumulate PP fields (for Time Average)
+        DDTT=deltaTclock
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_CUMULATE( PPviscArtave, PPviscAr,
+     &                           Nr, DDTT, bi, bj, myThid )
+          CALL TIMEAVE_CUMULATE( PPdiffKrtave, PPdiffKr,
+     &                           Nr, DDTT, bi, bj, myThid )
 C     Keep record of how much time has been integrated over
-        DO k=1,Nr
-         pp_TimeAve(k,bi,bj)=pp_TimeAve(k,bi,bj)+DDTT
+          PP_timeAve(bi,bj) = PP_timeAve(bi,bj)+DDTT
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+       ENDIF
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND.
-     &     DIFFERENT_MULTIPLE(PPtaveFreq,myTime,deltaTClock)
-     &     ) THEN
+       IF ( myIter.NE.nIter0 .AND.
+     &      DIFFERENT_MULTIPLE( PPtaveFreq, myTime, deltaTClock )
+     &    ) THEN
 
 C     Normalize by integrated time
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(PPviscArtave,pp_timeave,
-     &        Nr, bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(PPdiffKrtave,pp_timeave,
-     &        Nr, bi,bj,myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_NORMALIZE( PPviscArtave,
+     &                            PP_timeAve, Nr, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( PPdiffKrtave,
+     &                            PP_timeAve, Nr, bi, bj, myThid )
+         ENDDO
         ENDDO
-       ENDDO
-
-#ifdef MULTIPLE_RECORD_PP81_STATE_FILES
-C     Write each snap-shot as a new record in one file per variable
-C     - creates relatively few files but these files can become huge
-       STOP 'un-initialised pp_drctrecTave'
-       CALL WRITE_REC_XYZ_RL('PPviscAr-T',PPviscArTave,
-     &      pp_drctrecTave,myIter,myThid)
-       CALL WRITE_REC_XYZ_RL('PPdiffKr-T',PPdiffKrTave,
-     &      pp_drctrecTave,myIter,myThid)
-C--   Increment record counter
-       pp_drctrecTave = pp_drctrecTave + 1
-
-#else /* MULTIPLE_RECORD_PP81_STATE_FILES */
 
 C     Write each snap-shot as a new file
-C     - creates many files but for large configurations is easier to
-C     transfer analyse a particular snap-shots
-       WRITE(suff,'(I10.10)') myIter
-       CALL WRITE_FLD_XYZ_RL('PPviscAr-T.',suff,PPviscArTave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('PPdiffKr-T.',suff,PPdiffKrTave,
-     &      myIter,myThid)
-#endif /* MULTIPLE_RECORD_PP81_STATE_FILES */
+        WRITE(suff,'(I10.10)') myIter
+        CALL WRITE_FLD_XYZ_RL( 'PPviscAr-T.', suff,
+     &                          PPviscArTave, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL( 'PPdiffKr-T.', suff,
+     &                          PPdiffKrTave, myIter, myThid )
 
 C     Reset averages to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(PPviscArtave, Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(PPdiffKrtave,Nr,bi,bj,myThid)
-         DO k=1,Nr
-          pp_TimeAve(k,bi,bj)=0.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL TIMEAVE_RESET( PPviscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( PPdiffKrtave, Nr, bi, bj, myThid )
+          PP_timeAve(bi,bj) = 0.
          ENDDO
         ENDDO
-       ENDDO
 
-C     Time Average PP fields
-       DDTT=0.5*deltaTclock
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        PPviscArtave, PPviscAr, Nr,DDTT,bi,bj,myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        PPdiffKrtave,PPdiffKr,Nr,DDTT,bi,bj,myThid)
-C     Keep record of how much time has been integrated over
-         DO k=1,Nr
-          pp_TimeAve(k,bi,bj)=pp_TimeAve(k,bi,bj)+DDTT
-         ENDDO
-        ENDDO
-       ENDDO
+C-    end dump-files block
+       ENDIF
+
+C-    end if PPtaveFreq > 0
       ENDIF
-
 #endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_PP81 */
