@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.61 2009/09/16 21:36:11 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.62 2010/01/03 18:46:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,7 +46,7 @@ C     myThid :: Thread number for this instance of the routine.
 CEOP
 
 
-C     Generaly only thread 1 does IO here. It can not start until 
+C     Generaly only thread 1 does IO here. It can not start until
 C     all threads fields are ready.
       IF (debugMode) THEN
         IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
@@ -55,13 +55,13 @@ C     all threads fields are ready.
           _BARRIER
 
 C         Write "text-plots" of certain fields
-          CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , 
+          CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ',
      &         Nr, myIter, myThid )
-          CALL PLOT_FIELD_XYZRL( vVel , 'Current vVel  ' , 
+          CALL PLOT_FIELD_XYZRL( vVel , 'Current vVel  ',
      &         Nr, myIter, myThid )
-          CALL PLOT_FIELD_XYZRL( theta, 'Current theta ' , 
+          CALL PLOT_FIELD_XYZRL( theta, 'Current theta ',
      &         Nr, myIter, myThid )
-          CALL PLOT_FIELD_XYRL( etaN  , 'Current etaN  ' , 
+          CALL PLOT_FIELD_XYRL( etaN  , 'Current etaN  ',
      &         myIter, myThid )
 
         ENDIF
@@ -80,7 +80,7 @@ C     Do time averages
 #endif
 
 #ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) 
+      IF ( useFIZHI )
      &     CALL FIZHI_WRITE_STATE( myTime, myIter, myThid )
 #endif
 
@@ -114,32 +114,32 @@ C     Do KPP diagnostics.
 
 #ifdef ALLOW_PP81
 C     Do PP81 diagnostics.
-      IF (usePP81 .AND. myIter.NE.nIter0 )
+      IF ( usePP81 )
      &     CALL PP81_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_MY82
 C     Do MY82 diagnostics.
-      IF (useMY82 .AND. myIter.NE.nIter0 )
+      IF ( useMY82 )
      &     CALL MY82_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_OPPS
 C--   Do OPPS diagnostics.
-      IF (useOPPS .AND. myIter.NE.nIter0 )
+      IF ( useOPPS )
      & CALL OPPS_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_GGL90
 C--   Do GGL90 diagnostics.
-      IF (useGGL90 .AND. myIter.NE.nIter0 )
+      IF ( useGGL90 )
      & CALL GGL90_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SBO
 C     Do SBO diagnostics.
-      IF (useSBO .AND. myIter.NE.nIter0 ) THEN
-        CALL SBO_CALC ( myTime, myIter, myThid )
+      IF ( useSBO ) THEN
+        CALL SBO_CALC( myTime, myIter, myThid )
         CALL SBO_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif
@@ -176,7 +176,7 @@ C--   Do ptracer output.
 
 #ifdef ALLOW_MATRIX
 C--   Do matrix output
-      IF (useMATRIX) 
+      IF (useMATRIX)
      & CALL MATRIX_OUTPUT( myTime, myIter, myThid )
 #endif
 
