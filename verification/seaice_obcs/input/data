@@ -48,15 +48,15 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
- tempAdvScheme=7,
- saltAdvScheme=7,
- StaggerTimeStep=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme =7,
+ saltAdvScheme =7,
+ convertFW2Salt=-1,
  useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0,
  gravity         = 9.8156,
  rhoNil          = 1027.D0,
- convertFW2Salt=-1,
  &
 
 # Elliptic solver parameters
@@ -91,11 +91,11 @@
  deltaTClock =3600.0,
  cAdjFreq=0.,
  abEps=0.1,
- pChkptFreq=3600000.,
- dumpFreq = 3600.,
- tauSaltClimRelax = 4142330.,
- monitorFreq=1.,
  forcing_In_AB = .FALSE.,
+ tauSaltClimRelax = 4142330.,
+ pChkptFreq=3600000.,
+ dumpFreq = 86400.,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
