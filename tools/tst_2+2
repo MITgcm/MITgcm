@@ -1,20 +1,42 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.7 2009/12/14 20:36:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.8 2010/01/04 17:43:35 jmc Exp $
 # $Name:  $
 
 rnp_loc()
 {
 #   rnp_loc arg_1 arg_2
 #   rename files with prefix = 'arg_1' to files with prefix = 'arg_2'
-    echo ' rnp_loc:' $1 $2
+    if [ $prt -ge 1 ] ; then echo '  rnp_loc:' $1 $2 ; fi
 #   rnp -s $1 $2
     listY=`ls -1 $1*`
     for yy in $listY
     do
       zz=`echo $yy | sed "s/^$1/$2/"`
-      mv $yy $zz
+      if [ $prt -ge 2 ] ; then echo '   '$cmdMV $yy $zz ; fi
+      if test $action = 1 ; then    $cmdMV $yy $zz ; fi
     done
+}
+
+#-----------
+
+move_outp()
+{
+#   move_outp arg_1
+#   move mitgcm output files to directory 'arg_1'
+    if [ $prt -ge 1 ] ; then echo ' move_outp:' $1 ; fi
+    mv *.data *.meta $1
+    listF=`ls -1 *.txt STD???.00?? 2> /dev/null`
+    if test "x$listF" != x ; then mv $listF $1 ; fi
+    #- move back sym link:
+    listL=`find $1 -type l`
+    ttd=`echo $listL | wc -w`
+    #echo "ttd=$ttd"
+    if test $ttd != 0 ; then
+      #echo "listL='$listL'"
+      if [ $prt -ge 2 ] ; then echo "  mv back:" $listL | sed "s/$1\///g" ; fi
+      mv $listL .
+    fi
 }
 
 #---------------------------
@@ -77,9 +99,11 @@ case $nArg in
       echo "        flag = 2 -> compare std_outp"
       echo "        flag = 3 -> compare pickup files"
       echo "        flag = 4 -> clean-up output files"
+      echo "       flag = NC -> do 0,1,2,3 sequentially (no cleaning)"
       echo "      flag = All -> do 0,1,2,3,4 sequentially"
       exit 9 ;;
 esac
+if test $flag = 'NC' -o $flag = 'All' ; then Multi=1 ; else Multi=0 ; fi
 
 #-- set the run-command :
 if test "x$cmdEXE" = x
@@ -93,7 +117,7 @@ fi
 echo "cmdEXE='$cmdEXE'"
 #=========================
 
-if test $flag = '0' -o $flag = 'All' ; then
+if test $flag = '0' -o $Multi = '1' ; then
 #----------------------------------------------------------------------
 # last pickup written (from previous run):
 if [ $mpi -ge 1 ]
@@ -110,38 +134,14 @@ then
     exit 8
   else
     iter=`echo $lastPick | awk '{print $1}'`
-    zz=`echo $lastPick | awk '{print $2}'`
-    echo "from previous run std.outp, lastPick='$lastPick' ; iter='$iter' ; zz='$zz'"
+    sufx=`echo $lastPick | awk '{print $2}'`
+    echo "from previous run std.outp, lastPick='$lastPick' ; iter='$iter' ; sufx='$sufx'"
   fi
 else
   echo "no standard output file '$outpRun' from previous run"
   exit 7
 fi
 
-#- rename pickup (if needed)
-sufx=`printf "%10.10i\n" $iter`
-if test $zz = $sufx
-then
- echo "no need to change pickup sufix"
-else
-# echo "rename pickup sufix: $zz -> $sufx"
- listP=`ls pickup*.${zz}* 2> /dev/null | sed 's/\..*//g' | uniq`
- if test "x$listP" = x
- then echo ' rename' $zz  '->' $sufx ': no file to rename'
- else
-  if [ $prt -ge 1 ] ; then echo ' rename' $zz  '->' $sufx 'for all:' $listP ; fi
-  for yy in $listP
-  do
-    listF=`ls -1 $yy.${zz}*`
-    for xx in $listF
-    do
-      new=`echo $xx | sed "s/^$yy\.$zz/$yy.$sufx/"`
-      if [ $prt -ge 2 ] ; then echo '  '$cmdMV $xx $new ; fi
-      if test $action = 1 ; then    $cmdMV $xx $new ; fi
-    done
-  done
- fi
-fi
 #-------------------------
 echo "prepare parameter file 'data.tst' :"
 cp -p -f data data.tst
@@ -184,8 +184,6 @@ if test $action = 1 ; then
  mv -f *.meta $tmpDir
  mv -f *.txt $tmpDir 2> /dev/null
  mv -f STD???.0[0-9][0-9][0-9] $tmpDir
- listS=`ls $tmpDir/pickup*.${sufx}* 2> /dev/null | head -1`
- if test "x$listS" != x ; then mv $tmpDir/pickup*.${sufx}* . ; fi
 #- move main parameter file "data":
  mv -f data $tmpDir
 #- do not deal with MNC pickup at all:
@@ -208,6 +206,30 @@ if test $action = 1 ; then
     done
   else if [ $prt -ge 2 ] ; then echo ' : not found' ; echo ' ' ; fi
   fi
+fi
+#-------------------------
+#-- link back pickup files
+ listS=`ls $tmpDir/pickup*.${sufx}* 2> /dev/null | head -1`
+ if test "x$listS" != x ; then 
+   if [ $prt -ge 1 ] ; then echo ' link back:' $tmpDir'/pickup*.'${sufx}'*' ; fi
+   if test $action = 1 ; then ln -s $tmpDir/pickup*.${sufx}* . ; fi
+ fi
+#- rename pickup (if needed)
+nIt0c=`printf "%10.10i\n" $iter`
+if test $sufx = $nIt0c
+then
+ echo "no need to change pickup sufix"
+else
+ listP=`ls pickup*.${sufx}* 2> /dev/null | sed 's/\..*//g' | uniq`
+ if test "x$listP" = x
+ then echo ' rename' $sufx  '->' $nIt0c ': no file to rename'
+ else
+  if [ $prt -ge 1 ] ; then echo ' rename' $sufx  '->' $nIt0c 'for all:' $listP ; fi
+  for yy in $listP
+  do
+    rnp_loc $yy.${sufx} $yy.$nIt0c
+  done
+ fi
 fi
 #----------------------------------------------------------------------
 fi
@@ -242,7 +264,7 @@ echo ' cmdEXE='$cmdEXE
 #exit
 #---------------------------
 
-if test $flag = '1' -o $flag = 'All' ; then
+if test $flag = '1' -o $Multi = '1' ; then
 #----------------------------------------------------------------------
 #- check at the end of each run for pickup with prefix:
 pref='pickup'
@@ -284,11 +306,7 @@ for xx in $listP
 do
   rnp_loc $xx.ckptA $xx.$num2c
 done
-mv *.data *.meta $dir1
-txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-if test "x$txtF" != x ; then mv $txtF $dir1 ; fi
-listS=`ls $dir1/pickup*.${num0c}* 2> /dev/null | head -1`
-if test "x$listS" != x ; then mv $dir1/pickup*.${num0c}* . ; fi
+move_outp $dir1
 #---  2nd run ( Nit iter , restart from same Iter = num0 as 1rst run )
 sed "s/^ nTimeSteps=$Dbl/ nTimeSteps=$Nit/g" data.tst > data.tmp
 mv -f data.tmp data
@@ -313,11 +331,7 @@ for xx in $listP
 do
  rnp_loc $xx.ckptA $xx.$num1c
 done
-mv *.data *.meta $dir2
-txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-if test "x$txtF" != x ; then mv $txtF $dir2 ; fi
-listS=`ls $dir2/pickup*.${num0c}* 2> /dev/null | head -1`
-if test "x$listS" != x ; then mv $dir2/pickup*.${num0c}* . ; fi
+move_outp $dir2
 #---  3rd run ( Nit iter , restart from 2nd )
 ln -s $dir2/pickup*.$num1c.* .
 sed "s/^ nIter0=$num0/ nIter0=$num1/g" data > data.tmp
@@ -343,17 +357,14 @@ for xx in $listP
 do
  rnp_loc $xx.ckptA $xx.$num2c
 done
-mv *.data *.meta $dir3
-txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-if test "x$txtF" != x ; then mv $txtF $dir3 ; fi
-listS=`ls $dir3/pickup*.${num0c}* 2> /dev/null | head -1`
-if test "x$listS" != x ; then mv $dir3/pickup*.${num0c}* . ; fi
-rm $dir3/pickup*.$num1c.*
+# remove pickup*.$mun1c* sym-link:
+find . ! -name . -prune -type l -name 'pickup*.'${num1c}'*' -exec rm {} \;
+move_outp $dir3
 rm data
 #----------------------------------------------------------------------
 fi
 
-if test $flag = '2' -o $flag = 'All' ; then
+if test $flag = '2' -o $Multi = '1' ; then
 #----------------------------------------------------------------------
 listCGini="2"
 #-- check if using 3-D solver
@@ -378,7 +389,7 @@ done
 #----------------------------------------------------------------------
 fi
 
-if test $flag = '3' -o $flag = 'All' ; then
+if test $flag = '3' -o $Multi = '1' ; then
 #----------------------------------------------------------------------
 echo ' '
 echo "== diff pickup files : end of 1rst run (2x$Nit it) & end of 3rd run (2nd $Nit it)"
@@ -416,6 +427,11 @@ if test $flag = '4' -o $flag = 'All' ; then
 #-------------
 echo ' '
 echo "== clean-up and reset :"
+ echo '--> remove pickup*.'$num0c'* sym-links:'
+#find . ! -name . -prune -type l -name 'pickup*.'${num0c}'*' -exec rm {} \;
+ listS=`find . ! -name . -prune -type l -name 'pickup*.'${num0c}'*'`
+ if [ $prt -ge 2 ] ; then echo ' rm' $listS ; fi
+ rm -f $listS
  echo '--> remove output dir and output files:'
  echo ' rm -rf' $dir1 $dir2 $dir3
  rm -rf $dir1 $dir2 $dir3
