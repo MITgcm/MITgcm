@@ -1,33 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.16 2008/12/30 00:14:05 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.17 2010/01/05 02:55:14 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
 
-C The five "public" routines supplied here are:
-C
-C MDSREADFIELD   - read model field from direct access global or tiled MDS file
-C MDSWRITEFIELD  - write model field to direct access global or tiled MDS file
-C MDSFINDUNIT    - returns an available (unused) I/O channel
-C MDSREADVECTOR  - read vector from direct access global or tiled MDS file
-C MDSWRITEVECTOR - write vector to direct access global or tiled MDS file
-C
-C all other routines are "private" to these utilities and ought
-C not be accessed directly from the main code.
-C
-C Created:  03/16/99 adcroft@mit.edu
-C Modified: 03/23/99 adcroft@mit.edu
-C           To work with multiple records
-C Modified: 03/29/99 eckert@mit.edu
-C           Added arbitrary vector capability
-C Modified: 07/27/99 eckert@mit.edu
-C           Customized for state estimation (--> active_file_control.F)
-C           this relates only to *mdsreadvector* and *mdswritevector*
-C Modified: 07/28/99 eckert@mit.edu
-C           inserted calls to *print_message* and *print_error*
-C
-C To be modified to work with MITgcmuv message routines.
+C--  File mdsio_gl.F: Routines to handle mid-level I/O interface.
+C--   Contents
+C--   o MDSREADFIELD_3D_GL
+C--   o MDSWRITEFIELD_3D_GL
+C--   o MDSREADFIELD_2D_GL
+C--   o MDSWRITEFIELD_2D_GL
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSREADFIELD_3D_GL(
      I   fName,
      I   filePrec,
@@ -68,7 +52,6 @@ C Created: 03/16/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -147,7 +130,7 @@ C Assign a free unit number as the I/O channel for this routine
       if ( useSingleCPUIO ) then
 
 #ifdef ALLOW_USE_MPI
-        IF( mpiMyId .EQ. 0 ) THEN
+        IF( myProcId .EQ. 0 ) THEN
 #else
         IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
@@ -171,7 +154,7 @@ C Otherwise stop program.
           open( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          else
-          write(msgbuf,'(2a)') 
+          write(msgbuf,'(2a)')
      &      ' MDSREADFIELD: filename: ',dataFName(1:IL)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
@@ -228,7 +211,7 @@ C If we are reading from a global file then we open it here
        fileIsOpen=.TRUE.
       endif
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -354,7 +337,7 @@ c      else of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
        DO k=1,nNz
 
 #ifdef ALLOW_USE_MPI
-         IF( mpiMyId .EQ. 0 ) THEN
+         IF( myProcId .EQ. 0 ) THEN
 #else
          IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
@@ -412,13 +395,15 @@ c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
 
       _END_MASTER( myThid )
 
+#else /* ALLOW_CTRL */
+      STOP 'ABNORMAL END: S/R MDSREADFIELD_3D_GL is empty'
 #endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSWRITEFIELD_3D_GL(
      I   fName,
      I   filePrec,
@@ -469,7 +454,6 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -496,7 +480,9 @@ C Local variables
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,Nr,nSx,nSy)
-      integer dimList(3,3),ndims
+      INTEGER dimList(3,3), nDims, map2gl(2)
+      _RL dummyRL(1)
+      CHARACTER*8 blank8c
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
@@ -515,6 +501,9 @@ cph-usesingle)
 CMM(
       integer pIL
 CMM)
+
+      DATA dummyRL(1) / 0. _d 0 /
+      DATA blank8c / '        ' /
 
 C     ------------------------------------------------------------------
 
@@ -558,7 +547,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
-        IF( mpiMyId .EQ. 0 ) THEN
+        IF( myProcId .EQ. 0 ) THEN
          write(dataFname,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
@@ -573,7 +562,7 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and write it to file, one vertical level at a time
        DO k=1,nNz
-C Loop over all processors    
+C Loop over all processors
         do jp=1,nPy
         do ip=1,nPx
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -590,7 +579,7 @@ C Loop over all processors
         enddo
         enddo
         _BEGIN_MASTER( myThid )
-         IF( mpiMyId .EQ. 0 ) THEN
+         IF( myProcId .EQ. 0 ) THEN
           irec=k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
            DO J=1,Ny
@@ -624,7 +613,7 @@ C Loop over all processors
 
 C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
-        IF( mpiMyId .EQ. 0 ) THEN
+        IF( myProcId .EQ. 0 ) THEN
          close( dUnit )
          write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=Nx
@@ -636,10 +625,14 @@ C Close data-file and create meta-file
          dimList(1,3)=nNz
          dimList(2,3)=1
          dimList(3,3)=nNz
-         ndims=3
-         if (nNz .EQ. 1) ndims=2
-         call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+         nDims=3
+         if (nNz .EQ. 1) nDims=2
+         map2gl(1) = 0
+         map2gl(2) = 1
+         CALL MDS_WRITE_META(
+     I              metaFName, dataFName, the_run_name, ' ',
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
         ENDIF
        _END_MASTER( myThid )
 C To be safe, make other processes wait for I/O completion
@@ -650,7 +643,7 @@ C To be safe, make other processes wait for I/O completion
 #endif /* ALLOW_USE_MPI */
 cph-usesingle)
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -746,10 +739,14 @@ C Create meta-file for each tile if we are tiling
          dimList(1,3)=Nr
          dimList(2,3)=1
          dimList(3,3)=Nr
-         ndims=3
-         if (Nr .EQ. 1) ndims=2
-         call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+         nDims=3
+         if (Nr .EQ. 1) nDims=2
+         map2gl(1) = 0
+         map2gl(2) = 1
+         CALL MDS_WRITE_META(
+     I              metaFName, dataFName, the_run_name, ' ',
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
 C End of bi,bj loops
        enddo
       enddo
@@ -766,13 +763,15 @@ C endif useSingleCpuIO
 #endif /* ALLOW_USE_MPI */
 cph-usesingle)
 
+#else /* ALLOW_CTRL */
+      STOP 'ABNORMAL END: S/R MDSWRITEFIELD_3D_GL is empty'
 #endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSREADFIELD_2D_GL(
      I   fName,
      I   filePrec,
@@ -813,7 +812,6 @@ C Created: 03/16/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -894,7 +892,7 @@ C Assign a free unit number as the I/O channel for this routine
 
 C master thread of process 0, only, opens a global file
 #ifdef ALLOW_USE_MPI
-        IF( mpiMyId .EQ. 0 ) THEN
+        IF( myProcId .EQ. 0 ) THEN
 #else
         IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
@@ -918,7 +916,7 @@ C Otherwise stop program.
           open( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          else
-          write(msgbuf,'(2a)') 
+          write(msgbuf,'(2a)')
      &      ' MDSREADFIELD: filename: ',dataFName(1:IL)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
@@ -974,7 +972,7 @@ C If we are reading from a global file then we open it here
        fileIsOpen=.TRUE.
       endif
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -1100,7 +1098,7 @@ c      else of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
        DO k=1,nLocz
 
 #ifdef ALLOW_USE_MPI
-         IF( mpiMyId .EQ. 0 ) THEN
+         IF( myProcId .EQ. 0 ) THEN
 #else
          IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
@@ -1158,13 +1156,15 @@ c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
 
       _END_MASTER( myThid )
 
+#else /* ALLOW_CTRL */
+      STOP 'ABNORMAL END: S/R MDSREADFIELD_2D_GL is empty'
 #endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSWRITEFIELD_2D_GL(
      I   fName,
      I   filePrec,
@@ -1215,7 +1215,6 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -1243,7 +1242,9 @@ C Local variables
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nLocz,nSx,nSy)
-      integer dimList(3,3),ndims
+      INTEGER dimList(3,3), nDims, map2gl(2)
+      _RL dummyRL(1)
+      CHARACTER*8 blank8c
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
@@ -1262,6 +1263,9 @@ cph-usesingle)
 CMM(
       integer pIL
 CMM)
+
+      DATA dummyRL(1) / 0. _d 0 /
+      DATA blank8c / '        ' /
 
 C     ------------------------------------------------------------------
 
@@ -1306,7 +1310,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
-        IF( mpiMyId .EQ. 0 ) THEN
+        IF( myProcId .EQ. 0 ) THEN
          write(dataFname,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
@@ -1321,7 +1325,7 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and write it to file, one vertical level at a time
        DO k=1,nLocz
-C Loop over all processors    
+C Loop over all processors
         do jp=1,nPy
         do ip=1,nPx
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -1338,7 +1342,7 @@ C Loop over all processors
         enddo
         enddo
         _BEGIN_MASTER( myThid )
-         IF( mpiMyId .EQ. 0 ) THEN
+         IF( myProcId .EQ. 0 ) THEN
           irec=k+nLocz*(irecord-1)
           if (filePrec .eq. precFloat32) then
            DO J=1,Ny
@@ -1372,7 +1376,7 @@ C Loop over all processors
 
 C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
-        IF( mpiMyId .EQ. 0 ) THEN
+        IF( myProcId .EQ. 0 ) THEN
          close( dUnit )
          write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=Nx
@@ -1384,10 +1388,14 @@ C Close data-file and create meta-file
          dimList(1,3)=nLocz
          dimList(2,3)=1
          dimList(3,3)=nLocz
-         ndims=3
-         if (nLocz .EQ. 1) ndims=2
-         call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+         nDims=3
+         if (nLocz .EQ. 1) nDims=2
+         map2gl(1) = 0
+         map2gl(2) = 1
+         CALL MDS_WRITE_META(
+     I              metaFName, dataFName, the_run_name, ' ',
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
         ENDIF
        _END_MASTER( myThid )
 C To be safe, make other processes wait for I/O completion
@@ -1398,7 +1406,7 @@ C To be safe, make other processes wait for I/O completion
 #endif /* ALLOW_USE_MPI */
 cph-usesingle)
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -1494,10 +1502,14 @@ C Create meta-file for each tile if we are tiling
          dimList(1,3)=Nr
          dimList(2,3)=1
          dimList(3,3)=Nr
-         ndims=3
-         if (nLocz .EQ. 1) ndims=2
-         call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+         nDims=3
+         if (nLocz .EQ. 1) nDims=2
+         map2gl(1) = 0
+         map2gl(2) = 1
+         CALL MDS_WRITE_META(
+     I              metaFName, dataFName, the_run_name, ' ',
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
 C End of bi,bj loops
        enddo
       enddo
@@ -1512,8 +1524,9 @@ C endif useSingleCpuIO
       endif
 #endif /* ALLOW_USE_MPI */
 
+#else /* ALLOW_CTRL */
+      STOP 'ABNORMAL END: S/R MDSWRITEFIELD_2D_GL is empty'
 #endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
