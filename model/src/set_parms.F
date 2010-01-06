@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.6 2009/12/08 00:31:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.7 2010/01/06 00:49:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,10 +26,13 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: My Thread Id number
       INTEGER myThid
 
-C     !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     !FUNCTIONS:
 c     INTEGER  ILNBLNK
 c     EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL tmpVar
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -147,6 +150,29 @@ c     useDynP_inEos_Zc = .FALSE.
      &              .AND. ( eosType .EQ. 'JMD95P' .OR.
      &                      eosType .EQ. 'UNESCO' .OR.
      &                      eosType .EQ. 'MDJWF'       )  )
+
+C--   Adjust parameters related to length of the simulation
+
+C-    Need to adjust endTime for sub-timestep mismatch , since in
+C     several places, test for last iteration with time==endTime :
+      tmpVar = startTime + deltaTClock*FLOAT(nTimeSteps)
+      IF ( endTime.NE.tmpVar ) THEN
+       IF ( ABS(endTime-tmpVar).GT.deltaTClock*1. _d -6 ) THEN
+        WRITE(msgBuf,'(A,A)') '** WARNING ** SET_PARMS: ',
+     &   '(endTime-baseTime) not multiple of time-step'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A,1PE20.13)') '** WARNING ** SET_PARMS: ',
+     &   'Previous endTime=', endTime
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A,1PE20.13)') '** WARNING ** SET_PARMS: ',
+     &   'Adjusted endTime=', tmpVar
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       endTime = tmpVar
+      ENDIF
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS ) THEN
