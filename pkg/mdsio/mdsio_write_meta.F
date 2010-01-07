@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.4 2009/05/29 16:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.5 2010/01/07 23:41:35 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -174,9 +174,8 @@ C     for now, comment out this line for rdmds (i.e.: between /* */)
       IF ( nTimRec.GT.0 ) THEN
        ii = MIN(nTimRec,20)
        WRITE(msgBuf,'(1P20E20.12)') (timList(i),i=1,ii)
-       WRITE(mUnit,'(3A)')' /* modelTime = [', msgBuf(1:20*ii),' ];*/'
-c      iL = ILNBLNK(msgBuf)
-c      WRITE(mUnit,'(1X,3A)') 'modelTime = [', msgBuf(1:iL),' ];'
+c      WRITE(mUnit,'(3A)')' /* modelTime = [', msgBuf(1:20*ii),' ];*/'
+       WRITE(mUnit,'(1X,3A)') 'timeInterval = [', msgBuf(1:20*ii),' ];'
       ENDIF
 
 C-    Write list of Fields
