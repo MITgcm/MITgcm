@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.43 2010/01/03 00:42:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.44 2010/01/07 01:09:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -75,10 +75,10 @@ C              diagnostic storage qdiag into it.
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER prec, nRec
+      INTEGER prec, nRec, nTimRec
+      _RL     timeRec(2)
 #ifdef ALLOW_MDSIO
       LOGICAL glf
-      _RL timeRec(1)
 #endif
 #ifdef ALLOW_MNC
       INTEGER ll, llMx, jj, jjMx
@@ -104,6 +104,7 @@ C              diagnostic storage qdiag into it.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C---  set file properties
       ioUnit= standardMessageUnit
       undef = UNSET_RL
 #ifdef ALLOW_FIZHI
@@ -113,6 +114,40 @@ c     IF ( useFIZHI ) undef = getcon('UNDEF')
       WRITE(suff,'(I10.10)') myIter
       ilen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
+
+C--   Set time information:
+      IF ( freq(listId).LT.0. ) THEN
+C-    Snap-shot: store a unique time (which is consistent with State-Var timing)
+        nTimRec = 1
+        timeRec(1) = myTime
+      ELSE
+C-    Time-average: store the 2 edges of the time-averaging interval.
+C      this time is consitent with intermediate Var (i.e., non-state, e.g, flux,
+C      tendencies) timing. For State-Var, this is shifted by + halt time-step.
+        nTimRec = 2
+
+C-    end of time-averaging interval:
+        timeRec(2) = myTime
+
+C-    begining of time-averaging interval:
+c       timeRec(1) = myTime - freq(listId)
+C     a) find the time of the previous multiple of output freq:
+        timeRec(1) = myTime-deltaTClock*0.5 _d 0
+        timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
+        i = INT( timeRec(1) )
+        timeRec(1) = phase(listId) + freq(listId)*FLOAT(i)
+c       if ( listId.eq.2 ) write(0,*) 'f',i,timeRec(1)/deltaTClock
+        timeRec(1) = MAX( timeRec(1), startTime )
+
+C     b) round off to nearest multiple of time-step:
+        timeRec(1) = (timeRec(1)-baseTime)/deltaTClock
+        i = NINT( timeRec(1) )
+C     if just half way, NINT will return the next time-step: correct this
+        tmpLev = FLOAT(i) - 0.5 _d 0
+        IF ( timeRec(1).EQ.tmpLev ) i = i - 1
+        timeRec(1) = baseTime + deltaTClock*FLOAT(i)
+c       if ( listId.eq.2 ) write(0,*) i,timeRec(1)/deltaTClock
+      ENDIF
 
 #ifdef ALLOW_MNC
 C-- this is a trick to reverse the order of the loops on md (= field)
@@ -568,10 +603,9 @@ C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
             glf = globalFiles
             nRec = nfields(listId)*averageCycle(listId)
-            timeRec(1) = myTime
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
      &              0, 0, nlevels(listId), ' ',
-     &              nfields(listId), flds(1,listId), 1, timeRec,
+     &              nfields(listId), flds(1,listId), nTimRec, timeRec,
      &              nRec, myIter, myThid)
       ENDIF
 #endif /*  ALLOW_MDSIO  */
