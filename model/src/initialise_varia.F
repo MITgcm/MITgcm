@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.61 2010/01/02 23:48:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.62 2010/01/08 19:42:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -344,7 +344,7 @@ C--   Dump initial state to files
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
 #endif
-      CALL DO_THE_MODEL_IO( startTime, nIter0, myThid )
+      CALL DO_THE_MODEL_IO( .FALSE., startTime, nIter0, myThid )
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('INITIALISE_VARIA',myThid)

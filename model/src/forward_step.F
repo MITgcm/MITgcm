@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.175 2009/12/25 19:41:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.176 2010/01/08 19:42:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -997,18 +997,24 @@ C--   Calculate float trajectories
       ENDIF
 #endif
 
-#ifdef ALLOW_NEST_PARENT
-      IF ( useNEST_PARENT) THEN
-        CALL NEST_PARENT_IO_2( myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_NEST_PARENT */
-
 #ifdef ALLOW_TIMEAVE
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
       CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
 #endif
+
+#ifdef ALLOW_NEST_PARENT
+      IF ( useNEST_PARENT) THEN
+        CALL NEST_PARENT_IO_2( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NEST_PARENT */
+
+#ifdef ALLOW_NEST_CHILD
+      IF ( useNEST_CHILD) THEN
+            CALL NEST_CHILD_TRANSP( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NEST_CHILD */
 
 #ifdef ALLOW_MONITOR
       IF ( .NOT.useOffLine ) THEN
@@ -1027,11 +1033,7 @@ C--     this is done after exchanges to allow interpolation
       CALL TIMER_STOP ('COST_TILE           [FORWARD_STEP]',myThid)
 #endif
 
-C--   Do IO if needed.
-      CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-
+C--   Check if it has reached the end of simulation
       modelEnd = myTime.EQ.endTime .OR. myIter.EQ.nEndIter
 #ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
@@ -1039,19 +1041,15 @@ C--   Do IO if needed.
       ENDIF
 #endif /* HAVE_SIGREG */
 
+C--   Do IO if needed.
+      CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL DO_THE_MODEL_IO( modelEnd, myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+
 C--   Save state for restarts
       CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
-      CALL DO_WRITE_PICKUP(
-     I                      modelEnd, myTime, myIter, myThid )
+      CALL DO_WRITE_PICKUP( modelEnd, myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
-
-
-
-#ifdef ALLOW_NEST_CHILD
-      IF ( useNEST_CHILD) THEN
-            CALL NEST_CHILD_TRANSP( myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_NEST_CHILD */
 
 #ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
