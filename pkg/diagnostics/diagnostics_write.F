@@ -1,9 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.30 2007/01/03 00:29:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.31 2010/01/08 19:44:05 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
-      SUBROUTINE DIAGNOSTICS_WRITE ( myTime, myIter, myThid )
+      SUBROUTINE DIAGNOSTICS_WRITE (
+     I                               modelEnd,
+     I                               myTime, myIter, myThid )
 C***********************************************************************
 C  Purpose
 C  -------
@@ -11,9 +13,10 @@ C    Output sequence for the (multiple) diagnostics output files
 C
 C  Arguments  Description
 C  ----------------------
-C     myTime :: Current time of simulation ( s )
-C     myIter :: Current Iteration Number
-C     myThid :: my Thread Id number
+C     modelEnd :: true if call at end of model run.
+C     myTime   :: Current time of simulation ( s )
+C     myIter   :: Current Iteration Number
+C     myThid   :: my Thread Id number
 C***********************************************************************
        IMPLICIT NONE
 #include "EEPARAMS.h"
@@ -23,6 +26,7 @@ C***********************************************************************
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
+      LOGICAL modelEnd
       _RL     myTime
       INTEGER myIter, myThid
 
@@ -80,7 +84,7 @@ C       state-variable time-step:
      I                          myTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
-          IF ( dumpAtLast .AND. myTime.EQ.endTime
+          IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) THEN
             write2file = .TRUE.
@@ -115,7 +119,7 @@ C       state-variable time-step:
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
-          IF ( dumpAtLast .AND. myTime.EQ.endTime
+          IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) THEN
             write2file = .TRUE.
@@ -156,7 +160,7 @@ C--     Clear storage space:
      I                          myTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
-          IF ( dumpAtLast .AND. myTime.EQ.endTime
+          IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) CALL DIAGNOSTICS_CLEAR(n,myThid)
         ENDDO
@@ -174,7 +178,7 @@ C--     Clear storage space:
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
-          IF ( dumpAtLast .AND. myTime.EQ.endTime
+          IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR( n, myThid )
         ENDDO
