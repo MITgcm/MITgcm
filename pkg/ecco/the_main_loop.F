@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.88 2009/11/03 03:32:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.89 2010/01/08 20:02:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1043,7 +1043,7 @@ C--   Do IO if needed.
       CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
 #else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
+      CALL DO_THE_MODEL_IO( .FALSE., myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 #endif
 
