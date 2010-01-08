@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.45 2010/01/07 23:48:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.46 2010/01/08 19:19:44 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -135,7 +135,10 @@ C     a) find the time of the previous multiple of output freq:
         timeRec(1) = myTime-deltaTClock*0.5 _d 0
         timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
         i = INT( timeRec(1) )
-        IF ( timeRec(1).LT.0. ) i = i - 1
+        IF ( timeRec(1).LT.0. ) THEN
+          tmpLev = FLOAT(i)
+          IF ( timeRec(1).NE.tmpLev ) i = i - 1
+        ENDIF
         timeRec(1) = phase(listId) + freq(listId)*FLOAT(i)
 c       if ( listId.eq.2 ) write(0,*) 'f',i,timeRec(1)/deltaTClock
         timeRec(1) = MAX( timeRec(1), startTime )
@@ -149,6 +152,10 @@ C     if just half way, NINT will return the next time-step: correct this
         timeRec(1) = baseTime + deltaTClock*FLOAT(i)
 c       if ( listId.eq.2 ) write(0,*) i,timeRec(1)/deltaTClock
       ENDIF
+C--   Convert time to iteration number (debug)
+c     DO i=1,nTimRec
+c       timeRec(i) = timeRec(i)/deltaTClock
+c     ENDDO
 
 #ifdef ALLOW_MNC
 C-- this is a trick to reverse the order of the loops on md (= field)
