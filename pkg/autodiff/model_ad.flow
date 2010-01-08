@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.4 2009/05/07 19:10:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.5 2010/01/08 19:45:22 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
 C subroutine  do_the_model_io
 C----------------------------------------
-CADJ SUBROUTINE do_the_model_io  INPUT  = 1,2,3
+CADJ SUBROUTINE do_the_model_io  INPUT  = 1,2,3,4
 CADJ SUBROUTINE do_the_model_io  OUTPUT =
-CADJ SUBROUTINE do_the_model_io  DEPEND = 1,2,3
+CADJ SUBROUTINE do_the_model_io  DEPEND = 1,2,3,4
 CADJ SUBROUTINE do_the_model_io  REQUIRED
 
 C----------------------------------------
