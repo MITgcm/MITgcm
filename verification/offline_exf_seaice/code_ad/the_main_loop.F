@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.4 2007/08/30 15:07:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.5 2010/01/08 20:09:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -495,7 +495,7 @@ C--   Check status of solution (statistics, cfl, etc...)
 #endif /* ALLOW_MONITOR */
 
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
+      CALL DO_THE_MODEL_IO( .FALSE.,  myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
