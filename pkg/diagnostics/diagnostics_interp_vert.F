@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.10 2008/11/18 21:41:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.11 2010/01/10 04:09:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_INTERP_VERT
 
 C     !INTERFACE:
-      SUBROUTINE  DIAGNOSTICS_INTERP_VERT(
+      SUBROUTINE DIAGNOSTICS_INTERP_VERT(
      I                        listId, md, ndId, ip, im, lm,
      U                        qtmp1,
      I                        undef,
