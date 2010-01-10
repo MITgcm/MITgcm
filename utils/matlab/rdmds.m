@@ -63,7 +63,7 @@ function [AA,itrs,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.25 2010/01/07 23:20:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.26 2010/01/10 01:51:03 jmc Exp $
 % $Name:  $
 
 AA=[];
@@ -168,7 +168,7 @@ for iter=1:size(itrs,2);
    if isempty(ii), jj1=0; jj2=0;
    else jj1=ii; jj2=ii+min(findstr(M(1+ii:end),'];')); end
    if iter==1 & j==1,
-    MM=M; ind2=0; is1=ii1; js1=jj1; M3=''; 
+    MM=M; ind1=0; ind2=0; is1=ii1; js1=jj1; M3=''; 
     if ii1*jj1 > 0, 
      %ind1=min(ii1,jj1); ind2=max(ii2,jj2);
      %if ii1 < jj1, ii3=ii2+1; jj3=jj1-1;
