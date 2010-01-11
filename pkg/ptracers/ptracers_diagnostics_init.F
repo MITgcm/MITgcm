@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.6 2008/08/17 02:09:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.7 2010/01/11 19:52:43 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,6 +7,7 @@ CBOP
 C     !ROUTINE: PTRACERS_DIAGNOSTICS_INIT
 C     !INTERFACE:
       SUBROUTINE PTRACERS_DIAGNOSTICS_INIT( myThid )
+
 C     !DESCRIPTION:
 C     Routine to initialize pTracers diagnostics
 
@@ -22,14 +23,14 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid -  Number of this instance of PTRACERS_DIAGNOSTICS_INIT
+C     myThid :: my Thread Id. number
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       INTEGER       diagNum
@@ -88,9 +89,9 @@ C-     use name & units from data.ptracers :
 
 C--    Add diagnostics of Tracer concentration & u,v,w Transport
        WRITE(diagName,'(A4,A2,A2)') 'TRAC',PTRACERS_ioLabel(iTrc),'  '
-       WRITE(diagTitle,'(2A)') 'Mass-Weighted ', locName(1:ilnb)
+       WRITE(diagTitle,'(2A)') locName(1:ilnb), ' concentration'
        diagUnits = trcUnits//'         '
-       diagCode  = 'SM P    MR      '
+       diagCode  = 'SMR     MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -98,7 +99,7 @@ C--    Add diagnostics of Tracer concentration & u,v,w Transport
        WRITE(diagTitle,'(2A)') 'Zonal Mass-Weighted Transp of ',
      &                 locName(1:ilnb)
        diagUnits = trcUnits//'.m/s   '
-       diagCode  = 'UU      MR      '
+       diagCode  = 'UUr     MR      '
        diagMate  = diagNum + 2
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -107,7 +108,7 @@ C--    Add diagnostics of Tracer concentration & u,v,w Transport
        WRITE(diagTitle,'(2A)') 'Merid Mass-Weighted Transp of ',
      &                 locName(1:ilnb)
        diagUnits = trcUnits//'.m/s   '
-       diagCode  = 'VV      MR      '
+       diagCode  = 'VVr     MR      '
        diagMate  = diagNum
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
