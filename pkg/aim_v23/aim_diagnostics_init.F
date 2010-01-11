@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.9 2009/01/05 15:15:33 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.10 2010/01/11 19:46:52 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -50,7 +50,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      &  'Pot. Temp.  Tendency (Mass-Weighted) from Diabatic Processes'
       diagUnits = 'K/s             '
-      diagCode  = 'SM      ML      '
+      diagCode  = 'SMr     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -58,7 +58,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      &  'Spec.Humid. Tendency (Mass-Weighted) from Diabatic Processes'
       diagUnits = 'g/kg/s          '
-      diagCode  = 'SM      ML      '
+      diagCode  = 'SMr     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -81,7 +81,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'DTCONV  '
       diagTitle = 'Temperature Tendency due to Convection (TT_CNV)'
       diagUnits = 'K/s             '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SM      ML      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -127,7 +127,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'RELHUM  '
       diagTitle = 'Relative Humidity (fraction)'
       diagUnits = '0-1             '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
