@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.12 2009/06/08 14:40:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.13 2010/01/11 19:44:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -26,7 +26,7 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     myThid :: my Thread Id. number
       INTEGER myThid
 CEOP
 
@@ -38,6 +38,7 @@ C     == Local variables ==
       INTEGER i, j, k, k1, k2, mm, kLev
       LOGICAL found
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*12 suffix
 
       _BEGIN_MASTER( myThid)
 
@@ -189,10 +190,11 @@ C-      set Nb of levels to the minimum size of all diag of this list:
      &      'Set levels for Outp.Stream: ',fnames(ld)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid)
+          suffix = ' Levels:    '
+          IF ( fflags(ld)(2:2).EQ.'I' ) suffix = ' Sum Levels:'
           DO k1=1,nlevels(ld),20
             k2 = MIN(nlevels(ld),k1+19)
-            WRITE(msgBuf,'(A,20F5.0)')
-     &         ' Levels:    ', (levs(k,ld),k=k1,k2)
+            WRITE(msgBuf,'(A,20F5.0)') suffix, (levs(k,ld),k=k1,k2)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
           ENDDO

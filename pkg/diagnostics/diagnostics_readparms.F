@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.23 2008/05/30 01:58:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.24 2010/01/11 19:44:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -68,6 +68,7 @@ C     stat_fname  :: List of statistics output Filename
       CHARACTER*8 fileflags(ldimLoc)
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*12 suffix
       INTEGER stat_region(rdimLoc,ldimLoc)
       INTEGER set_regMask(rdimLoc)
       _RS     val_regMask(rdimLoc)
@@ -111,8 +112,6 @@ C     Initialize and Read Diagnostics Namelist
         filename(l)   = blkFilName
         missing_value(l)     = UNSET_RL
         missing_value_int(l) = UNSET_I
-C       eight spaces:        12345678
-c       fileflags(l)(1:8) = '        '
         fileflags(l)  = blk8c
         DO k = 1,kdimLoc
           levels(k,l) = UNSET_RL
@@ -251,9 +250,9 @@ C-     Only lists with non-empty file name (iLen>0) are considered
            averageFreq(n)  = frequency(l)
            averagePhase(n) = phase(n)
          ENDIF
-         IF ( missing_value(l) .NE. UNSET_RL ) 
+         IF ( missing_value(l) .NE. UNSET_RL )
      &        misvalFlt(n) = missing_value(l)
-         IF ( missing_value_int(l) .NE. UNSET_I ) 
+         IF ( missing_value_int(l) .NE. UNSET_I )
      &        misvalInt(n) = missing_value_int(l)
          fnames(n)  = filename (l)
          fflags(n)  = fileflags(l)
@@ -474,11 +473,21 @@ C     Echo History List Data Structure
      &    ' Averaging Freq.:', averageFreq(n),
      &    ' , Phase: ', averagePhase(n), ' , Cycle:', averageCycle(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(A,1PE20.12,A,I12)') 
+        IF ( fflags(n).EQ.blk8c ) THEN
+          WRITE(msgBuf,'(A,1PE20.12,A,I12,3A)')
      &       ' missing value:',  misvalFlt(n),
      &       ' ; for integers:', misvalInt(n)
+        ELSE
+          WRITE(msgBuf,'(A,1PE20.12,A,I12,3A)')
+     &       ' missing value:',  misvalFlt(n),
+     &       ' ; for integers:', misvalInt(n),
+     &       ' ; F-Flags="', fflags(n),'"'
+        ENDIF
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        IF ( nlevels(n).EQ.-1 ) THEN
+        IF ( nlevels(n).EQ.-1 .AND. fflags(n)(2:2).EQ.'I' ) THEN
+          WRITE(msgBuf,'(A)') ' Cumulate all Levels (to be set later)'
+          CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        ELSEIF ( nlevels(n).EQ.-1 ) THEN
           WRITE(msgBuf,'(A,A)') ' Levels:    ','will be set later'
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         ELSEIF ( fflags(n)(2:2).EQ.'P' ) THEN
@@ -488,9 +497,11 @@ C     Echo History List Data Structure
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
          ENDDO
         ELSE
+         suffix = ' Levels:    '
+         IF ( fflags(n)(2:2).EQ.'I' ) suffix = ' Sum Levels:'
          DO l=1,nlevels(n),20
           m = MIN(nlevels(n),l+19)
-          WRITE(msgBuf,'(A,20F5.0)') ' Levels:    ', (levs(k,n),k=l,m)
+          WRITE(msgBuf,'(A,20F5.0)') suffix, (levs(k,n),k=l,m)
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
          ENDDO
         ENDIF
