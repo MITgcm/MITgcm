@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.14 2009/04/29 20:58:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.15 2010/01/11 19:44:41 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -97,6 +97,25 @@ C-      others: set 1 level:
         ENDIF
       ENDDO
 
+C--   Check for inconsistent diagnostic parser field
+      ncount = 0
+      DO n = 1,ndiagt
+       gcode = gdiag(n)(1:10)
+       IF ( ( gcode(3:3).EQ.'r' .OR. gcode(3:3).EQ.'R' )
+     &                         .AND. gcode(10:10).NE.'R' ) THEN
+        WRITE(msgBuf,'(2A,4A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &   'inconsistent gdiag(3&10)="',gcode,'" for diag."',cdiag(n),'"'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        ncount = ncount + 1
+       ENDIF
+      ENDDO
+      IF ( ncount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A,I6,3A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &   'found', ncount, ' inconsistent parser "gdiag" => STOP'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R DIAGSTATS_SET_LEVELS'
+      ENDIF
+
 C--   Check for unvalid diag.mate number
       ncount = 0
       DO n = 1,ndiagt
@@ -114,6 +133,7 @@ C--   Check for unvalid diag.mate number
         STOP 'ABNORMAL END: S/R DIAGSTATS_SET_LEVELS'
       ENDIF
 
+C--   Print to standard output
       stdUnit = standardMessageUnit
       WRITE(msgBuf,'(2A)')
      &   '------------------------------------------------------------'
