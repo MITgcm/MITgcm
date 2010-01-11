@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.46 2010/01/08 19:19:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.47 2010/01/11 19:42:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_OUT
 
 C     !INTERFACE:
-      SUBROUTINE  DIAGNOSTICS_OUT(
+      SUBROUTINE DIAGNOSTICS_OUT(
      I     listId,
      I     myIter,
      I     myTime,
@@ -48,12 +48,14 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     i,j,k :: loop indices
+C     bi,bj :: tile indices
 C     lm    :: loop index (averageCycle)
 C     md    :: field number in the list "listId".
 C     ndId  :: diagnostics  Id number (in available diagnostics list)
 C     mate  :: counter mate Id number (in available diagnostics list)
 C     ip    :: diagnostics  pointer to storage array
 C     im    :: counter-mate pointer to storage array
+C     nLevOutp :: number of levels to write in output file
 C
 C--   COMMON /LOCAL_DIAGNOSTICS_OUT/ local common block (for multi-threaded)
 C     qtmp1 :: thread-shared temporary array (needs to be in common block):
@@ -70,6 +72,7 @@ C              diagnostic storage qdiag into it.
       _RL undef
       _RL tmpLev
       INTEGER ilen
+      INTEGER nLevOutp
 
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -114,6 +117,9 @@ c     IF ( useFIZHI ) undef = getcon('UNDEF')
       WRITE(suff,'(I10.10)') myIter
       ilen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
+C-    for now, if integrate vertically, output field has just 1 level:
+      nLevOutp = nlevels(listId)
+      IF ( fflags(listId)(2:2).EQ.'I' ) nLevOutp = 1
 
 C--   Set time information:
       IF ( freq(listId).LT.0. ) THEN
@@ -211,10 +217,10 @@ C       variable that has dimension (2,T) and clearly denotes the
 C       beginning and ending times for each diagnostics period
 
          dn(1)(1:NLEN) = dn_blnk(1:NLEN)
-         WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listId)
-         dim(1) = nlevels(listId)
+         WRITE(dn(1),'(a,i6.6)') 'Zmd', nLevOutp
+         dim(1) = nLevOutp
          ib(1)  = 1
-         ie(1)  = nlevels(listId)
+         ie(1)  = nLevOutp
 
          CALL MNC_CW_ADD_GNAME('diag_levels', 1,
      &        dim, dn, ib, ie, myThid)
@@ -359,7 +365,7 @@ C-        Empty diagnostics case :
             _END_MASTER( myThid )
             DO bj = myByLo(myThid), myByHi(myThid)
               DO bi = myBxLo(myThid), myBxHi(myThid)
-                DO k = 1,nlevels(listId)
+                DO k = 1,nLevOutp
                   DO j = 1-OLy,sNy+OLy
                     DO i = 1-OLx,sNx+OLx
                       qtmp1(i,j,k,bi,bj) = 0. _d 0
@@ -395,8 +401,8 @@ C-        diagnostics is not empty :
               ENDIF
             ENDIF
 
-            IF ( fflags(listId)(2:2).EQ.'P' ) THEN
-C-       get all the levels (for vertical interpolation)
+            IF ( fflags(listId)(2:2).NE.' ' ) THEN
+C-       get all the levels (for vertical post-processing)
               DO bj = myByLo(myThid), myByHi(myThid)
                DO bi = myBxLo(myThid), myBxHi(myThid)
                 DO k = 1,kdiag(ndId)
@@ -422,29 +428,36 @@ C-       get only selected levels:
               ENDDO
             ENDIF
 
-C-        end of empty diag / not empty block
-          ENDIF
-
 C-----------------------------------------------------------------------
-C         Check to see if we need to interpolate before output
+C--     Apply specific post-processing (e.g., interpolate) before output
 C-----------------------------------------------------------------------
-          IF ( fflags(listId)(2:2).EQ.'P' ) THEN
-C-        Do vertical interpolation:
-           IF ( fluidIsAir ) THEN
+            IF ( fflags(listId)(2:2).EQ.'P' ) THEN
+C-          Do vertical interpolation:
+             IF ( fluidIsAir ) THEN
 C jmc: for now, this can only work in an atmospheric set-up (fluidIsAir);
-            CALL DIAGNOSTICS_INTERP_VERT(
-     I                     listId, md, ndId, ip, im, lm,
-     U                     qtmp1,
-     I                     undef, myTime, myIter, myThid )
-           ELSE
-             WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
-     &         'INTERP_VERT not allowed in this config'
-             CALL PRINT_ERROR( msgBuf , myThid )
-             STOP 'ABNORMAL END: S/R DIAGNOSTICS_OUT'
-           ENDIF
+              CALL DIAGNOSTICS_INTERP_VERT(
+     I                         listId, md, ndId, ip, im, lm,
+     U                         qtmp1,
+     I                         undef, myTime, myIter, myThid )
+             ELSE
+               WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
+     &           'INTERP_VERT not allowed in this config'
+               CALL PRINT_ERROR( msgBuf , myThid )
+               STOP 'ABNORMAL END: S/R DIAGNOSTICS_OUT'
+             ENDIF
+            ENDIF
+            IF ( fflags(listId)(2:2).EQ.'I' ) THEN
+C-          Integrate vertically: for now, output field has just 1 level:
+              CALL DIAGNOSTICS_SUM_LEVELS(
+     I                         listId, md, ndId, ip, im, lm,
+     U                         qtmp1,
+     I                         undef, myTime, myIter, myThid )
+            ENDIF
+
+C--     End of empty diag / not-empty diag block
           ENDIF
 
-C--    Ready to write field "md", element "lm" in averageCycle(listId)
+C--     Ready to write field "md", element "lm" in averageCycle(listId)
 
 C-        write to binary file, using MDSIO pkg:
           IF ( diag_mdsio ) THEN
@@ -457,7 +470,7 @@ C           fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
 C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
             CALL WRITE_REC_LEV_RL(
      I                            fn, prec,
-     I                            NrMax, 1, nlevels(listId),
+     I                            NrMax, 1, nLevOutp,
      I                            qtmp1, -nRec, myIter, myThid )
           ENDIF
 
@@ -508,22 +521,22 @@ C           XY dimensions
             ENDIF
 
 C           Z is special since it varies
-            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listId)
+            WRITE(dn(3),'(a,i6.6)') 'Zd', nLevOutp
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'M') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevels(listId)
+              WRITE(dn(3),'(a,i6.6)') 'Zmd', nLevOutp
             ENDIF
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'L') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevels(listId)
+              WRITE(dn(3),'(a,i6.6)') 'Zld', nLevOutp
             ENDIF
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'U') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevels(listId)
+              WRITE(dn(3),'(a,i6.6)') 'Zud', nLevOutp
             ENDIF
             dim(3) = NrMax
             ib(3)  = 1
-            ie(3)  = nlevels(listId)
+            ie(3)  = nLevOutp
 
 C           Time dimension
             dn(4)(1:1) = 'T'
@@ -549,10 +562,12 @@ C     assign missing values and set flag for adding the netCDF atttibute
      I            misval_r8, misval_r4, misval_int,
      I            myThid )
 C     and now use the missing values for masking out the land points
+C     note: better to use 2-D mask if kdiag <> Nr or vert.integral
              DO bj = myByLo(myThid), myByHi(myThid)
               DO bi = myBxLo(myThid), myBxHi(myThid)
-               DO k = 1,nlevels(listId)
+               DO k = 1,nLevOutp
                 klev = NINT(levs(k,listId))
+                IF ( fflags(listId)(2:2).EQ.'I' ) kLev = 1
                 DO j = 1-OLy,sNy+OLy
                  DO i = 1-OLx,sNx+OLx
                   IF ( maskC(i,j,klev,bi,bj) .EQ. 0. )
@@ -612,7 +627,7 @@ C     meta files but with more informations in it.
             glf = globalFiles
             nRec = nfields(listId)*averageCycle(listId)
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
-     &              0, 0, nlevels(listId), ' ',
+     &              0, 0, nLevOutp, ' ',
      &              nfields(listId), flds(1,listId), nTimRec, timeRec,
      &              nRec, myIter, myThid)
       ENDIF
