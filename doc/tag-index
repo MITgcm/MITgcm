@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1213 2010/01/08 22:42:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1214 2010/01/12 00:23:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+ - Add option for writing vertical integral (sum of selected levels) of an output
+    field instead of writing output field levels. Activate this option on a per
+    output-file basis, by setting the 2nd character of fileflag to 'I'.
+ - Add field-specific information relative to level integral in 3rd postion
+    of parser diagnostics code (gdiag): " "=cumulate levels, "R"=integrate
+    vertically (x level-thickness x hFac), "r"=same but without hFac.
 o do_the_model_io:
   - pass end-of-model-run flag as argument, from forward_step to diagnostics_write:
     in case useSIGREG, will write (averaged) diagnostics (if dumpAtLast) before
