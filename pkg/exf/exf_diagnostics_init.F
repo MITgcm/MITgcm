@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.6 2009/12/21 00:11:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.7 2010/01/12 21:31:15 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -49,50 +49,50 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'Sensible heat flux into ocean, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFhl   '
       diagTitle = 'Latent heat flux into ocean, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFlwnet'
       diagTitle = 'Net upward longwave radiation, >0 decreases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFswnet'
       diagTitle = 'Net upward shortwave radiation, >0 decreases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFlwdn '
       diagTitle = 'Downward longwave radiation, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFswdn '
       diagTitle = 'Downward shortwave radiation, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFqnet '
       diagTitle = 'Net upward heat flux (turb+rad), >0 decreases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C--   surface fluxes:
       diagName  = 'EXFtaux '
@@ -103,8 +103,8 @@ C--   surface fluxes:
       ELSE
        diagCode = 'UM      U1      '
       ENDIF
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFtauy '
       diagTitle = 'meridional surface wind stress, >0 increases vVel'
@@ -114,85 +114,85 @@ C--   surface fluxes:
       ELSE
        diagCode = 'VM      U1      '
       ENDIF
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFuwind'
       diagTitle = 'zonal 10-m wind speed, >0 increases uVel'
       diagUnits = 'm/s             '
       diagCode  = 'UM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFvwind'
       diagTitle = 'meridional 10-m wind speed, >0 increases uVel'
       diagUnits = 'm/s             '
       diagCode  = 'VM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFwspee'
       diagTitle = '10-m wind speed modulus ( >= 0 )'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFatemp'
       diagTitle = 'surface (2-m) air temperature'
       diagUnits = 'degK            '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFaqh  '
       diagTitle = 'surface (2-m) specific humidity'
       diagUnits = 'kg/kg           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFevap '
       diagTitle = 'evaporation, > 0 increases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFpreci'
       diagTitle = 'precipitation, > 0 decreases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFsnow '
       diagTitle = 'snow precipitation, > 0 decreases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFempmr'
       diagTitle = 'net upward freshwater flux, > 0 increases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFpress'
       diagTitle = 'atmospheric pressure field'
       diagUnits = 'N/m^2           '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'EXFroff '
       diagTitle = 'river runoff, > 0 decreases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 

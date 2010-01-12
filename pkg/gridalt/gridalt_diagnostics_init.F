@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_diagnostics_init.F,v 1.2 2005/05/23 21:25:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_diagnostics_init.F,v 1.3 2010/01/12 21:31:15 jmc Exp $
 C $Name:  $
 
 #include "GRIDALT_OPTIONS.h"
@@ -48,8 +48,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'Pressure Thickness of Layers on Fizhi Grid'
       diagUnits = 'Pascal          '
       diagCode  = 'SM      ML      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 

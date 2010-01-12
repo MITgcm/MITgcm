@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_init.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_init.F,v 1.3 2010/01/12 21:31:15 jmc Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -41,8 +41,8 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       diagTitle = 'fractional plume: [0-1] (unitless)'
       diagUnits = '                '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'oceSPflx'
       diagTitle = 'net surface Salt flux rejected into the ocean during'
@@ -50,15 +50,15 @@ C     diagTitle :: local string (80c): description of field in diagnostic
      &          //' >0 increases salinity'
       diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'oceSPDep'
       diagTitle = 'Salt plume depth based on density criterion (>0)'
       diagUnits = 'm               '
       diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SALT_PLUME */

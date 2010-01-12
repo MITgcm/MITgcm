@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_init.F,v 1.3 2009/07/16 19:36:53 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_init.F,v 1.4 2010/01/12 21:31:15 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -54,30 +54,30 @@ C--    Land state variables:
         diagTitle = 'Surface Temperature over land'
         diagUnits = 'degC            '
         diagCode  = 'SM      Lg      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GrdTemp '
         diagTitle = 'Ground Temperature at each level'
         diagUnits = 'degC            '
         diagCode  = 'SM      MG      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GrdEnth '
         diagTitle = 'Ground Enthalpy at each level'
         diagUnits = 'J/m3            '
         diagCode  = 'SM      MG      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GrdWater'
         diagTitle =
      &       'Ground Water (vs Field Capacity) Fraction at each level'
         diagUnits = '0-1             '
         diagCode  = 'SM P    MG      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 c       cdiag(160) = 'SNOW    '
 c       tdiag(160) = 'Snow Depth (mm water equivalent)'
@@ -88,15 +88,15 @@ c---
         diagTitle = 'Snow Thickness over land'
         diagUnits = 'm               '
         diagCode  = 'SM P    Lg      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'LdSnwAge'
         diagTitle = 'Snow Age over land'
         diagUnits = 's               '
         diagCode  = 'SM P    Lg      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C--    Fluxes:
 
@@ -104,37 +104,37 @@ C--    Fluxes:
         diagTitle = 'Run-Off per surface unit'
         diagUnits = 'kg/m2/s         '
         diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'EnRunOff'
         diagTitle = 'Energy flux associated with run-Off'
         diagUnits = 'W/m^2           '
         diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'landHFlx'
         diagTitle = 'net surface downward Heat flux over land'
         diagUnits = 'W/m^2           '
         diagCode  = 'SM      Lg      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'landPmE '
         diagTitle = 'Precipitation minus Evaporation over land'
         diagUnits = 'kg/m^2/s        '
         diagCode  = 'SM      Lg      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'ldEnFxPr'
         diagTitle =
      &    'Energy flux (over land) associated with Precip (snow,rain)'
         diagUnits = 'W/m^2           '
         diagCode  = 'SM      Lg      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 c     ENDIF
 
