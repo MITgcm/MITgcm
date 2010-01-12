@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_add2list.F,v 1.6 2008/02/05 15:13:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_add2list.F,v 1.7 2010/01/12 05:37:50 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -46,15 +46,17 @@ C     numDiag   :: diagnostic number in the list of available diagnostics
 CEOP
 
 C     !LOCAL VARIABLES:
-C     msgBuf    :: Informational/error meesage buffer
+C     msgBuf    :: Informational/error message buffer
 C     diagMate  :: diagnostic mate number
 C     errIO     :: IO error flag
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*16  tempCode
       INTEGER diagMate
       INTEGER errIO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      tempCode = diagCode
       IF ( diagCode(6:8) .EQ. '   ' ) THEN
         diagMate = 0
       ELSEIF ( diagCode(5:5).EQ.'C' ) THEN
@@ -68,6 +70,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &      errIO,') reading mate number from diagcode => STOP'
           CALL PRINT_ERROR( msgBuf , myThid)
           STOP 'ABNORMAL END: S/R DIAGNOSTICS_ADD2LIST'
+        ELSE
+          tempCode(6:8) = '   '
         ENDIF
       ELSE
         READ(diagCode(6:8),'(I3)',IOSTAT=errIO) diagMate
@@ -81,12 +85,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
           diagMate = 0
+        ELSE
+          tempCode(6:8) = '   '
         ENDIF
       ENDIF
 
       CALL DIAGNOSTICS_ADDTOLIST (
      O     diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate,
+     I     diagName, tempCode, diagUnits, diagTitle, diagMate,
      I     myThid )
 
       RETURN
