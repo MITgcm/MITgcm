@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.17 2009/11/09 16:13:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.18 2010/01/12 00:47:34 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,26 +51,18 @@ C     == Local variables ==
 #ifdef SEAICE_MULTICATEGORY
       INTEGER k
       _RL recip_multdim
-#endif 
-C
+#endif
+
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 
       IF ( useDiagnostics ) THEN
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL DIAGNOSTICS_FILL(AREA,
-     &        'SIarea  ',0,1 ,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(HEFF,
-     &        'SIheff  ',0,1 ,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(UICE,
-     &        'SIuice  ',0,1 ,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(VICE,
-     &        'SIvice  ',0,1 ,2,bi,bj,myThid)
-        ENDDO
-       ENDDO
-C     
+       CALL DIAGNOSTICS_FILL( AREA, 'SIarea  ', 0, 1, 0, 1,1, myThid )
+       CALL DIAGNOSTICS_FILL( HEFF, 'SIheff  ', 0, 1, 0, 1,1, myThid )
+       CALL DIAGNOSTICS_FILL( UICE, 'SIuice  ', 0, 1, 0, 1,1, myThid )
+       CALL DIAGNOSTICS_FILL( VICE, 'SIvice  ', 0, 1, 0, 1,1, myThid )
+
        IF ( DIAGNOSTICS_IS_ON('SItices ',myThid) ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -86,28 +78,28 @@ C     division by zero is not possible
           DO k=1,MULTDIM
            DO j=1,sNy
             DO i=1,sNx
-             TICE(I,J,bi,bj) = TICE(I,J,bi,bj) 
+             TICE(I,J,bi,bj) = TICE(I,J,bi,bj)
      &            + TICES(I,J,K,bi,bj)*recip_multdim
             ENDDO
            ENDDO
           ENDDO
 #endif /* SEAICE_MULTICATEGORY */
-          CALL DIAGNOSTICS_FRACT_FILL(
-     I         TICE, AREA, 1. _d 0,1,'SItices ', 
-     I         0,1,1,bi,bj,myThid)
          ENDDO
         ENDDO
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   TICE, AREA, 1. _d 0, 1, 'SItices ',
+     I                   0, 1, 0, 1, 1, myThid )
        ENDIF
-C
+
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
-C
+
 #ifdef SEAICE_SALINITY
        CALL DIAGNOSTICS_FILL(HSALT  ,'SIhsalt ',0,1 ,0,1,1,myThid)
 #endif
 #ifdef SEAICE_AGE
        CALL DIAGNOSTICS_FILL(IceAge ,'SIage   ',0,1 ,0,1,1,myThid)
 #endif
-C
+
        CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
@@ -116,8 +108,8 @@ C
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
 #ifdef SEAICE_ALLOW_EVP
         IF ( SEAICEuseEVP ) THEN
-C     for EVP compute principle stress components from recent 
-C     stress state and normalize with latest 
+C     for EVP compute principle stress components from recent
+C     stress state and normalize with latest
 C     PRESS = PRESS(n-1), n = number of sub-cycling steps
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
