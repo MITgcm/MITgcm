@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_readparms.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_readparms.F,v 1.2 2010/01/12 23:55:48 jahn Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -33,18 +33,24 @@ C     msgBuf     :: message buffer
       INTEGER k,iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C     LS_nIter    :: number of dynamics time steps between ptracer steps
-C     LS_afterTS         :: use T,S at end of time step (after thermodynamics)
-C     LS_staggerTimeStep :: use U,V,W,T,S at end of time step
+C     LS_nIter        :: number of dynamics time steps between ptracer steps
+C     LS_whenToSample :: when to sample dynamical fields for the longstep average
+C                        0 - at beginning of timestep (reproduces offline results)
+C                        1 - after first THERMODYNAMICS but before DYNAMICS
+C                            (use use old U,V,W for advection, but new T,S for GCHEM if
+C                            staggerTimeStep=.FALSE.; reproduces online with
+C                            staggerTimeStep=.FALSE. for LS_nIter=1)
+C                        2 - after DYNAMICS and second THERMODYNAMICS
+C                            (use new U,V,W and T,S; reproduces online with
+C                            staggerTimeStep=.TRUE. for LS_nIter=1)
       NAMELIST /LONGSTEP_PARM01/
-     &     LS_nIter, LS_staggerTimeStep, LS_afterTS
+     &     LS_nIter, LS_whenToSample
 
       _BEGIN_MASTER(myThid)
 
 C     Set defaults values for parameters in LONGSTEP_PARAMS.h
       LS_nIter = 1
-      LS_staggerTimeStep = .FALSE.
-      LS_afterTS = .FALSE.
+      LS_whenToSample = 0
 
 C     Open and read the data.longstep file
       WRITE(msgBuf,'(A)') ' LONGSTEP_READPARMS: opening data.longstep'
@@ -66,15 +72,6 @@ C     Close the open data file
 C     Now set-up any remaining parameters that result from the input
 C     parameters
 
-C     can only do LS_staggerTimeStep if staggerTimeStep
-      IF ( LS_staggerTimeStep .AND. .NOT.staggerTimeStep ) THEN
-        WRITE(msgBuf,'(2A)')
-     &       ' LONGSTEP_READPARMS: LS_staggerTimeStep requires',
-     &       ' staggerTimeStep.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R LONGSTEP_READPARMS'
-      ENDIF
-
 C--   Print a summary of longstep parameter values:
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') '// ==================================='
@@ -86,12 +83,9 @@ C--   Print a summary of longstep parameter values:
       CALL WRITE_0D_I( LS_nIter, INDEX_NONE,
      &   'LS_nIter =',
      &   ' /* number of dynamics steps between ptracer steps */')
-      CALL WRITE_0D_L( LS_staggerTimeStep, INDEX_NONE,
-     &   'LS_staggerTimeStep =',
-     &   ' /* average U,V,W,T,S at end of time step */')
-      CALL WRITE_0D_L( LS_afterTS, INDEX_NONE,
-     &   'LS_afterTS =',
-     &   ' /* average T,S at end of time step */')
+      CALL WRITE_0D_I( LS_whenToSample, INDEX_NONE,
+     &   'LS_whenToSample =',
+     &   ' /* 0: before; 1: after TD, before DYN; 2: after */')
       WRITE(msgBuf,'(A)') ' -----------------------------------'
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 

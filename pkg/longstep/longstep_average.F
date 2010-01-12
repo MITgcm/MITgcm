@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.4 2009/09/09 22:48:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.5 2010/01/12 23:55:48 jahn Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -23,8 +23,10 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SURFACE.h"
 #include "LONGSTEP_PARAMS.h"
 #include "LONGSTEP.h"
 #ifdef ALLOW_GMREDI
@@ -62,6 +64,7 @@ C     first iteration in a long time step? - reset averages
 #ifdef SHORTWAVE_HEATING
        CALL LONGSTEP_RESET_3D(LS_QswCount, LS_Qsw, 1, myThid)
 #endif
+       CALL LONGSTEP_RESET_3D(LS_fwFluxCount, LS_fwFlux, 1, myThid)
 #ifdef ALLOW_GMREDI
        IF ( useGMRedi ) THEN
         CALL LONGSTEP_RESET_3D(LS_KwxCount, LS_Kwx, Nr, myThid)
@@ -82,8 +85,10 @@ C     first iteration in a long time step? - reset averages
 
 C--   update average inside tile (no overlaps) for all bi,bj
 
-      CALL LONGSTEP_FILL_3D(LS_uVelCount, LS_uVel, uVel, Nr, myThid)
-      CALL LONGSTEP_FILL_3D(LS_vVelCount, LS_vVel, vVel, Nr, myThid)
+      CALL LONGSTEP_FILL_3D_FAC(LS_uVelCount, LS_uVel, uVel, hFacW,
+     &                          Nr, myThid)
+      CALL LONGSTEP_FILL_3D_FAC(LS_vVelCount, LS_vVel, vVel, hFacS,
+     &                          Nr, myThid)
       CALL LONGSTEP_FILL_3D(LS_wVelCount, LS_wVel, wVel, Nr, myThid)
       CALL LONGSTEP_FILL_3D(LS_thetaCount, LS_theta, theta, Nr, myThid)
       CALL LONGSTEP_FILL_3D(LS_saltCount, LS_salt, salt, Nr, myThid)
@@ -93,6 +98,11 @@ C--   update average inside tile (no overlaps) for all bi,bj
 #ifdef SHORTWAVE_HEATING
       CALL LONGSTEP_FILL_3D_RS(LS_QswCount, LS_Qsw, Qsw, 1, myThid)
 #endif
+      IF ( LS_usePmEpR ) THEN
+       CALL LONGSTEP_FILL_3D_RS(LS_fwFluxCount,LS_fwFlux,PmEpR,1,myThid)
+      ELSE
+       CALL LONGSTEP_FILL_3D_RS(LS_fwFluxCount,LS_fwFlux,EmPmR,1,myThid)
+      ENDIF
 #ifdef ALLOW_GMREDI
       IF ( useGMRedi ) THEN
        CALL LONGSTEP_FILL_3D(LS_KwxCount, LS_Kwx, Kwx, Nr, myThid)
@@ -112,8 +122,10 @@ C--   update average inside tile (no overlaps) for all bi,bj
 C     time for a ptracer time step? - finish average
       IF ( MOD(myIter, LS_nIter) .EQ. LS_nIter-1 ) THEN
 
-       CALL LONGSTEP_AVERAGE_3D(LS_uVelCount, LS_uVel, Nr, myThid)
-       CALL LONGSTEP_AVERAGE_3D(LS_vVelCount, LS_vVel, Nr, myThid)
+       CALL LONGSTEP_AVERAGE_3D_FAC(LS_uVelCount, LS_uVel, hFacW,
+     &                              Nr, myThid)
+       CALL LONGSTEP_AVERAGE_3D_FAC(LS_vVelCount, LS_vVel, hFacS,
+     &                              Nr, myThid)
        CALL LONGSTEP_AVERAGE_3D(LS_wVelCount, LS_wVel, Nr, myThid)
        CALL LONGSTEP_AVERAGE_3D(LS_thetaCount,LS_theta,Nr, myThid)
        CALL LONGSTEP_AVERAGE_3D(LS_saltCount, LS_salt, Nr, myThid)
@@ -123,6 +135,8 @@ C     time for a ptracer time step? - finish average
 #ifdef SHORTWAVE_HEATING
        CALL LONGSTEP_AVERAGE_3D(LS_QswCount, LS_Qsw, 1, myThid)
 #endif
+       CALL LONGSTEP_AVERAGE_3D(LS_fwFluxCount, LS_fwFlux, 1, myThid)
+
 #ifdef ALLOW_GMREDI
        IF ( useGMRedi ) THEN
         CALL LONGSTEP_AVERAGE_3D(LS_KwxCount, LS_Kwx, Nr, myThid)
@@ -150,6 +164,7 @@ C     and update overlaps
 #ifdef SHORTWAVE_HEATING
        CALL EXCH_XY_RL( LS_Qsw, myThid )
 #endif
+       CALL EXCH_XY_RL( LS_fwFlux, myThid )
 #ifdef ALLOW_GMREDI
        IF ( useGMRedi ) THEN
         CALL EXCH_UV_AGRID_3D_RL( LS_Kwx, LS_Kwy, .FALSE., Nr, myThid )
@@ -177,6 +192,7 @@ C     and update overlaps
 #ifdef SHORTWAVE_HEATING
         CALL DIAGNOSTICS_FILL(LS_Qsw , 'LSqsw   ',0,1 ,0,1,1,myThid)
 #endif
+        CALL DIAGNOSTICS_FILL(LS_fwFlux, 'LSfwFlux',0,1 ,0,1,1,myThid)
 #ifdef ALLOW_GMREDI
         IF ( useGMRedi ) THEN
          CALL DIAGNOSTICS_FILL(LS_Kwx , 'LSkwx   ',0,Nr,0,1,1,myThid)

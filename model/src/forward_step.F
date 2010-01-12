@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.176 2010/01/08 19:42:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.177 2010/01/12 23:56:04 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -162,15 +162,13 @@ C     == Local variables ==
 C     modelEnd  :: true if reaching the end of the run
 C     myTimeBeg :: time at beginning of time step (needed by longstep)
 C     myIterBeg :: iteration number at beginning of time step
-C     myTimeTD  :: time at call to thermodynamics (needed by longstep)
-C     myIterTD  :: iteration number at call to thermodynamics
       LOGICAL modelEnd
 #ifdef COMPONENT_MODULE
       INTEGER myItP1
 #endif
 #ifdef ALLOW_LONGSTEP
-      INTEGER myIterBeg, myIterTD
-      _RL myTimeBeg, myTimeTD
+      INTEGER myIterBeg
+      _RL myTimeBeg
 #endif /* ALLOW_LONGSTEP */
 CEOP
 
@@ -191,9 +189,8 @@ C--   Reset the model iteration counter and the model time.
 
 #ifdef ALLOW_LONGSTEP
 C     store this for longstep_average with staggerTimeStep
-C     and longstep_thermodynamics without staggerTimeStep
-C     which are called after myIter and myTime are incremented
-C     but need iter/time at beginning of time step
+C     which is called after myIter and myTime are incremented
+C     but needs iter/time at beginning of time step
       myIterBeg = myIter
       myTimeBeg = myTime
 #endif /* ALLOW_LONGSTEP */
@@ -489,7 +486,7 @@ CADJ &     kind = isbyte
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS ) THEN
-       IF ( .NOT.LS_afterTS .AND. .NOT.LS_staggerTimeStep ) THEN
+       IF ( LS_whenToSample .EQ. 0 ) THEN
 C       Average all variables before advection (but after do_oceanic_phys
 C       where Qsw, KPP and GMRedi stuff is computed).
 C       This is like diagnostics package and will reproduce offline
@@ -501,6 +498,16 @@ C       results.
         CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
         CALL LONGSTEP_AVERAGE( myTime, myIter, myThid )
         CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
+#endif
+        CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                   myThid)
+        CALL LONGSTEP_THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                    myThid)
        ENDIF
       ENDIF
 #endif /* ALLOW_LONGSTEP */
@@ -515,14 +522,14 @@ CADJ &     kind = isbyte
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',myThid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',myThid)
-C--    if not staggerTimeStep: end
+C--     if not staggerTimeStep: end
       ENDIF
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS ) THEN
-       IF ( LS_afterTS .AND. .NOT.LS_staggerTimeStep ) THEN
-C       Average T and S after thermodynamics.  This will reproduce the
-C       effect of gchem's separate timestep, and thus online results
+       IF ( LS_whenToSample .EQ. 1 ) THEN
+C       Average T and S after thermodynamics, but U,V,W before dynamics.
+C       This will reproduce online results with staggerTimeStep=.FALSE.
 C       for LS_nIter=1
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
@@ -531,6 +538,16 @@ C       for LS_nIter=1
         CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
         CALL LONGSTEP_AVERAGE( myTime, myIter, myThid )
         CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
+#endif
+        CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                   myThid)
+        CALL LONGSTEP_THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                   myThid)
        ENDIF
       ENDIF
 #endif /* ALLOW_LONGSTEP */
@@ -887,9 +904,10 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS ) THEN
-       IF ( LS_staggerTimeStep ) THEN
+       IF ( LS_whenToSample .EQ. 2 ) THEN
 C       Average everything at the end of the timestep.  This will
 C       reproduce online results with staggerTimeStep=.TRUE.
+C       when LS_nIter=1
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
@@ -899,30 +917,24 @@ C       myIter has been update after dynamics, but the averaging window
 C       should be determined by myIter at beginning of timestep
         CALL LONGSTEP_AVERAGE( myTimeBeg, myIterBeg, myThid )
         CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
-       ENDIF
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &  CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
 #endif
-       CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
-     &                 myThid)
-       IF ( LS_staggerTimeStep ) THEN
-        myTimeTD = myTime
-        myIterTD = myIter
-       ELSE
-C     set iter for forcing/obcs as at beginning of timestep
-        myTimeTD = myTimeBeg
-        myIterTD = myIterBeg
-       ENDIF
-       CALL LONGSTEP_THERMODYNAMICS( myTimeTD, myIterTD, myThid )
-       CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+        CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
      &                   myThid)
+        CALL LONGSTEP_THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                   myThid)
+C--    if LS_whenToSample.EQ.2: end
+       ENDIF
 
 C--   Cycle time-stepping Tracers arrays (pTracers)
        CALL TIMER_START('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
        CALL LONGSTEP_CORRECTION_STEP(myTime, myIter, myThid)
        CALL TIMER_STOP ('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+C--    if usePTRACERS: end
       ENDIF
 #endif /* ALLOW_LONGSTEP */
 

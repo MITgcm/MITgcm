@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.38 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.39 2010/01/12 23:55:56 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -173,7 +173,7 @@ C  prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
 C       compute iter at beginning of ptracer time step
 #ifdef ALLOW_LONGSTEP
         iterNb = myIter - LS_nIter + 1
-        IF (LS_staggerTimeStep) iterNb = myIter - LS_nIter
+        IF (LS_whenToSample.GE.2) iterNb = myIter - LS_nIter
 #else
         iterNb = myIter
         IF (staggerTimeStep) iterNb = myIter - 1

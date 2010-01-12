@@ -41,17 +41,27 @@ The run-time parameters are set in data.longstep.  The default is:
 
  &LONGSTEP_PARM01
  LS_nIter=1,
- LS_afterTS=.FALSE.,
- LS_staggerTimeStep=.FALSE.,
+ LS_whenToSample=0,
  &
 
-LS_nIter   :: number of dynamical time steps per ptracer time step.
-LS_afterTS :: sample dynamical fields after updating T and S (after thermodynamics),
-              i.e. at the same time as gchem_forcing_sep is called.
-              This reproduces runs without longstep when LS_nIter == 1
-LS_staggerTimeStep :: same as LS_afterTS for staggerTimeStep == .TRUE.
+LS_nIter        :: number of dynamical time steps between ptracer time steps.
+LS_whenToSample :: when to sample dynamical fields for the longstep average
+                   0 - at beginning of timestep (reproduces offline results)
+                   1 - after first THERMODYNAMICS but before DYNAMICS
+                       (use use old U,V,W for advection, but new T,S for GCHEM if
+                       staggerTimeStep=.FALSE.; reproduces online with
+                       staggerTimeStep=.FALSE. for LS_nIter=1)
+                   2 - after DYNAMICS and second THERMODYNAMICS
+                       (use new U,V,W and T,S; reproduces online with
+                       staggerTimeStep=.TRUE. for LS_nIter=1)
 
 Default is to sample dynamical fields at the beginning of the time step.  This
-reproduces results from offline runs (with straight time averages used for the
-dynamical fields).
+reproduces results from offline runs with unshifted time averages used for the
+dynamical fields.
+
+To have a time stepping closer to the online model (and reproduce results
+for LS_nIter=1), use
+
+LS_whenToSample=1 if staggerTimeStep=.FALSE.
+LS_whenToSample=2 if staggerTimeStep=.TRUE.
 
