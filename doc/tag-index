@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1215 2010/01/12 21:35:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1216 2010/01/12 23:58:04 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/longstep:
+  - change parameters and fix tracer conservation with rstar/nonlinear free surface
 o diagnostics:
  - in all pkgs, replace remaining calls to old S/R DIAGNOSTICS_ADD2LIST with newer
    S/R DIAGNOSTICS_ADDTOLIST ; fix seaice VICE diagnostics.
