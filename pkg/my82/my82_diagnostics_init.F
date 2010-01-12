@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_diagnostics_init.F,v 1.2 2008/04/14 10:09:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_diagnostics_init.F,v 1.3 2010/01/12 21:34:09 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -47,23 +47,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'MYVISCAR'
         diagTitle = 'MY vertical eddy viscosity coefficient'
         diagUnits = 'm^2/s           '
-        diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'SM P    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'MYDIFFKR'
         diagTitle = 'Vertical diffusion coefficient for salt & tracers'
         diagUnits = 'm^2/s           '
-        diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'SM P    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'MYHBL   '
         diagTitle = 'MY82 boundary layer depth'
         diagUnits = 'm               '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 
 #endif /* ALLOW_DIAGNOSTICS */

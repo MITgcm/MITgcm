@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.6 2009/09/18 11:40:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.7 2010/01/12 21:34:09 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -47,101 +47,101 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'KPPviscA'
         diagTitle = 'KPP vertical eddy viscosity coefficient'
         diagUnits = 'm^2/s           '
-        diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'SM P    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPdiffS'
         diagTitle = 'Vertical diffusion coefficient for salt & tracers'
         diagUnits = 'm^2/s           '
-        diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'SM P    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPdiffT'
         diagTitle = 'Vertical diffusion coefficient for heat'
         diagUnits = 'm^2/s           '
-        diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'SM P    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPghat '
         diagTitle = 'Nonlocal transport coefficient'
         diagUnits = 's/m^2           '
         diagCode  = 'SM P    LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPhbl  '
         diagTitle = 'KPP boundary layer depth, bulk Ri criterion'
         diagUnits = 'm               '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPfrac '
         diagTitle = 'Short-wave flux fraction penetrating mixing layer'
         diagUnits = '                '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPdbsfc'
         diagTitle = 'Buoyancy difference with respect to surface'
         diagUnits = 'm/s^2           '
         diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPbfsfc'
         diagTitle = 'Bo+radiation absorbed to d=hbf*hbl + plume'
         diagUnits = 'm^2/s^3         '
         diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPRi   '
         diagTitle = 'Bulk Richardson number'
         diagUnits = 'non-dimensional '
         diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPbo   '
         diagTitle = 'Surface turbulent buoyancy forcing'
         diagUnits = 'm^2/s^3         '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPbosol'
         diagTitle = 'surface radiative buoyancy forcing'
         diagUnits = 'm^2/s^3         '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPdbloc'
         diagTitle = 'Local delta buoyancy across interfaces'
         diagUnits = 'm/s^2           '
         diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifndef EXCLUDE_KPP_DOUBLEDIFF
         diagName  = 'KPPnuddt'
         diagTitle = 'Vertical double diffusion coefficient for heat'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPnudds'
         diagTitle = 'Vertical double diffusion coefficient for salt'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM P    UR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ndef EXCLUDE_KPP_DOUBLEDIFF */
 
 #ifdef ALLOW_SALT_PLUME
@@ -149,15 +149,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagTitle = 'Salt plume flux fraction penetrating mixing layer'
         diagUnits = '                '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPboplm'
         diagTitle = 'Surface haline buoyancy forcing'
         diagUnits = 'm^2/s^3         '
         diagCode  = 'SM P     1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_SALT_PLUME */
 
 #endif /* ALLOW_DIAGNOSTICS */

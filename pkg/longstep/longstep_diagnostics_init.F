@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_diagnostics_init.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_diagnostics_init.F,v 1.2 2010/01/12 21:34:09 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -27,7 +27,7 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       INTEGER       diagNum
@@ -49,7 +49,7 @@ C--   Add diagnostics to the (long) list
       diagName  = 'LSuVel  '
       diagTitle = 'Zonal Component of Velocity (m/s)'
       diagUnits = 'm/s             '
-      diagCode  = 'UU      MR      '
+      diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -57,7 +57,7 @@ C--   Add diagnostics to the (long) list
       diagName  = 'LSvVel  '
       diagTitle = 'Meridional Component of Velocity (m/s)'
       diagUnits = 'm/s             '
-      diagCode  = 'VV      MR      '
+      diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -65,14 +65,14 @@ C--   Add diagnostics to the (long) list
       diagName  = 'LStheta '
       diagTitle = 'Potential Temperature'
       diagUnits = 'degC            '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'LSsalt  '
       diagTitle = 'Salinity'
       diagUnits = 'psu             '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -99,23 +99,25 @@ C--   Add diagnostics to the (long) list
        diagName  = 'LSkwx   '
        diagTitle = 'K_31 element (W.point, X.dir) of GM-Redi tensor'
        diagUnits = 'm^2/s           '
-       WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'UM      LR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
        diagName  = 'LSkwy   '
        diagTitle = 'K_32 element (W.point, Y.dir) of GM-Redi tensor'
        diagUnits = 'm^2/s           '
-       WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'VM      LR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
        diagName  = 'LSkwz   '
        diagTitle = 'K_33 element (W.point, Z.dir) of GM-Redi tensor'
        diagUnits = 'm^2/s           '
        diagCode  = 'WM P    LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDIF
 #endif
 
@@ -124,16 +126,16 @@ C--   Add diagnostics to the (long) list
        diagName  = 'LSKPPdfS'
        diagTitle = 'Vertical diffusion coefficient for salt & tracers'
        diagUnits = 'm^2/s           '
-       diagCode  = 'SM P    UR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'SM P    LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
        diagName  = 'LSKPPght'
        diagTitle = 'Nonlocal transport coefficient'
        diagUnits = 's/m^2           '
        diagCode  = 'SM P    LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDIF
 #endif /* ALLOW_KPP */
 

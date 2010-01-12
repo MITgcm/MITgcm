@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.6 2008/05/30 02:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.7 2010/01/12 21:34:09 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -34,12 +34,14 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
+C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
 C     diagCode  :: local parser field with characteristics of the diagnostics
 C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
+      INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -50,140 +52,154 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_VisbK'
-        diagTitle = 
+        diagTitle =
      &     'Mixing coefficient from Visbeck etal parameterization'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GM_hTrsL'
         diagTitle = 'Base depth (>0) of the Transition Layer'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GM_baseS'
         diagTitle = 'Slope at the base of the Transition Layer'
         diagUnits = '1               '
         diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GM_rLamb'
         diagTitle =
      &    'Slope vertical gradient at Trans. Layer Base (=recip.Lambda)'
         diagUnits = '1/m             '
         diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GM_Kux  '
         diagTitle = 'K_11 element (U.point, X.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'UU P ',diagNum+2,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UU P    MR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_Kvy  '
         diagTitle = 'K_22 element (V.point, Y.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV P ', diagNum ,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VV P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_Kuz  '
         diagTitle = 'K_13 element (U.point, Z.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_Kvz  '
         diagTitle = 'K_23 element (V.point, Z.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_Kwx  '
         diagTitle = 'K_31 element (W.point, X.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UM      LR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_Kwy  '
         diagTitle = 'K_32 element (W.point, Y.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VM      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_Kwz  '
         diagTitle = 'K_33 element (W.point, Z.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
         diagCode  = 'WM P    LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GM_PsiX '
         diagTitle = 'GM Bolus transport stream-function : X component'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UU      LR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_PsiY '
         diagTitle = 'GM Bolus transport stream-function : Y component'
         diagUnits = 'm^2/s           '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VV      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_KuzTz'
         diagTitle = 'Redi Off-diagonal Temperature flux: X component'
         diagUnits = 'degC.m^3/s      '
-        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_KvzTz'
         diagTitle = 'Redi Off-diagonal Temperature flux: Y component'
         diagUnits = 'degC.m^3/s      '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_ubT  '
         diagTitle = 'Zonal Mass-Weight Bolus Transp of Pot Temp'
         diagUnits = 'degC.m^3/s      '
-        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UUr     MR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_vbT  '
         diagTitle = 'Meridional Mass-Weight Bolus Transp of Pot Temp'
         diagUnits = 'degC.m^3/s      '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VVr     MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 #ifdef ALLOW_EDDYPSI
         diagName  = 'GMEdTauX'
         diagTitle = 'eddy-induced stress X-comp. estimated from Kwx'
         diagUnits = 'N/m^2           '
-        WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UM      LR      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GMEdTauY'
         diagTitle = 'eddy-induced stress Y-comp. estimated from Kwy'
         diagUnits = 'N/m^2           '
-        WRITE(diagCode,'(A,I3.3,A)') 'VM   ',diagNum+2,'LR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VM      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 #endif
 
 c     ENDIF
