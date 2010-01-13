@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_sum_levels.F,v 1.1 2010/01/11 19:42:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_sum_levels.F,v 1.2 2010/01/13 01:20:38 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -177,8 +177,8 @@ C--   Cumulate the level-thickness & hFac product:
                ELSE
                  tmpFac = drF(kLev)
                ENDIF
-               DO j = 1-OLy,sNy+OLy
-                DO i = 1-OLx,sNx+OLx
+               DO j = 2-OLy,sNy+OLy
+                DO i = 2-OLx,sNx+OLx
                  hFacLoc = MIN(
      &                          hFacW( i, j, kLev,bi,bj),
      &                          hFacW( i,j-1,kLev,bi,bj),
