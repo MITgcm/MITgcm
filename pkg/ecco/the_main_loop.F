@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.89 2010/01/08 20:02:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.90 2010/01/13 02:05:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1037,32 +1037,20 @@ C--   Check status of solution (statistics, cfl, etc...)
      &        CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
 #endif /* ALLOW_DEBUG */
 C--   Do IO if needed.
-#ifdef ALLOW_OFFLINE
-      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
-#else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( .FALSE., myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-#endif
 
 #ifndef ALLOW_DIVIDED_ADJOINT
 # ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
         IF ( i_got_signal .GT. 0 ) THEN
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
-     &        CALL DEBUG_CALL('PACKAGES_WRITE_PICKUP',myThid)
+          IF ( debugLevel .GE. debLevB ) 
+     &         CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
 #endif /* ALLOW_DEBUG */
-          CALL PACKAGES_WRITE_PICKUP(
-     I         .TRUE., myTime, myIter, myThid )
-#ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
-     &        CALL DEBUG_CALL('WRITE_PICKUP',myThid)
-#endif /* ALLOW_DEBUG */
-          CALL WRITE_PICKUP(
-     I         .TRUE., myTime, myIter, myThid )
+          CALL DO_WRITE_PICKUP(
+     I                .TRUE., myTime, myIter, myThid )
           STOP 'Checkpoint completed -- killed by signal handler'
         ENDIF
       ENDIF
