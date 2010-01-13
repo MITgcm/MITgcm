@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.31 2010/01/08 19:44:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.32 2010/01/13 01:42:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -135,6 +135,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           ENDIF
 C-      wait for everyone before setting arrays to zero:
           _BARRIER
+        ENDIF
+        IF ( modelEnd ) THEN
+C       Close all Stat-diags output files
+          CALL DIAGSTATS_CLOSE_IO( myThid )
         ENDIF
 
 C--     Clear storage space:
