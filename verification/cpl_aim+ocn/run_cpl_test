@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.14 2009/12/26 23:44:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.15 2010/01/13 00:25:37 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -8,11 +8,11 @@ Np=3
 MTH=
 MTHo=
 MTHa=
-if test $1 = '-mth' ; then
+if [ $# -ge 1 ] ; then if test $1 = '-mth' ; then
   MTH='-omp' ; shift
   if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
   if test -f input_atm/eedata.mth ; then MTHa=$MTH ; fi
-fi
+fi ; fi
 if [ $# -ne 1 ]
 then
   echo 'Usage:'`basename $0`' [opt] step'
