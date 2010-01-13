@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.2 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.3 2010/01/13 01:44:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,14 +21,13 @@ C     !USES:
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     myThid  :: my Thread Id number
       INTEGER myThid
 CEOP
 
@@ -42,11 +41,7 @@ C     == Local variables ==
 
       _BEGIN_MASTER( myThid)
 
-#ifdef ALLOW_USE_MPI
-      IF ( diagSt_Ascii .AND. mpiMyId.EQ.0 ) THEN
-#else
-      IF ( diagSt_Ascii ) THEN
-#endif
+      IF ( diagSt_Ascii .AND. myProcId.EQ.0 ) THEN
 
         DO n=1,diagSt_nbLists
 
