@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.131 2010/01/02 01:53:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.132 2010/01/14 23:17:42 jmc Exp $
 #  $Name:  $
 #
 
@@ -631,13 +631,17 @@ runmodel()
 	    ENDVAL=`cat $RUNLOG | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
 	fi
 	rm -f run.log_tmp
-	#if test "x$RETVAL" = x0 ; then
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
 	    tail $RUNLOG
 	    echo successful 1>&2
 	    # === Reduce the size of the testing emails!
 	    #cp $OUTPUTFILE $CDIR"/"$OUTPUTFILE
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
+	    return 0
+	elif [ $RETVAL -ne 0 -a $ENDVAL -gt 0 ] ; then
+	    #-- for some weird cases (run is finihed but with error code)
+	    tail $RUNLOG
+	    echo finished with error '(run:' $RETVAL ' end:' $ENDVAL ')' 1>&2
 	    return 0
 	else
 	    tail $RUNLOG
