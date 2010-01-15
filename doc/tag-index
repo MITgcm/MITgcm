@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1218 2010/01/15 20:02:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1219 2010/01/15 20:13:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62a (2010/01/15)
 o model/src:
   - bottom pressure diagnostic: correct for r* (when nonlinFreeSurf >= 4)
 o pkg/diagnostics:
