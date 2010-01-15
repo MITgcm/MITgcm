@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1216 2010/01/12 23:58:04 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1217 2010/01/15 00:59:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - add optional level number diagnostics (i.e., level number to be define
+    explictly with S/R DIAGNOSTICS_SETKLEV) with parser-code(10)="X".
+  - strictly check for valid parser-code(10) ;
+  - check if adding diag to the list from the right place.
 o pkg/longstep:
   - change parameters and fix tracer conservation with rstar/nonlinear free surface
 o diagnostics:
