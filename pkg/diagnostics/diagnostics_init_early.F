@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.15 2010/01/11 19:45:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.16 2010/01/15 00:24:37 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -48,6 +48,7 @@ C                   &  L  &  levels = MAX(Nr,NrPhys)  \\
 C                   &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
 C                   &  G  &  levels = Ground_level Number \\
 C                   &  I  &  levels = sea-Ice_level Number \\
+C                   &  X  &  free levels option (need to be set explicitly) \\
 C       \end{tabular}
 C     \end{center}
 
@@ -78,6 +79,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         udiag(n) = '                '
         tdiag(n) = ' '
       ENDDO
+
+C--   Diagnostics definition/setting starts here (can now add diags to list)
+      settingDiags = .TRUE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     For each output variable,

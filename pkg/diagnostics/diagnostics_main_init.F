@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.36 2010/01/11 19:45:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.37 2010/01/15 00:24:37 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -48,6 +48,7 @@ C                   &  L  &  levels = MAX(Nr,NrPhys)  \\
 C                   &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
 C                   &  G  &  levels = Ground_level Number \\
 C                   &  I  &  levels = sea-Ice_level Number \\
+C                   &  X  &  free levels option (need to be set explicitly) \\
 C       \end{tabular}
 C     \end{center}
 
