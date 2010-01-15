@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1217 2010/01/15 00:59:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1218 2010/01/15 20:02:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - bottom pressure diagnostic: correct for r* (when nonlinFreeSurf >= 4)
 o pkg/diagnostics:
   - add optional level number diagnostics (i.e., level number to be define
     explictly with S/R DIAGNOSTICS_SETKLEV) with parser-code(10)="X".
