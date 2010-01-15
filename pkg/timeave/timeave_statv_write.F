@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.40 2009/12/28 02:43:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.41 2010/01/15 22:43:55 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -130,11 +130,6 @@ C       Write to files
 
         IF (timeave_mdsio) THEN
 
-C         Set IO "context" for writing state
-#ifdef USE_DFILE
-          CALL DFILE_SET_RW
-          CALL DFILE_SET_CONT_ON_ERROR
-#endif
 C         Read IO error counter
           beginIOErrCount = IO_ERRCOUNT(myThid)
           CALL WRITE_FLD_XY_RL('ETAtave.' ,suff,etatave  ,myIter,myThid)
