@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.5 2010/01/15 19:25:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.6 2010/01/15 22:39:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,11 +64,20 @@ C     i,j :: Loop counters
       PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
 CEOP
 
-      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+      IF ( usingZCoords ) THEN
 
 C----- Compute bottom pressure deviation from gravity*rho0*H
 C      Start from phiHyd at the (bottom) tracer point and add Del_h*g*rho'
 C      with Del_h = distance from the bottom up to tracer point
+
+C--    Initialise to zero (otherwise phi0surf accumulate over land)
+       IF ( k.EQ.1 ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            phiHydLow(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+       ENDIF
 
        IF (integr_GeoPot.EQ.1) THEN
 C  --  Finite Volume Form
@@ -106,15 +115,14 @@ C  --  Finite Difference Form
 C  --  end if integr_GeoPot = ...
        ENDIF
 
-C  -- end buoyancyR = Oceanic (z)
+C  -- end usingZCoords
       ENDIF
 
-      IF (k.EQ.Nr) THEN
+      IF ( k.EQ.Nr ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  --  last level (bottom): rescale (r*) and add surface contribution
 
-       IF ( buoyancyRelation .EQ. 'OCEANICP' .OR.
-     &      buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+       IF ( usingPCoords ) THEN
 C  -- P coordinate : Phi(R_low) is simply at the top :
         DO j=jMin,jMax
          DO i=iMin,iMax
