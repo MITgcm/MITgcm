@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.25 2010/01/15 00:24:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.26 2010/01/15 18:57:36 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -548,6 +548,9 @@ C     Echo History List Data Structure
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
 
       _END_MASTER(myThid)
+
+C--   Everyone else must wait for the parameters to be loaded
+      _BARRIER
 
       RETURN
       END
