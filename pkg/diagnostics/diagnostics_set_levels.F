@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.15 2010/01/11 19:44:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.16 2010/01/15 00:25:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -26,6 +26,7 @@ C                   &  L  &  levels = MAX(Nr,NrPhys)  \\
 C                   &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
 C                   &  G  &  levels = Ground_level Number \\
 C                   &  I  &  levels = sea-Ice_level Number \\
+C                   &  X  &  free levels option (need to be set explicitly) \\
 C       \end{tabular}
 C     \end{center}
 
@@ -66,6 +67,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*84 ccHead, ccLine
       CHARACTER*8  blk8c
       CHARACTER*10 gcode
+      CHARACTER*1  g10code
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -73,29 +75,54 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER( myThid )
 
+C--   Diagnostics definition/setting ends (cannot add diags to list anymore)
+      settingDiags = .FALSE.
+
       nlevs   = MAX(Nr,Nrphys)
       nGroundLev = land_nLev
 
 C     Diagnostic Levels
 C     -----------------
+      ncount = 0
       DO n = 1,ndiagt
-        IF     (gdiag(n)(10:10) .EQ. '0') THEN
+        g10code = gdiag(n)(10:10)
+        IF     ( g10code .EQ. '0' ) THEN
           kdiag(n) = 0
-        ELSEIF (gdiag(n)(10:10) .EQ. '1') THEN
+        ELSEIF ( g10code .EQ. '1' ) THEN
           kdiag(n) = 1
-        ELSEIF (gdiag(n)(10:10) .EQ. 'R') THEN
+        ELSEIF ( g10code .EQ. 'R' ) THEN
           kdiag(n) = Nr
-        ELSEIF (gdiag(n)(10:10) .EQ. 'L') THEN
+        ELSEIF ( g10code .EQ. 'L' ) THEN
           kdiag(n) = nlevs
-        ELSEIF (gdiag(n)(10:10) .EQ. 'M') THEN
+        ELSEIF ( g10code .EQ. 'M' ) THEN
           kdiag(n) = nlevs - 1
-        ELSEIF (gdiag(n)(10:10) .EQ. 'G') THEN
+        ELSEIF ( g10code .EQ. 'G' ) THEN
           kdiag(n) = nGroundLev
-        ELSEIF (gdiag(n)(10:10) .NE. ' ') THEN
-C-      others: set 1 level:
+        ELSEIF ( g10code .EQ. 'g' ) THEN
           kdiag(n) = 1
+        ELSEIF ( g10code .EQ. 'X' ) THEN
+         IF ( kdiag(n) .LE. 0 ) THEN
+          WRITE(msgBuf,'(2A,I4,3A)')
+     &     '** WARNING ** DIAGNOSTICS_SET_LEVELS: ',
+     &     'level Nb =', kdiag(n), ' < 1 for diag."', cdiag(n),'"'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid )
+         ENDIF
+        ELSE
+C-      enforce a strict matching:
+          WRITE(msgBuf,'(2A,4A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &     'invalid gdiag(10)="', g10code, '" code for diag."',
+     &                            cdiag(n),'"'
+          CALL PRINT_ERROR( msgBuf , myThid )
+          ncount = ncount + 1
         ENDIF
       ENDDO
+      IF ( ncount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A,I6,3A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &   'found', ncount, ' invalid parser "gdiag(10)" => STOP'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R DIAGSTATS_SET_LEVELS'
+      ENDIF
 
 C--   Check for inconsistent diagnostic parser field
       ncount = 0

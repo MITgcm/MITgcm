@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.28 2009/01/25 17:00:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.29 2010/01/15 00:25:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,6 +8,7 @@ C--    Contents:
 C--    o GETDIAG
 C--    o DIAGNOSTICS_COUNT
 C--    o DIAGNOSTICS_GET_POINTERS
+C--    o DIAGNOSTICS_SETKLEV
 C--    o DIAGS_GET_PARMS_I (Function)
 C--    o DIAGS_MK_UNITS (Function)
 C--    o DIAGS_MK_TITLE (Function)
@@ -295,6 +296,120 @@ C-    search for this diag. in the active 2D/3D diagnostics list
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP 0
+C     !ROUTINE: DIAGNOSTICS_SETKLEV
+
+C     !INTERFACE:
+      SUBROUTINE DIAGNOSTICS_SETKLEV(
+     I                                diagName, nLevDiag, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | S/R DIAGNOSTICS_SETKLEV
+C     | o Define explicitly the number of level (stored in kdiag)
+C     |   of a diagnostic field. For most diagnostics, the number
+C     |   of levels is derived (in S/R SET_LEVELS) from gdiag(10)
+C     |   but occasionally one may want to set it explicitly.
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
+
+C     !INPUT PARAMETERS:
+C     diagName  :: diagnostic identificator name (8 characters long)
+C     nLevDiag  :: number of level to set for this diagnostics field
+C     myThid    :: my Thread Id number
+      CHARACTER*8  diagName
+      INTEGER nLevDiag
+      INTEGER myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER n, ndId
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Check if this S/R is called from the right place ;
+C     needs to be after DIAGNOSTICS_INIT_EARLY and before DIAGNOSTICS_INIT_FIXED
+      IF ( .NOT.settingDiags ) THEN
+        WRITE(msgBuf,'(4A,I5)') 'DIAGNOSTICS_SETKLEV: ',
+     &     'diagName="', diagName, '" , nLevDiag=', nLevDiag
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SETKLEV: ',
+     &     '<== called from the WRONG place, i.e.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SETKLEV: ',
+     &     'outside diagnostics setting section = from'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SETKLEV: ',
+     &     '   Diag_INIT_EARLY down to Diag_INIT_FIXED'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DIAGNOSTICS_SETKLEV'
+      ENDIF
+
+C--   Find this diagnostics in the list of available diag.
+      ndId = 0
+      DO n = 1,ndiagt
+        IF ( diagName.EQ.cdiag(n) ) THEN
+          ndId = n
+        ENDIF
+      ENDDO
+      IF ( ndId.EQ.0 ) THEN
+        WRITE(msgBuf,'(4A)') 'DIAGNOSTICS_SETKLEV: ',
+     &     'diagName="', diagName, '" not known.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DIAGNOSTICS_SETKLEV'
+      ENDIF
+
+C-    Optional level number diagnostics (X): set number of levels
+      IF ( kdiag(ndId).EQ.0
+     &   .AND. gdiag(ndId)(10:10).EQ.'X' ) THEN
+        kdiag(ndId) = nLevDiag
+      ELSEIF ( kdiag(ndId).EQ.nLevDiag
+     &   .AND. gdiag(ndId)(10:10).EQ.'X' ) THEN
+C-    level number already set to same value: send warning
+        WRITE(msgBuf,'(4A,I5)') '** WARNING ** DIAGNOSTICS_SETKLEV: ',
+     &     'diagName="', diagName, '" , nLevDiag=', nLevDiag
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(2A,I5,A)')'** WARNING ** DIAGNOSTICS_SETKLEV:',
+     &     ' level Nb (=', kdiag(ndId), ') already set.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+      ELSEIF ( gdiag(ndId)(10:10).EQ.'X' ) THEN
+C-    level number already set to a different value: do not reset but stop
+        WRITE(msgBuf,'(4A,I5)') 'DIAGNOSTICS_SETKLEV: ',
+     &     'diagName="', diagName, '" , nLevDiag=', nLevDiag
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I5,3A)') 'DIAGNOSTICS_SETKLEV: ',
+     &     'level Nb already set to', kdiag(ndId), ' => STOP'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ELSE
+C-    for now, do nothing but just send a warning
+        WRITE(msgBuf,'(4A,I5)') '** WARNING ** DIAGNOSTICS_SETKLEV: ',
+     &     'diagName="', diagName, '" , nLevDiag=', nLevDiag
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(2A,I5,3A)') '** WARNING ** will set level Nb',
+     &     ' from diagCode(ndId=', ndId, ')="', gdiag(ndId)(1:10), '"'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(4A)') '** WARNING ** DIAGNOSTICS_SETKLEV',
+     &     '("', diagName, '") <== Ignore this call.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
 C     !ROUTINE: DIAGS_GET_PARMS_I
 
 C     !INTERFACE:
@@ -376,7 +491,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j,n
 
-      DIAGS_MK_UNITS = '          '
+      DIAGS_MK_UNITS = '                '
       n = LEN(diagUnitsInPieces)
 
       j = 0
@@ -388,11 +503,11 @@ C     !LOCAL VARIABLES:
       ENDDO
 
       IF ( j.GT.16 ) THEN
-         WRITE(msgBuf,'(2A,I4,A)') '**WARNING** ',
+         WRITE(msgBuf,'(2A,I4,A)') '** WARNING ** ',
      &   'DIAGS_MK_UNITS: too long (',j,' >16) input string'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
-         WRITE(msgBuf,'(3A)') '**WARNING** ',
+         WRITE(msgBuf,'(3A)') '** WARNING ** ',
      &   'DIAGS_MK_UNITS: input=', diagUnitsInPieces
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
@@ -457,11 +572,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO
 
       IF ( j.GT.80 ) THEN
-         WRITE(msgBuf,'(2A,I4,A)') '**WARNING** ',
+         WRITE(msgBuf,'(2A,I4,A)') '** WARNING ** ',
      &   'DIAGS_MK_TITLE: too long (',j,' >80) input string'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
-         WRITE(msgBuf,'(3A)') '**WARNING** ',
+         WRITE(msgBuf,'(3A)') '** WARNING ** ',
      &   'DIAGS_MK_TITLE: input=', diagTitleInPieces
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
