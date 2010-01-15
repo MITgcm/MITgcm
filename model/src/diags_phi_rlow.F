@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.4 2009/10/26 21:48:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.5 2010/01/15 19:25:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,15 +6,15 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DIAGS_PHI_RLOW
 C     !INTERFACE:
-      SUBROUTINE DIAGS_PHI_RLOW( 
+      SUBROUTINE DIAGS_PHI_RLOW(
      I                       k, bi, bj, iMin,iMax, jMin,jMax,
      I                       phiHydF, phiHydC, alphRho, tFld, sFld,
      I                       myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R DIAGS_PHI_RLOW                                    
+C     | S/R DIAGS_PHI_RLOW
 C     | o Diagnose Phi-Hydrostatic at r-lower boundary
-C     |   = bottom pressure (ocean in z-coord) ; 
+C     |   = bottom pressure (ocean in z-coord) ;
 C     |   = sea surface elevation (ocean in p-coord) ;
 C     |   = height at the top of atmosphere (in p-coord) ;
 C     *==========================================================*
@@ -32,18 +32,18 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj      :: tile index            
+C     bi,bj      :: tile index
 C     iMin,iMax,jMin,jMax :: Loop counters
-C     phiHydF    :: hydrostatic potential anomaly at middle between 
+C     phiHydF    :: hydrostatic potential anomaly at middle between
 C                   2 centers k & k+1 (interface k+1)
 C     phiHydC    :: hydrostatic potential anomaly at cell center
 C                  (atmos: =Geopotential ; ocean-z: =Pressure/rho)
 C     alphRho    :: Density (z-coord) or specific volume (p-coord)
 C     tFld       :: Potential temp.
-C     sFld       :: Salinity 
-C     myTime :: Current time
-C     myIter :: Current iteration number
-C     myThid :: Instance number for this call of the routine.
+C     sFld       :: Salinity
+C     myTime     :: Current time
+C     myIter     :: Current iteration number
+C     myThid     :: my Thread Id number
       INTEGER k, bi,bj, iMin,iMax, jMin,jMax
       _RL phiHydF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -67,7 +67,7 @@ CEOP
       IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 
 C----- Compute bottom pressure deviation from gravity*rho0*H
-C      Start from phiHyd at the (bottom) tracer point and add Del_h*g*rho' 
+C      Start from phiHyd at the (bottom) tracer point and add Del_h*g*rho'
 C      with Del_h = distance from the bottom up to tracer point
 
        IF (integr_GeoPot.EQ.1) THEN
@@ -105,7 +105,7 @@ C  --  Finite Difference Form
 
 C  --  end if integr_GeoPot = ...
        ENDIF
-        
+
 C  -- end buoyancyR = Oceanic (z)
       ENDIF
 
@@ -123,11 +123,23 @@ C  -- P coordinate : Phi(R_low) is simply at the top :
         ENDDO
        ENDIF
 
+#ifdef NONLIN_FRSURF
+c      IF ( select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
+       IF ( select_rStar.GT.0 .AND. nonlinFreeSurf.GE.4 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
+     &                          *rStarFacC(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* NONLIN_FRSURF */
+
         DO j=jMin,jMax
          DO i=iMin,iMax
            phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
      &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-     &            + phi0surf(i,j,bi,bj) 
+     &            + phi0surf(i,j,bi,bj)
          ENDDO
         ENDDO
 
