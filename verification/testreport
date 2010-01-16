@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.132 2010/01/14 23:17:42 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.133 2010/01/16 22:08:27 jmc Exp $
 #  $Name:  $
 #
 
@@ -43,6 +43,7 @@ usage()
     echo "                             (DEF=\"12\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
+    echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
     echo "  (-nogenmake|-ng)         skip the genmake stage"
     echo "  (-noclean|-nc)           skip the \"make clean\" stage"
@@ -791,6 +792,7 @@ fi
 GSL=f
 
 CLEANUP=f
+NORUN=f
 QUICK=f
 NOGENMAKE=f
 NOCLEAN=f
@@ -903,6 +905,8 @@ for ac_option ; do
 	-clean | --clean)
 	    CLEANUP=t ; DELDIR=t ;;
 
+	-norun | --norun | -nr | --nr)
+	    NORUN=t ;;
 	-quick | --quick | -q | --q)
 	    QUICK=t ;;
 	-nogenmake | --nogenmake | -ng | --ng)
@@ -1050,7 +1054,11 @@ else
 fi
 
 #  create the FORTRAN comparison code
-createcodelet
+if test -x tr_cmpnum ; then
+    echo "skipping comparison code build"
+else
+    createcodelet
+fi
 
 #  build the mpack utility (if ADDRESSES = NONE, do it to test the build)
 if test "x$ADDRESSES" = x ; then
@@ -1219,7 +1227,9 @@ for dir in $TESTDIRS ; do
 
     #  Check whether there are "extra runs" for this testdir
     extra_runs=
-    ex_run_dirs=`( cd $dir ; echo $inputdir.* )`
+    if test "x$NORUN" = xf ; then
+	ex_run_dirs=`( cd $dir ; echo $inputdir.* )`
+    fi
     #echo "ex_run_dirs='$ex_run_dirs'"
     for exd in $ex_run_dirs ; do
 	name=`echo $exd | sed -e "s/$inputdir\.//"`
@@ -1262,10 +1272,14 @@ for dir in $TESTDIRS ; do
     mkdir $rel_CDIR
     CDIR=`pwd`"/$rel_CDIR"
     
-    if test "x$CLEANUP" = xt ; then
-	echo '====>>> this is to check that we never go through this part <<< ==='
-	makeclean $dir/$builddir \
-	    && run_clean $dir/$rundir
+    if test "x$NORUN" = xt ; then
+	    run=N
+	genmakemodel $dir/$builddir && genmake=Y \
+	    && makeclean $dir/$builddir \
+	    && run_clean $dir/$rundir \
+            && symlink_mpifiles $dir $code_dir $builddir \
+	    && makedependmodel $dir/$builddir && makedepend=Y \
+	    && makemodel $dir/$builddir && make=Y
     else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
@@ -1278,6 +1292,7 @@ for dir in $TESTDIRS ; do
 	    && results=`testoutput_run $dir $rundir $ref_outp`
     fi
     
+    #echo "results='$results'"
     echo
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
@@ -1370,7 +1385,9 @@ else
     fi
 fi
 
-rm -f tr_cmpnum.c tr_cmpnum
+if test "x$QUICK" = xf -a "x$NORUN" = xf ; then
+    rm -f tr_cmpnum.c tr_cmpnum
+fi
 
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY | sed 's/ \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \. //'
