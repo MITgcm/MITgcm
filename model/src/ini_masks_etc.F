@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.44 2009/12/17 23:47:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.45 2010/01/16 23:00:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,14 +137,14 @@ C       Note: if no fluid (continent) ==> ksurf = Nr+1
          DO I=1-Olx,sNx+Olx
           tmpfld(I,J,bi,bj) = 0.
           ksurfC(I,J,bi,bj) = Nr+1
-          maskH(I,J,bi,bj)  = 0.
+c         maskH(I,J,bi,bj)  = 0.
           Ro_surf(I,J,bi,bj) = R_low(I,J,bi,bj)
           DO K=Nr,1,-1
            Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)
      &                        + drF(k)*hFacC(I,J,K,bi,bj)
            IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
             ksurfC(I,J,bi,bj) = k
-            maskH(I,J,bi,bj)  = 1.
+c           maskH(I,J,bi,bj)  = 1.
             tmpfld(I,J,bi,bj) = tmpfld(I,J,bi,bj) + 1.
            ENDIF
           ENDDO
