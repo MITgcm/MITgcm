@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1219 2010/01/15 20:13:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1220 2010/01/16 23:17:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o cleaning:
+  - remove unused S/R (MDSWRITEMETA, DIAGNOSTICS_ADD2LIST, old DFILE IO S/R)
+  - comment out maskH definition (replaced by maskInC)
+o pkg/monitor:
+  - change mon_printstats_rl.F & mon_stats_rl.F (were similar to mon_writestats_rl
+    & mon_calc_stats_rl) to be the RL pendant to mon_printstats_rs & mon_stats_rs.
 
 checkpoint62a (2010/01/15)
 o model/src:
