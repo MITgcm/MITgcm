@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.37 2009/12/17 23:44:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.38 2010/01/16 23:06:34 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -349,7 +349,7 @@ C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
 C                    On some platforms it may be better to precompute
 C                    hFacW, hFacE, ... here than do MIN on the fly.
-C     maskH   :: cell Center full-column mask (= 2D mask)
+cC    maskH   :: cell Center full-column mask (= 2D mask)
 C     maskInC :: Cell Center 2-D Interior mask (i.e., zero beyond OB)
 C     maskInW :: West  face 2-D Interior mask (i.e., zero on and beyond OB)
 C     maskInS :: South face 2-D Interior mask (i.e., zero on and beyond OB)
@@ -405,13 +405,13 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  recip_Rcol,
      &  recip_hFacC,recip_hFacW,recip_hFacS,
      &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
-     &  maskH,
      &  maskInC, maskInW, maskInS,
      &  maskC, maskW, maskS,
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
      &  tanPhiAtU, tanPhiAtV, angleCosC, angleSinC,
      &  drC,drF,recip_drC,recip_drF,rC,rF,
      &  fCori, fCoriG, fCoriCos
+c    & , maskH
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -449,7 +449,7 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS recip_rAw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAs      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAz      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskInC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskInW        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskInS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
