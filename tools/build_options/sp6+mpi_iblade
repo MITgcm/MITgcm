@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sp6+mpi_iblade,v 1.1 2010/01/16 21:43:53 mlosch Exp $
+#  $Name:  $
+# 
+# tested on iblade1.awi.de
+# uname -a: AIX iblade1 3 5 0007465AD400
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_AIX -DWORDLENGTH=4 -DNML_TERMINATOR'
+HAVE_CLOC='true'
+HAVE_SETRLSTK='true'
+HAVE_STAT='true'
+
+MPI='true'
+INCLUDES='-I/usr/lpp/ppe.poe/include/thread64 -I/iblade/soft/netcdf/3.6.3/include'
+CPP='/lib/cpp -P'
+CC='mpcc_r -q64'
+FC='mpxlf95_r -q64'
+LINK='mpxlf95_r -q64'
+LIBS='-L/iblade/soft/netcdf/3.6.3/lib -lnetcdf'
+
+# increase allowed line length  
+FFLAGS='-qfixed=132'
+# this initializes all reals to NaNQ and all integers to -1
+#FFLAGS=${FFLAGS}' -qinitauto=FF' 
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O4'
+    #FOPTIM='-O5'
+    # if the above takes too long use a slightly less aggressive optimization
+    #FOPTIM='-O3 -qhot -qarch=auto -qtune=auto'
+    # for some unknown reason, the -qhot option (part of -O4 is not so hot 
+    # with these files (compilation takes forever), therefore we overwrite it
+    # here
+    NOOPTFILES='ini_curvilinear_grid.F  mon_stats_rs.F'
+    NOOPTFLAGS=${FOPTIM}' -qnohot'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O3 -qstrict -qstrictieeemod -qarch=auto -qtune=auto'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+
