@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.143 2009/10/26 21:48:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.144 2010/01/16 22:55:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -15,17 +15,17 @@ C     !INTERFACE:
       SUBROUTINE DYNAMICS(myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE DYNAMICS                                       
-C     | o Controlling routine for the explicit part of the model  
-C     |   dynamics.                                               
+C     | SUBROUTINE DYNAMICS
+C     | o Controlling routine for the explicit part of the model
+C     |   dynamics.
 C     *==========================================================*
-C     | This routine evaluates the "dynamics" terms for each      
-C     | block of ocean in turn. Because the blocks of ocean have  
-C     | overlap regions they are independent of one another.      
-C     | If terms involving lateral integrals are needed in this   
-C     | routine care will be needed. Similarly finite-difference  
-C     | operations with stencils wider than the overlap region    
-C     | require special consideration.                            
+C     | This routine evaluates the "dynamics" terms for each
+C     | block of ocean in turn. Because the blocks of ocean have
+C     | overlap regions they are independent of one another.
+C     | If terms involving lateral integrals are needed in this
+C     | routine care will be needed. Similarly finite-difference
+C     | operations with stencils wider than the overlap region
+C     | require special consideration.
 C     | The algorithm...
 C     |
 C     | "Correction Step"
@@ -168,7 +168,7 @@ C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
 C     k, kup,        - Index for layer above and below. kup and kDown
-C     kDown, km1       are switched with layer to be the appropriate 
+C     kDown, km1       are switched with layer to be the appropriate
 C                      index into fVerTerm.
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -395,7 +395,7 @@ C--       kDown  Cycles through 2,1 to point to current layer
           kup  = 1+MOD(k+1,2)
           kDown= 1+MOD(k,2)
 
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
          kkey = (idynkey-1)*Nr + k
 c
 CADJ STORE totphihyd (:,:,k,bi,bj) 
@@ -451,7 +451,7 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--      Integrate hydrostatic balance for phiHyd with BC of 
+C--      Integrate hydrostatic balance for phiHyd with BC of
 C        phiHyd(z=0)=0
          IF ( implicitIntGravWave ) THEN
            CALL CALC_PHI_HYD(
@@ -497,7 +497,7 @@ C
            ELSE
 #ifdef ALLOW_MOM_VECINV
 C
-# ifdef ALLOW_AUTODIFF_TAMC 
+# ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef NONLIN_FRSURF
 CADJ STORE fVerU(:,:,:) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -632,8 +632,8 @@ Cml(
 C     In order to compare the variance of phiHydLow of a p/z-coordinate
 C     run with etaH of a z/p-coordinate run the drift of phiHydLow
 C     has to be removed by something like the following subroutine:
-C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskH, maskH, rA, drF,
-C     &                'phiHydLow', myTime, myThid )
+C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskInC, maskInC, rA, drF,
+C     &                     'phiHydLow', myTime, myThid )
 Cml)
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -674,8 +674,8 @@ Cml)
 #endif
 
 #ifdef DYNAMICS_GUGV_EXCH_CHECK
-C- jmc: For safety checking only: This Exchange here should not change 
-C       the solution. If solution changes, it means something is wrong, 
+C- jmc: For safety checking only: This Exchange here should not change
+C       the solution. If solution changes, it means something is wrong,
 C       but it does not mean that it is less wrong with this exchange.
       IF ( debugLevel .GT. debLevB ) THEN
        CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
