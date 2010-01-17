@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.22 2009/11/30 15:18:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.23 2010/01/17 21:55:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -241,7 +241,7 @@ c      CALL EXCH_S3D_RL( cg3d_s, Nr, myThid )
        CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
       IF ( debugLevel.GT.debLevB .AND. diagFreq.GT.0. ) THEN
-        CALL WRITE_FLD_S3D_RS(
+        CALL WRITE_FLD_S3D_RL(
      I        'cg3d_r_I', 'I10', 1, Nr, cg3d_r, myIter, myThid )
       ENDIF
 
@@ -531,7 +531,7 @@ c       ENDIF
    11 CONTINUE
 
       IF ( debugLevel.GT.debLevB .AND. diagFreq.GT.0. ) THEN
-        CALL WRITE_FLD_S3D_RS(
+        CALL WRITE_FLD_S3D_RL(
      I        'cg3d_r_F', 'I10', 1, Nr, cg3d_r, myIter, myThid )
       ENDIF
 
