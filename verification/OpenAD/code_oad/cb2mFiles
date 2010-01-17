@@ -10,7 +10,6 @@ cost
 ctrl_dummy
 ctrl
 ctrl_weights
-DFILE
 DYNVARS
 EESUPPORT
 EOS
