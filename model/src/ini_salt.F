@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.22 2009/10/15 01:06:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.23 2010/01/18 19:37:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: INI_SALT
 C     !INTERFACE:
-      SUBROUTINE INI_SALT ( myThid )
+      SUBROUTINE INI_SALT( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_SALT
@@ -75,14 +75,14 @@ C--   Initialise salinity field to the vertical reference profile
           CALL MNC_FILE_CLOSE_ALL_MATCHING(hydrogSaltFile, myThid)
         ELSE
 #endif /*  ALLOW_MNC  */
-         CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
+          CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
 #ifdef ALLOW_MNC
         ENDIF
 #endif /*  ALLOW_MNC  */
-        _EXCH_XYZ_RL(salt  , myThid )
+        _EXCH_XYZ_RL( salt, myThid )
       ENDIF
 
-C     Apply mask and test consistancy
+C--   Apply mask and test consistency
       localWarnings=0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
