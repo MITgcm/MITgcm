@@ -1,25 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.2 2009/04/28 18:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.3 2010/01/18 19:42:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE INI_SALT ( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_SALT                                      |
-C     | o Set model initial salinity field.                      |
-C     |==========================================================|
-C     | There are several options for setting the initial        |
-C     | temperature file                                         |
-C     |  1. Inline code                                          |
-C     |  2. Vertical profile ( uniform S in X and Y )            |
-C     |  3. Three-dimensional data from a file. For example from |
-C     |     Levitus or from a checkpoint file from a previous    |
-C     |     integration.                                         |
-C     | In addition to setting the salinity field we also        |
-C     | set the initial salinity tendency term here.             |
-C     \==========================================================/
-      IMPLICIT NONE
+CBOP
+C     !ROUTINE: INI_SALT
+C     !INTERFACE:
+      SUBROUTINE INI_SALT( myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_SALT
+C     | o Set model initial salinity field.
+C     *==========================================================*
+C     | There are several options for setting the initial
+C     | temperature file
+C     |  1. Inline code
+C     |  2. Vertical profile ( uniform S in X and Y )
+C     |  3. Three-dimensional data from a file. For example from
+C     |     Levitus or from a checkpoint file from a previous
+C     |     integration.
+C     | In addition to setting the salinity field we also
+C     | set the initial salinity tendency term here.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -27,68 +33,101 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_SALT 
+C     myThid :: Number of this instance of INI_SALT
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj  :: Tile indices
+C     i,j,k  :: Loop counters
+C     rD     :: Radial displacement of point i,j
       INTEGER bi, bj
-      INTEGER  I,  J, K, localWarnings
+      INTEGER i, j, k, localWarnings
+      _RL     rD
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL rD
+CEOP
 
 C--   Initialise salinity field to the vertical reference profile
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-            rD=sqrt( (XC(i,j,bi,bj)-40.E3)**2
-     &              +(YC(i,j,bi,bj)-40.E3)**2
-     &              +(RC(k)+50.E3)**2 )
-           salt(I,J,K,bi,bj) = sRef(K)
-           IF (rD.LE.60.E3) salt(I,J,K,bi,bj) = sRef(K)+1.
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           salt(i,j,k,bi,bj) = sRef(k)
           ENDDO
          ENDDO
+C=== Set-up specific modification starts here ===
+C--    Initialise salinity field to a circular patch.
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            rD = SQRT( ( xC(i,j,bi,bj) - 40. _d 3 )**2
+     &                +( yC(i,j,bi,bj) - 40. _d 3 )**2
+     &                +( rC(k) + 50. _d 3 )**2
+     &               )
+            IF ( rD.LE.60. _d 3 ) salt(i,j,k,bi,bj) = sRef(k)+1. _d 0
+          ENDDO
+         ENDDO
+C=== Set-up specific modification ends here  ===
         ENDDO
        ENDDO
       ENDDO
 
       IF ( hydrogSaltFile .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
-       _END_MASTER(myThid)
-       _EXCH_XYZ_RL(salt  , myThid )
+        CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
+        _EXCH_XYZ_RL( salt, myThid )
       ENDIF
 
-C     Apply mask and test consistancy
+C--   Apply mask and test consistency
       localWarnings=0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1,sNy
-          DO I=1,sNx
-           IF (hFacC(I,J,K,bi,bj).EQ.0) salt(I,J,K,bi,bj) = 0.
-           IF (hFacC(I,J,K,bi,bj).NE.0.AND.salt(I,J,K,bi,bj).EQ.0.
-     &      .AND. sRef(k).NE.0.) THEN
-             localWarnings=localWarnings+1
-            ENDIF
+        DO k=1,Nr
+         IF ( maskIniSalt ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            IF (maskC(i,j,k,bi,bj).EQ.0.) salt(i,j,k,bi,bj) = 0.
+           ENDDO
           ENDDO
-         ENDDO
+         ENDIF
+         IF ( sRef(k).NE.0. ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( maskC(i,j,k,bi,bj).NE.0.
+     &      .AND. salt(i,j,k,bi,bj).EQ.0. ) THEN
+              localWarnings=localWarnings+1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
         ENDDO
        ENDDO
       ENDDO
-      IF (localWarnings.NE.0) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'S/R INI_SALT: salt = 0 identically. If this is intentional',
-     &  'you will need to edit ini_salt.F to avoid this safety check'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R INI_SALT'
+      IF ( localWarnings.NE.0 ) THEN
+       IF ( checkIniSalt ) THEN
+        WRITE(msgBuf,'(A,I10,A)')
+     &   ' INI_SALT: found', localWarnings,
+     &   ' wet grid-pts with salt=0 identically.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A,A)')
+     &  ' If this is intentional, you need to',
+     &  ' set checkIniSalt=.false. in "data", namelist PARM05'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_SALT'
+       ELSE
+        WRITE(msgBuf,'(A,I10,A)')
+     &   '** WARNINGS ** INI_SALT: found', localWarnings,
+     &   ' wet grid-pts with salt=0 identically.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
       ENDIF
 
-      CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity' , Nr, 1, myThid )
+      IF (debugMode) THEN
+        CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity',
+     &                         Nr, 1, myThid )
+      ENDIF
 
       RETURN
       END
