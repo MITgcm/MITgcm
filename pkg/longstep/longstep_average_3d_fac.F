@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average_3d_fac.F,v 1.1 2010/01/12 23:55:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average_3d_fac.F,v 1.2 2010/01/18 01:02:56 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -35,7 +35,7 @@ C       myNr :: number of levels to update
 C     myThid :: my Thread Id number
       INTEGER myNr
       _RL lsFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
-      _RL fac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RS fac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       INTEGER lsCnt(nSx,nSy)
       INTEGER myThid
 
