@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_correction_step.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_correction_step.F,v 1.2 2010/01/18 01:04:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,9 +34,9 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -44,10 +44,7 @@ C     myThid - Thread number for this instance of the routine.
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     == Local variables
-      INTEGER iMin,iMax
-      INTEGER jMin,jMax
       INTEGER bi,bj
-
 CEOP
 
 #ifdef ALLOW_LONGSTEP

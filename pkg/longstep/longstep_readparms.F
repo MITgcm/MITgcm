@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_readparms.F,v 1.2 2010/01/12 23:55:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_readparms.F,v 1.3 2010/01/18 01:04:18 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -27,10 +27,9 @@ CEOP
 #ifdef ALLOW_LONGSTEP
 
 C     !LOCAL VARIABLES:
-C     k          :: loop index
 C     iUnit      :: unit number for I/O
 C     msgBuf     :: message buffer
-      INTEGER k,iUnit
+      INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     LS_nIter        :: number of dynamics time steps between ptracer steps

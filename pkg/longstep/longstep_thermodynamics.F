@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.2 2010/01/12 23:55:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.3 2010/01/18 01:04:18 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -88,12 +88,9 @@ C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
-C     kappaRT,       - Total diffusion in vertical at level k, for T and S
-C     kappaRS          (background + spatially varying, isopycnal term).
 C     kappaRTr       - Total diffusion in vertical at level k,
 C                      for each passive Tracer
 C     kappaRk        - Total diffusion in vertical, all levels, 1 tracer
-C     useVariableK   = T when vertical diffusion is not constant
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
@@ -110,10 +107,6 @@ C                      index into fVerTerm.
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL kappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL kappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #ifdef ALLOW_PTRACERS
       _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       _RL kappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
@@ -127,13 +120,9 @@ C                      index into fVerTerm.
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER iterNb, m1, m2
 #endif
-#ifdef ALLOW_TIMEAVE
-      LOGICAL useVariableK
-#endif
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer, ip
 #endif
-      INTEGER trIter
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -159,9 +148,8 @@ CHPF$ INDEPENDENT
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
-CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
+CHPF$  INDEPENDENT, NEW (rTrans
 CHPF$&                  ,utrans,vtrans,xA,yA
-CHPF$&                  ,kappaRT,kappaRS
 CHPF$&                  )
 # ifdef ALLOW_PTRACERS
 CHPF$  INDEPENDENT, NEW (fVerP,kappaRTr)
