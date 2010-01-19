@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.47 2009/04/01 23:58:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.48 2010/01/19 14:24:36 mlosch Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -2449,7 +2449,7 @@ CCC      if(pl(i,L).le.10.) then
 CCC       qxlm(i,L) = 0.
 CCC      endif
          if(pl(i,L).le.150.) then
-          qxlm(i,L) = min(qxlm(i,L),5.)
+          qxlm(i,L) = min(qxlm(i,L),5. _d 0)
          endif
         enddo
       enddo
@@ -2525,8 +2525,8 @@ CCC       kh(i,L) = 0.
 CCC       km(i,L) = 0.
 CCC      endif
          if(pl(i,L).le.150.) then
-          kh(i,L) = min(kh(i,L),5.)
-          km(i,L) = min(km(i,L),5.)
+          kh(i,L) = min(kh(i,L),5. _d 0)
+          km(i,L) = min(km(i,L),5. _d 0)
          endif
         enddo
       enddo
