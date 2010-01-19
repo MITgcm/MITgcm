@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1220 2010/01/16 23:17:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1221 2010/01/19 14:25:53 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add 3 "_d 0"s so that fizhi compiles with xlf on iblade, and replace 
+  two " &end" by " &" (in fizhi-cs-*) because S/R NML_SET_TERMINATOR 
+  cannot deal with the former 
 o cleaning:
   - remove unused S/R (MDSWRITEMETA, DIAGNOSTICS_ADD2LIST, old DFILE IO S/R)
   - comment out maskH definition (replaced by maskInC)
