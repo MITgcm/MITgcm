@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.11 2010/01/11 19:49:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.12 2010/01/20 01:38:20 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -327,6 +327,19 @@ C--   add diagnostics of tendencies from each terms
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       diagName  = 'Vm_Cori '
       diagTitle = 'V momentum tendency from Coriolis term'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_dPHdx'
+      diagTitle = 'U momentum tendency from Hydrostatic Pressure grad'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_dPHdy'
+      diagTitle = 'V momentum tendency from Hydrostatic Pressure grad'
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
