@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.47 2009/11/21 01:27:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.48 2010/01/20 01:32:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -335,7 +335,7 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL bo      (imt)
       _RL bosol   (imt)
       _RL coriol  (imt)
-      integer ikppkey, kkppkey
+      integer ikppkey
 #ifdef ALLOW_SALT_PLUME
       _RL boplume (imt)
       _RL SPDepth (imt)
@@ -372,6 +372,9 @@ c wm, ws    : turbulent velocity scales         (m/s)
       parameter ( p5=0.5, eins=1.0 )
       _RL         minusone
       parameter ( minusone=-1.0 )
+#ifdef ALLOW_AUTODIFF_TAMC
+      integer kkppkey
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
 c     KPPBFSFC - Bo+radiation absorbed to d=hbf*hbl + plume (m^2/s^3)
@@ -1194,7 +1197,7 @@ c     sigma(imt)                  normalized depth (d / hbl)
       _RL blmc (imt,Nr,mdiff)
       _RL ghat (imt,Nr)
       _RL sigma(imt)
-      integer ikppkey, kkppkey
+      integer ikppkey
 
 #ifdef ALLOW_KPP
 
@@ -1214,6 +1217,9 @@ c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
 
       _RL    p0    , eins
       parameter (p0=0.0, eins=1.0)
+#ifdef ALLOW_AUTODIFF_TAMC
+      integer kkppkey
+#endif
 
 c-----------------------------------------------------------------------
 c compute velocity scales at hbl

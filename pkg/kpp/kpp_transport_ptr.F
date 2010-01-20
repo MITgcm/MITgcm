@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.11 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.12 2010/01/20 01:32:50 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -11,21 +11,21 @@ C $Name:  $
      I     tracerIdentity,
      O     df,
      I     myTime, myIter, myThid )
-C     /==========================================================\
-C     | o SUBROUTINE KPP_TRANSPORT_PTR                           |
-C     |   Add non local KPP transport term (ghat) to diffusive   |
-C     |   passive tracer flux.                                   |
-C     |==========================================================|
-C     | The nonlocal transport term is nonzero only for scalars  |
-C     | in unstable (convective) forcing conditions.             |
-C     | Note: We don't have a specific KPP diffusion for a       |
-C     |       passive tracer; use Salinity diffusion instead     |
-C     | Note: KPPdiffKzS(-,k) is defined at the top of grid cell |
-C     |       k while KPPghat(i,j,k,bi,bj) is defined at the     |
-C     |       bottom of grid cell k.                             |
-C     |       For K=1, KPPdiffKzS(-,k) = 0 which insures no flux |
-C     |       through the surface.                               |
-C     \==========================================================/
+C     *==========================================================*
+C     | o SUBROUTINE KPP_TRANSPORT_PTR
+C     |   Add non local KPP transport term (ghat) to diffusive
+C     |   passive tracer flux.
+C     *==========================================================*
+C     | The nonlocal transport term is nonzero only for scalars
+C     | in unstable (convective) forcing conditions.
+C     | Note: We don't have a specific KPP diffusion for a
+C     |       passive tracer; use Salinity diffusion instead
+C     | Note: KPPdiffKzS(-,k) is defined at the top of grid cell
+C     |       k while KPPghat(i,j,k,bi,bj) is defined at the
+C     |       bottom of grid cell k.
+C     |       For K=1, KPPdiffKzS(-,k) = 0 which insures no flux
+C     |       through the surface.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -68,7 +68,11 @@ C     myThid :: My Thread Id. number
 C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
+#ifdef ALLOW_GMREDI
       _RL tmpFac
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_GMREDI
 

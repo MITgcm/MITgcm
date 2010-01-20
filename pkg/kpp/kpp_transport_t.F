@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.18 2007/05/03 21:33:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.19 2010/01/20 01:32:50 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -6,27 +6,27 @@ C $Name:  $
 #include "GMREDI_OPTIONS.h"
 #endif
 
-      subroutine KPP_TRANSPORT_T (
+      SUBROUTINE KPP_TRANSPORT_T (
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
      O     df,
      I     myTime, myIter, myThid )
-C     /==========================================================\
-C     | o SUBROUTINE KPP_TRANSPORT_T                             |
-C     |   Add non local KPP transport term (ghat) to diffusive   |
-C     |   temperature flux.                                      |
-C     |==========================================================|
-C     | The nonlocal transport term is nonzero only for scalars  |
-C     | in unstable (convective) forcing conditions.             |
-C     | Note: [surfaceForcingT + Qsw * (1-KPPfrac)]              |
-C     |       is the total heat flux penetrating the mixed layer |
-C     |       from the surface in deg C / s referenced to the    |
-C     |       top layer.                                         |
-C     | Note: KPPdiffKzT(-,k) is defined at the top of grid cell |
-C     |       k while KPPghat(i,j,k,bi,bj) is defined at the     |
-C     |       bottom of grid cell k.                             |
-C     |       For K=1, KPPdiffKzT(-,k) = 0 which insures no flux |
-C     |       through the surface.                               |
-C     \==========================================================/
+C     *==========================================================*
+C     | o SUBROUTINE KPP_TRANSPORT_T
+C     |   Add non local KPP transport term (ghat) to diffusive
+C     |   temperature flux.
+C     *==========================================================*
+C     | The nonlocal transport term is nonzero only for scalars
+C     | in unstable (convective) forcing conditions.
+C     | Note: [surfaceForcingT + Qsw * (1-KPPfrac)]
+C     |       is the total heat flux penetrating the mixed layer
+C     |       from the surface in deg C / s referenced to the
+C     |       top layer.
+C     | Note: KPPdiffKzT(-,k) is defined at the top of grid cell
+C     |       k while KPPghat(i,j,k,bi,bj) is defined at the
+C     |       bottom of grid cell k.
+C     |       For K=1, KPPdiffKzT(-,k) = 0 which insures no flux
+C     |       through the surface.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -59,14 +59,18 @@ C     myThid :: My Thread Id. number
 C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
+#ifdef ALLOW_GMREDI
       _RL tmpFac
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_GMREDI
-      
-      IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN 
-        tmpFac = 1. _d 0 
+
+      IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN
+        tmpFac = 1. _d 0
       ELSE
-        tmpFac = 0. _d 0 
+        tmpFac = 0. _d 0
       ENDIF
       DO j=jMin,jMax
          DO i=iMin,iMax
