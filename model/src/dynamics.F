@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.144 2010/01/16 22:55:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.145 2010/01/20 03:50:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,6 +146,12 @@ C     myThid :: Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+C     !FUNCTIONS:
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
+
 C     !LOCAL VARIABLES:
 C     == Local variables
 C     fVer[UV]               o fVer: Vertical flux term - note fVer
@@ -190,6 +196,7 @@ C                      index into fVerTerm.
       INTEGER k, km1, kp1, kup, kDown
 
 #ifdef ALLOW_DIAGNOSTICS
+      LOGICAL dPhiHydDiagIsOn
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -242,6 +249,13 @@ CEOP
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &   CALL DEBUG_ENTER( 'DYNAMICS', myThid )
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      dPhiHydDiagIsOn = .FALSE.
+      IF ( useDiagnostics )
+     &  dPhiHydDiagIsOn = DIAGNOSTICS_IS_ON( 'Um_dPHdx', myThid )
+     &               .OR. DIAGNOSTICS_IS_ON( 'Vm_dPHdy', myThid )
 #endif
 
 C-- Call to routine for calculation of
@@ -468,6 +482,15 @@ C        phiHyd(z=0)=0
      O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
          ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+         IF ( dPhiHydDiagIsOn ) THEN
+           tmpFac = -1. _d 0
+           CALL DIAGNOSTICS_SCALE_FILL( dPhiHydX, tmpFac, 1,
+     &                           'Um_dPHdx', k, 1, 2, bi, bj, myThid )
+           CALL DIAGNOSTICS_SCALE_FILL( dPhiHydY, tmpFac, 1,
+     &                           'Vm_dPHdy', k, 1, 2, bi, bj, myThid )
+         ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
