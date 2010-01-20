@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.35 2010/01/02 23:10:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.36 2010/01/20 01:20:29 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -63,7 +63,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER i,j,k,kp1
+      INTEGER i,j,k
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -71,7 +71,7 @@ C     == Local variables ==
       _RL dSigmaDr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL maskp1, Kgm_tmp
+      _RL Kgm_tmp
       _RL ldd97_LrhoC(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL ldd97_LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL ldd97_LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -83,6 +83,10 @@ C     == Local variables ==
       _RL baseSlope  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL hTransLay  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL recipLambda(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
+      INTEGER kp1
+      _RL maskp1
+#endif
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef OLD_VISBECK_CALC
@@ -100,10 +104,12 @@ C     == Local variables ==
       LOGICAL  doDiagRediFlx
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
+#if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
       INTEGER  km1
       _RL dTdz
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

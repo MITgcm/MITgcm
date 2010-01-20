@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.6 2010/01/02 23:10:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.7 2010/01/20 01:20:29 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -45,7 +45,10 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+#if ( defined (ALLOW_TIMEAVE) || \
+      defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
       CHARACTER*(MAX_LEN_MBUF) suff
+#endif
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
 #endif

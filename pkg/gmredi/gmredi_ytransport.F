@@ -1,19 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.17 2008/05/30 02:50:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.18 2010/01/20 01:20:29 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
-      subroutine GMREDI_YTRANSPORT(
+      SUBROUTINE GMREDI_YTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
      I     yA,Tracer,tracerIdentity,
      U     df,
      I     myThid)
-C     /==========================================================\
-C     | o SUBROUTINE GMREDI_YTRANSPORT                           |
-C     |   Add horizontal y transport terms from GM/Redi          |
-C     |   parameterization.                                      |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | o SUBROUTINE GMREDI_YTRANSPORT
+C     |   Add horizontal y transport terms from GM/Redi
+C     |   parameterization.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -22,7 +21,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
- 
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -49,19 +48,22 @@ C     df               - Diffusive flux component work array.
 C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
-      INTEGER km1,kp1
-      _RL maskp1
+#if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
+      INTEGER kp1
+#endif
 #ifdef GM_EXTRA_DIAGONAL
+      INTEGER km1
       _RL dTdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef GM_BOLUS_ADVEC
+      _RL maskp1
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
+#endif /* GM_BOLUS_ADVEC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = tracerIdentity - 1
@@ -73,7 +75,7 @@ C     I, J - Loop counters
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1) 
+          igadkey = (act0 + 1)
      &                      + act1*max0
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
@@ -86,7 +88,7 @@ C     I, J - Loop counters
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (useGMRedi) THEN
- 
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE Kvy(:,:,k,bi,bj) =
@@ -125,10 +127,10 @@ C--   Area integrated meridional flux
       IF (GM_ExtraDiag) THEN
        km1 = MAX(k-1,1)
        kp1 = MIN(k+1,Nr)
- 
+
        DO j=jMin,jMax
         DO i=iMin,iMax
- 
+
 C-      Vertical gradients interpolated to V points
         dTdz(i,j) =  op5*(
      &   +op5*recip_drC(k)*
@@ -146,18 +148,18 @@ C-      Vertical gradients interpolated to V points
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dtdz(:,:) = 
+CADJ STORE dtdz(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
-        DO i=iMin,iMax 
+        DO i=iMin,iMax
 C-      Off-diagonal components of horizontal flux
           df(i,j) = df(i,j) - yA(i,j)*Kvz(i,j,k,bi,bj)*dTdz(i,j)
 
         ENDDO
        ENDDO
       ENDIF
-#endif /* GM_EXTRA_DIAGONAL */   
+#endif /* GM_EXTRA_DIAGONAL */
 
 #ifdef GM_BOLUS_ADVEC
       IF (GM_AdvForm .AND. GM_AdvSeparate
@@ -173,7 +175,7 @@ C-      Off-diagonal components of horizontal flux
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE vtrans(:,:) = 
+CADJ STORE vtrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
@@ -192,13 +194,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        kp1 = MIN(k+1,Nr)
        maskp1 = 1.
        IF (k.GE.Nr) maskp1 = 0.
-       DO j=jMin,jMax 
+       DO j=jMin,jMax
         DO i=iMin,iMax
          tmp1k(i,j) = dxG(i,j,bi,bj)*( GM_PsiY(i,j,kp1,bi,bj)*maskp1
      &                                -GM_PsiY(i,j,k,bi,bj) )
      &                               *maskS(i,j,k,bi,bj)
      &               *op5*(Tracer(i,j,k,bi,bj)+Tracer(i,j-1,k,bi,bj))
-        ENDDO 
+        ENDDO
        ENDDO
        CALL DIAGNOSTICS_FILL(tmp1k,'GM_vbT  ', k,1,2,bi,bj,myThid)
 

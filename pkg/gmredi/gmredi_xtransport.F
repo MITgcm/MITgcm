@@ -1,19 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.17 2008/05/30 02:50:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.18 2010/01/20 01:20:29 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
-      subroutine GMREDI_XTRANSPORT(
+      SUBROUTINE GMREDI_XTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
      I     xA,Tracer,tracerIdentity,
      U     df,
      I     myThid)
-C     /==========================================================\
-C     | o SUBROUTINE GMREDI_XTRANSPORT                           |
-C     |   Add horizontal x transport terms from GM/Redi          |
-C     |   parameterization.                                      |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | o SUBROUTINE GMREDI_XTRANSPORT
+C     |   Add horizontal x transport terms from GM/Redi
+C     |   parameterization.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -49,19 +48,22 @@ C     df               - Diffusive flux component work array.
 C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
-      INTEGER km1,kp1
-      _RL maskp1
+#if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
+      INTEGER kp1
+#endif
 #ifdef GM_EXTRA_DIAGONAL
+      INTEGER km1
       _RL dTdz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef GM_BOLUS_ADVEC
+      _RL maskp1
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
+#endif /* GM_BOLUS_ADVEC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = tracerIdentity - 1
@@ -73,7 +75,7 @@ C     I, J - Loop counters
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1) 
+          igadkey = (act0 + 1)
      &                      + act1*max0
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
@@ -86,10 +88,10 @@ C     I, J - Loop counters
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (useGMRedi) THEN
- 
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_NON_UNITY_DIAGONAL
-CADJ STORE Kux(:,:,k,bi,bj) = 
+CADJ STORE Kux(:,:,k,bi,bj) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 # endif
 # ifdef GM_EXTRA_DIAGONAL
@@ -141,13 +143,13 @@ C-        Vertical gradients interpolated to U points
      &           (Tracer(i-1,j,k,bi,bj)-Tracer(i-1,j,kp1,bi,bj))
      &        +maskC( i ,j,kp1,bi,bj)*
      &           (Tracer( i ,j,k,bi,bj)-Tracer( i ,j,kp1,bi,bj))
-     &       )      )      
+     &       )      )
 
 
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dtdz(:,:) = 
+CADJ STORE dtdz(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
@@ -173,7 +175,7 @@ C-        Off-diagonal components of horizontal flux
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE utrans(:,:) = 
+CADJ STORE utrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
@@ -184,9 +186,10 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
        ENDDO
       ENDIF
 
-#ifdef ALLOW_DIAGNOSTICS
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF ( useDiagnostics 
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics
      &     .AND. DIAGNOSTICS_IS_ON('GM_ubT  ', myThid )
      &     .AND. tracerIdentity .EQ. 1) THEN
        kp1 = MIN(k+1,Nr)
