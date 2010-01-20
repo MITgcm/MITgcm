@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.9 2009/07/31 03:09:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.10 2010/01/20 00:44:08 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,9 +24,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
-# include "DYNVARS.h"
-#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
@@ -55,14 +52,7 @@ C     === Local variables ===
 C     i,j - Loop counters
       INTEGER i, j
 #ifndef SEAICE_EXTERNAL_FLUXES
-      INTEGER ITER
-      _RL  QS1, TB, D1, D1W, D3, TMELT
-C     effective conductivity of combined ice and snow
-      _RL  effConduct
-C     specific humidity at ice surface
-      _RL  qhIce
-C     powers of temperature
-      _RL  t1, t2, t3, t4
+      _RL  QS1, D1, D1W, D3, TMELT
 
 C     local copies of global variables
       _RL tsurfLoc   (1:sNx,1:sNy)
@@ -78,8 +68,6 @@ C     auxiliary variable
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
       QS1=0.622 _d +00/1013.0 _d +00
-C FREEZING TEMPERATURE OF SEAWATER
-      TB=271.2 _d +00
 C SENSIBLE HEAT CONSTANT
       D1=SEAICE_sensHeat
 C WATER LATENT HEAT CONSTANT
