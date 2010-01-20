@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1222 2010/01/20 04:11:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1223 2010/01/20 23:33:45 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/icefront: adding the shell of, and the hooks to, a new package that
+   will model melting and freezing of vertical glacier ice fronts
 o momentum: 
   add diagnostics of momentum tendency from Hydrostatic pressure gradient
    (without surf.pressure term: would need a 2nd filling since implicit term).

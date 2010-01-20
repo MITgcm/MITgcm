@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.70 2009/10/25 02:04:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.71 2010/01/20 23:33:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,6 +79,8 @@ C       |
 C       |-- THSICE_INIT_FIXED
 C       |
 C       |-- SHELFICE_INIT_FIXED
+C       |
+C       |-- ICEFRONT_INIT_FIXED
 C       |
 C       |-- CPL_INIT_FIXED
 C       |
@@ -305,6 +307,10 @@ C--   Initialise fixed array for Float pkg
 #ifdef ALLOW_SHELFICE
       IF (useShelfIce) CALL SHELFICE_INIT_FIXED( myThid )
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF (useICEFRONT) CALL ICEFRONT_INIT_FIXED( myThid )
+#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_EMBED_FILES
       IF ( useEMBED_FILES ) CALL EMBED_FILES_INIT( myThid )

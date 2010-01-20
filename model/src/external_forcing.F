@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.54 2008/08/24 21:46:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.55 2010/01/20 23:33:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -346,6 +346,12 @@ C     Add heat in top-layer
      I     myTime, myThid )
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_ICEFRONT
+      IF ( useICEFRONT ) CALL ICEFRONT_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_ICEFRONT */
+
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
@@ -524,6 +530,12 @@ C     Add fresh-water in top-layer
      I     iMin,iMax, jMin,jMax, bi,bj, kLev,
      I     myTime, myThid )
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF ( useICEFRONT ) CALL ICEFRONT_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )

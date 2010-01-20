@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.63 2009/11/24 00:17:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.64 2010/01/20 23:33:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,6 +53,8 @@ C       |
 C       |-- SEAICE_READPARMS
 C       |
 C       |-- SHELFICE_READPARMS
+C       |
+C       |-- ICEFRONT_READPARMS
 C       |
 C       |-- SHAP_FILT_READPARMS
 C       |
@@ -189,6 +191,11 @@ C--   Initialize SEAICE parameters
 #ifdef ALLOW_SHELFICE
 C--   Initialize SHELFICE parameters
       IF (useShelfIce) CALL SHELFICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_ICEFRONT
+C--   Initialize ICEFRONT parameters
+      IF (useICEFRONT) CALL ICEFRONT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SHAP_FILT

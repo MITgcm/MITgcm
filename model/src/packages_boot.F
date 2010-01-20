@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.48 2009/11/19 19:49:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.49 2010/01/20 23:33:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,7 @@ c    &          useSMOOTH,
      &          useSEAICE,
      &          useSALT_PLUME,
      &          useShelfIce,
+     &          useICEFRONT,
      &          useThSIce,
      &          useATM2D,
      &          useAIM,
@@ -130,6 +131,7 @@ c     useGAD          =.FALSE.
       useSEAICE       =.FALSE.
       useSALT_PLUME   =.FALSE.
       useShelfIce     =.FALSE.
+      useICEFRONT     =.FALSE.
       useThSIce       =.FALSE.
       useATM2D        =.FALSE.
       useAIM          =.FALSE.

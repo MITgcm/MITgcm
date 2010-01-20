@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.84 2009/12/21 00:24:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.85 2010/01/20 23:33:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -253,6 +253,22 @@ C     shelf-ice ocean interface
      &      myThid)
       ENDIF
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF ( useICEFRONT .AND. fluidIsWater ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('ICEFRONT_THERMODYNAMICS',myThid)
+#endif
+C     compute temperature and (virtual) salt flux at the
+C     ice-front ocean interface
+       CALL TIMER_START('ICEFRONT_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &       myThid)
+       CALL ICEFRONT_THERMODYNAMICS( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'ICEFRONT_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &      myThid)
+      ENDIF
+#endif /* ALLOW_ICEFRONT */
 
 C--   Freeze water at the surface
 #ifdef ALLOW_AUTODIFF_TAMC

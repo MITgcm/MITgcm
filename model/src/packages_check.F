@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.47 2009/11/24 00:17:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.48 2010/01/20 23:33:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -249,6 +249,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useShelfIce) CALL SHELFICE_CHECK( myThid )
 #else
       IF (useShelfIce) CALL PACKAGES_ERROR_MSG('ShelfIce',' ',myThid)
+#endif
+
+#ifdef ALLOW_ICEFRONT
+      IF (useICEFRONT) CALL ICEFRONT_CHECK( myThid )
+#else
+      IF (useICEFRONT) CALL PACKAGES_ERROR_MSG('ICEFRONT',' ',myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF
