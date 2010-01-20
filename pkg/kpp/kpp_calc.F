@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.53 2009/11/21 01:27:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.54 2010/01/20 01:32:20 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -175,7 +175,6 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
       _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -200,7 +199,6 @@ cph)
       _RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #endif /* KPP_ESTIMATE_UREF */
 
-      _RL tempvar2
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
       integer ikppkey
 
