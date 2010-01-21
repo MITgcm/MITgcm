@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.47 2009/08/28 19:47:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.48 2010/01/21 00:15:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,7 @@ CBOP
 C     !ROUTINE: INI_DEPTHS
 C     !INTERFACE:
       SUBROUTINE INI_DEPTHS( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_DEPTHS
@@ -43,20 +44,19 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_DEPTHS
+C     myThid  ::  my Thread Id number
       INTEGER myThid
-CEndOfInterface
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     iG, jG - Global coordinate index
-C     bi,bj  - Tile indices
-C     I,J,K  - Loop counters
-C     oldPrec - Temporary used in controlling binary input dataset precision
-C     msgBuf    - Informational/error meesage buffer
+C     iG, jG  :: Global coordinate index
+C     bi, bj  :: Tile indices
+C     i, j    :: Loop counters
+C     oldPrec :: Temporary used in controlling binary input dataset precision
+C     msgBuf  :: Informational/error message buffer
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I, J
+      INTEGER  i, j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -229,14 +229,19 @@ C------
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           iG = myXGlobalLo-1+(bi-1)*sNx+I
-           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           iG = myXGlobalLo-1+(bi-1)*sNx+i
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
 C          Test for eastern edge
 c          IF ( iG .EQ. Nx )  Ro_surf(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  Ro_surf(i,j,bi,bj) = 0.
-           IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
-     &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
+C- Domain : Symetric % Eq. & closed at N & S boundaries:
+c          IF ( usingSphericalPolarGrid .AND.
+c    &          ABS(yC(i,j,bi,bj)).GE.ABS(ygOrigin) )
+c    &       Ro_surf(i,j,bi,bj) = rF(Nr+1)
+           IF ( usingSphericalPolarGrid .AND.
+     &          ABS(yC(i,j,bi,bj)).GE.90. )
+     &       Ro_surf(i,j,bi,bj) = rF(Nr+1)
           ENDDO
          ENDDO
         ENDDO
@@ -246,14 +251,19 @@ c          IF ( jG .EQ. Ny )  Ro_surf(i,j,bi,bj) = 0.
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           iG = myXGlobalLo-1+(bi-1)*sNx+I
-           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           iG = myXGlobalLo-1+(bi-1)*sNx+i
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
 C          Test for eastern edge
 c          IF ( iG .EQ. Nx )  R_low(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
-           IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
-     &       R_low(I,J,bi,bj) = rF(1)
+C- Domain : Symetric % Eq. & closed at N & S boundaries:
+c          IF ( usingSphericalPolarGrid .AND.
+c    &          ABS(yC(i,j,bi,bj)).GE.ABS(ygOrigin) )
+c    &       R_low(i,j,bi,bj) = rF(1)
+           IF ( usingSphericalPolarGrid .AND.
+     &          ABS(yC(i,j,bi,bj)).GE.90. )
+     &       R_low(i,j,bi,bj) = rF(1)
           ENDDO
          ENDDO
         ENDDO
@@ -269,7 +279,7 @@ c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
 c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
 
 C--   Everyone else must wait for the depth to be loaded
-C-    note: not necessary since all single-thread IO above are followed 
+C-    note: not necessary since all single-thread IO above are followed
 C           by an EXCH (with BARRIER) + BARRIER within IO routine
 c     _BARRIER
 
@@ -278,7 +288,7 @@ c     _BARRIER
 C     check for inconsistent topography along boundaries and fix it
        CALL OBCS_CHECK_DEPTHS( myThid )
 C     update the overlaps
-       _EXCH_XY_RS(R_low, myThid )
+       _EXCH_XY_RS( R_low, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
