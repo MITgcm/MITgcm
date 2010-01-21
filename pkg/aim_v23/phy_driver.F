@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.7 2006/01/26 00:18:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.8 2010/01/21 00:10:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: PHY_DRIVER
+C     !INTERFACE:
       SUBROUTINE PHY_DRIVER( tYear, usePkgDiag,
      I                       bi, bj, myTime, myIter, myThid )
 
-C------------------------
-C from SPEDDY code: (part of original code left with c_FM)
-C * S/R PHYPAR : except interp. dynamical Var. from Spectral of grid point
-C                here dynamical var. are loaded within S/R AIM_DYN2AIM.
-C * S/R FORDATE: only the CALL SOL_OZ (done once / day in SPEEDY)
+
+C     !DESCRIPTION: \bv
 C------------------------
 C--   SUBROUTINE PHYDRIVER (tYear, myTime, bi, bj, myThid )
 C--   Purpose: stand-alone driver for physical parametrization routines
@@ -22,12 +22,19 @@ C--             Diagnosed surface variables in common block: PHYGR3
 C--             Physical param. tendencies in common block: PHYTEN
 C--             Surface and upper boundary fluxes in common block: FLUXES
 C-------
-C  Note: tendencies are not /dpFac here but later in AIM_AIM2DYN
+C     Note: tendencies are not /dpFac here but later in AIM_AIM2DYN
 C-------
+C from SPEDDY code: (part of original code left with c_FM)
+C * S/R PHYPAR : except interp. dynamical Var. from Spectral of grid point
+C                here dynamical var. are loaded within S/R AIM_DYN2AIM.
+C * S/R FORDATE: only the CALL SOL_OZ (done once / day in SPEEDY)
+C------------------------
+C     \ev
 
+C     !USES:
       IMPLICIT NONE
 
-C     Resolution parameters
+C     == Global variables ===
 
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
@@ -49,7 +56,7 @@ C     Surface forcing fields (time-inv. or functions of seasonal cycle)
 C     Constants for forcing fields:
 #include "com_forcon.h"
 
-C     Radiation scheme variables 
+C     Radiation scheme variables
 #include "com_radvar.h"
 
 C     Radiation constants
@@ -58,17 +65,41 @@ C     Radiation constants
 C     Logical flags
 c_FM  include "com_lflags.h"
 
-C-- Routine arguments:
-      _RL tYear
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     tYear      :: Fraction into year
+C     usePkgDiag :: logical flag, true if using Diagnostics PKG
+C     bi, bj     :: Tile index
+C     myTime     :: Current time of simulation ( s )
+C     myIter     :: Current iteration number in simulation
+C     myThid     :: Number of this instance of the routine
+      _RL     tYear
       LOGICAL usePkgDiag
       INTEGER bi,bj
-      _RL myTime
+      _RL     myTime
       INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_AIM
-
+C     !FUNCTIONS:
+C     !LOCAL VARIABLES:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Local Variables originally (Speedy) in common bloc (com_physvar.h):
+C      TG1     :: absolute temperature
+C      QG1     :: specific humidity (g/kg)
+C      VsurfSq :: Square of surface wind speed (grid position = as T,Q)
+C      SE      :: dry static energy <- replaced by Pot.Temp.
+C      QSAT    :: saturation specific humidity (g/kg)
+C      PSG     :: surface pressure (normalized)
+      _RL TG1    (NGP,NLEV)
+      _RL QG1    (NGP,NLEV)
+      _RL VsurfSq(NGP)
+      _RL SE   (NGP,NLEV)
+      _RL QSAT (NGP,NLEV)
+      _RL PSG   (NGP)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Local variables:
-C    kGrd   :: Ground level index              (2-dim)  
+C    kGrd   :: Ground level index              (2-dim)
 C    dpFac  :: cell delta_P fraction           (3-dim)
 C    dTskin :: temp. correction for daily-cycle heating [K]
 C    T1s    :: near-surface air temperature (from Pot.Temp)
@@ -76,7 +107,7 @@ C    DENVV  :: surface flux (sens,lat.) coeff. (=Rho*|V|) [kg/m2/s]
 C    Shf0   :: sensible heat flux over freezing surf.
 C    dShf   :: sensible heat flux derivative relative to surf. temp
 C    Evp0   :: evaporation computed over freezing surface (Ts=0.oC)
-C    dEvp   :: evaporation derivative relative to surf. temp 
+C    dEvp   :: evaporation derivative relative to surf. temp
 C    Slr0   :: upward long wave radiation over freezing surf.
 C    dSlr   :: upward long wave rad. derivative relative to surf. temp
 C    sFlx   :: net surface flux (+=down) function of surf. temp Ts:
@@ -122,7 +153,7 @@ C     1.2.b Dry static energy
 C      <= replaced by Pot.Temp in aim_dyn2aim
 c     DO K=1,NLEV
 c      DO J=1,NGP
-c_FM    SE(J,K)=CP*TG1(J,K)+PHIG1(J,K) 
+c_FM    SE(J,K)=CP*TG1(J,K)+PHIG1(J,K)
 c      ENDDO
 c     ENDDO
 
@@ -165,7 +196,7 @@ c_FM &             PRECLS,TT_LSC,QT_LSC)
 
       IF ( aim_energPrecip ) THEN
 C     2.3 Snow Precipitation (update TT_CNV & TT_LSC)
-        CALL SNOW_PRECIP ( 
+        CALL SNOW_PRECIP (
      I             PSG, dpFac, SE, ICLTOP,
      I             PRECNV(1,myThid), QT_CNV(1,1,myThid),
      I             PRECLS(1,myThid), QT_LSC(1,1,myThid),
@@ -197,9 +228,9 @@ C     3.1 Compute shortwave tendencies and initialize lw transmissivity
 
 C     The sw radiation may be called at selected time steps
       LRADSW = .TRUE.
- 
+
       IF (LRADSW) THEN
- 
+
 c_FM    CALL RADSW (PSG,QG1,RH,ALB1,
 c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
        ICLTOP(1) = 1
@@ -209,21 +240,21 @@ c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
      O             ICLTOP,CLOUDC(1,myThid),
      O             TSR(1,myThid),SSR(1,0,myThid),TT_RSW(1,1,myThid),
      I             kGround,bi,bj,myThid)
- 
+
         DO J=1,NGP
           CLTOP(J,myThid)=SIGH(ICLTOP(J)-1)*PSG_1(J)
         ENDDO
- 
+
         DO K=1,NLEV
          DO J=1,NGP
           TT_RSW(J,K,myThid)=TT_RSW(J,K,myThid)*RPS_1*GRDSCP(K)
          ENDDO
         ENDDO
- 
+
       ENDIF
 
 C     3.2 Compute downward longwave fluxes
- 
+
 c_FM  CALL RADLW (-1,TG1,TS,ST4S,
 c_FM &            OLR,SLR,TT_RLW)
       CALL RADLW (-1,TG1,TS(1,myThid),ST4S,
@@ -233,11 +264,11 @@ c_FM &            OLR,SLR,TT_RLW)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     3.3. Compute surface fluxes and land skin temperature
- 
+
 c_FM  CALL SUFLUX (PSG,UG1,VG1,TG1,QG1,RH,PHIG1,
 c_FM &             PHIS0,FMASK1,STL1,SST1,SOILW1,SSR,SLR,
 c_FM &             USTR,VSTR,SHF,EVAP,ST4S,
-c_FM &             TS,TSKIN,U0,V0,T0,Q0) 
+c_FM &             TS,TSKIN,U0,V0,T0,Q0)
       CALL SUFLUX_PREP(
      I             PSG, TG1, QG1, RH(1,1,myThid), SE, VsurfSq,
      I             WVSurf(1,myThid),csLat(1,myThid),fOrogr(1,myThid),
@@ -256,7 +287,7 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      O             Shf0, dShf, Evp0, dEvp, Slr0, dSlr, sFlx,
      O             TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
-#ifdef ALLOW_LAND      
+#ifdef ALLOW_LAND
       CALL AIM_LAND_IMPL(
      I             FMASK1(1,1,myThid), dTskin,
      I             Shf0, dShf, Evp0, dEvp, Slr0, dSlr,
@@ -284,7 +315,7 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      O             Shf0, dShf, Evp0, dEvp, Slr0, dSlr, sFlx,
      O             TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
-#ifdef ALLOW_THSICE      
+#ifdef ALLOW_THSICE
         CALL AIM_SICE_IMPL(
      I             FMASK1(1,3,myThid), SSR(1,3,myThid), sFlx,
      I             Shf0, dShf, Evp0, dEvp, Slr0, dSlr,
@@ -302,11 +333,11 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
       ENDIF
 
       CALL SUFLUX_POST(
-     I             FMASK1(1,1,myThid), EMISFC, 
-     I             STL1(1,myThid), SST1(1,myThid), sti1(1,myThid), 
+     I             FMASK1(1,1,myThid), EMISFC,
+     I             STL1(1,myThid), SST1(1,myThid), sti1(1,myThid),
      I             dTskin, SLR(1,0,myThid),
      I             T0(1,myThid), Q0(1,myThid), DENVV,
-     U             DRAG(1,0,myThid), SHF(1,0,myThid), 
+     U             DRAG(1,0,myThid), SHF(1,0,myThid),
      U             EVAP(1,0,myThid), SLR(1,1,myThid),
      O             ST4S, TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
@@ -328,18 +359,18 @@ c_FM &            OLR,SLR,TT_RLW)
      &            OZUPP, STRATC, TAU2, FLUX, ST4A,
      O            OLR(1,myThid),SLR(1,0,myThid),TT_RLW(1,1,myThid),
      I            kGround,bi,bj,myThid)
- 
+
       DO K=1,NLEV
        DO J=1,NGP
         TT_RLW(J,K,myThid)=TT_RLW(J,K,myThid)*RPS_1*GRDSCP(K)
 c_FM    TTEND (J,K)=TTEND(J,K)+TT_RSW(J,K)+TT_RLW(J,K)
        ENDDO
-      ENDDO 
+      ENDDO
 
 #ifdef ALLOW_CLR_SKY_DIAG
 C     3.5 Compute clear-sky radiation (for diagnostics only)
       IF ( aim_clrSkyDiag ) THEN
-        
+
 C      3.5.1 Compute shortwave tendencies
        dummyI(1) = -1
        CALL RADSW (PSG,dpFac,QG1,RH(1,1,myThid),ALB1(1,0,myThid),
@@ -348,9 +379,9 @@ C      3.5.1 Compute shortwave tendencies
      O             dummyI, dummyR,
      O      TSWclr(1,myThid), SSWclr(1,myThid), TT_SWclr(1,1,myThid),
      I             kGround,bi,bj,myThid)
- 
+
 C      3.5.2 Compute downward longwave fluxes
- 
+
        CALL RADLW (-1,TG1,TS(1,myThid),ST4S,
      &             OZUPP, STRATC, TAU2, FLUX, ST4A,
      O      OLWclr(1,myThid), SLWclr(1,myThid), TT_LWclr(1,1,myThid),
@@ -362,13 +393,13 @@ C      3.5.3 Compute upward longwave fluxes, convert them to tendencies
      &            OZUPP, STRATC, TAU2, FLUX, ST4A,
      O      OLWclr(1,myThid), SLWclr(1,myThid), TT_LWclr(1,1,myThid),
      I            kGround,bi,bj,myThid)
- 
+
        DO K=1,NLEV
         DO J=1,NGP
           TT_SWclr(J,K,myThid)=TT_SWclr(J,K,myThid)*RPS_1*GRDSCP(K)
           TT_LWclr(J,K,myThid)=TT_LWclr(J,K,myThid)*RPS_1*GRDSCP(K)
         ENDDO
-       ENDDO 
+       ENDDO
 
       ENDIF
 #endif /* ALLOW_CLR_SKY_DIAG */
@@ -376,15 +407,15 @@ C      3.5.3 Compute upward longwave fluxes, convert them to tendencies
 C--   4. PBL interactions with lower troposphere
 
 C     4.1 Vertical diffusion and shallow convection
- 
+
 c_FM  CALL VDIFSC (UG1,VG1,SE,RH,QG1,QSAT,PHIG1,
 c_FM &             UT_PBL,VT_PBL,TT_PBL,QT_PBL)
       CALL VDIFSC (dpFac, SE, RH(1,1,myThid), QG1, QSAT,
      O             TT_PBL(1,1,myThid),QT_PBL(1,1,myThid),
      I             kGround,bi,bj,myThid)
- 
+
 C     4.2 Add tendencies due to surface fluxes
- 
+
       DO J=1,NGP
 c_FM   UT_PBL(J,NLEV)=UT_PBL(J,NLEV)+USTR(J,3)*RPS(J)*GRDSIG(NLEV)
 c_FM   VT_PBL(J,NLEV)=VT_PBL(J,NLEV)+VSTR(J,3)*RPS(J)*GRDSIG(NLEV)
@@ -398,7 +429,7 @@ c_FM   QT_PBL(J,NLEV)=QT_PBL(J,NLEV)+EVAP(J,3)*RPS(J)*GRDSIG(NLEV)
      &                     + EVAP(J,0,myThid)*RPS_1*GRDSIG(K)
        ENDIF
       ENDDO
- 
+
 c_FM  DO K=1,NLEV
 c_FM   DO J=1,NGP
 c_FM    UTEND(J,K)=UTEND(J,K)+UT_PBL(J,K)
@@ -406,9 +437,9 @@ c_FM    VTEND(J,K)=VTEND(J,K)+VT_PBL(J,K)
 c_FM    TTEND(J,K)=TTEND(J,K)+TT_PBL(J,K)
 c_FM    QTEND(J,K)=QTEND(J,K)+QT_PBL(J,K)
 c_FM   ENDDO
-c_FM  ENDDO  
+c_FM  ENDDO
 
-#endif /* ALLOW_AIM */ 
+#endif /* ALLOW_AIM */
 
       RETURN
       END

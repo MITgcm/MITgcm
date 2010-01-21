@@ -1,7 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.4 2004/06/24 23:41:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.5 2010/01/21 00:10:04 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
+
+C-- Note: Variables which do not need to stay in common block (local var)
+C         are declare locally in each S/R that use them (commented with "cL");
+C         Some variables are not needed at all (commented with single "c").
 
 C--   COMMON /LSMASK/ land-sea masks (initial. in INFORC)
 C     fmask1 - fractional land / sea / sea-ice mask
@@ -13,13 +17,13 @@ c     _RL fmask0(NGP,MAX_NO_THREADS)
 c     _RL fmasko1(NGP,MAX_NO_THREADS)
 c     _RL fmaskl1(NGP,MAX_NO_THREADS)
 
-C--   COMMON /FORFIX/ Time invariant forcing fields 
+C--   COMMON /FORFIX/ Time invariant forcing fields
 C              (initial. in INFORC, except for phis0 initial. in INVARS)
 C     phi0   - surface geopotential
 C     phis0  - ?
 C     alb0   - land-surface albedo
 c_FM  COMMON /FORFIX/ phi0, phis0, alb0
-      _RL phi0   (NGP)
+cL    _RL phi0   (NGP)
 c     _RL phis0  (NGP)
 c     _RL alb0   (NGP,MAX_NO_THREADS)
 
@@ -42,14 +46,13 @@ C     dTsurf - surface temperature changes form 1 it to the next one
 c     COMMON /FORDAY/ sst1, oice1, stl1, snow1, soilw1, alb1
       COMMON /FORDAY/ sst1, sti1, stl1, soilw1, alb1, dTsurf
       _RL sst1   (NGP,MAX_NO_THREADS)
-c     _RL oice1  (NGP,MAX_NO_THREADS)
+cL    _RL oice1  (NGP,MAX_NO_THREADS)
       _RL sti1   (NGP,MAX_NO_THREADS)
       _RL stl1   (NGP,MAX_NO_THREADS)
-c     _RL snow1  (NGP,MAX_NO_THREADS)
+cL    _RL snow1  (NGP,MAX_NO_THREADS)
       _RL soilw1 (NGP,MAX_NO_THREADS)
       _RL alb1   (NGP,0:3,MAX_NO_THREADS)
       _RL dTsurf (NGP,3,MAX_NO_THREADS)
-      _RL oice1(NGP), snow1(NGP)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif /* ALLOW_AIM */ 
+#endif /* ALLOW_AIM */

@@ -1,12 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.16 2009/06/30 16:03:44 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.17 2010/01/21 00:10:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: AIM_SURF_BC
+C     !INTERFACE:
       SUBROUTINE AIM_SURF_BC(
      U                        tYear,
      O                        aim_sWght0, aim_sWght1,
      I                        bi, bj, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *================================================================*
 C     | S/R AIM_SURF_BC
 C     | Set surface Boundary Conditions
@@ -18,6 +23,9 @@ C     |  and imposed (= surf. forcing).
 C     | In the future, will add
 C     |  a land model and a coupling interface with an ocean GCM
 C     *================================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     -------------- Global variables --------------
@@ -46,6 +54,7 @@ C-- Coupled to the Ocean :
 #include "ATMCPL.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     tYear      :: Fraction into year
 C     aim_sWght0 :: weight for time interpolation of surface BC
@@ -59,8 +68,19 @@ C     myThid     :: my Thread number Id.
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_AIM
+C     !FUNCTIONS:
+C     !LOCAL VARIABLES:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Local Variables originally (Speedy) in common bloc (com_forcing.h):
+C--   COMMON /FORDAY/ Daily forcing fields (updated in FORDATE)
+C     oice1      :: sea ice fraction
+C     snow1      :: snow depth (mm water)
+      _RL     oice1(NGP)
+      _RL     snow1(NGP)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     == Local variables ==
 C     i,j,k,I2,k   :: Loop counters
       INTEGER i,j,I2,k, nm0
@@ -69,11 +89,11 @@ C     i,j,k,I2,k   :: Loop counters
       _RL RSD, alb_land, oceTfreez, ALBSEA1, ALPHA, CZEN, CZEN2
       _RL RZEN, ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL, hlim
 c     _RL DALB, alb_sea
+#ifdef ALLOW_AIM_CO2
 #ifdef ALLOW_DIAGNOSTICS
       _RL pCO2scl
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
+#endif /* ALLOW_AIM_CO2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
@@ -230,7 +250,7 @@ c    &        + (alb_land - alb_sea)*fMask1(I2,1,myThid)
           ENDIF
           alb1(I2,1,myThid) = alb_land
 C_DE      alb1(I2,2,myThid) = ALBSEA
-          alb1(I2,2,myThid) = 0.5 _d 0 * ALBSEA 
+          alb1(I2,2,myThid) = 0.5 _d 0 * ALBSEA
      &        + 0.5 _d 0 * ALBSEA1
           alb1(I2,3,myThid) = ALBICE
          ENDDO
@@ -335,13 +355,12 @@ C     to replace MxL fields (if use sea-ice) or directly AIM SST
 #endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_AIM_CO2
-       DO j=1,sNy
+      DO j=1,sNy
         DO i=1,sNx
            I2 = i+(j-1)*sNx
            aim_CO2(I2,myThid)= atm_pCO2
         ENDDO
-       ENDDO
-
+      ENDDO
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          pCO2scl = 1. _d 6
@@ -349,7 +368,7 @@ C     to replace MxL fields (if use sea-ice) or directly AIM SST
      &                  'aim_pCO2', 1, 1, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-#endif
+#endif /* ALLOW_AIM_CO2 */
 
 #ifdef ALLOW_LAND
       IF (useLand) THEN
