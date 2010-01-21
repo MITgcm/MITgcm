@@ -22,6 +22,14 @@
 	  Initial version.
         </revremark>
       </revision>
+      <revision>
+	<revnumber>0.02</revnumber>
+	<date>2010-01-21</date>
+	<authorinitials>jmc</authorinitials>
+	<revremark>
+	  update links.
+        </revremark>
+      </revision>
     </revhistory>
 
     <abstract>
@@ -37,7 +45,7 @@
     <sect2>
       <title>New Versions of This Document</title> <para>You can
       obtain the latest version of this document <ulink
-      url="http://mitgcm.org/dev_docs/devel_HOWTO/">online</ulink> in
+      url="http://mitgcm.org/public/docs.html">online</ulink> in
       various formats.</para>
     </sect2>
     <sect2>
@@ -56,7 +64,7 @@
       <title>User Manual</title>
 
       <para>Before jumping into development, please familiarize yourself with
-	the <ulink url="http://mitgcm.org/docs.html"> MITgcm user manual
+	the <ulink url="http://mitgcm.org/public/docs.html"> MITgcm user manual
 	</ulink>.  This document contains volumes of useful information and is
 	included here by reference.</para>
 
@@ -130,7 +138,7 @@
    e|- tools
    ?|  tutorial_examples        documented tests
     |                             only populated on release1 branch 
-    |                             and not validated during "testscript"
+    |                             and not validated during "testreport"
     '- utils
        verification             std tests
 
@@ -182,7 +190,7 @@
       <title>Branches</title>
 
       <para>As shown in the online <ulink
-      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index?graph=1.174">
+      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/doc/tag-index?view=graph">
       ViewCVS-generated tree</ulink>, the MITgcm codebase is split into to two
       branches or "lines" under which development proceeds.  These two lines are
       referred to as the "MAIN" and "ecco" versions of the code.  While not
@@ -216,8 +224,8 @@
 
 	<listitem>
 	  <para>The developer then runs the <ulink
-          url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/verification/testscript">
-          testscript</ulink> shell script to see if any problems are introduced.
+          url="http://mitgcm.org/viewvc/MITgcm/MITgcm/verification/testreport">
+          testreport</ulink> shell script to see if any problems are introduced.
           While not intended to be exhaustive, the test cases within the
           verification directory do provide some indication whether gross errors
           have been introduced.
@@ -232,7 +240,7 @@
 	    <listitem>
 	      <para>adds a "checkpointXY_pre" comment (where X is a checkpoint
 	      number and Y is a letter) to the <ulink
-	      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index">
+	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/doc/tag-index">
 	      tag-index</ulink> file and checks it into the CVS
 	      repository</para>
 	    </listitem>
@@ -787,7 +795,7 @@ checkpoint50d_pre
 	      special command option (see "-command" below) to invoke the MPI
 	      executable.  Examples of PBS scripts using MPI with testreport can be
 	      found in the <ulink
-	      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm_contrib/test_scripts/">
+	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/test_scripts/">
 	      MITgcm-contrib area</ulink></para>
 	    </listitem>
 	  </varlistentry>
@@ -799,7 +807,7 @@ checkpoint50d_pre
 	      output.txt" is not sufficient.  This option allows a more general
 	      command (or shell script) to be invoked.  Examples of PBS scripts
 	      using MPI with testreport can be found in the <ulink
-	      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm_contrib/test_scripts/">
+	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/test_scripts/">
 	      MITgcm-contrib area</ulink></para>
 	    </listitem>
 	  </varlistentry>

@@ -17,6 +17,7 @@
 
 <style-sheet>
 
+<!--
 ;; ------------------------------------------------------------------------
 ;; ldp.dsl - LDP Customized DSSSL Stylesheet
 ;; v1.11, 2003-02-03
@@ -36,6 +37,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 ;; ------------------------------------------------------------------------
+-->
 
 <style-specification id="print" use="docbook">
 <style-specification-body> 
