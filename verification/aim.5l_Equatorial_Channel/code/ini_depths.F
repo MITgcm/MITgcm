@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.13 2009/04/28 18:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.14 2010/01/21 00:13:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,7 @@ CBOP
 C     !ROUTINE: INI_DEPTHS
 C     !INTERFACE:
       SUBROUTINE INI_DEPTHS( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_DEPTHS
@@ -43,20 +44,19 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_DEPTHS
+C     myThid  ::  my Thread Id number
       INTEGER myThid
-CEndOfInterface
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     iG, jG - Global coordinate index
-C     bi,bj  - Tile indices
-C     I,J,K  - Loop counters
-C     oldPrec - Temporary used in controlling binary input dataset precision
-C     msgBuf    - Informational/error meesage buffer
+C     iG, jG  :: Global coordinate index
+C     bi, bj  :: Tile indices
+C     i, j    :: Loop counters
+C     oldPrec :: Temporary used in controlling binary input dataset precision
+C     msgBuf  :: Informational/error message buffer
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I, J
+      INTEGER  i, j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -85,7 +85,8 @@ C------
       ENDDO
 
 C-    Need to synchronize here before doing master-thread IO
-      _BARRIER
+C     this is done within IO routines => no longer needed
+c     _BARRIER
 
 C------
 C   1) Set R_low = the Lower (in r sense) boundary of the fluid column :
@@ -111,7 +112,7 @@ C-            ocean : R_low = Bottom
           CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
           CALL MNC_CW_SET_CITER(bathyFile, 2, -1, -1, -1, myThid)
           CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
-          CALL MNC_CW_RL_R('D',bathyFile,0,0,'bathy',R_low, myThid)
+          CALL MNC_CW_RS_R('D',bathyFile,0,0,'bathy',R_low, myThid)
           CALL MNC_FILE_CLOSE_ALL_MATCHING(bathyFile, myThid)
           CALL MNC_CW_DEL_VNAME('bathy', myThid)
         ELSE
@@ -174,7 +175,6 @@ C------ read from file:
 C- read surface topography (in m) from topoFile (case topoFile.NE.' '):
 
         CALL READ_REC_XY_RS( topoFile, topoZ, 1, 0, myThid )
-        _BARRIER
 
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
 C----
@@ -187,7 +187,6 @@ c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',topoZ,0,myThid)
      O                       Ro_surf,
      I                       myThid )
 
-c         _BARRIER
 C         This I/O is now done in write_grid.F
 c         CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
 
@@ -230,18 +229,19 @@ C------
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           iG = myXGlobalLo-1+(bi-1)*sNx+I
-           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           iG = myXGlobalLo-1+(bi-1)*sNx+i
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
 C          Test for eastern edge
 c          IF ( iG .EQ. Nx )  Ro_surf(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  Ro_surf(i,j,bi,bj) = 0.
-c- Domain : Symetric % Eq. & closed at N & S boundaries:
-           IF (usingSphericalPolarGrid .AND.
-     &         ABS(yC(I,J,bi,bj)).GE.-ygOrigin)
-     &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
-           IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
-     &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
+C- Domain : Symetric % Eq. & closed at N & S boundaries:
+           IF ( usingSphericalPolarGrid .AND.
+     &          ABS(yC(i,j,bi,bj)).GE.ABS(ygOrigin) )
+     &       Ro_surf(i,j,bi,bj) = rF(Nr+1)
+           IF ( usingSphericalPolarGrid .AND.
+     &          ABS(yC(i,j,bi,bj)).GE.90. )
+     &       Ro_surf(i,j,bi,bj) = rF(Nr+1)
           ENDDO
          ENDDO
         ENDDO
@@ -251,18 +251,19 @@ c- Domain : Symetric % Eq. & closed at N & S boundaries:
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           iG = myXGlobalLo-1+(bi-1)*sNx+I
-           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           iG = myXGlobalLo-1+(bi-1)*sNx+i
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
 C          Test for eastern edge
 c          IF ( iG .EQ. Nx )  R_low(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
-c- Domain : Symetric % Eq. & closed at N & S boundaries:
-           IF (usingSphericalPolarGrid .AND.
-     &         ABS(yC(I,J,bi,bj)).GE.-ygOrigin)
-     &       R_low(I,J,bi,bj) = rF(1)
-           IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
-     &       R_low(I,J,bi,bj) = rF(1)
+C- Domain : Symetric % Eq. & closed at N & S boundaries:
+           IF ( usingSphericalPolarGrid .AND.
+     &          ABS(yC(i,j,bi,bj)).GE.ABS(ygOrigin) )
+     &       R_low(i,j,bi,bj) = rF(1)
+           IF ( usingSphericalPolarGrid .AND.
+     &          ABS(yC(i,j,bi,bj)).GE.90. )
+     &       R_low(i,j,bi,bj) = rF(1)
           ENDDO
          ENDDO
         ENDDO
@@ -270,6 +271,7 @@ c- Domain : Symetric % Eq. & closed at N & S boundaries:
       ENDIF
 
       IF ( debugLevel.GE.debLevB ) THEN
+       _BARRIER
        CALL PLOT_FIELD_XYRS( Ro_surf,
      &           'Surface reference r-position (ini_depths)',
      &           -1, myThid )
@@ -277,16 +279,16 @@ c- Domain : Symetric % Eq. & closed at N & S boundaries:
 c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
 
 C--   Everyone else must wait for the depth to be loaded
-C-    note: might not be necessary since all single-thread IO above
-C           are followed by an EXCH (with BARRIER)
-      _BARRIER
+C-    note: not necessary since all single-thread IO above are followed
+C           by an EXCH (with BARRIER) + BARRIER within IO routine
+c     _BARRIER
 
 #ifdef ALLOW_OBCS
       IF ( useOBCS ) THEN
 C     check for inconsistent topography along boundaries and fix it
        CALL OBCS_CHECK_DEPTHS( myThid )
 C     update the overlaps
-       _EXCH_XY_RS(R_low, myThid )
+       _EXCH_XY_RS( R_low, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 

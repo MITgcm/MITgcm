@@ -1,12 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.7 2009/05/17 19:41:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.8 2010/01/21 00:13:14 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: AIM_SURF_BC
+C     !INTERFACE:
       SUBROUTINE AIM_SURF_BC(
      U                        tYear,
      O                        aim_sWght0, aim_sWght1,
      I                        bi, bj, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *================================================================*
 C     | S/R AIM_SURF_BC
 C     | Set surface Boundary Conditions
@@ -18,6 +23,9 @@ C     |  and imposed (= surf. forcing).
 C     | In the future, will add
 C     |  a land model and a coupling interface with an ocean GCM
 C     *================================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     -------------- Global variables --------------
@@ -38,6 +46,7 @@ c #include "AIM_GRID.h"
 #include "com_forcon.h"
 #include "com_forcing.h"
 c #include "com_physvar.h"
+#include "AIM_CO2.h"
 
 C-- Coupled to the Ocean :
 #ifdef COMPONENT_MODULE
@@ -45,6 +54,7 @@ C-- Coupled to the Ocean :
 #include "ATMCPL.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     tYear      :: Fraction into year
 C     aim_sWght0 :: weight for time interpolation of surface BC
@@ -58,15 +68,32 @@ C     myThid     :: my Thread number Id.
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_AIM
+C     !FUNCTIONS:
+C     !LOCAL VARIABLES:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Local Variables originally (Speedy) in common bloc (com_forcing.h):
+C--   COMMON /FORDAY/ Daily forcing fields (updated in FORDATE)
+C     oice1      :: sea ice fraction
+C     snow1      :: snow depth (mm water)
+      _RL     oice1(NGP)
+      _RL     snow1(NGP)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     == Local variables ==
 C     i,j,k,I2,k   :: Loop counters
       INTEGER i,j,I2,k, nm0
       _RL t0prd, tNcyc, tmprd, dTprd
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
-      _RL RSD, alb_land, oceTfreez
+      _RL RSD, alb_land, oceTfreez, ALBSEA1, ALPHA, CZEN, CZEN2
+      _RL RZEN, ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL, hlim
 c     _RL DALB, alb_sea
+#ifdef ALLOW_AIM_CO2
+#ifdef ALLOW_DIAGNOSTICS
+      _RL pCO2scl
+#endif
+#endif /* ALLOW_AIM_CO2 */
 
 C_EqCh: start
       CHARACTER*(MAX_LEN_MBUF) suff
@@ -190,6 +217,10 @@ c        oceTfreez = tFreeze - 1.9 _d 0
 C-    Surface Albedo : (from F.M. FORDATE S/R)
 c_FM    DALB=ALBICE-ALBSEA
         RSD=1. _d 0/SDALB
+        ALPHA= 2. _d 0*PI*(TYEAR+10. _d 0/365. _d 0)
+        RZEN = COS(ALPHA) * ( -23.45 _d 0 * deg2rad)
+        ZC = COS(RZEN)
+        ZS = SIN(RZEN)
         DO j=1,sNy
          DO i=1,sNx
 c_FM      SNOWC=MIN(1.,RSD*SNOW1(I,J))
@@ -203,8 +234,35 @@ c_FM      ALB1(I,J)=FMASK1(I,J)*ALBL+FMASK0(I,J)*ALBS
 c         alb_sea  = ALBSEA + DALB*oice1(I2)
 c         alb1(I2,0,myThid) = alb_sea
 c    &        + (alb_land - alb_sea)*fMask1(I2,1,myThid)
+          ALBSEA1 = ALBSEA
+          IF ( aim_selectOceAlbedo .EQ. 1) THEN
+           SJ = SIN(yC(i,j,bi,bj) * deg2rad)
+           CJ = COS(yC(i,j,bi,bj) * deg2rad)
+           TMPA = SJ*ZS
+           TMPB = CJ*ZC
+           TMPL = -TMPA/TMPB
+           IF (TMPL .GE. 1.0 _d 0) THEN
+            CZEN = 0.0 _d 0
+           ELSEIF (TMPL .LE. -1.0 _d 0) THEN
+            CZEN = (2.0 _d 0)*TMPA*PI
+            CZEN2= PI*((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)
+            CZEN = CZEN2/CZEN
+           ELSE
+            hlim = ACOS(TMPL)
+            CZEN = 2.0 _d 0*(TMPA*hlim + TMPB*SIN(hlim))
+            CZEN2= 2.0 _d 0*TMPA*TMPA*hlim
+     &          + 4.0 _d 0*TMPA*TMPB*SIN(hlim)
+     &          + TMPB*TMPB*( hlim + 0.5 _d 0*SIN(2.0 _d 0*hlim) )
+            CZEN = CZEN2/CZEN
+           ENDIF
+           ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
+     &          + ( 15. _d 0 * (CZEN-0.1 _d 0) * (CZEN-0.5 _d 0)
+     &          * (CZEN-1.0 _d 0) ) ) / 100.0 _d 0
+          ENDIF
           alb1(I2,1,myThid) = alb_land
-          alb1(I2,2,myThid) = ALBSEA
+C_DE      alb1(I2,2,myThid) = ALBSEA
+          alb1(I2,2,myThid) = 0.5 _d 0 * ALBSEA
+     &        + 0.5 _d 0 * ALBSEA1
           alb1(I2,3,myThid) = ALBICE
          ENDDO
         ENDDO
@@ -320,6 +378,22 @@ C     to replace MxL fields (if use sea-ice) or directly AIM SST
      I           myTime, myIter, bi, bj, myThid )
       ENDIF
 #endif /* COMPONENT_MODULE */
+
+#ifdef ALLOW_AIM_CO2
+      DO j=1,sNy
+        DO i=1,sNx
+           I2 = i+(j-1)*sNx
+           aim_CO2(I2,myThid)= atm_pCO2
+        ENDDO
+      ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+         pCO2scl = 1. _d 6
+         CALL DIAGNOSTICS_SCALE_FILL( aim_CO2(1,myThid), pCO2scl, 1,
+     &                  'aim_pCO2', 1, 1, 3, bi, bj, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_AIM_CO2 */
 
 #ifdef ALLOW_LAND
       IF (useLand) THEN
