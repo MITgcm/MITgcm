@@ -1,24 +1,34 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.42 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.43 2010/01/21 01:48:05 jmc Exp $
 C $Name:  $
-      
+
 #include "MNC_OPTIONS.h"
-      
+
+C--  File mnc_cw_readwrite.template: template for routines to Read/Write
+C                               "RX" type variables from/to NetCDF file.
+C--   Contents
+C--   o MNC_CW_RX_W_S
+C--   o MNC_CW_RX_W
+C--   o MNC_CW_RX_W_OFFSET
+C--   o MNC_CW_RX_R_S
+C--   o MNC_CW_RX_R
+C--   o MNC_CW_RX_R_TF
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C !ROUTINE: MNC_CW_RX_W_S
 
 C !INTERFACE:
       SUBROUTINE MNC_CW_RX_W_S(
-     I     stype, 
-     I     fbname, bi,bj, 
-     I     vtype, 
-     I     var, 
+     I     stype,
+     I     fbname, bi,bj,
+     I     vtype,
+     I     var,
      I     myThid )
 
 C     !DESCRIPTION:
 C     A scalar version of MNC_CW_RX_W() for compilers that cannot
 C     gracefully handle the conversion on their own.
-      
+
 C     !USES:
       implicit none
 
@@ -41,16 +51,16 @@ C !ROUTINE: MNC_CW_RX_W
 
 C !INTERFACE:
       SUBROUTINE MNC_CW_RX_W(
-     I     stype, 
-     I     fbname, bi,bj, 
-     I     vtype, 
-     I     var, 
+     I     stype,
+     I     fbname, bi,bj,
+     I     vtype,
+     I     var,
      I     myThid )
 
 C     !DESCRIPTION:
 C     A scalar version of MNC_CW_RX_W() for compilers that cannot
 C     gracefully handle the conversion on their own.
-      
+
 C     !USES:
       implicit none
 
@@ -65,7 +75,7 @@ CEOP
       DO i = 1,9
         offsets(i) = 0
       ENDDO
-      CALL MNC_CW_RX_W_OFFSET(stype,fbname,bi,bj,vtype, var, 
+      CALL MNC_CW_RX_W_OFFSET(stype,fbname,bi,bj,vtype, var,
      &     offsets, myThid)
 
       RETURN
@@ -77,17 +87,17 @@ C !ROUTINE: MNC_CW_RX_W_OFFSET
 
 C !INTERFACE:
       SUBROUTINE MNC_CW_RX_W_OFFSET(
-     I     stype, 
-     I     fbname, bi,bj, 
-     I     vtype, 
-     I     var, 
-     I     offsets, 
+     I     stype,
+     I     fbname, bi,bj,
+     I     vtype,
+     I     var,
+     I     offsets,
      I     myThid )
 
 C     !DESCRIPTION:
 C     This subroutine writes one variable to a file or a file group,
 C     depending upon the tile indicies.
-      
+
 C     !USES:
       implicit none
 #include "netcdf.inc"
@@ -106,8 +116,8 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot, indu
-      integer bis,bie, bjs,bje, uniq_tnum, uniq_fnum, nfname, iseq
+      integer i,j,k, indv,nvf,nvl, n1,n2, igrid, indu
+      integer bis,bie, bjs,bje, uniq_tnum, nfname, iseq
       integer fid, idv, indvids, ndim, indf, err, nf
       integer lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer p(9),s(9),e(9), dimnc(9)
@@ -126,6 +136,9 @@ C     !LOCAL VARIABLES:
       REAL*4  resh_r( MNC_MAX_BUFF )
       INTEGER resh_i( MNC_MAX_BUFF )
       LOGICAL write_attributes, use_missing
+#ifdef MNC_WRITE_OLDNAMES
+      integer ntot
+#endif
 #ifdef HAVE_STAT
       integer ntotenc, ncenc, nbytes, fs_isdone
       character*(200) cenc
@@ -149,8 +162,8 @@ C     group (or base) name
       fg2 = ILNBLNK(fbname)
       CALL MNC_GET_IND(MNC_MAX_ID, fbname, mnc_cw_fgnm, indfg, myThid)
       IF (indfg .LT. 1) THEN
-        write(msgbuf,'(3a)') 
-     &       'MNC_CW_RX_W ERROR: file group name ''', 
+        write(msgbuf,'(3a)')
+     &       'MNC_CW_RX_W ERROR: file group name ''',
      &       fbname(fg1:fg2), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
@@ -164,14 +177,14 @@ C     Check that the Variable Type exists
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND(MNC_MAX_ID, vtype, mnc_cw_vname, indv, myThid)
       IF (indv .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_RX_W ERROR: vtype ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_RX_W ERROR: vtype ''',
      &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
       ENDIF
       igrid = mnc_cw_vgind(indv)
 
-C     Set the bi,bj indicies 
+C     Set the bi,bj indicies
       bis = bi
       bie = bi
       IF (bi .LT. 1) THEN
@@ -206,13 +219,13 @@ C         Create the file name
           ntot = ntot + 1
           fname(ntot:ntot) = '.'
           IF ( mnc_use_name_ni0 ) THEN
-            write(fname((ntot+1):(ntot+17)),'(i10.10,a1,i6.6)') 
+            write(fname((ntot+1):(ntot+17)),'(i10.10,a1,i6.6)')
      &           nIter0,'.',uniq_tnum
-            write(fname((ntot+18):(ntot+25)),'(a1,i4.4,a3)') 
+            write(fname((ntot+18):(ntot+25)),'(a1,i4.4,a3)')
      &           '.', iseq, '.nc'
             nfname = ntot + 25
           ELSE
-            write(fname((ntot+1):(ntot+14)),'(i4.4,a1,i6.6,a3)') 
+            write(fname((ntot+1):(ntot+14)),'(i4.4,a1,i6.6,a3)')
      &           iseq,'.',uniq_tnum, '.nc'
             nfname = ntot + 14
           ENDIF
@@ -233,9 +246,9 @@ C           Leave off the myIter value entirely
      &           tmpnm(1:k),'.nc'
           ELSE
 C           We have an error--bad flag value
-            write(msgbuf,'(4a)') 
+            write(msgbuf,'(4a)')
      &           'MNC_CW_RX_W ERROR: bad mnc_cw_cit(1,...) ',
-     &           'flag value for base name ''', fbname(fg1:fg2), 
+     &           'flag value for base name ''', fbname(fg1:fg2),
      &           ''''
             CALL print_error(msgbuf, mythid)
             STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
@@ -297,7 +310,7 @@ C               we are all done writing to it.
                 mnc_cw_fgis(indfg) = iseq
 #else
                 IF (mnc_cw_cit(1,mnc_cw_fgci(indfg)) .LT. 0) THEN
-                  write(msgbuf,'(5a)') 
+                  write(msgbuf,'(5a)')
      &            'MNC_CW_RX_W ERROR: output file for base name ''',
      &            fbname(fg1:fg2), ''' is about to exceed the max ',
      &            'file size and is NOT ALLOWED an iteration value ',
@@ -305,7 +318,7 @@ C               we are all done writing to it.
                   CALL print_error(msgbuf, mythid)
                   STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
                 ELSEIF (mnc_cw_cit(3,mnc_cw_fgci(indfg)) .LT. 0) THEN
-                  write(msgbuf,'(5a)') 
+                  write(msgbuf,'(5a)')
      &            'MNC_CW_RX_W ERROR: output file for base name ''',
      &            fbname(fg1:fg2), ''' is about to exceed the max ',
      &            'file size and no next-iter has been specified--',
@@ -318,7 +331,7 @@ C               DO NOT BUMP THE CURRENT ITER FOR ALL FILES IN THIS CITER
 C               GROUP SINCE THIS IS ONLY GROWTH TO AVOID FILE SIZE
 C               LIMITS FOR THIS ONE BASENAME GROUP, NOT GROWTH OF THE
 C               ENTIRE CITER GROUP !!!
-C               mnc_cw_cit(2,mnc_cw_fgci(indfg)) 
+C               mnc_cw_cit(2,mnc_cw_fgci(indfg))
 C               &   = mnc_cw_cit(3,mnc_cw_fgci(indfg))
 C               mnc_cw_cit(3,mnc_cw_fgci(indfg)) = -1
 #endif
@@ -343,13 +356,13 @@ C         local copy of them
             ENDIF
 
 C           Add the coordinate variables
-            CALL MNC_DIM_INIT_ALL_CV(fname, 
+            CALL MNC_DIM_INIT_ALL_CV(fname,
      &           mnc_cw_dn(i,igrid), dimnc(i), 'Y', lbi,lbj, myThid)
 
           ENDDO
 
 C         Ensure that the "grid" is defined
-          CALL MNC_GRID_INIT(fname, mnc_cw_gname(igrid), 
+          CALL MNC_GRID_INIT(fname, mnc_cw_gname(igrid),
      &        mnc_cw_ndim(igrid), mnc_cw_dn(1,igrid), myThid)
 
 C         Ensure that the variable is defined
@@ -376,12 +389,12 @@ C           exist in this file, so we need to write all the attributes
             j = 2 + 3*(i - 1)
             IF (mnc_v_names(mnc_fv_ids(indf,j)) .EQ. vtype) THEN
               idv = mnc_fv_ids(indf,j+1)
-              indvids = mnc_fd_ind(indf, mnc_f_info(indf, 
+              indvids = mnc_fd_ind(indf, mnc_f_info(indf,
      &             (mnc_fv_ids(indf,j+2) + 1)) )
               GOTO 30
             ENDIF
           ENDDO
-          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_W ERROR: ', 
+          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_W ERROR: ',
      &         'cannot reference variable ''', vtype, ''''
           CALL print_error(msgbuf, mythid)
           STOP 'ABNORMAL END: package MNC'
@@ -429,7 +442,7 @@ C         the unlimited dimension offset for the NetCDF array
               e(i) = mnc_cw_ie(i,igrid)
             ENDIF
 C           Check for the unlimited dimension
-            IF ((i .EQ. ndim) 
+            IF ((i .EQ. ndim)
      &           .AND. (mnc_cw_dims(i,igrid) .EQ. -1)) THEN
               IF (indu .GT. 0) THEN
 C               Use the indu value
@@ -453,7 +466,7 @@ C               Use the current unlimited dim size
             s(bjdim) = lbj
             e(bjdim) = lbj
           ENDIF
-          
+
 C         Check the offsets
           DO i = 1,9
             IF (offsets(i) .GT. 0) THEN
@@ -466,15 +479,15 @@ C         Check the offsets
           IF (write_attributes) THEN
 C           Add the per-variable attributes
             DO i = 1,mnc_cw_vnat(1,indv)
-              CALL MNC_VAR_ADD_ATTR_STR( fname, vtype, 
+              CALL MNC_VAR_ADD_ATTR_STR( fname, vtype,
      &             mnc_cw_vtnm(i,indv), mnc_cw_vtat(i,indv), myThid)
             ENDDO
             DO i = 1,mnc_cw_vnat(2,indv)
-              CALL MNC_VAR_ADD_ATTR_INT( fname, vtype, 
+              CALL MNC_VAR_ADD_ATTR_INT( fname, vtype,
      &             mnc_cw_vinm(i,indv), 1, mnc_cw_viat(i,indv), myThid)
             ENDDO
             DO i = 1,mnc_cw_vnat(3,indv)
-              CALL MNC_VAR_ADD_ATTR_DBL( fname, vtype, 
+              CALL MNC_VAR_ADD_ATTR_DBL( fname, vtype,
      &             mnc_cw_vdnm(i,indv), 1, mnc_cw_vdat(i,indv), myThid)
             ENDDO
           ENDIF
@@ -503,30 +516,30 @@ C         Handle missing values
             ENDIF
           ENDIF
           IF (write_attributes .AND. use_missing) THEN
-            write(msgbuf,'(4a)') 'writing attribute ''missing_value''', 
+            write(msgbuf,'(4a)') 'writing attribute ''missing_value''',
      &           ' within file ''', fname(1:nfname), ''''
             IF (stype(1:1) .EQ. 'D') THEN
-              err = NF_PUT_ATT_DOUBLE(fid, idv, 'missing_value', 
+              err = NF_PUT_ATT_DOUBLE(fid, idv, 'missing_value',
      &             NF_DOUBLE, 1, dvm(2))
             ELSEIF (stype(1:1) .EQ. 'R') THEN
-              err = NF_PUT_ATT_REAL(fid, idv, 'missing_value', 
+              err = NF_PUT_ATT_REAL(fid, idv, 'missing_value',
      &             NF_FLOAT, 1, rvm(2))
             ELSEIF (stype(1:1) .EQ. 'I') THEN
-              err = NF_PUT_ATT_INT(fid, idv, 'missing_value', 
+              err = NF_PUT_ATT_INT(fid, idv, 'missing_value',
      &             NF_INT, 1, ivm(2))
             ENDIF
             CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
-CMLC	 it may be better to use the attribute _FillValue, or both
-CML            write(msgbuf,'(4a)') 'writing attribute ''_FillValue''', 
+CMLC     it may be better to use the attribute _FillValue, or both
+CML            write(msgbuf,'(4a)') 'writing attribute ''_FillValue''',
 CML     &           ' within file ''', fname(1:nfname), ''''
 CML            IF (stype(1:1) .EQ. 'D') THEN
-CML              err = NF_PUT_ATT_DOUBLE(fid, idv, '_FillValue', 
+CML              err = NF_PUT_ATT_DOUBLE(fid, idv, '_FillValue',
 CML     &             NF_DOUBLE, 1, dvm(2))
 CML            ELSEIF (stype(1:1) .EQ. 'R') THEN
-CML              err = NF_PUT_ATT_REAL(fid, idv, '_FillValue', 
+CML              err = NF_PUT_ATT_REAL(fid, idv, '_FillValue',
 CML     &             NF_FLOAT, 1, rvm(2))
 CML            ELSEIF (stype(1:1) .EQ. 'I') THEN
-CML              err = NF_PUT_ATT_INT(fid, idv, '_FillValue', 
+CML              err = NF_PUT_ATT_INT(fid, idv, '_FillValue',
 CML     &             NF_INT, 1, ivm(2))
 CML            ENDIF
 CML            CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
@@ -534,12 +547,12 @@ CML            CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
           CALL MNC_FILE_ENDDEF(fname, myThid)
 
-          write(msgbuf,'(5a)') 'writing variable type ''', 
-     &         vtype(nvf:nvl), ''' within file ''', 
+          write(msgbuf,'(5a)') 'writing variable type ''',
+     &         vtype(nvf:nvl), ''' within file ''',
      &         fname(1:nfname), ''''
 
 C         DO i = 1,9
-C         write(*,*) 'i,p(i),s(i),e(i),udo(i),offsets(i) = ', 
+C         write(*,*) 'i,p(i),s(i),e(i),udo(i),offsets(i) = ',
 C         &        i,p(i),s(i),e(i),udo(i),offsets(i)
 C         ENDDO
 
@@ -622,7 +635,7 @@ C         Write the variable one vector at a time
         ENDIF
 
       ELSE
-        
+
         IF (stype(1:1) .EQ. 'D') THEN
           DO j1 = s(1),e(1)
             k1 = k2 + j1
@@ -659,7 +672,7 @@ C         Write the variable one vector at a time
 C         Sync the file
           err = NF_SYNC(fid)
           nf = ILNBLNK( fname )
-          write(msgbuf,'(3a)') 'sync for file ''', fname(1:nf), 
+          write(msgbuf,'(3a)') 'sync for file ''', fname(1:nf),
      &         ''' in S/R MNC_CW_RX_W'
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
@@ -670,24 +683,24 @@ C         Sync the file
 
       RETURN
       END
-      
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C !ROUTINE: MNC_CW_RX_R_S
 
 C !INTERFACE:
-      SUBROUTINE MNC_CW_RX_R_S( 
-     I     stype, 
-     I     fbname, bi,bj, 
-     I     vtype, 
-     I     var, 
+      SUBROUTINE MNC_CW_RX_R_S(
+     I     stype,
+     I     fbname, bi,bj,
+     I     vtype,
+     I     var,
      I     myThid )
 
 C     !DESCRIPTION:
 C     A scalar version of MNC_CW_RX_R() for compilers that cannot
 C     gracefully handle the conversion on their own.
-      
+
 C     !USES:
       implicit none
 
@@ -710,18 +723,18 @@ CBOP 0
 C !ROUTINE: MNC_CW_RX_R
 
 C !INTERFACE:
-      SUBROUTINE MNC_CW_RX_R( 
-     I     stype, 
-     I     fbname, bi,bj, 
-     I     vtype, 
-     I     var, 
+      SUBROUTINE MNC_CW_RX_R(
+     I     stype,
+     I     fbname, bi,bj,
+     I     vtype,
+     I     var,
      I     myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     A simple wrapper for the old version of this routine.  The new
 C     version includes the isvar argument which, for backwards
 C     compatibility, is set to false here.
-      
+
 C     !USES:
       implicit none
 
@@ -747,12 +760,12 @@ CBOP 0
 C !ROUTINE: MNC_CW_RX_R
 
 C !INTERFACE:
-      SUBROUTINE MNC_CW_RX_R_TF( 
-     I     stype, 
-     I     fbname, bi,bj, 
-     I     vtype, 
-     I     var, 
-     B     isvar, 
+      SUBROUTINE MNC_CW_RX_R_TF(
+     I     stype,
+     I     fbname, bi,bj,
+     I     vtype,
+     I     var,
+     B     isvar,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -761,7 +774,7 @@ C     depending upon the tile indicies.  If isvar is true and the
 C     variable does not exist, then isvar is set to false and the
 C     program continues normally.  This allows one to gracefully handle
 C     the case of reading variables that might or might not exist.
-      
+
 C     !USES:
       implicit none
 #include "netcdf.inc"
@@ -789,7 +802,6 @@ C     integer f_sNx,f_sNy, alen, atype, ind_fv_ids, ierr, indf
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_PATH) fname
-      character*(MNC_MAX_PATH) fname_zs
       character*(MNC_MAX_PATH) tmpnm
       character*(MNC_MAX_PATH) path_fname
       character*(MNC_MAX_PATH) bpath
@@ -797,6 +809,9 @@ C     integer f_sNx,f_sNy, alen, atype, ind_fv_ids, ierr, indf
       REAL*8  resh_d( MNC_MAX_BUFF )
       REAL*4  resh_r( MNC_MAX_BUFF )
       INTEGER resh_i( MNC_MAX_BUFF )
+#ifdef MNC_READ_OLDNAMES
+      character*(MNC_MAX_PATH) fname_zs
+#endif
 
 C     Functions
       integer IFNBLNK, ILNBLNK
@@ -814,8 +829,8 @@ C     group (or base) name
       fg2 = ILNBLNK(fbname)
       CALL MNC_GET_IND(MNC_MAX_ID, fbname, mnc_cw_fgnm, indfg, myThid)
       IF (indfg .LT. 1) THEN
-        write(msgbuf,'(3a)') 
-     &       'MNC_CW_RX_W ERROR: file group name ''', 
+        write(msgbuf,'(3a)')
+     &       'MNC_CW_RX_W ERROR: file group name ''',
      &       fbname(fg1:fg2), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
@@ -827,7 +842,7 @@ C     Check that the Variable Type exists
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND( MNC_MAX_ID, vtype, mnc_cw_vname, ind_vt, myThid)
       IF (ind_vt .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_RX_R ERROR: vtype ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_RX_R ERROR: vtype ''',
      &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
@@ -880,8 +895,8 @@ C         Add the path to the file name
             nfname = npath + nfname
           ENDIF
 
-          WRITE(fname_zs,'(2a,i4.4,a1,i6.6,a3)') 
-     &         mnc_indir_str(1:npath), fbname(n1:n2), 
+          WRITE(fname_zs,'(2a,i4.4,a1,i6.6,a3)')
+     &         mnc_indir_str(1:npath), fbname(n1:n2),
      &         0, '.', uniq_tnum, '.nc'
 
 C         The steps are:
@@ -890,7 +905,7 @@ C         (2) get the var id for the current variable,
 C         (3) read the data, and then
 C         (4) close the file--theres no need to keep it open!
 
-          write(msgbuf,'(4a)') 'MNC_CW_RX_R: cannot open', 
+          write(msgbuf,'(4a)') 'MNC_CW_RX_R: cannot open',
      &         ' file ''', fname(1:nfname), ''' in read-only mode'
           err = NF_OPEN(fname, NF_NOWRITE, fid)
           IF ( err .NE. NF_NOERR ) THEN
@@ -900,8 +915,8 @@ C           zero sequence number inserted
           ENDIF
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
-          write(msgbuf,'(5a)') 
-     &         'MNC_CW_RX_R: cannot get id for variable ''', 
+          write(msgbuf,'(5a)')
+     &         'MNC_CW_RX_R: cannot get id for variable ''',
      &         vtype(nvf:nvl), '''in file ''', fname(1:nfname), ''''
           err = NF_INQ_VARID(fid, vtype, idv)
           IF ( isvar .AND. ( err .NE. NF_NOERR ) ) THEN
@@ -939,12 +954,12 @@ C         Add the face index
           CALL MNC_CW_GET_FACE_NUM( lbi,lbj, uniq_fnum, myThid)
           IF ( uniq_fnum .EQ. -1 ) THEN
 C           There is only one face
-            WRITE(path_fname,'(2a,a2)') 
+            WRITE(path_fname,'(2a,a2)')
      &           mnc_indir_str(1:npath), fname(1:ntot), 'nc'
           ELSE
             CALL MNC_PSNCM(tmpnm, uniq_fnum, MNC_DEF_FMNC)
             k = ILNBLNK(tmpnm)
-            WRITE(path_fname,'(2a,a1,a,a3)') 
+            WRITE(path_fname,'(2a,a1,a,a3)')
      &           mnc_indir_str(1:npath), fname(1:ntot), 'f',
      &           tmpnm(1:k), '.nc'
           ENDIF
@@ -960,7 +975,7 @@ C           Create the PER-TILE file name
             CALL MNC_PSNCM(tmpnm, uniq_tnum, MNC_DEF_TMNC)
             k = ILNBLNK(tmpnm)
             path_fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
-            WRITE(path_fname,'(2a,a1,a,a3)') 
+            WRITE(path_fname,'(2a,a1,a,a3)')
      &           mnc_indir_str(1:npath), fname(1:ntot), 't',
      &           tmpnm(1:k), '.nc'
 C           WRITE(*,*) 'trying: "', path_fname, '"'
@@ -969,7 +984,7 @@ C           WRITE(*,*) 'trying: "', path_fname, '"'
               f_or_t = 0
             ELSE
               k = ILNBLNK(path_fname)
-              write(msgbuf,'(4a)') 
+              write(msgbuf,'(4a)')
      &             'MNC_CW_RX_R: cannot open either a per-face or a ',
      &             'per-tile file: last try was ''', path_fname(1:k),
      &             ''''
@@ -980,7 +995,7 @@ C           WRITE(*,*) 'trying: "', path_fname, '"'
           ENDIF
 
           ntot = ILNBLNK(path_fname)
-          write(msgbuf,'(5a)') 
+          write(msgbuf,'(5a)')
      &         'MNC_CW_RX_R: cannot get netCDF id for variable ''',
      &         vtype(nvf:nvl), ''' in file ''', path_fname(1:ntot),
      &         ''''
@@ -1000,12 +1015,12 @@ C           WRITE(*,*) 'trying: "', path_fname, '"'
 
           IF ( f_or_t .EQ. 1 ) THEN
 
-C           write(msgbuf,'(2a)') 
+C           write(msgbuf,'(2a)')
 C           &           'MNC_CW_RX_R: per-face reads are not yet ',
 C           &           'implemented -- so pester Ed to finish them'
 C           CALL print_error(msgbuf, mythid)
 C           STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
-            
+
 C           Get the X,Y PER-FACE offsets
             CALL MNC_CW_GET_XYFO(lbi,lbj, ixoff,iyoff, myThid)
 
@@ -1020,20 +1035,20 @@ C           f_sNy = -1
 C           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNx',atype,alen)
 C           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
 C             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', f_sNx)
-C             CALL MNC_HANDLE_ERR(err, 
-C      &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R', 
+C             CALL MNC_HANDLE_ERR(err,
+C      &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R',
 C      &           myThid)
 C           ENDIF
 C           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNy',atype,alen)
 C           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
 C             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', f_sNy)
-C             CALL MNC_HANDLE_ERR(err, 
+C             CALL MNC_HANDLE_ERR(err,
 C      &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R',
 C      &           myThid)
 C           ENDIF
 C           IF ((f_sNx .NE. sNx) .OR. (f_sNy .NE. sNy)) THEN
 C             write(msgbuf,'(5a)') 'MNC_CW_RX_R WARNING: the ',
-C      &           'attributes ''sNx'' and ''sNy'' within the file ''', 
+C      &           'attributes ''sNx'' and ''sNy'' within the file ''',
 C      &           fname(1:nfname), ''' do not exist or do not match ',
 C      &           'the current sizes within the model'
 C             CALL print_error(msgbuf, mythid)
@@ -1042,11 +1057,11 @@ C           ENDIF
 C         Check that the in-memory variable and the in-file variables
 C         are of compatible sizes
 C           ires = 1
-C           CALL MNC_CHK_VTYP_R_NCVAR( ind_vt, 
+C           CALL MNC_CHK_VTYP_R_NCVAR( ind_vt,
 C      &         indf, ind_fv_ids, indu, ires)
 C           IF (ires .LT. 0) THEN
 C             write(msgbuf,'(7a)') 'MNC_CW_RX_R WARNING: the sizes ',
-C      &           'of the in-program variable ''', vtype(nvf:nvl), 
+C      &           'of the in-program variable ''', vtype(nvf:nvl),
 C      &           ''' and the corresponding variable within file ''',
 C      &           fname(1:nfname), ''' are not compatible -- please ',
 C      &           'check the sizes'
@@ -1102,7 +1117,7 @@ C               since they accomplish the same thing
 
             ENDIF
 C           Check for the unlimited dimension
-            IF ((i .EQ. ndim) 
+            IF ((i .EQ. ndim)
      &           .AND. (mnc_cw_dims(i,igrid) .EQ. -1)) THEN
               IF (indu .GT. 0) THEN
 C               Use the indu value
@@ -1110,12 +1125,12 @@ C               Use the indu value
               ELSE
 C               We need the current unlim dim size
                 write(msgbuf,'(5a)') 'MNC_CW_RX_R: getting the ',
-     &               'unlim dim id within file ''', 
+     &               'unlim dim id within file ''',
      &               fname(1:nfname), ''''
                 err = NF_INQ_UNLIMDIM(fid, unlid)
                 CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
                 write(msgbuf,'(5a)') 'MNC_CW_RX_R: getting the ',
-     &               'unlim dim size within file ''', 
+     &               'unlim dim size within file ''',
      &               fname(1:nfname), ''''
                 err = NF_INQ_DIMLEN(fid, unlid, unlim_sz)
                 CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
@@ -1135,9 +1150,9 @@ C               We need the current unlim dim size
 C     DO i = 9,1,-1
 C     write(*,*) 'i,p(i),s(i),e(i) = ', i,': ',p(i),s(i),e(i)
 C     ENDDO
-          
-          write(msgbuf,'(5a)') 'reading variable type ''', 
-     &         vtype(nvf:nvl), ''' within file ''', 
+
+          write(msgbuf,'(5a)') 'reading variable type ''',
+     &         vtype(nvf:nvl), ''' within file ''',
      &         fname(1:nfname), ''''
 
 C         Read the variable one vector at a time
@@ -1206,7 +1221,7 @@ C         Read the variable one vector at a time
         ENDDO
       ENDIF
 
- 
+
                     ENDDO
                   ENDDO
                 ENDDO
@@ -1217,7 +1232,7 @@ C         Read the variable one vector at a time
 C         Close the file
 C         CALL MNC_FILE_CLOSE(fname, myThid)
           err = NF_CLOSE(fid)
-          write(msgbuf,'(3a)') 'MNC_CW_RX_R:  cannot close file ''', 
+          write(msgbuf,'(3a)') 'MNC_CW_RX_R:  cannot close file ''',
      &         fname(1:nfname), ''''
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 

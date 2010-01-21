@@ -1,7 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.22 2008/06/30 14:25:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.23 2010/01/21 01:48:05 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
+
+C--  File mnc_utils.F:
+C--   Contents
+C--   o MNC_HANDLE_ERR
+C--   o MNC_GET_IND
+C--   o MNC_GET_NEXT_EMPTY_IND
+C--   o MNC_GET_FVINDS
+C--   o MNC_CHK_VTYP_R_NCVAR
+C--   o MNC_PSNCM
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
@@ -13,7 +22,7 @@ C     !INTERFACE:
 C     !DESCRIPTION:
 C     Convenience function for handling all MNC and NetCDF library
 C     errors.
-      
+
 C     !USES:
       implicit none
 #include "EEPARAMS.h"
@@ -21,7 +30,7 @@ C     !USES:
 
 C     !DESCRIPTION:
 C     Create an MNC grid within a NetCDF file context.
-      
+
 C     !USES:
       INTEGER  myThid, status
       character*(*) msg
@@ -71,7 +80,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Get the index of the specified name.
-      
+
 C     !USES:
       implicit none
 #include "EEPARAMS.h"
@@ -128,7 +137,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Get the index of the next empty entry.
-      
+
 C     !USES:
       implicit none
 #include "EEPARAMS.h"
@@ -158,7 +167,7 @@ C     Search for the index
 
 C     If this is code is reached, we have exceeded the array size
       write(msgbuf,'(a,i6,a)')
-     &     'MNC_GET_NEXT_EMPTY_IND: array size ', nt, 
+     &     'MNC_GET_NEXT_EMPTY_IND: array size ', nt,
      &     ' exceeded'
       CALL print_error( msgbuf, myThid )
       n = ILNBLNK( var_symb )
@@ -177,16 +186,16 @@ CBOP 1
 C     !ROUTINE: MNC_GET_FVINDS
 
 C     !INTERFACE:
-      SUBROUTINE MNC_GET_FVINDS( 
-     I     fname, 
-     I     vname, 
-     O     indf, 
+      SUBROUTINE MNC_GET_FVINDS(
+     I     fname,
+     I     vname,
+     O     indf,
      O     ind_fv_ids,
      I     myThid )
 
 C     !DESCRIPTION:
 C     Get the variable indicies.
-      
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -244,11 +253,11 @@ C     Return values:
 C     .  YES  ==>  ires > 0
 C     .  NO   ==>  ires < 0
 
-      SUBROUTINE MNC_CHK_VTYP_R_NCVAR( 
-     I     ind_vt, 
+      SUBROUTINE MNC_CHK_VTYP_R_NCVAR(
+     I     ind_vt,
      I     indf,
-     I     ind_fv_ids, 
-     I     indu, 
+     I     ind_fv_ids,
+     I     indu,
      O     ires,
      I     myThid )
 
@@ -263,9 +272,8 @@ C     Functions
       integer ILNBLNK
 
 C     Locals
-      integer  ii,k, ind_cw_g, ig,ids,ide,nint, indd, cw_len, nk
+      integer  ii,k, ind_cw_g, ig,ids,ide,nint, indd, nk
       integer  ndim_vt, ncgt,ncvr,ncvf, npb, sz_min
-      character*1  ch
       character*(MAX_LEN_MBUF) pbuf, msgbuf
 
       ires = -1
@@ -282,7 +290,7 @@ C     grid indicies for the internal (as-read-from-the-file) data
       ncvf = ILNBLNK(mnc_f_names(indf))
       write(pbuf,'(7a)') 'MNC_CHK_VTYP_R_NCVAR WARNING: var ''',
      &     mnc_v_names(mnc_fv_ids(indf,ind_fv_ids))(1:ncvr),
-     &     ''' within file ''', mnc_f_names(indf)(1:ncvf), 
+     &     ''' within file ''', mnc_f_names(indf)(1:ncvf),
      &     ''' does not satisy the size needed by GType ''',
      &     mnc_cw_gname(ind_cw_g)(1:ncgt), ''''
       npb = ILNBLNK(pbuf)
@@ -301,14 +309,14 @@ C     Check that the necessary size exists along each dimension
         IF (sz_min .EQ. -1)  sz_min = indu
         indd = mnc_fd_ind(indf,ii)
         IF (mnc_d_size(indd) .LT. sz_min) THEN
-          write(msgbuf,'(2a,i3,a,i3,a,i3)') pbuf(1:npb), ': dim #', 
+          write(msgbuf,'(2a,i3,a,i3,a,i3)') pbuf(1:npb), ': dim #',
      &         k, ' is too small: ', mnc_d_size(indd), ' vs ',
      &         mnc_cw_ie(k,ind_cw_g)
           CALL print_error(msgbuf, myThid)
           RETURN
         ENDIF
       ENDDO
-      
+
 C     Reaching this point means all tests passed
       ires = 1
 

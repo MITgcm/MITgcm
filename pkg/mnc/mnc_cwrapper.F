@@ -1,7 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.34 2009/06/28 01:08:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.35 2010/01/21 01:48:05 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
+
+C--  File mnc_cwrapper.F:
+C--   Contents
+C--   o MNC_CW_ADD_GNAME
+C--   o MNC_CW_DEL_GNAME
+C--   o MNC_CW_DUMP
+C--   o MNC_CW_APPEND_VNAME
+C--   o MNC_CW_ADD_VNAME
+C--   o MNC_CW_DEL_VNAME
+C--   o MNC_CW_ADD_VATTR_TEXT
+C--   o MNC_CW_ADD_VATTR_INT
+C--   o MNC_CW_ADD_VATTR_DBL
+C--   o MNC_CW_ADD_VATTR_ANY
+C--   o MNC_CW_GET_TILE_NUM
+C--   o MNC_CW_GET_FACE_NUM
+C--   o MNC_CW_GET_XYFO
+C--   o MNC_CW_FILE_AORC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -695,7 +712,9 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
+#ifdef ALLOW_EXCH2
       integer uniq_tnum
+#endif
 
 #ifdef ALLOW_EXCH2
 
