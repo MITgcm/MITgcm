@@ -1,31 +1,38 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.6 2006/03/28 04:26:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.7 2010/01/21 00:11:16 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: AIM_AIM2DYN
+C     !INTERFACE:
       SUBROUTINE AIM_AIM2DYN(
-     I           bi, bj, myTime, myIter, myThid)
+     I                        bi, bj, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R AIM_AIM2DYN                                          |
-C     | o Remap AIM outputs to dynamics conforming arrays.       |
+C     | S/R AIM_AIM2DYN
+C     | o Remap AIM outputs to dynamics conforming arrays.
 C     |==========================================================*
-C     | Currently AIM exports to the dynmaics                    |
-C     |  - PBL drag coefficient                                  |
-C     |  - Net tendency for temperature                          |
-C     |  - Net tendency for water vapor                          |
-C     | Exporting drag has the nice property that it is a scalar.|
-C     | This means that the exchanges on the AIM exported fields |
-C     | do not need special piaring on the cube. It may not be   |
-C     | a good idea in the long term as it makes assumptions     |
-C     | about the momentum schemes within AIM.                   |
+C     | Currently AIM exports to the dynmaics
+C     |  - PBL drag coefficient
+C     |  - Net tendency for temperature
+C     |  - Net tendency for water vapor
+C     | Exporting drag has the nice property that it is a scalar.
+C     | This means that the exchanges on the AIM exported fields
+C     | do not need special piaring on the cube. It may not be
+C     | a good idea in the long term as it makes assumptions
+C     | about the momentum schemes within AIM.
 C     *==========================================================*
+C     \ev
 C-------
 C  Note: Except LSC tendency, all others need to be /dpFac.
 C-------
+
+C     !USES:
       IMPLICIT NONE
 
-C     == Global data ==
+C     == Global variables ===
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 
@@ -37,16 +44,19 @@ C-- size for MITgcm & Physics package :
 #include "AIM2DYN.h"
 #include "com_physvar.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj  - Tile index
-C     myTime - Current time of simulation ( s )
-C     myIter - Current iteration number in simulation
-C     myThid - Number of this instance of the routine
-      INTEGER bi, bj, myIter, myThid
-      _RL myTime
-CEndOfInterface
+C     bi,bj  :: Tile index
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Current iteration number in simulation
+C     myThid :: Number of this instance of the routine
+      INTEGER bi, bj
+      _RL     myTime
+      INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_AIM
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j,k        :: loop counters
 C     I2,Katm      :: loop counters
@@ -59,6 +69,8 @@ C     conv_T2theta :: conversion factor from (absolute) Temp. to Pot.Temp.
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Physics tendency term
 

@@ -1,17 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.22 2009/12/29 23:02:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.23 2010/01/21 00:11:16 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-CStartOfInterFace
-      SUBROUTINE AIM_DIAGNOSTICS( bi,bj, myTime, myIter, myThid )
+CBOP
+C     !ROUTINE: AIM_DIAGNOSTICS
+C     !INTERFACE:
+      SUBROUTINE AIM_DIAGNOSTICS( bi, bj, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE AIM_DIAGNOSTICS
+C     | S/R AIM_DIAGNOSTICS
 C     | o Calculate AIM diagnostics
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
-C     === Global variables ===
+C     == Global variables ===
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 
@@ -25,38 +32,39 @@ c #include "AIM2DYN.h"
 #include "com_physvar.h"
 #include "com_forcing.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj  - Tile index
-C     myTime - Current time of simulation ( s )
-C     myIter - Current iteration number in simulation
-C     myThid - Number of this instance of the routine
-      INTEGER bi, bj, myIter, myThid
+C     bi,bj  :: Tile index
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Current iteration number in simulation
+C     myThid :: Number of this instance of the routine
+      INTEGER bi, bj
       _RL     myTime
-CEndOfInterface
+      INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_AIM
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER I,J,K, I2,Katm
       _RL DDTT
       CHARACTER*(80) suff
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpVar(NGP)
 #endif
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
-      ELSE
-        pf(1:1) = 'R'
-      ENDIF
 
 C--  mean surf. temp. change:
       DO J=1,NGP
@@ -110,6 +118,12 @@ C-    using MNC S/R
        IF ( .FALSE. ) THEN
 C jmc: temporary turn off this part until this get fixed:
 C      > MNC_CW_RL_W ERROR: vtype 'aim_dT_RSW' is not defined
+
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+         ELSE
+           pf(1:1) = 'R'
+         ENDIF
 
          IF ( bi.EQ.1 .AND. bj.EQ.1 ) THEN
           WRITE(suff,'(a)') 'aim_tend'
@@ -206,6 +220,12 @@ C-    end if aim_snapshot_mdsio
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. aim_snapshot_mnc ) THEN
 C-    using MNC S/R
+
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+         ELSE
+           pf(1:1) = 'R'
+         ENDIF
 
          IF ( bi.EQ.1 .AND. bj.EQ.1 ) THEN
           WRITE(suff,'(a)') 'aim_phys'
