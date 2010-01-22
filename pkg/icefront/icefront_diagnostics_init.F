@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.1 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.2 2010/01/22 00:51:54 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -28,14 +28,12 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
-C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
 C     diagCode  :: local parser field with characteristics of the diagnostics
 C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
-      INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -43,96 +41,33 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-c     IF ( useDiagnotics ) THEN
+      diagName  = 'ICFfwFlx'
+      diagTitle = 'Ice shelf fresh water flux (positive upward)'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'MYPaSta1'
-        diagTitle = 'Scalar state variable 1 for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      MR      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      diagName  = 'ICFhtFlx'
+      diagTitle = 'Ice shelf heat flux  (positive upward)'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'MYPaSta2'
-        diagTitle = 'Scalar state variable 2 for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      MR      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      diagName  = 'ICFForcT'
+      diagTitle = 'Ice shelf forcing for theta, >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'MYPaStaU'
-        diagTitle = 'uVel-type state variable for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'UM      MR      '
-        diagMate  = diagNum + 2
-        IF ( myPa_StaV_Cgrid ) diagCode(2:2) = 'U'
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-        diagName  = 'MYPaStaV'
-        diagTitle = 'vVel-type state variable for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'VM      MR      '
-        diagMate  = diagNum
-        IF ( myPa_StaV_Cgrid ) diagCode(2:2) = 'V'
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-        diagName  = 'MYPaSur1'
-        diagTitle = 'Surface field 1 for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-        diagName  = 'MYPaSur2'
-        diagTitle = 'Surface field 2 for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-        diagName  = 'MYPadTdt'
-        diagTitle = ' Pot.Temp. tendency from package ICEFRONT'
-        diagUnits = 'K/s             '
-        diagCode  = 'SM      MR      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-        diagName  = 'MYPadSdt'
-        diagTitle = ' Salinity  tendency from package ICEFRONT'
-        diagUnits = 'psu/s           '
-        diagCode  = 'SM      MR      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-        diagName  = 'MYPadUdt'
-        diagTitle = 'u-Velocity tendency from package ICEFRONT'
-        diagUnits = 'm/s^2           '
-        diagCode  = 'UM      MR      '
-        diagMate  = diagNum + 2
-        IF ( myPa_Tend_Cgrid ) diagCode(2:2) = 'U'
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-        diagName  = 'MYPadVdt'
-        diagTitle = 'v-Velocity tendency from package ICEFRONT'
-        diagUnits = 'm/s^2           '
-        diagCode  = 'VM      MR      '
-        diagMate  = diagNum
-        IF ( myPa_Tend_Cgrid ) diagCode(2:2) = 'V'
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-C--     an example of how to set "free levels option" diagnostics
-        diagName  = 'MYPaLev3'
-        diagTitle = '3-levels field for package ICEFRONT'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      MX      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, 3, myThid )
-
-c     ENDIF
+      diagName  = 'ICFForcS'
+      diagTitle = 'Ice shelf forcing for salt, >0 increases salt'
+      diagUnits = 'g/m^2/s         '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 

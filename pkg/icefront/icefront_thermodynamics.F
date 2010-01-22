@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.1 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.2 2010/01/22 00:51:54 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -117,35 +117,12 @@ C     where this value is part of the protocol
          DO I = 1, sNx
 C--   make local copies of temperature, salinity and depth (pressure)
 C--   underneath the ice
-          K         = MAX(1,kTopC(I,J,bi,bj))
+          K         = 1
           pLoc(I,J) = ABS(R_icefront(I,J,bi,bj))
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), 0. _d 0)
          ENDDO
         ENDDO
-        IF ( ICEFRONTBoundaryLayer ) THEN
-C--   average over boundary layer width
-         DO J = 1, sNy
-          DO I = 1, sNx
-           K   = kTopC(I,J,bi,bj)
-           IF ( K .NE. 0 .AND. K .LT. Nr ) THEN
-            Kp1 = MIN(Nr,K+1)
-C--   overlap into lower cell
-            drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
-C--   lower cell may not be as thick as required
-            drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
-            recip_drLoc = 1. _d 0 /
-     &           ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
-            tLoc(I,J) = ( tLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-     &           + theta(I,J,Kp1,bi,bj) *drKp1 )
-     &           * recip_drLoc
-            sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-     &           + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
-     &           * recip_drLoc
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDIF
 
 C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
@@ -159,7 +136,7 @@ C--   to the surface
         IF ( useISOMIPTD ) THEN
          DO J = 1, sNy
           DO I = 1, sNx
-           K = kTopC(I,J,bi,bj)
+           K = 1
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C--   Calculate freezing temperature as a function of salinity and pressure
             thetaFreeze =
@@ -210,7 +187,7 @@ C     a few abbreviations
 
          DO J = 1, sNy
           DO I = 1, sNx
-           K    = kTopC(I,J,bi,bj)
+           K    = 1
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C     solve quadratic equation to get salinity at icefront-ocean interface
 C     note: this part of the code is not very intuitive as it involves

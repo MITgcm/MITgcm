@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.1 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.2 2010/01/22 00:51:54 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -18,9 +18,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "ICEFRONT.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-# include "MNC_PARAMS.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -45,13 +42,8 @@ CEOP
      &     ICEFRONTlatentHeat, ICEFRONTHeatCapacity_Cp,
      &     ICEFRONTthetaSurface,
      &     useISOMIPTD,
-     &     ICEFRONTconserve, ICEFRONTboundaryLayer,
-     &     ICEFRONTwriteState,
-     &     ICEFRONT_dumpFreq,
-     &     ICEFRONT_taveFreq,
-     &     ICEFRONT_tave_mnc,
-     &     ICEFRONT_dump_mnc,
-     &     ICEFRONTtopoFile, ICEFRONTloadAnomalyFile
+     &     ICEFRONTconserve,
+     &     ICEFRONTtopoFile
 
       _BEGIN_MASTER(myThid)
 
@@ -62,8 +54,6 @@ C internal flag to indicate we are in business
 C Set defaults values for parameters in ICEFRONT.h
       useISOMIPTD              = .FALSE.
       ICEFRONTconserve         = .FALSE.
-      ICEFRONTboundaryLayer    = .FALSE.
-      ICEFRONTloadAnomalyFile  = ' '
       ICEFRONTtopoFile         = ' '
       ICEFRONTlatentHeat       =  334.0 _d 3
       ICEFRONTHeatCapacity_Cp  = 2000.0 _d 0
@@ -73,16 +63,6 @@ C Set defaults values for parameters in ICEFRONT.h
       ICEFRONTsaltTransCoeff   = UNSET_RL
       ICEFRONTkappa            =   1.54 _d -06
       ICEFRONTthetaSurface     = - 20.0 _d 0
-      ICEFRONTwriteState       = .FALSE.
-      ICEFRONT_dumpFreq        = dumpFreq
-      ICEFRONT_taveFreq        = taveFreq
-#ifdef ALLOW_MNC
-      ICEFRONT_tave_mnc = timeave_mnc
-      ICEFRONT_dump_mnc = snapshot_mnc
-#else
-      ICEFRONT_tave_mnc = .FALSE.
-      ICEFRONT_dump_mnc = .FALSE.
-#endif
 
 C Open and read the data.icefront file
       WRITE(msgBuf,'(A)') ' ICEFRONT_READPARMS: opening data.icefront'
@@ -107,18 +87,6 @@ C Now set-up any remaining parameters that result from the input parameters
       IF ( ICEFRONTsaltTransCoeff .EQ. UNSET_RL )
      &     ICEFRONTsaltTransCoeff =
      &     5.05 _d -3 *ICEFRONTheatTransCoeff
-
-C-    Set Output type flags :
-      ICEFRONT_tave_mdsio = .TRUE.
-      ICEFRONT_dump_mdsio = .TRUE.
-#ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. ICEFRONT_tave_mnc ) ICEFRONT_tave_mdsio = .FALSE.
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. ICEFRONT_dump_mnc ) ICEFRONT_dump_mdsio = .FALSE.
-      ENDIF
-#endif
 
       _END_MASTER(myThid)
 C Everyone else must wait for the parameters to be loaded
