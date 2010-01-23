@@ -1,0 +1,69 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ Tref= 50*10.,
+ sRef= 50*35.,
+ viscAr=1.E-6,
+ viscAh=1.E-6,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ f0=0.0,
+ beta=0.E-11,
+ eosType='LINEAR',
+ tAlpha=0.E-4,
+ sBeta =0.E-4,
+ gravity=10.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.
+ implicSurfPress=0.5,
+ implicDiv2DFlow=0.5,
+ nonHydrostatic=.TRUE.,
+ selectNHfreeSurf=1,
+ saltStepping=.FALSE.,
+ tempStepping=.FALSE.,
+ hFacMin=0.2,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=100,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=200,
+ cg3dTargetResidual=1.E-11,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+#endTime=20.,
+ nTimeSteps=12,
+ deltaT=5.e-3,
+ alph_AB=0.5,
+ beta_AB=0.281105,
+ momDissip_In_AB=.FALSE.,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=5.0,
+ monitorFreq=0.2,
+ monitorSelect=1,
+ monitorFreq=0.005,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delX=52*0.2,
+ delY= 1*0.2,
+ delR=50*0.2,
+ &
+
+# Input datasets
+ &PARM05
+ pSurfInitFile='Eta_ini.bin',
+ bathyFile  ='topo_flat.bin',
+ &
