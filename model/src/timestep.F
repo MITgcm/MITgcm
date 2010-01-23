@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.50 2009/12/08 21:49:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.51 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -334,16 +334,33 @@ C-- explicit part of the NH pressure gradient is added here
       IF ( use3Dsolver .AND. implicitNHPress.NE.1. _d 0 ) THEN
         nhFac = pfFacMom*(1. _d 0 - implicitNHPress)
      &         *recip_deepFacC(k)*recip_rhoFacC(k)
+       IF ( exactConserv ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
           gUtmp(i,j) = gUtmp(i,j)
      &               - nhFac*_recip_dxC(i,j,bi,bj)*
-     &                (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+     &                ( (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+     &                 -( dPhiNH(i,j,bi,bj) - dPhiNH(i-1,j,bi,bj) )
+     &                )
           gVtmp(i,j) = gVtmp(i,j)
      &               - nhFac*_recip_dyC(i,j,bi,bj)*
-     &                (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+     &                ( (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+     &                 -( dPhiNH(i,j,bi,bj) - dPhiNH(i,j-1,bi,bj) )
+     &                )
          ENDDO
         ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUtmp(i,j) = gUtmp(i,j)
+     &               - nhFac*_recip_dxC(i,j,bi,bj)*
+     &                  (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+          gVtmp(i,j) = gVtmp(i,j)
+     &               - nhFac*_recip_dyC(i,j,bi,bj)*
+     &                  (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.2 2009/12/11 13:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.3 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,10 +49,9 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks
-c     INTEGER ioUnit
       CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-c     _RL     tmpVar(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     tmpSurf
 CEOP
 
 C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
@@ -102,11 +101,27 @@ C        rStar : take vertical average of P_NH as Hyd.Surf.Press adjustment
           ENDDO
 #endif /* NONLIN_FRSURF */
          ENDIF
+         IF ( selectNHfreeSurf.GE.1 ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+             tmpSurf = deltaTMom*deltaTfreesurf
+     &                *Bo_surf(i,j,bi,bj)*recip_drC(1)
+     &                *implicitNHPress*implicDiv2DFlow
+             dPhiNH(i,j,bi,bj) = ( tmpSurf*dPhiNH(i,j,bi,bj)
+     &           + Bo_surf(i,j,bi,bj)*
+     &                  ( etaH(i,j,bi,bj)-etaN(i,j,bi,bj)
+     &                   +implicDiv2DFlow*deltaTfreesurf
+c    &                                   *(wVel(i,j,1,bi,bj)+PmE)
+     &                                   *wVel(i,j,1,bi,bj)
+     &                  )        )/(1. _d 0 + tmpSurf )
+           ENDDO
+          ENDDO
+         ENDIF
         ENDDO
        ENDDO
-       IF ( DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock) ) THEN
-        WRITE(sufx,'(I10.10)') myIter
-        CALL WRITE_FLD_XY_RL( 'dPhiNH.',sufx, dPhiNH, myIter, myThid )
+       IF ( selectNHfreeSurf.GE.1 .AND.
+     &      implicitNHPress.LT.1. _d 0 ) THEN
+         CALL EXCH_XY_RL( dPhiNH, myThid )
        ENDIF
       ENDIF
 

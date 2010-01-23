@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.5 2009/11/29 03:12:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.6 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,7 +37,7 @@ C     == Routine Arguments ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER iMin,iMax,jMin,jMax
-      INTEGER i,j,k
+      INTEGER i, j, k, km1
       _RL     gWtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tmpFac, nh_Fac, igwFac
 CEOP
@@ -56,33 +56,36 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         nh_Fac = 0.
         IF ( nh_Am2.NE.0. ) nh_Fac = 1. _d 0 / nh_Am2
 
-        k = 1
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
-          ENDDO
-        ENDDO
-
-        DO k=2,Nr
+        DO k=1,Nr
+         km1 = MAX( k-1, 1 )
 
          IF ( implicitNHPress.NE.1. _d 0 ) THEN
 C--   add explicit part of NH pressure gradient:
           tmpFac = pfFacMom*(1. _d 0 - implicitNHPress)
-     &                     *wUnit2rVel(k)*wUnit2rVel(k)
-     &                     *recip_rhoFacF(k)
-          DO j=jMin,jMax
-           DO i=iMin,iMax
-            gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
-     &             - tmpFac*rkSign*recip_drC(k)
-     &             *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j,k-1,bi,bj) )
+     &           * wUnit2rVel(k)*wUnit2rVel(k)*recip_rhoFacF(k)
+          IF ( k.GE.2 ) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
+     &              - tmpFac*rkSign*recip_drC(k)
+     &              *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j,k-1,bi,bj) )
+            ENDDO
            ENDDO
-          ENDDO
+          ELSEIF ( selectNHfreeSurf.GE.1 ) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
+     &              - tmpFac*rkSign*recip_drC(k)
+     &              *( phi_nh(i,j,k,bi,bj) - dPhiNH(i,j,bi,bj) )
+            ENDDO
+           ENDDO
+          ENDIF
          ENDIF
 C     apply mask to gW and keep a copy of wVel in gW:
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             gWtmp(i,j) = gW(i,j,k,bi,bj)
-     &             *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &             *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
             gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
           ENDDO
          ENDDO

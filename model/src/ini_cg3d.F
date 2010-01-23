@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.25 2009/11/29 03:16:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.26 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,6 +53,7 @@ C     myNorm   :: Work variable used in clculating normalisation factor
       _RL     theRecip_Dr
       _RL     aU, aL, aW, aE, aN, aS
       _RL     tmpFac, nh_Fac, igwFac
+      _RL     tmpSurf
 CEOP
 
 CcnhDebugStarts
@@ -239,11 +240,19 @@ C-    Add free-surface source term
         IF ( select_rStar .EQ. 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
+           tmpSurf = 1.
+           IF ( selectNHfreeSurf.GE.1 ) THEN
+             tmpSurf = deltaTMom*deltaTfreesurf
+     &                *Bo_surf(i,j,bi,bj)*recip_drC(1)
+     &                *implicitNHPress*implicDiv2DFlow
+             tmpSurf = tmpSurf / (1. _d 0 + tmpSurf )
+           ENDIF
            ks = ksurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
      &         - freeSurfFac*recip_Bo(i,j,bi,bj)
      &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTfreesurf
+     &          *tmpSurf
            ENDIF
           ENDDO
          ENDDO

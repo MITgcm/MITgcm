@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.42 2009/12/11 13:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.43 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,14 +89,14 @@ C     i,j,k         :: Loop counters
       _RL    gwAdd (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    del2w (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER i,j,k, kp1
-      _RL  wOverride, surfFac
+      INTEGER i,j,k, km1, kp1
+      _RL  mskM1, mskP1
       _RL  tmp_WbarZ
       _RL  uTrans, vTrans, rTrans
       _RL  viscLoc
       _RL  halfRL
       _RS  halfRS, zeroRS
-      PARAMETER( halfRL = 0.5D0 )
+      PARAMETER( halfRL = 0.5 _d 0 )
       PARAMETER( halfRS = 0.5 , zeroRS = 0. )
       PARAMETER( iMin = 1 , iMax = sNx )
       PARAMETER( jMin = 1 , jMax = sNy )
@@ -107,8 +107,7 @@ CEOP
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
 
-C--   Catch barotropic mode
-      IF ( Nr .LT. 2 ) RETURN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -144,22 +143,27 @@ C-    Initialize del2w to zero:
       ENDIF
 
 C--   Boundaries condition at top (vertical advection of vertical momentum):
-C     Setting surfFac=0 ignores surface wVel (as if wVel_k=1 = 0)
-      surfFac = 1. _d 0
-c     surfFac = 0. _d 0
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         flxAdvUp(i,j) = 0.
+c        flxDisUp(i,j) = 0.
+       ENDDO
+      ENDDO
+
 
 C---  Sweep down column
-      DO k=2,Nr
-        kp1=k+1
-        wOverRide=1.
-        IF (k.EQ.Nr) THEN
-          kp1=Nr
-          wOverRide=0.
-        ENDIF
+      DO k=1,Nr
+        km1 = MAX( k-1, 1 )
+        kp1 = MIN( k+1,Nr )
+        mskM1 = 1.
+        mskP1 = 1.
+        IF ( k.EQ. 1 ) mskM1 = 0.
+        IF ( k.EQ.Nr ) mskP1 = 0.
+        IF ( k.GT.1 ) THEN
 C--   Compute grid factor arround a W-point:
 #ifdef CALC_GW_NEW_THICK
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            IF ( maskC(i,j,k-1,bi,bj).EQ.0. .OR.
      &          maskC(i,j, k ,bi,bj).EQ.0. ) THEN
              recip_rThickC(i,j) = 0.
@@ -170,9 +174,9 @@ C-    valid in z & p coord.; also accurate if Interface @ middle between 2 cente
      &         - MAX( R_low(i,j,bi,bj),  rC(k)   )
      &        )
            ENDIF
+          ENDDO
          ENDDO
-        ENDDO
-        IF (momViscosity) THEN
+         IF (momViscosity) THEN
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            rThickC_C(i,j) = MAX( zeroRS,
@@ -205,10 +209,10 @@ C deep-model: xA,yA is only used for viscous flux, in terms like: xA/dxC,yA/dyC.
 C this gives deepFacF*recip_deepFacF => cancel each other (and therefore omitted)
           ENDDO
          ENDDO
-        ENDIF
+         ENDIF
 #else /* CALC_GW_NEW_THICK */
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
 C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate !
            IF ( maskC(i,j,k,bi,bj).EQ.0. ) THEN
              recip_rThickC(i,j) = 0.
@@ -243,19 +247,32 @@ c    &                              *deepFacF(k)
 C deep-model: xA,yA is only used for viscous flux, in terms like: xA/dxC,yA/dyC.
 C this gives deepFacF*recip_deepFacF => cancel each other (and therefore omitted)
 c          ENDIF
+          ENDDO
          ENDDO
-        ENDDO
 #endif /* CALC_GW_NEW_THICK */
+        ELSEIF ( selectNHfreeSurf.GE.1 ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           recip_rThickC(i,j) = recip_drC(k)
+c          rThickC_C(i,j) = drC(k)
+c          rThickC_W(i,j) = drC(k)
+c          rThickC_S(i,j) = drC(k)
+c          xA(i,j) = _dyG(i,j,bi,bj)*drC(k)
+c          yA(i,j) = _dxG(i,j,bi,bj)*drC(k)
+          ENDDO
+         ENDDO
+        ENDIF
+
+C--   local copy of wVel:
+        DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            wFld(i,j) = wVel(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
 
 C--   horizontal bi-harmonic dissipation
-        IF (momViscosity .AND. viscA4W.NE.0. ) THEN
+        IF ( momViscosity .AND. k.GT.1 .AND. viscA4W.NE.0. ) THEN
 
-C-    local copy of wVel:
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-             wFld(i,j) = wVel(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
 C-    calculate the horizontal Laplacian of vertical flow
 C     Zonal flux d/dx W
           IF ( useCubedSphereExchange ) THEN
@@ -310,7 +327,7 @@ C     Divergence of horizontal fluxes
 C end if biharmonic viscosity
         ENDIF
 
-        IF (momViscosity) THEN
+        IF ( momViscosity .AND. k.GT.1 ) THEN
 C Viscous Flux on Western face
           DO j=jMin,jMax
            DO i=iMin,iMax+1
@@ -361,7 +378,7 @@ C     Interpolate vert viscosity to center of tracer-cell (level k):
      &                  +KappaRV(i,j,kp1)+KappaRV(i,j+1,kp1)
      &                 )*0.125 _d 0
              flx_Dn(i,j) =
-     &          - viscLoc*( wVel(i,j,kp1,bi,bj)*wOverRide
+     &          - viscLoc*( wVel(i,j,kp1,bi,bj)*mskP1
      &                     -wVel(i,j, k ,bi,bj) )*rkSign
      &                   *recip_drF(k)*rA(i,j,bi,bj)
      &                   *deepFac2C(k)*rhoFacC(k)
@@ -405,7 +422,7 @@ C--        prepare for next level (k+1)
           ENDDO
         ENDIF
 
-        IF ( momViscosity .AND. no_slip_sides ) THEN
+        IF ( momViscosity .AND. k.GT.1 .AND. no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
           CALL MOM_W_SIDEDRAG(
      I               bi,bj,k,
@@ -424,18 +441,21 @@ C-     No-slip BCs impose a drag at walls...
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( momAdvection ) THEN
+
+         IF ( k.GT.1 .OR. selectNHfreeSurf.GE.1 ) THEN
 C Advective Flux on Western face
           DO j=jMin,jMax
            DO i=iMin,iMax+1
 C     transport through Western face area:
              uTrans = (
-     &          drF(k-1)*_hFacW(i,j,k-1,bi,bj)*uVel(i,j,k-1,bi,bj)
-     &                  *rhoFacC(k-1)
+     &          drF(km1)*_hFacW(i,j,km1,bi,bj)*uVel(i,j,km1,bi,bj)
+     &                  *rhoFacC(km1)*mskM1
      &        + drF( k )*_hFacW(i,j, k ,bi,bj)*uVel(i,j, k ,bi,bj)
      &                  *rhoFacC(k)
      &                )*halfRL*_dyG(i,j,bi,bj)*deepFacF(k)
-             flx_EW(i,j)=
-     &         uTrans*(wVel(i,j,k,bi,bj)+wVel(i-1,j,k,bi,bj))*halfRL
+             flx_EW(i,j) = uTrans*(wFld(i,j)+wFld(i-1,j))*halfRL
+c            flx_EW(i,j)=
+c    &         uTrans*(wVel(i,j,k,bi,bj)+wVel(i-1,j,k,bi,bj))*halfRL
            ENDDO
           ENDDO
 C Advective Flux on Southern face
@@ -443,49 +463,48 @@ C Advective Flux on Southern face
            DO i=iMin,iMax
 C     transport through Southern face area:
              vTrans = (
-     &          drF(k-1)*_hFacS(i,j,k-1,bi,bj)*vVel(i,j,k-1,bi,bj)
-     &                  *rhoFacC(k-1)
+     &          drF(km1)*_hFacS(i,j,km1,bi,bj)*vVel(i,j,km1,bi,bj)
+     &                  *rhoFacC(km1)*mskM1
      &         +drF( k )*_hFacS(i,j, k ,bi,bj)*vVel(i,j, k ,bi,bj)
      &                  *rhoFacC(k)
      &                )*halfRL*_dxG(i,j,bi,bj)*deepFacF(k)
-             flx_NS(i,j)=
-     &         vTrans*(wVel(i,j,k,bi,bj)+wVel(i,j-1,k,bi,bj))*halfRL
+             flx_NS(i,j) = vTrans*(wFld(i,j)+wFld(i,j-1))*halfRL
+c            flx_NS(i,j)=
+c    &         vTrans*(wVel(i,j,k,bi,bj)+wVel(i,j-1,k,bi,bj))*halfRL
            ENDDO
           ENDDO
+         ENDIF
 C Advective Flux on Lower face of W-Cell (= at tracer-cell center, level k)
+c        IF (.TRUE.) THEN
           DO j=jMin,jMax
            DO i=iMin,iMax
 C     NH in p-coord.: advect wSpeed [m/s] with rTrans
              tmp_WbarZ = halfRL*
-     &              ( wVel(i,j, k ,bi,bj)*rVel2wUnit(k)
-     &               +wVel(i,j,kp1,bi,bj)*rVel2wUnit(kp1)*wOverRide )
+     &              ( wVel(i,j, k ,bi,bj)*rVel2wUnit( k )
+     &               +wVel(i,j,kp1,bi,bj)*rVel2wUnit(kp1)*mskP1 )
 C     transport through Lower face area:
              rTrans = halfRL*
      &              ( wVel(i,j, k ,bi,bj)*deepFac2F( k )*rhoFacF( k )
      &               +wVel(i,j,kp1,bi,bj)*deepFac2F(kp1)*rhoFacF(kp1)
-     &                                   *wOverRide
+     &                                   *mskP1
      &              )*rA(i,j,bi,bj)
              flx_Dn(i,j) = rTrans*tmp_WbarZ
            ENDDO
           ENDDO
-          IF ( k.EQ.2 ) THEN
-C Advective Flux on Upper face of W-Cell (= at tracer-cell center, level k-1)
+c        ENDIF
+         IF ( k.EQ.1 .AND. selectNHfreeSurf.GE.1 ) THEN
+C Advective Flux on Upper face of W-Cell (= at surface)
            DO j=jMin,jMax
             DO i=iMin,iMax
-             tmp_WbarZ = halfRL*
-     &              ( wVel(i,j,k-1,bi,bj)*rVel2wUnit(k-1)*surfFac
-     &               +wVel(i,j, k, bi,bj)*rVel2wUnit( k ) )
-             rTrans = halfRL*
-     &              ( wVel(i,j,k-1,bi,bj)*deepFac2F(k-1)*rhoFacF(k-1)
-     &                                   *surfFac
-     &               +wVel(i,j, k ,bi,bj)*deepFac2F( k )*rhoFacF( k )
-     &              )*rA(i,j,bi,bj)
+             tmp_WbarZ = wVel(i,j,k,bi,bj)*rVel2wUnit(k)
+             rTrans = wVel(i,j,k,bi,bj)*deepFac2F(k)*rhoFacF(k)
+     &               *rA(i,j,bi,bj)
              flxAdvUp(i,j) = rTrans*tmp_WbarZ
-C to recover old (before 2009/11/30) results (since flxAdvUp(k=2) was zero)
 c            flxAdvUp(i,j) = 0.
             ENDDO
            ENDDO
-          ENDIF
+         ENDIF
+         IF ( k.GT.1 .OR. selectNHfreeSurf.GE.1 ) THEN
 C     Tendency is minus divergence of advective fluxes:
 C     anelastic: all transports & advect. fluxes are scaled by rhoFac
           DO j=jMin,jMax
@@ -496,13 +515,31 @@ C     anelastic: all transports & advect. fluxes are scaled by rhoFac
      &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign*wUnit2rVel(k)
      &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
      &          *recip_deepFac2F(k)*recip_rhoFacF(k)
+           ENDDO
+          ENDDO
+         ENDIF
+
+         DO j=jMin,jMax
+           DO i=iMin,iMax
 C--          prepare for next level (k+1)
              flxAdvUp(i,j)=flx_Dn(i,j)
            ENDDO
-          ENDDO
+         ENDDO
+
+c       ELSE
+C-    if momAdvection / else
+c         DO j=1-OLy,sNy+OLy
+c          DO i=1-OLx,sNx+OLx
+c            gW(i,j,k,bi,bj) = 0. _d 0
+c          ENDDO
+c         ENDDO
+
+C-    endif momAdvection.
         ENDIF
 
-        IF ( useNHMTerms ) THEN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+        IF ( useNHMTerms .AND. k.GT.1 ) THEN
           CALL MOM_W_METRIC_NH(
      I               bi,bj,k,
      I               uVel, vVel,
@@ -514,7 +551,7 @@ C--          prepare for next level (k+1)
            ENDDO
           ENDDO
         ENDIF
-        IF ( use3dCoriolis ) THEN
+        IF ( use3dCoriolis .AND. k.GT.1 ) THEN
           CALL MOM_W_CORIOLIS_NH(
      I               bi,bj,k,
      I               uVel, vVel,
@@ -535,12 +572,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                           k, 1, 2, bi,bj, myThid )
 C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
-          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Diss ',bi,bj,myThid)
+c         IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Diss ',bi,bj,myThid)
         ENDIF
         IF ( diagAdvec ) THEN
           CALL DIAGNOSTICS_FILL( gW, 'Wm_Advec',
      &                           k,Nr, 1, bi,bj, myThid )
-          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Advec',bi,bj,myThid)
+c         IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Advec',bi,bj,myThid)
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

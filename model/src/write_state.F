@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.60 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.61 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,7 +138,10 @@ C         easier to transfer analyse a particular snap-shots
           ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
           IF (nonHydroStatic) THEN
-            CALL WRITE_FLD_XYZ_RL( 'PNH.',suff,phi_nh,myIter,myThid)
+            CALL WRITE_FLD_XYZ_RL( 'PNH.',suff,phi_nh,myIter,myThid )
+          ENDIF
+          IF ( selectNHfreeSurf.GE.1 ) THEN
+            CALL WRITE_FLD_XY_RL( 'dPnh.',suff,dPhiNH,myIter,myThid )
           ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 #ifdef NONLIN_FRSURF

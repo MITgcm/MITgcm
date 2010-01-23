@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.1 2009/12/11 04:31:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.2 2010/01/23 00:04:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,10 +58,9 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks, kp1
-c     INTEGER ioUnit
 c     CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     tmpFac
+      _RL     tmpFac, tmpSurf
       _RL     wFacKm, wFacKp
       _RL     uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL     vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -99,10 +98,23 @@ c        IF ( select_rStar.EQ.0 .AND. exactConserv ) THEN
            tmpFac = 0.
            DO j=1,sNy
             DO i=1,sNx
+              IF ( selectNHfreeSurf.GE.1 ) THEN
+               tmpSurf = deltaTMom*deltaTfreesurf
+     &                  *Bo_surf(i,j,bi,bj)*recip_drC(1)
+     &                  *implicitNHPress*implicDiv2DFlow
+               tmpSurf = ( tmpSurf*( etaN(i,j,bi,bj)-etaH(i,j,bi,bj) )
+     &                    +implicDiv2DFlow*deltaTfreesurf
+c    &                                    *(wVel(i,j,1,bi,bj)+PmE)
+     &                                    *wVel(i,j,1,bi,bj)
+     &                   )/(1. _d 0 + tmpSurf )
+              ELSE
+               tmpSurf = etaN(i,j,bi,bj)-etaH(i,j,bi,bj)
+              ENDIF
               ks = ksurfC(i,j,bi,bj)
               IF ( ks.LE.Nr ) THEN
                cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &                  +freeSurfFac*(etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &                  +freeSurfFac*tmpSurf
+c    &                  +freeSurfFac*(etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
      &                              *_rA(i,j,bi,bj)*deepFac2F(ks)
      &                              /deltaTMom/deltaTfreesurf
               ENDIF
