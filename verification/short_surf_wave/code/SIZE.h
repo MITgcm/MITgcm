@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/code/SIZE.h,v 1.1 2010/01/23 19:39:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/code/SIZE.h,v 1.2 2010/01/23 20:19:04 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -43,11 +43,11 @@ C     Nr  :: No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  26,
+     &           sNx =  13,
      &           sNy =   1,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   2,
+     &           nSx =   4,
      &           nSy =   1,
      &           nPx =   1,
      &           nPy =   1,
