@@ -1,17 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1223 2010/01/20 23:33:45 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1224 2010/01/23 20:28:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/icefront: adding the shell of, and the hooks to, a new package that
+o non-hydrostatic:
+  - add Non-hydrostatic free-surface form (selectNHfreeSurf=1)(not fully tested);
+  - add a simple 2-D experiment (short_surf_wave) to test it.
+o pkg/icefront:
+   adding the shell of, and the hooks to, a new package that
    will model melting and freezing of vertical glacier ice fronts
-o momentum: 
+o momentum:
   add diagnostics of momentum tendency from Hydrostatic pressure gradient
    (without surf.pressure term: would need a 2nd filling since implicit term).
-o add 3 "_d 0"s so that fizhi compiles with xlf on iblade, and replace 
-  two " &end" by " &" (in fizhi-cs-*) because S/R NML_SET_TERMINATOR 
-  cannot deal with the former 
+o add 3 "_d 0"s so that fizhi compiles with xlf on iblade, and replace
+  two " &end" by " &" (in fizhi-cs-*) because S/R NML_SET_TERMINATOR
+  cannot deal with the former
 o cleaning:
   - remove all (except OpenAD) old TLM output from results_ad dirs.
   - remove unused S/R (MDSWRITEMETA, DIAGNOSTICS_ADD2LIST, old DFILE IO S/R)
