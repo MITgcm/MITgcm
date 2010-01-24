@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#PBS -q four-twelve
+#PBS -q long
 #PBS -N tst_mp2
 #PBS -l nodes=2:ppn=2
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.1 2009/06/26 16:12:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.2 2010/01/24 18:17:35 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -59,10 +59,10 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
+    /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
-    /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
