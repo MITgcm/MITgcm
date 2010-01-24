@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mth.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mth.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.10 2009/06/16 21:32:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.11 2010/01/24 18:16:47 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -45,9 +45,10 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
+    /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
+#   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
-    /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
