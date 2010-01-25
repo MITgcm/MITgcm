@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.2 2010/01/22 00:51:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.3 2010/01/25 22:37:19 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -55,16 +55,16 @@ CEOP
       COMMON /ICEFRONT_FIELDS_RL/ 
      &     icefrontForcingT,
      &     icefrontForcingS
-      _RL icefrontForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL icefrontForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL icefrontForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icefrontForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       COMMON /ICEFRONT_FIELDS_RS/ 
      &     R_icefront,
      &     icefrontHeatFlux,
      &     icefrontFreshWaterFlux
       _RS R_icefront            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS icefrontHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS icefrontFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS icefrontHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS icefrontFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       
       LOGICAL ICEFRONTisOn
       LOGICAL useISOMIPTD

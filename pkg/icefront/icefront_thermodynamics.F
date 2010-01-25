@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.2 2010/01/22 00:51:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.3 2010/01/25 22:37:19 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -276,18 +276,18 @@ C     endif (not) useISOMIPTD
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-       CALL DIAGNOSTICS_FILL_RS(icefrontFreshWaterFlux,'SHIfwFlx',
-     &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL_RS(icefrontHeatFlux,      'SHIhtFlx',
-     &      0,1,0,1,1,myThid)
-C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
+       CALL DIAGNOSTICS_FILL_RS(icefrontFreshWaterFlux,'ICFfwFlx',
+     &      0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL_RS(icefrontHeatFlux,      'ICFhtFlx',
+     &      0,Nr,0,1,1,myThid)
+C     SHIForcT (Ice front forcing for theta [W/m2], >0 increases theta)
        tmpFac = HeatCapacity_Cp*rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL(icefrontForcingT,tmpFac,1,
-     &      'SHIForcT',0, 1,0,1,1,myThid)
-C     SHIForcS (Ice shelf forcing for salt [g/m2/s], >0 increases salt)
+     &      'ICFForcT',0, Nr,0,1,1,myThid)
+C     SHIForcS (Ice front forcing for salt [g/m2/s], >0 increases salt)
        tmpFac = rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL(icefrontForcingS,tmpFac,1,
-     &      'SHIForcS',0, 1,0,1,1,myThid)
+     &      'ICFForcS',0, Nr,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
