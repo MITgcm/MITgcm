@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1224 2010/01/23 20:28:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1225 2010/01/26 01:09:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o non-hydrostatic:
+o pkg/monitor:
+  - change back mon_printstats_rl.F & mon_stats_rl.F and add a stop 
+    (in case someone forgot to update customized pieces of code)
+o nonHydrostatic:
   - add Non-hydrostatic free-surface form (selectNHfreeSurf=1)(not fully tested);
   - add a simple 2-D experiment (short_surf_wave) to test it.
 o pkg/icefront:
@@ -22,7 +25,7 @@ o cleaning:
   - comment out maskH definition (replaced by maskInC)
 o pkg/monitor:
   - change mon_printstats_rl.F & mon_stats_rl.F (were similar to mon_writestats_rl
-    & mon_calc_stats_rl) to be the RL pendant to mon_printstats_rs & mon_stats_rs.
+    & mon_calc_stats_rl) to be the RL equivalent of mon_printstats_rs & mon_stats_rs.
 
 checkpoint62a (2010/01/15)
 o model/src:
