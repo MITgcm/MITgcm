@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1225 2010/01/26 01:09:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1226 2010/01/26 16:13:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62b (2010/01/26)
 o pkg/monitor:
   - change back mon_printstats_rl.F & mon_stats_rl.F and add a stop 
     (in case someone forgot to update customized pieces of code)
