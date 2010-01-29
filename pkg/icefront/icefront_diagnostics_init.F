@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.3 2010/01/25 22:37:19 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.4 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -51,20 +51,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'ICFhtFlx'
       diagTitle = 'Ice shelf heat flux  (positive upward)'
       diagUnits = 'W/m^2           '
-      diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'ICFForcT'
-      diagTitle = 'Ice shelf forcing for theta, >0 increases theta'
-      diagUnits = 'W/m^2           '
-      diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'ICFForcS'
-      diagTitle = 'Ice shelf forcing for salt, >0 increases salt'
-      diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )

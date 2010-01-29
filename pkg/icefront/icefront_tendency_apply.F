@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.1 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.2 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -33,20 +33,19 @@ C     !INPUT PARAMETERS:
       _RL myTime
 CEOP
 
-#ifdef ICEFRONT_TENDENCY
 C     !LOCAL VARIABLES:
       INTEGER i, j
 
-      IF ( myPa_applyTendT ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+      IF ( applyIcefrontTendT ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         IF (k .LE. k_icefront(i,j,bi,bj)) THEN  
           gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
-     &     + maskC(i,j,k,bi,bj) * myPa_TendScal1(i,j,k,bi,bj)
-         ENDDO
+     &         + ICEFRONT_TendT(i,j,k,bi,bj)
+         ENDIF
         ENDDO
+       ENDDO
       ENDIF
-
-#endif /* ICEFRONT_TENDENCY */
 
       RETURN
       END
@@ -77,20 +76,19 @@ C     !INPUT PARAMETERS:
       _RL myTime
 CEOP
 
-#ifdef ICEFRONT_TENDENCY
 C     !LOCAL VARIABLES:
       INTEGER i, j
 
-      IF ( myPa_applyTendS ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+      IF ( applyIcefrontTendS ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         IF (k .LE. k_icefront(i,j,bi,bj)) THEN  
           gS(i,j,k,bi,bj) = gS(i,j,k,bi,bj)
-     &     + maskC(i,j,k,bi,bj) * myPa_TendScal2(i,j,k,bi,bj)
-         ENDDO
+     &         + ICEFRONT_TendS(i,j,k,bi,bj)
+         ENDIF
         ENDDO
+       ENDDO
       ENDIF
-
-#endif /* ICEFRONT_TENDENCY */
 
       RETURN
       END

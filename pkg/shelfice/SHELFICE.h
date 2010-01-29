@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.6 2008/09/10 08:55:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.7 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -46,7 +46,9 @@ C     shelficeLoadAnomaly    - pressure load anomaly of shelfice [Pa]
 C     shelficeHeatFlux       - upward heat flux [W/m^2]
 C     shelficeFreshWaterFlux - upward fresh water flux (virt. salt flux) [m/s]
 C     shelficeForcingT       - analogue of surfaceForcingT
+C                              units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       - analogue of surfaceForcingS
+C                              units are  r_unit.psu/s (=psu.m/s if r=z)
 C-----------------------------------------------------------------------
 C \ev
 CEOP

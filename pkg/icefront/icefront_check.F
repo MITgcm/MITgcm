@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.2 2010/01/25 22:37:19 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.3 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 #include "ICEFRONT_OPTIONS.h"
 
@@ -50,30 +50,6 @@ CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
 CML      ENDIF
 CML#endif /* ALLOW_NONHYDROSTATIC */
-
-CDM#ifndef ALLOW_ISOMIP_TD
-CDM      IF ( useISOMIPTD ) THEN
-CDM       WRITE(msgBuf,'(A,A,A)')
-CDM     &      'Run-time control flag useISOMIPTD was used'
-CDM       CALL PRINT_ERROR( msgBuf, myThid )
-CDM       WRITE(msgBuf,'(A,A,A)')
-CDM     &      'when CPP flag ALLOW_ISOMIP_TD was unset'
-CDM       CALL PRINT_ERROR( msgBuf, myThid )
-CDM       STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
-CDM      ENDIF
-CDM#else
-CDM      IF ( useISOMIPTD ) THEN
-CDM       IF ( ICEFRONTconserve ) THEN
-CDM        WRITE(msgBuf,'(A,A,A)')
-CDM     &       'Run-time control flag ICEFRONTconserve=.TRUE. was used'
-CDM        CALL PRINT_ERROR( msgBuf, myThid )
-CDM        WRITE(msgBuf,'(A,A,A)')
-CDM     &       'when useISOMIPTD=.TRUE.; this does not work!'
-CDM        CALL PRINT_ERROR( msgBuf, myThid )
-CDM        STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
-CDM       ENDIF
-CDM      ENDIF
-CDM#endif /* ALLOW_ISOMIP_TD */
 
       _END_MASTER(myThid)
 

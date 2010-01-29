@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT_OPTIONS.h,v 1.1 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT_OPTIONS.h,v 1.2 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,9 +16,6 @@ C     \==========================================================/
 #ifdef ALLOW_ICEFRONT
 
 #include "CPP_OPTIONS.h"
-
-C     allow code for simple ISOMIP thermodynamics
-#define ALLOW_ISOMIP_TD
 
 #endif /* ALLOW_ICEFRONT */
 #endif /* ICEFRONT_OPTIONS_H */

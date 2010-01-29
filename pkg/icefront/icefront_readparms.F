@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.2 2010/01/22 00:51:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.3 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -18,6 +18,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "ICEFRONT.h"
 #include "PARAMS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -41,9 +44,9 @@ CEOP
      &     rhoIcefront, ICEFRONTkappa,
      &     ICEFRONTlatentHeat, ICEFRONTHeatCapacity_Cp,
      &     ICEFRONTthetaSurface,
-     &     useISOMIPTD,
      &     ICEFRONTconserve,
-     &     ICEFRONTtopoFile
+     &     applyIcefrontTendT,applyIcefrontTendS,
+     &     ICEFRONTdepthFile, ICEFRONTlengthFile
 
       _BEGIN_MASTER(myThid)
 
@@ -52,17 +55,35 @@ C internal flag to indicate we are in business
       ICEFRONTisON=.TRUE.
 
 C Set defaults values for parameters in ICEFRONT.h
-      useISOMIPTD              = .FALSE.
-      ICEFRONTconserve         = .FALSE.
-      ICEFRONTtopoFile         = ' '
-      ICEFRONTlatentHeat       =  334.0 _d 3
-      ICEFRONTHeatCapacity_Cp  = 2000.0 _d 0
+#ifdef ALLOW_SHELFICE
+      IF (useShelfice) THEN
+C Use the same values as in SHELFICE
+       ICEFRONTlatentHeat       = SHELFICElatentHeat
+       ICEFRONTHeatCapacity_Cp  = SHELFICEHeatCapacity_Cp
+       rhoIcefront              = rhoShelfice
+       ICEFRONTheatTransCoeff   = SHELFICEheatTransCoeff
+       ICEFRONTkappa            = SHELFICEkappa
+       ICEFRONTthetaSurface     = SHELFICEthetaSurface
+      ELSE
+#else /* ifndef ALLOW_SHELFICE */
+      IF (.TRUE.) THEN
+#endif /* ALLOW_SHELFICE */
+C Default values when SHELFICE is not used
+       ICEFRONTlatentHeat       =  334.0 _d 3
+       ICEFRONTHeatCapacity_Cp  = 2000.0 _d 0
+       rhoIcefront              =  917.0 _d 0
+       ICEFRONTheatTransCoeff   =    1.0 _d -04
+       ICEFRONTkappa            =   1.54 _d -06
+       ICEFRONTthetaSurface     = - 20.0 _d 0
+      ENDIF
+
       recip_ICEFRONTlatentHeat =    0.0 _d 0
-      rhoIcefront              =  917.0 _d 0
-      ICEFRONTheatTransCoeff   =    1.0 _d -04
+      ICEFRONTconserve         = .FALSE.
       ICEFRONTsaltTransCoeff   = UNSET_RL
-      ICEFRONTkappa            =   1.54 _d -06
-      ICEFRONTthetaSurface     = - 20.0 _d 0
+      ICEFRONTlengthFile       = ' '
+      ICEFRONTdepthFile        = ' '
+      applyIcefrontTendS       = .TRUE.
+      applyIcefrontTendT       = .TRUE.
 
 C Open and read the data.icefront file
       WRITE(msgBuf,'(A)') ' ICEFRONT_READPARMS: opening data.icefront'

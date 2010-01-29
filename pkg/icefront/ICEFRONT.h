@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.3 2010/01/25 22:37:19 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.4 2010/01/29 01:05:27 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -16,26 +16,36 @@ C     \==========================================================/
 C-----------------------------------------------------------------------
 C
 C--   Constants that can be set in data.icefront
-C     ICEFRONTtopoFile         - File containing the topography of the 
-C                                icefront draught (unit=m)
+C     ICEFRONTdepthFile        - name of icefront depth file (m)
+C                                2D file containing depth of the ice front
+C                                at each model grid cell
+C     ICEFRONTlengthFile       - name of icefront length file (m/m^2)
+C                                2D file containing the ratio of the horizontal
+C                                length of the ice front in each model grid cell
+C                                divided by the grid cell area
 C     ICEFRONTheatTransCoeff   - heat transfer coefficient that determines
 C                                 heat flux into icefront (m/s)
 C     ICEFRONTsaltTransCoeff   - salinity transfer coefficient that determines
 C                                salt flux into icefront (m/s)
 C     ICEFRONTlatentHeat       - latent heat of fusion (J/kg)
-C     useISOMIPTD              - use simple ISOMIP thermodynamics
 C     ICEFRONTconserve         - use conservative form of H&O-thermodynamics 
 C                                following Jenkins et al. (2001, JPO)
+C     applyIcefrontTendT/S     -  
 C
 C--   Fields
-C     R_icefront             - icefront topography [m]
-C     icefrontHeatFlux       - upward heat flux [W/m^2]
-C     icefrontFreshWaterFlux - upward fresh water flux (virt. salt flux) [m/s]
-C     icefrontForcingT       - analogue of surfaceForcingT
-C     icefrontForcingS       - analogue of surfaceForcingS
+C     K_icefront             - # of icefront model levels at every horizontal location (2D)
+C     R_icefront             - icefront depth [m] (2D)
+C     icefrontlength         - icefront horizontal length divided by grid cell area [m/m^2] (2D)
+C     icefrontHeatFlux       - outward heat flux, +ve cools the ocean [W/m^2]
+C     icefrontFreshWaterFlux - outward fresh water flux, +ve increases ocean salinity [m/s]
+C     icefront_TendT         - temperature tendency (Kelvin/s)
+C     icefront_TendS         - salinity tendency (psu/s)
 C-----------------------------------------------------------------------
 C \ev
 CEOP
+
+      COMMON /ICEFRONT_PARMS_I/  K_icefront
+      INTEGER K_icefront (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /ICEFRONT_PARMS_R/ 
      &     ICEFRONTheatTransCoeff, ICEFRONTsaltTransCoeff,
@@ -53,29 +63,35 @@ CEOP
       _RL ICEFRONTthetaSurface
 
       COMMON /ICEFRONT_FIELDS_RL/ 
-     &     icefrontForcingT,
-     &     icefrontForcingS
-      _RL icefrontForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL icefrontForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+     &     icefront_TendT,
+     &     icefront_TendS
+      _RL icefront_TendT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icefront_TendS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       COMMON /ICEFRONT_FIELDS_RS/ 
      &     R_icefront,
+     &     icefrontlength, 
      &     icefrontHeatFlux,
      &     icefrontFreshWaterFlux
       _RS R_icefront            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS icefrontlength        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS icefrontHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS icefrontFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       
       LOGICAL ICEFRONTisOn
-      LOGICAL useISOMIPTD
       LOGICAL ICEFRONTconserve
+      LOGICAL applyIcefrontTendT
+      LOGICAL applyIcefrontTendS
       COMMON /ICEFRONT_PARMS_L/
      &     ICEFRONTisOn,
-     &     useISOMIPTD,
-     &     ICEFRONTconserve
+     &     ICEFRONTconserve,
+     &     applyIcefrontTendT,
+     &     applyIcefrontTendS
 
-      CHARACTER*(MAX_LEN_FNAM) ICEFRONTtopoFile
+      CHARACTER*(MAX_LEN_FNAM) ICEFRONTlengthFile
+      CHARACTER*(MAX_LEN_FNAM) ICEFRONTdepthFile
       COMMON /ICEFRONT_PARM_C/ 
-     &     ICEFRONTtopoFile
+     &     ICEFRONTlengthFile, 
+     &     ICEFRONTdepthFile
 
 #endif /* ALLOW_ICEFRONT */
