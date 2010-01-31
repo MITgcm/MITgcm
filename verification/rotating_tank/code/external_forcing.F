@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.6 2007/05/03 21:42:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.7 2010/01/31 17:55:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -255,9 +255,9 @@ C     faceArea           :: Temp. for holding area normal to tempurature gradien
       _RL faceArea
 
 C--   Forcing term
-C     Add term which represents the diffusive flux from a circular cylinder of temperature tCylIm in the 
+C     Add term which represents the diffusive flux from a circular cylinder of temperature tCylIm in the
 C     interior of the simulation domain. Result is a tendency which is determined from the finite
-C     volume formulated divergence of the diffusive heat flux due to the local cylinder 
+C     volume formulated divergence of the diffusive heat flux due to the local cylinder
 C     temperature, fluid temperature difference.
 C     kDiffCyl :: Diffusion coefficient
 C     tCylIn     :: Temperature of the inner boundary of the cylinder
@@ -287,7 +287,6 @@ c    (plexiglass, air, water in the compound tank case)
       INTEGER rSource
       INTEGER iGSource
       INTEGER jGSource
-      CHARACTER*(MAX_LEN_MBUF+1000) msgBuf
 
 #ifdef SHORTWAVE_HEATING
       integer two
@@ -371,7 +370,7 @@ c      IF(jG .GE. jGSource-rSource .AND. jG .LE. jGSource+rSource) THEN
 c     the following bites the big one
       IF(jG .LE. 10) THEN
          tCyl = tCylIn
-      ELSE 
+      ELSE
          tCyl = tCylOut
       ENDIF
 c      IF(iG .GE. iGSource-rSource .AND. iG .LE. iGSource+rSource) THEN
@@ -383,7 +382,7 @@ c      IF(iG .GE. iGSource-rSource .AND. iG .LE. iGSource+rSource) THEN
           IF ( hC .NE. 0. .AND .hW .EQ. 0. ) THEN
 C          Cylinder to west
            faceArea = drF(kLev)*dyG(i,j,bi,bj)
-           dFluxW = 
+           dFluxW =
      &      -faceArea*kDiffCyl*(theta(i,j,kLev,bi,bj) - tCyl)
      &      *recip_dxC(i,j,bi,bj)
           ENDIF

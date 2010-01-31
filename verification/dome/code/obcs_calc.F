@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.4 2009/12/15 17:03:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.5 2010/01/31 17:55:10 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -6,19 +6,20 @@ C $Name:  $
       SUBROUTINE OBCS_CALC( futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE OBCS_CALC                                     |
 C     | o Calculate future boundary data at open boundaries      |
 C     |   at time = futureTime                                   |
-C     |==========================================================|
+C     *==========================================================*
 C     |                                                          |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "OBCS.h"
 #include "EOS.h"
 
@@ -36,15 +37,14 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER bi, bj
-      INTEGER I, J ,K, I_obc, J_obc
+      INTEGER I, J ,K
 
-#include "GRID.h"
-      _RL Uinflow,rampTime2,Tinflow
+      _RL rampTime2
       _RL rexpt
       _RL hinit, delh
       _RL z(nr)
       _RL Dmax,Dinf,dTemp,gp_inflow,Lrho
-      _RL Width,d0,d0hat,x,Xcenter,Fz,zt,Rit
+      _RL Width,x,Xcenter,Fz,zt,Rit
 
 c     Total depth
       Dmax = 600. _d 0
