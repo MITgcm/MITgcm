@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.15 2009/12/21 00:21:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.16 2010/01/31 17:39:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -94,8 +94,7 @@ C-- Compute the new column thikness :
         DO j=1,sNy
          DO i=1,sNx+1
           IF ( kSurfW(i,j,bi,bj).LE.Nr ) THEN
-           tmpfldW = MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
-     &             - MAX( R_low(i-1,j,bi,bj), R_low(i,j,bi,bj) )
+           tmpfldW = rSurfW(i,j,bi,bj) - rLowW(i,j,bi,bj)
            rStarFacW(i,j,bi,bj) =
      &       ( 0.5 _d 0 *( etaFld(i-1,j,bi,bj)*rA(i-1,j,bi,bj)
      &                    +etaFld(i,j,bi,bj)*rA(i,j,bi,bj)
@@ -109,8 +108,7 @@ C-- Compute the new column thikness :
         DO j=1,sNy+1
          DO i=1,sNx
           IF ( kSurfS(i,j,bi,bj).LE.Nr ) THEN
-           tmpfldS = MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
-     &             - MAX( R_low(i,j-1,bi,bj), R_low(i,j,bi,bj) )
+           tmpfldS = rSurfS(i,j,bi,bj) - rLowS(i,j,bi,bj)
            rStarFacS(i,j,bi,bj) =
      &       ( 0.5 _d 0 *( etaFld(i,j-1,bi,bj)*rA(i,j-1,bi,bj)
      &                    +etaFld(i,j,bi,bj)*rA(i,j,bi,bj)
@@ -155,9 +153,7 @@ C     for now, just stop
         IF ( icntc1+icnts+icntw .GT. 0 ) THEN
 C-    Print an error msg and then stop:
          IF ( icntw  .GT. 0 ) THEN
-          tmpfldW =
-     &         MIN( Ro_surf(iiw-1,jjw,bi,bj),Ro_surf(iiw,jjw,bi,bj) )
-     &       - MAX( R_low(iiw-1,jjw,bi,bj), R_low(iiw,jjw,bi,bj) )
+          tmpfldW = rSurfW(iiw,jjw,bi,bj) - rLowW(iiw,jjw,bi,bj)
           WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
      &     'WARNING: r*FacW < hFacInf at',icntw,
      &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
@@ -169,9 +165,7 @@ C-    Print an error msg and then stop:
      &     'STOP in CALC_R_STAR : too SMALL rStarFacW !'
          ENDIF
          IF ( icnts  .GT. 0 ) THEN
-          tmpfldS =
-     &         MIN( Ro_surf(iis,jjs-1,bi,bj),Ro_surf(iis,jjs,bi,bj) )
-     &       - MAX( R_low(iis,jjs-1,bi,bj), R_low(iis,jjs,bi,bj) )
+          tmpfldS = rSurfS(iis,jjs,bi,bj) - rLowS(iis,jjs,bi,bj)
           WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
      &     'WARNING: r*FacS < hFacInf at',icnts,
      &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
