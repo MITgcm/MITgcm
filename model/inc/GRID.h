@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.39 2010/01/31 17:21:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.40 2010/01/31 17:32:10 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -360,16 +360,16 @@ C     maskInS :: South face 2-D Interior mask (i.e., zero on and beyond OB)
 C     maskC   :: cell Center land mask
 C     maskW   :: West face land mask
 C     maskS   :: South face land mask
-C     recip_dxC   :: Recipricol of dxC
-C     recip_dxG   :: Recipricol of dxG
-C     recip_dxF   :: Recipricol of dxF
-C     recip_dxV   :: Recipricol of dxV
-C     recip_dyC   :: Recipricol of dxC
-C     recip_dyG   :: Recipricol of dyG
-C     recip_dyF   :: Recipricol of dyF
-C     recip_dyU   :: Recipricol of dyU
-C     recip_drC   :: Recipricol of drC
-C     recip_drF   :: Recipricol of drF
+C     recip_dxC   :: Reciprocal of dxC
+C     recip_dxG   :: Reciprocal of dxG
+C     recip_dxF   :: Reciprocal of dxF
+C     recip_dxV   :: Reciprocal of dxV
+C     recip_dyC   :: Reciprocal of dxC
+C     recip_dyG   :: Reciprocal of dyG
+C     recip_dyF   :: Reciprocal of dyF
+C     recip_dyU   :: Reciprocal of dyU
+C     recip_drC   :: Reciprocal of drC
+C     recip_drF   :: Reciprocal of drF
 C     recip_Rcol  :: Inverse of cell center column thickness (1/r_unit)
 C     recip_hFacC :: Inverse of cell open-depth f[X,Y,Z] ( dimensionless ).
 C     recip_hFacW    rhFacC center, rhFacW west, rhFacS south.
