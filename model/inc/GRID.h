@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.38 2010/01/16 23:06:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.39 2010/01/31 17:21:15 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -343,7 +343,11 @@ C     dyU     :: U-point separation in Y across south-west corner of cell (m)
 C     drC     :: Cell center separation along Z axis ( units of r ).
 C     drF     :: Cell face separation along Z axis ( units of r ).
 C     R_low   :: base of fluid in r_unit (Depth(m) / Pressure(Pa) at top Atmos.)
+C     rLowW   :: base of fluid column in r_unit at Western  edge location.
+C     rLowS   :: base of fluid column in r_unit at Southern edge location.
 C     Ro_surf :: surface reference (at rest) position, r_unit.
+C     rSurfW  :: surface reference position at Western  edge location [r_unit].
+C     rSurfS  :: surface reference position at Southern edge location [r_unit].
 C     hFac    :: Fraction of cell in vertical which is open i.e how
 C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
@@ -398,7 +402,8 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
 
       COMMON /GRID_RS/
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
-     &  R_low, Ro_surf,
+     &  R_low, rLowW, rLowS,
+     &  Ro_surf, rSurfW, rSurfS,
      &  hFacC, hFacW, hFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
@@ -408,8 +413,8 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  maskInC, maskInW, maskInS,
      &  maskC, maskW, maskS,
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
+     &  drC, drF, recip_drC, recip_drF, rC, rF,
      &  tanPhiAtU, tanPhiAtV, angleCosC, angleSinC,
-     &  drC,drF,recip_drC,recip_drF,rC,rF,
      &  fCori, fCoriG, fCoriCos
 c    & , maskH
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -421,7 +426,11 @@ c    & , maskH
       _RS dyG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rLowW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rLowS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS Ro_surf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rSurfW         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rSurfS         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS hFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS hFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -456,33 +465,19 @@ c     _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS angleCosC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS angleSinC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS drC            (Nr)
       _RS drF            (Nr)
       _RS recip_drC      (Nr)
       _RS recip_drF      (Nr)
       _RS rC             (Nr)
       _RS rF             (Nr+1)
+      _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS angleCosC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS angleSinC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCori          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-#ifdef ALLOW_NONHYDROSTATIC
-C--   COMMON /GRID_NH_RS/ RS grid defining variables for Non-Hydrostatic code.
-C     rLowW   :: base of fluid column in r_unit at Western  edge location.
-C     rLowS   :: base of fluid column in r_unit at Southern edge location.
-C     rSurfW  :: surface reference position at Western  edge location [r_unit].
-C     rSurfS  :: surface reference position at Southern edge location [r_unit].
-      COMMON /GRID_NH_RS/
-     &  rLowW, rLowS, rSurfW, rSurfS
-      _RS rLowW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rLowS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rSurfW         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rSurfS         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* ALLOW_NONHYDROSTATIC */
 
 #ifdef ALLOW_DEPTH_CONTROL
 C--   COMMON /GRID_DEPTH_CTRL/ grid defining variables for Depth Control code.
