@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_mnc_init.F,v 1.4 2005/09/11 04:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_mnc_init.F,v 1.5 2010/01/31 17:58:05 jmc Exp $
 C $Name:  $
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "AIM_OPTIONS.h"
 
@@ -11,7 +9,7 @@ C     !ROUTINE: AIM_MNC_INIT
 C     !INTERFACE:
       SUBROUTINE AIM_MNC_INIT( myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     Initialize MNC variables for AIM.
 
 C     !USES:
@@ -29,17 +27,18 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_MNC
 C     == Local variables ==
       CHARACTER*55 ln_var
+      INTEGER i,j, ndim
+      INTEGER CW_MAX_LOC
+      PARAMETER ( CW_MAX_LOC = 6 )
+      CHARACTER*(MNC_MAX_CHAR) dn(CW_MAX_LOC)
+      INTEGER dim(CW_MAX_LOC), ib(CW_MAX_LOC), ie(CW_MAX_LOC)
 
-#ifdef ALLOW_MNC
-      integer i,j, ndim
-      integer CW_MAX_LOC
-      parameter ( CW_MAX_LOC = 6 )
-      character*(MNC_MAX_CHAR) dn(CW_MAX_LOC)
-      integer dim(CW_MAX_LOC), ib(CW_MAX_LOC), ie(CW_MAX_LOC)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      
+
       CALL MNC_CW_ADD_VNAME('USTRtave', 'U_xy_Hn__-__t',3,4,myThid)
       ln_var='u-stress'
       CALL MNC_CW_ADD_VATTR_TEXT('USTRtave','long_name',ln_var,myThid)
@@ -250,11 +249,7 @@ C     Non-halo-ed variables
       CALL MNC_CW_ADD_VNAME('aim_SLWclr','AIM_xyt',0,0,myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('aim_SLWclr','units','---',myThid)
 
-
-
-#endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_MNC */
 
       RETURN
       END
