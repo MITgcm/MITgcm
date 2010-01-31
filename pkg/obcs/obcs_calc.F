@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.25 2009/12/17 23:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.26 2010/01/31 20:25:49 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -6,13 +6,13 @@ C $Name:  $
       SUBROUTINE OBCS_CALC( futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
-C     |==========================================================|
+C     *==========================================================*
 C     | SUBROUTINE OBCS_CALC                                     |
 C     | o Calculate future boundary data at open boundaries      |
 C     |   at time = futureTime                                   |
-C     |==========================================================|
+C     *==========================================================*
 C     |                                                          |
-C     |==========================================================|
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -48,7 +48,7 @@ C     msgBuf       :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER I, J, K, I_obc, J_obc
 #ifdef ALLOW_OBCS_BALANCE
-      _RL Tr_T, Ar_T, Tr, Ar
+      _RL Tr_T, Ar_T, Ar
 #endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_PTRACERS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -393,7 +393,7 @@ C ------------------------------------------------------------------------------
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. - Tr_T)/Ar_T
+        Tr_T = (0. _d 0 - Tr_T)/Ar_T
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,Nr
@@ -430,7 +430,7 @@ c            OBEv(J,K,bi,bj) = 0.
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. - Tr_T)/Ar_T
+        Tr_T = (0. _d 0 - Tr_T)/Ar_T
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,Nr
@@ -467,7 +467,7 @@ c            OBWv(J,K,bi,bj) = 0.
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. - Tr_T)/Ar_T
+        Tr_T = (0. _d 0 - Tr_T)/Ar_T
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,Nr
@@ -504,7 +504,7 @@ c            OBNu(I,K,bi,bj) = 0.
        _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. - Tr_T)/Ar_T
+        Tr_T = (0. _d 0 - Tr_T)/Ar_T
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,Nr

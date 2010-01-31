@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.4 2009/06/24 08:04:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.5 2010/01/31 20:25:49 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -27,7 +27,9 @@ C     == Routine Arguments ==
 
 C     == Local variables ==
       INTEGER I, J, bi, bj, I_obc, J_obc
+#ifdef OBCS_SEAICE_SMOOTH_EDGE
       _RL edge_val
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

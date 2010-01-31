@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.25 2009/12/08 00:21:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.26 2010/01/31 20:25:49 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -34,8 +34,11 @@ C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER I,J,iTracer
+      INTEGER I, J
       INTEGER bi, bj, iG, jG, iGm, jGm
+#ifdef ALLOW_PTRACERS
+      INTEGER iTracer
+#endif
 
       NAMELIST /OBCS_PARM01/
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,

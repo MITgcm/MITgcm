@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.16 2009/12/15 14:13:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.17 2010/01/31 20:25:49 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
 
@@ -72,14 +72,17 @@ C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     aWght, bWght :: Interpolation weights
 C     msgBuf       :: Informational/error message buffer
-#ifdef NONLIN_FRSURF
-      INTEGER i,j,bi,bj
-#endif /* NONLIN_FRSURF */
       INTEGER fp
-      INTEGER iRec0, iRec1, iTr
+      INTEGER iRec0, iRec1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef NONLIN_FRSURF
+      INTEGER i,j,bi,bj
+#endif /* NONLIN_FRSURF */
+#ifdef ALLOW_PTRACERS
+      INTEGER iTr
+#endif
 CEOP
 
       fp = readBinaryPrec
