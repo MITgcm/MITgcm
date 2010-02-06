@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.3 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -36,14 +36,50 @@ c     == routine arguments ==
       integer myiter
       _RL     mytime
 
+#ifdef ALLOW_GENCOST_CONTRIBUTION
 c     == local variables ==
 
-      integer startrec
-      integer endrec
+      integer var_num
+      integer bi,bj
+      integer i,j
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      integer irec
+      integer ilps
+
+      logical doglobalread
+      logical ladinit
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
 
 c     == end of interface ==
 
-c--   Evaluate user defined cost function contributions.
-c--   [to be added here by user]
+      do k = 1, NGENCOST
+
+         write(msgbuf,'(a,x,i2.2)') 'ph-cost gencost #', k
+         call print_message( msgbuf, standardmessageunit,
+     &        SQUEEZE_RIGHT , mythid)
+         nnzbar = 1
+         nnzobs = 1
+         call cost_generic(
+     &        nnzbar, gencost_barfile(k), 
+     &        gencost_barfld(1-Olx,1-Oly,1,1,k), 
+     &        xx_genbar_dummy(k),
+     &        nnzobs, gencost_datafile(k), mult_gencost(k),
+     &        gencost_nrec(k), modelstartdate, gencost_period(k),
+     &        gencost_spzero(k),
+===+++>>>     &        maskC, wsst,
+     &        gencost_spmin(k), gencost_spmax(k), 
+     &        objf_gencost(1,1,k), num_gencost(1,1,k),
+     &        myiter, mytime, mythid )
+
+      end do
+
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
 
       end

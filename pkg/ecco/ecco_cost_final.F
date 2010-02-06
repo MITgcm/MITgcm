@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.43 2009/11/03 03:32:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.44 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -392,7 +392,7 @@ c--   Sum up all contributions.
        do num_var=1,NGENCOST
           fc = fc
      &            + mult_gencost(num_var)
-     &            *objf_gencost(num_var,bi,bj)
+     &            *objf_gencost(bi,bj,num_var)
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST
@@ -487,7 +487,7 @@ c--   Sum up all contributions.
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
           f_gencost(num_var)=f_gencost(num_var)
-     &            +objf_gencost(num_var,bi,bj)
+     &            +objf_gencost(bi,bj,num_var)
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST
@@ -565,7 +565,7 @@ c--   Sum up all contributions.
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
           no_gencost(num_var)=no_gencost(num_var)
-     &            +num_gencost(num_var,bi,bj)
+     &            +num_gencost(bi,bj,num_var)
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST

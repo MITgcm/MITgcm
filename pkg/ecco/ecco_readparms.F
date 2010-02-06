@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.43 2009/11/03 03:35:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.44 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -46,7 +46,7 @@ c--   Read the namelist input.
      &                   psbarfile, bpbarfile,
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
-     &                   hfluxbarfile, sfluxbarfile,
+     &                   hfluxmeanbarfile, sfluxmeanbarfile,
      &                   costTranspDataFile,  topexmeanfile,
      &                   using_topex, using_ers, using_gfo,
      &                   topexstartdate1, topexstartdate2,
@@ -88,7 +88,6 @@ c--   Read the namelist input.
      &                   geoid_errfile, geoid_covariancefile,
      &                   bottomdrag_errfile,edtau_errfile,
      &                   kapgm_errfile,kapredi_errfile,diffkr_errfile,
-     &                   gencost_datafile, gencost_errfile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh,
@@ -112,7 +111,7 @@ c--   Read the namelist input.
      &                   mult_curmtr, mult_ageos,
      &                   mult_kapgm, mult_kapredi, mult_diffkr,
      &                   mult_edtau, mult_bottomdrag,
-     &                   mult_gencost, mult_transp,
+     &                   mult_transp,
      &                   mult_smooth_ic, mult_smooth_bc,
      &                   whflux0, wsflux0, wtau0,
      &                   wbottomdrag0,
@@ -126,6 +125,12 @@ c--   Read the namelist input.
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
      &                   cost_iprec, cost_yftype
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      namelist /ecco_gencost_nml/
+     &         gencost_datafile, gencost_errfile,
+     &         mult_gencost
+#endif
 
       _BEGIN_MASTER( myThid )
 
@@ -141,8 +146,8 @@ c--     Set default values.
         wbarfile              =    'wbar'
         tauxbarfile           =    'tauxbar'
         tauybarfile           =    'tauybar'
-        hfluxbarfile          =    'hfluxbar'
-        sfluxbarfile          =    'sfluxbar'
+        hfluxmeanbarfile      =    'hfluxmeanbar'
+        sfluxmeanbarfile      =    'sfluxmeanbar'
         costTranspDataFile    =    ' '
         using_topex           = .false.
         topexstartdate1       =      0
@@ -240,10 +245,6 @@ c--     Set default values.
         kapgm_errfile         =    ' '
         kapredi_errfile       =    ' '
         diffkr_errfile        =    ' '
-        do k=1,NGENCOST
-         gencost_datafile(k)  =    ' '
-         gencost_errfile(k)   =    ' '
-        enddo
         do k=1,NSSHV4COST
          sshv4cost_errfile(k) =    ' '
          sshv4cost_errfactor(k)=     1. _d 0
@@ -308,9 +309,6 @@ c--     Set default values.
         mult_diffkr           =      0. _d 0
         mult_edtau            =      0. _d 0
         mult_bottomdrag       =      0. _d 0
-        do k=1,NGENCOST
-        mult_gencost(k)       =      0. _d 0
-        enddo
         do k=1,NSSHV4COST
         mult_sshv4cost(k)       =      0. _d 0
         enddo
@@ -365,11 +363,10 @@ c--     Next, read the cost data file.
 
         READ(  iUnit, nml = ecco_cost_nml )
 
-        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: finished reading data.ecco'
+        WRITE(msgBuf,'(A)') 
+     &       'ECCO_READPARMS: finished reading #1: ecco_cost_nml'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                  SQUEEZE_RIGHT , 1)
-
-        CLOSE( iUnit )
+     &       SQUEEZE_RIGHT , 1)
 
 C--   Check parameters:
         IF ( cost_yftype.NE.'RL' ) THEN
@@ -423,7 +420,57 @@ c--     ... SCAT data.
      &                  SQUEEZE_RIGHT , 1)
 #endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+
+      _BEGIN_MASTER( myThid )
+
+c--   Set default values.
+      do k=1,NGENCOST
+         gencost_avgperiod(k)  = '     '
+         gencost_datafile(k)  = ' '
+         gencost_errfile(k)   = ' '
+         write(gencost_barfile(k)(1:8),'(a,i2.2)'),
+     &        'genbar', k
+         mult_gencost(k)      = 0. _d 0
+      enddo
+
+      READ(  iUnit, nml = ecco_gencost_nml )
+
+      WRITE(msgBuf,'(A)') 
+     &     'ECCO_READPARMS: finished reading #2: ecco_gencost_nml'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+
+C--   Check parameters:
+
+      do k=1,NGENCOST
+         if ( gencost_avgperiod(k) .NE. 'day' .OR.
+     &        gencost_avgperiod(k) .NE. 'DAY' .OR.
+     &        gencost_avgperiod(k) .NE. 'month' .OR.
+     &        gencost_avgperiod(k) .NE. 'MONTH' .OR.
+     &        gencost_avgperiod(k) .NE. 'year' .OR.
+     &        gencost_avgperiod(k) .NE. 'YEAR' ) then
+            STOP 
+     &           'ECCO_READPARMS: gencost_avgperiod not properly set'
+         end if
+      end do
+
+      _END_MASTER( myThid )
+
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+      _BEGIN_MASTER( myThid )
+
+      CLOSE( iUnit )
+
+      _END_MASTER( myThid )
+
+      WRITE(msgBuf,'(A)') 
+     &     'ECCO_READPARMS: done'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
 
       _BARRIER
 

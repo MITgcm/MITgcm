@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.8 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.9 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 
       subroutine cost_generic(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
-     &     nnzobs, localobsfile, localobs, mult_local,
+     &     nnzobs, localobsfile, mult_local,
      &     nrecloc, localstartdate, localperiod,
      &     localmask, localweight,
      &     spminloc, spmaxloc, spzeroloc,
@@ -52,7 +52,6 @@ c     == routine arguments ==
       integer localstartdate(4)
 
       _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_localbar_mean_dummy
@@ -91,6 +90,7 @@ c     == local variables ==
       _RL localcost
       _RL junk
 
+      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
 
       character*(128) fname1, fname2
@@ -134,6 +134,13 @@ c--   Initialise local variables.
         do bi = itlo,ithi
           objf_local(bi,bj) = 0. _d 0
           num_local(bi,bj) = 0. _d 0
+          do k = 1,nnzobs
+            do j = jmin,jmax
+              do i = imin,imax
+                localobs(i,j,k,bi,bj) = 0. _d 0
+              enddo
+            enddo
+          enddo
         enddo
       enddo
 

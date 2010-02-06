@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.42 2009/11/12 13:56:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.43 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -32,11 +32,6 @@ c     monrec  - number of averaged theta and salinity records.
       integer monrec
       integer yearrec
 
-c     Number of Generic Cost terms:
-c     =============================
-      INTEGER NGENCOST
-      PARAMETER ( NGENCOST=20 )
-
 c     Number of sshv4cost Cost terms:
 c     =============================
       INTEGER NSSHV4COST
@@ -47,6 +42,46 @@ c     =============================
 c     17 years: 6210
       INTEGER maxNumDays
       PARAMETER ( maxNumDays = 6210 )
+
+c     Number of Generic Cost terms:
+c     =============================
+      INTEGER NGENCOST
+      PARAMETER ( NGENCOST=4 )
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+c     objf_gencost - gencost user defined contribution
+      common /ecco_gencost_ctrl/
+     &       xx_genbar_dummy
+      _RL  xx_genbar_dummy(NGENCOST)
+
+      common /ecco_gencost_r/
+     &       objf_gencost, num_gencost, mult_gencost,
+     &       gencost_barfld, gencost_modfld,
+     &       gencost_spmin, gencost_spmax, gencost_spzero
+      _RL  objf_gencost(nsx,nsy,NGENCOST)
+      _RL  num_gencost(nsx,nsy,NGENCOST)
+      _RL  mult_gencost(NGENCOST)
+      _RL  gencost_spmin(NGENCOST)
+      _RL  gencost_spmax(NGENCOST)
+      _RL  gencost_spzero(NGENCOST)
+      _RL  gencost_barfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,NGENCOST)
+      _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,NGENCOST)
+
+      common /ecco_gencost_i/
+     &       gencost_nrec
+      integer gencost_nrec(NGENCOST)
+
+      common /ecco_gencost_c/
+     &       gencost_errfile,
+     &       gencost_datafile,
+     &       gencost_barfile,
+     &       gencost_avgperiod
+      character*(MAX_LEN_FNAM) gencost_errfile(NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_barfile(NGENCOST)
+      character*(5)            gencost_avgperiod(NGENCOST)
+
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
 
 c     Averaged Fields:
 c     ================
@@ -223,6 +258,8 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
      &                    tauybarfile,
      &                    hfluxbarfile,
      &                    sfluxbarfile,
+     &                    hfluxmeanbarfile,
+     &                    sfluxmeanbarfile,
      &                    costTranspDataFile
       character*(MAX_LEN_FNAM) tbarfile
       character*(MAX_LEN_FNAM) sbarfile
@@ -236,6 +273,8 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       character*(MAX_LEN_FNAM) tauybarfile
       character*(MAX_LEN_FNAM) hfluxbarfile
       character*(MAX_LEN_FNAM) sfluxbarfile
+      character*(MAX_LEN_FNAM) hfluxmeanbarfile
+      character*(MAX_LEN_FNAM) sfluxmeanbarfile
       character*(MAX_LEN_FNAM) costTranspDataFile
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
@@ -321,7 +360,6 @@ c     objf_ctdsclim - Salinity measurements from Woce CTD without timetag
 c     objf_xbt   - XBT temperature data
 c     objf_argot - ARGO temperature profiles
 c     objf_argos - ARGO salt profiles
-c     objf_gencost - gencost user defined contribution
 c     objf_scatxm - time-mean zonal SCAT  contribution
 c     objf_scatym - time-mean meridional SCAT  contribution
 c     objf_scatx  - zonal SCAT  contribution
@@ -343,23 +381,16 @@ c                  function contributions.
      &     objf_tauu,  objf_tauum,  objf_tauusmoo,
      &     objf_tauv,  objf_tauvm,  objf_tauvsmoo,
      &     objf_hmean,
-     &     objf_h,
-     &     objf_tp,
-     &     objf_ers,
-     &     objf_gfo,
+     &     objf_h, objf_tp, objf_ers, objf_gfo,
      &     objf_sshv4cost,
      &     objf_temp,      objf_salt,
      &     objf_temp0,     objf_salt0,
      &     objf_temp0smoo, objf_salt0smoo,
-     &     objf_sst,
-     &     objf_tmi,
-     &     objf_sss,
+     &     objf_sst, objf_tmi, objf_sss,
      &     objf_bp,
      &     objf_ctdt,      objf_ctds,
      &     objf_ctdtclim,  objf_ctdsclim,
-     &     objf_xbt,
-     &     objf_argot,     objf_argos,
-     &     objf_gencost,
+     &     objf_xbt, objf_argot,     objf_argos,
      &     objf_drift, objf_tdrift, objf_sdrift, objf_wdrift,
      &     objf_scatx, objf_scaty,  objf_scatxm, objf_scatym,
      &     objf_atemp,      objf_atempm,      objf_atempsmoo,
@@ -386,6 +417,7 @@ c                  function contributions.
      &     objf_eddytau,
      &     objf_bottomdrag,
      &     objf_transp
+
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
       _RL  objf_hfluxmm
@@ -423,7 +455,6 @@ c                  function contributions.
       _RL  objf_xbt  (nsx,nsy)
       _RL  objf_argot(nsx,nsy)
       _RL  objf_argos(nsx,nsy)
-      _RL  objf_gencost(NGENCOST,nsx,nsy)
       _RL  objf_drift(nsx,nsy)
       _RL  objf_tdrift(nsx,nsy)
       _RL  objf_sdrift(nsx,nsy)
@@ -519,7 +550,6 @@ c                  function contributions.
      &                num_xbt,
      &                num_argot,
      &                num_argos,
-     &                num_gencost,
      &                num_drift,
      &                num_tdrift,
      &                num_sdrift,
@@ -601,7 +631,6 @@ c                  function contributions.
       _RL  num_xbt  (nsx,nsy)
       _RL  num_argot(nsx,nsy)
       _RL  num_argos(nsx,nsy)
-      _RL  num_gencost(NGENCOST,nsx,nsy)
       _RL  num_drift(nsx,nsy)
       _RL  num_tdrift(nsx,nsy)
       _RL  num_sdrift(nsx,nsy)
@@ -680,7 +709,6 @@ c                  function contributions.
      &                    mult_xbt,
      &                    mult_argot,
      &                    mult_argos,
-     &                    mult_gencost,
      &                    mult_drift,
      &                    mult_tdrift,
      &                    mult_sdrift,
@@ -743,7 +771,6 @@ c                  function contributions.
       _RL  mult_xbt
       _RL  mult_argot
       _RL  mult_argos
-      _RL  mult_gencost(NGENCOST)
       _RL  mult_drift
       _RL  mult_tdrift
       _RL  mult_sdrift
@@ -874,7 +901,6 @@ c     velerrfile            - representation error
      &                kapredi_errfile,
      &                diffkr_errfile,
      &                bottomdrag_errfile,
-     &                gencost_errfile,
      &                uwind_errfile,
      &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
@@ -925,7 +951,6 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) kapredi_errfile
       character*(MAX_LEN_FNAM) diffkr_errfile
       character*(MAX_LEN_FNAM) bottomdrag_errfile
-      character*(MAX_LEN_FNAM) gencost_errfile(NGENCOST)
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
@@ -1170,9 +1195,6 @@ c     vdriftdat  - drifters meridional velocities
      &                     tdat,
      &                     scatxdat,
      &                     scatydat,
-     &                     sstdat,
-     &                     tmidat,
-     &                     sssdat,
      &                     bpdat,
      &                     sstmask,
      &                     tmimask,
@@ -1204,9 +1226,6 @@ c     vdriftdat  - drifters meridional velocities
       _RL tdat      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL scatxdat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL scatydat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL sstdat    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL tmidat    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL sssdat    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL bpdat     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tauxmask  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tauymask  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1281,7 +1300,6 @@ c     driftfile     - reference data file for drifter's mean velocities
      &                     argosfile,
      &                     udriftfile,
      &                     vdriftfile,
-     &                     gencost_datafile,
      &                     curmtrufile,
      &                     curmtrvfile
 
@@ -1305,7 +1323,6 @@ c     driftfile     - reference data file for drifter's mean velocities
       character*(MAX_LEN_FNAM) argotfile
       character*(MAX_LEN_FNAM) argosfile
       character*(MAX_LEN_FNAM) argofile
-      character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
       character*(MAX_LEN_FNAM) udriftfile
       character*(MAX_LEN_FNAM) vdriftfile
       character*(MAX_LEN_FNAM) curmtrufile

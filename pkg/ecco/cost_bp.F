@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.1 2009/10/26 00:41:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.2 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -64,10 +64,6 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      _RL offset
-      _RL costmean
-      _RL offset_sum
-
       _RL bpdifmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL bpdifanom ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL bpdatmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
@@ -98,7 +94,6 @@ c     == end of interface ==
       imax = snx
 
 c--   Initialise local variables.
-      costmean   = 0. _d 0
 cgf convert phibot from m2/s2 to cm
       fac = 1. _d 2 / 9.81 _d 0
 

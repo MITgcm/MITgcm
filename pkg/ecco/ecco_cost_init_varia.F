@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.15 2009/11/03 03:32:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.16 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -136,9 +136,11 @@ c--   Initialize the tiled cost function contributions.
           objf_salt_ini_fin(bi,bj)  = 0. _d 0
           objf_eddytau(bi,bj)    = 0. _d 0
           objf_bottomdrag(bi,bj)    = 0. _d 0
+#ifdef ALLOW_GENCOST_CONTRIBUTION
           do k=1,NGENCOST
-          objf_gencost(k,bi,bj)    = 0. _d 0
+            objf_gencost(bi,bj,k)    = 0. _d 0
           enddo
+#endif
           do k=1,NSSHV4COST
           objf_sshv4cost(k,bi,bj)    = 0. _d 0
           enddo
@@ -198,9 +200,11 @@ c
           num_kapredi(bi,bj)    = 0. _d 0
           num_eddytau(bi,bj)    = 0. _d 0
           num_bottomdrag(bi,bj)    = 0. _d 0
+#ifdef ALLOW_GENCOST_CONTRIBUTION
           do k=1,NGENCOST
-          num_gencost(k,bi,bj)    = 0. _d 0
+            num_gencost(bi,bj,k)    = 0. _d 0
           enddo
+#endif
           do k=1,NSSHV4COST
           num_sshv4cost(k,bi,bj)    = 0. _d 0
           enddo
@@ -252,7 +256,6 @@ c
                else
                   tmimask(i,j,bi,bj) = 1. _d 0
                endif
-               tmidat(i,j,bi,bj)     = 0. _d 0
 #endif
 #ifdef ALLOW_SST_COST_CONTRIBUTION
                if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
@@ -260,7 +263,6 @@ c
                else
                   sstmask(i,j,bi,bj) = 1. _d 0
                endif
-               sstdat(i,j,bi,bj)     = 0. _d 0
 #endif
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
                if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
@@ -268,7 +270,6 @@ c
                else
                   sssmask(i,j,bi,bj) = 1. _d 0
                endif
-               sssdat(i,j,bi,bj)     = 0. _d 0
 #endif
 #ifdef ALLOW_BP_COST_CONTRIBUTION
                if (_hFacC(i,j,k,bi,bj) .eq. 0.) then

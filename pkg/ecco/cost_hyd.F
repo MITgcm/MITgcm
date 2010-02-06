@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.18 2009/11/20 22:29:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.19 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -72,7 +72,7 @@ c     == end of interface ==
       localperiod = 0.
       call cost_generic(
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
-     &     nnzobs, sstdatfile, sstdat, mult_sst,
+     &     nnzobs, sstdatfile, mult_sst,
      &     nmonsrec, modelstartdate, localperiod,
      &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
@@ -93,7 +93,7 @@ c
       localperiod = 86400.
       call cost_generic(
      &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
-     &     nnzobs, sstdatfile, sstdat, mult_sst,
+     &     nnzobs, sstdatfile, mult_sst,
      &     nrecloc, modelstartdate, localperiod,
      &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
@@ -135,7 +135,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       localperiod = 0.
       call cost_generic(
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
-     &     nnzobs, tmidatfile, tmidat, mult_tmi,
+     &     nnzobs, tmidatfile, mult_tmi,
      &     nmonsrec, tmistartdate, localperiod,
      &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
@@ -156,7 +156,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
       localperiod = 0.
       call cost_generic(
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
-     &     nnzobs, sssdatfile, sssdat,  mult_sss,
+     &     nnzobs, sssdatfile, mult_sss,
      &     nmonsrec, modelstartdate, localperiod,
      &     maskC, wsss,
      &     spminloc, spmaxloc, spzeroloc,

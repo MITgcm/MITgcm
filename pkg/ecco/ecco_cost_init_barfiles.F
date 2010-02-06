@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.15 2009/11/20 22:29:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.16 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,8 +62,8 @@ c     == local variables ==
       character*(128) fnamewbar
       character*(128) fnametauxbar
       character*(128) fnametauybar
-      character*(128) fnamehfluxbar
-      character*(128) fnamesfluxbar
+      character*(128) fnamehfluxmeanbar
+      character*(128) fnamesfluxmeanbar
       character*(128) fnamebpbar
       character*(128) fnamesmrareabar
       character*(128) fnamesmrsstbar
@@ -78,8 +78,8 @@ c
       character*(128) adfnamewbar
       character*(128) adfnametauxbar
       character*(128) adfnametauybar
-      character*(128) adfnamehfluxbar
-      character*(128) adfnamesfluxbar
+      character*(128) adfnamehfluxmeanbar
+      character*(128) adfnamesfluxmeanbar
       character*(128) adfnamebpbar
       character*(128) adfnamesmrareabar
       character*(128) adfnamesmrsstbar
@@ -340,32 +340,32 @@ c--   Save tauxbar, tauybar on file.
 #endif
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
-c--   Save hfluxbar on file.
-      ilps=ilnblnk( hfluxbarfile )
-      write(fnamehfluxbar,'(2a,i10.10)')
-     &     hfluxbarfile(1:ilps), '.', optimcycle
-      write(adfnamehfluxbar,'(3a,i10.10)')
-     &     yadprefix, hfluxbarfile(1:ilps), '.', optimcycle
+c--   Save hfluxmeanbar on file.
+      ilps=ilnblnk( hfluxmeanbarfile )
+      write(fnamehfluxmeanbar,'(2a,i10.10)')
+     &     hfluxmeanbarfile(1:ilps), '.', optimcycle
+      write(adfnamehfluxmeanbar,'(3a,i10.10)')
+     &     yadprefix, hfluxmeanbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, nyearsrec
 #ifndef ALLOW_TANGENTLINEAR_RUN
-        call active_write_xy( adfnamehfluxbar, tmpfld2d, irec,
+        call active_write_xy( adfnamehfluxmeanbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_hflux_mean_dummy )
 #endif
       enddo
 #endif
 
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-c--   Save sfluxbar on file.
-      ilps=ilnblnk( sfluxbarfile )
-      write(fnamesfluxbar,'(2a,i10.10)')
-     &     sfluxbarfile(1:ilps), '.', optimcycle
-      write(adfnamesfluxbar,'(3a,i10.10)')
-     &     yadprefix, sfluxbarfile(1:ilps), '.', optimcycle
+c--   Save sfluxmeanbar on file.
+      ilps=ilnblnk( sfluxmeanbarfile )
+      write(fnamesfluxmeanbar,'(2a,i10.10)')
+     &     sfluxmeanbarfile(1:ilps), '.', optimcycle
+      write(adfnamesfluxmeanbar,'(3a,i10.10)')
+     &     yadprefix, sfluxmeanbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, nyearsrec
 #ifndef ALLOW_TANGENTLINEAR_RUN
-        call active_write_xy( adfnamesfluxbar, tmpfld2d, irec,
+        call active_write_xy( adfnamesfluxmeanbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_sflux_mean_dummy )
 #endif
       enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.13 2009/09/30 15:48:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.14 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -92,9 +92,9 @@ c--   Read tiled data.
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
-        ilsalt = ilnblnk( sfluxbarfile )
+        ilsalt = ilnblnk( sfluxmeanbarfile )
         write(fnamesflux(1:80),'(2a,i10.10)')
-     &    sfluxbarfile(1:ilsalt),'.',optimcycle
+     &    sfluxmeanbarfile(1:ilsalt),'.',optimcycle
       endif
 
       do irec = 1, MAX(1,nyearsrec)

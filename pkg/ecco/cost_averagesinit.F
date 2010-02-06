@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.10 2009/11/20 22:29:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.11 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -65,6 +65,18 @@ c--   Set the loop ranges.
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+          do  k=1,NGENCOST
+            do j = jmin,jmax
+              do i = imin,imax
+                gencost_barfld(i,j,bi,bj,k) = 0. _d 0
+                gencost_modfld(i,j,bi,bj,k) = 0. _d 0
+              enddo
+            enddo
+            xx_genbar_dummy(k) = 0. _d 0
+          enddo
+#endif
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 c--       Initialise surface pressure average.
@@ -199,7 +211,7 @@ c--       Initialise salinity average (2d).
 c--       Initialise salinity average (2d).
           do j = jmin,jmax
             do i =  imin,imax
-              hfluxbar(i,j,bi,bj) = 0. _d 0
+              hfluxmeanbar(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
           xx_hflux_mean_dummy = 0. _d 0
@@ -209,7 +221,7 @@ c--       Initialise salinity average (2d).
 c--       Initialise salinity average (2d).
           do j = jmin,jmax
             do i =  imin,imax
-              sfluxbar(i,j,bi,bj) = 0. _d 0
+              sfluxmeanbar(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
           xx_sflux_mean_dummy = 0. _d 0

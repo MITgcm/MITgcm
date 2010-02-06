@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.27 2009/11/20 22:29:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.28 2010/02/06 02:43:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -82,6 +82,13 @@ c     == local variables ==
       logical endofmonth
       logical endofyear
       logical intmp
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      logical startofgen(NGENCOST)
+      logical endofgen(NGENCOST)
+      logical ingen(NGENCOST)
+      logical sum1gen(NGENCOST)
+      logical genrec(NGENCOST)
+#endif
 
       integer ilps, ils,ilt
 
@@ -93,8 +100,8 @@ c     == local variables ==
       character*(128) fnamewbar
       character*(128) fnametauxbar
       character*(128) fnametauybar
-      character*(128) fnamehfluxbar
-      character*(128) fnamesfluxbar
+      character*(128) fnamehfluxmeanbar
+      character*(128) fnamesfluxmeanbar
 
 cph(
       integer locdayrec
@@ -133,6 +140,17 @@ c--   Get the time flags and record numbers for the time averaging.
      O                    sum1mon,    monrec,
      O                    sum1year,   yearrec
      &                  )
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      call cost_gencost_assignperiod(
+     I                    startofday, startofmonth, startofyear,
+     I                    inday,      inmonth,      inyear,
+     I                    endofday,   endofmonth,   endofyear,
+     O                    startofgen, endofgen,     ingen,
+     O                    sum1gen,    genrec,
+     I                    mythid )
+      call cost_gencost_customize( mythid )
+#endif
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 #ifdef ALLOW_DEBUG
@@ -379,18 +397,18 @@ c--     Accumulate ubar and vbar.
 cph: this is one mean over whole integration:
 c      intmp = (.NOT. first) .and. (.NOT. last)
 c      call cost_averagesgeneric(
-c     &     hfluxbarfile,
-c     &     hfluxbar, qnet, xx_hflux_mean_dummy,
+c     &     hfluxmeanbarfile,
+c     &     hfluxmeanbar, qnet, xx_hflux_mean_dummy,
 c     &     first, last, .false., .false., intmp,
 c     &     ntimesteps, 1, 1, mythid )
 cph: switch to annual means:
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesgeneric hfluxbar',myThid)
+     &    CALL DEBUG_CALL('cost_averagesgeneric hfluxmeanbar',myThid)
 #endif
       call cost_averagesgeneric(
-     &     hfluxbarfile,
-     &     hfluxbar, qnet, xx_hflux_mean_dummy,
+     &     hfluxmeanbarfile,
+     &     hfluxmeanbar, qnet, xx_hflux_mean_dummy,
      &     first, last, startofyear, endofyear, inyear,
      &     sum1year, yearrec, 1, mythid )
 #endif
@@ -400,21 +418,21 @@ cph: these are annual means
 # ifndef ALLOW_SEAICE
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesgeneric sfluxbar',myThid)
+     &    CALL DEBUG_CALL('cost_averagesgeneric sfluxmeanbar',myThid)
 #endif
       call cost_averagesgeneric(
-     &     sfluxbarfile,
-     &     sfluxbar, empmr, xx_sflux_mean_dummy,
+     &     sfluxmeanbarfile,
+     &     sfluxmeanbar, empmr, xx_sflux_mean_dummy,
      &     first, last, startofyear, endofyear, inyear,
      &     sum1year, yearrec, 1, mythid )
 # else
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesgeneric sfluxbar',myThid)
+     &    CALL DEBUG_CALL('cost_averagesgeneric sfluxmeanbar',myThid)
 #endif
       call cost_averagesgeneric(
-     &     sfluxbarfile,
-     &     sfluxbar, frWtrAtm, xx_sflux_mean_dummy,
+     &     sfluxmeanbarfile,
+     &     sfluxmeanbar, frWtrAtm, xx_sflux_mean_dummy,
      &     first, last, startofyear, endofyear, inyear,
      &     sum1year, yearrec, 1, mythid )
 # endif
@@ -468,6 +486,20 @@ c
       endif
 #endif /* ALLOW_SEAICE */
 
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+cph currently all assumed to be surface fields, i.e. 2-d
+      do num_var = 1, NGENCOST
+      call cost_averagesgeneric(
+     &     gencost_barfile(num_var), 
+     &     gencost_barfld(1-Olx,1-Oly,1,1,num_var), 
+     &     gencost_modfld(1-Olx,1-Oly,1,1,num_var),
+     &     xx_genbar_dummy(num_var),
+     &     first, last, 
+     &     startofgen(num_var), endofgen(num_var), ingen(num_var),
+     &     sum1gen(num_var), genrec(num_var), 1, mythid )
+      end do
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
 #if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
 cph moved to the_main_loop to separate from cost package
 cph      CALL profiles_inloop(mytime,mythid)
@@ -514,7 +546,7 @@ cph   In the mean time increment ad hoc during day
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesgeneric leave',myThid)
+     &    CALL DEBUG_CALL('cost_averagesfields leave',myThid)
 #endif
 
       return
