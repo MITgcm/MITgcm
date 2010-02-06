@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.19 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.20 2010/02/06 11:30:16 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -74,7 +74,7 @@ c     == end of interface ==
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, sstdatfile, mult_sst,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wsst,
+     &     'C', wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
@@ -95,7 +95,7 @@ c
      &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
      &     nnzobs, sstdatfile, mult_sst,
      &     nrecloc, modelstartdate, localperiod,
-     &     maskC, wsst,
+     &     'C', wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
@@ -137,7 +137,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, tmidatfile, mult_tmi,
      &     nmonsrec, tmistartdate, localperiod,
-     &     maskC, wsst,
+     &     'C', wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_tmi, num_tmi,
      &     myiter, mytime, mythid )
@@ -158,7 +158,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
      &     nnzobs, sssdatfile, mult_sss,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wsss,
+     &     'C', wsss,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sss, num_sss,
      &     myiter, mytime, mythid )

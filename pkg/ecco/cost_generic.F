@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.9 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.10 2010/02/06 11:30:16 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -8,7 +8,7 @@ C $Name:  $
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
      &     nnzobs, localobsfile, mult_local,
      &     nrecloc, localstartdate, localperiod,
-     &     localmask, localweight,
+     &     ylocmask, localweight,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_local, num_local,
      &     myiter, mytime, mythid )
@@ -31,6 +31,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -53,7 +54,6 @@ c     == routine arguments ==
 
       _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_localbar_mean_dummy
       _RL mult_local
       _RL mytime
@@ -64,6 +64,7 @@ c     == routine arguments ==
       _RL objf_local(nsx,nsy)
       _RL num_local(nsx,nsy)
 
+      character*(1) ylocmask
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
 
@@ -90,6 +91,7 @@ c     == local variables ==
       _RL localcost
       _RL junk
 
+      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
 
@@ -143,6 +145,17 @@ c--   Initialise local variables.
           enddo
         enddo
       enddo
+
+c--   Assign mask
+      if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
+         localmask(:,:,:,:,:) = maskC(:,:,:,:,:)
+      elseif ( ylocmask .EQ. 'S' .OR. ylocmask .EQ. 's' ) then
+         localmask(:,:,:,:,:) = maskS(:,:,:,:,:)
+      elseif ( ylocmask .EQ. 'W' .OR. ylocmask .EQ. 'w' ) then
+         localmask(:,:,:,:,:) = maskW(:,:,:,:,:)
+      else
+         STOP 'cost_generic: wrong ylocmask'
+      endif
 
 c--   First, read tiled data.
       doglobalread = .false.

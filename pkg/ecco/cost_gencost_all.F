@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.3 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.4 2010/02/06 11:30:16 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -73,7 +73,7 @@ c     == end of interface ==
      &        nnzobs, gencost_datafile(k), mult_gencost(k),
      &        gencost_nrec(k), modelstartdate, gencost_period(k),
      &        gencost_spzero(k),
-===+++>>>     &        maskC, wsst,
+===+++>>>     &        gencost_mask(k), wsst,
      &        gencost_spmin(k), gencost_spmax(k), 
      &        objf_gencost(1,1,k), num_gencost(1,1,k),
      &        myiter, mytime, mythid )
