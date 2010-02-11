@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.3 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.4 2010/02/11 23:14:31 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -38,8 +38,6 @@ CEOP
           DO K = 1, Nr
            icefront_TendT        (i,j,k,bi,bj) = 0. _d 0
            icefront_TendS        (i,j,k,bi,bj) = 0. _d 0
-           icefrontHeatFlux      (i,j,k,bi,bj) = 0. _d 0
-           icefrontFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO

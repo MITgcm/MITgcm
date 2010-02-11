@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.4 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.5 2010/02/11 23:14:31 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -65,18 +65,14 @@ CEOP
       COMMON /ICEFRONT_FIELDS_RL/ 
      &     icefront_TendT,
      &     icefront_TendS
-      _RL icefront_TendT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL icefront_TendS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icefront_TendT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icefront_TendS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       COMMON /ICEFRONT_FIELDS_RS/ 
      &     R_icefront,
-     &     icefrontlength, 
-     &     icefrontHeatFlux,
-     &     icefrontFreshWaterFlux
-      _RS R_icefront            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS icefrontlength        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS icefrontHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS icefrontFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+     &     icefrontlength
+      _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       
       LOGICAL ICEFRONTisOn
       LOGICAL ICEFRONTconserve
