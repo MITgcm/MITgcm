@@ -1,0 +1,19 @@
+#Diagnostic Package Choices
+ &diagnostics_list
+  frequency(1) = 18000.,
+   fields(1,1) = 'SHIfwFlx',
+   filename(1) = 'SHIfwFlx',
+  frequency(2) = 18000.,
+   fields(1,2) = 'SHIhtFlx',
+   filename(2) = 'SHIhtFlx',
+  frequency(3) = 18000.,
+   fields(1,3) = 'ICFfwFlx',
+   filename(3) = 'ICFfwFlx',
+  frequency(4) = 18000.,
+   fields(1,4) = 'ICFhtFlx',
+   filename(4) = 'ICFhtFlx',
+ &
+
+# Parameter for Diagnostics of per level statistics:
+ &DIAG_STATIS_PARMS
+ &

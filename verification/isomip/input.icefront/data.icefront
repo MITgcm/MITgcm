@@ -1,0 +1,10 @@
+# ===================================
+# | Parameters for ICEFRONT package |
+# ===================================
+ &ICEFRONT_PARM01
+ ICEFRONTdepthFile='frontdepth.xuyun',
+ ICEFRONTlengthFile = 'frontcircum.xuyun',
+ ICEFRONTconserve   = .true.,
+ applyIcefrontTendT = .true.,
+ applyIcefrontTendS = .true.,
+ &
