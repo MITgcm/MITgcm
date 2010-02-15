@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.10 2010/02/06 11:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.11 2010/02/15 21:18:04 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -147,15 +147,25 @@ c--   Initialise local variables.
       enddo
 
 c--   Assign mask
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,Nr
+            do j = 1-oly,sny+oly
+              do i = 1-olx,snx+olx
       if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
-         localmask(:,:,:,:,:) = maskC(:,:,:,:,:)
+         localmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
       elseif ( ylocmask .EQ. 'S' .OR. ylocmask .EQ. 's' ) then
-         localmask(:,:,:,:,:) = maskS(:,:,:,:,:)
+         localmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
       elseif ( ylocmask .EQ. 'W' .OR. ylocmask .EQ. 'w' ) then
-         localmask(:,:,:,:,:) = maskW(:,:,:,:,:)
+         localmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
       else
          STOP 'cost_generic: wrong ylocmask'
       endif
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
 
 c--   First, read tiled data.
       doglobalread = .false.
