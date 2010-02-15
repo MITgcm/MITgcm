@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.9 2008/10/18 12:57:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.10 2010/02/15 23:57:57 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,9 +78,9 @@ cph)
       localperiod = 86400.
       call cost_generic(
      &     nnzbar, smrareabarfile, smrareabar, xx_smrareabar_mean_dummy,
-     &     nnzobs, smrareadatfile, smrareadat, mult_smrarea,
+     &     nnzobs, smrareadatfile, mult_smrarea,
      &     nrecloc, modelstartdate, localperiod,
-     &     maskC, wsmrarea,
+     &     'C', wsmrarea,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_smrarea, num_smrarea,
      &     myiter, mytime, mythid )
