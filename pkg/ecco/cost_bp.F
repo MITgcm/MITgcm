@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.2 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.3 2010/02/15 23:10:36 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -69,8 +69,7 @@ c     == local variables ==
       _RL bpdatmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL bpdatanom ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL bpcount ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL wwwbp  ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL junk
+      _RL junk,junkweight
 
       character*(80) fname
       character*(80) fname4test
@@ -106,13 +105,11 @@ cgf convert phibot from m2/s2 to cm
               bpdatmean(i,j,bi,bj) = 0. _d 0
               bpdatanom(i,j,bi,bj) = 0. _d 0
               bpcount(i,j,bi,bj) = 0. _d 0
-              wwwbp(i,j,bi,bj)  = 0. _d 0
             enddo
           enddo
         enddo
       enddo
 
-c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
@@ -125,10 +122,9 @@ c--   ============
 c--   Mean values.
 c--   ============
 
-c--   Loop over records for the first time.
       do irec = 1, nmonsrec
 
-c--     Compute the mean over all bpbar records.
+c--     Compute the mean over all bpdat records.
         call active_read_xy( fname, bpbar, irec, doglobalread,
      &                       ladinit, optimcycle, mythid,
      &                       xx_bpbar_mean_dummy )
@@ -141,7 +137,8 @@ c--     Compute the mean over all bpbar records.
               do i = imin,imax
       if (bpmask(i,j,bi,bj).NE.0.) then
                 bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
-     &                ( fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj) )
+     &              ( fac*maskc(i,j,1,bi,bj)*bpbar(i,j,bi,bj) 
+     &              - bpdat(i,j,bi,bj) )
                 bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
      &                bpdat(i,j,bi,bj) 
                 bpcount(i,j,bi,bj) = bpcount(i,j,bi,bj) +1.
@@ -185,11 +182,12 @@ c--    Compute field of anomalies
             do j = jmin,jmax
               do i = imin,imax
                 bpdifanom(i,j,bi,bj) = 
-     &                    (   fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj)
-     &                       -bpdifmean(i,j,bi,bj)   )*bpmask(i,j,bi,bj)
+     &                      ( fac*maskc(i,j,1,bi,bj)*bpbar(i,j,bi,bj) 
+     &                      - bpdat(i,j,bi,bj) - bpdifmean(i,j,bi,bj)
+     &                      )*bpmask(i,j,bi,bj)
                 bpdatanom(i,j,bi,bj) =
-     &                    (  bpdat(i,j,bi,bj)
-     &                       -bpdatmean(i,j,bi,bj)   )*bpmask(i,j,bi,bj)
+     &                     ( bpdat(i,j,bi,bj) - bpdatmean(i,j,bi,bj)
+     &                     )*bpmask(i,j,bi,bj)
               enddo
             enddo
           enddo
@@ -206,8 +204,8 @@ c--    Smooth field of anomalies
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdatanom,irec,1,mythid)
 
-      call smooth_basic2D(bpdifanom,maskc,750000. _d 0,5000,mythid)
-      call smooth_basic2D(bpdatanom,maskc,750000. _d 0,5000,mythid)
+      call smooth_basic2D(bpdifanom,bpmask,750000. _d 0,5000,mythid)
+      call smooth_basic2D(bpdatanom,bpmask,750000. _d 0,5000,mythid)
 
       write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -222,11 +220,12 @@ c--    Compute cost function
             do j = jmin,jmax
               do i = imin,imax
 c--             The array bpdat contains SSH anomalies.
-                wwwbp(i,j,bi,bj) = wbp(i,j,bi,bj) *cosphi(i,j,bi,bj)
-                junk       = bpdifanom(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+                junkweight = wbp(i,j,bi,bj) *cosphi(i,j,bi,bj)
+     &                      *bpmask(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+                junk       = bpdifanom(i,j,bi,bj)
                 objf_bp(bi,bj) = objf_bp(bi,bj)
-     &              + junk*junk*wwwbp(i,j,bi,bj)
-                if ( wwwbp(i,j,bi,bj)*junk .ne. 0. )
+     &              + junk*junk*junkweight
+                if ( junkweight .ne. 0. )
      &               num_bp(bi,bj) = num_bp(bi,bj) + 1. _d 0
 
               enddo
@@ -235,7 +234,6 @@ c--             The array bpdat contains SSH anomalies.
         enddo
 
       enddo
-c--   End of second loop over records.
 
 #endif /* ifdef ALLOW_SMOOTH */
 #endif /* ifdef ALLOW_BP_COST_CONTRIBUTION */

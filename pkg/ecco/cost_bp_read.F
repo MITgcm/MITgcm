@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.1 2009/10/26 00:41:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.2 2010/02/15 23:10:36 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -107,13 +107,15 @@ ce    --> there is certainly a better place for this.
           k = 1
           do j = jmin,jmax
             do i = imin,imax
-              if (maskC(i,j,k,bi,bj) .eq. 0.) then
+c              if (maskC(i,j,k,bi,bj) .eq. 0.) then
+c                bpmask(i,j,bi,bj) = 0. _d 0
+c              else
+c                bpmask(i,j,bi,bj) = 1. _d 0
+c              endif
+              if (bpdat(i,j,bi,bj) .lt. spval) then
                 bpmask(i,j,bi,bj) = 0. _d 0
               else
                 bpmask(i,j,bi,bj) = 1. _d 0
-              endif
-              if (bpdat(i,j,bi,bj) .lt. spval) then
-                bpmask(i,j,bi,bj) = 0. _d 0
               endif
               bpdat(i,j,bi,bj) = bpdat(i,j,bi,bj)*
      &                              bpmask(i,j,bi,bj)

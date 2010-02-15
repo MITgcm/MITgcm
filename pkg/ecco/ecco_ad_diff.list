@@ -32,6 +32,9 @@ cost_readtopexmean.f
 cost_salt.f                     
 cost_salt0.f                    
 cost_scat.f                     
+cost_sla_read.f
+cost_sla_read_yd.f
+cost_sshv4.f
 cost_ssh.f                      
 cost_ssh_new.f
 cost_ssh_mean.f                 
