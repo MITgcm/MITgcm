@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adzero_adj.F,v 1.4 2008/07/23 20:26:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adzero_adj.F,v 1.5 2010/02/15 20:03:56 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 C     !ROUTINE: ADZERO_ADJ_LOC
 C     !INTERFACE:
       SUBROUTINE ADZERO_ADJ_LOC(
-     I             NrIn,myThid,adFieldFwd)
+     I             NrIn, adFieldFwd, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o zero out a local (no nsx,nsy dims.) adjoint field
@@ -42,7 +42,7 @@ C     == Local arguments ==
 C     !ROUTINE: ADZERO_ADJ
 C     !INTERFACE:
       SUBROUTINE ADZERO_ADJ(
-     I             NrIn,myThid,adFieldFwd)
+     I             NrIn, adFieldFwd, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o zero out a full (incl. nsx,nsy dims.) adjoint field
