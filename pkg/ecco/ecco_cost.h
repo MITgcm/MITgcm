@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.44 2010/02/06 11:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.45 2010/02/16 02:08:16 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -64,8 +64,10 @@ c     objf_gencost - gencost user defined contribution
       _RL  gencost_spmin(NGENCOST)
       _RL  gencost_spmax(NGENCOST)
       _RL  gencost_spzero(NGENCOST)
-      _RL  gencost_barfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,NGENCOST)
-      _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,NGENCOST)
+      _RL  gencost_barfld(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
+      _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
 
       common /ecco_gencost_i/
      &       gencost_nrec

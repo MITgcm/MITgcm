@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.28 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.29 2010/02/16 02:08:16 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -69,6 +69,9 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      integer num_var
+#endif
 
       logical first
       logical startofday

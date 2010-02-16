@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.4 2010/02/06 11:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.5 2010/02/16 02:08:16 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -59,6 +59,7 @@ c     == external functions ==
 
 c     == end of interface ==
 
+#ifdef ALLOW_GENCOSTBUG
       do k = 1, NGENCOST
 
          write(msgbuf,'(a,x,i2.2)') 'ph-cost gencost #', k
@@ -79,6 +80,7 @@ c     == end of interface ==
      &        myiter, mytime, mythid )
 
       end do
+#endif /* ALLOW_GENCOSTBUG */
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
