@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.5 2010/02/11 23:14:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.6 2010/02/16 21:25:22 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -44,46 +44,36 @@ CEOP
 #ifdef ALLOW_ICEFRONT
 C     !LOCAL VARIABLES :
 C     === Local variables ===
-C     I,J,K,bi,bj  :: loop counters
+C     I,J,K,bi,bj      :: loop counters
 C     tLoc, sLoc, pLoc :: local in-situ temperature, salinity, pressure
-C     pICE, thetaICE   :: averaged depth() and temperature of glacier interior
+C     thetaICE         :: averaged temperature of glacier interior
 C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
 C     freshWaterFlux   :: local variable for fresh water melt flux due to
 C                         melting in kg/m^2/s (negative density x melt rate)
-C     convertFW2SaltLoc:: local copy of convertFW2Salt
-C     cFac             :: 1 for conservative form, 0, otherwise
 C     auxiliary variables and abbreviations:
-C     a0, a1, a2, b, c0
+C     a0, b, c0
 C     eps1, eps2, eps3, eps4, eps5, eps6, eps7
 C     aqe, bqe, cqe, discrim, recip_aqe
       INTEGER I,J,K
       INTEGER bi,bj
       _RL tLoc, sLoc, pLoc
-      _RL pICE, thetaICE
+      _RL thetaICE
       _RL thetaFreeze, saltFreeze
-      _RL freshWaterFlux, convertFW2SaltLoc
+      _RL freshWaterFlux
       _RL a0, b, c0
       _RL eps1, eps2, eps3, eps4, eps5, eps6, eps7
-      _RL cFac, rFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
-      _RL tmpFac
 
-      _RS icefrontHeatFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS icefrontHeatFlux(1-olx:sNx+olx,1-oly:sNy+oly,Nr,nSx,nSy)
       _RS icefrontFreshWaterFlux
-     &                     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+     &                    (1-olx:sNx+olx,1-oly:sNy+oly,Nr,nSx,nSy)
 
       _RL SW_TEMP
       EXTERNAL SW_TEMP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     are we doing the conservative form of Jenkins et al. (2001)?
-      cFac = 0. _d 0
-      IF ( ICEFRONTconserve ) cFac = 1. _d 0
-C     with "real fresh water flux" (affecting ETAN), there is more to modify
-      rFac = 1. _d 0
-      IF ( ICEFRONTconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
 C     linear dependence of freezing point on salinity
       a0 = -0.0575   _d  0
       c0 =  0.0901   _d  0
@@ -94,25 +84,27 @@ C     a few abbreviations
       eps2 = rUnit2mass*ICEFRONTlatentHeat*ICEFRONTsaltTransCoeff
       eps3 = rUnit2mass*ICEFRONTheatCapacity_Cp*ICEFRONTsaltTransCoeff
       eps5 = mass2rUnit/HeatCapacity_Cp
+      aqe  = a0  *(-eps1+eps3)
+      recip_aqe = 0.5 _d 0/aqe
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-Olx,sNx+Olx
-          DO K = 1, Nr
+
+        DO K = 1, Nr
+         DO J = 1,sNy
+          DO I = 1,sNx
            icefrontHeatFlux      (I,J,K,bi,bj) = 0. _d 0
            icefrontFreshWaterFlux(I,J,K,bi,bj) = 0. _d 0
-           icefront_TendT        (I,J,K,bi,bj) = 0. _d 0
-           icefront_TendS        (I,J,K,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
+          ENDDO ! I
+         ENDDO ! J
+        ENDDO ! K
+
         DO J = 1, sNy
          DO I = 1, sNx
           IF (ICEFRONTlength(I,J,bi,bj) .GT. 0.D0 ) THEN
            DO K = 1, K_icefront(I,J,bi,bj)
 
-C******  make local copies of temperature, salinity and depth (pressure)
+C     make local copies of temperature, salinity and depth (pressure)
             pLoc = ABS(rC(k))
             tLoc = theta(I,J,K,bi,bj)
             sLoc = MAX(salt(I,J,K,bi,bj), 0. _d 0)
@@ -135,9 +127,6 @@ C     a few abbreviations
             eps7 = eps4 - thetaIce
 
 C     solve quadratic equation to get salinity at icefront-ocean interface
-            aqe = a0  *(-eps1+eps3)
-            recip_aqe = 0. _d 0
-            IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
             bqe = - eps1*eps6 -sLoc*a0*eps3 + eps3*eps7 + eps2
             cqe = -(eps2+eps3*eps7)*sLoc
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
@@ -156,11 +145,12 @@ C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
             icefrontHeatFlux(I,J,K,bi,bj) =
-     &           HeatCapacity_Cp *
+     &           maskC(I,J,K,bi,bj) * HeatCapacity_Cp *
      &           ( -rUnit2mass*ICEFRONTheatTransCoeff + freshWaterFlux)
      &           * ( thetaFreeze - tLoc )
 
-            icefrontFreshWaterFlux(I,J,K,bi,bj) = freshWaterFlux
+            icefrontFreshWaterFlux(I,J,K,bi,bj) =
+     &           maskC(I,J,K,bi,bj) * freshWaterFlux
 
 C--   compute tendencies
             icefront_TendT(i,j,K,bi,bj) =
@@ -186,23 +176,25 @@ C     to partial depth of ice front
      &            * ICEFRONTlength(i,j,bi,bj)
      &            * (ABS(R_icefront(I,J,bi,bj))-ABS(rF(K)))
      &            * recip_drF(K)
-         ENDIF
+            ENDIF
 
-           ENDDO
-          ENDIF
-         ENDDO
+           ENDDO ! K
+          ENDIF ! I
+         ENDDO ! J
         ENDDO
-       ENDDO
-      ENDDO
+        _BARRIER
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
        CALL DIAGNOSTICS_FILL_RS(icefrontFreshWaterFlux,'ICFfwFlx',
-     &      0,Nr,0,1,1,myThid)
+     &      0,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL_RS(icefrontHeatFlux,      'ICFhtFlx',
-     &      0,Nr,0,1,1,myThid)
+     &      0,Nr,1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+       ENDDO ! bi
+      ENDDO ! bj
 
 #endif /* ALLOW_ICEFRONT */
       RETURN

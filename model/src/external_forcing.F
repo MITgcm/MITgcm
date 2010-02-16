@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.55 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.56 2010/02/16 21:25:22 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -347,9 +347,9 @@ C     Add heat in top-layer
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
-      IF ( useICEFRONT ) CALL ICEFRONT_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+      IF ( useICEFRONT )
+     &     CALL ICEFRONT_TENDENCY_APPLY_T(
+     &     bi,bj, kLev, myTime, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef SHORTWAVE_HEATING
@@ -532,9 +532,9 @@ C     Add fresh-water in top-layer
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
-      IF ( useICEFRONT ) CALL ICEFRONT_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+      IF ( useICEFRONT )
+     &     CALL ICEFRONT_TENDENCY_APPLY_S(
+     &     bi,bj, kLev, myTime, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME

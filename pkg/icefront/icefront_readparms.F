@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.3 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.4 2010/02/16 21:25:22 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -44,7 +44,6 @@ CEOP
      &     rhoIcefront, ICEFRONTkappa,
      &     ICEFRONTlatentHeat, ICEFRONTHeatCapacity_Cp,
      &     ICEFRONTthetaSurface,
-     &     ICEFRONTconserve,
      &     applyIcefrontTendT,applyIcefrontTendS,
      &     ICEFRONTdepthFile, ICEFRONTlengthFile
 
@@ -78,7 +77,6 @@ C Default values when SHELFICE is not used
       ENDIF
 
       recip_ICEFRONTlatentHeat =    0.0 _d 0
-      ICEFRONTconserve         = .FALSE.
       ICEFRONTsaltTransCoeff   = UNSET_RL
       ICEFRONTlengthFile       = ' '
       ICEFRONTdepthFile        = ' '

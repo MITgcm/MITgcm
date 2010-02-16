@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.2 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.3 2010/02/16 21:25:22 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -13,12 +13,11 @@ C !ROUTINE: ICEFRONT_TENDENCY_APPLY_T
 
 C !INTERFACE:
       SUBROUTINE ICEFRONT_TENDENCY_APPLY_T(
-     &                     iMin, iMax, jMin, jMax,
      &                     bi, bj, k, myTime, myThid )
 
 C     !DESCRIPTION:
-C     Add icefront tendency terms to T (theta) tendency.  Routine works
-C     for one level at a time
+C     Add icefront tendency terms to T (theta) tendency.
+C     Routine works for one level at a time.
 
 C     !USES:
       IMPLICIT NONE
@@ -29,7 +28,7 @@ C     !USES:
 #include "ICEFRONT.h"
 
 C     !INPUT PARAMETERS:
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
+      INTEGER k, bi, bj, myThid
       _RL myTime
 CEOP
 
@@ -56,12 +55,11 @@ C !ROUTINE: ICEFRONT_TENDENCY_APPLY_S
 
 C !INTERFACE:
       SUBROUTINE ICEFRONT_TENDENCY_APPLY_S(
-     &                     iMin, iMax, jMin, jMax,
      &                     bi, bj, k, myTime, myThid )
 
 C     !DESCRIPTION:
-C     Add icefront tendency terms to S tendency.  Routine works for one
-C     level at a time
+C     Add icefront tendency terms to S tendency.
+C     Routine works for one level at a time.
 
 C     !INPUT PARAMETERS:
       IMPLICIT NONE
@@ -72,7 +70,7 @@ C     !INPUT PARAMETERS:
 #include "ICEFRONT.h"
 
 C     !INPUT PARAMETERS:
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
+      INTEGER k, bi, bj, myThid
       _RL myTime
 CEOP
 

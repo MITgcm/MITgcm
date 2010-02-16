@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.5 2010/02/11 23:14:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.6 2010/02/16 21:25:22 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -28,8 +28,6 @@ C                                 heat flux into icefront (m/s)
 C     ICEFRONTsaltTransCoeff   - salinity transfer coefficient that determines
 C                                salt flux into icefront (m/s)
 C     ICEFRONTlatentHeat       - latent heat of fusion (J/kg)
-C     ICEFRONTconserve         - use conservative form of H&O-thermodynamics 
-C                                following Jenkins et al. (2001, JPO)
 C     applyIcefrontTendT/S     -  
 C
 C--   Fields
@@ -65,22 +63,20 @@ CEOP
       COMMON /ICEFRONT_FIELDS_RL/ 
      &     icefront_TendT,
      &     icefront_TendS
-      _RL icefront_TendT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL icefront_TendS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icefront_TendT (1:sNx,1:sNy,Nr,nSx,nSy)
+      _RL icefront_TendS (1:sNx,1:sNy,Nr,nSx,nSy)
 
       COMMON /ICEFRONT_FIELDS_RS/ 
      &     R_icefront,
      &     icefrontlength
-      _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       
       LOGICAL ICEFRONTisOn
-      LOGICAL ICEFRONTconserve
       LOGICAL applyIcefrontTendT
       LOGICAL applyIcefrontTendS
       COMMON /ICEFRONT_PARMS_L/
      &     ICEFRONTisOn,
-     &     ICEFRONTconserve,
      &     applyIcefrontTendT,
      &     applyIcefrontTendS
 
