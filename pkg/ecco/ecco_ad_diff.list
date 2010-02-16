@@ -15,6 +15,7 @@ cost_driftw.f
 cost_generic.f
 cost_forcing.f                  
 cost_forcing_gen.f
+cost_usercost_all.f
 cost_gencost_all.f
 cost_gencost_assignperiod.f
 cost_gencost_customize.f

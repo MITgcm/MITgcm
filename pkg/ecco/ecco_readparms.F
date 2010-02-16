@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.45 2010/02/06 11:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.46 2010/02/16 23:33:37 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -88,6 +88,7 @@ c--   Read the namelist input.
      &                   geoid_errfile, geoid_covariancefile,
      &                   bottomdrag_errfile,edtau_errfile,
      &                   kapgm_errfile,kapredi_errfile,diffkr_errfile,
+     &                   usercost_datafile, usercost_errfile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh,
@@ -111,7 +112,7 @@ c--   Read the namelist input.
      &                   mult_curmtr, mult_ageos,
      &                   mult_kapgm, mult_kapredi, mult_diffkr,
      &                   mult_edtau, mult_bottomdrag,
-     &                   mult_transp,
+     &                   mult_usercost, mult_transp,
      &                   mult_smooth_ic, mult_smooth_bc,
      &                   whflux0, wsflux0, wtau0,
      &                   wbottomdrag0,
@@ -247,6 +248,10 @@ c--     Set default values.
         kapgm_errfile         =    ' '
         kapredi_errfile       =    ' '
         diffkr_errfile        =    ' '
+        do k=1,NUSERCOST
+         usercost_datafile(k)  =    ' '
+         usercost_errfile(k)   =    ' '
+        enddo
         do k=1,NSSHV4COST
          sshv4cost_errfile(k) =    ' '
          sshv4cost_errfactor(k)=     1. _d 0
@@ -311,6 +316,9 @@ c--     Set default values.
         mult_diffkr           =      0. _d 0
         mult_edtau            =      0. _d 0
         mult_bottomdrag       =      0. _d 0
+        do k=1,NUSERCOST
+        mult_usercost(k)       =      0. _d 0
+        enddo
         do k=1,NSSHV4COST
         mult_sshv4cost(k)       =      0. _d 0
         enddo

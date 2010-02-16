@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.45 2010/02/16 02:08:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.46 2010/02/16 23:33:37 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -36,6 +36,11 @@ c     Number of sshv4cost Cost terms:
 c     =============================
       INTEGER NSSHV4COST
       PARAMETER ( NSSHV4COST=5 )
+
+c     Number of User Cost terms:
+c     =============================
+      INTEGER NUSERCOST
+      PARAMETER ( NUSERCOST=10 )
 
 c     Number of days: (hard-coded to set up some vector dimensions
 c     =============================
@@ -364,6 +369,7 @@ c     objf_ctdsclim - Salinity measurements from Woce CTD without timetag
 c     objf_xbt   - XBT temperature data
 c     objf_argot - ARGO temperature profiles
 c     objf_argos - ARGO salt profiles
+c     objf_usercost - user defined cost contribution
 c     objf_scatxm - time-mean zonal SCAT  contribution
 c     objf_scatym - time-mean meridional SCAT  contribution
 c     objf_scatx  - zonal SCAT  contribution
@@ -392,6 +398,7 @@ c                  function contributions.
      &     objf_temp0smoo, objf_salt0smoo,
      &     objf_sst, objf_tmi, objf_sss,
      &     objf_bp,
+     &     objf_usercost,
      &     objf_ctdt,      objf_ctds,
      &     objf_ctdtclim,  objf_ctdsclim,
      &     objf_xbt, objf_argot,     objf_argos,
@@ -458,6 +465,7 @@ c                  function contributions.
       _RL  objf_ctdsclim (nsx,nsy)
       _RL  objf_xbt  (nsx,nsy)
       _RL  objf_argot(nsx,nsy)
+      _RL  objf_usercost(NUSERCOST,nsx,nsy)
       _RL  objf_argos(nsx,nsy)
       _RL  objf_drift(nsx,nsy)
       _RL  objf_tdrift(nsx,nsy)
@@ -554,6 +562,7 @@ c                  function contributions.
      &                num_xbt,
      &                num_argot,
      &                num_argos,
+     &                num_usercost,
      &                num_drift,
      &                num_tdrift,
      &                num_sdrift,
@@ -635,6 +644,7 @@ c                  function contributions.
       _RL  num_xbt  (nsx,nsy)
       _RL  num_argot(nsx,nsy)
       _RL  num_argos(nsx,nsy)
+      _RL  num_usercost(NUSERCOST,nsx,nsy)
       _RL  num_drift(nsx,nsy)
       _RL  num_tdrift(nsx,nsy)
       _RL  num_sdrift(nsx,nsy)
@@ -713,6 +723,7 @@ c                  function contributions.
      &                    mult_xbt,
      &                    mult_argot,
      &                    mult_argos,
+     &                    mult_usercost,
      &                    mult_drift,
      &                    mult_tdrift,
      &                    mult_sdrift,
@@ -775,6 +786,7 @@ c                  function contributions.
       _RL  mult_xbt
       _RL  mult_argot
       _RL  mult_argos
+      _RL  mult_usercost(NUSERCOST)
       _RL  mult_drift
       _RL  mult_tdrift
       _RL  mult_sdrift
@@ -905,6 +917,7 @@ c     velerrfile            - representation error
      &                kapredi_errfile,
      &                diffkr_errfile,
      &                bottomdrag_errfile,
+     &                usercost_errfile,
      &                uwind_errfile,
      &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
@@ -955,6 +968,7 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) kapredi_errfile
       character*(MAX_LEN_FNAM) diffkr_errfile
       character*(MAX_LEN_FNAM) bottomdrag_errfile
+      character*(MAX_LEN_FNAM) usercost_errfile(NUSERCOST)
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
@@ -1304,6 +1318,7 @@ c     driftfile     - reference data file for drifter's mean velocities
      &                     argosfile,
      &                     udriftfile,
      &                     vdriftfile,
+     &                     usercost_datafile,
      &                     curmtrufile,
      &                     curmtrvfile
 
@@ -1327,6 +1342,7 @@ c     driftfile     - reference data file for drifter's mean velocities
       character*(MAX_LEN_FNAM) argotfile
       character*(MAX_LEN_FNAM) argosfile
       character*(MAX_LEN_FNAM) argofile
+      character*(MAX_LEN_FNAM) usercost_datafile(NUSERCOST)
       character*(MAX_LEN_FNAM) udriftfile
       character*(MAX_LEN_FNAM) vdriftfile
       character*(MAX_LEN_FNAM) curmtrufile

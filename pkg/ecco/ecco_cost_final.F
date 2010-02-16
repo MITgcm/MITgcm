@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.44 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.45 2010/02/16 23:33:38 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -84,6 +84,7 @@ c     == local variables ==
       _RL f_eddytau, f_bottomdrag
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_gencost(NGENCOST)
+      _RL f_usercost(NUSERCOST)
       _RL f_sshv4cost(NSSHV4COST)
       _RL f_transp
 
@@ -108,6 +109,7 @@ c     == local variables ==
       _RL no_hmean
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_gencost(NGENCOST)
+      _RL no_usercost(NUSERCOST)
       _RL no_sshv4cost(NSSHV4COST)
       _RL no_transp
 
@@ -221,6 +223,11 @@ c     == end of interface ==
         f_gencost(num_var)= 0. _d 0
        enddo
 #endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+        f_usercost(num_var)= 0. _d 0
+       enddo
+#endif
 #ifdef ALLOW_SSHV4_COST
        do num_var=1,NSSHV4COST
         f_sshv4cost(num_var)= 0. _d 0
@@ -302,6 +309,11 @@ c     == end of interface ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         no_gencost(num_var)= 0. _d 0
+       enddo
+#endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+        no_usercost(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST
@@ -393,6 +405,13 @@ c--   Sum up all contributions.
           fc = fc
      &            + mult_gencost(num_var)
      &            *objf_gencost(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+          fc = fc
+     &            + mult_usercost(num_var)
+     &            *objf_usercost(num_var,bi,bj)
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST
@@ -490,6 +509,12 @@ c--   Sum up all contributions.
      &            +objf_gencost(bi,bj,num_var)
        enddo
 #endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+          f_usercost(num_var)=f_usercost(num_var)
+     &            +objf_usercost(num_var,bi,bj)
+       enddo
+#endif
 #ifdef ALLOW_SSHV4_COST
        do num_var=1,NSSHV4COST
           f_sshv4cost(num_var)=f_sshv4cost(num_var)
@@ -566,6 +591,12 @@ c--   Sum up all contributions.
        do num_var=1,NGENCOST
           no_gencost(num_var)=no_gencost(num_var)
      &            +num_gencost(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+          no_usercost(num_var)=no_usercost(num_var)
+     &            +num_usercost(num_var,bi,bj)
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST
@@ -670,6 +701,11 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
        enddo
 #endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+        _GLOBAL_SUM_RL(f_usercost(num_var), myThid )
+       enddo
+#endif
 #ifdef ALLOW_SSHV4_COST
        do num_var=1,NSSHV4COST
         _GLOBAL_SUM_RL(f_sshv4cost(num_var), myThid )
@@ -747,6 +783,11 @@ c--   Do global summation for each part of the cost function
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         _GLOBAL_SUM_RL(no_gencost(num_var), myThid )
+       enddo
+#endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+        _GLOBAL_SUM_RL(no_usercost(num_var), myThid )
        enddo
 #endif
 #ifdef ALLOW_SSHV4_COST
@@ -919,6 +960,15 @@ c--   Do global summation for each part of the cost function
         if (no_gencost(num_var).GT.0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_gencost =',f_gencost(num_var),
+     &      num_var
+        endif
+       enddo
+#endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+        if (no_usercost(num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_usercost =',f_usercost(num_var),
      &      num_var
         endif
        enddo
@@ -1153,6 +1203,16 @@ cph)
      &    'gencost', num_var, ' = ',
      &    f_gencost(num_var),
      &    no_gencost(num_var)
+         endif
+       enddo
+#endif
+#ifdef ALLOW_USERCOST_CONTRIBUTION
+       do num_var=1,NUSERCOST
+        if (no_usercost(num_var).GT.0) then
+         write(ifc,'(A,i2.0,A,2D22.15)')
+     &    'usercost', num_var, ' = ',
+     &    f_usercost(num_var),
+     &    no_usercost(num_var)
          endif
        enddo
 #endif
