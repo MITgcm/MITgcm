@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1227 2010/02/16 23:24:22 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1228 2010/02/16 23:39:26 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco
+  - allow user defined cost function contributions
+	CPP: ALLOW_USERCOST_CONTRIBUTION
+	USAGE: compute contributions in cost_usercost_all.F
+  - note: this is identical to what ALLOW_GENCOST_CONTRIBUTION once was.
+      the two options are complementary.
 o pkg/smooth
   - migration from contrib to the main repository
 checkpoint62b (2010/01/26)
