@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.146 2009/11/23 16:15:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.147 2010/02/17 00:21:07 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -315,6 +315,10 @@ C--   Input files
       checkIniTemp    = .TRUE.
       checkIniSalt    = .TRUE.
       diffKrFile      = ' '
+      viscAhDfile     = ' '
+      viscAhZfile     = ' '
+      viscA4Dfile     = ' '
+      viscA4Zfile     = ' '
       zonalWindFile   = ' '
       meridWindFile   = ' '
       thetaClimFile   = ' '

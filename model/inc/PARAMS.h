@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.235 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.236 2010/02/17 00:21:32 gforget Exp $
 C $Name:  $
 C
 
@@ -51,6 +51,10 @@ C                        for potential temperature.
 C     hydrogSaltFile  :: File containing initial hydrographic data (3-D)
 C                        for salinity.
 C     diffKrFile      :: File containing 3D specification of vertical diffusivity
+C     viscAhDfile     :: File containing 3D specification of horizontal viscosity
+C     viscAhZfile     :: File containing 3D specification of horizontal viscosity
+C     viscA4Dfile     :: File containing 3D specification of horizontal viscosity
+C     viscA4Zfile     :: File containing 3D specification of horizontal viscosity
 C     zonalWindFile   :: File containing zonal wind data
 C     meridWindFile   :: File containing meridional wind data
 C     thetaClimFile   :: File containing surface theta climataology used
@@ -78,6 +82,8 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                delRFile, delRcFile,
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile,
+     &                viscAhDfile, viscAhZfile, 
+     &                viscA4Dfile, viscA4Zfile, 
      &                hydrogThetaFile, hydrogSaltFile, diffKrFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile,
@@ -103,6 +109,10 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile, hydrogSaltFile
       CHARACTER*(MAX_LEN_FNAM) diffKrFile
+      CHARACTER*(MAX_LEN_FNAM) viscAhDfile
+      CHARACTER*(MAX_LEN_FNAM) viscAhZfile
+      CHARACTER*(MAX_LEN_FNAM) viscA4Dfile
+      CHARACTER*(MAX_LEN_FNAM) viscA4Zfile
       CHARACTER*(MAX_LEN_FNAM) zonalWindFile
       CHARACTER*(MAX_LEN_FNAM) meridWindFile
       CHARACTER*(MAX_LEN_FNAM) thetaClimFile

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.228 2009/12/08 00:31:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.229 2010/02/17 00:21:07 gforget Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -260,8 +260,8 @@ C--   Gridding parameters
 
 C--   Input files
       NAMELIST /PARM05/
-     & bathyFile, topoFile, shelfIceFile,
-     & diffKrFile,
+     & bathyFile, topoFile, shelfIceFile, diffKrFile,
+     & viscAhDfile, viscAhZfile, viscA4Dfile, viscA4Zfile,
      & hydrogThetaFile, hydrogSaltFile,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
      & zonalWindFile, meridWindFile,

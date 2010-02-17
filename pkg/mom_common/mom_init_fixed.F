@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.7 2009/09/17 21:16:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.8 2010/02/17 00:21:35 gforget Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -22,6 +22,9 @@ C     !USES:
 #include "GRID.h"
 #include "SURFACE.h"
 #include "MOM_VISC.h"
+#if defined (ALLOW_3D_VISCAH) || defined (ALLOW_3D_VISCA4)
+#include "DYNVARS.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -113,6 +116,27 @@ C-    used for side-drag:
          ENDDO
         ENDDO
        ENDDO
+
+#ifdef ALLOW_3D_VISCAH
+       IF ( viscAhDfile .NE. ' ' ) THEN
+          CALL READ_FLD_XYZ_RL(viscAhDfile,' ',viscAhDfld,0,myThid)
+          CALL EXCH_3D_RL( viscAhDfld, Nr, myThid )
+       ENDIF
+       IF ( viscAhZfile .NE. ' ' ) THEN
+          CALL READ_FLD_XYZ_RL(viscAhZfile,' ',viscAhZfld,0,myThid)
+          CALL EXCH_Z_3D_RL( viscAhZfld, Nr, myThid )
+       ENDIF
+#endif
+#ifdef ALLOW_3D_VISCA4
+       IF ( viscA4Dfile .NE. ' ' ) THEN
+          CALL READ_FLD_XYZ_RL(viscA4Dfile,' ',viscA4Dfld,0,myThid)
+          CALL EXCH_3D_RL( viscA4Dfld, Nr, myThid )
+       ENDIF
+       IF ( viscA4Zfile .NE. ' ' ) THEN
+          CALL READ_FLD_XYZ_RL(viscA4Zfile,' ',viscA4Zfld,0,myThid)
+          CALL EXCH_Z_3D_RL( viscA4Zfld, Nr, myThid )
+       ENDIF
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

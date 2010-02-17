@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.42 2009/12/08 21:43:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.43 2010/02/17 00:21:35 gforget Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -82,6 +82,9 @@ C     == Global variables ==
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 #include "MOM_VISC.h"
+#if defined (ALLOW_3D_VISCAH) || defined (ALLOW_3D_VISCA4)
+#include "DYNVARS.h"
+#endif
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
@@ -163,6 +166,14 @@ C--   Set flags which are used in this S/R and elsewhere :
      &  .OR.(viscC4leithD.NE.0.)
      &  .OR.(viscC2smag.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
+#ifdef ALLOW_3D_VISCAH
+     &  .OR.( viscAhDfile .NE. ' ' )
+     &  .OR.( viscAhZfile .NE. ' ' )
+#endif
+#ifdef ALLOW_3D_VISCA4
+     &  .OR.( viscA4Dfile .NE. ' ' )
+     &  .OR.( viscA4Zfile .NE. ' ' )
+#endif
 
       harmonic=
      &      (viscAh.NE.0.)
@@ -172,6 +183,10 @@ C--   Set flags which are used in this S/R and elsewhere :
      &  .OR.(viscC2leith.NE.0.)
      &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC2smag.NE.0.)
+#ifdef ALLOW_3D_VISCAH
+     &  .OR.( viscAhDfile .NE. ' ' )
+     &  .OR.( viscAhZfile .NE. ' ' )
+#endif
 
       biharmonic=
      &      (viscA4.NE.0.)
@@ -181,6 +196,10 @@ C--   Set flags which are used in this S/R and elsewhere :
      &  .OR.(viscC4leith.NE.0.)
      &  .OR.(viscC4leithD.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
+#ifdef ALLOW_3D_VISCA4
+     &  .OR.( viscA4Dfile .NE. ' ' )
+     &  .OR.( viscA4Zfile .NE. ' ' )
+#endif
 
       IF (useVariableViscosity) THEN
 C---- variable viscosity :
@@ -424,6 +443,9 @@ c This approximation is good to the same order as above...
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
      &          +viscAh_DLth(i,j)+viscAh_DSmg(i,j)
+#ifdef ALLOW_3D_VISCAH
+     &          +viscAhDfld(i,j,k,bi,bj)
+#endif
          viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
          viscAh_DMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
@@ -432,6 +454,9 @@ C  Harmonic on Div.u points
 C  BiHarmonic on Div.u points
          Alin=viscA4D+viscA4Grid*L4rdt
      &          +viscA4_DLth(i,j)+viscA4_DSmg(i,j)
+#ifdef ALLOW_3D_VISCA4
+     &          +viscA4Dfld(i,j,k,bi,bj)
+#endif   
          viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
          viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
@@ -550,6 +575,9 @@ C but this approximation will work on cube (and differs by 4X)
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
      &           +viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
+#ifdef ALLOW_3D_VISCAH         
+     &          +viscAhZfld(i,j,k,bi,bj)
+#endif         
          viscAh_ZMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_Z(i,j)=MAX(viscAh_ZMin(i,j),Alin)
          viscAh_ZMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
@@ -558,6 +586,9 @@ C  Harmonic on Zeta points
 C  BiHarmonic on Zeta points
          Alin=viscA4Z+viscA4Grid*L4rdt
      &           +viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
+#ifdef ALLOW_3D_VISCA4
+     &          +viscA4Zfld(i,j,k,bi,bj)
+#endif   
          viscA4_ZMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)
          viscA4_ZMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
