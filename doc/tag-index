@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1229 2010/02/16 23:58:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1230 2010/02/17 00:54:35 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src model/inc and pkg/mom_common
+   ALLOW_3D_VISCAH/ALLOW_3D_VISCA4 => 3D specification of Viscosity
+   => addition to the viscosity field as computed by others schemes
 o tools/build_options: 
   - rename "_generic_mpi" -> "+mpi_generic" (like other "+mpi" optfile)
     but keep the former optfile for few weeks for smooth transition
