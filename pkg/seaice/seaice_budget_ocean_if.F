@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ocean_if.F,v 1.1 2008/03/27 19:53:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ocean_if.F,v 1.2 2010/02/17 08:16:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -28,6 +28,10 @@ C     === Global variables ===
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
 #include "DYNVARS.h"
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_FIELDS.h"
+#endif
 
 C     === Routine arguments ===
 C     INPUT:
