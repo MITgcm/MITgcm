@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.8 2009/07/29 14:24:04 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.9 2010/02/17 21:16:12 gforget Exp $
 C $Name:  $
 c
 c
@@ -254,28 +254,25 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
 #endif
 
 #ifdef ALLOW_ICE_AREAMASK
-      COMMON /exf_ice_areamask_r/ areamask, lambda_areamask,
+      COMMON /exf_ice_areamask_r/ areamask,
      &                        areamask0, areamask1
       _RL areamask       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL lambda_areamask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areamask0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areamask1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
-      COMMON /exf_clim_sst_r/ climsst, lambda_climsst,
+      COMMON /exf_clim_sst_r/ climsst,
      &                        climsst0, climsst1
       _RL climsst       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL lambda_climsst(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climsst0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climsst1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
-      COMMON /exf_clim_sss_r/ climsss, lambda_climsss,
+      COMMON /exf_clim_sss_r/ climsss,
      &                        climsss0, climsss1
       _RL climsss       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL lambda_climsss(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climsss0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climsss1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif

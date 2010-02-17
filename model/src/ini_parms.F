@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.229 2010/02/17 00:21:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.230 2010/02/17 21:16:10 gforget Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1317,6 +1317,28 @@ C     Check for retired parameters still being used
      &  'substitute "SHELFICEtopoFile" in data.shelfice'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
+
+C     Check for relaxation term:
+       IF ( (tauThetaClimRelax.GT.0.).AND.
+     &      (thetaClimFile.EQ.' ') ) THEN
+         WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: tauThetaClimRelax > 0 but'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: thetaClimFile is undefined'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
+       IF ( (tauSaltClimRelax.GT.0.).AND.
+     &      (saltClimFile.EQ.' ') ) THEN
+         WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: tauSaltClimRelax > 0 but'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: saltClimFile is undefined'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
 
 C--   Set Units conversion factor required to incorporate
 C     surface forcing into z-p isomorphic equations:

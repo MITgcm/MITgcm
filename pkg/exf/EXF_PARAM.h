@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.13 2009/06/26 20:53:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.14 2010/02/17 21:16:12 gforget Exp $
 C $Name:  $
 c
 c
@@ -231,6 +231,7 @@ c     data values
       integer areamaskstartdate2
       _RL     areamaskstartdate
       _RL     areamaskperiod
+      _RL     areamaskTauRelax
       _RL     areamaskconst
       _RL     areamask_exfremo_intercept
       _RL     areamask_exfremo_slope
@@ -242,6 +243,7 @@ c     Calendar data.
       integer climsststartdate2
       _RL     climsststartdate
       _RL     climsstperiod
+      _RL     climsstTauRelax
       _RL     climsstconst
       _RL     climsst_exfremo_intercept 
       _RL     climsst_exfremo_slope
@@ -252,6 +254,7 @@ c     Calendar data.
       integer climsssstartdate2
       _RL     climsssstartdate
       _RL     climsssperiod
+      _RL     climsssTauRelax
       _RL     climsssconst
       _RL     climsss_exfremo_intercept 
       _RL     climsss_exfremo_slope
@@ -433,6 +436,7 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
      &                     swdownconst,
      &                     lwdownconst,
      &                     apressureconst,
+     &                     areamaskTauRelax,
      &                     areamaskconst
 
       common /exf_param_trend_removal/
@@ -508,6 +512,7 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
      &                        climtempfreeze,
      &                        climsstperiod,      climsststartdate,
      &                        climsssperiod,      climsssstartdate,
+     &                        climsstTauRelax,    climsssTauRelax,
      &                        climsstconst,       climsssconst,
      &     climsst_exfremo_intercept, climsst_exfremo_slope,
      &     climsss_exfremo_intercept, climsss_exfremo_slope,

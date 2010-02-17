@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.55 2009/06/26 20:53:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.56 2010/02/17 21:16:12 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -111,7 +111,8 @@ c     Surface flux data.
      &apressurestartdate1,apressurestartdate2,apressureperiod,
      &  areamaskstartdate1,areamaskstartdate2,areamaskperiod,
      &  climsststartdate1,  climsststartdate2, climsstperiod,
-     &  climsssstartdate1,  climsssstartdate2, climsssperiod
+     &  climsssstartdate1,  climsssstartdate2, climsssperiod,
+     &   areamaskTauRelax, climsstTauRelax, climsssTauRelax
 
       NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
@@ -387,6 +388,7 @@ c     Calendar data.
       areamaskstartdate1    = 0
       areamaskstartdate2    = 0
       areamaskperiod        = 0.0 _d 0
+      areamaskTauRelax      = 0.0 _d 0
       areamaskconst         = 0.0 _d 0
       areamask_exfremo_intercept = 0. _d 0
       areamask_exfremo_slope = 0. _d 0
@@ -394,6 +396,7 @@ c     Calendar data.
       climsststartdate1  = 0
       climsststartdate2  = 0
       climsstperiod      = 0
+      climsstTauRelax    = 0.0 _d 0
       climsstconst         = 0.0 _d 0
       climsst_exfremo_intercept = 0.0 _d 0
       climsst_exfremo_slope = 0.0 _d 0
@@ -401,6 +404,7 @@ c     Calendar data.
       climsssstartdate1  = 0
       climsssstartdate2  = 0
       climsssperiod      = 0
+      climsssTauRelax    = 0.0 _d 0
       climsssconst         = 0.0 _d 0
       climsss_exfremo_intercept = 0.0 _d 0
       climsss_exfremo_slope = 0.0 _d 0
@@ -757,6 +761,75 @@ C--   Derive other parameters:
 #else
       stressIsOnCgrid = readStressOnCgrid
 #endif
+
+#ifdef ALLOW_CLIMSST_RELAXATION
+cgf warning before we overwrite tauThetaClimRelax/thetaClimFile:
+      if ( (tauThetaClimRelax.NE.0.).AND.
+     &     (climsstTauRelax.NE.0.) ) then
+        WRITE(msgBuf,'(2A)') '***WARNING***',
+     &   ' useEXF implies that tauThetaClimRelax and '
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)') '***WARNING***',
+     &   'thetaClimFile from "data" file are overwritten'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+      endif
+cgf overwrite doThetaClimRelax based on data.exf:
+      if ( climsstTauRelax.NE.0.) then
+        if (climsstfile.EQ.' ') then
+           WRITE(msgBuf,'(A)')
+     &     'S/R EXF_READPARMS: climsstTauRelax > 0 but'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(A)')
+     &     'S/R EXF_READPARMS: climsstfile is undefined'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R EXF_READPARMS'
+        else
+           doThetaClimRelax=.TRUE.
+        endif
+      else
+           doThetaClimRelax=.FALSE.
+      endif
+cgf overwrite tauThetaClimRelax/thetaClimFile:
+      tauThetaClimRelax=climsstTauRelax
+      thetaClimFile=' '
+#endif
+
+#ifdef ALLOW_CLIMSSS_RELAXATION
+cgf warning before we overwrite tauSaltClimRelax/saltClimFile:
+      if ( (tauSaltClimRelax.NE.0.).AND.
+     &     (climsssTauRelax.NE.0.) ) then
+        WRITE(msgBuf,'(2A)') '***WARNING***',
+     &   ' useEXF implies that tauSaltClimRelax and '
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)') '***WARNING***',
+     &   'saltClimFile from "data" file are overwritten'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+      endif
+cgf overwrite doSaltClimRelax based on data.exf:
+      if ( climsssTauRelax.NE.0.) then
+        if (climsssfile.EQ.' ') then
+           WRITE(msgBuf,'(A)')
+     &     'S/R EXF_READPARMS: climsssTauRelax > 0 but'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(A)')
+     &     'S/R EXF_READPARMS: climsssfile is undefined'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R EXF_READPARMS'
+        else
+           doSaltClimRelax=.TRUE.
+        endif
+      else
+           doSaltClimRelax=.FALSE.
+      endif
+cgf overwrite tauSaltClimRelax/saltClimFile:
+      tauSaltClimRelax=climsssTauRelax
+      saltClimFile=' '
+#endif
+
 
       CALL EXF_CHECK( myThid )
 
