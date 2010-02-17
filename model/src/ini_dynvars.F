@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.22 2010/02/17 00:21:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.23 2010/02/17 23:39:32 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,17 +78,6 @@ C-      3D arrays
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
 #ifdef ALLOW_ADDFLUID
            addMass(I,J,K,bi,bj) = 0. _d 0
-#endif
-#ifdef ALLOW_3D_VISCAH
-           viscAhDfld(I,J,K,bi,bj) = 0. _d 0
-           viscAhZfld(I,J,K,bi,bj) = 0. _d 0
-#endif
-#ifdef ALLOW_3D_VISCA4           
-           viscA4Dfld(I,J,K,bi,bj) = 0. _d 0
-           viscA4Zfld(I,J,K,bi,bj) = 0. _d 0
-#endif          
-#ifdef ALLOW_3D_DIFFKR
-            diffKr(I,J,K,bi,bj) = 0. _d 0
 #endif
           ENDDO
          ENDDO
