@@ -62,10 +62,6 @@
  taveFreq=   311040000.,
  taveFreq=   864000.,
  monitorFreq=1.,
-# 2 months restoring timescale for temperature
- tauThetaClimRelax =  5184000.0,
-# 6 months restoring timescale for salinity
- tauSaltClimRelax = 15552000.0,
  &
 
 # Gridding parameters

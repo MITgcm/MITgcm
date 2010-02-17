@@ -112,8 +112,6 @@
  chkptFreq= 0.,
  dumpFreq = 0.,
  tavefreq = 36000.,
- tauSaltClimRelax = 4142330.,
- tauThetaClimRelax = 0.,
  monitorFreq=1.,
  adjMonitorFreq=1.,
  adjDumpFreq=1.,

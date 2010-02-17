@@ -91,7 +91,6 @@
  deltaTmom=3600.0,
  cAdjFreq=0.,
  abEps=0.1,
- tauSaltClimRelax = 4142330.,
  forcing_In_AB = .FALSE.,
  dumpInitAndLast=.FALSE.,
  monitorFreq = 0.,

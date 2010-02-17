@@ -93,8 +93,6 @@
  tavefreq = 5184000.,
  monitorFreq=864000.,
 # adjDumpFreq=86400.,
- tauSaltClimRelax = 4142330.,
- tauThetaClimRelax = 0.,
  &
 
 # Gridding parameters

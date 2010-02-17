@@ -30,10 +30,14 @@
  climsststartdate1  = 19910116,
  climsststartdate2  = 000000,
  climsstperiod      = 2592000.0,
+# 2 months restoring timescale for temperature
+ climsstTauRelax         = 5184000.0,
 #
  climsssstartdate1  = 19910116,
  climsssstartdate2  = 000000,
  climsssperiod      = 2592000.0,
+# 6 months restoring timescale for salinity
+ climsssTauRelax         = 15552000.0,
 #
  hfluxfile    = 'ncep_qnet.bin',
 # sfluxfile    = 'ncep_emp.bin',

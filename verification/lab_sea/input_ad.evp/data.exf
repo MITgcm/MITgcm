@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad.evp/Attic/data.exf,v 1.1 2009/11/27 15:04:34 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad.evp/Attic/data.exf,v 1.2 2010/02/17 21:10:30 gforget Exp $
 #
 # *********************
 # External Forcing Data
@@ -74,10 +74,12 @@
  climsststartdate1  = 19781216,
  climsststartdate2  = 180000,
  climsstperiod      = 2635200.0,
+ climsstTauRelax    = 0.0,
 #
  climsssstartdate1  = 19781216,
  climsssstartdate2  = 180000,
  climsssperiod      = 2635200.0,
+ climsssTauRelax    = 4142330.0,
 #
  hfluxfile         = ' ',
  sfluxfile         = ' ',
