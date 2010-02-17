@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.4 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.5 2010/02/17 20:31:23 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -42,14 +42,14 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'ICFfwFlx'
-      diagTitle = 'Ice shelf fresh water flux (positive upward)'
+      diagTitle = 'Ice front freshwater flux (+ve increases ocean salt)'
       diagUnits = 'kg/m^2/s        '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'ICFhtFlx'
-      diagTitle = 'Ice shelf heat flux  (positive upward)'
+      diagTitle = 'Ice front heat flux  (+ve cools ocean)'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

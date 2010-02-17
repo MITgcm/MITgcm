@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.6 2010/02/16 21:25:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.7 2010/02/17 20:31:23 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -34,8 +34,6 @@ C--   Fields
 C     K_icefront             - # of icefront model levels at every horizontal location (2D)
 C     R_icefront             - icefront depth [m] (2D)
 C     icefrontlength         - icefront horizontal length divided by grid cell area [m/m^2] (2D)
-C     icefrontHeatFlux       - outward heat flux, +ve cools the ocean [W/m^2]
-C     icefrontFreshWaterFlux - outward fresh water flux, +ve increases ocean salinity [m/s]
 C     icefront_TendT         - temperature tendency (Kelvin/s)
 C     icefront_TendS         - salinity tendency (psu/s)
 C-----------------------------------------------------------------------
