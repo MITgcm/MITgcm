@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sn9735_craysv1_f90,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+#  Tested on hermes.casaccia.enea.it
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+BASH='/bin/sh'
+
+FC='f90'
+LINK='f90'
+CPP='/opt/ctl/bin/cpp -N -P'
+FOPTIM='-O0'
+NOOPTFLAGS='-O0'

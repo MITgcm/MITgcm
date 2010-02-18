@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_ifc,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#  $Name:  $
+#
+
+FC=ifc
+CC=gcc
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+INCLUDES='-I/usr/include/netcdf'
+LIBS='-lPEPCF90'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+else
+#   FOPTIM='-O0 -noalign'
+    FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
+#   FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW'
+    NOOPTFILES=$NOOPTFILES' fizhi_turb.F'
+fi
+
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
+

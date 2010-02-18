@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/irix64+mpi,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+INCLUDES='-I/usr/local/mpi/include'
+FC='mpif77'
+LINK='mpif77'
+FFLAGS='-extend_source -bytereclen -r10000 -mips4'
+FOPTIM='-O3'
+RMFILES='rii_files'

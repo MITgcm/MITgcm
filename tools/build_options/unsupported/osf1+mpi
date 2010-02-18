@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/osf1+mpi,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+#ph: e.g. halem.gsfc.nasa.gov
+LIBS='-lfmpi -lmpi -lkmp_osfp10 -pthread'
+#ph: -lkmp_osfp10 not needed on some/many platforms

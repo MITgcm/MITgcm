@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1231 2010/02/17 21:21:05 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1232 2010/02/18 17:06:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options :
+   move (some) old optfiles from build_options/ to build_options/unsupported/
 o model/src and pkg/exf
    surface relaxation -- separating data and data.exf options
    The point is to ensure that we specify the surface relaxation

@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp4_edvir1,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#  $Name:  $
+# 
+# tested on edvir1.awi-bremerhaven.de
+# uname -a: AIX edvir1 2 5 0010117A4C00
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4 -DNML_TERMINATOR'
+
+INCLUDES='-I/edvir1/soft/netcdf-3.5.1/64/include'
+CPP='/lib/cpp -P'
+CC='cc -q64'
+FC='xlf95 -q64'
+LINK='xlf95 -q64'
+LIBS='-L/export/soft/mass/4.1/aix5/lib -lmass -L/edvir1/soft/netcdf-3.5.1/64/lib -lnetcdf'
+
+# increase allowed line length 
+FFLAGS='-qfixed=132'
+# this initializes all reals to NaNQ and all integers to -1
+#FFLAGS=${FFLAGS}' -qinitauto=FF' 
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O4 -qmaxmem=-1'
+    # if the above takes too long use a slightly less aggressive optimization
+    # FOPTIM='-O3 -qhot -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    # for some unknown reason, the -qhot option (part of -O4 is not so hot 
+    # with these files (compilation takes forever), therefore we overwrite it
+    # here
+    NOOPTFILES='ini_curvilinear_grid.F  mon_stats_rs.F'
+    NOOPTFLAGS=${FOPTIM}' -qnohot'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O3 -qstrict -qstrictieeemod -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+

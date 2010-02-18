@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/irix32,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+INCLUDES='-I/usr/include'
+FFLAGS='-extend_source -bytereclen -r10000 -64'
+FOPTIM='-O2'
+NOOPTFLAGS='-O0'
+LIBS='-lmpi'

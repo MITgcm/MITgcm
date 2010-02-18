@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp3-32bit,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+#  tested on blackforest, ce107 Jan 2005
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4'
+
+CPP='/lib/cpp -P'
+CC='cc_r'
+FC='xlf95_r'
+LINK='mpxlf95_r'
+LIBS='-L/usr/local/apps/mass -lmass'
+FFLAGS='-qfixed=132 -bmaxdata:0x80000000'
+FOPTIM='-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"

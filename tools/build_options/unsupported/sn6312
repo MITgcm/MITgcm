@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sn6312,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+FC='f90'
+LINK='f90'
+FFLAGS='-O 2,fusion'

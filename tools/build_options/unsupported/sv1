@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sv1,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4 -DTARGET_CRAY_VECTOR'
+
+FC='f90'
+LINK='f90'
+CPP='/opt/ctl/bin/cpp -N -P'
+FOPTIM='-O0'
+NOOPTFLAGS='-O0'

@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/hp-ux+mpi,v 1.1 2010/02/18 17:03:10 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+FC='mpif77'
+LINK='mpif77'
+INCLUDES='-I/opt/mpi/include'

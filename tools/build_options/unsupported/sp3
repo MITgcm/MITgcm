@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp3,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_AIX -DWORDLENGTH=4'
+
+# tested on blackforest, IBM SP3 at NCAR 10/2004 
+INCLUDES='-I/usr/lpp/ppe.poe/include'
+CPP='/lib/cpp -P'
+FC='mpxlf95'
+LINK='mpxlf95'
+LIBS='-L/usr/local/apps/mass -lmass'
+FFLAGS='-qfixed=132 -bmaxdata:0x80000000'
+FOPTIM='-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"

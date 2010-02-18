@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/osf1_halem_mpi,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+#  confirmed on Halem by eh3, 2003-09-04
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_DEC -DWORDLENGTH=1'
+
+# netcdf
+# Tested and works:  Wed Jul 21 11:55:34 EDT 2004
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+INCLUDES="$INCLUDES -I/usr/ulocal/stow/netcdf-3.5.1/include"
+LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib -lnetcdf"
+
+CPP='/usr/local/bin/cpp -P -traditional'
+#ph: makedepend not available on some/many DEC Alpha's; use mkdep instead
+FC='f77'
+LINK='f77'
+LIBS='-lfmpi -lmpi -lkmp_osfp10 -pthread'
+FFLAGS='-fpe2 -convert big_endian -r8 -extend_source -automatic -call_shared -notransform_loops -align dcommons'
+FOPTIM='-O5 -fast -tune host -inline all'
+#ph: -O5 probably too aggressive in conjunction with adjoint code
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'
+NOOPTFLAGS='-O0'
+RMFILES='*.p.out'

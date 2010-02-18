@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/ames_opt+mpi,v 1.1 2010/02/18 17:03:10 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+INCLUDES='-I/usr/include -I/opt/mpt/1.6.1.beta/usr/include'
+FFLAGS='-n32 -extend_source -bytereclen'
+FOPTIM='-O3 -OPT:Olimit=0:roundoff=3:div_split=ON:alias=typed'
+LIBS='-lmpi -lscs'
+FC='f90'
+LINK='f90'

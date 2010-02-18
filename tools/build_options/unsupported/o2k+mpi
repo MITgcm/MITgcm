@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/o2k+mpi,v 1.1 2010/02/18 17:03:11 jmc Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+INCLUDES='-I/usr/include'
+FFLAGS='-n32 -extend_source -bytereclen'
+FOPTIM='-O3 -OPT:Olimit=0:roundoff=3:div_split=ON:alias=typed'
+LIBS='-lmpi -lscs'
