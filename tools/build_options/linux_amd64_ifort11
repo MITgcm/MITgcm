@@ -1,8 +1,22 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.2 2010/02/19 22:26:01 jmc Exp $
+# $Name:  $
+#
 #  Constantinos Evangelinos
 #
 #  Build options for the intel 11 fortran compiler
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#-------
 
 FC=ifort
 F90C=ifort
@@ -11,8 +25,9 @@ LINK=ifort
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
-F90FIXEDFORMAT='-fixed -Tf' 
+F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0 -g -m64 -fPIC'
 NOOPTFILES=''
@@ -22,10 +37,12 @@ INCLUDES=''
 LIBS=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -fPIC -r8 -i4 -convert big_endian -assume byterecl -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all'
+    FFLAGS='-m64 -fPIC -convert big_endian -assume byterecl -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all'
 else
-    FFLAGS='-m64 -fPIC -r8 -i4 -W0 -WB -convert big_endian -assume byterecl'
+    FFLAGS='-m64 -fPIC -W0 -WB -convert big_endian -assume byterecl'
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
 if test "x$GENERIC" != x ; then
     PROCF=-axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2
