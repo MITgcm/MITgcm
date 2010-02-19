@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.6 2009/01/02 20:40:42 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.7 2010/02/19 22:23:22 jmc Exp $
 #  $Name:  $
 #
 
@@ -8,11 +8,21 @@
 #              formally for gcc-gfortran 4.3*
 #       + with gcc-gfortran v4.3.0 on FC9
 #  It fixes the ' \' versus ' &' terminator problem ;
-#  some namelist problems remain with old version (The biggest seems 
+#  some namelist problems remain with old version (The biggest seems
 #     to be the inability to support namelist syntax such as:
 #     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
 #      which results in run-time errors).
 
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
 
 FC=gfortran
 F90C=gfortran
@@ -21,6 +31,7 @@ DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp -traditional -P'
 NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+OMPFLAG='-fopenmp'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
