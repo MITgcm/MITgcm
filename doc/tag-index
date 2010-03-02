@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1232 2010/02/18 17:06:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1233 2010/03/02 19:43:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62c (2010/03/02)
 o tools/build_options :
    move (some) old optfiles from build_options/ to build_options/unsupported/
 o model/src and pkg/exf
