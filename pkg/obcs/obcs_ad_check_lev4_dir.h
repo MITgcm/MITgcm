@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev4_dir.h,v 1.5 2009/10/08 09:39:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev4_dir.h,v 1.6 2010/03/02 23:07:33 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -67,6 +67,9 @@ CADJ STORE OBNa0  = tapelev4, key = ilev_4
 CADJ STORE OBNa1  = tapelev4, key = ilev_4
 CADJ STORE OBNsn0 = tapelev4, key = ilev_4
 CADJ STORE OBNsn1 = tapelev4, key = ilev_4
+#ifdef NONLIN_FRSURF
+CADJ STORE obneta0,obneta1 = tapelev4, key = ilev_4
+#endif
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
@@ -80,6 +83,9 @@ CADJ STORE OBSa0  = tapelev4, key = ilev_4
 CADJ STORE OBSa1  = tapelev4, key = ilev_4
 CADJ STORE OBSsn0 = tapelev4, key = ilev_4
 CADJ STORE OBSsn1 = tapelev4, key = ilev_4
+#ifdef NONLIN_FRSURF
+CADJ STORE obseta0,obseta1 = tapelev4, key = ilev_4
+#endif
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* ALLOW_OBCS_SOUTH */
 #ifdef ALLOW_OBCS_EAST
@@ -93,6 +99,9 @@ CADJ STORE OBEa0  = tapelev4, key = ilev_4
 CADJ STORE OBEa1  = tapelev4, key = ilev_4
 CADJ STORE OBEsn0 = tapelev4, key = ilev_4
 CADJ STORE OBEsn1 = tapelev4, key = ilev_4
+#ifdef NONLIN_FRSURF
+CADJ STORE obeeta0,obeeta1 = tapelev4, key = ilev_4
+#endif
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
@@ -106,6 +115,9 @@ CADJ STORE OBWa0  = tapelev4, key = ilev_4
 CADJ STORE OBWa1  = tapelev4, key = ilev_4
 CADJ STORE OBWsn0 = tapelev4, key = ilev_4
 CADJ STORE OBWsn1 = tapelev4, key = ilev_4
+#ifdef NONLIN_FRSURF
+CADJ STORE obweta0,obweta1 = tapelev4, key = ilev_4
+#endif
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* ALLOW_OBCS_WEST */
 #

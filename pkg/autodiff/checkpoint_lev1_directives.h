@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.43 2009/10/12 14:39:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.44 2010/03/02 23:07:33 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -46,6 +46,8 @@ cph the following are frequently needed, e.g. with seaice
 CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE gs,gsnm1,gt,gtnm1  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE gunm1,gvnm1        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE salt,theta         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
