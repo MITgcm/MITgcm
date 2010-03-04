@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.32 2009/05/25 04:33:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.33 2010/03/04 22:01:35 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -46,6 +46,29 @@ C
 C     ALWAYS - indicates the choice will be fixed at compile time
 C              so no run-time option will be present
 
+C=== Macro related options ===
+C--   Control storage of floating point operands
+C     On many systems it improves performance only to use
+C     8-byte precision for time stepped variables.
+C     Constant in time terms ( geometric factors etc.. )
+C     can use 4-byte precision, reducing memory utilisation and
+C     boosting performance because of a smaller working set size.
+C     However, on vector CRAY systems this degrades performance.
+C     Enable to switch REAL4_IS_SLOW from genmake2 (with LET_RS_BE_REAL4):
+#ifdef LET_RS_BE_REAL4
+#undef REAL4_IS_SLOW
+#else /* LET_RS_BE_REAL4 */
+#define REAL4_IS_SLOW
+#endif /* LET_RS_BE_REAL4 */
+
+C--   Control use of "double" precision constants.
+C     Use D0 where it means REAL*8 but not where it means REAL*16
+#define D0 d0
+
+C--   Enable some old macro conventions for backward compatibility
+#undef USE_OLD_MACROS_R4R8toRSRL
+
+C=== IO related options ===
 C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
 C     safe, on Sun it is not possible - if you are unsure then
@@ -59,10 +82,11 @@ C     a different file for each tile) and read are thread-safe.
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
 
-C--   Flag to turn on checking for errors from all threads and procs
-C     (calling S/R STOP_IF_ERROR) before stopping.
-#define USE_ERROR_STOP
+C--   Alternative formulation of BYTESWAP, faster than
+C     compiler flag -byteswapio on the Altix.
+#undef FAST_BYTESWAP
 
+C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
@@ -87,22 +111,9 @@ C     Under MPI selects/deselects "blocking" sends and receives.
 C--   Control use of JAM routines for Artic network
 C     These invoke optimized versions of "exchange" and "sum" that
 C     utilize the programmable aspect of Artic cards.
-#undef  LETS_MAKE_JAM
-#undef  JAM_WITH_TWO_PROCS_PER_NODE
-
-C--   Control storage of floating point operands
-C     On many systems it improves performance only to use
-C     8-byte precision for time stepped variables.
-C     Constant in time terms ( geometric factors etc.. )
-C     can use 4-byte precision, reducing memory utilisation and
-C     boosting performance because of a smaller working
-C     set size. However, on vector CRAY systems this degrades
-C     performance.
-#define REAL4_IS_SLOW
-
-C--   Control use of "double" precision constants.
-C     Use D0 where it means REAL*8 but not where it means REAL*16
-#define D0 d0
+CXXX No longer supported ; started to remove JAM routines.
+CXXX #undef  LETS_MAKE_JAM
+CXXX #undef  JAM_WITH_TWO_PROCS_PER_NODE
 
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is
@@ -114,10 +125,6 @@ C           filled in some way.
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
 
-C--   Alternative formulation of BYTESWAP, faster than
-C     compiler flag -byteswapio on the Altix.
-#undef FAST_BYTESWAP
-
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls.
 #undef GLOBAL_SUM_SEND_RECV
@@ -127,9 +134,14 @@ C     to eliminate tiling-dependent roundoff errors.
 C     Note: This is slow.
 #undef  CG2D_SINGLECPU_SUM
 
-C--   Enablbe some old macro conventions for
-C     backward compatibility
-#undef USE_OLD_MACROS_R4R8toRSRL
+C=== Other options (to add/remove pieces of code) ===
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R STOP_IF_ERROR) before stopping.
+#define USE_ERROR_STOP
+
+C--   Control use of communication with other component:
+C     allow to import and export from/to Coupler interface.
+#undef COMPONENT_MODULE
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
