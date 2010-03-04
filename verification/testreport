@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.134 2010/01/17 21:52:01 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.135 2010/03/04 21:26:27 jmc Exp $
 #  $Name:  $
 #
 
@@ -16,6 +16,7 @@ usage()
     echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
     echo "                             (DEF=\"-ieee\")"
     echo "  (-gsl)                   compile with \"-gsl\" flag"
+    echo "  (-ur4|-use_r4)           if allowed, use real*4 type for '_RS' variable"
     echo "  (-of=|-optfile=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"\" no email is sent)"
@@ -105,7 +106,7 @@ testoutput_var()
 {
     # testoutput_var dir s1 label subdir reference_output
     #
-    #  compares 1 variable output selected from file $dir/$subdir/$OUTPUTFILE 
+    #  compares 1 variable output selected from file $dir/$subdir/$OUTPUTFILE
     #     with same output from reference file $dir/results/$reference_output
     #  using search strings s1 and text label
 
@@ -177,7 +178,7 @@ testoutput_var()
 	fi
     fi
     rm -f tmp1.txt tmp2.txt tmp3.txt tmp4.txt
-    
+
     return $digits_of_similarity
 }
 
@@ -292,13 +293,13 @@ testoutput_run()
         done
 
 	nbVar=`echo $listVar | awk '{print NF}'`
-        if [ $nbVar -lt $LEN_CHECK_LIST ] ; then 
+        if [ $nbVar -lt $LEN_CHECK_LIST ] ; then
         #-- fill line (up to standard length) with dot:
           adNul=`expr $LEN_CHECK_LIST - $nbVar | awk '{for(i=1;i<=$1;i++){print "."}}'`
 	  echo $allargs $adNul
         else
 	  echo $allargs
-        fi 
+        fi
 # <-- same processing for adjoint & forward test
 }
 
@@ -339,12 +340,15 @@ genmakemodel()
 	    #- run multi-threaded using OpenMP:
 		command="$command -omp"
 	    fi
+	    if test "x$USE_R4" = xt ; then
+		command="$command -use_r4"
+	    fi
 	    if test "x$TS" = xt ; then
 		command="$command -ts"
 	    fi
 	    if test "x$PAPIS" = xt ; then
 		command="$command -papis"
-	    else 
+	    else
 	    if test "x$PCLS" = xt ; then
 		command="$command -pcls"
 	    fi
@@ -483,7 +487,7 @@ symlink_mpifiles()
     code_dir=$2
     BUILD_DIR=$dir/$3
     CODE_DIR=$dir/$code_dir
-    
+
     # These are files that should replace their counter-part when using -mpi
     MPI_FILES=`(cd $CODE_DIR; find . -name "*_mpi" -print)`
 
@@ -518,7 +522,7 @@ symlink_mpifiles()
 	    fi
 	done
     fi
-    
+
 }
 
 linkdata()
@@ -537,7 +541,7 @@ linkdata()
 		if test "x$MPI" = "xt" ; then
 		# mpi test: remove symbolic link & link _mpi sfx file
 		    if test -h $yy ; then rm -f $yy ; fi
-		    if test ! -r $yy ; then 
+		    if test ! -r $yy ; then
 			ln -sf "../"$1"/"$xx $yy ;
 			printf "$xx " 1>&2
 		    fi
@@ -552,7 +556,7 @@ linkdata()
 		if test "x$MULTI_THREAD" = "xt" ; then
 		# multi-threaded test: remove symbolic link & link eedata.mth
 		    if test -h eedata ; then rm -f eedata ; fi
-		    if test ! -r eedata ; then 
+		    if test ! -r eedata ; then
 			ln -sf "../"$1"/eedata.mth" eedata ;
 			printf 'eedata.mth ' 1>&2
 		    fi
@@ -589,7 +593,7 @@ runmodel()
 {
     # runmodel directory
     #
-    #  runs "$COMMAND in "directory" 
+    #  runs "$COMMAND in "directory"
     #  (where "$COMMAND" is relative to "directory")
     (
 	cd $1
@@ -625,7 +629,7 @@ runmodel()
 		if test -f $RUNLOG ; then
 		    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
      		    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
-		else 
+		else
 		    touch $RUNLOG
 		    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
      		    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
@@ -701,7 +705,7 @@ EOF
 	return 0
     else
 	echo
-	echo "ERROR: failed to compile comparison code -- please specify" 
+	echo "ERROR: failed to compile comparison code -- please specify"
 	echo "  a C compiler using the CC environment variable."
 	exit 1
     fi
@@ -720,7 +724,7 @@ formatresults()
     printf '%3s' $listPrt
 #   line below does not work on hp-ux_ia64 : do those substitutions later on
 #   printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</'
-    
+
     if [ $xx = '..' ]; then
 	printf ' N/O '
     elif [ $xx = '--' ]; then
@@ -736,7 +740,7 @@ formatresults()
     fi
     printf '  %s' $nm
     printf '\n'
-    
+
 }
 
 scandirs()
@@ -822,6 +826,7 @@ MPI=f
 MULTI_THREAD=f
 OUTDIR=
 DELDIR=
+USE_R4=
 
 ADM=
 OADM=
@@ -844,7 +849,7 @@ for ac_option ; do
     fi
 
     ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
-    
+
     case $ac_option in
 	
 	-help | --help | -h | --h)
@@ -940,24 +945,24 @@ for ac_option ; do
 
 	-deldir | -dd) DELDIR=t ;;
 
+	-ur4|-use_r4) USE_R4=t ;;
+
 	-ts) TS=t;;
-
 	-papis) PAPIS=t;;
-
 	-pcls) PCL=t;;
 
         -*)
             echo "Error: unrecognized option: "$ac_option
             usage
             ;;
-        
+
         *)
             echo "Error: unrecognized argument: "$ac_option
             usage
             ;;
-        
+
      esac
-     
+
 done
 
 if test "x$QUICK" = xt ; then
@@ -1000,7 +1005,7 @@ else
 		 LIST=${LIST}" "`ls | grep 'tutorial_'` ;;
 	*)	 LIST=${LIST}" "$xx ;;
       esac
-    done 
+    done
 fi
 #echo 'LIST='${LIST}'<'
 #- skip dirs, remove duplicate and non-directory:
@@ -1021,7 +1026,7 @@ do
 	else count=1 ; echo "" ;  echo -n " skip: \"$xx\""
 	fi
     fi
-done 
+done
 if test $count = 1 ; then echo "" ; echo -n " ... " ; fi
 #echo 'TESTDIRS='${TESTDIRS}'<'
 
@@ -1133,8 +1138,8 @@ fi
 echo
 echo >> $SUMMARY
 if test "x$ADM" = x -a "x$OADM" = x; then
-    if [ $MATCH_CRIT -lt 10 ] ; 
-    then line_0="default  "$MATCH_CRIT ; 
+    if [ $MATCH_CRIT -lt 10 ] ;
+    then line_0="default  "$MATCH_CRIT ;
     else line_0="default "$MATCH_CRIT ; fi
        line_0="$line_0  ----T-----  ----S-----  ----U-----  ----V-----"
 #   line_0="            ----T-----  ----S-----  ----U-----  ----V-----"
@@ -1158,8 +1163,8 @@ if test "x$ADM" = x -a "x$OADM" = x; then
 else
     echo "ADJOINT=true" >> $SUMMARY
     echo >> $SUMMARY
-    if [ $MATCH_CRIT -lt 10 ] ; 
-    then line_0="default     "$MATCH_CRIT ; 
+    if [ $MATCH_CRIT -lt 10 ] ;
+    then line_0="default     "$MATCH_CRIT ;
     else line_0="default    "$MATCH_CRIT ; fi
     echo "$line_0" | tee -a $SUMMARY
     cat << EOF | tee -a $SUMMARY
@@ -1173,7 +1178,7 @@ fi
 
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
-    
+
     # set builddir & rundir:
     builddir="build"
     if test ! -d $dir/$builddir ; then mkdir $dir/$builddir ; fi
@@ -1202,7 +1207,7 @@ for dir in $TESTDIRS ; do
 	continue
     fi
 
-    #  Verify that the testdir exists and contains previous 
+    #  Verify that the testdir exists and contains previous
     #  results in the correct location--or skip this directory!
     fout=$dir"/results/"$ref_outp
     if test ! -r $fout ; then
@@ -1239,7 +1244,7 @@ for dir in $TESTDIRS ; do
 	refExOut=`echo $ref_outp | sed "s/\./.${name}./"`
 	outf="$dir/results/$refExOut"
         if test -f $outf -a -r $outf ; then
-	  if test "x$MULTI_THREAD" = "xt" ; then 
+	  if test "x$MULTI_THREAD" = "xt" ; then
 	    if test -r $dir"/"$exd"/eedata.mth" ; then
 	      if test "x$MPI" = "xt" ; then
 		retv=`check_eedata $CODE_DIR"/SIZE.h_mpi" $dir"/"$exd"/eedata.mth"`
@@ -1261,7 +1266,7 @@ for dir in $TESTDIRS ; do
 
     echo "-------------------------------------------------------------------------------"
     echo
-    if test "x$extra_runs" = "x" ; then 
+    if test "x$extra_runs" = "x" ; then
        echo "Experiment:  $dir"
     else
        echo "Experiment:  $dir ; extra_runs=$extra_runs"
@@ -1274,7 +1279,7 @@ for dir in $TESTDIRS ; do
     rel_CDIR=$DRESULTS"/"$dir
     mkdir $rel_CDIR
     CDIR=`pwd`"/$rel_CDIR"
-    
+
     if test "x$NORUN" = xt ; then
 	    run=N
 	genmakemodel $dir/$builddir && genmake=Y \
@@ -1294,7 +1299,7 @@ for dir in $TESTDIRS ; do
 	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput_run $dir $rundir $ref_outp`
     fi
-    
+
     #echo "results='$results'"
     echo
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
@@ -1351,9 +1356,9 @@ for dir in $TESTDIRS ; do
  	makeclean $dir/$builddir \
  	    && run_clean $dir/$rundir
     fi
-    
+
     echo "-------------------------------------------------------------------------------"
-    
+
 done
 
 printf "Start time:  " >> $SUMMARY
