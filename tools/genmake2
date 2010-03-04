@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.202 2010/03/03 19:19:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.203 2010/03/04 21:24:22 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -519,6 +519,9 @@ Usage: "$0" [OPTIONS]
       -pdefault=NAME | --pdefault=NAME
           Get the default package list from "NAME".
 
+    -bash NAME
+          Explicitly specify the Bourne or BASH shell to use
+
     -make NAME | -m NAME
       --make=NAME | -m=NAME
           Use "NAME" for the MAKE program. The default is "make" but 
@@ -578,6 +581,10 @@ Usage: "$0" [OPTIONS]
           *only* works if it is supported by the OPTFILE that 
           is being used.
 
+    -use_real4 | -use_r4 | -ur4 | --use_real4 | --use_r4 | --ur4
+          Use "real*4" type for _RS variable (#undef REAL4_IS_SLOW)
+          *only* works if CPP_EEOPTIONS.h allows this.
+
     -ignoretime | -ignore_time | --ignoretime | --ignore_time
           Ignore all the "wall clock" routines entirely.  This will
           not in any way hurt the model results -- it simply means 
@@ -620,9 +627,6 @@ Usage: "$0" [OPTIONS]
           Embed a tarball containing the full source code 
           (including the Makefile, etc.) used to build the 
           executable [off by default]
-
-    -bash NAME
-          Explicitly specify the Bourne or BASH shell to use
 
   While it is most often a single word, the "NAME" variables specified 
   above can in many cases be a space-delimited string such as:
@@ -1065,6 +1069,7 @@ MPI=
 MPIPATH=
 OMP=
 OMPFLAG=
+USE_R4=
 TS=
 PAPIS=
 PCLS=
@@ -1132,7 +1137,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CPP IEEE TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI OMP DUMPSTATE STANDARDDIRS"
+gm_s2="FC IEEE USE_R4 TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI OMP DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM FEXTRAFLAGS"
@@ -1296,6 +1301,9 @@ for ac_option in "$@" ; do
 	    IEEE=true ;;
 	-noieee | --noieee)
 	    IEEE= ;;
+
+	-use_real4 | -use_r4 | -ur4 | --use_real4 | --use_r4 | --ur4 )
+	    USE_R4=true ;;
 
 	-ts | --ts)
 	    TS=true ;;
@@ -1571,6 +1579,11 @@ if test ! "x$OMP" = x ; then
       FFLAGS="$FFLAGS $OMPFLAG"
       F90FLAGS="$F90FLAGS $OMPFLAG"
       DEFINES="$DEFINES -DUSE_OMP_THREADING"
+fi
+
+if test ! "x$USE_R4" = x ; then
+      echo "  Turning on LET_RS_BE_REAL4 cpp flag"
+      DEFINES="$DEFINES -DLET_RS_BE_REAL4"
 fi
 
 if test ! "x$TS" = x ; then
