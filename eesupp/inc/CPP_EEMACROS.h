@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.21 2009/06/17 23:19:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.22 2010/03/04 22:02:26 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -183,14 +183,15 @@ cph Needed for some backward compatibility with broken packages
 C--   Control use of JAM routines for Artic network (no longer supported)
 C     These invoke optimized versions of "exchange" and "sum" that
 C     utilize the programmable aspect of Artic cards.
-#ifdef LETS_MAKE_JAM
-#define _GLOBAL_SUM_RS(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b)
-#define _GLOBAL_SUM_RL(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b )
-#define _EXCH_XY_RS(a,b) CALL EXCH_XY_R8_JAM ( a, b )
-#define _EXCH_XY_RL(a,b) CALL EXCH_XY_R8_JAM ( a, b )
-#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
-#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
-#endif
+CXXX No longer supported ; started to remove JAM routines.
+CXXX #ifdef LETS_MAKE_JAM
+CXXX #define _GLOBAL_SUM_RS(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b)
+CXXX #define _GLOBAL_SUM_RL(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b )
+CXXX #define _EXCH_XY_RS(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+CXXX #define _EXCH_XY_RL(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+CXXX #define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
+CXXX #define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
+CXXX #endif
 
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
