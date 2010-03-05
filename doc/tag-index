@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1234 2010/03/05 00:44:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1235 2010/03/05 19:45:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp: remove JAM communication code (obsolete).
 o add option to genmake2 & testreport to switch "_RS" type to "real*4"
   (if allowed in CPP_EEOPTIONS.h); update default CPP_EEOPTIONS.h and return 
   to default CPP_EEOPTIONS.h for exp. inverted_barometer & solid-body.cs-32x32x1
