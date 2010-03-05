@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.4 2009/07/22 18:01:51 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.5 2010/03/05 22:08:51 jmc Exp $
 #  $Name:  $
 
 # Adapted from linux_amd64_ifort_generic_mpi
@@ -64,10 +64,12 @@ INCLUDES=''
 LIBS=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model except -warn all'
+    FFLAGS='-w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model except -warn all'
 else
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC'
+    FFLAGS='-w95 -W0 -WB -convert big_endian -assume byterecl -fPIC'
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
