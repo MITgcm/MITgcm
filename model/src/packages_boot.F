@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.49 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.50 2010/03/12 23:00:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,6 +143,7 @@ c     useGAD          =.FALSE.
       useLayers       =.FALSE.
       useMNC          =.FALSE.
       useRunClock     =.FALSE.
+      useEMBED_FILES  =.FALSE.
       useMYPACKAGE    =.FALSE.
 
 C--   Read parameters from open data file
