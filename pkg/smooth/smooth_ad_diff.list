@@ -1,9 +1,9 @@
-smooth_basic2D.f
-smooth_diff3D.f
-smooth_diff2D.f
-smooth_correl3D.f
-smooth_correl2D.f
-smooth_correl2Dw.f
+smooth_basic2d.f
+smooth_diff3d.f
+smooth_diff2d.f
+smooth_correl3d.f
+smooth_correl2d.f
+smooth_correl2dw.f
 smooth_impldiff.f
 smooth_init_varia.f
 smooth_rhs.f
