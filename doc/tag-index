@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1236 2010/03/08 16:39:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1237 2010/03/13 01:04:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  fix seaice_model.F for adjoint (gael) and update AD results of experiments
+   lab_sea (std + evp + noseaicedyn) and offline_exf_seaice.
 o testreport:
   add option '-runonly' (short: '-ro') to just do the run part (without make).
 o eesupp: remove JAM communication code (obsolete).
