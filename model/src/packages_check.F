@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.48 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.49 2010/03/13 00:26:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -183,6 +183,14 @@ C---  Continue with standard packages (with standard usePKG flag)
      &                  'BULK_FORCE', 'useBulkForce=.T.', myThid )
 #endif
 
+#ifndef ALLOW_EBM
+      IF (useEBM) CALL PACKAGES_ERROR_MSG('EBM',' ',myThid)
+#endif
+
+#ifndef ALLOW_CHEAPAML
+      IF (useCheapAML) CALL PACKAGES_ERROR_MSG('CheapAML',' ',myThid)
+#endif
+
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_CHECK( myThid )
 #else
@@ -198,15 +206,19 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifndef ALLOW_LAND
-      IF (useLand) CALL PACKAGES_ERROR_MSG('LAND',' ',myThid)
+      IF (useLand) CALL PACKAGES_ERROR_MSG('Land',' ',myThid)
+#endif
+
+#ifndef ALLOW_FIZHI
+      IF (useFizhi) CALL PACKAGES_ERROR_MSG('Fizhi',' ',myThid)
+#endif
+
+#ifndef ALLOW_GRIDALT
+      IF (useGridAlt) CALL PACKAGES_ERROR_MSG('GridAlt',' ',myThid)
 #endif
 
 #ifndef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PACKAGES_ERROR_MSG('PTRACERS',' ',myThid)
-#endif
-
-#ifndef ALLOW_MATRIX
-      IF (useMATRIX) CALL PACKAGES_ERROR_MSG('MATRIX',' ',myThid)
 #endif
 
 #ifdef ALLOW_GCHEM
@@ -215,8 +227,16 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useGCHEM) CALL PACKAGES_ERROR_MSG('GCHEM',' ',myThid)
 #endif
 
+#ifndef ALLOW_RBCS
+      IF (useRBCS) CALL PACKAGES_ERROR_MSG('RBCS',' ',myThid)
+#endif
+
 #ifndef ALLOW_OFFLINE
       IF (useOffLine) CALL PACKAGES_ERROR_MSG('OffLine',' ',myThid)
+#endif
+
+#ifndef ALLOW_MATRIX
+      IF (useMATRIX) CALL PACKAGES_ERROR_MSG('MATRIX',' ',myThid)
 #endif
 
 #ifndef ALLOW_SHAP_FILT
@@ -245,6 +265,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useSEAICE) CALL PACKAGES_ERROR_MSG('SEAICE',' ',myThid)
 #endif
 
+#ifdef ALLOW_SALT_PLUME
+      IF (useSALT_PLUME)CALL SALT_PLUME_CHECK( myThid )
+#else
+      IF (useSALT_PLUME)CALL PACKAGES_ERROR_MSG('SALT_PLUME',' ',myThid)
+#endif
+
 #ifdef ALLOW_SHELFICE
       IF (useShelfIce) CALL SHELFICE_CHECK( myThid )
 #else
@@ -271,6 +297,10 @@ C---  Continue with standard packages (with standard usePKG flag)
 
 #ifdef ALLOW_GRDCHK
       IF (useGRDCHK) CALL GRDCHK_CHECK( myThid )
+#endif
+
+#ifndef ALLOW_SMOOTH
+      IF (useSMOOTH) CALL PACKAGES_ERROR_MSG('SMOOTH',' ',myThid)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -306,16 +336,15 @@ C---  Continue with standard packages (with standard usePKG flag)
      & 'NEST_PARENT',' ',myThid)
 #endif
 
+#ifndef ALLOW_EMBED_FILES
+      IF (useEMBED_FILES) CALL PACKAGES_ERROR_MSG(
+     &                                  'EMBED_FILES',' ',myThid)
+#endif
+
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )
 #else
       IF (useMYPACKAGE) CALL PACKAGES_ERROR_MSG('MYPACKAGE',' ',myThid)
-#endif
-
-#ifdef ALLOW_SALT_PLUME
-      IF (useSALT_PLUME)CALL SALT_PLUME_CHECK( myThid )
-#else
-      IF (useSALT_PLUME)CALL PACKAGES_ERROR_MSG('SALT_PLUME',' ',myThid)
 #endif
 
 #ifdef ALLOW_ECCO
