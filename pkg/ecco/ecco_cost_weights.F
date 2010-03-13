@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.36 2009/11/03 03:32:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.37 2010/03/13 23:12:48 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -1538,6 +1538,31 @@ c--           Test for missing values.
       endif
 #endif
 
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      do k=1,NGENCOST
+      if ( gencost_errfile(k) .NE. ' ' ) then
+
+        call mdsreadfield( gencost_errfile(k), cost_iprec, cost_yftype,
+     &      1, gencost_weight(:,:,1,1,k), 1, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+           do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (gencost_weight(i,j,bi,bj,k) .lt. -9900.) then
+                gencost_weight(i,j,bi,bj,k) = 0. _d 0
+              endif
+            enddo
+           enddo
+        enddo
+      enddo
+
+      endif
+      enddo
+#endif
+
+
 c--   Units have to be checked!
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1728,6 +1753,16 @@ cph(
                  wtauv2(i,j,bi,bj) = 0.0 _d 0
               endif
 cph)
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+              do k=1,NGENCOST
+              if (gencost_weight(i,j,bi,bj,k) .ne. 0.) then
+                 gencost_weight(i,j,bi,bj,k) =
+     &                1./gencost_weight(i,j,bi,bj,k)/gencost_weight(i,j,bi,bj,k)
+              else
+                 gencost_weight(i,j,bi,bj,k) = 0.0 _d 0
+              endif
+              enddo
+#endif
             enddo
           enddo
 
@@ -1953,5 +1988,4 @@ c
       call active_write_xy_loc( 'wbottomdrag', wbottomdrag
      & , 1, 0, mythid, dummy)
 #endif
-
       end

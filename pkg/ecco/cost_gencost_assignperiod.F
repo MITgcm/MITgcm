@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.1 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.2 2010/03/13 23:12:48 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -40,8 +40,8 @@ c     == routine arguments ==
       logical startofgen(NGENCOST)
       logical endofgen(NGENCOST)
       logical ingen(NGENCOST)
-      logical sum1gen(NGENCOST)
-      logical genrec(NGENCOST)
+      integer sum1gen(NGENCOST)
+      integer genrec(NGENCOST)
 
       integer mythid
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.46 2010/02/16 23:33:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.47 2010/03/13 23:12:48 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -51,7 +51,7 @@ c     17 years: 6210
 c     Number of Generic Cost terms:
 c     =============================
       INTEGER NGENCOST
-      PARAMETER ( NGENCOST=4 )
+      PARAMETER ( NGENCOST=1 )
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     objf_gencost - gencost user defined contribution
@@ -59,9 +59,9 @@ c     objf_gencost - gencost user defined contribution
      &       xx_genbar_dummy
       _RL  xx_genbar_dummy(NGENCOST)
 
-      common /ecco_gencost_r/
+      common /ecco_gencost_r_1/
      &       objf_gencost, num_gencost, mult_gencost,
-     &       gencost_barfld, gencost_modfld,
+     &       gencost_barfld, gencost_modfld, gencost_weight,
      &       gencost_spmin, gencost_spmax, gencost_spzero
       _RL  objf_gencost(nsx,nsy,NGENCOST)
       _RL  num_gencost(nsx,nsy,NGENCOST)
@@ -73,10 +73,16 @@ c     objf_gencost - gencost user defined contribution
      &       nsx,nsy,NGENCOST)
       _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,
      &       nsx,nsy,NGENCOST)
+      _RL  gencost_weight(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
 
-      common /ecco_gencost_i/
+      common /ecco_gencost_r_2/
+     &       gencost_period
+      _RL     gencost_period(NGENCOST)
+
+      common /ecco_gencost_i_1/
      &       gencost_nrec
-      integer gencost_nrec(NGENCOST)
+      integer gencost_nrec(NGENCOST)      
 
       common /ecco_gencost_c/
      &       gencost_errfile,
@@ -116,10 +122,10 @@ c             intantaneous field.
 c     tauybar  - contains the averaged zonal velocity component for the
 c             whole integration period. Before, it accumulates the
 c             intantaneous field.
-c     hfluxbar  - contains the averaged zonal velocity component for the
+c     hfluxmeanbar  - contains the averaged zonal velocity component for the
 c             whole integration period. Before, it accumulates the
 c             intantaneous field.
-c     sfluxbar  - contains the averaged zonal velocity component for the
+c     sfluxmeanbar  - contains the averaged zonal velocity component for the
 c             whole integration period. Before, it accumulates the
 c             intantaneous field.
 
@@ -134,8 +140,8 @@ c             intantaneous field.
      &                    wbar,
      &                    tauxbar,
      &                    tauybar,
-     &                    hfluxbar,
-     &                    sfluxbar,
+     &                    hfluxmeanbar,
+     &                    sfluxmeanbar,
      &                    Slmean,
      &                    Tlmean,
      &                    wlmean,
@@ -242,15 +248,15 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
 #endif
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
-      _RL hfluxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
+      _RL hfluxmeanbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
 #else
-      _RL hfluxbar
+      _RL hfluxmeanbar
 #endif
 
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-      _RL sfluxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
+      _RL sfluxmeanbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
 #else
-      _RL sfluxbar
+      _RL sfluxmeanbar
 #endif
 
 
@@ -265,8 +271,6 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
      &                    wbarfile,
      &                    tauxbarfile,
      &                    tauybarfile,
-     &                    hfluxbarfile,
-     &                    sfluxbarfile,
      &                    hfluxmeanbarfile,
      &                    sfluxmeanbarfile,
      &                    costTranspDataFile
@@ -280,8 +284,6 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       character*(MAX_LEN_FNAM) wbarfile
       character*(MAX_LEN_FNAM) tauxbarfile
       character*(MAX_LEN_FNAM) tauybarfile
-      character*(MAX_LEN_FNAM) hfluxbarfile
-      character*(MAX_LEN_FNAM) sfluxbarfile
       character*(MAX_LEN_FNAM) hfluxmeanbarfile
       character*(MAX_LEN_FNAM) sfluxmeanbarfile
       character*(MAX_LEN_FNAM) costTranspDataFile

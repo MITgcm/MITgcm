@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.46 2010/02/16 23:33:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.47 2010/03/13 23:12:48 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -129,9 +129,14 @@ c--   Read the namelist input.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
+     &         gencost_barfile,
      &         gencost_datafile, 
      &         gencost_errfile,
      &         gencost_mask,
+     &         gencost_spmin,
+     &         gencost_spmax,
+     &         gencost_spzero,
+     &         gencost_avgperiod,
      &         mult_gencost
 #endif
 
@@ -444,6 +449,10 @@ c--   Set default values.
          gencost_mask(k)       = ' '
          write(gencost_barfile(k)(1:8),'(a,i2.2)'),
      &        'genbar', k
+cph         gencost_barfile(k)    = ' '
+         gencost_spmin         = 0. _d 0
+         gencost_spmax         = 0. _d 0
+         gencost_spzero        = 9876. _d 0
          mult_gencost(k)      = 0. _d 0
       enddo
 
@@ -457,15 +466,28 @@ c--   Set default values.
 C--   Check parameters:
 
       do k=1,NGENCOST
-         if ( gencost_avgperiod(k) .NE. 'day' .OR.
-     &        gencost_avgperiod(k) .NE. 'DAY' .OR.
-     &        gencost_avgperiod(k) .NE. 'month' .OR.
-     &        gencost_avgperiod(k) .NE. 'MONTH' .OR.
-     &        gencost_avgperiod(k) .NE. 'year' .OR.
-     &        gencost_avgperiod(k) .NE. 'YEAR' ) then
+
+         if ( gencost_avgperiod(k) .NE. 'day  ' .AND.
+     &        gencost_avgperiod(k) .NE. 'DAY  ' .AND.
+     &        gencost_avgperiod(k) .NE. 'month' .AND.
+     &        gencost_avgperiod(k) .NE. 'MONTH' .AND.
+     &        gencost_avgperiod(k) .NE. 'year ' .AND.
+     &        gencost_avgperiod(k) .NE. 'YEAR ' ) then
             STOP 
      &           'ECCO_READPARMS: gencost_avgperiod not properly set'
          end if
+
+         if ( gencost_spmin(k) .EQ. 0. _d 0 .AND.
+     &        gencost_spmax(k) .EQ. 0. _d 0 ) then
+            STOP
+     &       'ECCO_READPARMS: gencost_spmin, gencost_spmax not set'
+         endif
+
+         if ( gencost_spzero(k) .EQ. 9876. _d 0 ) then
+            STOP
+     &       'ECCO_READPARMS: gencost_spzero not set'
+         endif
+
       end do
 
       _END_MASTER( myThid )

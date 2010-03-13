@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.16 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.17 2010/03/13 23:12:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,6 +68,9 @@ c     == local variables ==
       character*(128) fnamesmrareabar
       character*(128) fnamesmrsstbar
       character*(128) fnamesmrsssbar
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      character*(128) fname_gencostbar(NGENCOST)
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
 c
       character*(128) adfnamepsbar
       character*(128) adfnametbar
@@ -84,6 +87,9 @@ c
       character*(128) adfnamesmrareabar
       character*(128) adfnamesmrsstbar
       character*(128) adfnamesmrsssbar
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      character*(128) adfname_gencostbar(NGENCOST)
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
 
 c     == external functions ==
 
@@ -408,6 +414,25 @@ c initialize smr sss bar
 
       endif
 #endif /* ALLOW_SEAICE */
+
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+c--   Save gencost_barfile on file.
+      do k=1,NGENCOST
+      ilt=ilnblnk( gencost_barfile(k) )
+      write(fname_gencostbar,'(2a,i10.10)')
+     &     gencost_barfile(k)(1:ilt), '.', optimcycle
+      write(adfname_gencostbar,'(3a,i10.10)')
+     &     yadprefix, gencost_barfile(k)(1:ilt), '.', optimcycle
+      do irec = 1,nmonsrec
+#ifndef ALLOW_TANGENTLINEAR_RUN
+        call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
+     &       optimcycle, mythid, xx_genbar_dummy(k) )
+#endif
+      enddo
+      enddo 
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
 
 #endif /* ALLOW_COST */
 
