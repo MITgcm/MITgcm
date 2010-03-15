@@ -1,7 +1,7 @@
-c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cheapaml_bulkcdn.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cheapaml_bulkcdn.F,v 1.2 2010/03/15 22:53:46 jmc Exp $
+C $Name:  $
 
-
-#include "CPP_OPTIONS.h"
+#include "CHEAPAML_OPTIONS.h"
 
 c      real*8 function cheapaml_BulkCdn(
       _RL   function cheapaml_BulkCdn(
