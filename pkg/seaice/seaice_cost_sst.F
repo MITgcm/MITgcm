@@ -1,5 +1,7 @@
-c ian fenty 
-#include "COST_CPPOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sst.F,v 1.2 2010/03/15 22:33:41 heimbach Exp $
+C $Name:  $
+
+#include "SEAICE_OPTIONS.h"
 
       subroutine seaice_cost_sst( 
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
@@ -13,6 +15,7 @@ c ian fenty
 
       implicit none
 
+c ian fenty
 c     == global variables ==
 
 #include "EEPARAMS.h"

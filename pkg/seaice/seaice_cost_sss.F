@@ -1,5 +1,7 @@
-c ian fenty 
-#include "COST_CPPOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sss.F,v 1.2 2010/03/15 22:33:41 heimbach Exp $
+C $Name:  $
+
+#include "SEAICE_OPTIONS.h"
 
 c read the area dat file and compare against the averaged salinity file
 
@@ -15,6 +17,7 @@ c read the area dat file and compare against the averaged salinity file
 
       implicit none
 
+c ian fenty
 c     == global variables ==
 
 #include "EEPARAMS.h"
