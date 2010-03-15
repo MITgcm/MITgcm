@@ -170,12 +170,15 @@ if [ "$verbose"x = "y"x ]; then
     cat $CPPCMD
 fi
 
+cat $CPPCMD
+
+
 echo '' > $DEPENDLINES
 for i in $files
 do
     $CPPCMD $i       | sed -n "/^#/s;^;$i ;p"
 
-done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"||g' -e 's| \./| |'   | awk '{
+done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"||g' -e 's| \./| |'   | awk '!/<.*>/{
 	if ($1 != $4  &&  $2 != "#ident" && $2 != "#pragma")
 
 
