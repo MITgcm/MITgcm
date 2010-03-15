@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sensi.F,v 1.1 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sensi.F,v 1.2 2010/03/15 16:08:29 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -25,9 +25,10 @@ C     myThid - Thread number for this instance of the routine.
 #ifdef ALLOW_COST
 C     == Local variables
 
-        CALL COST_ICE_TEST ( myTime, myIter, myThid )
+      CALL COST_ICE_TEST ( myTime, myIter, myThid )
 
-        CALL SEAICE_COST_ACCUMULATE_MEAN (myThid)
+      CALL SEAICE_COST_ACCUMULATE_MEAN (
+     &    myTime, myIter, myThid)
 
 #endif
 

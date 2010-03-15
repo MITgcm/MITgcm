@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.2 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.3 2010/03/15 16:08:29 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,7 +32,13 @@ C     ========= Local variables =========================
       integer ig, jg
       integer bi, bj
 
-      parameter ( isec = 79, jsecbeg = 57, jsecend = 83 )
+#if (defined (SEAICE_COST_EXPORT_FRAM))
+      parameter ( isec = 74, jsecbeg = 60, jsecend = 89 )
+#elif (defined (SEAICE_COST_EXPORT_CANARCH))
+      parameter ( isec = 202, jsecbeg = 236, jsecend = 242 )
+#else
+      parameter ( isec = 1, jsecbeg = 1, jsecend = 1)
+#endif
       parameter ( kmaxdepth = 1 )
 
       do bj=myByLo(myThid),myByHi(myThid)
@@ -45,7 +51,11 @@ C     ========= Local variables =========================
             jg = myYGlobalLo-1+(bj-1)*sNy+j
             if ((jg .ge. jsecbeg) .and. (jg .le. jsecend)) then
              objf_ice_export(bi,bj) = objf_ice_export(bi,bj)
-     &              + vHeffExportCell(i,j,bi,bj)
+     &              - uHeffExportCell(i,j,bi,bj)
+cph(
+cph             print *, 'ph-canarch pos i, ig, j, jg, X, Y ',
+cph     &        i, ig, j, jg, xC(i,j,bi,bj), yC(i,j,bi,bj)
+cph)
             end if
            enddo
           enddo
