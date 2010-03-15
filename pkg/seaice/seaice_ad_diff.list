@@ -23,11 +23,14 @@ seaice_readparms.f
 lsr.f
 seaice_cost_accumulate_mean.f
 seaice_cost_areasst.f
+seaice_cost_concentration.f
 seaice_cost_driver.f
 seaice_cost_export.f
 seaice_cost_final.f
 seaice_cost_init_varia.f
 seaice_cost_sensi.f
+seaice_cost_sss.f
+seaice_cost_sst.f
 seaice_ctrl_map_ini.f
 cost_ice_test.f
 seaice_calc_strainrates.f
