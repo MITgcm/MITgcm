@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.6 2009/09/28 16:09:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.7 2010/03/15 01:05:51 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -72,7 +72,7 @@ C     i,j    - loop counters
       ENDIF
 #endif /* COMPONENT_MODULE */
 
-      IF ( Aim_CO2_Flag .EQ. 1 .AND. myTime .EQ. starttime ) THEN
+      IF ( Aim_CO2_Flag .EQ. 1 .AND. myTime .EQ. startTime ) THEN
         _BEGIN_MASTER(myThid)
         atm_pCO2 = atmpCO2init
         _END_MASTER(myThid)
@@ -96,12 +96,12 @@ C- First compute global mole flux at air-sea interface
 
         _BARRIER
         _BEGIN_MASTER(myThid)
-        IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
+        IF ( startTime.EQ.baseTime .AND. myTime.EQ.0 ) THEN
 C- If  first iteration, use atmpCO2init as initial condition
           atm_pCO2 = atmpCO2init
           Atm_CO2_Moles = atm_pCO2 * total_atmos_moles
 
-        ELSEIF ( myTime .EQ. starttime ) THEN
+        ELSEIF ( myTime .EQ. startTime ) THEN
 C- If restart, read moles number from pickup
           WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',nIter0
           ilo = IFNBLNK(fn)
