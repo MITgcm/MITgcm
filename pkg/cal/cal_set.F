@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.5 2004/04/19 23:25:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.6 2010/03/16 00:11:46 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -134,8 +134,7 @@ c     Initialise some variables.
       usingModelCalendar     = .false.
       usingJulianCalendar    = .false.
 
-c     Map the numerical model's parameters. --> common blocks in
-c                                               CALENDAR.h
+c     Map the numerical model parameters. --> common blocks in CALENDAR.h
       modelstart       = modstart
       modelend         = modend
       modelstep        = modstep
@@ -191,7 +190,7 @@ c     o modelend
       if ( modelend .eq. 0. .and. modeliterend .ne. 0 )
      &     modelend = modelstep*float(modeliterend)
 
-c     Start setting the calendar's parameters.
+c     Start setting the calendar parameters.
 
 c     The calendar type.
       if ( modcalendartype .eq. 'none') then

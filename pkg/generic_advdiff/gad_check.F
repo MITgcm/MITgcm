@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.3 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.4 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -33,7 +33,7 @@ C     myThid :: my Thread Id number
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf :: Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -44,7 +44,7 @@ CEOP
      &                     SQUEEZE_RIGHT , myThid )
 
 C--  Print out some kee parameters :
-C    (better chance to know why it's stopping if print first & check after)
+C    (better chance to know why it is stopping if print first & check after)
 
 C--  Check Options:
 #ifdef DISABLE_MULTIDIM_ADVECTION

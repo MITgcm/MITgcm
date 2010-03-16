@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_stepsforday.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_stepsforday.F,v 1.3 2010/03/16 00:11:46 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -24,7 +24,7 @@ c       extensively.
 c
 c     started: Christian Eckert eckert@mit.edu  06-Apr-2000
 c
-c     changed: 
+c     changed:
 c
 c     ==================================================================
 c     SUBROUTINE cal_StepsForDay
@@ -102,7 +102,7 @@ c--         This can only happen if we end at midnight of the next day.
               firststep = 1
               laststep  = modelintsteps
 c--           Note: This holds only if modelenddate was determined
-c--                 such that it coincides with the model's final time.
+c--                 such that it coincides with the model final time.
             else
 c--           We do not end at midnight of the first day of
 c--           the next month.
@@ -135,12 +135,12 @@ c--       Somewhere between first and last month.
 c--       The first steps in iday.
           fullsteps = int((secondsperday - startsecs)/mdstep)
           numsteps  = fullsteps
-c--       What's left in the first day (frac1).
+c--       What is left in the first day (frac1).
           frac1     = (secondsperday - startsecs) - fullsteps*mdstep
           fullsteps = int(secondsperday/modelstep)
-c--       What's left in a complete day (frac2).
+c--       What is left in a complete day (frac2).
           frac2     = secondsperday - fullsteps*mdstep
-c--       What's left up to the current day (frac3).
+c--       What is left up to the current day (frac3).
           frac3     = frac1 + frac2*(iday - 1)
           numsteps  = numsteps + (iday - 1)*fullsteps +
      &                frac3/mdstep
@@ -152,12 +152,12 @@ c--       The last day of integration.
 c--       The first step in iday.
           fullsteps = int((secondsperday - startsecs)/mdstep)
           numsteps  = fullsteps
-c--       What's left in the first day (frac1).
+c--       What is left in the first day (frac1).
           frac1     = (secondsperday - startsecs) - fullsteps*mdstep
           fullsteps = int(secondsperday/modelstep)
-c--       What's left in a complete day (frac2).
+c--       What is left in a complete day (frac2).
           frac2     = secondsperday - fullsteps*mdstep
-c--       What's left up to the day before the last (frac3).
+c--       What is left up to the day before the last (frac3).
           frac3     = frac1 + frac2*(iday - 2)
           numsteps  = numsteps + (iday - 2)*fullsteps
 c--       The last step in iday.

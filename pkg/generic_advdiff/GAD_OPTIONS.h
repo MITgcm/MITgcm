@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.13 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.14 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -66,8 +66,8 @@ C contributions (or roundoff errors), it may be necessary to reduce this
 C value to achieve strict positivity.
 C
 C This hack applies to all tracers except temperature and salinity!
-C Don't use with Adams-Bashforth (for ptracers)!
-C Don't use with OBCS!
+C Do not use with Adams-Bashforth (for ptracers)!
+C Do not use with OBCS!
 #undef  GAD_SMOLARKIEWICZ_HACK
 
 #else

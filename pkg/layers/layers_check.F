@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.3 2009/12/28 02:33:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.4 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -48,7 +48,7 @@ C--  Check parameters:
 C     For now the package will only work if density ~ temperature
       IF ( (eosType .EQ. 'LINEAR')
      &  .AND. (sBeta .EQ. 0.0 _d 0) ) THEN
-C        we're good
+C        we are good
       ELSE
         WRITE(msgBuf,'(2A)') 'eosType must be eosType=''LINEAR''',
      &   ' and sBeta must = 0.0'

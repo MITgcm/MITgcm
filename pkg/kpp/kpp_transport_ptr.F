@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.12 2010/01/20 01:32:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.13 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -18,7 +18,7 @@ C     |   passive tracer flux.
 C     *==========================================================*
 C     | The nonlocal transport term is nonzero only for scalars
 C     | in unstable (convective) forcing conditions.
-C     | Note: We don't have a specific KPP diffusion for a
+C     | Note: We do not have a specific KPP diffusion for a
 C     |       passive tracer; use Salinity diffusion instead
 C     | Note: KPPdiffKzS(-,k) is defined at the top of grid cell
 C     |       k while KPPghat(i,j,k,bi,bj) is defined at the

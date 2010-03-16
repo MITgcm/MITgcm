@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timestamp.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timestamp.F,v 1.3 2010/03/16 00:11:46 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -49,7 +49,7 @@ c--   Get the current date.
       call cal_GetDate( myiter, mytime, mydate, mythid )
 
 c--   Print integration step, time, and the corresponding date
-c--   if this is the master thread's instance of this routine.
+c--   if this is the master thread instance of this routine.
 
       _BEGIN_MASTER(mythid)
         write(msgbuf,'(a)')

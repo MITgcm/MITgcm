@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_forcing.F,v 1.9 2007/11/05 18:55:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_forcing.F,v 1.10 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 C modified for external_forcing_DIC.F  August 1999
@@ -87,7 +87,7 @@ c    &      write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
      &        ACFC12north,ACFC12south
 C provide gradient between N and S values
 
-C STEPH'S INITIAL VERSION
+C STEPH S INITIAL VERSION
 #ifdef STEPH_GRAD
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx

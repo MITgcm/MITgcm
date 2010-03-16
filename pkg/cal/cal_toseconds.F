@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.7 2003/12/18 06:38:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.8 2010/03/16 00:11:46 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -17,12 +17,12 @@ c     o Given a time interval as a date array return the number of
 c       seconds in that time interval.
 c
 c       If one wanted to use calendar dates in this routine, then
-c       the date should be after the calendar's refdate and timeint
+c       the date should be after the calendar refdate and timeint
 c       would be the number of seconds that have elapsed since the
 c       refdate. Of course this can also be done by first calling
 c       sub cal_TimePassed and then calling this routine with the
 c       resulting time interval array.
-c              
+c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
 c     changed: Christian Eckert eckert@mit.edu  29-Dec-1999

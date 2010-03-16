@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.2 2010/01/02 23:19:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.3 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -319,7 +319,7 @@ C--   end if KPP_taveFreq > 0
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
-C     don't fill during call from INITIALISE_VARIA
+C     do not fill during call from INITIALISE_VARIA
       IF ( useDiagnostics .AND. myIter.NE.nIter0 ) THEN
        CALL DIAGNOSTICS_FILL(KPPviscAz ,'KPPviscA',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(KPPdiffKzS,'KPPdiffS',0,Nr,0,1,1,myThid)

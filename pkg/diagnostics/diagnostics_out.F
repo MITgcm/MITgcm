@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.47 2010/01/11 19:42:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.48 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -621,7 +621,7 @@ C--   end loop on jj counter
 
 #ifdef ALLOW_MDSIO
       IF (diag_mdsio) THEN
-C-    Note: temporary: since it's a pain to add more arguments to
+C-    Note: temporary: since it is a pain to add more arguments to
 C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
             glf = globalFiles

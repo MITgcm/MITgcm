@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.10 2009/09/03 14:49:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.11 2010/03/16 00:14:47 jmc Exp $
 C $Name:  $
 
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
@@ -31,7 +31,7 @@ c          nlperdyn    - physics level number atop each dynamics layer
 c
 c NOTES: 1) Pressure levs are built up from bottom, using p0, ps and dp:
 c              p(i,j,k)=p(i,j,k-1) + dp(k)*ps(i,j)/p0(i,j)
-c        2) Output dp's are aligned to fit EXACTLY between existing
+c        2) Output dp(s) are aligned to fit EXACTLY between existing
 c           levels of the dynamics vertical grid
 c        3) IMPORTANT! This routine assumes the levels are numbered
 c           from the bottom up, ie, level 1 is the surface.
@@ -54,7 +54,7 @@ c
 c
        integer i,j,L,Lbotij,Lnew
 c Require 12 (or 15) levels near the surface (300 mb worth) for fizhi. 
-c   the dp's are in the dptry arrays:
+c   the dp(s) are in the dptry arrays:
        integer ntry,ntry10,ntry40
        parameter (ntry10 = 12)
        parameter (ntry40 = 12)
