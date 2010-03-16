@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.39 2009/11/10 09:33:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.40 2010/03/16 19:16:23 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -266,6 +266,11 @@ C End of IF (DIFFERENT_MULTIPLE ...
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE stressDivergenceX  = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+CADJ STORE stressDivergenceY  = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+CADJ STORE DWATN  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Calculate ocean surface stress

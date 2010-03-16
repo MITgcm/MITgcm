@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.34 2009/11/13 09:04:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.35 2010/03/16 19:16:24 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -176,6 +176,12 @@ C
      I       uIceC, vIceC,
      O       e11, e22, e12,
      I       iEVPstep, myTime, myIter, myThid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE e11  = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE e12  = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE e22  = comlev1_evp,key = ikeyloc, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -394,10 +400,21 @@ C
      &           ) * recip_rAs(I,J,bi,bj)
            ENDDO
           ENDDO
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE stressDivergenceX  = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE stressDivergenceY = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C
 C     set up rhs for stepping the velocity field
 C
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=0,sNy
            DO I=0,sNx
 C     set up non-linear water drag, forcex, forcey
@@ -491,6 +508,11 @@ C
           ENDDO
          ENDDO
         ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uIceC = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE vIceC = comlev1_evp, key = ikeyloc, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
         CALL EXCH_UV_XY_RL(uIceC,vIceC,.TRUE.,myThid)
 
