@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.86 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.87 2010/03/16 19:47:50 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,6 +143,21 @@ C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
      I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_SALT_PLUME
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          saltPlumeDepth(i,j,bi,bj) = 0. _d 0
+          saltPlumeFlux(i,j,bi,bj)  = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_SEAICE
       IF ( useSEAICE ) THEN
@@ -378,16 +393,6 @@ c          rhoInSitu(i,j,k,bi,bj) = 0.
 # endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
           ENDDO
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_SALT_PLUME
-          saltPlumeDepth(i,j,bi,bj) = 0. _d 0
-          saltPlumeFlux(i,j,bi,bj)  = 0. _d 0
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
          ENDDO
         ENDDO
 
