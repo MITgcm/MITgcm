@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.2 2010/03/15 22:33:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.3 2010/03/16 13:29:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -185,7 +185,7 @@ cnew(
       print *,'ymod, yday     ', ymod,yday
       print *,'smrarstrtdt(1) ', smrareastartdate(1)
       print *,'smrarstartdate ', smrareastartdate
-#endif SEAICE_DEBUG
+#endif /* SEAICE_DEBUG */
 
       if ( ymod .EQ. yday ) then
          middate(1) = smrareastartdate(1) 
