@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.6 2004/04/03 04:46:34 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.7 2010/03/16 00:02:33 jmc Exp $
 C $Name:  $
 C
 CBOP
 C     !ROUTINE: EXCH.h
-C     !INTERFACE: 
+C     !INTERFACE:
 C     include "EXCH.h"
 C
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | EXCH.h                                                    
+C     | EXCH.h
 C     *==========================================================*
-C     | Support data structures for the MITgcm UV "exchange       
-C     | routines" code. This data should be private to the        
-C     | execution environment routines.
+C     | Support data structures for
+C     | the MITgcm-UV "exchange routines" code. This data should
+C     | be private to the execution environment routines.
 C     *==========================================================*
 CEOP
 
@@ -153,16 +153,16 @@ C      EXCH_SPIN_LIMIT - Error trapping threshold for deadlocked exchange
        PARAMETER ( EXCH_SPIN_LIMIT = 100000000 )
 
 C
-C      L_BUFFER[XY]  - Maximum size for exchange buffer in 
+C      L_BUFFER[XY]  - Maximum size for exchange buffer in
 C      L_WBUFFER    west,
 C      L_EBUFFER    east,
 C      L_SBUFFER   south,
 C      L_NBUFFER   north.
        INTEGER L_BUFFERX
-       PARAMETER ( L_BUFFERX = 
+       PARAMETER ( L_BUFFERX =
      &  (sNy+2*MAX_OLY_EXCH)*MAX_OLX_EXCH*MAX_NR_EXCH )
        INTEGER L_BUFFERY
-       PARAMETER ( L_BUFFERY = 
+       PARAMETER ( L_BUFFERY =
      &  (sNx+2*MAX_OLX_EXCH)*MAX_OLY_EXCH*MAX_NR_EXCH )
        INTEGER L_WBUFFER
        INTEGER L_EBUFFER
@@ -177,13 +177,13 @@ C--    COMMON / EXCH_L / LOGICAL number common arrays for exchanges
 C      exchNeedsMemSync - TRUE if memory sync. required to ensure
 C                         memory consistency during exchange
 C      exchUsesBarrier  - TRUE if we use a call to BAR to do sync.
-C                         between processes. On some machines we wont 
-C                         spin on the Ack setting ( the T90 ), 
+C                         between processes. On some machines we wont
+C                         spin on the Ack setting ( the T90 ),
 C                         instead we will use s system barrier.
-C                         On the T90 the system barrier is very fast and 
-C                         switches out the thread while it waits. On most 
-C                         machines the system barrier is much too slow and if 
-C                         we own the machine and have one thread per process 
+C                         On the T90 the system barrier is very fast and
+C                         switches out the thread while it waits. On most
+C                         machines the system barrier is much too slow and if
+C                         we own the machine and have one thread per process
 C                         preemption is not a problem.
 C      exchCollectStatistics - Turns exchange statistics collecting on and off.
 
@@ -197,85 +197,85 @@ C--    COMMON / EXCH_R / REAL number common arrays for exchanges
 C      xxxxSendBuf - Buffer used for sending data to another tile.
 C      xxxxRecvBuf - Buffer used for receiving data from another tile.
        COMMON / EXCH_R /
-     &  westSendBuf_RL, eastSendBuf_RL, 
+     &  westSendBuf_RL, eastSendBuf_RL,
      &  southSendBuf_RL, northSendBuf_RL,
-     &  westRecvBuf_RL, eastRecvBuf_RL, 
+     &  westRecvBuf_RL, eastRecvBuf_RL,
      &  southRecvBuf_RL, northRecvBuf_RL,
-     &  westSendBuf_RS, eastSendBuf_RS, 
+     &  westSendBuf_RS, eastSendBuf_RS,
      &  southSendBuf_RS, northSendBuf_RS,
-     &  westRecvBuf_RS, eastRecvBuf_RS, 
+     &  westRecvBuf_RS, eastRecvBuf_RS,
      &  southRecvBuf_RS, northRecvBuf_RS,
-     &  westSendBuf_R8, eastSendBuf_R8, 
+     &  westSendBuf_R8, eastSendBuf_R8,
      &  southSendBuf_R8, northSendBuf_R8,
-     &  westRecvBuf_R8, eastRecvBuf_R8, 
+     &  westRecvBuf_R8, eastRecvBuf_R8,
      &  southRecvBuf_R8, northRecvBuf_R8,
-     &  westSendBuf_R4, eastSendBuf_R4, 
+     &  westSendBuf_R4, eastSendBuf_R4,
      &  southSendBuf_R4, northSendBuf_R4,
-     &  westRecvBuf_R4, eastRecvBuf_R4, 
+     &  westRecvBuf_R4, eastRecvBuf_R4,
      &  southRecvBuf_R4, northRecvBuf_R4
-       _RL   westSendBuf_RL( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL   westSendBuf_RL( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL   eastSendBuf_RL( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL   eastSendBuf_RL( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL  southSendBuf_RL( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL  southSendBuf_RL( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL  northSendBuf_RL( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL  northSendBuf_RL( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL   westRecvBuf_RL( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL   westRecvBuf_RL( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL   eastRecvBuf_RL( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL   eastRecvBuf_RL( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL  southRecvBuf_RL( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL  southRecvBuf_RL( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RL  northRecvBuf_RL( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RL  northRecvBuf_RL( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS   westSendBuf_RS( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS   westSendBuf_RS( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS   eastSendBuf_RS( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS   eastSendBuf_RS( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS  southSendBuf_RS( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS  southSendBuf_RS( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS  northSendBuf_RS( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS  northSendBuf_RS( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS   westRecvBuf_RS( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS   westRecvBuf_RS( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS   eastRecvBuf_RS( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS   eastRecvBuf_RS( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS  southRecvBuf_RS( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS  southRecvBuf_RS( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _RS  northRecvBuf_RS( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _RS  northRecvBuf_RS( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8   westSendBuf_R8( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8   westSendBuf_R8( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8   eastSendBuf_R8( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8   eastSendBuf_R8( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8  southSendBuf_R8( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8  southSendBuf_R8( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8  northSendBuf_R8( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8  northSendBuf_R8( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8   westRecvBuf_R8( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8   westRecvBuf_R8( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8   eastRecvBuf_R8( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8   eastRecvBuf_R8( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8  southRecvBuf_R8( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8  southRecvBuf_R8( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R8  northRecvBuf_R8( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R8  northRecvBuf_R8( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4   westSendBuf_R4( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4   westSendBuf_R4( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4   eastSendBuf_R4( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4   eastSendBuf_R4( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4  southSendBuf_R4( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4  southSendBuf_R4( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4  northSendBuf_R4( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4  northSendBuf_R4( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4   westRecvBuf_R4( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4   westRecvBuf_R4( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4   eastRecvBuf_R4( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4   eastRecvBuf_R4( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4  southRecvBuf_R4( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4  southRecvBuf_R4( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       _R4  northRecvBuf_R4( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+       _R4  northRecvBuf_R4( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
 
 C--    COMMON / EXCH_I / INTEGER common arrays for exchanges
@@ -297,21 +297,21 @@ C         Min - Minimum spins for an exchange
      &  exchRecvXExchCount,
      &  exchRecvYSpinCount, exchRecvYSpinMax, exchRecvYSpinMin,
      &  exchRecvYExchCount
-       INTEGER  westSendAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER  westSendAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER  eastSendAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER  eastSendAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER southSendAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER southSendAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER northSendAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER northSendAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER  westRecvAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER  westRecvAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER  eastRecvAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER  eastRecvAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER southRecvAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER southRecvAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
-       INTEGER northRecvAck(            NUMBER_OF_BUFFER_LEVELS, 
+       INTEGER northRecvAck(            NUMBER_OF_BUFFER_LEVELS,
      &                       nSx, nSy )
        INTEGER exchangeBufLevel(  cacheLineSize/4, nSx, nSy )
        INTEGER exchNReqsX(cacheLineSize/4,nSx,nSy)
