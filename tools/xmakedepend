@@ -1,5 +1,8 @@
 #! /usr/bin/env sh
 #
+# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.8 2010/03/16 00:59:38 jmc Exp $
+# $Name:  $
+#
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
 #
 #	Do the equivalent of the 'makedepend' program, but do it right.
@@ -166,12 +169,9 @@ case "$makefile" in
 	;;
 esac
 
-if [ "$verbose"x = "y"x ]; then 
+if [ "$verbose"x = "y"x ]; then
     cat $CPPCMD
 fi
-
-cat $CPPCMD
-
 
 echo '' > $DEPENDLINES
 for i in $files
@@ -180,8 +180,6 @@ do
 
 done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"||g' -e 's| \./| |'   | awk '!/<.*>/{
 	if ($1 != $4  &&  $2 != "#ident" && $2 != "#pragma")
-
-
 
 	    {
 	    ofile = substr ($1, 1, length ($1) - 2) "'"$objsuffix"'"
@@ -252,7 +250,6 @@ case "$makefile" in
     $TMPMAKEFILE)
 	cat $TMPMAKEFILE
 	;;
-
 esac
 
 rm -f ${TMP}*
