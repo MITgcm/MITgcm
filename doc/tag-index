@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1237 2010/03/13 01:04:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1238 2010/03/16 00:32:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o remove unbalanced quote (single or double) in commented line of source code
+  (may cause some warning with some preprocessor/makedepend versions).
+o pkg/seaice:
   fix seaice_model.F for adjoint (gael) and update AD results of experiments
    lab_sea (std + evp + noseaicedyn) and offline_exf_seaice.
 o testreport:
