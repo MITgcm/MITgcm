@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.35 2010/03/16 19:16:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.36 2010/03/16 19:21:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -408,6 +408,15 @@ CADJ STORE stressDivergenceX  = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
 CADJ STORE stressDivergenceY = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_DYN_STABLE_ADJOINT
+cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
+      CALL ZERO_ADJ( 1, stressDivergenceX, myThid)
+      CALL ZERO_ADJ( 1, stressDivergenceY, myThid)
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C

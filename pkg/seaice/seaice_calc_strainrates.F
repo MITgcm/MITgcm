@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.15 2009/10/23 08:10:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.16 2010/03/16 19:21:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -196,6 +196,16 @@ C     one metric term is missing
        ENDDO
       ENDDO
 #endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_DYN_STABLE_ADJOINT
+cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
+      CALL ZERO_ADJ( 1, e11Loc, myThid)
+      CALL ZERO_ADJ( 1, e12Loc, myThid)
+      CALL ZERO_ADJ( 1, e22Loc, myThid)
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
       RETURN
