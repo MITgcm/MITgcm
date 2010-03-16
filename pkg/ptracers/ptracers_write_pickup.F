@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.10 2010/01/02 23:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.11 2010/03/16 00:22:26 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -88,7 +88,7 @@ C       First ***define*** the file group name
 C       Then set the actual unlimited dimension
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
 C       The following two values should probably be for the n-1 time
-C       step since we're saving the gpTrNm1 variable first
+C       step since we are saving the gpTrNm1 variable first
         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         DO iTracer = 1,PTRACERS_numInUse

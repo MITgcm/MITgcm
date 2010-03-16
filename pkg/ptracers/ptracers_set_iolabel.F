@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_set_iolabel.F,v 1.1 2007/11/10 22:09:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_set_iolabel.F,v 1.2 2010/03/16 00:22:26 jmc Exp $
 C $Name:  $
 
 #undef STAND_ALONE_IOLABEL_TESTING
@@ -86,7 +86,7 @@ CEOP
       c2Set3 = c1Set1//c2Set2
 
 C--   Set a default.
-C     This shouldn't show up unless there is a problem
+C     This should not show up unless there is a problem
 C     where nbLbl is equal or greater than 10*10 + 10*52 + 52*62 = 62**2
       DO n=1,nbLbl
        ioLbl(n) = '--'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.18 2009/09/14 20:54:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.19 2010/03/16 00:23:59 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -27,9 +27,9 @@ C ADAPTED FROM:
 C LANL CICE.v2.0.2
 C-----------------------------------------------------------------------
 C.. thermodynamics (vertical physics) based on M. Winton 3-layer model
-C.. See Bitz, C. M. and W. H. Lipscomb, 1999:  "An energy-conserving
-C..       thermodynamic sea ice model for climate study."  J. Geophys.
-C..       Res., 104, 15669 - 15677.
+C.. See Bitz, C. M. and W. H. Lipscomb, 1999:  An energy-conserving
+C..       thermodynamic sea ice model for climate study.
+C..       J. Geophys. Res., 104, 15669 - 15677.
 C..     Winton, M., 1999:  "A reformulated three-layer sea ice model."
 C..       Submitted to J. Atmos. Ocean. Technol.
 C.. authors Elizabeth C. Hunke and William Lipscomb

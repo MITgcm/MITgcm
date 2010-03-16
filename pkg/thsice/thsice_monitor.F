@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.16 2009/12/21 00:20:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.17 2010/03/16 00:23:59 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -72,7 +72,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
           IF ( thSIce_mon_stdio ) THEN
             mon_write_stdout = .TRUE.
@@ -258,7 +258,7 @@ C-- Total Energy :
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
           IF (mon_write_stdout) THEN
             WRITE(msgBuf,'(2A)') '// ==========================',

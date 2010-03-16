@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.27 2009/06/24 08:01:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.28 2010/03/16 00:23:18 jmc Exp $
 C $Name:  $
 
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
@@ -101,7 +101,7 @@ C SET SOME VALUES
 C SOLVE FOR UICE
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cph That's an important one! Note, that
+cph That is an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
 CADJ STORE uice = comlev1_dynsol,

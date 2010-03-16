@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.7 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.8 2010/03/16 00:22:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -144,8 +144,8 @@ C--   Set vertical diffusivity contribution from KPP
 #endif
 
 C-    Apply mask to vertical diffusivity
-C jmc: don't have the impression that masking is needed
-C      but could be removed later if it's the case.
+C jmc: do not have the impression that masking is needed
+C      but could be removed later if it is the case.
         DO j = 1-Oly, sNy+Oly
          DO i = 1-Olx, sNx+Olx
           KappaRtr(i,j,iTr) = maskUp(i,j)*KappaRtr(i,j,iTr)

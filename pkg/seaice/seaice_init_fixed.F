@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.7 2010/01/03 00:21:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.8 2010/03/16 00:23:19 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -37,7 +37,7 @@ C     i,j,k,bi,bj - Loop counters
 #endif
 cif(
 cif   Helper variable for determining the fraction of sw radiation
-cif   penetrating the model's shallowest layer
+cif   penetrating the model shallowest layer
       INTEGER dummyIter
       _RL dummyTime
       _RL swfracba(2)

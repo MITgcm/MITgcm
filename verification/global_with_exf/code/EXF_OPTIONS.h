@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.1 2007/05/10 21:54:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.2 2010/03/16 00:27:00 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -11,7 +11,7 @@ C $Name:  $
 #ifdef ALLOW_AUTODIFF_TAMC
 
 C When compile for AD mode,
-C this package is currently configured by ECCO_CPPOPTIONS.h 
+C this package is currently configured by ECCO_CPPOPTIONS.h
 C which is directly included in CPP_OPTIONS.h
 
 #else /* ndef ALLOW_AUTODIFF_TAMC */
@@ -31,29 +31,29 @@ c       Do a bit more printout for the log file than usual.
 c
 c   >>> ALLOW_ATM_WIND <<<
 c       If defined, 10-m wind fields can be read-in from files.
-c                                        
+c
 c   >>> ALLOW_ATM_TEMP <<<
 c       If defined, atmospheric temperature and specific
 c       humidity fields can be read-in from files.
-c                                        
+c
 c   >>> ALLOW_DOWNWARD_RADIATION <<<
 c       If defined, downward long-wave and short-wave radiation
 c       can be read-in form files or computed from lwflux and swflux.
 c
 c   >>> ALLOW_BULKFORMULAE <<<
 c       Allows the use of bulk formulae in order to estimate
-c       turbulent and radiative fluxes at the ocean's surface.
+c       turbulent and radiative fluxes at the ocean surface.
 c
 c   >>> EXF_READ_EVAP <<<
 c       If defined, evaporation fields are read-in, rather than
 c       computed from atmospheric state.
-c                                        
+c
 c   >>> ALLOW_RUNOFF <<<
 c       If defined, river and glacier runoff can be read-in from files.
 c
 c   >>> ATMOSPHERIC_LOADING <<<
 c       If defined, atmospheric pressure can be read-in from files.
-c   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h 
+c   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
 c            and cannot be changed here (in EXF_OPTIONS)
 c
 c   >>> ALLOW_CLIMSST_RELAXATION <<<

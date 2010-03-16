@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.7 2010/01/31 17:55:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.8 2010/03/16 00:27:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -274,7 +274,7 @@ C              :: includes the cylinder and no other land, they do not need to b
 c afe:
 c  the below appears to be an attempt to make the heat flux somewhat general in regards
 c  to bathymetry, but jmc pointed out some ways it could be better.  this is not
-c  an issue at this point (July '04) since all experiments are being done with straight-
+c  an issue at this point (July 04) since all experiments are being done with straight-
 c  sided tank and cyclinder walls.
 c  some todo items:
 c  * add terms to top and bottom -- probably critical!!!

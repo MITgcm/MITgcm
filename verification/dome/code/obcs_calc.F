@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.5 2010/01/31 17:55:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.6 2010/03/16 00:27:00 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -52,7 +52,7 @@ c     width of flow transition
       delh=5. _d 0
 c     total depth of active layer
       Dinf=300. _d 0
-c     g' of inflow
+c     g_prime of inflow
       dTemp=(2. _d 0/rhonil)/(2. _d -4)
       gp_inflow=Talpha*gravity*dTemp
 c     Deformation radius

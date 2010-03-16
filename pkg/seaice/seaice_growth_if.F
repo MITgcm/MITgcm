@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.8 2009/08/02 19:45:42 jmc Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.9 2010/03/16 00:23:18 jmc Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -450,7 +450,7 @@ C     NOW DO ICE
      O           F_io_net,F_ia_net,F_ia, QSWI, 
      I           bi, bj)
 
-C Sometimes it's nice to have a setup without ice-atmosphere heat
+C Sometimes it is nice to have a setup without ice-atmosphere heat
 C fluxes.  This flag turns those fluxes to zero but leaves the 
 C Ice ocean fluxes intact.  Thus, the first oceanic cell can transfer
 C heat to the ice leading to melting in F_ml and it can release 
@@ -898,7 +898,7 @@ c     There is a convergence of energy into the ice from above
 
 c     THE QUANTITY OF HEAT WHICH IS THE RESIDUAL TO THE QUANTITY OF 
 c     ML temperature.  If the net energy flux is exactly balanced by the 
-c     latent energy of fusion in the new ice created then we won't 
+c     latent energy of fusion in the new ice created then we will not 
 c     change the ML temperature at all.
 
                   ResidualHeatOutOfSystem(I,J) = 
@@ -1226,7 +1226,7 @@ CADJ &                        key = iicekey, byte = isbyte
 #endif /* SEAICE_DEBUG */
             
             
-C     BI,BJ'S
+C     end bi,bj loops
          ENDDO
       ENDDO
       

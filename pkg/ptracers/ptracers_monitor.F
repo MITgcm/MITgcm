@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.17 2009/12/21 00:17:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.18 2010/03/16 00:22:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,7 +60,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Ptracers field monitor start
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
           IF (monitor_stdio) THEN
             mon_write_stdout = .TRUE.
@@ -119,7 +119,7 @@ c        WRITE(suff,'(A6,I4.4)') 'ptrac', ip
 C--   Ptracers field monitor finish
        IF ( MASTER_CPU_IO(myThid) ) THEN
 C-    only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
         IF ( mon_write_stdout ) THEN
          WRITE(msgBuf,'(2A)') '// ==========================',

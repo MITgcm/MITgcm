@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.3 2010/03/15 16:08:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.4 2010/03/16 00:23:18 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
       subroutine seaice_cost_export( myThid )
 C     /==========================================================\
 C     | subroutine seaice_cost_export
-C     | o Poor man's ice export through Fram Strait
+C     | o Poor man ice export through Fram Strait
 C     |   Parameters currently hard-wired for arctic210x192x50
 C     \==========================================================/
        implicit none

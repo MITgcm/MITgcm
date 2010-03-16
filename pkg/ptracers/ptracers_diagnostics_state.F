@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.5 2010/01/02 23:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.6 2010/03/16 00:22:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -79,7 +79,7 @@ C     trIter=0 when this routine is called the first time
               DO j = 1,sNy
                 DO i = 1,sNx+1
 #ifdef ALLOW_LONGSTEP
-C     at first timestep we don't have averaged velocities yet -
+C     at first timestep we do not have averaged velocities yet -
 C     use initial velocities instead
                  IF ( trIter.GT.nIter0 ) THEN
                   dummy(i,j,k,bi,bj) =
@@ -112,7 +112,7 @@ C     use initial velocities instead
               DO j = 1,sNy+1
                 DO i = 1,sNx
 #ifdef ALLOW_LONGSTEP
-C     at first timestep we don't have averaged velocities yet -
+C     at first timestep we do not have averaged velocities yet -
 C     use initial velocities instead
                  IF ( trIter.GT.nIter0 ) THEN
                   dummy(i,j,k,bi,bj) =
@@ -146,7 +146,7 @@ C     use initial velocities instead
               DO j = 1,sNy
                 DO i = 1,sNx
 #ifdef ALLOW_LONGSTEP
-C     at first timestep we don't have averaged velocities yet -
+C     at first timestep we do not have averaged velocities yet -
 C     use initial velocities instead
                  IF ( trIter.GT.nIter0 ) THEN
                   dummy(i,j,k,bi,bj) = LS_wVel(i,j,k,bi,bj) *

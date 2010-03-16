@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/update_ocean_exports.F,v 1.4 2005/06/16 15:09:42 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/update_ocean_exports.F,v 1.5 2010/03/16 00:27:00 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
        subroutine update_ocean_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine update_ocean_exports - 'Wrapper' routine to update
-c        the fields related to the ocean's surface that are needed
+c        the fields related to the ocean surface that are needed
 c        by fizhi (sst and sea ice extent).
 c
 c Call:  getsst  (Return the current sst field-read dataset if needed)

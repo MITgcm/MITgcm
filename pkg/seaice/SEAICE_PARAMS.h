@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.62 2009/11/10 09:33:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.63 2010/03/16 00:23:18 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -189,7 +189,7 @@ C     SEAICE_snowThick   - cutoff snow thickness
 C     SEAICE_shortwave   - penetration shortwave radiation factor
 C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
 C     SEAICE_salinity    - initial salinity of sea ice defined as a
-C                          fraction of the model's surface level salinity
+C                          fraction of the model surface level salinity
 C     SEAICE_gamma_t     - timescale for melting ice from a warm mixed layer (s),
 C                          3d = 259200s is a reasonable value, default=unset
 C     SEAICE_gamma_t_frz - timescale for freezing ice from a cold mixed layer (s),
