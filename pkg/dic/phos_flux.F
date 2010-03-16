@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.10 2009/10/08 16:15:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.11 2010/03/16 00:18:09 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -81,7 +81,7 @@ C- topography), then remineralize in place
      &                  +BIOac(i,j,k)*(1. _d 0-DOPfraction)
            ELSE
 
-C- else, let's flux it downward
+C- else, let us flux it downward
 
              zbase=-rF(k+1)
              DO ko=k+1,Nr

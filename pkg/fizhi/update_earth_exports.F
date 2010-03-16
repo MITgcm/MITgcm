@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.28 2009/04/01 19:34:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.29 2010/03/16 00:19:33 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
        subroutine update_earth_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine update_earth_exports - 'Wrapper' routine to update
-c        the fields related to the earth's surface that are needed
+c        the fields related to the earth surface that are needed
 c        by fizhi.
 c
 c Call:  getlgr    (Set the leaf area index and surface greenness,

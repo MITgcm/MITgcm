@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.11 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.12 2010/03/16 00:18:09 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -74,7 +74,7 @@ C- topography), then remineralize in place
              cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
            ELSE
 
-C- else, let's flux it downward
+C- else, let us flux it downward
 
              zbase=-rF(k+1)
              DO ko=k+1,Nr

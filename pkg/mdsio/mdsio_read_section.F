@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_section.F,v 1.1 2009/09/01 19:16:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_section.F,v 1.2 2010/03/16 00:16:50 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -30,7 +30,7 @@ C fName       string  :: base name for file to read
 C filePrec    integer :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always read from the current directory (even if
 C                        "mdsioLocalDir" is set)
-C arrType     char(2) :: which array (fldRL/RS) to read into, either "RL" or "RS
+C arrType     char(2) :: which array (fldRL/RS) to read into, either "RL" or "RS"
 C kSize       integer :: size of third dimension, normally either 1 or Nr
 C fldRL         RL    :: array to read into if arrType="RL", fldRL(:,kSize,:,:)
 C fldRS         RS    :: array to read into if arrType="RS", fldRS(:,kSize,:,:)
@@ -286,7 +286,7 @@ C fName       string  :: base name for file to read
 C filePrec    integer :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always read from the current directory (even if
 C                        "mdsioLocalDir" is set)
-C arrType     char(2) :: which array (fldRL/RS) to read into, either "RL" or "RS
+C arrType     char(2) :: which array (fldRL/RS) to read into, either "RL" or "RS"
 C kSize       integer :: size of third dimension, normally either 1 or Nr
 C fldRL         RL    :: array to read into if arrType="RL", fldRL(:,kSize,:,:)
 C fldRS         RS    :: array to read into if arrType="RS", fldRS(:,kSize,:,:)

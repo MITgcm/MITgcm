@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.6 2007/07/31 23:01:58 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.7 2010/03/16 00:16:50 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -9,8 +9,8 @@ C !ROUTINE: OPPS_CALC
 C !INTERFACE: ======================================================
       subroutine OPPS_CALC(
      U     tracerEnv,
-     I     wVel, 
-     I     kMax, nTracer, nTracerInuse, 
+     I     wVel,
+     I     kMax, nTracer, nTracerInuse,
      I     I, J, bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
@@ -44,7 +44,7 @@ C     |   not improve the readability of the code because of the joint      |
 C     |   treatment of active (theta, salt) and passive tracers. The array  |
 C     |   tracerEnv(Nr,2+PTRACERS_num) contains                             |
 C     |   theta    = tracerEnv(:,1),                                        |
-C     |   salt     = tracerEnv(:,2), and                                    | 
+C     |   salt     = tracerEnv(:,2), and                                    |
 C     |   ptracers = tracerEnv(:,3:PTRACERS_num+2).                         |
 C     |   All related array names have been changed accordingly, so that    |
 C     |   instead of Sd(Nr) and Td(Nr) (plume salinity and temperature), we |
@@ -85,7 +85,7 @@ c     myTime - Current time in simulation
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 C     imin, imax, jmin, jmax  - array computation indices
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER K, K2, K2m1, K2p1, ktr
       INTEGER ntime,nn,kmx,ic
@@ -121,7 +121,7 @@ C     local initialization
 
 C     Copy some arrays
       dtts = dTtracerLev(1)
-C     
+C
 C     start k-loop
 C
 
@@ -157,11 +157,11 @@ c
        PlumeEntrainment(k) = 0.0
 c
 c
-c 
+c
 #ifdef ALLOW_OPPS_DEBUG
        IF ( OPPSdebugLevel.GE.debLevB ) THEN
         WRITE(msgBuf,'(A,I3)')
-     &       'S/R OPPS_CALC: doing old lowerparcel', k  
+     &       'S/R OPPS_CALC: doing old lowerparcel', k
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT , 1)
        ENDIF
@@ -169,7 +169,7 @@ c
        radius=PlumeRadius
        StartingFlux=radius*radius*Wd(k)*Dd(k)
        oldflux=StartingFlux
-       
+
        dz2=DrF(k)
        DO k2=k,KMax-1
         D1=state1( Pd(k2,2), Pd(k2,1),i,j,k2+1,bi,bj,myThid)
@@ -180,27 +180,27 @@ c
 c To start downward, parcel has to initially be heavier than environment
 c but after it has started moving, we continue plume until plume tke or
 c flux goes negative
-c 
+c
 CML     &       _hFacC(i,j,k-1,bi,bj)
 CML     &       *_hFacC(i,j,k,bi,bj) .GT. 0.
 CML     &  .AND.
         IF (D2-D1 .LT. STABILITY_THRESHOLD.or.k2.ne.k) THEN
          dz1=dz2
          dz2=DrF(k2+1)
-c     
+c
 C     find mass flux according to eq.(3) from paper by vertical integration
 c
          newflux=oldflux+e2*radius*Wd(k2)*Dd(k2)*
      &        .5*(dz1+dz2)
 CML         print *, 'ml-opps:', i,j,k,oldflux,newflux,e2,radius,
 CML     &        Wd(k2),Dd(k2),Pd(k2,1),Pd(k2,2),dz1,dz2
-c     
+c
          PlumeEntrainment(k2+1) = newflux/StartingFlux
-c     
+c
          IF(newflux.LE.0.0) then
 #ifdef ALLOW_OPPS_DEBUG
           IF ( OPPSdebugLevel.GE.debLevA ) THEN
-           WRITE(msgBuf,'(A,I3)') 
+           WRITE(msgBuf,'(A,I3)')
      &          'S/R OPPS_CALC: Plume entrained to zero at level ', k2
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT , 1)
@@ -210,19 +210,19 @@ c
           if(maxdepth.eq.k) goto 1000
           goto 1
          endif
-c     
+c
 c entrainment rate is basically a scaled mass flux dM/M
 c
          entrainrate = (newflux - oldflux)/newflux
          oldflux = newflux
 c
 c
-c mix var's are the average environmental values over the two grid levels
+c mix var(s) are the average environmental values over the two grid levels
 c
          DO ktr=1,nTracerInUse
           pmix=(dz1*tracerEnv(k2,ktr)+dz2*tracerEnv(k2+1,ktr))
      &         /(dz1+dz2)
-          Pd(k2+1,ktr)=Pd(k2,ktr) 
+          Pd(k2+1,ktr)=Pd(k2,ktr)
      &         - entrainrate*(pmix - Pd(k2,ktr))
          ENDDO
 c
@@ -236,7 +236,7 @@ c and eq (5) from the paper
 c
 #ifdef ALLOW_OPPS_DEBUG
          IF ( OPPSdebugLevel.GE.debLevA ) THEN
-          WRITE(msgBuf,'(A,3E12.4,I3)') 
+          WRITE(msgBuf,'(A,3E12.4,I3)')
      &    'S/R OPPS_CALC: Dd,De,entr,k ',Dd(k2),De(k2),entrainrate,k2
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &         SQUEEZE_RIGHT , 1)
@@ -246,24 +246,24 @@ CML   insert Eq. (4) into Eq. (5) to get something like this for wp^2
          wsqr = wsqr - wsqr*abs(entrainrate)+ gravity*
      &        (dz1*(Dd(k2)-De(k2))/De(k2)
      &        +dz2*(Dd(k2+1)-De(k2+1))/De(k2+1))
-c     
+c
 c if negative k.e. then plume has reached max depth, get out of loop
 c
          IF(wsqr.LE.0.0)then
           maxdepth = k2
 #ifdef ALLOW_OPPS_DEBUG
           IF ( OPPSdebugLevel.GE.debLevA ) THEN
-           WRITE(msgBuf,'(A,I3)') 
+           WRITE(msgBuf,'(A,I3)')
      &     'S/R OPPS_CALC: Plume velocity went to zero at level ', k2
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT , 1)
-           WRITE(msgBuf,'(A,4A14)') 
-     &          'S/R OPPS_CALC: ', 'wsqr', 'entrainrate', 
+           WRITE(msgBuf,'(A,4A14)')
+     &          'S/R OPPS_CALC: ', 'wsqr', 'entrainrate',
      &          '(Dd-De)/De up', '(Dd-De)/De do'
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT , 1)
-           WRITE(msgBuf,'(A,4E14.6)') 
-     &          'S/R OPPS_CALC: ', wsqr, entrainrate, 
+           WRITE(msgBuf,'(A,4E14.6)')
+     &          'S/R OPPS_CALC: ', wsqr, entrainrate,
      &          (Dd(k2)-De(k2))/De(k2), (Dd(k2+1)-De(k2+1))/De(k2+1)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT , 1)
@@ -290,7 +290,7 @@ c
        MaxDepth=kMax
 c
  1     CONTINUE
-c     
+c
        Ad(k)=FRACTIONAL_AREA
        IC=0
 c
@@ -303,12 +303,12 @@ c
 c next compute the mass flux beteen each grid box using the entrainment
 c
         Md(k)=Wd(k)*Ad(k)
-c     
+c
         DO k2=k+1,maxDepth
          Md(k2)=Md(k)*PlumeEntrainment(k2)
 #ifdef ALLOW_OPPS_DEBUG
          IF ( OPPSdebugLevel.GE.debLevA ) THEN
-          WRITE(msgBuf,'(A,2E12.4,I3)') 
+          WRITE(msgBuf,'(A,2E12.4,I3)')
      &         'S/R OPPS_CALC: Md, Wd, and  k are ',Md(k2),Wd(k2),k2
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &         SQUEEZE_RIGHT , 1)
@@ -329,7 +329,7 @@ c
         dt = dtts
         do k2=k,maxDepth-1
          IF ( Wd(K2) .NE. 0. _d 0 ) dt = min(dt,drF(k2)/Wd(k2))
-c     
+c
 c time integration will be integer number of steps to get one
 c gcm time step
 c
@@ -341,13 +341,13 @@ c
 c make sure area weighted vertical velocities match; in other words
 c make sure mass in equals mass out at the intersection of each grid
 c cell. Eq. (20)
-c     
+c
          mda(k2) = (md(k2)*drF(k2)+md(k2+1)*drF(k2+1))/
      *        (drF(k2)+drF(k2+1))
-c     
+c
          wda(k2) = (wd(k2)*drF(k2)+wd(k2+1)*drF(k2+1))/
      *        (drF(k2)+drF(k2+1))
-c     
+c
          DO ktr = 1, nTracerInUse
           Pda(k2,ktr) = Pd(k2,ktr)
           Paa(k2,ktr) = tracerEnv(k2+1,ktr)
@@ -357,7 +357,7 @@ c
         dt = min(dt,dtts)
 #ifdef ALLOW_OPPS_DEBUG
         IF ( OPPSdebugLevel.GE.debLevA ) THEN
-         WRITE(msgBuf,'(A,F14.4)') 
+         WRITE(msgBuf,'(A,F14.4)')
      &        'S/R OPPS_CALC: time step = ', dt
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , 1)
@@ -370,32 +370,32 @@ C
         kmx = maxdepth-1
         do nn=1,ntime
 C
-C     top point 
+C     top point
 C
          DO ktr = 1,nTracerInUse
           tracerEnv(k,ktr) =  tracerEnv(k,ktr)-
      &        (mda(k)*(Pda(k,ktr)-Paa(k,ktr)))*dt*recip_drF(k)
          ENDDO	
-c     
+c
 c now do inner points if there are any
 c
 CML         if(Maxdepth-k.gt.1) then
-CML    This if statement is superfluous     
+CML    This if statement is superfluous
 CML         IF ( k .LT. Maxdepth-1 ) THEN
 CML         DO k2=k+1,Maxdepth-1
 CML         mda(maxDepth) = 0.
          DO k2=k+1,kmx
           k2m1 = max(k,k2-1)
           k2p1 = max(k2+1,maxDepth)
-c     
+c
            DO ktr = 1,nTracerInUse
             tracerEnv(k2,ktr) = tracerEnv(k2,ktr) +
      &           (mda(k2m1)*(Pda(k2m1,ktr)-Paa(k2m1,ktr))
      &           -mda(k2)  *(Pda(k2,ktr)  -Paa(k2,ktr))  )
      &           *dt*recip_drF(k2)
-           ENDDO           
+           ENDDO
           ENDDO
-CML    This if statement is superfluous     
+CML    This if statement is superfluous
 CML         ENDIF
 C
 C     bottom point
@@ -404,24 +404,24 @@ C
           tracerEnv(kmx+1,ktr) =  tracerEnv(kmx+1,ktr)+
      &        mda(kmx)*(Pda(kmx,ktr)-Paa(kmx,ktr))*dt*recip_drF(kmx+1)
          ENDDO
-c     
+c
 c     set the environmental temp and salinity to equal new fields
-c     
+c
          DO ktr=1,nTracerInUse
           DO k2=1,kmx
            paa(k2,ktr) = tracerEnv(k2+1,ktr)
           ENDDO
          ENDDO	
-c     
+c
 c end loop on number of time integration steps
 c
         enddo
        ENDDO
  999   continue
-C     
+C
 C     count convection event in this grid cell
-C     
-       OPPSconvectCount(I,J,K,bi,bj) = 
+C
+       OPPSconvectCount(I,J,K,bi,bj) =
      &      OPPSconvectCount(I,J,K,bi,bj) + 1. _d 0
 C
 C     jump here if k = maxdepth or if level not unstable, go to next
@@ -432,7 +432,7 @@ c
 C
 C     end  of k-loop
 C
-      ENDDO 
+      ENDDO
 
 C--   End IF (DIFFERENT_MULTIPLE)
       ENDIF
@@ -483,14 +483,14 @@ CML      pLoc = ABS(rC(kRef))*mtoSI
 
       IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 C     in Z coordinates the pressure is rho0 * (hydrostatic) Potential
-       IF ( useDynP_inEos_Zc ) THEN  
+       IF ( useDynP_inEos_Zc ) THEN
 C----------
 C     NOTE: For now, totPhiHyd only contains the Potential anomaly
-C           since PhiRef is not available for Atmos and has not (yet) 
-C           been added in S/R DIAGS_PHI_HYD 
+C           since PhiRef is not available for Atmos and has not (yet)
+C           been added in S/R DIAGS_PHI_HYD
 C----------
         pLoc = rhoConst*( totPhiHyd(i,j,kRef,bi,bj)
-     &                   -rC(kRef)*gravity 
+     &                   -rC(kRef)*gravity
      &                   )*maskC(i,j,kRef,bi,bj)
        ELSE
         pLoc = -rhoConst*rC(kRef)*gravity*maskC(i,j,kRef,bi,bj)
@@ -517,7 +517,7 @@ C     the tracer point
       t2 = t1*t1
       t3 = t2*t1
       t4 = t3*t1
-      
+
       s1  = sLoc
 
       IF ( equationOfState .EQ. 'LINEAR' ) THEN
@@ -531,9 +531,9 @@ C     the tracer point
 
 C     this is not correct, there is a field eosSig0 which should be use here
 C     but I DO not intent to include the reference level in this routine
-         WRITE(*,'(a)') 
+         WRITE(*,'(a)')
      &        ' FIND_RHO_SCALAR: for POLY3, the density is not'
-         WRITE(*,'(a)') 
+         WRITE(*,'(a)')
      &         '                 computed correctly in this routine'
          rhoLoc = 0. _d 0
 
@@ -542,20 +542,20 @@ C     but I DO not intent to include the reference level in this routine
 C     nonlinear equation of state in pressure coordinates
 
          s3o2 = s1*SQRT(s1)
-         
+
          p1 = pLoc*SItoBar
          p2 = p1*p1
 
 C     density of freshwater at the surface
-         rfresh = 
-     &          eosJMDCFw(1) 
+         rfresh =
+     &          eosJMDCFw(1)
      &        + eosJMDCFw(2)*t1
      &        + eosJMDCFw(3)*t2
      &        + eosJMDCFw(4)*t3
      &        + eosJMDCFw(5)*t4
      &        + eosJMDCFw(6)*t4*t1
 C     density of sea water at the surface
-         rsalt = 
+         rsalt =
      &        s1*(
      &             eosJMDCSw(1)
      &           + eosJMDCSw(2)*t1
@@ -573,7 +573,7 @@ C     density of sea water at the surface
          rhoP0 = rfresh + rsalt
 
 C     secant bulk modulus of fresh water at the surface
-         bMfresh = 
+         bMfresh =
      &             eosJMDCKFw(1)
      &           + eosJMDCKFw(2)*t1
      &           + eosJMDCKFw(3)*t2
@@ -591,7 +591,7 @@ C     secant bulk modulus of sea water at the surface
      &           + eosJMDCKSw(7)*t2
      &           )
 C     secant bulk modulus of sea water at pressure p
-         bMpres = 
+         bMpres =
      &        p1*( eosJMDCKP(1)
      &           + eosJMDCKP(2)*t1
      &           + eosJMDCKP(3)*t2
@@ -612,44 +612,44 @@ C     secant bulk modulus of sea water at pressure p
      &           )
 
          bulkMod = bMfresh + bMsalt + bMpres
-         
+
 C     density of sea water at pressure p
          rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod) - rhoConst
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         sp5 = SQRT(s1) 
-            
+         sp5 = SQRT(s1)
+
          p1   = pLoc*SItodBar
          p1t1 = p1*t1
 
          rhoNum = eosMDJWFnum(0)
-     &        + t1*(eosMDJWFnum(1) 
-     &        +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )  
+     &        + t1*(eosMDJWFnum(1)
+     &        +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )
      &        + s1*(eosMDJWFnum(4)
-     &        +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)      
-     &        + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2 
-     &        +     eosMDJWFnum(9)*s1 
+     &        +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)
+     &        + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2
+     &        +     eosMDJWFnum(9)*s1
      &        +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
 
-            
+
          den = eosMDJWFden(0)
      &        + t1*(eosMDJWFden(1)
      &        +     t1*(eosMDJWFden(2)
      &        +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
      &        + s1*(eosMDJWFden(5)
-     &        +     t1*(eosMDJWFden(6) 
-     &        +         eosMDJWFden(7)*t2) 
-     &        +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) ) 
+     &        +     t1*(eosMDJWFden(6)
+     &        +         eosMDJWFden(7)*t2)
+     &        +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) )
      &        + p1*(eosMDJWFden(10)
      &        +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
-            
-         rhoDen = 1.0/(epsln+den) 
+
+         rhoDen = 1.0/(epsln+den)
 
          rhoLoc = rhoNum*rhoDen - rhoConst
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
-C     
+C
       ELSE
        WRITE(msgbuf,'(3A)')
      &        ' STATE1 : equationOfState = "',
@@ -664,7 +664,7 @@ C
       RETURN
       END
 
-      
+
 #undef OPPS_ORGCODE
 #ifdef OPPS_ORGCODE
 c Listed below is the subroutine for use in parallel 3-d circulation code.
@@ -672,10 +672,10 @@ c It has been used in the parallel semtner-chervin code and is now being used
 c In the POP code.  The subroutine is called nlopps (long story to explain why).
 
 c I've attached the version of lopps that we've been using in the simulations.
-c There is one common block that is different from the standard model commons 
+c There is one common block that is different from the standard model commons
 c (countc) and it is not needed if the array convadj is not used.  The routine
 c does need "kmp" which is why the boundc common is included. For massively
-c parallel codes (like POP) we think this will work well when converted from a 
+c parallel codes (like POP) we think this will work well when converted from a
 c "slab" (i=is,ie) to a column, which just means removing the "do i=is,ie" loop.  c There are differences between this
 c code and the 1-d code and the earlier scheme implemented in 3-d models. These c differences are described below.
 
@@ -695,19 +695,19 @@ c     each grid level.  First, a plume profile of T,S, and W are
 c     determined using the standard plume model, but with a detraining
 c     mass instead of entraining.  Thus, the T and S plume
 c     characteristics still change, but the plume contracts in size
-c     rather than expanding ala classical entraining plumes.  This 
+c     rather than expanding ala classical entraining plumes.  This
 c     is heuristically more in line with large eddy simulation results.
 c     At each grid level, the convergence of plume velocity determines
 c     the flux of T and S, which is conserved by using an upstream
 c     advection.  The vertical velocity is balanced so that the area
-c     weighted upward velocity equals the area weighted downdraft 
+c     weighted upward velocity equals the area weighted downdraft
 c     velocity, ensuring mass conservation. The present implementation
 c     adjusts the plume for a time period equal to the time for 1/2 of
-c     the mass of the fastest moving level to move downward.  As a 
+c     the mass of the fastest moving level to move downward.  As a
 c     consequence, the model does not completely adjust the profile at
 c     each model time step, but provides a smooth adjustment over time.
 c
-c     
+c
 
 
 c
@@ -855,12 +855,12 @@ c
           PlumeEntrainment(k) = 0.0
 c
 c
-c 
+c
           if(debug) write(0,*) 'Doing old lowerparcel'
           radius=PlumeRadius
           StartingFlux=radius*radius*Wd(k)*Dd(k)
           oldflux=StartingFlux
-      
+
           dz2=GridThickness(k)
           DO k2=k,NumGridPoints-1
             D1=state1(Sd(k2),Td(k2),k2+1)
@@ -870,7 +870,7 @@ c
 c To start downward, parcel has to initially be heavier than environment
 c but after it has started moving, we continue plume until plume tke or
 c flux goes negative
-c 
+c
             IF (D2-D1 .LT. STABILITY_THRESHOLD.or.k2.ne.k) THEN
                  dz1=dz2
                  dz2=GridThickness(k2+1)
@@ -897,7 +897,7 @@ c
                  oldflux = newflux
 c
 c
-c mix var's are the average environmental values over the two grid levels
+c mix var(s) are the average environmental values over the two grid levels
 c
                  smix=(dz1*stemp(k2)+dz2*stemp(k2+1))/(dz1+dz2)
                  thmix=(dz1*ttemp(k2)+dz2*ttemp(k2+1))/(dz1+dz2)
@@ -909,7 +909,7 @@ c
 c
                   sd(k2+1)=sd(k2) - entrainrate*(smix - sd(k2))
                   td(k2+1)=td(k2) - entrainrate*(thmix - td(k2))
-c                
+c
 c
 c compute the density at this level for the buoyancy term in the
 c vertical k.e. equation
@@ -1106,7 +1106,7 @@ c
 c
 c end loop on k, move on to next possible plume
 c
-      ENDDO 
+      ENDDO
 1100  continue
 c
 c i loop

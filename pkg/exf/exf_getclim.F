@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.13 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.14 2010/03/16 00:18:51 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -20,7 +20,7 @@ c       be set in EXF_OPTIONS.h .
 c
 c       A note on surface fluxes:
 c
-c       The MITgcmUV's vertical coordinate z is positive upward.
+c       The MITgcm-UV vertical coordinate z is positive upward.
 c       This implies that a positive flux is out of the ocean
 c       model. However, the wind stress forcing is not treated
 c       this way. A positive zonal wind stress accelerates the

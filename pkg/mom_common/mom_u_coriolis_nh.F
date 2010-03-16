@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_coriolis_nh.F,v 1.2 2007/03/12 23:54:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_coriolis_nh.F,v 1.3 2010/03/16 00:20:14 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -15,7 +15,7 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C Calculates the 3.D Coriolis term in the zonal momentum equation:
 C \begin{equation*}
-C - \overline{ f' \overline{w}^{k} }^{i}
+C - \overline{ f_prime \overline{w}^{k} }^{i}
 C \end{equation*}
 C consistent with Non-Hydrostatic (or quasi-hydrostatic) formulation
 

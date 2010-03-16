@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.7 2005/06/17 16:51:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.8 2010/03/16 00:19:33 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1030,7 +1030,7 @@ C**** 2. Pathological cases.
 C**** Case 1: EVAP is positive in presence of negative gradient.
 C**** Case 2: EVAP and ETURB have opposite sign, implying that 
 C**** "virtual effects" derivatives are meaningless and thus that we
-C**** don't know the proper tendency terms.
+C**** do not know the proper tendency terms.
 C**** In both cases, assume zero evaporation for the time step.
 
 C      IF( ( EVAP(CHNO) .LT. 0. .AND. EM(CHNO).LT.ESATNW )
@@ -1525,9 +1525,9 @@ C****
 C**** -------------------------------------------------
 C**** DEWFALL:
 C**** 
-C**** If dewfall adds to cir, insure that it doesn't fill 
+C**** If dewfall adds to cir, insure that it does not fill 
 C**** beyond capacity.  If resulting throughfall adds to top soil layer, 
-C**** insure that it also doesn't fill beyond capacity.
+C**** insure that it also does not fill beyond capacity.
 C**** 
       IF( CAPAC(ChNo) .GT. SATCAP(ChNo) ) THEN
         THRU = CAPAC(ChNo) - SATCAP(ChNo)

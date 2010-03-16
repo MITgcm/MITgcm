@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.36 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.37 2010/03/16 00:18:51 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -111,7 +111,7 @@ c     o Get the forcing fields for the current time step. The switches
 c       for the inclusion of the individual forcing components have to
 c       be set in EXF_OPTIONS.h (or ECCO_CPPOPTIONS.h).
 c       A note on surface fluxes:
-c       The MITgcmUV's vertical coordinate z is positive upward.
+c       The MITgcm-UV vertical coordinate z is positive upward.
 c       This implies that a positive flux is out of the ocean
 c       model. However, the wind stress forcing is not treated
 c       this way. A positive zonal wind stress accelerates the

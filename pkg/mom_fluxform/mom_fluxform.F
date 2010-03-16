@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.41 2008/04/18 18:11:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.42 2010/03/16 00:16:50 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -830,7 +830,7 @@ c     ELSE
 #endif
       ENDIF
 
-C--   3.D Coriolis term (horizontal momentum, Eastward component: -f'*w)
+C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
       IF ( use3dCoriolis ) THEN
         CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,cf,myThid)
         DO j=jMin,jMax

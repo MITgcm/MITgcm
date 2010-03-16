@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.62 2008/04/01 01:27:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.63 2010/03/16 00:16:50 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -659,7 +659,7 @@ C--   Bernoulli term
 C--   end if momAdvection
       ENDIF
 
-C--   3.D Coriolis term (horizontal momentum, Eastward component: -f'*w)
+C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
       IF ( use3dCoriolis ) THEN
         CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,uCf,myThid)
         DO j=jMin,jMax

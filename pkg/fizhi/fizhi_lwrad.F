@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.25 2005/06/17 16:51:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.26 2010/03/16 00:19:33 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1028,7 +1028,7 @@ c     the fitting for the planck flux is valid in the range 160-345 K.
         enddo
        enddo
 
-c-----the earth's surface, with an index "np+1", is treated as a layer
+c-----the earth surface, with an index "np+1", is treated as a layer
 
        do j=1,n
         do i=1,m

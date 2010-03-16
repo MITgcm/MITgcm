@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.9 2008/06/11 18:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.10 2010/03/16 00:18:51 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -570,7 +570,7 @@ c     from the beginning of the year.
       _END_MASTER( myThid )
       _BARRIER
 
-C--   Summarize the External forcing's setup.
+C--   Summarize the External forcing setup.
       CALL EXF_SUMMARY( myThid )
 
 #ifdef ALLOW_DIAGNOSTICS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.13 2008/04/09 22:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.14 2010/03/16 00:18:09 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -130,7 +130,7 @@ c set donewt = 0 for bracket and bisection
 c ---------------------------------------------------------------------
 C Change units from the input of mol/m^3 -> mol/kg:
 c (1 mol/m^3)  x (1 m^3/1024.5 kg)
-c where the ocean's mean surface density is 1024.5 kg/m^3
+c where the ocean mean surface density is 1024.5 kg/m^3
 c Note: mol/kg are actually what the body of this routine uses 
 c for calculations.  Units are reconverted back to mol/m^3 at the 
 c end of this routine.
@@ -189,7 +189,7 @@ c the iterative [H+] solvers
             b2=b*b
             db = 2.0*x + k1local
 
-c Evaluate f([H+]) and f'([H+])
+c Evaluate f([H+]) and f_prime([H+])
 c fn = hco3+co3+borate+oh+hpo4+2*po4+silicate+hfree
 c      +hso4+hf+h3po4-ta
             fn = k1local*x*diclocal/b +
@@ -396,7 +396,7 @@ c carbonate
 c ---------------------------------------------------------------------
 C Change units from the input of mol/m^3 -> mol/kg:
 c (1 mol/m^3)  x (1 m^3/1024.5 kg)
-c where the ocean's mean surface density is 1024.5 kg/m^3
+c where the ocean mean surface density is 1024.5 kg/m^3
 c Note: mol/kg are actually what the body of this routine uses
 c for calculations.  Units are reconverted back to mol/m^3 at the
 c end of this routine.
@@ -534,7 +534,7 @@ c carbonate
 c ---------------------------------------------------------------------
 C Change units from the input of mol/m^3 -> mol/kg:
 c (1 mol/m^3)  x (1 m^3/1024.5 kg)
-c where the ocean's mean surface density is 1024.5 kg/m^3
+c where the ocean mean surface density is 1024.5 kg/m^3
 c Note: mol/kg are actually what the body of this routine uses
 c for calculations.  Units are reconverted back to mol/m^3 at the
 c end of this routine.
@@ -691,8 +691,8 @@ C carbon species. References for each equation are noted in the code.
 C Once calculated, the constants are
 C stored and passed in the common block "const". The original version 
 C of this code was based on the code by dickson in Version 2 of 
-C "Handbook of Methods C for the Analysis of the Various Parameters of 
-C the Carbon Dioxide System in Seawater", DOE, 1994 (SOP No. 3, p25-26). 
+C  Handbook of Methods C for the Analysis of the Various Parameters of 
+C the Carbon Dioxide System in Seawater , DOE, 1994 (SOP No. 3, p25-26). 
 C....................................................................
 
         do i=imin,imax
@@ -939,8 +939,8 @@ C carbon species. References for each equation are noted in the code.
 C Once calculated, the constants are
 C stored and passed in the common block "const". The original version
 C of this code was based on the code by dickson in Version 2 of
-C "Handbook of Methods C for the Analysis of the Various Parameters of
-C the Carbon Dioxide System in Seawater", DOE, 1994 (SOP No. 3, p25-26).
+C  Handbook of Methods C for the Analysis of the Various Parameters of
+C the Carbon Dioxide System in Seawater , DOE, 1994 (SOP No. 3, p25-26).
 C....................................................................
 
 c determine pressure (bar) from depth

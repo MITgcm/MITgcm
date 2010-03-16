@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_coriolis_nh.F,v 1.2 2007/03/12 23:54:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_coriolis_nh.F,v 1.3 2010/03/16 00:20:14 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -16,7 +16,7 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C Calculates the Coriolis term in the vertical momentum equation:
 C \begin{equation*}
-C + f'\overline{u}^{ik}
+C + f_prime \overline{u}^{ik}
 C \end{equation*}
 
 C !USES: ===============================================================

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.6 2009/12/21 00:05:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.7 2010/03/16 00:20:51 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -61,7 +61,7 @@ C     !LOCAL VARIABLES:
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
           IF (monitor_stdio) THEN
             mon_write_stdout = .TRUE.
@@ -160,7 +160,7 @@ C       Print the numerical stablility parameters for current state
 C       Dynamics field monitor finish
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
           IF ( mon_write_stdout ) THEN
             WRITE(msgBuf,'(2A)') '// ==========================',

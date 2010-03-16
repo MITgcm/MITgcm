@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_section.F,v 1.1 2009/09/01 19:16:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_section.F,v 1.2 2010/03/16 00:16:50 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -33,7 +33,7 @@ C filePrec    integer :: number of bits per word in file (32 or 64)
 C globalFile  logical :: selects between writing a global or tiled file
 C useCurrentDir logic :: always write to the current directory (even if
 C                        "mdsioLocalDir" is set)
-C arrType     char(2) :: which array (fldRL/RS) to write, either "RL" or "RS
+C arrType     char(2) :: which array (fldRL/RS) to write, either "RL" or "RS"
 C kSize       integer :: size of third dimension, normally either 1 or Nr
 C fldRL         RL    :: array to write if arrType="RL", fldRL(:,kSize,:,:)
 C fldRS         RS    :: array to write if arrType="RS", fldRS(:,kSize,:,:)
@@ -265,7 +265,7 @@ C filePrec    integer :: number of bits per word in file (32 or 64)
 C globalFile  logical :: selects between writing a global or tiled file
 C useCurrentDir logic :: always write to the current directory (even if
 C                        "mdsioLocalDir" is set)
-C arrType     char(2) :: which array (fldRL/RS) to write, either "RL" or "RS
+C arrType     char(2) :: which array (fldRL/RS) to write, either "RL" or "RS"
 C kSize       integer :: size of third dimension, normally either 1 or Nr
 C fldRL         RL    :: array to write if arrType="RL", fldRL(:,kSize,:,:)
 C fldRS         RS    :: array to write if arrType="RS", fldRS(:,kSize,:,:)

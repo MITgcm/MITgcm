@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.7 2008/01/23 06:55:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.8 2010/03/16 00:21:26 jmc Exp $
 C $Name:  $
  
 C CPP options file for OBCS package
@@ -35,7 +35,7 @@ C balance barotropic velocity
 
 C     The following five CPP options are experimental and aim to deal
 C     with artifacts due to the low-frequency specification of sea-ice
-C     boundary conditions compared to the model's forcing frequency.
+C     boundary conditions compared to the model forcing frequency.
 C     Ice convergence at edges can cause model to blow up.  The
 C     following CPP option fixes this problem at the expense of less
 C     accurate boundary conditions.
