@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.9 2010/03/16 00:23:18 jmc Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.10 2010/03/16 19:09:51 gforget Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,7 +202,6 @@ c     conversion between Joules and m^3 of ice  (m^3)
 
 c     FOR FLOODING
       FL_C2 = RHOI/RHOSW
-      FL_C2 = RHOSN/RHOSW
       FL_C3 = (RHOSW-RHOI)/RHOSN
       FL_C4 = RHOSN/RHOI
 
@@ -409,22 +408,19 @@ c                  In m of mean snow thickness.
           ENDDO
             
 C     FIND ATM. WIND SPEED
-            DO J=1,sNy
-               DO I=1,sNx
-#ifdef SEAICE_EXTERNAL_FORCING
-c     USE EXF PACKAGE
-                  UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
-#else 
-C     CALCULATE IT HERE
-                  SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
-                  IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
-                     UG(I,J)=SEAICE_EPS
-                  ELSE
-                     UG(I,J)=SQRT(SPEED_SQ)
-                  ENDIF
-#endif /* SEAICE_EXTERNAL_FORCING */
-               ENDDO
-            ENDDO
+        DO J=1,sNy
+         DO I=1,sNx
+C     copy the wind speed computed in exf_wind.F to UG
+          UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
+CML   this is the old code, which does the same
+CML          SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
+CML          IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
+CML             UG(I,J)=SEAICE_EPS
+CML          ELSE
+CML             UG(I,J)=SQRT(SPEED_SQ)
+CML          ENDIF
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphCADJ STORE heff   = comlev1, key = ikey_dynamics
