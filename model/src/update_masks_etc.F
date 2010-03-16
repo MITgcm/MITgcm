@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.3 2009/04/28 18:01:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.4 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -160,7 +160,7 @@ Cml      ENDDO
 C     CALL PLOT_FIELD_XYRS( tmpfld, 
 C    &         'Model Depths K Index' , 1, myThid )
 CML I assume that R_low is not changed anywhere else in the code
-CML and since it is not changed in this routine, we don't need to 
+CML and since it is not changed in this routine, we do not need to 
 CML print it again.
 CML      CALL PLOT_FIELD_XYRS(R_low,
 CML     &         'Model R_low (ini_masks_etc)', 1, myThid)
@@ -282,7 +282,7 @@ Cml   The masks should stay constant, so they are not recomputed at this time
 Cml   implicitly implying that no cell that is wet in the begin will ever dry
 Cml   up! This is a strong constraint and should be implementent as a hard 
 Cml   inequality contraint when performing optimization (m1qn3 cannot do that)
-Cml   Also, I am assuming here that the new hFac's never become zero during
+Cml   Also, I am assuming here that the new hFac(s) never become zero during
 Cml   optimization!
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

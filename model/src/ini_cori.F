@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.30 2009/06/28 01:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.31 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -181,7 +181,7 @@ C    with 2 polar faces + 4 equatorials:
 #ifdef ALLOW_MONITOR
       IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
         IF (monitor_stdio) THEN
           mon_write_stdout = .TRUE.

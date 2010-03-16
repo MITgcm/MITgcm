@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.2 2009/11/30 13:21:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.3 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,7 +44,7 @@ C     | the threads to solve several different problems
 C     | concurrently this implementation will not work.
 C     |
 C     | This version implements the single-reduction CG algorithm of
-C     | d'Azevedo, Eijkhout, and Romine (Lapack Working Note 56, 1999).
+C     | d Azevedo, Eijkhout, and Romine (Lapack Working Note 56, 1999).
 C     | C. Wolfe, November 2009, clwolfe@ucsd.edu
 C     *==========================================================*
 C     \ev
@@ -178,12 +178,12 @@ C--   Initial residual calculation
         ENDDO
        ENDDO
       ENDDO
-      
+
       CALL EXCH_S3D_RL( cg2d_r, 1,  myThid )
-      
+
       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
       CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
-       
+
       err = SQRT(err)
       actualIts      = 0
       actualResidual = err
@@ -195,9 +195,9 @@ C--   Initial residual calculation
         _END_MASTER( myThid )
       ENDIF
       firstResidual=actualResidual
-      
+
       IF ( err .LT. cg2dTolerance ) GOTO 11
-      
+
 C DER (1999) do one iteration outside of the loop to start things up.
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
@@ -223,10 +223,10 @@ C--    conjugate direction vector "s".
         ENDDO
        ENDDO
       ENDDO
-      
+
       CALL EXCH_S3D_RL( cg2d_s, 1, myThid )
       CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
-       
+
       eta_qrNM1 = eta_qrN
 
 C==    Evaluate laplace operator on conjugate gradient vector
@@ -252,9 +252,9 @@ C==    q = A.s
         ENDDO
        ENDDO
       ENDDO
-      
+
       CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
-      
+
       sigma = eta_qrN/alpha
 
 C==   Update solution and residual vectors
@@ -298,7 +298,7 @@ C--    z = M^-1 r
        ENDDO
 
        CALL EXCH_S3D_RL( cg2d_y, 1, myThid )
-      
+
 C==    v = A.z
 C--    eta_qr = <z,r>
 C--    delta = <z,v>
@@ -332,7 +332,7 @@ C--    Do the error calcuation here to consolidate global reductions
          ENDDO
         ENDDO
        ENDDO
-       
+
 C      CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 C      CALL GLOBAL_SUM_TILE_RL( deltaTile,delta,myThid )
 C      CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
@@ -342,16 +342,16 @@ C      CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
          sumPhi(2,bi,bj) = deltaTile(bi,bj)
          sumPhi(3,bi,bj) = errTile(bi,bj)
         ENDDO
-       ENDDO       
-       
-C     global_vec_sum_r8 doesn't call BAR2 on input     
+       ENDDO
+
+C     global_vec_sum_r8 does not call BAR2 on input
        CALL BAR2( myThid)
        CALL GLOBAL_VEC_SUM_R8(3,3,sumPhi,myThid)
-       
+
        eta_qrN = sumPhi(1,1,1)
        delta   = sumPhi(2,1,1)
        err     = sumPhi(3,1,1)
-       
+
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
@@ -366,12 +366,12 @@ c    &      ) THEN
 c       ENDIF
        ENDIF
        IF ( err .LT. cg2dTolerance ) GOTO 11
-       
+
        cgBeta   = eta_qrN/eta_qrNM1
        eta_qrNM1 = eta_qrN
        alpha = delta - cgBeta**2*alpha
        sigma = eta_qrN/alpha
-       
+
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy

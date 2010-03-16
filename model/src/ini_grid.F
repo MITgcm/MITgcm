@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.32 2008/09/05 20:15:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.33 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,7 +96,7 @@ C     Set up horizontal grid and coordinate system
 #ifdef ALLOW_MONITOR
       IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
-C     & mon_write_mnc (since it's the only thread that uses those flags):
+C     & mon_write_mnc (since it is the only thread that uses those flags):
 
         IF (monitor_stdio) THEN
           mon_write_stdout = .TRUE.

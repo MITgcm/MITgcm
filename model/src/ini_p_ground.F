@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.7 2005/12/15 01:11:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.8 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -289,7 +289,7 @@ C-   compute phiLoc = hRef(Ro_surf):
 
         IF (selectFindRoSurf.EQ.1) THEN
 C-----
-C  goal: evaluate phi0surf (used for computing geopotential'= Phi - PhiRef):
+C  goal: evaluate phi0surf (used for computing geopotential_prime = Phi - PhiRef):
 C   phi0surf = g*Ztopo-PhiRef(Ro_surf) if no truncation was applied to Ro_surf;
 C  but because of hFacMin, surf.ref.pressure (=Ro_surf) is truncated and
 C   phi0surf = Phi(Theta-Analytic,P=Ro_surf) - PhiRef(P=Ro_surf)

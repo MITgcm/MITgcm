@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.6 2010/01/15 22:39:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.7 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,7 +67,7 @@ CEOP
       IF ( usingZCoords ) THEN
 
 C----- Compute bottom pressure deviation from gravity*rho0*H
-C      Start from phiHyd at the (bottom) tracer point and add Del_h*g*rho'
+C      Start from phiHyd at the (bottom) tracer point and add Del_h*g*rho_prime
 C      with Del_h = distance from the bottom up to tracer point
 
 C--    Initialise to zero (otherwise phi0surf accumulate over land)

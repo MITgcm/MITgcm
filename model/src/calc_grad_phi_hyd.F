@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.10 2007/02/05 03:22:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.11 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -155,7 +155,7 @@ C--   Zonal & Meridional gradient of potential anomaly
 #ifdef NONLIN_FRSURF
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.1 ) THEN
        IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
-C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
+C--    z* coordinate slope term: rho_prime/rho0 * Grad_r(g.z)
         factorZ = gravity*recip_rhoConst*recip_rhoFacC(k)*0.5 _d 0
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -180,7 +180,7 @@ C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
          ENDDO
         ENDDO
        ELSEIF (buoyancyRelation .EQ. 'OCEANICP' ) THEN
-C--    p* coordinate slope term: alpha' * Grad_r( p )
+C--    p* coordinate slope term: alpha_prime * Grad_r( p )
         factorP = 0.5 _d 0
         DO j=jMin,jMax
          DO i=iMin+1,iMax
@@ -199,7 +199,7 @@ C--    p* coordinate slope term: alpha' * Grad_r( p )
          ENDDO
         ENDDO
        ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
-C--    p* coordinate slope term: alpha' * Grad_r( p )
+C--    p* coordinate slope term: alpha_prime * Grad_r( p )
         conv_theta2T = (rC(k)/atm_Po)**atm_kappa
         factorP = (atm_Rd/rC(k))*conv_theta2T*0.5 _d 0
         DO j=jMin,jMax

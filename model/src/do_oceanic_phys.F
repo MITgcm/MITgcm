@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.85 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.86 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -697,7 +697,7 @@ C--     Compute GGL90 mixing coefficients
 cph storing here is needed only for one GMREDI_OPTIONS:
 cph define GM_BOLUS_ADVEC
 cph keep it although TAF says you dont need to.
-cph but I've avoided the #ifdef for now, in case more things change
+cph but I have avoided the #ifdef for now, in case more things change
 CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, 
 CADJ &     kind = isbyte
 CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.53 2009/11/30 22:22:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.54 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -345,7 +345,7 @@ C--   Free-surface related limitations:
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-C- note : not implemented in checkpoint48b but it's done now (since 01-28-03)
+C- note : not implemented in checkpoint48b but it is done now (since 01-28-03)
 c     IF (select_rStar.GT.0 .AND. useOBCS ) THEN
 c       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 c     ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.36 2008/02/13 02:43:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.37 2010/03/16 00:08:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -174,8 +174,8 @@ C--   Set vertical diffusivity contribution from KPP
 #endif
 
 C-    Apply mask to vertical diffusivity
-C jmc: don't have the impression that masking is needed
-C      but could be removed later if it's the case.
+C jmc: do not have the impression that masking is needed
+C      but could be removed later if it is the case.
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
         KappaRT(i,j) = maskUp(i,j)*KappaRT(i,j)
