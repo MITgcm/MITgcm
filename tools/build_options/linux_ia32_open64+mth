@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64+mth,v 1.2 2009/08/14 20:28:19 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64+mth,v 1.3 2010/03/17 22:05:21 ce107 Exp $
 #  $Name:  $
 #
 # Multithreaded tests require
@@ -15,10 +15,12 @@ FC=openf90
 F90C=openf90
 F90FIXEDFORMAT='-fixedform -x f95'
 LD=openf90
+LIBS=-lstdc++
 DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-extend-source'
 MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -g'
+NOOPTFLAGS='-O0 -m32 -g -openmp'
 # to avoid a bug in ealier version (4.1) of compiler with openMP:
 NOOPTFILES='mon_set_iounit.F mon_init.F'
 
