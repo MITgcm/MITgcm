@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.26 2009/11/24 00:16:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.27 2010/03/18 13:06:01 dimitri Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -34,7 +34,7 @@ C     MAX_NO_BARRIERS - Maximum number of distinct thread "barriers"
       INTEGER MAX_NO_THREADS
       PARAMETER ( MAX_NO_THREADS =  4 )
       INTEGER MAX_NO_PROCS
-      PARAMETER ( MAX_NO_PROCS   =  2048 )
+      PARAMETER ( MAX_NO_PROCS   =  4096 )
       INTEGER MAX_NO_BARRIERS
       PARAMETER ( MAX_NO_BARRIERS = 1 )
 
