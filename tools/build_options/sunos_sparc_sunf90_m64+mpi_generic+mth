@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+
+#  Build options for the Sun fortran compiler with a generic MPI
+# DON'T FORGET to set environment variable MPI_INC_DIR to the include
+# directory of your MPI implementation
+ 
+FC=${FC:=mpif77}
+F90C=${F90C:=mpif90}
+CC=${CC:=mpicc}
+LINK=${F90C}
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
+CPP='/usr/ccs/lib/cpp -P'
+NOOPTFLAGS='-O0 -g -m64 -u -r8const -xopenmp=noopt'
+NOOPTFILES=''
+EXTENDED_SRC_FLAG='-e'
+
+if test "x$DEVEL" != x ; then
+    FFLAGS='-u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover -xopenmp=noopt'
+else
+    FFLAGS='-u -r8const -xopenmp'
+fi
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-fast -m64 -xvector=lib -xpad=local'
+    LIBS="$LIBS -lmopt -lsunmath"
+else
+    #  Try to follow IEEE-754
+#    FOPTIM='-O0 -m64'
+    FOPTIM='-fast -m64 -xpad=local -fsimple=1'
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O3 -m64 -xopenmp'
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64 -L/usr/local/lib'
+fi
+
+INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+MPIINCLUDEDIR="$MPI_INC_DIR"
+MPI_HEADER_FILES=${MPI_HEADER_FILES:='mpif.h mpiof.h'}
+MPI_HEADER_FILES_INC=${MPI_HEADER_FILES_INC:='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'}
+
