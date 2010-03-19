@@ -6,31 +6,30 @@ F90C=f90
 CC=cc
 LINK=${F90C}
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0 -g -m64 -Kpic -xfilebyteorder=big16:%all -u -r8const'
+NOOPTFLAGS='-O0 -g -m32 -xfilebyteorder=big16:%all -u -r8const -xopenmp=noopt'
 NOOPTFILES=''
 EXTENDED_SRC_FLAG='-e'
-OMPFLAG='-xopenmp'
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-xfilebyteorder=big16:%all -u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover'
+    FFLAGS='-xfilebyteorder=big16:%all -u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover -xopenmp=noopt'
 else
-    FFLAGS='-xfilebyteorder=big16:%all -u -r8const'
+    FFLAGS='-xfilebyteorder=big16:%all -u -r8const -xopenmp'
 fi
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-fast -m64 -xvector=simd -xpad=local -Kpic'
+    FOPTIM='-fast -m32 -xvector=simd -xpad=local'
     LIBS="$LIBS -lmopt"
 else
     #  Try to follow IEEE-754
-#    FOPTIM='-O0 -m64 -Kpic'
-    FOPTIM='-fast -m64 -xpad=local -fsimple=1 -Kpic'
+#    FOPTIM='-O0 -m32'
+    FOPTIM='-fast -m32 -xpad=local -fsimple=1'
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -Kpic'
+CFLAGS='-O3 -m32 -xopenmp'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -56,7 +55,7 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
     LIBS="-L${NETCDF_LIBDIR}"
 elif test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
-    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3'
 elif test -d /usr/include/netcdf ; then
     INCLUDES='-I/usr/include/netcdf'
 elif test -d /usr/local/netcdf ; then
@@ -64,6 +63,6 @@ elif test -d /usr/local/netcdf ; then
     LIBS='-L/usr/local/netcdf/lib'
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
-    LIBS='-L/usr/local/lib64 -L/usr/local/lib'
+    LIBS='-L/usr/local/lib'
 fi
 

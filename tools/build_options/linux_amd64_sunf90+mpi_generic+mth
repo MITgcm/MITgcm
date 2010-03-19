@@ -1,22 +1,25 @@
 #!/bin/bash
 #
 
-FC=f77
-F90C=f90
-CC=cc
+#  Build options for the Sun fortran compiler with a generic MPI
+# DON'T FORGET to set environment variable MPI_INC_DIR to the include
+# directory of your MPI implementation
+ 
+FC=${FC:=mpif77}
+F90C=${F90C:=mpif90}
+CC=${CC:=mpicc}
 LINK=${F90C}
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0 -g -m64 -Kpic -xfilebyteorder=big16:%all -u -r8const'
+NOOPTFLAGS='-O0 -g -m64 -Kpic -xfilebyteorder=big16:%all -u -r8const -xopenmp=noopt'
 NOOPTFILES=''
 EXTENDED_SRC_FLAG='-e'
-OMPFLAG='-xopenmp'
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-xfilebyteorder=big16:%all -u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover'
+    FFLAGS='-xfilebyteorder=big16:%all -u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover -xopenmp=noopt'
 else
-    FFLAGS='-xfilebyteorder=big16:%all -u -r8const'
+    FFLAGS='-xfilebyteorder=big16:%all -u -r8const -xopenmp'
 fi
 
 if test "x$IEEE" = x ; then
@@ -30,7 +33,7 @@ else
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -Kpic'
+CFLAGS='-O3 -m64 -Kpic -xopenmp'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -66,4 +69,10 @@ elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64 -L/usr/local/lib'
 fi
+
+INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+MPIINCLUDEDIR="$MPI_INC_DIR"
+MPI_HEADER_FILES=${MPI_HEADER_FILES:='mpif.h mpiof.h'}
+MPI_HEADER_FILES_INC=${MPI_HEADER_FILES_INC:='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'}
 
