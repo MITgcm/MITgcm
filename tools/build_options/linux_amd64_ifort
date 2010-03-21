@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort,v 1.5 2010/02/19 22:26:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort,v 1.6 2010/03/21 18:00:26 jmc Exp $
 # $Name:  $
 #
 
@@ -15,7 +15,7 @@
 # optfile should work.
 # d) You can replace -fPIC with -mcmodel=medium which may perform faster
 # than -fPIC and still support data sizes over 2GB per process but all
-# the libraries you link to myst be compiled with -fPIC or -mcmodel=medium
+# the libraries you link to must be compiled with -fPIC or -mcmodel=medium
 # e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed
 # impact appears to be minimal.
 
@@ -49,9 +49,9 @@ INCLUDES=''
 LIBS=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fpstkchk -check all -fpe0 -traceback -ftrapuv -fpmodel except -warn all'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fpstkchk -check all -fpe0 -traceback -ftrapuv -fpmodel except -warn all"
 else
-    FFLAGS='-w95 -W0 -WB -convert big_endian -assume byterecl -fPIC'
+    FFLAGS="-$FFLAGS w95 -W0 -WB -convert big_endian -assume byterecl -fPIC"
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
