@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort11+mpi_generic,v 1.1 2010/02/16 23:56:03 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort11+mpi_generic,v 1.2 2010/03/21 17:59:13 jmc Exp $
 #  $Name:  $
 #
 #  Constantinos Evangelinos
@@ -17,7 +17,7 @@ LINK="$F90C -shared-intel -no-ipo"
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
-F90FIXEDFORMAT='-fixed -Tf' 
+F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 
 NOOPTFLAGS='-O0 -g'
@@ -28,10 +28,12 @@ INCLUDES=''
 LIBS=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-r8 -i4 -convert big_endian -assume byterecl -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all'
+    FFLAGS="$FFLAGS -convert big_endian -assume byterecl -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all"
 else
-    FFLAGS='-r8 -i4 -W0 -WB -convert big_endian -assume byterecl'
+    FFLAGS="$FFLAGS -W0 -WB -convert big_endian -assume byterecl"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
 if test "x$GENERIC" != x ; then
     PROCF=-mia32 -axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+authors,v 1.1 2009/04/15 23:52:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+authors,v 1.2 2010/03/21 17:59:13 jmc Exp $
 # $Name:  $
 
 #  Build options for the intel 9.0 fortran compiler
@@ -11,7 +11,7 @@
 
 # OpenMP : Tested on hugo, eddy and faulks
 #-------
-# run with OpenMP: needs to set environment var. OMP_NUM_THREADS 
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
 #    and generally, needs to increase the stack-size:
 #   -  sh,bash:
 #     > export OMP_NUM_THREADS=2
@@ -27,7 +27,7 @@ LINK='/usr/local/pkg/intel/intel_fc_90/bin/ifort -i-static -no-ipo'
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
-F90FIXEDFORMAT='-fixed -Tf' 
+F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 OMPFLAG='-openmp'
 
@@ -39,12 +39,15 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
 #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
 else
     FOPTIM='-O0 -noalign -check all'
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
-   #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl"
+   #FFLAGS="$FFLAGS -mp -w95 -W0 -WB"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 

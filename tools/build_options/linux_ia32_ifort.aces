@@ -1,6 +1,7 @@
 #!/bin/bash
-
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces,v 1.1 2009/04/16 01:04:42 jmc Exp $
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces,v 1.2 2010/03/21 17:59:13 jmc Exp $
+# $Name:  $
 
 # test Multi-Treaded with OpenMP:
 #  to get 1 node with 2 cpu : qsub -I -l nodes=1:ppn=2
@@ -16,10 +17,10 @@
 #     > setenv KMP_STACKSIZE 400m
 #-------
 
-
 FC='ifort'
 CC='icc'
 LINK='ifort'
+
 INCLUDES='-I/usr/local/pkg/ifc/ifc-9.0.021/include'
 LIBS='-L/usr/local/pkg/ifc/ifc-9.0.021/lib'
 
@@ -33,11 +34,13 @@ NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
 
 if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
 else
     FOPTIM='-O0 -noalign'
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -pc64 -xW -convert big_endian -assume byterecl'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -pc64 -xW -convert big_endian -assume byterecl"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
 NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
 NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'

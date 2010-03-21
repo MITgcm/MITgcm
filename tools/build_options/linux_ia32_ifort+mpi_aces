@@ -1,9 +1,10 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.8 2009/06/26 16:06:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.9 2010/03/21 17:59:13 jmc Exp $
+# $Name:  $
 #
 #  build options used with the Intel compiler, version 8 and 9,
-#  for the daily testing on ACES (which are initiated by cron jobs 
+#  for the daily testing on ACES (which are initiated by cron jobs
 #  on the "ao" head node).
 #
 #  Needs the appropriate module commands,
@@ -13,16 +14,16 @@
 #-- using default intel (v8.1) and default mpich/intel:
 #    module add mpich/intel
 #    module add netcdf/3.6.1/icc
-#   e.g.(sh,bash): 
+#   e.g.(sh,bash):
 #    export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-intel/include/'
 #   (and run using mpirun -machinefile my_list_of_nodes)
-#   
+#
 #-- using intel v9.0 and mpich2-intel, in this order:
 #    module add ifc/9.0.021 icc/9.0.021 intel/9.0
 #    module add mpich2/1.0.3/intel
 #    module add netcdf/3.6.1/icc
 #    module add mpiexec             (<-- to run with mpiexec)
-#   e.g.(sh,bash): 
+#   e.g.(sh,bash):
 #    export MPI_INC_DIR='/usr/local/pkg/mpich2/mpich2-1.0.3/intel/include/'
 #   (and run using mpiexec)
 #
@@ -30,13 +31,13 @@
 #  -several problems with earlier version of ifort (including some version 8)
 #  -with version 9 and more recent one:
 #   1) compile with genmake2 -omp option ;
-#   2) needs to set environment variable OMP_NUM_THREADS, and generally, 
+#   2) needs to set environment variable OMP_NUM_THREADS, and generally,
 #      needs also to increase the thread stack-size:
-#     (sh, bash) > export OMP_NUM_THREADS=2  
+#     (sh, bash) > export OMP_NUM_THREADS=2
 #                > export KMP_STACKSIZE=400m
 #     (csh,tcsh) > setenv OMP_NUM_THREADS 2
 #                > setenv KMP_STACKSIZE 400m
-#  NOTE: set KMP_STACKSIZE in .bashrc/.profile/.cshrc/.tcshrc is the easiest 
+#  NOTE: set KMP_STACKSIZE in .bashrc/.profile/.cshrc/.tcshrc is the easiest
 #  way (I found) to set it for all proc; not an issue (?) for OMP_NUM_THREADS
 
 # Notes: the PBS -V option for exporting environment variables does not work
@@ -47,7 +48,7 @@ CC='mpicc'
 F90C='mpif90 -fixed -c '
 LINK='mpif77'
 
-#-- for NetCDF: 
+#-- for NetCDF:
 INCLUDES="-I$NETCDF_INCDIR"
 INCLUDEDIRS=$NETCDF_INCDIR
 LIBS="-L$NETCDF_LIBDIR"
@@ -73,13 +74,16 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
     #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
     #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+    FFLAGS="$FFLAGS -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian"
 else
     # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
     FOPTIM='-O0 -noalign -CB -CU -CV'
-    FFLAGS='-r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
-    # FLAGS='-mp -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian"
+    # FLAGS="$FFLAGS -mp -w95 -W0 -WB -assume byterecl -convert big_endian"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 
