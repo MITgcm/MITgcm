@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+oad+mpi,v 1.3 2008/03/18 19:51:39 utke Exp $
-#
-#  These are the build options used with the Intel compiler together with OpenAD and MPI
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+oad+mpi,v 1.4 2010/03/21 18:01:13 jmc Exp $
+# $Name:  $
+
+# These are the build options used with the Intel compiler together with OpenAD and MPI
 
 
 FC='mpif77'
