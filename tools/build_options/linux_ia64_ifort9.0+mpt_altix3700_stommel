@@ -4,17 +4,22 @@
 CC=icc
 FC=ifort
 LD=ifort
+
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
 #MAKEDEPEND=/usr/X11R6/bin/makedepend
+EXTENDED_SRC_FLAG='-132'
+
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-w95 -u -warn all -WB -r8 -i4 -convert big_endian -assume byterecl -ftrapuv -g -traceback -gen-interfaces'
+    FFLAGS="$FFLAGS -w95 -u -warn all -WB -convert big_endian -assume byterecl -ftrapuv -g -traceback -gen-interfaces"
 else
-    FFLAGS='-w95 -W0 -WB -r8 -i4 -convert big_endian -assume byterecl'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754

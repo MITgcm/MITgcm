@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_ifort,v 1.16 2010/03/21 17:58:17 jmc Exp $
+# $Name:  $
+
 #  Ed Hill
 #
 #  tested on faulks, 20030818
@@ -11,10 +14,14 @@
 
 FC=ifort
 F90C=ifort
-F90FIXEDFORMAT='-fixed -Tf' 
-DEFINES='-DWORDLENGTH=4'
 LINK='ifort -static'
+
+DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+#OMPFLAG='-openmp'
+
 ###INCLUDES='-I/ocean/data4/ce107/netcdf-3.6.1/Linux-i686-intel8/include'
 ###LIBS='-L/ocean/data4/ce107/netcdf-3.6.1/Linux-i686-intel8/lib -lnetcdf'
 INCLUDES='-I/usr/local/pkg/netcdf/include'
@@ -27,14 +34,15 @@ if test "x$IEEE" = x ; then
     F90OPTIM='-O3'
 #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
-    F90FLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
 else
     FOPTIM='-O0 -noalign'
     F90OPTIM='-O0 -g'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
-   #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl"
+   #FFLAGS="$FFLAGS -mp -w95 -W0 -WB"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
-
+F90FLAGS=$FFLAGS
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_generic,v 1.1 2010/02/16 23:56:02 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_generic,v 1.2 2010/03/21 17:58:17 jmc Exp $
 #  $Name:  $
 #
 # Composed and tested by ce107 on ross/weddell (Opteron system)
@@ -13,13 +13,26 @@
 # c) Provided that the libraries you link to are compiled with -fPIC this
 # optfile should work.
 # d) You can replace -fPIC with -mcmodel=medium which may perform faster
-# then -fPIC and still support data sizes over 2GB per process but all
-# the libraries you link to myst be compiled with -fPIC or -mcmodel=medium
+# than -fPIC and still support data sizes over 2GB per process but all
+# the libraries you link to must be compiled with -fPIC or -mcmodel=medium
 # e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed
 # impact appears to be minimal.
 #
 # DON'T FORGET to set environment variable MPI_INC_DIR to the include
 # directory of your MPI implementation
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#  NOTE: need to set KMP_STACKSIZE in ~/.tcshrc (but curiously, works
+#  without OMP_NUM_THREADS in ~/.tcshrc).
+#-------
 
 FC=mpif77
 F90C=mpif90
@@ -29,6 +42,8 @@ LINK='mpif90 -i-dynamic -no-ipo'
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0 -g -m64 -fPIC'
 NOOPTFILES=''
@@ -38,10 +53,12 @@ INCLUDES=''
 LIBS=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fpstkchk -check all -fpe0 -traceback -ftrapuv -fpmodel except -warn all'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fpstkchk -check all -fpe0 -traceback -ftrapuv -fpmodel except -warn all"
 else
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
