@@ -1,29 +1,34 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.6 2009/08/08 17:00:46 jmc Exp $
-#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.7 2010/03/21 21:32:57 jmc Exp $
+# $Name:  $
 
-# on author: 
+# on author:
 # (csh,tcsh) setenv PGI /usr/local/pkg/pgi/pgi-6.1-5
 # (sh,bash)  export PGI=/usr/local/pkg/pgi/pgi-6.1-5
 
 FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf77'
 CC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgcc'
-DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
-# INCLUDES="-I/scratch/edhill/netcdf_for_pgi/pgi_fc3/include"
-# LIBS="-L/scratch/edhill/netcdf_for_pgi/pgi_fc3/lib"
 if test "x$ALWAYS_USE_F90" = x1 ; then
     FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf90'
 fi
 
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+
+# INCLUDES="-I/scratch/edhill/netcdf_for_pgi/pgi_fc3/include"
+# LIBS="-L/scratch/edhill/netcdf_for_pgi/pgi_fc3/lib"
+
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS="$FFLAGS -byteswapio -Mnodclchk -Mextend"
-    FOPTIM="$FOPTIM -fastsse -Mvect=cachesize:524288,transform"
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
     FFLAGS="$FFLAGS -byteswapio"
-    FOPTIM="$FOPTIM -O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee"
+    FOPTIM='-O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
