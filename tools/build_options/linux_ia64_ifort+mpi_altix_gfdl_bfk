@@ -1,32 +1,38 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_ifort+mpi_altix_gfdl_bfk,v 1.6 2010/03/21 18:03:53 jmc Exp $
+# $Name:  $
+
 #  Ed Hill
-#
 #  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029
 #
 # adapted to GFDL's Itanium cluster
 #  heimbach@mit.edu and baylor@mit.edu
-# 
+#
 #  Will need to do module_load ifort.9.1.039 mpt-1.14 first
-
-CPP='/lib/cpp  -traditional -P'
-
-# the '-convert big_endian' is crucial on this platform
-# -D_BYTESWAPIO doesn't work
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian'
-
-FOPTIM='-O3 -align -ip'
-NOOPTFILES='ini_curvilinear_grid.F'
-NOOPTFLAGS='-O3'
-
-#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
-#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
-LIBS='-lmpi -lnetcdf'
 
 FC=ifort
 # Using gcc instead of icc since this is how netcdf was compiled
 #CC=icc
+
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+
+NOOPTFILES='ini_curvilinear_grid.F'
+NOOPTFLAGS='-O3'
+
+# the '-convert big_endian' is crucial on this platform
+# -D_BYTESWAPIO doesn't work
+FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+FOPTIM='-O3 -align -ip'
+
+#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' )
+#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' )
+LIBS='-lmpi -lnetcdf'
 
 #SKIP_NETCDF_CHECK=t
 #HAVE_NETCDF=t
