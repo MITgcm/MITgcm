@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.3 2009/10/15 23:06:32 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.4 2010/03/21 17:59:54 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -55,7 +55,7 @@ if test "x$IEEE" = x ; then
     # -fno-alias  don't assume aliasing (assume that different variables DON'T refer to the same memory location)
     # -assume byterecl     record length in OPEN statements is in bytes
     # -convert big_endian  binary files contain big-endian data
-    FFLAGS="$FFLAGS -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
+    FFLAGS="$FFLAGS -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
 else
     #  Try to follow IEEE-754
     NOOPTFLAGS='-O0'
@@ -64,8 +64,11 @@ else
     # -pc64       round floating point values to 64 bits
     # one could also try
     # -mp         maintain precision
-    FFLAGS="$FFLAGS -pc64 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
+    FFLAGS="$FFLAGS -pc64 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
 #F90FLAGS=$FFLAGS
 #F90OPTIM=$FOPTIM
 
