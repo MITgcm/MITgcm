@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.4 2010/03/05 22:31:47 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.5 2010/03/21 18:01:30 jmc Exp $
 # $Name:  $
 
 # Tested on columbia (SGI Altix cluster)
@@ -12,8 +12,8 @@
 # c) Provided that the libraries you link to are compiled with -fPIC this
 #    optfile should work.
 # d) You can replace -fPIC with -mcmodel=medium which may perform faster
-#   then -fPIC and still support data sizes over 2GB per process but all
-#   the libraries you link to myst be compiled with -fPIC or -mcmodel=medium
+#   than -fPIC and still support data sizes over 2GB per process but all
+#   the libraries you link to must be compiled with -fPIC or -mcmodel=medium
 # e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed
 #   impact appears to be minimal.
 
