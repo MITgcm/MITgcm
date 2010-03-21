@@ -1,14 +1,12 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc3,v 1.1 2005/04/26 20:15:38 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_pgf77+authors_fc2,v 1.1 2010/03/21 16:08:29 jmc Exp $
 #
 
-FC='/usr/local/pkg/pgi/pgi-5.2-fc3/linux86/5.2/bin/pgf77'
-CC='/usr/local/pkg/pgi/pgi-5.2-fc3/linux86/5.2/bin/pgcc'
+FC='/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/bin/pgf77'
+CC='/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/bin/pgcc'
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-# INCLUDES="-I/scratch/edhill/netcdf_for_pgi/pgi_fc3/include"
-# LIBS="-L/scratch/edhill/netcdf_for_pgi/pgi_fc3/lib"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
