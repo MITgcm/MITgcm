@@ -1,24 +1,27 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.4 2005/01/31 19:30:14 ce107 Exp $
-#
-
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.5 2010/03/21 21:34:01 jmc Exp $
+# $Name:  $
 
 FC='/opt/mpich/bin/mpif77'
 CC='/opt/mpich/bin/mpicc'
 LINK='/opt/mpich/bin/mpif77'
+
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
-
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
-else
-    #  Try to follow IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
-fi
+EXTENDED_SRC_FLAG='-Mextend'
 
 INCLUDES='-I/opt/mpich/include'
 LIBS='-L/opt/mpich/lib/ -lfmpich -lmpich'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
+else
+    #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -byteswapio"
+    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"

@@ -1,20 +1,24 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.7 2005/01/31 19:30:14 ce107 Exp $
-#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.8 2010/03/21 21:34:01 jmc Exp $
+# $Name:  $
 
 FC='pgf77'
 CC='pgcc'
+
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
     FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FFLAGS="$FFLAGS -byteswapio"
     FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 

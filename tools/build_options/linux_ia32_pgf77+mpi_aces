@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.5 2008/05/09 16:38:34 jmc Exp $
-#  $Name:  $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.6 2010/03/21 21:34:01 jmc Exp $
+# $Name:  $
 #
 #  These are the build options used with the PGI compiler for the
 #  daily testing on ACES (which are initiated by cron jobs on the "ao"
@@ -12,26 +12,30 @@
 #    module add mpich/pgi
 #
 
-
 FC='mpif77'
 CC='mpicc'
 if test "x$ALWAYS_USE_F90" = x1 ; then
     FC='mpif90'
 fi
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
-INCLUDES='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
-CPP='cpp  -traditional -P'
 LINK=$FC
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+
+INCLUDES='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
 LIBS='-L/usr/local/pkg/mpich/mpich-pgi/lib -L/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/lib'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk -Mextend"
     # FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform'
     FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
-    FFLAGS='-byteswapio -r8'
+    FFLAGS="$FFLAGS -byteswapio"
     FOPTIM='-O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 

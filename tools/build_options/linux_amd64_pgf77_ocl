@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77_ocl,v 1.1 2004/12/22 08:29:10 mlosch Exp $
-#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77_ocl,v 1.2 2010/03/21 21:34:01 jmc Exp $
+# $Name:  $
+
 # tested on ocl00.awi-bremerhaven.de
 # Linux ocl00 2.4.21-261-smp #1 SMP Wed Nov 17 22:05:59 UTC 2004 x86_64 unknown
 # pgf77 5.2-4
@@ -11,20 +12,24 @@
 FC='pgf77'
 CC='pgcc'
 LINK='pgf77'
-CPP='/usr/bin/cpp -P -traditional'
 
 DEFINES='-DWORDLENGTH=4'
+CPP='/usr/bin/cpp -P -traditional'
+EXTENDED_SRC_FLAG='-Mextend'
+
 INCLUDES='-I/var/tmp.shared/netcdf-64/include'
 LIBS='-L/var/tmp.shared/netcdf-64/lib -lnetcdf'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
     FOPTIM='-tp amd64 -O2 -Munroll'
 # -Mvect=cachesize:512000,transform
 else
     #  Try to follow IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FFLAGS="$FFLAGS -byteswapio"
     FOPTIM='-tp amd64 -O0 -Munroll -Kieee'
 # -Mvect=cachesize:512000,transform
 fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
