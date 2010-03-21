@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/SUPER-UX_SX-6_sx90_dkrz,v 1.1 2004/08/02 18:45:51 heimbach Exp $
-#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/SUPER-UX_SX-6_sx90_dkrz,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Name:  $
+
 # for use on hurrikan.dkrz.de
 # compile on cross.dkrz.de using cross compiler
 # module load cross-compiler

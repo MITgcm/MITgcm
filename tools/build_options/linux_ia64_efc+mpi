@@ -1,9 +1,11 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_efc+mpi,v 1.5 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 #  Ed Hill
 #
 #  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029
-
 
 CPP='/lib/cpp  -traditional -P'
 
@@ -16,8 +18,8 @@ else
 fi
 
 FOPTIM='-O3 -align'
-#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
-#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
+#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' )
+#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' )
 LIBS='-lPEPCF90 -lmpi'
 
 FC=efc

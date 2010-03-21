@@ -1,3 +1,8 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_f95,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 # tested on dual G4-mirror door, 1.25GHz
 # uname -mrsvp:
 #Darwin 7.9.0 Darwin Kernel Version 7.9.0: Wed Mar 30 20:11:17 PST 2005;

@@ -1,8 +1,9 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_ifort,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 #  Ed Hill
-#
-#  tested on faulks, 20030818
 #
 #  Build options for the intel 9 fortran compiler on MAC OS X
 #  On Mac PoweBookPro OSX 10.4.8 with standard ifort
@@ -10,7 +11,7 @@
 CC=icc
 FC=ifort
 F90C=ifort
-F90FIXEDFORMAT='-fixed -Tf' 
+F90FIXEDFORMAT='-fixed -Tf'
 DEFINES='-DWORDLENGTH=4'
 LINK='ifort'
 CPP='cpp  -traditional -P'

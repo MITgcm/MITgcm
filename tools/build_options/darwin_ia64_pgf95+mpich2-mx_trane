@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia64_pgf95+mpich2-mx_trane,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 # build options files for trane with MPI
 # remove MPI='true' to get non-mpi executables
 # uname -a

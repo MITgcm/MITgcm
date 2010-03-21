@@ -1,15 +1,16 @@
 #!/bin/bash
-
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf,v 1.3 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 # Build options for Darwin on G5 Mac with IBM XL Fortran compilers
 # tested on G5 dual, 2GHz
 # ( Darwin eaps-dhcp-162.lcs.mit.edu 6.7.5 Darwin Kernel Version 6.7.5: Mon Aug 11 19:28:40 PDT 2003; root:xnu/xnu-344.21.73.obj~1/RELEASE_PPC  Power Macintosh powerpc )
-# cc-compiler is available only with the Apple Developer Tools, 
-# so make sure that those are installed 
+# cc-compiler is available only with the Apple Developer Tools,
+# so make sure that those are installed
 #
-# **NOTES** 
-#   o with Darwin you must remember to build on a ufs file system. The default Darwin file system (hfs) treats 
+# **NOTES**
+#   o with Darwin you must remember to build on a ufs file system. The default Darwin file system (hfs) treats
 #     upper case and lower case file names as the same file. This breaks the current MITgcm build procedure.
 #   o tim.c should use uembellished cloc() are the procedure name for XLF
 #     ETIME (timers.F) and FDATE (utils.F) are not available with Darwin+XLF so need to be switched out.

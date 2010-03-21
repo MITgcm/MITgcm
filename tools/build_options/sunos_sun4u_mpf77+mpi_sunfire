@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_mpf77+mpi_sunfire,v 1.4 2007/02/18 19:19:42 mlosch Exp $
-#
-# developed and tested on 
+# $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_mpf77+mpi_sunfire,v 1.5 2010/03/21 22:22:53 jmc Exp $
+# $Name:  $
+
+# developed and tested on
 # SunOS model 5.9 Generic_112233-11 sun4u sparc SUNW,Sun-Fire-15000
 # (hostname: model.awi-bremerhaven.de)
 #
-
 
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 S64='$(TOOLSDIR)/set64bitConst.sh'

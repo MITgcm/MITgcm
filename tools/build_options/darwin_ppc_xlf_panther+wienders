@@ -1,10 +1,11 @@
 #!/bin/bash
-
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf_panther+wienders,v 1.2 2005/06/21 16:14:36 edhill Exp $
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf_panther+wienders,v 1.3 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 #  Notes:
 #    This optfile was created by Nicolas Wienders and Ed Hill and
-#    is known to work (complete with netCDF) on at least one Mac 
+#    is known to work (complete with netCDF) on at least one Mac
 #    system.
 
 CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'

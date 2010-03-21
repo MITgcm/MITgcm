@@ -1,7 +1,8 @@
 #!/bin/bash
-
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia32_gfortran+mpi,v 1.1 2009/12/23 12:52:32 mlosch Exp $
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia32_gfortran+mpi,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 # tested on MacBook Pro with Leopard
 # on 23-Dec-2009
 # gfortran (version 4.3.1) obtained via fink

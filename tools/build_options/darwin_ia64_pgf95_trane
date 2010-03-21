@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia64_pgf95_trane,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
 # build options files for trane without MPI
 # uname -a
 # Darwin trane.evsc.virginia.edu 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386

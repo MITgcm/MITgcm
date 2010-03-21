@@ -1,12 +1,11 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc_xlf+mth,v 1.2 2007/09/20 21:11:55 ce107 Exp $
-#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc_xlf+mth,v 1.3 2010/03/21 22:22:53 jmc Exp $
+# $Name:  $
 
 #  tested on frost, ce107 Aug 4 2005
 #  using the following invocation:
 #    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc_xlf+mth
-
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend

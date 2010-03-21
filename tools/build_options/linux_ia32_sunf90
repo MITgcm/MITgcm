@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_sunf90,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
 
 FC=f77
 F90C=f90

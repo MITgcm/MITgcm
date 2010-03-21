@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sp5+mpi_nas,v 1.1 2007/10/04 18:21:24 heimbach Exp $
-#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/sp5+mpi_nas,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Name:  $
 
 #  tested on bluevista, ce107 Feb 2006
 #  using the following invocation:
@@ -21,7 +21,7 @@ CC='mpcc_r -q64'
 FC='mpxlf_r -q64'
 LINK='mpxlf_r -q64'
 LIBS="-lmass -L${NETCDF}/lib"
-FFLAGS='-qfixed=132' 
+FFLAGS='-qfixed=132'
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FOPTIM='-O3 -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'

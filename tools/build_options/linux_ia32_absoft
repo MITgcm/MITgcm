@@ -1,6 +1,9 @@
 #!/bin/bash
 #
-# To use our namelists please do a 
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_absoft,v 1.4 2010/03/21 22:22:52 jmc Exp $
+# $Name:  $
+
+# To use our namelists please do a
 # setenv ABSOFT_RT_FLAGS -f90nlexts
 FC=af77
 F90C=af90

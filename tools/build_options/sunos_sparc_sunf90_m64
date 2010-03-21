@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sparc_sunf90_m64,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Name:  $
+
 
 FC=f77
 F90C=f90
