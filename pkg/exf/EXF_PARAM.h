@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.14 2010/02/17 21:16:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.15 2010/03/22 19:59:34 heimbach Exp $
 C $Name:  $
 c
 c
@@ -607,8 +607,9 @@ c-- set dummy dimension 1
 #else
 C  To read input data without dynamical allocation (EXF_INTERP_USE_DYNALLOC undef),
 C  buffer size currently set to 65000 (allows to read-in a 1x1 global data set)
+C  Increase to 140000 to accommodate for ECMWF-INTERIM
       INTEGER    exf_interp_bufferSize
-      PARAMETER( exf_interp_bufferSize = 65000 )
+      PARAMETER( exf_interp_bufferSize = 140000 )
 c for lat interpolation, arraysize currently set to 2176 max data values
        integer MAX_LAT_INC
        parameter(MAX_LAT_INC = 2176)
