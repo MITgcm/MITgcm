@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.8 2008/04/19 18:02:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.9 2010/03/22 02:16:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -183,7 +183,7 @@ c
 #ifdef ALLOW_OBCS_CONTROL
                         do iobcs = 1, nobcs
 cgg   This overcounts the number of o.b. control points by a factor of "nobcs".
-cgg   As an ad-hoc solution I've divided by nobcs everywhere.
+cgg   As an ad-hoc solution I have divided by nobcs everywhere.
                            if ( i .eq. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
                               nvarlength = nvarlength + 

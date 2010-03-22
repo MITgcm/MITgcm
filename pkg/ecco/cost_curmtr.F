@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_curmtr.F,v 1.4 2009/04/28 18:13:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_curmtr.F,v 1.5 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -152,7 +152,7 @@ cgg( fixed precision of file.)
      &                           irec,   mythid)
 
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 c--         Loop over the model layers
@@ -243,7 +243,7 @@ cgg(  Perform the comparison in observation space.
                   endif
 #endif
 
-cgg(  Weights are subject to individual's preference.
+cgg(  Weights are subject to individual preference.
                   wu(i,j) = wcurrent2(i,j,k,bi,bj)
                   wv(i,j) = wcurrent2(i,j,k,bi,bj)
 cgg                  wtmp(i,j) = wtheta2(i,j,k,bi,bj)

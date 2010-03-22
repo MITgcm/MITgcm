@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_volflux.F,v 1.9 2007/10/09 00:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_volflux.F,v 1.10 2010/03/22 02:16:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -172,7 +172,7 @@ c
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcsn_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
@@ -220,7 +220,7 @@ cgg -- Positive is flux in.
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcss_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
@@ -271,7 +271,7 @@ cgg -- Positive is flux in.
      &                ladinit, optimcycle, mythid
      &                       , xx_obcsw_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
@@ -329,7 +329,7 @@ cgg -- Positive is flux in.
                       ladinit, optimcycle, mythid
      &                       , xx_obcse_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 

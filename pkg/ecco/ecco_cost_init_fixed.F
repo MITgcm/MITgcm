@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.19 2010/03/13 23:12:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.20 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -292,7 +292,7 @@ c
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-c--   Summarize the cost function's setup.
+c--   Summarize the cost function setup.
       _BEGIN_MASTER( mythid )
       call ecco_cost_summary( mythid )
       _END_MASTER( mythid )

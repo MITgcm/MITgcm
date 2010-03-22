@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.17 2010/03/13 23:12:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.18 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -275,7 +275,7 @@ c--   Save sbar.
 
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
-cph   There's a mismatch between the cost_drifer and the
+cph   There is a mismatch between the cost_drifer and the
 cph   cost_obcs usage of ubar, vbar.
 cph   cost_obcs refers to monthly means, cost_drifer to total mean.
 cph   Needs to be updated for cost_drifer.

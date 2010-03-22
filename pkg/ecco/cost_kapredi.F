@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapredi.F,v 1.2 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapredi.F,v 1.3 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -96,7 +96,7 @@ c--   Read state record from global file.
      &                       ladinit, optimcycle, mythid
      &        , xx_kapredi_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 

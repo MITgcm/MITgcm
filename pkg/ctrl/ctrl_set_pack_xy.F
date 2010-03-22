@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.16 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.17 2010/03/22 02:16:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -15,7 +15,7 @@ c     o Compress the control vector such that only ocean points are
 c       written to file.
 c
 c     changed: heimbach@mit.edu 17-Jun-2003
-c              merged Armin's changes to replace write of
+c              merged changes from Armin to replace write of
 c              nr * globfld2d by 1 * globfld3d
 c              (ad hoc fix to speed up global I/O)
 c

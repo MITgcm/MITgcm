@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.14 2009/09/30 16:03:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.15 2010/03/22 02:16:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -17,7 +17,7 @@ c     o Open boundary packing added :
 c          gebbie@mit.edu, 18-Mar-2003
 c
 c     changed: heimbach@mit.edu 17-Jun-2003
-c              merged Armin's changes to replace write of
+c              merged changes from Armin to replace write of
 c              nr * globfld2d by 1 * globfld3d
 c              (ad hoc fix to speed up global I/O)
 c

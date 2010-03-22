@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.3 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.4 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -177,7 +177,7 @@ cgg    Need to solve for iobcs. Then only keep iobcs=3.or.4.
         iobcs = irec - igg*nobcs
 
 #ifdef ALLOW_OBCSN_CONTROL
-cgg   Assume that nobcs=4, and V velocity is the 4th record. I can't
+cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         jp1 = 0
 
@@ -194,7 +194,7 @@ cgg  are diagonally offset. Could check later by employing both
 cgg  BALANCE_CONTROL_VOLFLUX and VOLFLUX_COST_CONTRIBUTION.
 cgg
 cgg  25-jan-03 --- no idea what i was talking about ^^^^
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
           do bj = jtlo,jthi
             do bi = itlo,ithi
 
@@ -220,7 +220,7 @@ cgg -- Positive is flux in.
 #endif
 
 #ifdef ALLOW_OBCSS_CONTROL
-cgg   Assume that nobcs=4, and V velocity is the 4th record. I can't
+cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         jp1 = 1
 
@@ -236,7 +236,7 @@ cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
 cgg  BALANCE_CONTROL_VOLFLUX and VOLFLUX_COST_CONTRIBUTION.
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
           do bj = jtlo,jthi
             do bi = itlo,ithi
 
@@ -263,7 +263,7 @@ cgg -- Positive is flux in.
 #endif
 
 #ifdef ALLOW_OBCSW_CONTROL
-cgg   Assume that nobcs=4, and V velocity is the 4th record. I can't
+cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         ip1 = 1
 
@@ -279,7 +279,7 @@ cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
 cgg  BALANCE_CONTROL_VOLFLUX and VOLFLUX_COST_CONTRIBUTION.
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
           do bj = jtlo,jthi
             do bi = itlo,ithi
 
@@ -306,7 +306,7 @@ cgg -- Positive is flux in.
 #endif
 
 #ifdef ALLOW_OBCSE_CONTROL
-cgg   Assume that nobcs=4, and V velocity is the 4th record. I can't
+cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         ip1 = 0
 
@@ -322,7 +322,7 @@ cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
 cgg  BALANCE_CONTROL_VOLFLUX and VOLFLUX_COST_CONTRIBUTION.
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
           do bj = jtlo,jthi
             do bi = itlo,ithi
 

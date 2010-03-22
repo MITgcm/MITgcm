@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.91 2010/02/16 23:33:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.92 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1245,7 +1245,7 @@ c--   Compute cost function contribution of Temperature and Salinity.
       call timer_stop ('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
 #endif
 
-c--   Compute cost function contribution of drifter's velocities.
+c--   Compute cost function contribution of drifter velocities.
 #ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
       IF ( debugLevel .GE. debLevB ) 

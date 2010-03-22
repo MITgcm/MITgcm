@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.28 2009/05/29 06:14:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.29 2010/03/22 02:20:43 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -150,7 +150,7 @@ c--   Set the loop ranges.
 c--   initialise variables
       call grdchk_init( mythid )
 
-c--   Compute the adjoint models' gradients.
+c--   Compute the adjoint model gradients.
 c--   Compute the unperturbed cost function.
 cph   Gradient via adjoint has already been computed,
 cph   and so has unperturbed cost function,

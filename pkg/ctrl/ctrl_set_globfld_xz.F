@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xz.F,v 1.13 2009/09/30 16:03:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xz.F,v 1.14 2010/03/22 02:16:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -16,7 +16,7 @@ c
 c     started: heimbach@mit.edu, 16-Aug-2001
 c
 c     changed: heimbach@mit.edu 17-Jun-2003
-c              merged Armin's changes to replace write of
+c              merged changes from Armin to replace write of
 c              nr * globfld2d by 1 * globfld3d
 c              (ad hoc fix to speed up global I/O)
 c

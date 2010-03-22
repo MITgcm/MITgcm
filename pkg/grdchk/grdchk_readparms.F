@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.12 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.13 2010/03/22 02:20:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -136,7 +136,7 @@ c       Next, read the calendar data file.
            STOP 'S/R grdchk_readparms'
         ENDIF
 
-c--     Summarize the gradient check's setup.
+c--     Summarize the gradient check setup.
         call grdchk_Summary( mythid )
       _END_MASTER( mythid )
 
@@ -145,5 +145,3 @@ c--     Summarize the gradient check's setup.
 #endif /* ALLOW_GRDCHK */
 
       end
-
-

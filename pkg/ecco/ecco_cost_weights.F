@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.37 2010/03/13 23:12:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.38 2010/03/22 02:19:35 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -869,7 +869,7 @@ c--           Test for missing values.
 #if (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
       nnz   =   1
 ce      irec  =   2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( tauu_errfile .NE. ' ' ) then
@@ -902,7 +902,7 @@ cph)
 
       nnz   =   1
 ce      irec  =   2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( uwind_errfile .NE. ' ' ) then
@@ -933,7 +933,7 @@ c--   Read meridional wind stress variance.
 #if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) || defined (ALLOW_VSTRESS_CONTROL))
       nnz   =   1
 ce      irec  =   2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
 
@@ -966,7 +966,7 @@ cph)
 
       nnz   =   1
 ce      irec  =   2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
 
@@ -999,7 +999,7 @@ c--   Read heat flux flux variance.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( hflux_errfile .NE. ' ' ) then
@@ -1034,7 +1034,7 @@ c--   Read atmos. temp. variance.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( atemp_errfile .NE. ' ' ) then
@@ -1068,7 +1068,7 @@ c--   Read salt flux variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( sflux_errfile .NE. ' ' ) then
@@ -1103,7 +1103,7 @@ c--   Secific humid. variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( aqh_errfile .NE. ' ' ) then
@@ -1135,7 +1135,7 @@ c--   Atmos. precipitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( precip_errfile .NE. ' ' ) then
@@ -1167,7 +1167,7 @@ c--   Atmos. swfluxitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( swflux_errfile .NE. ' ' ) then
@@ -1199,7 +1199,7 @@ c--   Atmos. swdownitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( swdown_errfile .NE. ' ' ) then
@@ -1231,7 +1231,7 @@ c--   Atmos. lwfluxitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( lwflux_errfile .NE. ' ' ) then
@@ -1263,7 +1263,7 @@ c--   Atmos. lwdownitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( lwdown_errfile .NE. ' ' ) then
@@ -1295,7 +1295,7 @@ c--   Atmos. snowprecipitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( snowprecip_errfile .NE. ' ' ) then
@@ -1328,7 +1328,7 @@ c--   Atmos. evapitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( evap_errfile .NE. ' ' ) then
@@ -1360,7 +1360,7 @@ c--   Atmos. apressureitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( apressure_errfile .NE. ' ' ) then
@@ -1393,7 +1393,7 @@ c--   Atmos. runoffitation variance. Second read: data in units of m/s.
 c--   First  record in data file:  mean field.
 c--   Second record in data file:  rms  field.
 ce      irec  =  2
-ce(   due to Patrick's processing:
+ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( runoff_errfile .NE. ' ' ) then
