@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.4 2008/06/20 21:43:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.5 2010/03/22 02:15:02 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,7 +16,7 @@ C     | by TAMC if correct flow directives are given             |
 C     |   tamc -reverse ....                                     |
 C     |                                                          |
 C     | written and tested by Ralf Giering, Jan. 14th 1999       |
-C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01    |
 C     \==========================================================/
 
 #include "CPP_OPTIONS.h"

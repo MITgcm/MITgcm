@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.9 2007/10/08 23:50:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.10 2010/03/22 02:15:02 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -142,7 +142,7 @@ c       Read the active variable from file.
 
         if (lAdInit) then
 c         Initialise the corresponding adjoint variable on the
-c         adjoint variable's file. These files are tiled.
+c         adjoint variable file. These files are tiled.
 
           writeglobalfile = .false.
           do bj = 1,nsy
@@ -595,7 +595,7 @@ c           Copy data to appropriate location in active_var.
 
         if (lAdInit) then
 c         Initialise the corresponding adjoint variable on the
-c         adjoint variable's file.
+c         adjoint variable file.
 
           writeglobalfile = .false.
           do i=1,(snx+2*olx)*(sny+2*oly)

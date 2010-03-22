@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.4 2008/06/20 21:43:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.5 2010/03/22 02:15:02 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -15,7 +15,7 @@ C     | by TAMC if correct flow directives are given             |
 C     |   tamc -reverse ....                                     |
 C     |                                                          |
 C     | written and tested by Ralf Giering, Jan. 14th 1999       |
-C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01    |
 C     \==========================================================/
 
 #include "CPP_OPTIONS.h"
@@ -55,7 +55,7 @@ C     === Global data ===
 #include "EESUPPORT.h"
 
 C     === Routine arguments ===
-C     phi    - Array who's overlap regions are to be exchanged
+C     phi    - Array which overlap regions are to be exchanged
 C     myThid - My thread id.
       _RS aduphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS advphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -129,7 +129,7 @@ C     === Global data ===
 #include "EESUPPORT.h"
 
 C     === Routine arguments ===
-C     phi    - Array who's overlap regions are to be exchanged
+C     phi    - Array which overlap regions are to be exchanged
 C     myThid - My thread id.
       _RL aduphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL advphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -202,7 +202,7 @@ C     === Global data ===
 #include "EESUPPORT.h"
 
 C     === Routine arguments ===
-C     phi    - Array who's overlap regions are to be exchanged
+C     phi    - Array which overlap regions are to be exchanged
 C     myThid - My thread id.
       _RS aduphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS advphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -276,7 +276,7 @@ C     === Global data ===
 #include "EESUPPORT.h"
 
 C     === Routine arguments ===
-C     phi    - Array who's overlap regions are to be exchanged
+C     phi    - Array which overlap regions are to be exchanged
 C     myThid - My thread id.
       _RL aduphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL advphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

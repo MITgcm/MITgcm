@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/active_file_loc_control.F,v 1.7 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/active_file_loc_control.F,v 1.8 2010/03/22 02:15:02 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -128,7 +128,7 @@ c       Read the active variable from file.
 
         if (lAdInit) then
 c         Initialise the corresponding adjoint variable on the
-c         adjoint variable's file. These files are tiled.
+c         adjoint variable file. These files are tiled.
 
           writeglobalfile = .false.
           do bj = 1,nsy
