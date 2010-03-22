@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.19 2007/10/09 00:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.20 2010/03/22 00:58:42 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -253,7 +253,7 @@ cph)
 # endif
                      endif
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-#endif / * ALLOW_SMOOTH_CORREL3D * /
+#endif /* ALLOW_SMOOTH_CORREL3D */
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif

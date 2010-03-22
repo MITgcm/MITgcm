@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.21 2007/10/09 00:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.22 2010/03/22 00:58:42 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -15,7 +15,7 @@ c     o Unpack the control vector such that the land points are filled
 c       in.
 c
 c     changed: heimbach@mit.edu 17-Jun-2003
-c              merged Armin's changes to replace write of
+c              merged changes from Armin to replace write of
 c              nr * globfld2d by 1 * globfld3d
 c              (ad hoc fix to speed up global I/O)
 c
@@ -227,7 +227,7 @@ cph)
      &                       / forcingPrecond
                      endif
 #endif
-#else / * ALLOW_SMOOTH_CORREL2D * /
+#else /* ALLOW_SMOOTH_CORREL2D */
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
@@ -237,7 +237,7 @@ cph)
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
      &                       / forcingPrecond
                      endif
-#endif / * ALLOW_SMOOTH_CORREL2D * /
+#endif /* ALLOW_SMOOTH_CORREL2D */
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
@@ -335,7 +335,7 @@ cph)
      &                       / forcingPrecond
                      endif
 #endif
-#else / * ALLOW_SMOOTH_CORREL2D * /
+#else /* ALLOW_SMOOTH_CORREL2D */
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
@@ -345,7 +345,7 @@ cph)
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
      &                       / forcingPrecond
                      endif
-#endif / * ALLOW_SMOOTH_CORREL2D * /
+#endif /* ALLOW_SMOOTH_CORREL2D */
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif

@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sss.F,v 1.2 2010/03/15 22:33:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sss.F,v 1.3 2010/03/22 00:57:19 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 c read the area dat file and compare against the averaged salinity file
 
-      subroutine seaice_cost_sss( 
+      subroutine seaice_cost_sss(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
      &             areabarfile,   areabar, xx_areabar_mean_dummy,
      &     nnzobs, localobsfile, localobs, mult_local,
@@ -88,7 +88,7 @@ c     == local variables ==
       _RL localcost
       _RL junk
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
 
       character*(128) fname1, fname2,fname3
       character*(MAX_LEN_MBUF) msgbuf
@@ -144,12 +144,12 @@ csss
       write(fname3(1:128),'(80a)') ' '
 
       il=ilnblnk( localbarfile )
-      write(fname1(1:128),'(2a,i10.10)') 
+      write(fname1(1:128),'(2a,i10.10)')
      &     localbarfile(1:il),'.',optimcycle
 
 csss
       il=ilnblnk( areabarfile )
-      write(fname3(1:128),'(2a,i10.10)') 
+      write(fname3(1:128),'(2a,i10.10)')
      &     areabarfile(1:il),'.',optimcycle
 
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
@@ -159,22 +159,22 @@ c--   Loop over records for the second time.
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname1, localbar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid, 
+     &                      ladinit, optimcycle, mythid,
      &                      xx_localbar_mean_dummy )
         else
            call active_read_xyz( fname1, localbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid, 
+     &                       ladinit, optimcycle, mythid,
      &                       xx_localbar_mean_dummy )
         endif
 
 csss
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname3, areabar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid, 
+     &                      ladinit, optimcycle, mythid,
      &                      xx_areabar_mean_dummy )
         else
            call active_read_xyz( fname3, areabar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid, 
+     &                       ladinit, optimcycle, mythid,
      &                       xx_areabar_mean_dummy )
         endif
 
@@ -202,10 +202,10 @@ cnew(
       print *,'ymod, yday     ', ymod,yday
       print *,'smrarstrtdt(1) ', smrareastartdate(1)
       print *,'smrarstartdate ', smrareastartdate
-#endif SEAICE_DEBUG
+#endif /* SEAICE_DEBUG */
 
       if ( ymod .EQ. yday ) then
-         middate(1) = smrareastartdate(1) 
+         middate(1) = smrareastartdate(1)
       else
          middate(1) = yday*10000+100+1
       endif
@@ -224,7 +224,7 @@ cnew(
       print *,'middate(3,4)     ', middate(3),middate(4)
       print *,'difftime,diffsecs',difftime,diffsecs
       print *,'localrec         ',localrec
-#endif 
+#endif
 
       il=ilnblnk(localobsfile)
       write(fname2(1:128),'(2a,i4)')
@@ -243,13 +243,13 @@ cnew(
 #endif
         endif
 
-        if ( localrec .GT. 0 ) then 
+        if ( localrec .GT. 0 ) then
 
 #ifdef SEAICE_DEBUG
           print *,'calling mdsreadfile',fname2,localrec
 #endif
 
-          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs, 
+          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
         else
           do bj = jtlo,jthi
@@ -307,10 +307,10 @@ c--
                 localwww  = localweight(i,j,bi,bj)*cmask(i,j,k)
 
 c only accumulate cost if there is ice observed but not simulated..
-                if ( localobs(i,j,k,bi,bj) .GT. 0.0 .AND. 
+                if ( localobs(i,j,k,bi,bj) .GT. 0.0 .AND.
      &                areabar(i,j,1,bi,bj) .LE. 0.0) then
 
-c                if ( localobs(i,j,k,bi,bj) .GT.  
+c                if ( localobs(i,j,k,bi,bj) .GT.
 c     &               areabar(i,j,1,bi,bj)) then
 
                    junk = ( localbar(i,j,k,bi,bj) - SEAICE_clamp_salt )
@@ -335,8 +335,8 @@ c     &                         ( localbar(i,j,k,bi,bj) - 1.0)
 
                    print '(A,2i4,2(1x,1P2E15.3))',
      &                 'costg i j bar-obs,wgt,loCost ',i,j,
-     &                 junk, 
-     &                 localwww, 
+     &                 junk,
+     &                 localwww,
      &                 localcost
                 endif
 #endif
