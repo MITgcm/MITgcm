@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64+mth,v 1.4 2010/03/19 03:32:54 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64+mth,v 1.5 2010/03/22 22:56:31 ce107 Exp $
 #  $Name:  $
 #
 # Multithreaded tests require
@@ -79,6 +79,6 @@ fi
 
 if [ "x$LIBS" != x ] ; then
     LIBS="$LIBS -lstdc++"
-elif
+else
     LIBS="-lstdc++"
 fi
