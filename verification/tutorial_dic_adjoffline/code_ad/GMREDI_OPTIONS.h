@@ -1,27 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/GMREDI_OPTIONS.h,v 1.1 2009/10/16 16:49:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/GMREDI_OPTIONS.h,v 1.2 2010/03/22 02:26:59 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
 C
 C Use this file for selecting options within the GM/Redi package
-C
+
 #ifndef GMREDI_OPTIONS_H
 #define GMREDI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#ifdef ALLOW_GMREDI
 
 #include "CPP_OPTIONS.h"
-
-#ifdef ALLOW_GMREDI
 
 C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_AC02_TAP
 #define GM_EXCLUDE_FM07_TAP
-#undef GM_EXCLUDE_TAPERING 
- 
+#undef GM_EXCLUDE_TAPERING
+
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
-#undef  GM_VISBECK_VARIABLE_K
+#undef GM_VISBECK_VARIABLE_K
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
@@ -37,7 +36,7 @@ C  instead of the Skew-Flux form (=default)
 
 C Following option avoids specific recomputation in adjoint
 C routines of gmredi_x/y/rtransport
-C It's not needed, only for tests, and very memory-consuming
+C It is not needed, only for tests, and very memory-consuming
 #undef GM_AUTODIFF_EXCESSIVE_STORE
 
 #endif /* ALLOW_GMREDI */
