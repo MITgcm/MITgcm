@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/dummy_in_hfac.F,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/dummy_in_hfac.F,v 1.3 2010/03/22 01:15:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -149,6 +149,6 @@ C--     Check for IO errors
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 #endif /* ALLOW_DEPTH_CONTROL */
-#endif ALLOW_AUTODIFF_MONITOR
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
       end
