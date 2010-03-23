@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.5 2009/11/20 22:33:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.6 2010/03/23 19:06:15 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -48,14 +48,14 @@ c     == local variables ==
 c     == external functions ==
 
 c     == end of interface ==
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(mythid)
+      jthi = myByHi(mythid)
+      itlo = myBxLo(mythid)
+      ithi = myBxHi(mythid)
       jmin = 1-OLy
-      jmax = sny+OLy
+      jmax = sNy+OLy
       imin = 1-OLx
-      imax = snx+OLy
+      imax = sNx+OLx
 
 c--   Initialize the tiled cost function contributions.
       do bj = jtlo,jthi
