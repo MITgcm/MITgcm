@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.3 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.4 2010/03/24 22:03:35 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -42,13 +42,24 @@ C     I,J,K,bi,bj - Loop counters
        _EXCH_XY_RS( R_icefront, myThid )
       ENDIF
 
+C     Make sure that R_icefront is positive
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J = 1-OLy, sNy+OLy
+         DO I = 1-OLx, sNx+OLx
+          R_icefront(I,J,bi,bj) = ABS(R_icefront(I,J,bi,bj))
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J = 1-OLy, sNy+OLy
          DO I = 1-OLx, sNx+OLx
           K_icefront(i,j,bi,bj) = 0
           DO K = 1 , Nr
-           IF ( ABS(R_icefront(I,J,bi,bj)) .GT. ABS(rF(K)))
+           IF ( R_icefront(I,J,bi,bj) .GT. ABS(rF(K)))
      &          K_icefront(I,J,bi,bj) = K
           ENDDO
          ENDDO
