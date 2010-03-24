@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.12 2008/04/09 22:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.13 2010/03/24 21:06:35 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
 
 C !DESCRIPTION:
 C find light as function of date and latitude
-c based on paltridge and parson
+C based on paltridge and parson
 
 
 C !USES: ===============================================================
@@ -47,20 +47,16 @@ CEOP
       solar = 1360. _d 0   !solar constant
       albedo= 0.6 _d 0     !planetary albedo
 
-#ifndef READ_PAR
-C     latitute in radians, backed out from coriolis parameter
-C     (makes latitude independent of grid)
-      IF ( usingCurvilinearGrid ) THEN
-       STOP 'S/R INSOL: use #define READ_PAR with usingCurvilinearGrid'
+C     Case where a 2-d output array is needed: for now, stop here.
+      IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+       STOP 'ABNORMAL END: S/R INSOL: 2-D output not implemented'
       ENDIF
-#endif /* READ_PAR */
 
-c
-c find day (****NOTE for year starting in winter*****)
+C find day (****NOTE for year starting in winter*****)
         dayfrac=mod(Time,360. _d 0*86400. _d 0)
      &                    /(360. _d 0*86400. _d 0)  !fraction of year
         yday = 2. _d 0*PI*dayfrac                    !convert to radians
-        delta = (0.006918 _d 0 
+        delta = (0.006918 _d 0
      &         -(0.399912 _d 0*cos(yday))            !cosine zenith angle
      &         +(0.070257 _d 0*sin(yday))            !(paltridge+platt)
      &         -(0.006758 _d 0*cos(2. _d 0*yday))
@@ -68,14 +64,12 @@ c find day (****NOTE for year starting in winter*****)
      &         -(0.002697 _d 0*cos(3. _d 0*yday))
      &         +(0.001480 _d 0*sin(3. _d 0*yday)) )
        DO j=1-OLy,sNy+OLy
-c latitude in radians
+C latitude in radians
           lat=YC(1,j,1,bj)*deg2rad
-#ifndef READ_PAR
 C     latitute in radians, backed out from coriolis parameter
 C     (makes latitude independent of grid)
-          IF ( .NOT. usingSphericalPolarGrid )
+          IF ( usingCartesianGrid .OR. usingCylindricalGrid )
      &         lat = asin( fCori(1,j,1,bj)/(2. _d 0*omega) )*deg2rad
-#endif /* READ_PAR */
           sun1 = -sin(delta)/cos(delta) * sin(lat)/cos(lat)
           IF (sun1.LE.-0.999 _d 0) sun1=-0.999 _d 0
           IF (sun1.GE. 0.999 _d 0) sun1= 0.999 _d 0
@@ -84,14 +78,14 @@ C     (makes latitude independent of grid)
      &            (cos(delta)*cos(lat)*sin(dayhrs)/dayhrs) )
           IF (cosz.LE.5. _d -3) cosz= 5. _d -3
           frac = dayhrs/PI                           !fraction of daylight in day
-c daily average photosynthetically active solar radiation just below surface
+C daily average photosynthetically active solar radiation just below surface
           fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
-c
-c convert to sfac
+
+C convert to sfac
           sfac(j) = MAX(1. _d -5,fluxi)
        ENDDO !j
 
 #endif /* DIC_BIOTIC */
 
-      return
-      end
+      RETURN
+      END
