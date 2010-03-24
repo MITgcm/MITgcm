@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1240 2010/03/24 02:12:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1241 2010/03/24 20:54:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  in carbon_chem.F, replace log10 (AUTODIFF) with explicit form to avoid
+  a weakness of TAF that drops part of double precision in log10 derivative.
+  update AD output of exp. tutorial_dic_adjoffline & tutorial_global_oce_biogeo.
 o pkg/ecco:
   add missing "_d 0" in cost_readers.F, cost_readtopex.F & cost_readtopexmean.F
   update all 4 lab_sea AD output.
