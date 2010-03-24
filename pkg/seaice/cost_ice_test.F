@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.9 2009/06/24 08:55:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.10 2010/03/24 03:05:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,8 +82,8 @@ c     == external functions ==
 c     == end of interface ==
 
       if ( myTime .GT. (endTime - lastinterval) ) then
-         tempVar = 1. /
-     &             ( ( 1. + min(endTime-startTime,lastinterval) )
+         tempVar = 1. _d 0/
+     &             ( ( 1. _d 0 + min(endTime-startTime,lastinterval) )
      &             / deltaTClock )
 
          kSrf = 1
@@ -146,9 +146,9 @@ c     heat content of top level plus latent heat of sea-ice
                do i =  1,snx
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
-     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 ) *
-     &                 drF(1) * 3996 * 1026 -
-     &                 HEFF(i,j,bi,bj) * 334000 * 910 )
+     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
+     &                 drF(1) * 3996. _d 0 * 1026. _d 0 -
+     &                 HEFF(i,j,bi,bj) * 334000. _d 0 * 910. _d 0 )
                enddo
               enddo
              enddo
@@ -162,8 +162,8 @@ c     heat content of top level
                do i =  1,snx
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
-     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 ) *
-     &                 drF(1) * 3996 * 1026 )
+     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
+     &                 drF(1) * 3996. _d 0 * 1026. _d 0 )
                enddo
               enddo
              enddo
@@ -177,12 +177,12 @@ c     heat content of top level plus sea-ice plus latent heat of snow
                do i =  1,snx
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
-     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 ) *
-     &                 drF(1) * 3996 * 1026 +
-     &                 (TICE(i,j,bi,bj) - 273.15 + 1.96 ) *
-     &                 HEFF(i,j,bi,bj) * 2090 * 910 -
-     &                 HEFF(i,j,bi,bj) * 334000 * 910 -
-     &                 HSNOW(i,j,bi,bj) * 334000 * 330 )
+     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
+     &                 drF(1) * 3996. _d 0 * 1026. _d 0 +
+     &                 (TICE(i,j,bi,bj) - 273.15 _d 0 + 1.96 _d 0 ) *
+     &                 HEFF(i,j,bi,bj) * 2090. _d 0 * 910. _d 0 -
+     &                 HEFF(i,j,bi,bj) * 334000. _d 0 * 910. _d 0 -
+     &                 HSNOW(i,j,bi,bj) * 334000. _d 0 * 330. _d 0 )
                enddo
               enddo
              enddo
@@ -198,8 +198,8 @@ c     assumed that measurements are AREA=0.5 at all times everywhere.
                   do j = 1,sny
                      do i =  1,snx
                         objf_ice(bi,bj) = objf_ice(bi,bj) +
-     &                       ( AREA(i,j,bi,bj) - 0.5 ) *
-     &                       ( AREA(i,j,bi,bj) - 0.5 )
+     &                       ( AREA(i,j,bi,bj) - 0.5 _d 0 ) *
+     &                       ( AREA(i,j,bi,bj) - 0.5 _d 0 )
                      enddo
                   enddo
                enddo
@@ -220,4 +220,5 @@ cph)
 
 #endif /* ALLOW_COST_ICE */
 
+      return
       end

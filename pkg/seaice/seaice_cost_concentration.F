@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.5 2010/03/23 18:50:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.6 2010/03/24 03:05:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-
-      subroutine seaice_cost_concentration( 
+      subroutine seaice_cost_concentration(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
      &     nnzobs, localobsfile, localobs, mult_local,
      &     nrecloc, localstartdate, localperiod,
@@ -85,12 +84,12 @@ c     == local variables ==
       logical ladinit
 
       _RL spval
-      parameter (spval = -9999. )
+      parameter (spval = -9999. _d 0 )
       _RL localwww
       _RL localcost
       _RL junk
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
 
       character*(128) fname1, fname2
       character*(MAX_LEN_MBUF) msgbuf
@@ -143,7 +142,7 @@ c--   First, read tiled data.
 
       write(fname1(1:128),'(80a)') ' '
       il=ilnblnk( localbarfile )
-      write(fname1(1:128),'(2a,i10.10)') 
+      write(fname1(1:128),'(2a,i10.10)')
      &     localbarfile(1:il),'.',optimcycle
 
 cph      if ( .NOT. ( mult_local.EQ.0. .OR. localobsfile.EQ.' ' ) ) then
@@ -155,11 +154,11 @@ c--   Loop over records for the second time.
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname1, localbar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid, 
+     &                      ladinit, optimcycle, mythid,
      &                      xx_localbar_mean_dummy )
         else
            call active_read_xyz( fname1, localbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid, 
+     &                       ladinit, optimcycle, mythid,
      &                       xx_localbar_mean_dummy )
         endif
 
@@ -190,7 +189,7 @@ cnew(
 #endif /* SEAICE_DEBUG */
 
       if ( ymod .EQ. yday ) then
-         middate(1) = smrareastartdate(1) 
+         middate(1) = smrareastartdate(1)
       else
          middate(1) = yday*10000+100+1
       endif
@@ -209,7 +208,7 @@ cnew(
       print *,'middate(3,4)     ', middate(3),middate(4)
       print *,'difftime,diffsecs',difftime,diffsecs
       print *,'localrec         ',localrec
-#endif 
+#endif
 
       il=ilnblnk(localobsfile)
         write(fname2(1:128),'(2a,i4)')
@@ -228,13 +227,13 @@ cnew(
 #endif
         endif
 
-        if ( localrec .GT. 0 ) then 
+        if ( localrec .GT. 0 ) then
 
 #ifdef SEAICE_DEBUG
           print *,'calling mdsreadfile',fname2,localrec
 #endif
 
-          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs, 
+          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
         else
           do bj = jtlo,jthi
@@ -256,34 +255,34 @@ cnew(
             do k = 1,nnzobs
               do j = jmin,jmax
                 do i = imin,imax
-cif                  set the new weight equal to the old weight                     
-                     localModWeight(i,j,bi,bj) = 
+cif                  set the new weight equal to the old weight
+                     localModWeight(i,j,bi,bj) =
      &                  localweight(i,j,bi,bj)
 
 cif                  as long we the weight here is not zero we can continue
-                     if (localweight(i,j,bi,bj) .GT. 0.0) THEN 
+                     if (localweight(i,j,bi,bj) .GT. 0. _d 0) THEN
 
 cif                    back out the original sigma for this location
-                       areaSigma = 1.0/sqrt(localweight(i,j,bi,bj))
+                       areaSigma = 1. _d 0/sqrt(localweight(i,j,bi,bj))
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccX
-                      IF      (localobs(i,j,k,bi,bj) .eq. 0.00 ) THEN
-                         areaSigma = areaSigma * 0.85
-                      ELSEIF ((localobs(i,j,k,bi,bj) .gt. 0.00) .and.
-     &                        (localobs(i,j,k,bi,bj) .lt. 0.15)) THEN
-                         areaSigma = areaSigma * 1.2
-                      ELSEIF ((localobs(i,j,k,bi,bj) .ge. 0.15) .and.
-     &                        (localobs(i,j,k,bi,bj) .le. 0.25)) THEN
-                         areaSigma = areaSigma * 1.1
+                      IF      (localobs(i,j,k,bi,bj) .eq. 0. _d 0 ) THEN
+                         areaSigma = areaSigma * 0.85 _d 0
+                      ELSEIF ((localobs(i,j,k,bi,bj).gt.0. _d 0  ) .and.
+     &                        (localobs(i,j,k,bi,bj).lt.0.15 _d 0)) THEN
+                         areaSigma = areaSigma * 1.2 _d 0
+                      ELSEIF ((localobs(i,j,k,bi,bj).ge.0.15 _d 0) .and.
+     &                        (localobs(i,j,k,bi,bj).le.0.25 _d 0)) THEN
+                         areaSigma = areaSigma * 1.1 _d 0
                       ENDIF
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccX
 
 cif                    reconstruct the weight = sigma^(-2)
-                       localModWeight(i,j,bi,bj) = 
-     &                    1.0 / (areaSigma*areaSigma)
+                       localModWeight(i,j,bi,bj) =
+     &                    1. _d 0 / (areaSigma*areaSigma)
 
-cif                  if the local weight here is somehow 0, 
-cif                  do not divide by its square root but say something 
+cif                  if the local weight here is somehow 0,
+cif                  do not divide by its square root but say something
 c                     else
 c                        print *,'costg : localweight <= 0 ',i,j
                      endif
@@ -305,7 +304,7 @@ C seaice debug
             enddo
           enddo
         enddo
-#endif 
+#endif
 C variable smrarea weight
 
 
@@ -368,8 +367,8 @@ c--
 
                    print '(A,2i4,2(1x,1P2E15.3))',
      &                 'costg i j bar-obs,wgt,loCost ',i,j,
-     &                 junk, 
-     &                 localwww, 
+     &                 junk,
+     &                 localwww,
      &                 junk*junk*localwww
                 endif
 #endif
@@ -393,4 +392,5 @@ c--   End of mult_local or localobsfile
 
 #endif /* ifdef ALLOW_ECCO */
 
+      return
       end

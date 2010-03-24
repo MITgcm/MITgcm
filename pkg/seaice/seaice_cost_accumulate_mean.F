@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.5 2010/03/15 16:08:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.6 2010/03/24 03:05:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-      subroutine seaice_cost_accumulate_mean( 
-     &     myTime, myIter, myThid )
+      SUBROUTINE SEAICE_COST_ACCUMULATE_MEAN(
+     &           myTime, myIter, myThid )
 C     *==========================================================*
 C     | subroutine seaice_cost_accumulate_mean                   |
 C     | o accumulate time-mean state for cost evalualtion        |
@@ -26,55 +26,51 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
-      integer myThid
-      integer myIter
       _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_COST
 C     == Local variables
-      _RL thetaRef
+      INTEGER bi, bj
+      INTEGER i, j
+      INTEGER itlo,ithi
+      INTEGER jtlo,jthi
 
-      integer i, j, k
-      integer ig, jg
-      integer itlo,ithi
-      integer jtlo,jthi
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
 #ifdef ALLOW_SEAICE_COST_EXPORT
 
       IF ( myTime .GT. (EndTime - lastinterval) ) THEN
 
 C--   Calculate cost function on tile of this instance
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j=1,sNy
-            do i=1,sNx
-              uHeffExportCell(i,j,bi,bj) = 
-     &           uHeffExportCell(i,j,bi,bj)
-     &           + ( 0.92*0.5*(HEFF(i,j,bi,bj)+HEFF(i-1,j,bi,bj))
-     &             + 0.33*0.5*(HSNOW(i,j,bi,bj)+HSNOW(i-1,j,bi,bj)) )
-     &           *UICE(i,j,bi,bj)
-     &           *_dyG(i,j,bi,bj)/lastinterval*deltaTClock
-              vHeffExportCell(i,j,bi,bj) = 
-     &           vHeffExportCell(i,j,bi,bj)
-     &           + ( 0.92*0.5*(HEFF(i,j,bi,bj)+HEFF(i,j-1,bi,bj))
-     &             + 0.33*0.5*(HSNOW(i,j,bi,bj)+HSNOW(i,j-1,bi,bj)) )
-     &           *VICE(i,j,bi,bj)
-     &           *_dxG(i,j,bi,bj)/lastinterval*deltaTClock
-            end do
-          end do
-        end do
-      end do
+       DO bj = jtlo,jthi
+        DO bi = itlo,ithi
+         DO j=1,sNy
+          DO i=1,sNx
+            uHeffExportCell(i,j,bi,bj) = uHeffExportCell(i,j,bi,bj)
+     &      + ( 0.92 _d 0*(HEFF(i,j,bi,bj)+HEFF(i-1,j,bi,bj))*0.5 _d 0
+     &        + 0.33 _d 0*(HSNOW(i,j,bi,bj)+HSNOW(i-1,j,bi,bj))*0.5 _d 0
+     &        )*UICE(i,j,bi,bj)
+     &         *_dyG(i,j,bi,bj)/lastinterval*deltaTClock
+            vHeffExportCell(i,j,bi,bj) = vHeffExportCell(i,j,bi,bj)
+     &      + ( 0.92 _d 0*(HEFF(i,j,bi,bj)+HEFF(i,j-1,bi,bj))*0.5 _d 0
+     &        + 0.33 _d 0*(HSNOW(i,j,bi,bj)+HSNOW(i,j-1,bi,bj))*0.5 _d 0
+     &        )*VICE(i,j,bi,bj)
+     &         *_dxG(i,j,bi,bj)/lastinterval*deltaTClock
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
 
       ENDIF
 
-#endif
+#endif /* ALLOW_SEAICE_COST_EXPORT */
 
-#endif
+#endif /* ALLOW_COST */
 
+      RETURN
       END
