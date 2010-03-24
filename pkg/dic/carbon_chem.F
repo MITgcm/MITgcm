@@ -1,7 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.14 2010/03/16 00:18:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.15 2010/03/24 15:44:08 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
+
+C--  File carbon_checm.F:
+C--   Contents
+C--   o CALC_PCO2
+C--   o CALC_PCO2_APPROX_CO3
+C--   o CALC_PCO2_APPROX
+C--   o CARBON_COEFFS
+C--   o CARBON_COEFFS_PRESSURE_DEP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C !ROUTINE: CALC_PCO2
@@ -19,9 +29,9 @@ C !INTERFACE: ==========================================================
      I                       myThid)
 
 C !DESCRIPTION:
-C  surface ocean inorganic carbon chemistry to OCMIP2       
-C  regulations modified from OCMIP2 code;                  
-C  Mick Follows, MIT, Oct 1999.                           
+C  surface ocean inorganic carbon chemistry to OCMIP2
+C  regulations modified from OCMIP2 code;
+C  Mick Follows, MIT, Oct 1999.
 
 
 C !USES: ===============================================================
@@ -35,11 +45,11 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C     == Routine arguments ==
-C       diclocal = total inorganic carbon (mol/m^3) 
+C       diclocal = total inorganic carbon (mol/m^3)
 C             where 1 T = 1 metric ton = 1000 kg
-C       ta  = total alkalinity (eq/m^3) 
-C       pt  = inorganic phosphate (mol/^3) 
-C       sit = inorganic silicate (mol/^3) 
+C       ta  = total alkalinity (eq/m^3)
+C       pt  = inorganic phosphate (mol/^3)
+C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
 C       s   = salinity (PSU)
         INTEGER donewt
@@ -52,7 +62,7 @@ C       s   = salinity (PSU)
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
         INTEGER myThid
-CEndOfInterface
+CEOP
 
 C     == Local variables ==
 C INPUT
@@ -65,15 +75,16 @@ C       pco2surf = oceanic pCO2 (ppmv)
 C ---------------------------------------------------------------------
 C OCMIP NOTE: Some words about units - (JCO, 4/4/1999)
 C     - Models carry tracers in mol/m^3 (on a per volume basis)
-C     - Conversely, this routine, which was written by 
-C       observationalists (C. Sabine and R. Key), passes input 
+C     - Conversely, this routine, which was written by
+C       observationalists (C. Sabine and R. Key), passes input
 C       arguments in umol/kg (i.e., on a per mass basis)
 C     - I have changed things slightly so that input arguments are in
 C       mol/m^3,
-C     - Thus, all input concentrations (diclocal, ta, pt, and st) should be 
-C       given in mol/m^3; output arguments "co2star" and "dco2star"  
+C     - Thus, all input concentrations (diclocal, ta, pt, and st) should be
+C       given in mol/m^3; output arguments "co2star" and "dco2star"
 C       are likewise be in mol/m^3.
 C ---------------------------------------------------------------------
+
         _RL  phhi
         _RL  phlo
         _RL  tk
@@ -104,7 +115,7 @@ C ---------------------------------------------------------------------
         _RL  htotal2
         _RL  s2
         _RL  xacc
-        _RL  co2star 
+        _RL  co2star
         _RL  co2starair
         _RL  dco2star
         _RL  dpCO2
@@ -131,11 +142,11 @@ c ---------------------------------------------------------------------
 C Change units from the input of mol/m^3 -> mol/kg:
 c (1 mol/m^3)  x (1 m^3/1024.5 kg)
 c where the ocean mean surface density is 1024.5 kg/m^3
-c Note: mol/kg are actually what the body of this routine uses 
-c for calculations.  Units are reconverted back to mol/m^3 at the 
+c Note: mol/kg are actually what the body of this routine uses
+c for calculations.  Units are reconverted back to mol/m^3 at the
 c end of this routine.
 c ---------------------------------------------------------------------
-c To convert input in mol/m^3 -> mol/kg 
+c To convert input in mol/m^3 -> mol/kg
         pt=pt*permil
         sit=sit*permil
         ta=ta*permil
@@ -158,7 +169,7 @@ c convert to [H+]...
 
 c----------------------------------------------------------------
 c iteratively solve for [H+]
-c (i) Newton-Raphson method with fixed number of iterations, 
+c (i) Newton-Raphson method with fixed number of iterations,
 c     use previous [H+] as first guess
 
 c select newton-raphson, inewt=1
@@ -233,7 +244,7 @@ cdiags
           end do
 c end of newton-raphson method
 c....................................................
-        else 
+        else
 c....................................................
 C BRACKET AND BISECTION METHOD
 c....................................................
@@ -242,7 +253,7 @@ c      with fixed, large number of iterations
           do ibrack = 1, ibrackmax
             do hstep = 1,3
               if(hstep .eq. 1)x = xhi
-              if(hstep .eq. 2)x = xlo 
+              if(hstep .eq. 2)x = xlo
               if(hstep .eq. 3)x = xmid
 c set some common combinations of parameters used in
 c the iterative [H+] solvers
@@ -300,7 +311,7 @@ c----------------------------------------------------------------
 c now determine pCO2 etc...
 c htotal = [H+], hydrogen ion conc
         htotal = x
-C Calculate [CO2*] as defined in DOE Methods Handbook 1994 Ver.2, 
+C Calculate [CO2*] as defined in DOE Methods Handbook 1994 Ver.2,
 C ORNL/CDIAC-74, dickson and Goyet, eds. (Ch 2 p 10, Eq A.49)
         htotal2=htotal*htotal
         co2star=diclocal*htotal2/(htotal2 + k1local*htotal
@@ -323,21 +334,14 @@ c       Reconvert from mol/kg -> mol/m^3
         ta=ta/permil
         diclocal=diclocal/permil
 
-        return
-        end
+        RETURN
+        END
 
-c=================================================================
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-CC  New efficient pCO2 solver, Mick Follows         CC
-CC                             Taka Ito             CC
-CC                             Stephanie Dutkiewicz CC
-CC  20 April 2003                                   CC
-CC  ADD CO3 ESTIMATION AND PASS OUT                 CC
-CC  Karsten Friis, Mick Follows                     CC
-CC  1 sep 04                                        CC
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-#include "DIC_OPTIONS.h"
-CStartOfInterFace
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: CALC_PCO2_APPROX_CO3
+
+C !INTERFACE: ==========================================================
        SUBROUTINE CALC_PCO2_APPROX_CO3(
      I                       t,s,diclocal,pt,sit,ta,
      I                       k1local,k2local,
@@ -347,9 +351,22 @@ CStartOfInterFace
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,co3local,
      I                       myThid)
-C     /==========================================================\
+
+C !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE CALC_PCO2_APPROX_CO3                          |
-C     \==========================================================/
+C     *==========================================================*
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CC  New efficient pCO2 solver, Mick Follows         CC
+CC                             Taka Ito             CC
+CC                             Stephanie Dutkiewicz CC
+CC  20 April 2003                                   CC
+CC  ADD CO3 ESTIMATION AND PASS OUT                 CC
+CC  Karsten Friis, Mick Follows                     CC
+CC  1 sep 04                                        CC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -376,7 +393,7 @@ C       s   = salinity (PSU)
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
         INTEGER myThid
-CEndOfInterface
+CEOP
 
 C     == Local variables ==
         _RL  phguess
@@ -387,7 +404,7 @@ C     == Local variables ==
         _RL  gamm
         _RL  hnew
         _RL  co2s
-        _RL  h3po4g, h2po4g, hpo4g, po4g   
+        _RL  h3po4g, h2po4g, hpo4g, po4g
         _RL  siooh3g
 c carbonate
         _RL  co3local
@@ -451,7 +468,7 @@ cmick - return update pH to main routine
 c NOW EVALUATE CO32-, carbonate ion concentration
 c used in determination of calcite compensation depth
 c Karsten Friis & Mick - Sep 2004
-        co3local = k1local*k2local*diclocal / 
+        co3local = k1local*k2local*diclocal /
      &         (hnew*hnew + k1local*hnew + k1local*k2local)
 
 c ---------------------------------------------------------------
@@ -464,18 +481,16 @@ c Reconvert from mol/kg -> mol/m^3
         sit=sit/permil
         ta=ta/permil
         diclocal=diclocal/permil
-        return
-        end
 
-c=================================================================
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-CC  New efficient pCO2 solver, Mick Follows         CC
-CC                             Taka Ito             CC
-CC                             Stephanie Dutkiewicz CC
-CC  20 April 2003                                   CC
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-#include "DIC_OPTIONS.h"
-CStartOfInterFace
+        RETURN
+        END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C !ROUTINE: CALC_PCO2_APPROX
+
+C !INTERFACE: ==========================================================
        SUBROUTINE CALC_PCO2_APPROX(
      I                       t,s,diclocal,pt,sit,ta,
      I                       k1local,k2local,
@@ -485,9 +500,19 @@ CStartOfInterFace
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,
      I                       myThid)
-C     /==========================================================\
+
+C !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE CALC_PCO2_APPROX                              |
-C     \==========================================================/
+C     *==========================================================*
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CC  New efficient pCO2 solver, Mick Follows         CC
+CC                             Taka Ito             CC
+CC                             Stephanie Dutkiewicz CC
+CC  20 April 2003                                   CC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -514,7 +539,7 @@ C       s   = salinity (PSU)
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
         INTEGER myThid
-CEndOfInterface
+CEOP
 
 C     == Local variables ==
         _RL  phguess
@@ -525,7 +550,7 @@ C     == Local variables ==
         _RL  gamm
         _RL  hnew
         _RL  co2s
-        _RL  h3po4g, h2po4g, hpo4g, po4g   
+        _RL  h3po4g, h2po4g, hpo4g, po4g
         _RL  siooh3g
 c carbonate
         _RL  co3local
@@ -589,7 +614,7 @@ cmick - return update pH to main routine
 c NOW EVALUATE CO32-, carbonate ion concentration
 c used in determination of calcite compensation depth
 c Karsten Friis & Mick - Sep 2004
-c       co3local = k1local*k2local*diclocal / 
+c       co3local = k1local*k2local*diclocal /
 c    &         (hnew*hnew + k1local*hnew + k1local*k2local)
 
 c ---------------------------------------------------------------
@@ -602,43 +627,48 @@ c Reconvert from mol/kg -> mol/m^3
         sit=sit/permil
         ta=ta/permil
         diclocal=diclocal/permil
-        return
-        end
 
-c=================================================================
-c *******************************************************************
-c=================================================================
-CStartOfInterFace
+        RETURN
+        END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: CARBON_COEFFS
+
+C !INTERFACE: ==========================================================
       SUBROUTINE CARBON_COEFFS(
      I                   ttemp,stemp,
      I                   bi,bj,iMin,iMax,jMin,jMax,myThid)
-C
-C     /==========================================================\
+
+C !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE CARBON_COEFFS                                 |
 C     | determine coefficients for surface carbon chemistry      |
 C     | adapted from OCMIP2:  SUBROUTINE CO2CALC                 |
 C     | mick follows, oct 1999                                   |
-c     | minor changes to tidy, swd aug 2002                      |
-C     \==========================================================/
+C     | minor changes to tidy, swd aug 2002                      |
+C     *==========================================================*
 C INPUT
-C       diclocal = total inorganic carbon (mol/m^3) 
+C       diclocal = total inorganic carbon (mol/m^3)
 C             where 1 T = 1 metric ton = 1000 kg
-C       ta  = total alkalinity (eq/m^3) 
-C       pt  = inorganic phosphate (mol/^3) 
-C       sit = inorganic silicate (mol/^3) 
+C       ta  = total alkalinity (eq/m^3)
+C       pt  = inorganic phosphate (mol/^3)
+C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
 C       s   = salinity (PSU)
 C OUTPUT
 C IMPORTANT: Some words about units - (JCO, 4/4/1999)
-c     - Models carry tracers in mol/m^3 (on a per volume basis)
-c     - Conversely, this routine, which was written by observationalists 
-c       (C. Sabine and R. Key), passes input arguments in umol/kg  
-c       (i.e., on a per mass basis)
-c     - I have changed things slightly so that input arguments are in mol/m^3,
-c     - Thus, all input concentrations (diclocal, ta, pt, and st) should be 
-c       given in mol/m^3; output arguments "co2star" and "dco2star"  
-c       are likewise be in mol/m^3.
+C     - Models carry tracers in mol/m^3 (on a per volume basis)
+C     - Conversely, this routine, which was written by observationalists
+C       (C. Sabine and R. Key), passes input arguments in umol/kg
+C       (i.e., on a per mass basis)
+C     - I have changed things slightly so that input arguments are in mol/m^3,
+C     - Thus, all input concentrations (diclocal, ta, pt, and st) should be
+C       given in mol/m^3; output arguments "co2star" and "dco2star"
+C       are likewise be in mol/m^3.
 C--------------------------------------------------------------------------
+
+C !USES: ===============================================================
         IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
@@ -657,8 +687,7 @@ C general
         _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
         INTEGER bi,bj,iMin,iMax,jMin,jMax
         INTEGER myThid
-CEndOfInterface
-
+CEOP
 
 C LOCAL VARIABLES
         _RL  t
@@ -689,10 +718,10 @@ C OCMIP note:
 C Calculate all constants needed to convert between various measured
 C carbon species. References for each equation are noted in the code.
 C Once calculated, the constants are
-C stored and passed in the common block "const". The original version 
-C of this code was based on the code by dickson in Version 2 of 
-C  Handbook of Methods C for the Analysis of the Various Parameters of 
-C the Carbon Dioxide System in Seawater , DOE, 1994 (SOP No. 3, p25-26). 
+C stored and passed in the common block "const". The original version
+C of this code was based on the code by dickson in Version 2 of
+C  Handbook of Methods C for the Analysis of the Various Parameters of
+C the Carbon Dioxide System in Seawater , DOE, 1994 (SOP No. 3, p25-26).
 C....................................................................
 
         do i=imin,imax
@@ -729,7 +758,7 @@ C K0 from Weiss 1974
 C------------------------------------------------------------------------
 C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
-C Millero p.664 (1995) using Mehrbach et al. data on seawater scale 
+C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
            ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
      &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
      &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
@@ -792,7 +821,7 @@ C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
 C dickson and Riley (1979) -- change pH scale to total
            akf(i,j,bi,bj)=exp(1590.2 _d 0*invtk - 12.641 _d 0 +
-     &   1.525 _d 0*sqrtis + log(1.0 _d 0 - 0.001005 _d 0*s) + 
+     &   1.525 _d 0*sqrtis + log(1.0 _d 0 - 0.001005 _d 0*s) +
      &   log(1.0 _d 0 + (0.1400 _d 0/96.062 _d 0)*(scl)/aks(i,j,bi,bj)))
 C------------------------------------------------------------------------
 C Calculate concentrations for borate, sulfate, and fluoride
@@ -823,27 +852,30 @@ C------------------------------------------------------------------------
          end do
         end do
 
-        return
-        end
+        RETURN
+        END
 
-c=================================================================
-c *******************************************************************
-c=================================================================
-CStartOfInterFace
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C !ROUTINE: CARBON_COEFFS_PRESSURE_DEP
+
+C !INTERFACE: ==========================================================
       SUBROUTINE CARBON_COEFFS_PRESSURE_DEP(
      I                   ttemp,stemp,
      I                   bi,bj,iMin,iMax,jMin,jMax,
      I                   Klevel,myThid)
-C
-C     /==========================================================\
+
+C !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE CARBON_COEFFS                                 |
 C     | determine coefficients for surface carbon chemistry      |
 C     | adapted from OCMIP2:  SUBROUTINE CO2CALC                 |
 C     | mick follows, oct 1999                                   |
-c     | minor changes to tidy, swd aug 2002                      |
-c     | MODIFIED FOR PRESSURE DEPENDENCE                         |
-c     | Karsten Friis and Mick Follows 2004                      |
-C     \==========================================================/
+C     | minor changes to tidy, swd aug 2002                      |
+C     | MODIFIED FOR PRESSURE DEPENDENCE                         |
+C     | Karsten Friis and Mick Follows 2004                      |
+C     *==========================================================*
 C INPUT
 C       diclocal = total inorganic carbon (mol/m^3)
 C             where 1 T = 1 metric ton = 1000 kg
@@ -854,21 +886,22 @@ C       t   = temperature (degrees C)
 C       s   = salinity (PSU)
 C OUTPUT
 C IMPORTANT: Some words about units - (JCO, 4/4/1999)
-c     - Models carry tracers in mol/m^3 (on a per volume basis)
-c     - Conversely, this routine, which was written by observationalists
-c       (C. Sabine and R. Key), passes input arguments in umol/kg
-c       (i.e., on a per mass basis)
-c     - I have changed things slightly so that input arguments are in mol/m^3,
-c     - Thus, all input concentrations (diclocal, ta, pt, and st) should be
-c       given in mol/m^3; output arguments "co2star" and "dco2star"
-c       are likewise be in mol/m^3.
-c
-c
-c NOW INCLUDES:
-c PRESSURE DEPENDENCE of K1, K2, solubility product of calcite
-c based on Takahashi, GEOSECS Atlantic Report, Vol. 1 (1981)
-c
+C     - Models carry tracers in mol/m^3 (on a per volume basis)
+C     - Conversely, this routine, which was written by observationalists
+C       (C. Sabine and R. Key), passes input arguments in umol/kg
+C       (i.e., on a per mass basis)
+C     - I have changed things slightly so that input arguments are in mol/m^3,
+C     - Thus, all input concentrations (diclocal, ta, pt, and st) should be
+C       given in mol/m^3; output arguments "co2star" and "dco2star"
+C       are likewise be in mol/m^3.
+C
+C NOW INCLUDES:
+C PRESSURE DEPENDENCE of K1, K2, solubility product of calcite
+C based on Takahashi, GEOSECS Atlantic Report, Vol. 1 (1981)
+C
 C--------------------------------------------------------------------------
+
+C !USES: ===============================================================
         IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
@@ -886,12 +919,10 @@ C general
         _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
         _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
         INTEGER bi,bj,iMin,iMax,jMin,jMax
-c K is depth index
+C K is depth index
         INTEGER Klevel
         INTEGER myThid
-CEndOfInterface
-
-
+CEOP
 
 C LOCAL VARIABLES
         _RL  t
@@ -993,21 +1024,21 @@ C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
      &          0.0049867*tk1002))
 C------------------------------------------------------------------------
 C K0 from Weiss 1974
-           ak0(i,j,bi,bj) = exp(93.4517/tk100 - 60.2409 + 
+           ak0(i,j,bi,bj) = exp(93.4517/tk100 - 60.2409 +
      &        23.3585 * log(tk100) +
-     &        s * (0.023517 - 0.023656*tk100 + 
+     &        s * (0.023517 - 0.023656*tk100 +
      &        0.0047036*tk1002))
 C------------------------------------------------------------------------
 C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
-C Millero p.664 (1995) using Mehrbach et al. data on seawater scale 
-           ak1(i,j,bi,bj)=10**(-1*(3670.7*invtk - 
+C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
+           ak1(i,j,bi,bj)=10**(-1*(3670.7*invtk -
      &          62.008 + 9.7944*dlogtk -
      &          0.0118 * s + 0.000116*s2))
-           ak2(i,j,bi,bj)=10**(-1*(1394.7*invtk + 4.777 - 
+           ak2(i,j,bi,bj)=10**(-1*(1394.7*invtk + 4.777 -
      &          0.0184*s + 0.000118*s2))
 C NOW PRESSURE DEPENDENCE:
-c Following Takahashi (1981) GEOSECS report - quoting Culberson and 
+c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
 c pressc = pressure in bars
            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
@@ -1029,38 +1060,38 @@ C Millero p.669 (1995) using data from dickson (1990)
      &          dlogtk + 0.053105*sqrts*tk)
 C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
-C with additional info from CO2sys documentation (E. Lewis and 
+C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
-           bigR = 83.145 
+           bigR = 83.145
            dv = -29.48 + 0.1622*t + 2.608d-3*t*t
            dk = -2.84d-3
-           pfactor = - (dv/(bigR*tk))*pressc 
+           pfactor = - (dv/(bigR*tk))*pressc
      &               + (0.5*dk/(bigR*tk))*pressc*pressc
            akb(i,j,bi,bj) = akb(i,j,bi,bj)*exp(pfactor)
 C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
-           ak1p(i,j,bi,bj) = exp(-4576.752*invtk + 115.525 - 
+           ak1p(i,j,bi,bj) = exp(-4576.752*invtk + 115.525 -
      &          18.453*dlogtk +
      &          (-106.736*invtk + 0.69171)*sqrts +
      &          (-0.65643*invtk - 0.01844)*s)
 C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
 C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
-           ak2p(i,j,bi,bj) = exp(-8814.715*invtk + 172.0883 - 
+           ak2p(i,j,bi,bj) = exp(-8814.715*invtk + 172.0883 -
      &          27.927*dlogtk +
      &          (-160.340*invtk + 1.3566) * sqrts +
      &          (0.37335*invtk - 0.05778) * s)
 C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
-           ak3p(i,j,bi,bj) = exp(-3070.75*invtk - 18.141 + 
+           ak3p(i,j,bi,bj) = exp(-3070.75*invtk - 18.141 +
      &          (17.27039*invtk + 2.81197) *
      &          sqrts + (-44.99486*invtk - 0.09984) * s)
 C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
-           aksi(i,j,bi,bj) = exp(-8904.2*invtk + 117.385 - 
+           aksi(i,j,bi,bj) = exp(-8904.2*invtk + 117.385 -
      &          19.334*dlogtk +
      &          (-458.79*invtk + 3.5913) * sqrtis +
      &          (188.74*invtk - 1.5998) * is +
@@ -1069,14 +1100,14 @@ C Millero p.671 (1995) using data from Yao and Millero (1995)
 C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
-           akw(i,j,bi,bj) = exp(-13847.26*invtk + 148.9652 - 
-     &          23.6521*dlogtk + 
+           akw(i,j,bi,bj) = exp(-13847.26*invtk + 148.9652 -
+     &          23.6521*dlogtk +
      &          (118.67*invtk - 5.977 + 1.0495 * dlogtk) *
      &          sqrts - 0.01615 * s)
 C------------------------------------------------------------------------
 C ks = [H][SO4]/[HSO4]
 C dickson (1990, J. chem. Thermodynamics 22, 113)
-           aks(i,j,bi,bj)=exp(-4276.1*invtk + 141.328 - 
+           aks(i,j,bi,bj)=exp(-4276.1*invtk + 141.328 -
      &          23.093*dlogtk +
      &          (-13856*invtk + 324.57 - 47.986*dlogtk)*sqrtis +
      &          (35474*invtk - 771.54 + 114.723*dlogtk)*is -
@@ -1167,5 +1198,3 @@ C------------------------------------------------------------------------
 
         return
         end
-
-
