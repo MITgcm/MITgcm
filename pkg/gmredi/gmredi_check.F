@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.18 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.19 2010/03/24 21:21:49 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -74,8 +74,7 @@ C- print out some kee parameters :
        CALL WRITE_0D_RL( GM_background_K*GM_advect, INDEX_NONE,
      &  'GM_advec*K =',
      &  '    /* Backg. GM-Advec(=Bolus) Diffusivity [m^2/s]*/')
-       CALL WRITE_0D_RL( GM_background_K*GM_advect, INDEX_NONE,
-     &  'GM_Kmin_horiz =',
+       CALL WRITE_0D_RL( GM_Kmin_horiz, INDEX_NONE, 'GM_Kmin_horiz =',
      &  ' /* Minimum Horizontal Diffusivity [m^2/s] */')
        CALL WRITE_0D_RL( GM_Visbeck_alpha, INDEX_NONE,
      &  'GM_Visbeck_alpha =', ' /* Visbeck alpha coeff. [-] */')
