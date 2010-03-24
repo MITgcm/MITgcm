@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1241 2010/03/24 20:54:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1242 2010/03/24 21:56:45 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/lab_sea:
+  change to multi-tile setup.
+  NOTE: while cost function values remain very similar,
+  gradients are very different, although gradient checks are self-consistent
+  Should try to get to the bottom of this (cost function summation order?)
 o pkg/dic:
   in carbon_chem.F, replace log10 (AUTODIFF) with explicit form to avoid
   a weakness of TAF that drops part of double precision in log10 derivative.
