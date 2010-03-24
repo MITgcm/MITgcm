@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.4 2009/06/17 15:14:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.5 2010/03/24 01:34:38 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -64,8 +64,8 @@ c     == end of interface ==
       imax = snx
 
 c--   Convert mean ssh from cm to m
-      factor =  0.01
-      spval  = -9990.
+      factor =  0.01 _d 0
+      spval  = -9990. _d 0
 
       call mdsreadfield( topexmeanfile, cost_iprec, cost_yftype, 1,
      &                   tpmean, 1, mythid )
@@ -102,5 +102,5 @@ c--   Convert mean ssh from cm to m
 
 #endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 
+      return
       end
-

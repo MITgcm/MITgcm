@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.8 2009/06/17 15:14:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.9 2010/03/24 01:34:38 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -84,8 +84,8 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      factor = 0.01
-      spval = -9990.
+      factor = 0.01 _d 0
+      spval = -9990. _d 0
 
 cnew(
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
@@ -159,4 +159,3 @@ cph)
 
       return
       end
-
