@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.5 2010/01/04 17:45:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.6 2010/03/25 23:09:29 jmc Exp $
 # $Name:  $
 
 usage()
@@ -152,6 +152,7 @@ do
       if test "x$OPTFILE" = x -a -f $xx/build/Makefile ; then
         comm=`grep '^# OPTFILE=' $xx/build/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
         echo "from '$xx/build/Makefile', extract:" > $DRESULTS/genmake_state
+        sed -n '/^# executed by:/,+1 p' $xx/build/Makefile >> $DRESULTS/genmake_state
         echo $comm >> $DRESULTS/genmake_state
         eval $comm
       fi
