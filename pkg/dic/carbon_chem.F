@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.16 2010/03/24 15:49:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.17 2010/03/25 20:12:20 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -609,15 +609,7 @@ cmick - now determine [CO2*]
         co2s  = diclocal/
      &   (1.0 _d 0 + (k1local/hnew) + (k1local*k2local/(hnew*hnew)))
 cmick - return update pH to main routine
-#ifdef ALLOW_AUTODIFF_TAMC
-C jmc: replace log10 with explicit form to avoid a weakness of TAF that 
-C      drops part of double precision in log10 derivative. 
-C      We now get the precise derivative: =1./log(x)/log(10.d0) 
-C      instead of TAF approximated version: =1./(log(x)*alog(10.))
-        phlocal = -log(hnew)/log(10. _d 0)
-#else
         phlocal = -log10(hnew)
-#endif
 
 c NOW EVALUATE CO32-, carbonate ion concentration
 c used in determination of calcite compensation depth
