@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1242 2010/03/24 21:56:45 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1243 2010/03/25 20:24:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,6 +12,7 @@ o verification/lab_sea:
 o pkg/dic:
   in carbon_chem.F, replace log10 (AUTODIFF) with explicit form to avoid
   a weakness of TAF that drops part of double precision in log10 derivative.
+  <= changes removed since problem has been fixed in current TAF version 1.9.71
   update AD output of exp. tutorial_dic_adjoffline & tutorial_global_oce_biogeo.
 o pkg/ecco:
   add missing "_d 0" in cost_readers.F, cost_readtopex.F & cost_readtopexmean.F
