@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SIZE.h_mpi,v 1.6 2010/03/24 21:53:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SIZE.h_mpi,v 1.7 2010/03/25 16:47:38 jmc Exp $
 C $Name:  $
 
 C
@@ -46,8 +46,8 @@ C     Nr  :: No. points in Z for full process domain.
       PARAMETER (
      &           sNx =  10,
      &           sNy =   8,
-     &           OLx =   3,
-     &           OLy =   3,
+     &           OLx =   4,
+     &           OLy =   4,
      &           nSx =   1,
      &           nSy =   2,
      &           nPx =   2,
