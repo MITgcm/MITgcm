@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/GMREDI_OPTIONS.h,v 1.2 2010/03/22 02:27:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/GMREDI_OPTIONS.h,v 1.3 2010/03/26 15:17:38 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -16,6 +16,7 @@ C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_AC02_TAP
+#define GM_EXCLUDE_FM07_TAP
 #undef GM_EXCLUDE_TAPERING
 
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
