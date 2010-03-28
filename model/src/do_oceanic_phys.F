@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.87 2010/03/16 19:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.88 2010/03/28 14:15:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,6 +165,7 @@ C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
 cph-adj-test(
 CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hsnow  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE heff   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE empmr,qsw,theta   = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 cph-adj-test)
