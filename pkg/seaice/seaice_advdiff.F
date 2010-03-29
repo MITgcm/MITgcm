@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.37 2009/06/24 13:11:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.38 2010/03/29 12:35:54 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,6 +120,15 @@ C     Do we need this? I am afraid so.
       ENDIF
 
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area   = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE heff   = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE heffm  = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE hsnow  = comlev1, key = ikey_dynamics, kind=isbyte
+# ifdef SEAICE_SALINITY
+CADJ STORE hsalt   = comlev1, key = ikey_dynamics, kind=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEmultiDimAdvection ) THEN
 #ifndef ALLOW_AUTODIFF_TAMC
 C     This has to be done to comply with the time stepping in advect.F:

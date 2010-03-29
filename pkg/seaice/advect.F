@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.25 2009/10/22 12:16:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.26 2010/03/29 12:35:54 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,35 +57,36 @@ C     save fld from previous time step
       ENDDO
 
       DO k=1,2
-       IF ( k .EQ. 1 ) THEN
+cph       IF ( k .EQ. 1 ) THEN
 C     Predition step
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            tmpFld(I,J,bi,bj) = fld(I,J,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ELSE       
+cph        DO bj=myByLo(myThid),myByHi(myThid)
+cph         DO bi=myBxLo(myThid),myBxHi(myThid)
+cph          DO j=1-OLy,sNy+OLy
+cph           DO i=1-OLx,sNx+OLx
+cph            tmpFld(I,J,bi,bj) = fld(I,J,bi,bj)
+cph           ENDDO
+cph          ENDDO
+cph         ENDDO
+cph        ENDDO
+cph       ELSE       
 C     Backward Euler correction step
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
+cph for k=1 this is same as tmpFld = fld
             tmpFld(i,j,bi,bj)=HALF*(fld(I,J,bi,bj)
      &           +fldNm1(i,j,bi,bj))
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDIF
+cph       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphCADJ STORE fld    = comlev1, key = ikey_dynamics
 cphCADJ STORE fldNm1 = comlev1, key = ikey_dynamics
-CADJ STORE tmpFld = comlev1, key = ikey_dynamics
+cphCADJ STORE tmpFld = comlev1, key = ikey_dynamics
        DO J=1-Oly,sNy+Oly
         DO I=1-Olx,sNx+Olx
          afx(I,J) = 0. _d 0
