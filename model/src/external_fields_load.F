@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.33 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.34 2010/03/29 20:05:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,7 +83,7 @@ C-jmc: with some option of g77, FLOAT results in real*4 evaluation
 C      of aWght; using DFLOAT always force real*8 computation:
 c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
 C-ph: however, TAF doesnt recognize DFLOAT,
-C-jmc: so let's try this:
+C-jmc: so let me try this:
       tmp1Wght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
       tmp2Wght = FLOAT( Ifprd )
       aWght =  tmp1Wght / tmp2Wght
