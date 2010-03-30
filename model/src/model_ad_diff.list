@@ -54,13 +54,12 @@ ini_linear_phisurf.f
 ini_masks_etc.f	
 ini_mixing.f	
 ini_nh_fields.f	
+ini_nlfs_vars.f	
 ini_p_ground.f	
 ini_pressure.f	
 ini_psurf.f	
-ini_r_star.f
 ini_salt.f	
 ini_spherical_polar_grid.f
-ini_surf_dr.f
 ini_theta.f	
 ini_dynvars.f	
 ini_vel.f	

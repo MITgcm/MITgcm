@@ -1,18 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_surf_dr.F,v 1.3 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.1 2010/03/30 17:45:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: INI_SURF_DR
+C     !ROUTINE: INI_NLFS_VARS
 C     !INTERFACE:
-      SUBROUTINE INI_SURF_DR( myThid )
+      SUBROUTINE INI_NLFS_VARS( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_SURF_DR
-C     | o Calculate the new surface level thickness according to
-C     |   the surface r-position  (Non-Linear Free-Surf)
-C     | o take decision if grid box becomes too thin or too thick
+C     | SUBROUTINE INI_NLFS_VARS
+C     | o Initialise variables for Non-Linear Free-Surface
+C     |   formulations (formerly INI_SURF_DR & INI_R_STAR)
 C     *==========================================================*
 C     \ev
 
@@ -27,7 +26,7 @@ C     == Global variables
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid :: Thread number for this instance of the routine.
+C     myThid :: my Thread Id. number
       INTEGER myThid
 
 #ifdef NONLIN_FRSURF
@@ -35,7 +34,7 @@ C     myThid :: Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     Local variables
 C     i,j,k,bi,bj  :: loop counter
-      INTEGER i,j,bi,bj
+      INTEGER i,j,k,bi,bj
       INTEGER ks
       _RL hFacInfMOM, Rmin_tmp
 c     CHARACTER*(MAX_LEN_MBUF) suff
@@ -43,12 +42,17 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-       hFacInfMOM = hFacInf
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('INI_NLFS_VARS',myThid)
+#endif
 
-       DO bj=myByLo(myThid), myByHi(myThid)
-        DO bi=myBxLo(myThid), myBxHi(myThid)
+      hFacInfMOM = hFacInf
 
-C-- Initialise arrays :
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+C-    1rst bi,bj loop :
+
+C-- Initialise arrays (NLFS using r-coordinate):
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            hFac_surfC(i,j,bi,bj) = 0.
@@ -58,6 +62,40 @@ C-- Initialise arrays :
            Rmin_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj)
           ENDDO
          ENDDO
+
+C-- Initialise arrays (NLFS using r* coordinate):
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            rStarFacC(i,j,bi,bj) = 1.
+            rStarFacW(i,j,bi,bj) = 1.
+            rStarFacS(i,j,bi,bj) = 1.
+            rStarExpC(i,j,bi,bj) = 1.
+            rStarExpW(i,j,bi,bj) = 1.
+            rStarExpS(i,j,bi,bj) = 1.
+            rStarDhCDt(i,j,bi,bj) = 0.
+            rStarDhWDt(i,j,bi,bj) = 0.
+            rStarDhSDt(i,j,bi,bj) = 0.
+            PmEpR(i,j,bi,bj) = 0.
+          ENDDO
+         ENDDO
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
+            h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+            h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+
+C-    end 1rst bi,bj loop.
+       ENDDO
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
 
 C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
          DO j=1,sNy
@@ -83,12 +121,17 @@ C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
          ENDDO
 
 C-    end bi,bj loop.
-        ENDDO
        ENDDO
+      ENDDO
 
-       _EXCH_XY_RL( Rmin_surf, myThid )
+      CALL EXCH_XY_RL( Rmin_surf, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('INI_NLFS_VARS',myThid)
+#endif
+
 #endif /* NONLIN_FRSURF */
 
       RETURN
