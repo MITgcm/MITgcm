@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.137 2010/03/30 14:57:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.138 2010/03/30 16:40:03 jmc Exp $
 #  $Name:  $
 #
 
@@ -231,7 +231,7 @@ testoutput_run()
           listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
         fi
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(M)='$listVar'" 1>&2 ; fi
-	echo "listVar='$listVar'" > $CDIR"/summary.txt"
+	echo "listVar='$listVar'" > $locDIR"/summary.txt"
         allargs=""
         for xx in $listVar
         do
@@ -1289,8 +1289,9 @@ for dir in $TESTDIRS ; do
     results=$EMPTY_RESULTS
 
     #  Create an output dir for each OPTFILE/tdir combination
-    CDIR=$DRESULTS"/"$dir
-    mkdir $CDIR
+    locDIR=$DRESULTS"/"$dir
+    mkdir $locDIR
+    CDIR=`pwd`"/$locDIR"
 
     if test "x$NORUN" = xt ; then
 	    run=N
@@ -1317,16 +1318,16 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-	touch $CDIR"/summary.txt"
-	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
-	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
-	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
-	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
-	echo "tdir='$dir'" >> $CDIR"/summary.txt"
+	touch $locDIR"/summary.txt"
+	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+	echo "MACH='$MACH'" >> $locDIR"/summary.txt"
+	echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
+	echo "DATE='$DATE'" >> $locDIR"/summary.txt"
+	echo "tdir='$dir'" >> $locDIR"/summary.txt"
 	if test "x$ADM" = xt ; then
-	    head -1 $dir/$builddir/taf_ad.log >> $CDIR"/summary.txt"
+	    head -1 $dir/$builddir/taf_ad.log >> $locDIR"/summary.txt"
 	    grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
-				>> $CDIR"/summary.txt"
+				>> $locDIR"/summary.txt"
 	fi
 
 	for ex in $extra_runs ; do
@@ -1335,8 +1336,9 @@ for dir in $TESTDIRS ; do
 	    #  reference output file
 	    refExOut=`echo $ref_outp | sed "s/\./.${ex}./g"`
 	    #  Create an output dir for each OPTFILE/tdir.ex combination
-	    CDIR=$DRESULTS"/"$dir"."$ex
-	    mkdir $CDIR
+	    locDIR=$DRESULTS"/"$dir"."$ex
+	    mkdir $locDIR
+	    CDIR=`pwd`"/$locDIR"
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
 	    run_clean $dir/tr_run.$ex
 	    linkdata $dir/tr_run.$ex $inputdir.$ex $inputdir input
@@ -1346,16 +1348,16 @@ for dir in $TESTDIRS ; do
 	    fres="$fres.$ex"
 	    echo
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-	    touch $CDIR"/summary.txt"
-	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
-	    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
-	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
-	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
-	    echo "tdir='$dir.$ex'" >> $CDIR"/summary.txt"
+	    touch $locDIR"/summary.txt"
+	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+	    echo "MACH='$MACH'" >> $locDIR"/summary.txt"
+	    echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
+	    echo "DATE='$DATE'" >> $locDIR"/summary.txt"
+	    echo "tdir='$dir.$ex'" >> $locDIR"/summary.txt"
             if test "x$ADM" = xt ; then
-	        head -1 $dir/$builddir/taf_ad.log >> $CDIR"/summary.txt"
+	        head -1 $dir/$builddir/taf_ad.log >> $locDIR"/summary.txt"
 	        grep -A3 'Seconds in section "ALL' $dir/tr_run.$ex/$OUTPUTFILE \
-			           >> $CDIR"/summary.txt"
+			           >> $locDIR"/summary.txt"
             fi
 	    if test "x$POSTCLEAN" = xt ; then
 		run_clean $dir/tr_run.$ex
