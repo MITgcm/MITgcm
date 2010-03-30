@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.136 2010/03/08 16:36:20 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.137 2010/03/30 14:57:49 jmc Exp $
 #  $Name:  $
 #
 
@@ -1289,9 +1289,8 @@ for dir in $TESTDIRS ; do
     results=$EMPTY_RESULTS
 
     #  Create an output dir for each OPTFILE/tdir combination
-    rel_CDIR=$DRESULTS"/"$dir
-    mkdir $rel_CDIR
-    CDIR=`pwd`"/$rel_CDIR"
+    CDIR=$DRESULTS"/"$dir
+    mkdir $CDIR
 
     if test "x$NORUN" = xt ; then
 	    run=N
@@ -1336,9 +1335,8 @@ for dir in $TESTDIRS ; do
 	    #  reference output file
 	    refExOut=`echo $ref_outp | sed "s/\./.${ex}./g"`
 	    #  Create an output dir for each OPTFILE/tdir.ex combination
-	    rel_CDIR=$DRESULTS"/"$dir"."$ex
-	    mkdir $rel_CDIR
-	    CDIR=`pwd`"/$rel_CDIR"
+	    CDIR=$DRESULTS"/"$dir"."$ex
+	    mkdir $CDIR
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
 	    run_clean $dir/tr_run.$ex
 	    linkdata $dir/tr_run.$ex $inputdir.$ex $inputdir input
@@ -1364,6 +1362,14 @@ for dir in $TESTDIRS ; do
 	    fi
 	done
 
+    if test -f $DRESULTS"/"genmake_state ; then : ; else 
+	if test -f $dir/$builddir/Makefile ; then
+	    mkOpt=`grep '^# OPTFILE=' $dir/$builddir/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
+	    echo "from '$dir/$builddir/Makefile', extract:" > $DRESULTS/genmake_state
+	    sed -n '/^# executed by:/,+1 p' $dir/$builddir/Makefile >> $DRESULTS/genmake_state
+	    echo $mkOpt >> $DRESULTS/genmake_state
+	fi
+    fi
     #postclean $dir/$builddir
     if test "x$POSTCLEAN" = xt ; then
  	makeclean $dir/$builddir \
