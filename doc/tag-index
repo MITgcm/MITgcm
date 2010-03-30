@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1243 2010/03/25 20:24:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1244 2010/03/30 18:43:34 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/offline:
+  - no need to specify periodicExternalForcing, etc ... to use offline pack
+  - offline input files no longer just single prec --> parameter offlineLoadPrec
 o verification/lab_sea:
   change to multi-tile setup.
   NOTE: while cost function values remain very similar,
