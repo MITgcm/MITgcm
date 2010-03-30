@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.7 2009/10/08 19:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.8 2010/03/30 14:56:30 dfer Exp $
 C $Name:  $
 
 #ifdef  ALLOW_OFFLINE
@@ -12,12 +12,14 @@ c   Forcing files
       COMMON /OFFLINE_COMMON_R/
      &       ConvectCount, ICEM,
      &       deltaToffline,
-     &       offlineForcingPeriod, offlineForcingCycle
+     &       offlineForcingPeriod, offlineForcingCycle,
+     &       offlineLoadPrec
       _RL ICEM(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL deltaToffline
       _RL offlineForcingPeriod
       _RL offlineForcingCycle
+      INTEGER offlineLoadPrec
 
       COMMON /OFFLINE_COMMON_C/
      &       UvelFile, VvelFile, WvelFile, ThetFile, Saltfile,
