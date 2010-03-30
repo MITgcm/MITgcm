@@ -4,8 +4,11 @@
 # *******************
  &GRDCHK_NML
  grdchk_eps       = 1.d-4,
- nbeg             = 4,
+# nbeg             = 4,
+ iGloPos          = 4,
+ jGloPos          = 8,
+ kGloPos          = 1,
  nstep            = 1,
- nend             = 8,
+ nend             = 4,
  grdchkvarindex   = 7,
  &
