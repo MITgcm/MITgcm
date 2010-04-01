@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.16 2010/03/30 14:56:30 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.17 2010/04/01 15:27:27 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -44,12 +44,12 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-      INTEGER myThid
+C     myTime  :: Simulation time
+C     myIter  :: Simulation timestep number
+C     myThid  :: Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_OFFLINE
 C     !FUNCTIONS:
@@ -331,8 +331,8 @@ c       print*,'OFFLINE READ', fn
 
 C--   Interpolate uvel, vvel, wvel
       DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        do k=1,Nr
+      DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO k=1,Nr
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           Uvel(i,j,k,bi,bj)   = bWght*uvel0(i,j,k,bi,bj)
@@ -357,18 +357,6 @@ C--   Interpolate uvel, vvel, wvel
           Kwz(i,j,k,bi,bj)    =  bWght*gmkz0(i,j,k,bi,bj)
      &                       +aWght*gmkz1(i,j,k,bi,bj)
 #endif
-          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
-     &                       +aWght*hflx1(i,j,bi,bj)
-          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &        *rUnit2mass/HeatCapacity_Cp
-          surfaceForcingS(i,j,bi,bj) =  bWght*sflx0(i,j,bi,bj)
-     &                       +aWght*sflx1(i,j,bi,bj)
-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &        *rUnit2mass
-
-          ICEM(i,j,bi,bj) =  bWght*icem0(i,j,bi,bj)
-     &                       +aWght*icem1(i,j,bi,bj)
-
 #ifdef ALLOW_KPP
           KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
      &                       +aWght*kdfs1(i,j,k,bi,bj)
@@ -378,6 +366,22 @@ C--   Interpolate uvel, vvel, wvel
          ENDDO
         ENDDO
        ENDDO
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
+     &                       +aWght*hflx1(i,j,bi,bj)
+          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &                      *recip_Cp*mass2rUnit
+          surfaceForcingS(i,j,bi,bj) =  bWght*sflx0(i,j,bi,bj)
+     &                       +aWght*sflx1(i,j,bi,bj)
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &                               *mass2rUnit
+
+          ICEM(i,j,bi,bj) =  bWght*icem0(i,j,bi,bj)
+     &                       +aWght*icem1(i,j,bi,bj)
+        ENDDO
+       ENDDO
+C--   end bi,bj loops
       ENDDO
       ENDDO
 
@@ -472,4 +476,3 @@ CEOP
 
       RETURN
       END
-
