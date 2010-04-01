@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.9 2010/01/24 18:16:47 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.10 2010/04/01 15:46:03 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -21,9 +21,9 @@ umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-TST_DIR="/home/jmc/test_ACES/gcm_tests"
-HERE='/home/jmc/test_ACES/output'
-cd $HERE
+TST_DIR="/home/jmc/test_ACES"
+HERE=$TST_DIR/output
+#cd $HERE
 
 sfx='tuv'
 module add open64

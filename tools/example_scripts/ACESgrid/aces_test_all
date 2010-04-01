@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.13 2009/06/26 16:12:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.14 2010/04/01 15:46:03 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -26,26 +26,27 @@ fi
 . /etc/profile.d/modules.sh
 module list > ~/tmp/.module_list 2>&1
 
-cd /home/jmc/test_ACES
-
 # QSUB="/usr/local/bin/qsub"
 # QSTAT="/usr/local/bin/qstat"
 QSUB=qsub
 QSTAT=qstat
+TST_DIR="/home/jmc/test_ACES"
 MPACK="MITgcm_tools/mpack-1.6/mpack"
-TST_DIR="/home/jmc/test_ACES/gcm_tests"
+SUB_DIR="MITgcm_tools/example_scripts/ACESgrid"
+
+cd $TST_DIR
 
 nbtst=0
 for i in $tst_list
 do
   sfx=`echo ${i}"_mpi" | sed 's/mth_mpi/ifc_mth/' | sed 's/tuv_mpi/op64_tuv/' | sed 's/mp2_mpi/mp2_mth/'`
-  if test -f MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx ; then
+  if test -f $SUB_DIR/aces_test_$sfx ; then
     JOB="tst_"$i
     job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
     if [ $action -ge 2 ] ; then 
     #-- to submit job
       if test "x_$job_exist" = x_0 ; then
-        $QSUB MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx
+        $QSUB $SUB_DIR/aces_test_$sfx
         eval M_$i='submitted'
         nbtst=`expr $nbtst + 1`
       else 

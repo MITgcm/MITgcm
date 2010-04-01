@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_adm.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_adm.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.6 2010/01/24 18:16:47 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.7 2010/04/01 15:46:03 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint MPI test using ifort (default=v8) & mpich
@@ -21,8 +21,8 @@ umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-TST_DIR="/home/jmc/test_ACES/gcm_tests"
-HERE='/home/jmc/test_ACES/output'
+TST_DIR="/home/jmc/test_ACES"
+HERE=$TST_DIR/output
 #cd $HERE
 
 sfx='adm'
