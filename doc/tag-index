@@ -1,14 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1244 2010/03/30 18:43:34 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1245 2010/04/01 15:32:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/offline:
+  fix bug in S/R OFFLINE_FIELDS_LOAD regarding surfaceForcing conversion factor
+  (bug was added in version 1.10 on 2007-08-23).
+o pkg/offline:
   - no need to specify periodicExternalForcing, etc ... to use offline pack
   - offline input files no longer just single prec --> parameter offlineLoadPrec
 o verification/lab_sea:
-  change to multi-tile setup.
+  change AD test to multi-tile setup and update all 4 AD output.
   NOTE: while cost function values remain very similar,
   gradients are very different, although gradient checks are self-consistent
   Should try to get to the bottom of this (cost function summation order?)
