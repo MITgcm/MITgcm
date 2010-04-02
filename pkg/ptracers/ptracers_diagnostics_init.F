@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.7 2010/01/11 19:52:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.8 2010/04/02 19:27:59 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -180,6 +180,15 @@ C-     Diffusive flux:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    add diagnostics for other pkg contribution to ptracer solution
+       IF ( useKPP ) THEN
+        diagName  = 'KPPg'//diagSufx
+        WRITE(diagTitle,'(2A)') 'KPP non-local Flux of ',
+     &                 locName(1:ilnb)
+        diagCode  = 'WM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       ENDIF
+
        IF ( useDOWN_SLOPE ) THEN
         diagName  = 'DSLP'//diagSufx
         WRITE(diagTitle,'(2A)') locName(1:ilnb),
