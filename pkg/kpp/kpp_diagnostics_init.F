@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.7 2010/01/12 21:34:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.8 2010/04/02 19:27:14 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -20,6 +20,10 @@ C     !USES:
 
 C     === Global variables ===
 #include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -31,16 +35,24 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
+C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
 C     diagCode  :: local parser field with characteristics of the diagnostics
 C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
+c     INTEGER       diagMate
+      CHARACTER*4   diagSufx
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
+#ifdef ALLOW_GENERIC_ADVDIFF
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+#endif
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -143,6 +155,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ndef EXCLUDE_KPP_DOUBLEDIFF */
+
+        diagSufx  = 'aaaa'
+#ifdef ALLOW_GENERIC_ADVDIFF
+        diagSufx  = GAD_DIAG_SUFX( GAD_TEMPERATURE, myThid )
+#endif
+        diagName  = 'KPPg'//diagSufx
+        diagTitle = 'KPP non-local Flux of Pot.Temperature'
+        diagUnits = 'degC.m^3/s      '
+        diagCode  = 'WM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+        diagSufx  = GAD_DIAG_SUFX( GAD_SALINITY, myThid )
+#endif
+        diagName  = 'KPPg'//diagSufx
+        diagTitle = 'KPP non-local Flux of Salinity'
+        diagUnits = 'psu.m^3/s       '
+        diagCode  = 'WM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef ALLOW_SALT_PLUME
         diagName  = 'KPPpfrac'
