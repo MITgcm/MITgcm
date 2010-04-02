@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.53 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.54 2010/04/02 19:29:01 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -579,8 +579,9 @@ C-    Set non local KPP transport term (ghat):
      I           myTime, myIter, myThid )
 #endif
        ELSE
-        PRINT*,'invalid tracer indentity: ', tracerIdentity
-        STOP 'GAD_CALC_RHS: Ooops'
+        WRITE(errorMessageUnit,*)
+     &    'tracer identity =', tracerIdentity, ' is not valid => STOP'
+        STOP 'ABNORMAL END: S/R GAD_CALC_RHS: invalid tracer identity'
        ENDIF
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -588,8 +589,18 @@ C-    Set non local KPP transport term (ghat):
      &                  + df(i,j)*maskUp(i,j)*rhoFacF(k)
         ENDDO
        ENDDO
-      ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+C-    Diagnostics of Non-Local Tracer (vertical) flux
+       IF ( useDiagnostics ) THEN
+         diagName = 'KPPg'//diagSufx
+         CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
+C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
+C        does it only if k=1 (never the case here)
+         IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
+       ENDIF
 #endif
+      ENDIF
+#endif /* ALLOW_KPP */
 
 #ifdef GAD_SMOLARKIEWICZ_HACK
 coj   Hack to make redi (and everything else in this s/r) positive
@@ -623,7 +634,7 @@ coj   If tracer is already negative, scale flux to zero
            fac = MAX(0. _d 0,SmolarkiewiczMaxFrac*trac/outFlux)
 
            IF (fZon(i+1,j).GT.0. _d 0) fZon(i+1,j)=fac*fZon(i+1,j)
-           IF (-fZon(i,j) .GT.0. _d 0) fZon(i,j)  =fac*fZon(i,j)       
+           IF (-fZon(i,j) .GT.0. _d 0) fZon(i,j)  =fac*fZon(i,j)
            IF (fMer(i,j+1).GT.0. _d 0) fMer(i,j+1)=fac*fMer(i,j+1)
            IF (-fMer(i,j) .GT.0. _d 0) fMer(i,j)  =fac*fMer(i,j)
            IF (-fVerT(i,j,kUp)*rkSign .GT.0. _d 0)
