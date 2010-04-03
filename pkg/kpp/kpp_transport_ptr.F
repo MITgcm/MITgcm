@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.13 2010/03/16 00:14:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.14 2010/04/03 22:33:57 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -66,47 +66,52 @@ C     myThid :: My Thread Id. number
 #if defined(ALLOW_KPP) && defined(KPP_GHAT) && defined(ALLOW_PTRACERS)
 
 C     == Local variables ==
-C     I, J - Loop counters
-      INTEGER I, J
-#ifdef ALLOW_GMREDI
+C     i, j :: Loop counters
+      INTEGER i, j
       _RL tmpFac
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_GMREDI
+      IF (useOffLine) THEN
 
-      IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN
-        tmpFac = 1. _d 0
+C--   Note: in this case (offline) KPPghat array already contains
+C           the product ghat*diffKzS which has been loaded from file
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = - _rA(i,j,bi,bj)
+     &        *KPPghat(i,j,k,bi,bj)
+     &        *surfaceForcingPTr(i,j,bi,bj,tracerIdentity)
+         ENDDO
+        ENDDO
+
       ELSE
-        tmpFac = 0. _d 0
-      ENDIF
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        df(i,j) = - _rA(i,j,bi,bj)
+
+        IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN
+          tmpFac = 1. _d 0
+        ELSE
+          tmpFac = 0. _d 0
+        ENDIF
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = - _rA(i,j,bi,bj)
 #ifdef ALLOW_LONGSTEP
-     &        *(LS_KPPdiffKzS(i,j,k,bi,bj) + tmpFac*LS_Kwz(i,j,k,bi,bj))
-     &        *LS_KPPghat(i,j,km1,bi,bj)
-#else
-     &        *( KPPdiffKzS(i,j,k,bi,bj) + tmpFac*Kwz(i,j,k,bi,bj) )
-     &        *KPPghat(i,j,km1,bi,bj)
+     &        *( LS_KPPdiffKzS(i,j,k,bi,bj)
+#ifdef ALLOW_GMREDI
+     &         + tmpFac*LS_Kwz(i,j,k,bi,bj)
 #endif
+     &         )*LS_KPPghat(i,j,km1,bi,bj)
+#else /* ALLOW_LONGSTEP */
+     &        *( KPPdiffKzS(i,j,k,bi,bj)
+#ifdef ALLOW_GMREDI
+     &         + tmpFac*Kwz(i,j,k,bi,bj)
+#endif
+     &         )*KPPghat(i,j,km1,bi,bj)
+#endif /* ALLOW_LONGSTEP */
      &        *surfaceForcingPTr(i,j,bi,bj,tracerIdentity)
-       ENDDO
-      ENDDO
+         ENDDO
+        ENDDO
 
-#else /* ALLOW_GMREDI */
-
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        df(i,j) = - _rA(i,j,bi,bj)
-     &        *KPPdiffKzS(i,j,k,bi,bj)
-     &        *KPPghat(i,j,km1,bi,bj)
-     &        *surfaceForcingPTr(i,j,bi,bj,tracerIdentity)
-       ENDDO
-      ENDDO
-
-#endif /* ALLOW_GMREDI */
+      ENDIF
 
 #endif /* ALLOW_KPP and KPP_GHAT and PTRACERS */
 

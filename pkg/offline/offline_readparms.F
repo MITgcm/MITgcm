@@ -1,22 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.7 2010/03/30 14:56:30 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.8 2010/04/03 22:34:26 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
 
       SUBROUTINE OFFLINE_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE OFFLINE_READPARMS                                 |
-C     | o Routine to initialize OFFLINE variables and constants.     |
-C     |==========================================================|
-C     | Initialize OFFLINE    parameters, read in data.off          |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE OFFLINE_READPARMS
+C     | o Routine to initialize OFFLINE variables and constants.
+C     *==========================================================*
+C     | Initialize OFFLINE    parameters, read in data.off
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
+c#include "GRID.h"
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
 #endif
@@ -24,38 +24,41 @@ C     === Global variables ===
 C     === Routine arguments ===
       INTEGER myThid
 
-#ifdef ALLOW_OFFLINE    
+#ifdef ALLOW_OFFLINE
 C--   Bulk Formula parameter
       NAMELIST /OFFLINE_PARM01/
      &         UvelFile, VvelFile, WvelFile, ThetFile,
      &         SaltFile, ConvFile, GMwxFile, GMwyFile,
-     &         GMwzFile, HfluxFile, SfluxFile, KPP_DiffSFile,
-     &         KPP_ghatFile, ICEFile
+     &         GMwzFile, HfluxFile, SfluxFile,
+     &         KPP_DiffSFile, KPP_ghatKFile, ICEFile,
+     &         KPP_ghatFile
 
       NAMELIST /OFFLINE_PARM02/
      &         offlineIter0, offlineOffsetIter,
-     &         deltaToffline, offlineForcingPeriod, 
+     &         deltaToffline, offlineForcingPeriod,
      &         offlineForcingCycle, offlineLoadPrec
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+C     Retired main data.offline file parameters
+      CHARACTER*(MAX_LEN_FNAM) KPP_ghatFile
 
       _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' OFFLINE_READPARMS: opening data.off'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-    
+     &                    SQUEEZE_RIGHT, myThid )
+
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.off', 'OFFLINE_READPARMS',
      O                          iUnit,
      I                          myThid )
 
-C--   Default values 
+C--   Default values for params in OFFLINE_PARM01 :
       UvelFile=' '
       VvelFile=' '
       WvelFile=' '
@@ -64,30 +67,44 @@ C--   Default values
       ConvFile=' '
       GMwxFile=' '
       GMwyFile=' '
-      GMwzFile=' ' 
+      GMwzFile=' '
       HFluxFile=' '
       SFluxFile=' '
       KPP_DiffSFile=' '
-      KPP_ghatFile=' '
+      KPP_ghatKFile=' '
+      KPP_ghatFile='KPP_ghatFile has been replaced by KPP_ghatKFile'
       ICEFile=' '
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OFFLINE_PARM01)
 
+      IF ( KPP_ghatFile .NE.
+     &    'KPP_ghatFile has been replaced by KPP_ghatKFile' ) THEN
+c       nRetired = nRetired+1
+        WRITE(msgBuf,'(A,A)') 'S/R OFFLINE_READPARMS: "KPP_ghatFile"',
+     &                     ' is no longer allowed in file "data.off"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,A)') 'S/R OFFLINE_READPARMS: read instead ',
+     &           'the product ghat*diffKz from file "KPP_ghatKFile"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OFFLINE_READPARMS'
+      ENDIF
+
+C--   Default values for params in OFFLINE_PARM02 :
       deltaToffline=deltaTclock
       offlineIter0=nIter0        !initial offline field timestep
       offlineOffsetIter=0        !offset
       offlineForcingPeriod=2592000.
       offlineForcingCycle=31104000.
       offlineLoadPrec=readBinaryPrec
-     
+
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OFFLINE_PARM02)
 
       WRITE(msgBuf,'(A)')
      &      ' OFFLINE_READPARMS: finished reading data.off'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
       CLOSE(iUnit)
@@ -95,7 +112,6 @@ C--   Close the open data file
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-
 
 #endif /* ALLOW_OFFLINE */
 

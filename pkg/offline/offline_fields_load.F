@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.17 2010/04/01 15:27:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.18 2010/04/03 22:34:26 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -288,13 +288,15 @@ c       print*,'OFFLINE READ', fn
         CALL READ_REC_3D_RS( fn, prec, Nr, kdfs1, 1, myIter, myThid )
        ENDIF
 
-       IF (KPP_ghatFile      .NE. ' ') THEN
-        I1=IFNBLNK(KPP_ghatFile)
-        I2=ILNBLNK(KPP_ghatFile)
-        WRITE(fn,'(A,A,I10.10)') KPP_ghatFile(I1:I2),'.',
+       IF (KPP_ghatKFile     .NE. ' ') THEN
+C-- Note: assume that KPP_ghatKFile contains the product ghat*diffKzS
+C         even if, for convienience, it will be loaded into array KPPghat
+        I1=IFNBLNK(KPP_ghatKFile)
+        I2=ILNBLNK(KPP_ghatKFile)
+        WRITE(fn,'(A,A,I10.10)') KPP_ghatKFile(I1:I2),'.',
      &        intime0*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, kght0, 1, myIter, myThid )
-        WRITE(fn,'(A,A,I10.10)') KPP_ghatFile(I1:I2),'.',
+        WRITE(fn,'(A,A,I10.10)') KPP_ghatKFile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, kght1, 1, myIter, myThid )
        ENDIF
@@ -360,6 +362,8 @@ C--   Interpolate uvel, vvel, wvel
 #ifdef ALLOW_KPP
           KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
      &                       +aWght*kdfs1(i,j,k,bi,bj)
+C-- Note: for convenience, the array KPPghat will contain
+C         the product ghat*diffKzS (and not ghat alone).
           KPPghat(i,j,k,bi,bj) = bWght*kght0(i,j,k,bi,bj)
      &                       +aWght*kght1(i,j,k,bi,bj)
 #endif

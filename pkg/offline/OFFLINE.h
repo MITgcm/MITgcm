@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.8 2010/03/30 14:56:30 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.9 2010/04/03 22:34:26 jmc Exp $
 C $Name:  $
 
 #ifdef  ALLOW_OFFLINE
@@ -25,7 +25,7 @@ c   Forcing files
      &       UvelFile, VvelFile, WvelFile, ThetFile, Saltfile,
      &       ConvFile, GMwxFile, GMwyFile, GMwzFile,
      &       HfluxFile, SfluxFile, ICEFile,
-     &       KPP_DiffSFile, KPP_ghatFile
+     &       KPP_DiffSFile, KPP_ghatKFile
       CHARACTER*(MAX_LEN_FNAM) UvelFile
       CHARACTER*(MAX_LEN_FNAM) VvelFile
       CHARACTER*(MAX_LEN_FNAM) WvelFile
@@ -39,7 +39,7 @@ c   Forcing files
       CHARACTER*(MAX_LEN_FNAM) SFluxFile
       CHARACTER*(MAX_LEN_FNAM) ICEFile
       CHARACTER*(MAX_LEN_FNAM) KPP_DiffSFile
-      CHARACTER*(MAX_LEN_FNAM) KPP_ghatFile
+      CHARACTER*(MAX_LEN_FNAM) KPP_ghatKFile
 
       COMMON /OFFLINE_COMMON_I/
      &       offlineIter0, offlineOffsetIter
