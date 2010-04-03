@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.3 2010/03/16 00:14:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.4 2010/04/03 22:28:45 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 #undef  MULTIPLE_RECORD_KPP_STATE_FILES
 
 CBOP
@@ -44,12 +47,15 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 #include "KPP_TAVE.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
+#endif
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: my time in simulation ( s )
@@ -64,13 +70,28 @@ C     myThid :: my Thread Id number
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
 
 C     !LOCAL VARIABLES:
+C     kpp_drctrec  :: next record to dump for KPP files
+      INTEGER kpp_drctrec
+      COMMON / KPP_RECORDNUM1 / kpp_drctrec
+C     local variable:
       CHARACTER*(MAX_LEN_MBUF) suff
-#ifdef ALLOW_TIMEAVE
+#if (defined ALLOW_TIMEAVE) || (defined ALLOW_DIAGNOSTICS)
       INTEGER bi, bj
+      INTEGER i, j, k
+      _RL tmpFac
+#endif
+#ifdef ALLOW_TIMEAVE
       _RL DDTT
       LOGICAL dumpFiles
+#endif
+#ifdef ALLOW_DIAGNOSTICS
+      _RL tmpLoc(1:sNx,1:sNy,Nr)
 #endif
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
@@ -175,7 +196,7 @@ C     Initialize averages to zero
           DO bi = myBxLo(myThid), myBxHi(myThid)
             CALL TIMEAVE_RESET(KPPviscAztave, Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPdiffKzTtave,Nr,bi,bj,myThid)
-            CALL TIMEAVE_RESET(KPPghattave,   Nr,bi,bj,myThid)
+            CALL TIMEAVE_RESET(KPPghatKStave, Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPdiffKzStave,Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPhbltave,    1, bi,bj,myThid)
             KPP_timeAve(bi,bj) = 0.
@@ -186,6 +207,11 @@ C     Initialize averages to zero
 
 C     Time Average KPP fields
         DDTT=deltaTclock
+        IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN
+          tmpFac = 1. _d 0
+        ELSE
+          tmpFac = 0. _d 0
+        ENDIF
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_CUMULATE(
@@ -193,9 +219,19 @@ C     Time Average KPP fields
           CALL TIMEAVE_CUMULATE(
      &         KPPdiffKzTtave,KPPdiffKzT,Nr,DDTT,bi,bj,myThid)
           CALL TIMEAVE_CUMULATE(
-     &         KPPghattave,   KPPghat,   Nr,DDTT,bi,bj,myThid)
-          CALL TIMEAVE_CUMULATE(
      &         KPPdiffKzStave,KPPdiffKzS,Nr,DDTT,bi,bj,myThid)
+          DO k=2,Nr
+           DO j=1,sNy
+            DO i=1,sNx
+              KPPghatKStave(i,j,k,bi,bj) = KPPghatKStave(i,j,k,bi,bj)
+     &          + ( KPPdiffKzS(i,j,k,bi,bj)
+#ifdef ALLOW_GMREDI
+     &             +tmpFac*Kwz(i,j,k,bi,bj)
+#endif
+     &            )*KPPghat(i,j,k-1,bi,bj)*DDTT
+            ENDDO
+           ENDDO
+          ENDDO
           CALL TIMEAVE_CUMULATE(
      &         KPPhbltave,    KPPhbl,    1, DDTT,bi,bj,myThid)
 C         Keep record of how much time has been integrated over
@@ -227,7 +263,7 @@ C       Normalize by integrated time
      &                              KPP_timeAve, Nr, bi, bj, myThid )
             CALL TIMEAVE_NORMALIZE( KPPdiffKzTtave,
      &                              KPP_timeAve, Nr, bi, bj, myThid )
-            CALL TIMEAVE_NORMALIZE( KPPghattave,
+            CALL TIMEAVE_NORMALIZE( KPPghatKStave,
      &                              KPP_timeAve, Nr, bi, bj, myThid )
             CALL TIMEAVE_NORMALIZE( KPPdiffKzStave,
      &                              KPP_timeAve, Nr, bi, bj, myThid )
@@ -241,15 +277,15 @@ C       Normalize by integrated time
 C         Write each tave output as a new record in one file per variable
 C         - creates relatively few files but these files can become huge
 C         NOTE: file size and number problems are *SOLVED* by MNC
-          CALL WRITE_REC_XYZ_RL('KPPviscAz-T',KPPviscAzTave,
+          CALL WRITE_REC_XYZ_RL('KPPviscAz-T',KPPviscAztave,
      &         kpp_drctrecTave,myIter,myThid)
-          CALL WRITE_REC_XYZ_RL('KPPdiffKzT-T',KPPdiffKzTTave,
+          CALL WRITE_REC_XYZ_RL('KPPdiffKzT-T',KPPdiffKzTtave,
      &         kpp_drctrecTave,myIter,myThid)
-          CALL WRITE_REC_XYZ_RL('KPPdiffKzS-T',KPPdiffKzSTave,
+          CALL WRITE_REC_XYZ_RL('KPPdiffKzS-T',KPPdiffKzStave,
      &         kpp_drctrecTave,myIter,myThid)
-          CALL WRITE_REC_XYZ_RL('KPPghat-T',KPPghatTave,
+          CALL WRITE_REC_XYZ_RL('KPPghatKS-T',KPPghatKStave,
      &         kpp_drctrecTave,myIter,myThid)
-          CALL WRITE_REC_XY_RL('KPPhbl-T',KPPhblTave,
+          CALL WRITE_REC_XY_RL('KPPhbl-T',KPPhbltave,
      &         kpp_drctrecTave,myIter,myThid)
 C--       Increment record counter
           _BARRIER
@@ -262,15 +298,15 @@ C         Write each tave output as a new file - creates many files but for
 C         large configurations is easier to transfer
 C         NOTE: file size and number problems are *SOLVED* by MNC
           WRITE(suff,'(I10.10)') myIter
-          CALL WRITE_FLD_XYZ_RL('KPPviscAz-T.',suff,KPPviscAzTave,
+          CALL WRITE_FLD_XYZ_RL('KPPviscAz-T.',suff,KPPviscAztave,
      &         myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL('KPPdiffKzT-T.',suff,KPPdiffKzTTave,
+          CALL WRITE_FLD_XYZ_RL('KPPdiffKzT-T.',suff,KPPdiffKzTtave,
      &         myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL('KPPdiffKzS-T.',suff,KPPdiffKzSTave,
+          CALL WRITE_FLD_XYZ_RL('KPPdiffKzS-T.',suff,KPPdiffKzStave,
      &         myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL('KPPghat-T.',suff,KPPghatTave,
+          CALL WRITE_FLD_XYZ_RL('KPPghatKS-T.',suff,KPPghatKStave,
      &         myIter,myThid)
-          CALL WRITE_FLD_XY_RL('KPPhbl-T.',suff,KPPhblTave,
+          CALL WRITE_FLD_XY_RL('KPPhbl-T.',suff,KPPhbltave,
      &         myIter,myThid)
 #endif /* MULTIPLE_RECORD_KPP_STATE_FILES */
         ENDIF
@@ -287,15 +323,15 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)
           CALL MNC_CW_I_W_S('I','kpp_timeave',0,0,'iter',myIter,myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPviscAz', KPPviscAzTave, myThid)
+     &         'KPPviscAz', KPPviscAztave, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPdiffKzT', KPPdiffKzTTave, myThid)
+     &         'KPPdiffKzT', KPPdiffKzTtave, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPdiffKzS', KPPdiffKzSTave, myThid)
+     &         'KPPdiffKzS', KPPdiffKzStave, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPGHAT', KPPghatTave, myThid)
+     &         'KPPghatKS', KPPghatKStave, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPHBL', KPPhblTave, myThid)
+     &         'KPPHBL', KPPhbltave, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -304,7 +340,7 @@ C       Reset averages to zero
           DO bi = myBxLo(myThid), myBxHi(myThid)
             CALL TIMEAVE_RESET(KPPviscAztave, Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPdiffKzTtave,Nr,bi,bj,myThid)
-            CALL TIMEAVE_RESET(KPPghattave,   Nr,bi,bj,myThid)
+            CALL TIMEAVE_RESET(KPPghatKStave, Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPdiffKzStave,Nr,bi,bj,myThid)
             CALL TIMEAVE_RESET(KPPhbltave,    1, bi,bj,myThid)
             KPP_timeAve(bi,bj) = 0.
@@ -324,7 +360,35 @@ C     do not fill during call from INITIALISE_VARIA
        CALL DIAGNOSTICS_FILL(KPPviscAz ,'KPPviscA',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(KPPdiffKzS,'KPPdiffS',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(KPPdiffKzT,'KPPdiffT',0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(KPPghat   ,'KPPghat ',0,Nr,0,1,1,myThid)
+       IF ( DIAGNOSTICS_IS_ON( 'KPPghatK', myThid ) ) THEN
+        IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN
+          tmpFac = 1. _d 0
+        ELSE
+          tmpFac = 0. _d 0
+        ENDIF
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+            DO i=1,sNx
+              tmpLoc(i,j,1) = 0. _d 0
+            ENDDO
+          ENDDO
+          DO k=2,Nr
+           DO j=1,sNy
+            DO i=1,sNx
+              tmpLoc(i,j,k) = KPPghat(i,j,k-1,bi,bj)*
+     &                      ( KPPdiffKzS(i,j,k,bi,bj)
+#ifdef ALLOW_GMREDI
+     &                      + tmpFac*Kwz(i,j,k,bi,bj)
+#endif
+     &                      )
+            ENDDO
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(tmpLoc,'KPPghatK',0,Nr,3,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
        CALL DIAGNOSTICS_FILL(KPPhbl    ,'KPPhbl  ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(KPPfrac   ,'KPPfrac ',0,1 ,0,1,1,myThid)
 #ifdef ALLOW_SALT_PLUME

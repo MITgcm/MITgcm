@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.8 2010/04/02 19:27:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.9 2010/04/03 22:28:45 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -77,9 +77,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'KPPghat '
-        diagTitle = 'Nonlocal transport coefficient'
-        diagUnits = 's/m^2           '
+        diagName  = 'KPPghatK'
+        diagTitle = 'ratio of KPP non-local (salt) flux'
+     &            //' relative to surface-flux'
+        diagUnits = '0-1             '
         diagCode  = 'SM P    LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )

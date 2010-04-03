@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_fixed.F,v 1.3 2009/07/08 21:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_fixed.F,v 1.4 2010/04/03 22:28:45 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -83,6 +83,16 @@ C       Define grid types for KPP variables
      &       'KPP_nonlocal_transport_coefficient', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT',
      &       'coordinates','XC YC RC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('KPPghatKS', 'Cen_xy_Hn__L__t',
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPghatKS','units','0-1',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPghatKS','long_name',
+     &  'ratio of KPP non-local (salt) flux relative to surface-flux',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPghatKS','coordinates',
+     &       'XC YC RF iter', myThid)
 
         CALL MNC_CW_ADD_VNAME('KPPHBL', 'Cen_xy_Hn__-__t',
      &       3,4, myThid)
