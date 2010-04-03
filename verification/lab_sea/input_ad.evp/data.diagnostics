@@ -89,8 +89,8 @@
    filename(18) = 'MXLDEPTH',
 #
   frequency(19) = 36000.,
-   fields(1,19) = 'KPPghat ',
-   filename(19) = 'KPPghat ',
+   fields(1,19) = 'KPPghatK',
+   filename(19) = 'KPPghatK',
 #
  &
 

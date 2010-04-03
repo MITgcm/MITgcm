@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.2 2008/10/30 18:52:53 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.3 2010/04/03 22:32:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -138,6 +138,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          IF ( diagName.EQ.'KPPmld  ' ) THEN
            WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
      &             diagName, '" was retired in favor of "MXLDEPTH"'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
+     &              '=> need to change "data.diagnostics" accordingly'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           ndCount = ndCount + 1
+         ENDIF
+         IF ( diagName.EQ.'KPPghat ' ) THEN
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
+     &             diagName, '" was retired in favor of "KPPghatK"'
            CALL PRINT_ERROR( msgBuf , myThid )
            WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
      &              '=> need to change "data.diagnostics" accordingly'
