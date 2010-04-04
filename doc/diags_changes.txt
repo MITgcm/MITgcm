@@ -1,3 +1,47 @@
+================================================================
+Apr 03, 2010
+1) add diagnostics for KPP non-local flux of Temp, Salt and pTracers
+ (respectively: KPPg_TH, KPPg_SLT and KPPgTrXX for tracer number XX)
+This allows to close the tracer budget when using KPP.
+
+2) Change the diagnostic for KPP non-local term:
+ name:		description:
+KPPghat		Nonlocal transport coefficient (s/m^2)
+		(correspond to KPP ghat field, from which the non-local
+		flux of tracer (T,S,pTr) is computed, as the product of
+                ghat , KPPdiffKz and surface flux.)
+replaced by:
+KPPghatK	ratio of KPP non-local (salt) flux relative to surface-flux
+		(correspond to the product: KPP_ghat * KPPdiffKzS
+		 which gives the fraction of the the surface flux of Salt
+		 that KPP return as non local flux; also valid for any passive
+		 tracer, but could be different for Temp., see comment below)
+
+comments (from mitgcm-devel list):
+ I was also tempted to replace the KPPghat diagnostics
+ with something more useful which incorporates the KPPdiffKz:
+ Since it is the product KPPghat*KPPdiffKz which matters,
+ and given that short time variations of both (which have no
+ reason not to be correlated) can be significant,
+ the product of the 2 time-ave is very likely to be quiet
+ far from the time-ave of the product.
+ It has also the advantage of a simpler interpretation:
+ the product is just the fraction of the surface flux which is
+ treated as non local (no unit, instead of this funny s/m^2
+ for KPPghat).
+
+ Then I would propose to just pick one KPPdiffKz (for instance,
+ KPPdiffKzS for salinity, since it's also used for Ptracers),
+ and have only 1 diag: "KPPghatK" for KPPghat*KPPdiffKzS (no unit).
+
+ For temperature (KPPghat*KPPdiffKzT), it's probably not too different
+ from the one computed for salinity (might be in fact a better
+ time-ave value that what we have now, for the reason above).
+ And to get a precise diagnostic of KPP-non-local effect
+ on temperature, there would be this new diagnostic directly from
+ kpp_transport_t.F (which can be used to close a Temp. budget).
+
+================================================================
 Jun 21, 2009
 Some redundancies and relations for model diagnostics:
 

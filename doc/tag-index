@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1245 2010/04/01 15:32:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1246 2010/04/04 14:28:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp:
+ - add diagnostics for KPP non-local flux of Temp, Salinity and pTracers;
+ - change diagnostic of KPP non-local term: output average of KPPghat*KPPdiffKzS
+   (= ratio of KPP non-local (salt) flux relative to surface-flux) when 
+   using pkg/timeave & pkg/diagnostics (diag 'KPPghatK' replaces 'KPPghat ');
+ - change pkg/offline to read-in average KPPghat*KPPdiffKzS from file
+   KPP_ghatKFile (instead of the average of KPPghat from file KPP_ghatFile).
 o pkg/offline:
   fix bug in S/R OFFLINE_FIELDS_LOAD regarding surfaceForcing conversion factor
   (bug was added in version 1.10 on 2007-08-23).
