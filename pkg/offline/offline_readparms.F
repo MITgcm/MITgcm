@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.8 2010/04/03 22:34:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.9 2010/04/04 14:16:32 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -16,7 +16,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "GRID.h"
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
 #endif
@@ -25,6 +24,14 @@ C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_OFFLINE
+C     === Local variables ===
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
+C     Retired main data.offline file parameters
+      CHARACTER*(MAX_LEN_FNAM) KPP_ghatFile
+
 C--   Bulk Formula parameter
       NAMELIST /OFFLINE_PARM01/
      &         UvelFile, VvelFile, WvelFile, ThetFile,
@@ -38,13 +45,7 @@ C--   Bulk Formula parameter
      &         deltaToffline, offlineForcingPeriod,
      &         offlineForcingCycle, offlineLoadPrec
 
-C     === Local variables ===
-C     msgBuf     :: Informational/error message buffer
-C     iUnit      :: Work variable for IO unit number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
-C     Retired main data.offline file parameters
-      CHARACTER*(MAX_LEN_FNAM) KPP_ghatFile
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
