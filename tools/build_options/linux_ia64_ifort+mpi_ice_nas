@@ -1,32 +1,37 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_ifort+mpi_ice_nas,v 1.3 2010/03/21 17:59:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_ifort+mpi_ice_nas,v 1.4 2010/04/05 20:46:25 dfer Exp $
 # $Name:  $
 
 # tested on pleiades using:
 # module load comp-intel/11.1.046 mpi/mpt.1.25 netcdf/3.6.0/intel
+#
+# Option -xSSE4.2 only works on queue "normal_N", if you want to submit to
+# the "normal" queue instead, then use -xSSE4.1
+#
 
 FC=ifort
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='/lib/cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
 
-LIBS='-lmpi -L/nasa/netcdf/3.6.0/intel/lib -lnetcdf'
+LIBS='-L/nasa/sgi/mpt/1.25/lib -lmpi -L/nasa/netcdf/3.6.0/intel/lib -lnetcdf'
 INCLUDES='-I/nasa/sgi/mpt/1.25/include -I/nasa/netcdf/3.6.0/intel/include'
 INCLUDEDIRS='/nasa/sgi/mpt/1.25/include'
 MPIINCLUDEDIR='/nasa/sgi/mpt/1.25/include'
 MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
-#PAPIINC='-I/usr/local/include'
-#PAPILIB='-L/usr/local/lib -lpapi'
+
+NOOPTFLAGS='-O0'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS="$FFLAGS -fp-model precise -w95 -W0 -WB -convert big_endian -assume byterecl -align"
-    FOPTIM='-O3'
-    NOOPTFLAGS='-O1'
-    NOOPTFILES='phy_radiat.F fizhi_lsm.F fizhi_clockstuff.F'
+    FFLAGS="$FFLAGS -fp-model precise -w95 -W0 -WB -convert big_endian -assume byterecl"
+    FOPTIM='-O2 -align -ip -xSSE4.2'
+#   FOPTIM='-O2 -align -ip -xSSE4.1'
+    NOOPTFILES='calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
 else
     #  Try to follow IEEE-754
     FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
@@ -34,3 +39,7 @@ else
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
+
+#For really big executable (> 2 GB), uncomment following 2 lines
+#FFLAGS="$FFLAGS -mcmodel medium -shared-intel"
+#CFLAGS='-mcmodel medium'
