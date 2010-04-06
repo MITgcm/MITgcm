@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.7 2007/11/05 19:13:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.8 2010/04/06 20:38:18 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_RBCS
@@ -15,7 +15,7 @@ c number of mask to read
       INTEGER maskLEN
       PARAMETER(maskLEN = 3 )
 
-      _RL RBC_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,maskLEN)
+      _RS RBC_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,maskLEN)
       _RL RBCtemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL RBCsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tauRelaxT
@@ -25,25 +25,24 @@ c number of mask to read
       INTEGER rbcsIniter
       LOGICAL useRBCtemp
       LOGICAL useRBCsalt
-      LOGICAL useRBCptracers
       CHARACTER*(MAX_LEN_FNAM) relaxMaskFile(maskLEN)
       CHARACTER*(MAX_LEN_FNAM) relaxTFile
       CHARACTER*(MAX_LEN_FNAM) relaxSFile
 
+      COMMON /RBCS_PARM01_RS/
+     &          RBC_mask
       COMMON /RBCS_PARM01_R/
+     &          RBCtemp,
+     &          RBCsalt,
      &          tauRelaxT,
      &          tauRelaxS,
      &          rbcsForcingPeriod,
-     &          rbcsForcingCycle,
-     &          RBC_mask,
-     &          RBCtemp,
-     &          RBCsalt
+     &          rbcsForcingCycle
       COMMON /RBCS_PARM01_I/
      &          rbcsIniter
       COMMON /RBCS_PARM01_L/
      &          useRBCtemp,
-     &          useRBCsalt,
-     &          useRBCptracers
+     &          useRBCsalt
       COMMON /RBCS_PARM01_C/
      &          relaxMaskFile,
      &          relaxTFile,
@@ -52,7 +51,7 @@ c number of mask to read
 #ifdef ALLOW_PTRACERS
       LOGICAL useRBCptrnum(PTRACERS_num)
       _RL RBC_ptracers(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &              PTRACERS_num)
+     &                PTRACERS_num)
       _RL tauRelaxPTR(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) relaxPtracerFile(PTRACERS_num)
 
@@ -63,7 +62,7 @@ c number of mask to read
      &          tauRelaxPTR
       COMMON /RBCS_PARM02_C/
      &          relaxPtracerFile
-#endif
+#endif /* ALLOW_PTRACERS */
 
       COMMON /RBCFFIELDS/
      &                 rbct0, rbcs0,
@@ -80,6 +79,6 @@ c number of mask to read
      &              PTRACERS_num)
        _RS rbcptr1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &              PTRACERS_num)
-#endif
+#endif /* ALLOW_PTRACERS */
 
-#endif
+#endif /* ALLOW_RBCS */

@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.9 2009/04/28 18:18:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.10 2010/04/06 20:38:18 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+#include "RBCS_OPTIONS.h"
 
 C     !ROUTINE: RBCS_FIELDS_LOAD
 C     !INTERFACE:
@@ -43,6 +42,10 @@ C     myThid :: Thread no. that called this routine.
       INTEGER myIter
       INTEGER myThid
 
+C     !FUNCTIONS:
+      INTEGER  IFNBLNK, ILNBLNK
+      EXTERNAL IFNBLNK, ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     [01]      :: End points for interpolation
@@ -52,9 +55,9 @@ C     aWght, bWght :: Interpolation weights
       INTEGER bi,bj,i,j,k,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+#ifdef ALLOW_PTRACERS
       INTEGER iTracer
-      INTEGER  IFNBLNK, ILNBLNK
-      EXTERNAL IFNBLNK, ILNBLNK
+#endif
 
 #ifdef ALLOW_RBCS
       CALL TIMER_START('RBCS_FIELDS_LOAD      [I/O]', myThid)
@@ -62,39 +65,39 @@ C     aWght, bWght :: Interpolation weights
 C First call requires that we initialize everything to zero for safety
       IF ( myIter .EQ. nIter0 ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           rbct0(i,j,k,bi,bj)=0. _d 0
-           rbcs0(i,j,k,bi,bj)=0. _d 0
-           rbct1(i,j,k,bi,bj)=0. _d 0
-           rbcs1(i,j,k,bi,bj)=0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       ENDDO
-#ifdef ALLOW_PTRACERS
-       DO iTracer = 1, PTRACERS_numInUse
-        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k=1,Nr
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            rbcptr0(i,j,k,bi,bj,iTracer)=0. _d 0
-            rbcptr1(i,j,k,bi,bj,iTracer)=0. _d 0
+             rbct0(i,j,k,bi,bj)=0. _d 0
+             rbcs0(i,j,k,bi,bj)=0. _d 0
+             rbct1(i,j,k,bi,bj)=0. _d 0
+             rbcs1(i,j,k,bi,bj)=0. _d 0
            ENDDO
           ENDDO
          ENDDO
         ENDDO
+       ENDDO
+#ifdef ALLOW_PTRACERS
+       DO iTracer = 1, PTRACERS_numInUse
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             rbcptr0(i,j,k,bi,bj,iTracer)=0. _d 0
+             rbcptr1(i,j,k,bi,bj,iTracer)=0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDDO
        ENDDO
 #endif
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
-      IF (rbcsForcingCycle.GT.0. _d 0) THEN
+      IF ( rbcsForcingCycle.GT.0. _d 0 ) THEN
        rdt = 1. _d 0 / deltaTclock
        nForcingPeriods = NINT(rbcsForcingCycle/rbcsForcingPeriod)
        Imytm = NINT( (myTime-rbcsIniter*deltaTclock)*rdt )
@@ -124,29 +127,28 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
-       _BARRIER
-
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
        _BEGIN_MASTER(myThid)
-       WRITE(*,*)
-     &  'S/R RBCS_FIELDS_LOAD: Reading new data',myTime,myIter
-     &            , nIter0, intime0,intime1
+        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
+     &        'S/R RBCS_FIELDS_LOAD: Reading new data:',
+     &         intime0, intime1, myIter, myTime
        _END_MASTER(myThid)
 
-       IF ( relaxTFile      .NE. ' '  ) THEN
+       IF ( useRBCtemp .AND. relaxTFile .NE. ' '  ) THEN
         CALL READ_REC_XYZ_RS(relaxTFile, rbct0, intime0, myIter,myThid)
         CALL READ_REC_XYZ_RS(relaxTFile, rbct1, intime1, myIter,myThid)
        ENDIF
-       IF ( relaxSFile      .NE. ' '  ) THEN
+       IF ( useRBCsalt .AND. relaxSFile .NE. ' '  ) THEN
         CALL READ_REC_XYZ_RS(relaxSFile, rbcs0, intime0, myIter,myThid)
         CALL READ_REC_XYZ_RS(relaxSFile, rbcs1, intime1, myIter,myThid)
        ENDIF
 
 #ifdef ALLOW_PTRACERS
-       IF (useRBCptracers) THEN
+       IF ( usePTRACERS ) THEN
         DO iTracer = 1, PTRACERS_numInUse
-         IF (useRBCptrnum(iTracer)) THEN
+         IF ( useRBCptrnum(iTracer) .AND.
+     &        relaxPtracerFile(iTracer).NE. ' ' ) THEN
            CALL READ_REC_XYZ_RS( relaxPtracerFile(iTracer),
      &                           rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),
      &                           intime0, myIter, myThid )
@@ -158,18 +160,24 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 
-       _EXCH_XYZ_RS(rbct0 , myThid )
-       _EXCH_XYZ_RS(rbct1 , myThid )
-       _EXCH_XYZ_RS(rbcs0 , myThid )
-       _EXCH_XYZ_RS(rbcs1 , myThid )
+       IF ( useRBCtemp .AND. relaxTFile .NE. ' '  ) THEN
+         CALL EXCH_XYZ_RS( rbct0 , myThid )
+         CALL EXCH_XYZ_RS( rbct1 , myThid )
+       ENDIF
+       IF ( useRBCsalt .AND. relaxSFile .NE. ' '  ) THEN
+         CALL EXCH_XYZ_RS( rbcs0 , myThid )
+         CALL EXCH_XYZ_RS( rbcs1 , myThid )
+       ENDIF
 #ifdef ALLOW_PTRACERS
-       IF (useRBCptracers) THEN
+       IF (usePTRACERS) THEN
         DO iTracer = 1, PTRACERS_numInUse
-         _EXCH_XYZ_RS(rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),myThid)
-         _EXCH_XYZ_RS(rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+         IF ( useRBCptrnum(iTracer) ) THEN
+          CALL EXCH_XYZ_RS( rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),myThid )
+          CALL EXCH_XYZ_RS( rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),myThid )
+         ENDIF
         ENDDO
        ENDIF
-#endif
+#endif /* ALLOW_PTRACERS */
 
       ENDIF
 
@@ -190,7 +198,7 @@ C--   Interpolate
       ENDDO
 
 #ifdef ALLOW_PTRACERS
-      IF (useRBCptracers) THEN
+      IF ( usePTRACERS ) THEN
        DO iTracer = 1, PTRACERS_numInUse
         IF (useRBCptrnum(iTracer)) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -209,7 +217,7 @@ C--   Interpolate
         ENDIF
        ENDDO
       ENDIF
-#endif
+#endif /* ALLOW_PTRACERS */
 
       CALL TIMER_STOP ('RBCS_FIELDS_LOAD      [I/O]', myThid)
 

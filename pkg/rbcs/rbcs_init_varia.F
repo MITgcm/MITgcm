@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.5 2007/10/09 00:09:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.6 2010/04/06 20:38:18 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+#include "RBCS_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE RBCS_INIT_VARIA(myThid )
+      SUBROUTINE RBCS_INIT_VARIA( myThid )
 
 C !DESCRIPTION:
 C calls subroutines that initialized variables for relaxed
@@ -14,8 +13,6 @@ c boundary conditions
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_PTRACERS
@@ -33,7 +30,6 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER i,j,k,bi,bj
-      INTEGER irbc
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif
@@ -43,10 +39,12 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
           DO k=1,Nr
             DO j=1-Oly,sNy+OLy
               DO i=1-Olx,sNx+Olx
-                 rbct0(i,j,k,bi,bj) = 0. _d 0
-                 rbcs0(i,j,k,bi,bj) = 0. _d 0
-                 rbct1(i,j,k,bi,bj) = 0. _d 0
-                 rbcs1(i,j,k,bi,bj) = 0. _d 0
+                rbct0(i,j,k,bi,bj) = 0. _d 0
+                rbcs0(i,j,k,bi,bj) = 0. _d 0
+                rbct1(i,j,k,bi,bj) = 0. _d 0
+                rbcs1(i,j,k,bi,bj) = 0. _d 0
+                RBCtemp(i,j,k,bi,bj) = 0. _d 0
+                RBCsalt(i,j,k,bi,bj) = 0. _d 0
               ENDDO
             ENDDO
           ENDDO
@@ -57,12 +55,13 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
 C     Loop over tracers
       DO iTracer = 1, PTRACERS_num
         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO k=1,Nr
-              DO j=1-Oly,sNy+OLy
-                DO i=1-Olx,sNx+Olx
-                  rbcptr0(i,j,k,bi,bj,iTracer) = 0. _d 0
-                  rbcptr1(i,j,k,bi,bj,iTracer) = 0. _d 0
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO k=1,Nr
+             DO j=1-Oly,sNy+OLy
+               DO i=1-Olx,sNx+Olx
+                rbcptr0(i,j,k,bi,bj,iTracer) = 0. _d 0
+                rbcptr1(i,j,k,bi,bj,iTracer) = 0. _d 0
+                RBC_ptracers(i,j,k,bi,bj,iTracer) = 0. _d 0
                ENDDO
               ENDDO
             ENDDO
@@ -70,7 +69,7 @@ C     Loop over tracers
         ENDDO
 C       end of Tracer loop
       ENDDO
-#endif
+#endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_RBCS */
 

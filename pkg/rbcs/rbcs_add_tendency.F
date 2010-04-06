@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.4 2007/11/05 19:08:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.5 2010/04/06 20:38:18 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+#include "RBCS_OPTIONS.h"
 
 CBOP
 C !ROUTINE: RBCS_ADD_TSTENDENCY
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE RBCS_ADD_TENDENCY(bi,bj,k, tracernum,
-     &                            myTime, myThid )
+      SUBROUTINE RBCS_ADD_TENDENCY(
+     I                    bi, bj, k, tracerNum,
+     I                    myTime, myThid )
 
 C !DESCRIPTION:
 C     Will update tendencies with terms to relax to 3-D field
@@ -28,73 +28,68 @@ C !USES: ===============================================================
 #include "RBCS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
-C  iTracer              :: ptracer number
-C  bi,bj                :: tile indices
-C  k                    :: vertical level
-      INTEGER myThid, myIter
+C  bi,bj          :: tile indices
+C  k              :: vertical level index
+C  tracerNum      :: tracer number (1=Temp, 2=Salt, >2 : ptracer)
+C  myTime         :: current time
+C  myIter         :: current timestep
+C  myThid         :: my Thread Id number
+      INTEGER bi, bj, k
+      INTEGER tracerNum
       _RL myTime
-      INTEGER bi,bj,k
-      INTEGER tracernum
+c     INTEGER myIter
+      INTEGER myThid
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
+C  i,j            :: loop indices
       INTEGER i,j
+#ifdef ALLOW_PTRACERS
       INTEGER iTracer
       INTEGER irbc
+#endif
 CEOP
 
 #ifdef ALLOW_RBCS
 
-      if (tracernum.eq.1) then
-       if (useRBCtemp) then
+      IF ( tracerNum.EQ.1 .AND. useRBCtemp ) THEN
         DO j=1,sNy
-        DO i=1,sNx
-         gT(I,J,K,bi,bj) = gT(I,J,K,bi,bj)
-     &       - maskC(I,J,K,bi,bj)*
-     &      RBC_mask(I,J,K,bi,bj,1)/tauRelaxT*
-     &      (theta(I,J,K,bi,bj)-
-     &             RBCtemp(I,J,K,bi,bj))
+         DO i=1,sNx
+          gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
+     &       - maskC(i,j,k,bi,bj)
+     &        *RBC_mask(i,j,k,bi,bj,1)/tauRelaxT
+     &        *( theta(i,j,k,bi,bj)- RBCtemp(i,j,k,bi,bj) )
+         ENDDO
         ENDDO
-        ENDDO
-       endif
-      endif
+      ENDIF
 
-      if (tracernum.eq.2) then
-       if (useRBCsalt) then
+      IF ( tracerNum.EQ.2 .AND. useRBCsalt ) THEN
         DO j=1,sNy
-        DO i=1,sNx
-         gS(I,J,K,bi,bj) = gS(I,J,K,bi,bj)
-     &       - maskC(I,J,K,bi,bj)*
-     &      RBC_mask(I,J,K,bi,bj,2)/tauRelaxS*
-     &      (salt(I,J,K,bi,bj)-
-     &             RBCsalt(I,J,K,bi,bj))
+         DO i=1,sNx
+          gS(i,j,k,bi,bj) = gS(i,j,k,bi,bj)
+     &       - maskC(i,j,k,bi,bj)
+     &        *RBC_mask(i,j,k,bi,bj,2)/tauRelaxS
+     &        *( salt(i,j,k,bi,bj)- RBCsalt(i,j,k,bi,bj) )
+         ENDDO
         ENDDO
-        ENDDO
-       endif
-      endif
+      ENDIF
 
 #ifdef ALLOW_PTRACERS
-      if (tracernum.gt.2) then
-       iTracer=tracernum-2
-       irbc=min(maskLEN,tracernum)
-       if (useRBCptracers) then
-        if (useRBCptrnum(iTracer)) then
-         DO j=1,sNy
+      IF ( usePTRACERS .AND. tracerNum.GT.2 ) THEN
+       iTracer = tracerNum-2
+       irbc = MIN(maskLEN,tracerNum)
+       IF ( useRBCptrnum(iTracer) ) THEN
+        DO j=1,sNy
          DO i=1,sNx
-           gPtr(I,J,K,bi,bj,iTracer) = gPtr(I,J,K,bi,bj,iTracer)
-     &       - maskC(I,J,K,bi,bj)*
-     &      RBC_mask(I,J,K,bi,bj,irbc)/tauRelaxPTR(iTracer)*
-     &      (pTracer(I,J,K,bi,bj,iTracer)-
-     &             RBC_ptracers(I,J,K,bi,bj,iTracer))
+          gPtr(i,j,k,bi,bj,iTracer) = gPtr(i,j,k,bi,bj,iTracer)
+     &       - maskC(i,j,k,bi,bj)
+     &        *RBC_mask(i,j,k,bi,bj,irbc)/tauRelaxPTR(iTracer)
+     &        *( pTracer(i,j,k,bi,bj,iTracer)
+     &           - RBC_ptracers(i,j,k,bi,bj,iTracer) )
          ENDDO
-         ENDDO
-        endif
-       endif
-      endif
-#endif
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_RBCS */
 
