@@ -1,0 +1,21 @@
+# RBCS package parameters:
+ &RBCS_PARM01
+#   tauRelaxT=864000.,
+    tauRelaxS=864000.,
+#   relaxMaskFile='rbcs_mask_T.bin','rbcs_mask_S.bin',
+    relaxMaskFile(3)='rbcs_mask.bin',
+#   relaxTFile='sponge_temp.bin',
+#   relaxSFile='rbcs_Tr1_fld.bin',
+#   useRBCtemp=.TRUE.,
+#   useRBCsalt=.TRUE.,
+#   rbcsIniter=100,
+#   rbcsForcingPeriod=2592000.,
+#   rbcsForcingCycle=31104000.,
+ &
+
+# RBCS for pTracers (read this namelist only when ptracers pkg is compiled)
+ &RBCS_PARM02
+  useRBCptrnum(1)    = .TRUE.,
+  tauRelaxPTR(1)     = 21600.,
+  relaxPtracerFile(1)='rbcs_Tr1_fld.bin',
+ &
