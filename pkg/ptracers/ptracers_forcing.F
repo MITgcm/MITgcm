@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.15 2007/12/17 21:20:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.16 2010/04/06 20:27:45 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,10 +21,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_RBCS
-#include "PTRACERS_SIZE.h"
-#include "RBCS.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -84,7 +80,7 @@ C     because it is needed by KPP_TRANSPORT_PTR.
       ENDIF
 
 #ifdef ALLOW_RBCS
-      IF ( useRBCptracers ) THEN
+      IF ( useRBCS ) THEN
         CALL RBCS_ADD_TENDENCY(
      I                          bi,bj,k,iTracer+2,
      I                          myTime, myThid )
