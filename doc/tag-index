@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1246 2010/04/04 14:28:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1247 2010/04/06 21:41:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/rbcs:
+ - clean-up RBCS code: add RBCS_OPTIONS.h file ; fix multi-threaded ;
+   change (+ fix IO calls) type of array RBC_mask from _RL to _RS.
+ - add RBCS to exp4 passive tracer 01 (rbcs was previously untested)
+   and update output.txt
 o pkg/kpp:
  - add diagnostics for KPP non-local flux of Temp, Salinity and pTracers;
  - change diagnostic of KPP non-local term: output average of KPPghat*KPPdiffKzS
