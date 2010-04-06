@@ -36,5 +36,6 @@ the default behavior; at the western boundary, salinity values are
 used for salinity and one passive tracer in the same way. Salinity is
 set to sLev at all other boundaries, while a (nearly) homogeneous
 v.Neumann condition is applied to the passive tracer (the latter is
-the default in obcs_calc.F). Open boundary parameters are set in
+the default in obcs_calc.F), with a relaxation (using pkg rbcs) in
+the Eastern part of the channel. Open boundary parameters are set in
 data.obcs.

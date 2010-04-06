@@ -1,7 +1,8 @@
-# This set-up is supposed to mimic salinity. That is, initially 
-# PTRACER(:,:,:,1) is identical to salinity, except that the 
-# open boundary conditions are different, so that PTRACER(:,:,:,1) evolves
-# differently than salinity.
+# This set-up is supposed to mimic salinity. That is, initially
+# PTRACER(:,:,:,1) is identical to salinity, except that
+# 1) the default (i.e., not explicitly specified) open boundary conditions
+# are different, so that PTRACER(:,:,:,1) evolves differently than salinity.
+# 2) a weak relaxation is applied in the Eastern part of the channel (using rbcs).
  &PTRACERS_PARM01
  PTRACERS_numInUse=1,
  PTRACERS_ref(1,1) = 8*35.,
