@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.77 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.78 2010/04/06 20:58:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -263,7 +263,7 @@ cph#endif
 # ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 # endif
-#endif /* ALLOW_RBCS */
+#endif /* ALLOW_OFFLINE */
 
 #ifdef ALLOW_GCHEM
 # ifndef ALLOW_AUTODIFF_TAMC
