@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran_greenplanet,v 1.1 2010/04/05 20:58:31 yunx Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran_greenplanet,v 1.2 2010/04/06 17:17:38 yunx Exp $
 #  $Name:  $
 # 
 # tested on greenplanet.ps.uci.edu
@@ -71,7 +71,6 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
 elif test -d /sopt/netcdf/netcdf3-gcc-serial; then
     INCLUDES='-I/sopt/netcdf/netcdf3-gcc-serial/include'
     LIBS='-L/sopt/netcdf/netcdf3-gcc-serial/lib'
-
 elif test -d /usr/include/netcdf ; then
     INCLUDES='-I/usr/include/netcdf'
 elif test -d /usr/local/netcdf ; then
