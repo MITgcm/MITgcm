@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.23 2008/01/24 08:29:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.24 2010/04/07 20:52:30 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -42,6 +42,7 @@ C-      local variables:
        RETURN
        END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        SUBROUTINE exf_interp(
      I   infile,
@@ -79,7 +80,8 @@ C subroutine variables
       _RS           xG_in   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS           yG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL           lon_0, lon_inc
-      _RL           lat_0, lat_inc(ny_in-1)
+c     _RL           lat_0, lat_inc(ny_in-1)
+      _RL           lat_0, lat_inc(*)
       integer       method, mythid
 
 C functions
@@ -139,7 +141,8 @@ C setup input latitude grid
        if (y_in(j-1).eq.ninety) then
         y_in(j) = 2 * ninety - y_in(j-2)
        else
-        y_in(j) = min( y_in(j-1)+lat_inc(ny_in-1), ninety )
+        i = max(1,ny_in-1)
+        y_in(j) = min( y_in(j-1)+lat_inc(i), ninety )
        endif
       enddo
 
@@ -188,8 +191,8 @@ C     as is already done above in order to allow cross-PoleArctic flow
 C check validity of input/output coordinates
 #ifdef ALLOW_DEBUG
         if ( debugLevel .ge. debLevB ) then
-         do i=1,snx
-          do j=1,sny
+         do j=1,sny
+          do i=1,snx
            if ( xG(i,j,bi,bj) .lt. x_in(0)         .or.
      &          xG(i,j,bi,bj) .ge. x_in(nx_in+1)   .or.
      &          yG(i,j,bi,bj) .lt. y_in(0)         .or.
@@ -202,15 +205,15 @@ C check validity of input/output coordinates
               print*,'x_in(0,nx_in+1)',x_in(0)      ,x_in(nx_in+1)
               print*,'y_in(0,ny_in+1)',y_in(0)      ,y_in(ny_in+1)
               STOP   ' ABNORMAL END: S/R EXF_INTERP'
-             endif
-           enddo
+           endif
+          enddo
          enddo
         endif
 #endif /* ALLOW_DEBUG */
 
 C compute interpolation indices
-        do i=1,snx
-         do j=1,sny
+        do j=1,sny
+         do i=1,snx
           if (xG(i,j,bi,bj)-x_in(1) .ge. 0.) then
            w_ind(i,j) = int((xG(i,j,bi,bj)-x_in(1))/lon_inc) + 1
           else
@@ -220,10 +223,10 @@ C compute interpolation indices
          enddo
         enddo
 #ifndef TARGET_NEC_SX
-C     use the original and more readable variant of the algorithm that 
+C     use the original and more readable variant of the algorithm that
 C     has unvectorizable while-loops for each (i,j)
-        do i=1,snx
-         do j=1,sny
+        do j=1,sny
+         do i=1,snx
           js = ny_in*.5
           do while (yG(i,j,bi,bj) .lt. y_in(js))
            js = (js - 1)*.5
@@ -238,21 +241,21 @@ C     has unvectorizable while-loops for each (i,j)
 C     this variant vectorizes more efficiently than the original one because
 C     it moves the while loops out of the i,j loops (loop pushing) but
 C     it is ugly and incomprehensible
-	icnt = 0
+        icnt = 0
         do j=1,sny
          do i=1,snx
           s_ind(i,j) = ny_in*.5
-	  icnt = icnt+1
-	  inx(icnt,1) = i
-	  inx(icnt,2) = j
+          icnt = icnt+1
+          inx(icnt,1) = i
+          inx(icnt,2) = j
          enddo
         enddo
         do while (icnt .gt. 0)
          ii = 0
 !CDIR NODEP
          do ic=1,icnt
-	  i = inx(ic,1)
-	  j = inx(ic,2)
+          i = inx(ic,1)
+          j = inx(ic,2)
           if (yG(i,j,bi,bj) .lt. y_in(s_ind(i,j))) then
            s_ind(i,j) = (s_ind(i,j) - 1)*.5
            ii = ii+1
@@ -260,22 +263,22 @@ C     it is ugly and incomprehensible
            inx(ii,2) = j
           endif
          enddo
-	 icnt = ii
+         icnt = ii
         enddo
-	icnt = 0
+        icnt = 0
         do j=1,sny
          do i=1,snx
-	  icnt = icnt+1
-	  inx(icnt,1) = i
-	  inx(icnt,2) = j
+          icnt = icnt+1
+          inx(icnt,1) = i
+          inx(icnt,2) = j
          enddo
         enddo
         do while (icnt .gt. 0)
          ii = 0
 !CDIR NODEP
          do ic=1,icnt
-	  i = inx(ic,1)
-	  j = inx(ic,2)
+          i = inx(ic,1)
+          j = inx(ic,2)
           if (yG(i,j,bi,bj) .ge. y_in(s_ind(i,j)+1)) then
            s_ind(i,j) = s_ind(i,j) + 1
            ii = ii+1
@@ -283,11 +286,11 @@ C     it is ugly and incomprehensible
            inx(ii,2) = j
           endif
          enddo
-	 icnt = ii
+         icnt = ii
         enddo
 #endif /* TARGET_NEC_SX defined */
-        do i=1,snx
-         do j=1,sny
+        do j=1,sny
+         do i=1,snx
           n_ind(i,j) = s_ind(i,j) + 1
          enddo
         enddo
