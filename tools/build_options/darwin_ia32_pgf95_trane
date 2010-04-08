@@ -1,23 +1,18 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia64_pgf95+mpich2-mx_trane,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_pgf95_trane,v 1.1 2010/04/08 12:34:09 mlosch Exp $
 # $Name:  $
 
-# build options files for trane with MPI
-# remove MPI='true' to get non-mpi executables
+# build options files for trane without MPI
 # uname -a
 # Darwin trane.evsc.virginia.edu 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386
 #
 
-FC='mpif90'
-CC='mpicc'
-LINK='mpif90'
+FC='pgf95'
+CC='pgcc'
+LINK='pgf90'
 
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
-
-MPI='true'
-MPI_INC_DIR="/common/mpich2-mx-1.1.1p1..5/src/include"
-INCLUDES="$INCLUDES -I$MPI_INC_DIR"
 
 NETCDF_INCDIR="/common/usr/local/include"
 INCLUDES="$INCLUDES -I$NETCDF_INCDIR"
