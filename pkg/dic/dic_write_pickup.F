@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.5 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.6 2010/04/11 20:59:27 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -20,6 +20,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DIC_VARS.h"
+#include "DIC_ATMOS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C     permPickup :: write a permanent pickup
@@ -35,20 +36,45 @@ C     myThid     :: My Thread Id number
 CEOP
 
 #ifdef ALLOW_DIC
-#ifdef DIC_BIOTIC
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER prec
+#ifndef USE_ATMOSCO2
+      INTEGER ioUnit
+      _RL tmpFld(2)
+      _RS dummyRS(1)
+#endif
+#ifdef DIC_BIOTIC
       LOGICAL glf
-      INTEGER prec, j, nj
+      INTEGER j, nj
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 2 )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
+
 
 c     IF ( DIC_pickup_write_mdsio ) THEN
         prec = precFloat64
+
+#ifndef USE_ATMOSCO2
+        IF ( dic_int1.EQ.3 ) THEN
+          WRITE(fn,'(A,A)') 'pickup_dic_co2atm.',suff
+          ioUnit = 0
+          tmpFld(1) = total_atmos_carbon
+          tmpFld(2) = atpco2
+#ifdef ALLOW_MDSIO
+          CALL MDS_WRITEVEC_LOC(
+     I                         fn, prec, ioUnit,
+     I                         'RL', 2, tmpFld, dummyRS,
+     I                         0, 0, 1, myIter, myThid )
+#endif
+        ENDIF
+#endif /* ndef USE_ATMOSCO2 */
+
+#ifdef DIC_BIOTIC
         WRITE(fn,'(A,A)') 'pickup_dic.',suff
         j = 0
 
@@ -93,10 +119,11 @@ C     files
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
+#endif /* DIC_BIOTIC  */
+
 c     ENDIF /* DIC_pickup_write_mdsio */
 
-#endif /*  DIC_BIOTIC  */
-#endif /*  ALLOW_DIC  */
+#endif /* ALLOW_DIC  */
 
       RETURN
       END

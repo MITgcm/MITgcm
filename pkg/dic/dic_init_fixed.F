@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.10 2009/10/17 20:47:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.11 2010/04/11 20:59:27 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -23,19 +23,14 @@ C     !USES:
 #include "DIC_ATMOS.h"
 
 C     !INPUT PARAMETERS:
-C     myThid               :: thread number
+C     myThid       :: my Thread Id number
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_DIC
-      INTEGER i,j, bi,bj
       INTEGER k
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      CHARACTER*(MAX_LEN_FNAM) iName
-      integer ilo,ihi
-      integer  ilnblnk,ifnblnk
-      external ilnblnk,ifnblnk
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -71,28 +66,17 @@ C     Set other constant/flag
 
 #ifndef USE_ATMOSCO2
 
-      if (dic_int1.eq.2) then
-        call mdsfindunit( iUnit, mythid )
-        open(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
-        do k=1,dic_int2
-          read(iUnit,*) co2atmos(k)
-          print*,'co2atmos',co2atmos(k)
-        enddo
-        close(iUnit)
-      endif
+      IF ( dic_int1.EQ.2 ) THEN
+        CALL MDSFINDUNIT( iUnit, mythid )
+        OPEN(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
+        DO k=1,dic_int2
+          READ(iUnit,*) co2atmos(k)
+          WRITE(standardMessageUnit,*) 'co2atmos',co2atmos(k)
+        ENDDO
+        CLOSE(iUnit)
+      ENDIF
 
-      if (dic_int1.eq.3) then
-        write(iName,'(A,I10.10)') 'dic_atmos.',nIter0
-        ilo = ifnblnk(iName)
-        ihi = ilnblnk(iName)
-        call mdsfindunit( iUnit, mythid )
-        open(UNIT=iUnit,FILE=iname(ilo:ihi),STATUS='old')
-        read(iUnit,*) total_atmos_carbon_ini,
-     &              atpco2_ini
-        close(iUnit)
-      endif
-     
-#endif
+#endif /* ndef USE_ATMOSCO2 */
 
 #ifdef DIC_BIOTIC
 #ifdef ALLOW_AUTODIFF
