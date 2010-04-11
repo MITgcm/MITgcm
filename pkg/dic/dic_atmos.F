@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.15 2010/04/11 20:59:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.16 2010/04/11 21:04:39 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
-#undef DIC_OLD_TRUNCATION
 
 CBOP
 C !ROUTINE: DIC_ATMOS
@@ -25,8 +24,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "DYNVARS.h"
-c#include "FFIELDS.h"
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
@@ -126,7 +123,6 @@ C linearly interpolate between file entries
 
       ENDIF
 
-
 C interactive atmosphere
       IF (dic_int1.EQ.3) THEN
 
@@ -202,9 +198,6 @@ C calculate new atmos pCO2
        _BEGIN_MASTER(myThid)
        total_ocean_carbon = total_carbon
        atpco2 = total_atmos_carbon/total_atmos_moles
-
-c     print*,'QQpCO2', total_atmos_carbon, atpco2, total_ocean_carbon,
-c    &                 total_flux
 
        WRITE(ioUnit,*) 'QQ atmos C, total, pCo2',
      &                     total_atmos_carbon, atpco2
