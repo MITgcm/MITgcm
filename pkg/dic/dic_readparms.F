@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.9 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.10 2010/04/11 20:54:49 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -134,7 +134,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        dic_int2    = 0
        dic_int3    = 0
        dic_int4    = 0
-       dic_pCO2    = 0. _d 0
+       dic_pCO2    = 278. _d -6
 c default periodic forcing to same as for physics
        DIC_forcingPeriod = externForcingPeriod
        DIC_forcingCycle  = externForcingCycle
@@ -281,6 +281,13 @@ C- namelist DIC_FORCING
      &  ' /* Atmospheric pCO2 to be read in data.dic */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( dic_int1.EQ.0 .AND. dic_pCO2.NE.278. _d -6 ) THEN
+        WRITE(msgBuf,'(A)')
+     &    'DIC_READPARMS: cannot change default dic_pCO2 if dic_int1=0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DIC_READPARMS: dic_pCO2 error'
+      ENDIF
 
       _END_MASTER(myThid)
 
