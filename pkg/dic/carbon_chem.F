@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.17 2010/03/25 20:12:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.18 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -87,14 +87,6 @@ C ---------------------------------------------------------------------
 
         _RL  phhi
         _RL  phlo
-        _RL  tk
-        _RL  tk100
-        _RL  tk1002
-        _RL  dlogtk
-        _RL  sqrtis
-        _RL  sqrts
-        _RL  s15
-        _RL  scl
         _RL  c
         _RL  a
         _RL  a2
@@ -106,21 +98,14 @@ C ---------------------------------------------------------------------
         _RL  df
         _RL  deltax
         _RL  x
-        _RL  x1
         _RL  x2
         _RL  x3
         _RL  xmid
         _RL  ftest
         _RL  htotal
         _RL  htotal2
-        _RL  s2
-        _RL  xacc
         _RL  co2star
-        _RL  co2starair
-        _RL  dco2star
-        _RL  dpCO2
         _RL  phguess
-        _RL  atmpres
         INTEGER inewton
         INTEGER ibrack
         INTEGER hstep
@@ -128,9 +113,6 @@ C ---------------------------------------------------------------------
         _RL  xlo
         _RL  xhi
         _RL  xguess
-        _RL  invtk
-        _RL  is
-        _RL  is2
         _RL  k123p
         _RL  k12p
         _RL  k12
@@ -553,7 +535,7 @@ C     == Local variables ==
         _RL  h3po4g, h2po4g, hpo4g, po4g
         _RL  siooh3g
 c carbonate
-        _RL  co3local
+c       _RL  co3local
 
 
 c ---------------------------------------------------------------------
@@ -692,9 +674,6 @@ CEOP
 C LOCAL VARIABLES
         _RL  t
         _RL  s
-        _RL  ta
-        _RL  pt
-        _RL  sit
         _RL  tk
         _RL  tk100
         _RL  tk1002
@@ -703,10 +682,7 @@ C LOCAL VARIABLES
         _RL  sqrts
         _RL  s15
         _RL  scl
-        _RL  x1
-        _RL  x2
         _RL  s2
-        _RL  xacc
         _RL  invtk
         _RL  is
         _RL  is2
@@ -927,9 +903,6 @@ CEOP
 C LOCAL VARIABLES
         _RL  t
         _RL  s
-        _RL  ta
-        _RL  pt
-        _RL  sit
         _RL  tk
         _RL  tk100
         _RL  tk1002
@@ -938,10 +911,7 @@ C LOCAL VARIABLES
         _RL  sqrts
         _RL  s15
         _RL  scl
-        _RL  x1
-        _RL  x2
         _RL  s2
-        _RL  xacc
         _RL  invtk
         _RL  is
         _RL  is2

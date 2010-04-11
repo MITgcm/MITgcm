@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.12 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.13 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -43,12 +43,12 @@ C  GALK                 :: tendency term of alkalinity
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
 
+#ifdef ALLOW_OLD_VIRTUALFLUX
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-#ifdef ALLOW_OLD_VIRTUALFLUX
         DO j=jmin,jmax
           DO i=imin,imax
             IF (maskC(i,j,1,bi,bj).NE.0. _d 0) THEN

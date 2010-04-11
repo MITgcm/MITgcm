@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.3 2009/10/15 05:23:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.4 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -32,12 +32,7 @@ CEOP
 #ifdef ALLOW_DIC
       INTEGER i,j, bi,bj
       INTEGER k
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
-      CHARACTER*(MAX_LEN_FNAM) iName
-      integer ilo,ihi
-      integer  ilnblnk,ifnblnk
-      external ilnblnk,ifnblnk
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -45,15 +40,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
+        DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             alpha(i,j,bi,bj)      = alphaUniform
             rain_ratio(i,j,bi,bj) = rainRatioUniform
-            DO k = 1, Nr
-               omegaC(i,j,k,bi,bj) =  0. _d 0
-            ENDDO
+          ENDDO
+        ENDDO
+        DO k = 1, Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            omegaC(i,j,k,bi,bj) =  0. _d 0
           ENDDO
          ENDDO
+        ENDDO
        ENDDO
       ENDDO
 # ifdef ALLOW_COST

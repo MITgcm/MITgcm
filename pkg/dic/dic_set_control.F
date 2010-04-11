@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.5 2010/03/24 03:04:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.6 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -32,6 +32,7 @@ C     == GLobal variables ==
 C     == Routine arguments ==
       INTEGER myThid
 
+#ifdef ALLOW_CTRL
 cph#ifdef DIC_BIOTIC
 C     == Local arguments ==
       INTEGER bi, bj
@@ -48,7 +49,6 @@ c     == external ==
 
 c     == end of interface ==
 CEOP
-#ifdef ALLOW_CTRL
 
       doglobalread = .FALSE.
       ladinit      = .FALSE.

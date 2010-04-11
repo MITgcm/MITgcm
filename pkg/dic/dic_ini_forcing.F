@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.20 2009/10/08 16:15:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.21 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -33,8 +33,10 @@ CEOP
 
 c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j
+#if (defined (READ_PAR) && defined (USE_QSW))
        CHARACTER*(MAX_LEN_MBUF) msgBuf
-c
+#endif
+
 C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( dicwind0,myThid )
       CALL LEF_ZERO( dicwind1,myThid )

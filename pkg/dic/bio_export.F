@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.25 2009/10/17 20:47:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.26 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -60,7 +60,10 @@ C  i,j,k                  :: loop indices
       _RL sfac(1-OLy:sNy+OLy)
       _RL lit, atten
       _RL nutlimit
-      _RL tmpfe, tmppo4
+      _RL tmppo4
+#ifdef ALLOW_FE
+      _RL tmpfe
+#endif
 #ifdef AD_SAFE
       _RL thx, thy, theps
 #endif

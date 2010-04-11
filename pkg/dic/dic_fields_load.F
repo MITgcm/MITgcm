@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.28 2009/12/03 05:49:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.29 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -42,10 +42,11 @@ c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+#ifdef READ_PAR
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 CEOP
 
-c
       IF (  DIC_forcingCycle.gt.0. _d 0 ) THEN
 
 

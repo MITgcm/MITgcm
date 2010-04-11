@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.22 2008/04/09 22:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.23 2010/04/11 22:03:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -45,7 +45,7 @@ c GDC                   :: tendency due to air-sea exchange
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-       INTEGER I,J, kLev, it
+       INTEGER i,j, kLev
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
       _RL SchmidtNoDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
