@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.9 2008/04/09 22:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.10 2010/04/12 20:07:57 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -115,7 +115,7 @@ CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal,pCO2local,carbonate,
-     I          myThid )
+     I          i,j,k,bi,bj,myIter,myThid )
 c........................................................
 c               if(i .eq. 76 .and. j .eq. 36  .and. k .eq. 15) then
 c                 write(6,*)'Iteration, pH = ',CO3iter,pHlocal

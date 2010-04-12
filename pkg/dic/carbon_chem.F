@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.18 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.19 2010/04/12 20:07:57 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
-C--  File carbon_checm.F:
+C--  File carbon_chem.F:
 C--   Contents
 C--   o CALC_PCO2
 C--   o CALC_PCO2_APPROX_CO3
@@ -26,7 +26,7 @@ C !INTERFACE: ==========================================================
      I                       ksilocal,kflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,
-     I                       myThid)
+     I                       i,j,k,bi,bj,myIter,myThid )
 
 C !DESCRIPTION:
 C  surface ocean inorganic carbon chemistry to OCMIP2
@@ -61,6 +61,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        INTEGER i,j,k,bi,bj,myIter
         INTEGER myThid
 CEOP
 
@@ -332,7 +333,7 @@ C !INTERFACE: ==========================================================
      I                       ksilocal,kflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,co3local,
-     I                       myThid)
+     I                       i,j,k,bi,bj,myIter,myThid )
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -374,6 +375,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        INTEGER i,j,k,bi,bj,myIter
         INTEGER myThid
 CEOP
 
@@ -481,7 +483,7 @@ C !INTERFACE: ==========================================================
      I                       ksilocal,kflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,
-     I                       myThid)
+     I                       i,j,k,bi,bj,myIter,myThid )
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -520,6 +522,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        INTEGER i,j,k,bi,bj,myIter
         INTEGER myThid
 CEOP
 

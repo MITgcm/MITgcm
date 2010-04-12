@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.23 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.24 2010/04/12 20:07:57 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,13 +8,13 @@ CBOP
 C !ROUTINE: DIC_SURFFORCING
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE DIC_SURFFORCING( PTR_CO2 , PTR_ALK, PTR_PO4, GDC, 
+      SUBROUTINE DIC_SURFFORCING( PTR_CO2 , PTR_ALK, PTR_PO4, GDC,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
 C !DESCRIPTION:
-C  Calculate the carbon air-sea flux terms              
-C  following external_forcing_dic.F (OCMIP run) from Mick            
+C  Calculate the carbon air-sea flux terms
+C  following external_forcing_dic.F (OCMIP run) from Mick
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -142,7 +142,7 @@ C$TAF LOOP = parallel
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),
-     I        myThid )
+     I        i,j,kLev,bi,bj,myIter,myThid )
           ELSE
             pCO2(i,j,bi,bj)=0. _d 0
           ENDIF
@@ -154,16 +154,16 @@ C$TAF LOOP = parallel
 
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
 C calculate SCHMIDT NO. for CO2
-              SchmidtNoDIC(i,j) = 
-     &            sca1 
+              SchmidtNoDIC(i,j) =
+     &            sca1
      &          + sca2 * theta(i,j,kLev,bi,bj)
-     &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)  
-     &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj) 
+     &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
+     &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
      &                *theta(i,j,kLev,bi,bj)
 
 C Determine surface flux (FDIC)
 C first correct pCO2at for surface atmos pressure
-              pCO2sat(i,j) = 
+              pCO2sat(i,j) =
      &          AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
 
 C then account for Schmidt number
@@ -174,11 +174,11 @@ C Calculate flux in terms of DIC units using K0, solubility
 C Flux = Vp * ([CO2sat] - [CO2])
 C CO2sat = K0*pCO2atmos*P/P0
 C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
-              FluxCO2(i,j,bi,bj) = 
-     &         Kwexch(i,j)*( 
-     &         ak0(i,j,bi,bj)*pCO2sat(i,j) - 
-     &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj) 
-     &         ) 
+              FluxCO2(i,j,bi,bj) =
+     &         Kwexch(i,j)*(
+     &         ak0(i,j,bi,bj)*pCO2sat(i,j) -
+     &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj)
+     &         )
           ELSE
               FluxCO2(i,j,bi,bj) = 0. _d 0
           ENDIF
@@ -206,11 +206,11 @@ c
           ENDDO
          ENDDO
 
-C update tendency      
+C update tendency
          DO j=jmin,jmax
           DO i=imin,imax
            GDC(i,j)= recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
-     &              *(FluxCO2(i,j,bi,bj) 
+     &              *(FluxCO2(i,j,bi,bj)
 #ifdef ALLOW_OLD_VIRTUALFLUX
      &              + VirtualFlux(i,j)
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.28 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.29 2010/04/12 20:07:57 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -202,7 +202,7 @@ C====================================================================
         IF ( .NOT.pH_isLoaded ) THEN
 C set guess of pH for first step here
 
-          print*,'QQ: pCO2 approximation method'
+          WRITE(standardMessageUnit,*) 'QQ: pCO2 approximation method'
 c first approximation
 C$TAF LOOP = parallel
           DO j=jMin,jMax
@@ -223,14 +223,15 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),
-     I        myThid )
+     I        i,j,kLev,bi,bj, it ,  myThid )
              ENDDO
             ENDIF
            ENDDO
           ENDDO
           iprt = MIN(20,sNx)
           jprt = MIN(20,sNy)
-          print*,'QQ first guess pH', pH(iprt,jprt,bi,bj),
+          WRITE(standardMessageUnit,*) 'QQ first guess pH',
+     &        pH(iprt,jprt,bi,bj),
      &        theta(iprt,jprt,1,bi,bj), salt(iprt,jprt,1,bi,bj),
      &        PTR_CO2(iprt,jprt,1), surfphos(iprt,jprt),
      &        surfsi(iprt,jprt),surfalk(iprt,jprt)
