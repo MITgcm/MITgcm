@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.10 2009/11/02 18:55:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.11 2010/04/12 16:11:14 jmc Exp $
 
 #  Ed Hill
 
@@ -250,6 +250,7 @@ do
   export PGI=/usr/local/pkg/pgi/pgi-6.1-5
   echo "Running testreport using:"
   comm="./testreport -match $MC -dd"
+  #comm="$comm -skd tutorial_advection_in_gyre"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -261,6 +262,7 @@ do
   echo
   echo "Running testreport using:"
   comm="./testreport -match $MC -q -a jmc@mitgcm.org"
+  #comm="$comm -skd tutorial_advection_in_gyre"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
