@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.9 2007/05/14 19:35:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.10 2010/04/12 09:00:34 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -128,7 +128,7 @@ c            ustar = SQRT(usSq/atmrho)
         ENDDO
 
         IF ( wspeedfile .EQ. ' ' ) THEN
-C--   wspeed is not loaded ; devive wind-speed by inversion of
+C--   wspeed is not loaded ; derive wind-speed by inversion of
 C     wind-stress=fct(wind-speed) relation:
 C             The variables us, sh and rdn have to be computed from
 C             given wind stresses inverting relationship for neutral
