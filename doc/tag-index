@@ -1,12 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1249 2010/04/13 07:00:08 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1250 2010/04/13 15:05:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o exf:
+o pkg/dic:
+  -fix bug in fe_chem.F for multi-tile (nSx*nSy > 1) set-up;
+    (note: not presently tested in any forward verification exp.)
+   update tutorial_global_oce_biogeo AD output file.
+o pkg/exf:
   - account for the variation of albedo as a function of zenith angle
-    by defining ALLOW_ZENITHANGLE in EXF_OPTIONS.h 
+    by defining ALLOW_ZENITHANGLE in EXF_OPTIONS.h
 o build_options:
  - rename "linux_ia64_ifort+mpi_ice_nas" to "linux_amd64_ifort+mpi_ice_nas"
 o pkg/dic:
