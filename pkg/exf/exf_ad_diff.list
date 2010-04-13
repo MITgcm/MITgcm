@@ -18,3 +18,4 @@ exf_set_obcs.f
 exf_set_uv.f
 exf_swapffields.f
 exf_wind.f
+exf_zenithangle.f

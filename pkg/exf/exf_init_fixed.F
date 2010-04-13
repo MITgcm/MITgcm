@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.10 2010/03/16 00:18:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.11 2010/04/13 06:57:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -569,6 +569,12 @@ c     from the beginning of the year.
 
       _END_MASTER( myThid )
       _BARRIER
+
+#if defined(ALLOW_ZENITHANGLE) && defined(SHORTWAVE_HEATING)
+      IF ( useExfZenithAngle ) THEN
+       CALL EXF_ZENITHANGLE_TABLE(myThid)
+      ENDIF
+#endif
 
 C--   Summarize the External forcing setup.
       CALL EXF_SUMMARY( myThid )

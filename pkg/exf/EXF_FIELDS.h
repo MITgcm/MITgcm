@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.9 2010/02/17 21:16:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.10 2010/04/13 06:57:34 gforget Exp $
 C $Name:  $
 c
 c
@@ -237,6 +237,16 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
       _RL swdown1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_ZENITHANGLE
+      COMMON /exf_zenith_angle_r/ 
+     &     zen_albedo_table, zen_albedo_pointer,
+     &     zen_albedo, zen_fsol_diurnal, zen_fsol_daily
+      _RL zen_albedo_table (366,181,nSx,nSy)
+      _RL zen_albedo_pointer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zen_albedo (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zen_fsol_diurnal (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zen_fsol_daily (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #endif
 
 #ifdef ATMOSPHERIC_LOADING

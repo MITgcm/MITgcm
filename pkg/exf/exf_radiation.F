@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.5 2008/11/17 23:09:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.6 2010/04/13 06:57:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -112,11 +112,27 @@ c     ENDIF
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
       IF ( swfluxfile .EQ. ' ' .AND. swdownfile .NE. ' ' ) THEN
+#ifdef ALLOW_ZENITHANGLE
+      IF ( useExfZenithAngle ) THEN
+       CALL EXF_ZENITHANGLE(myTime, myIter, myThid)
+      ENDIF
+#endif
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
          DO j = 1,sNy
           DO i = 1,sNx
-           swflux(i,j,bi,bj) = -(1.0-exf_albedo) * swdown(i,j,bi,bj)
+#ifdef ALLOW_ZENITHANGLE
+      IF ( useExfZenithAngle ) THEN       
+           swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
+     &                         (1.0-zen_albedo(i,j,bi,bj))
+      ELSE
+           swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
+     &                         (1.0-exf_albedo)
+      ENDIF
+#else
+           swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
+     &                         (1.0-exf_albedo)
+#endif
           ENDDO
          ENDDO
         ENDDO

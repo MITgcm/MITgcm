@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.15 2010/03/22 19:59:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.16 2010/04/13 06:57:34 gforget Exp $
 C $Name:  $
 c
 c
@@ -345,6 +345,7 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
 
       logical useExfYearlyFields, twoDigitYear
       logical useExfCheckRange
+      logical useExfZenithAngle
       logical readStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
@@ -354,7 +355,7 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
 
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
-     &                     useExfCheckRange,
+     &                     useExfCheckRange, useExfZenithAngle,
      &                     readStressOnAgrid, readStressOnCgrid,
      &                     stressIsOnCgrid, useStabilityFct_overIce,
      &                     useRelativeWind, noNegativeEvap
