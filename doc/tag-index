@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1248 2010/04/12 20:29:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1249 2010/04/13 07:00:08 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o exf:
+  - account for the variation of albedo as a function of zenith angle
+    by defining ALLOW_ZENITHANGLE in EXF_OPTIONS.h 
 o build_options:
  - rename "linux_ia64_ifort+mpi_ice_nas" to "linux_amd64_ifort+mpi_ice_nas"
 o pkg/dic:
