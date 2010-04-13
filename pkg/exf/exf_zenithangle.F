@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.1 2010/04/13 06:57:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.2 2010/04/13 16:24:49 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -44,8 +44,8 @@ C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j
 
-	  integer iLat1,iLat2,iTyear1,iTyear2
-	  _RL     wLat1,wLat2,wTyear1,wTyear2
+      integer iLat1,iLat2,iTyear1,iTyear2
+      _RL     wLat1,wLat2,wTyear1,wTyear2
 
       _RL H0, dD0dDsq, CZENdaily, CZENdiurnal
       _RL TDAY, TYEAR, ALBSEA1, ALPHA, CZEN, CZEN2
@@ -63,7 +63,7 @@ C     == end of interface ==
 c solar constant
 c --------------
       SOLC   = 1368. _d 0
-c note: it's fourth (342. _d 0) is called SOLC in pkg/aim_v23
+c note: it is fourth (342. _d 0) is called SOLC in pkg/aim_v23
 
 c determine time of year/day
 c --------------------------
@@ -109,27 +109,27 @@ c       This is not the case for ALLOW_DIURNAL_ALBEDO (see comments below).
 
           iTyear1= 1 + 365.*TYEAR
           wTyear1= iTyear1 - 365.*TYEAR
-	  iTyear2= iTyear1 + 1
-	  wTyear2= 1.0 _d 0 - wTyear1
-		  
+          iTyear2= iTyear1 + 1
+          wTyear2= 1.0 _d 0 - wTyear1
+  
           if ( zen_albedo_pointer(i,j,bi,bj).EQ. 181. _d 0 ) then
-  	    iLat1=181
-	    wLat1=0.5  _d 0
-  	    iLat2=181
-	    wLat2=0.5  _d 0
+            iLat1=181
+            wLat1=0.5  _d 0
+            iLat2=181
+            wLat2=0.5  _d 0
           else
-	    iLat1= zen_albedo_pointer(i,j,bi,bj)
-	    wLat1= 1. _d 0 + iLat1 - zen_albedo_pointer(i,j,bi,bj)
+            iLat1= zen_albedo_pointer(i,j,bi,bj)
+            wLat1= 1. _d 0 + iLat1 - zen_albedo_pointer(i,j,bi,bj)
             iLat2= iLat1 + 1
-	    wLat2= 1. _d 0 - wLat1
+            wLat2= 1. _d 0 - wLat1
           endif
-		  
-	  ALBSEA1=
+  
+          ALBSEA1=
      &    wTyear1*wLat1*zen_albedo_table(iTyear1,iLat1,bi,bj)+
      &    wTyear1*wLat2*zen_albedo_table(iTyear1,iLat2,bi,bj)+
      &    wTyear2*wLat1*zen_albedo_table(iTyear2,iLat1,bi,bj)+
      &    wTyear2*wLat2*zen_albedo_table(iTyear2,iLat2,bi,bj)
-	  
+
 #else
 
 c determine solar declination
@@ -149,7 +149,7 @@ c   1) formula from aim_surf_bc.F, neglecting eccentricity:
 c        ALPHA= 2. _d 0*PI*(TYEAR+10. _d 0/365. _d 0)
 c        DECLI = COS(ALPHA) * ( -23.45 _d 0 * deg2rad)
 c   2) formulas that accounts for minor astronomic effects, e.g.
-c    Yallop, B. D., Position of the sun to 1' of arc precision, H. M. Nautical Almanac Office,
+c    Yallop, B. D., Position of the sun to 1 minute of arc precision, H. M. Nautical Almanac Office,
 c    Royal Greenwich Observatory, Herstmonceux Castle, Hailsham, Sussex BN27 1RP, 1977.
  
         ZC = COS(DECLI)
@@ -195,20 +195,20 @@ c       (formula from Briegleb, Minnis, et al 1986)
 c
 c       comments on ALLOW_DAILY_ALBEDO_AIM and ALLOW_DIURNAL_ALBEDO:
 c       - CZENdaily as computed in aim was found to imply sizable biases in daily upward sw fluxes.
-c	  It is not advised to use it, but it is kept in connection to pkg/aim_v23.
+c         It is not advised to use it, but it is kept in connection to pkg/aim_v23.
 c       - CZENdiurnal should never be used with daily mean input fields. 
-c	  Furthermore, at this point, it is not advised to use it even with 6 hourly swdown input fields. 
-c	  This is because we simply time interpolate between 6 hourly swdown fields, so each day there 
-c	  will be times when CZENdiurnal correctly reflects that it is night time, but swdown.NE.0. does not.
-c	  CZENdiurnal may actually be rather harmful in this context, since an inconsistency of phase between
+c         Furthermore, at this point, it is not advised to use it even with 6 hourly swdown input fields. 
+c         This is because we simply time interpolate between 6 hourly swdown fields, so each day there 
+c         will be times when CZENdiurnal correctly reflects that it is night time, but swdown.NE.0. does not.
+c         CZENdiurnal may actually be rather harmful in this context, since an inconsistency of phase between
 c         CZENdiurnal and swdown will yield biases in daily mean upward sw fluxes. So ... 
 
-#ifdef ALLOW_DIURNAL_ALBEDO
+#if (defined (ALLOW_DIURNAL_ALBEDO))
         CZEN=CZENdiurnal
         ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
      &          + ( 15. _d 0 * (CZEN-0.1 _d 0) * (CZEN-0.5 _d 0)
      &          * (CZEN-1.0 _d 0) ) ) / 100.0 _d 0
-#else ALLOW_DAILY_ALBEDO_AIM
+#elif (defined (ALLOW_DAILY_ALBEDO_AIM))
         CZEN=CZENdaily
         ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
      &          + ( 15. _d 0 * (CZEN-0.1 _d 0) * (CZEN-0.5 _d 0)

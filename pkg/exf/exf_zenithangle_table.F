@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.1 2010/04/13 06:57:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.2 2010/04/13 16:24:50 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -53,12 +53,12 @@ c --------------
       SOLC   = 1368. _d 0
 
        DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)		
+        DO bi = myBxLo(myThid),myBxHi(myThid)
          DO iLat=1,181
-	  DO iTyear=1,366
+          DO iTyear=1,366
 
-	LLLAT=(iLat-91. _d 0)
-	TYEAR=(iTyear-1. _d 0)/365. _d 0
+        LLLAT=(iLat-91. _d 0)
+        TYEAR=(iTyear-1. _d 0)/365. _d 0
 
 c determine solar declination
 c ---------------------------
@@ -89,14 +89,14 @@ c       (formula from Hartmann textbook, after Spencer 1971)
      &         + 0.000077 _d 0 * sin ( 2. _d 0 * ALPHA )
 
         tmpINT1=0. _d 0
-        tmpINT2=0. _d 0		   
-	DO iTday=1,100
-	    TDAY=iTday/100. _d 0			
+        tmpINT2=0. _d 0	   
+        DO iTday=1,100
+            TDAY=iTday/100. _d 0
 c determine DAILY VARYING cos of solar zenith angle CZEN
 c ------------------------------------------------------
             CZEN = TMPA + TMPB * 
      &         cos( 2. _d 0 *PI* TDAY + 0. _d 0 * deg2rad )
-	    if ( CZEN .LE.0 ) CZEN = 0. _d 0
+            if ( CZEN .LE.0 ) CZEN = 0. _d 0
 c compute incoming flux at the top of the atm.:
 c ---------------------------------------------
             FSOL = SOLC * dD0dDsq * MAX( 0. _d 0, CZEN )
@@ -110,14 +110,14 @@ c accumulate averages
 c -------------------
             tmpINT1=tmpINT1+FSOL*ALBSEA1/100. _d 0
             tmpINT2=tmpINT2+FSOL/100. _d 0
-	ENDDO
+         ENDDO
 c compute weighted average of albedo
 c ----------------------------------
-	if ( 0.5 _d 0 * tmpINT2 .GT. tmpINT1) then
-	  zen_albedo_table(iTyear,iLat,bi,bj)=tmpINT1/tmpINT2
-	else
-	  zen_albedo_table(iTyear,iLat,bi,bj)=0.5 _d 0
-	endif
+         if ( 0.5 _d 0 * tmpINT2 .GT. tmpINT1) then
+            zen_albedo_table(iTyear,iLat,bi,bj)=tmpINT1/tmpINT2
+         else
+            zen_albedo_table(iTyear,iLat,bi,bj)=0.5 _d 0
+         endif
 
           ENDDO
          ENDDO
@@ -128,13 +128,13 @@ c ----------------------------------
 
 c determine interpolation coefficient for each grid point
        DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)		
-	 DO j = 1,sNy
-	  DO i = 1,sNx
+        DO bi = myBxLo(myThid),myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
            LLLAT=yC(i,j,bi,bj)+91. _d 0
-c ensure that it is in valid range		   
-	   LLLAT=max(LLLAT, 1._d 0)
-	   LLLAT=min(LLLAT, 181._d 0)
+c ensure that it is in valid range   
+           LLLAT=max(LLLAT, 1._d 0)
+           LLLAT=min(LLLAT, 181._d 0)
 c store
            zen_albedo_pointer(i,j,bi,bj)=LLLAT
           ENDDO
