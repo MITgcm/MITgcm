@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff2d.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff2d.F,v 1.2 2010/04/13 04:43:45 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -61,7 +61,7 @@ c       in order not to overwrite the same tape
          DO i = 1,sNx
            gt_in(i,j,bi,bj)   = 0. _d 0
            gtm1_in(i,j,bi,bj)   = 0. _d 0
-       smooth2Dmask(i,j,bi,bj) = mask_in(i,j,1,bi,bj)
+           smooth2Dmask(i,j,bi,bj) = mask_in(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -128,6 +128,8 @@ CADJ & key = key_in*nchklev_1 + ilev_1
 
       gt_in(i,j,bi,bj)=0.
 
+      if (smooth2Dmask(i,j,bi,bj).NE.0.) then
+
       gt_in(i,j,bi,bj)=gt_in(i,j,bi,bj)+
      & smooth2D_Kux(i,j,bi,bj)*dyG(i,j,bi,bj)*
      & smooth2Dmask(i,j,bi,bj)*smooth2Dmask(i-1,j,bi,bj)*
@@ -147,6 +149,8 @@ CADJ & key = key_in*nchklev_1 + ilev_1
      & smooth2D_Kvy(i,j+1,bi,bj)*dxG(i,j+1,bi,bj)*
      & smooth2Dmask(i,j,bi,bj)*smooth2Dmask(i,j+1,bi,bj)*
      & (fld_in(i,j,bi,bj)-fld_in(i,j+1,bi,bj))*recip_dyC(i,j+1,bi,bj)
+
+      endif
 
            ENDDO
           ENDDO
