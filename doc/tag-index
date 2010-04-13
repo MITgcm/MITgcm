@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1250 2010/04/13 15:05:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1251 2010/04/13 17:12:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - fix wrong index in OBCS_SPONGE_V for Eastern-OB (reported by David Hebert).
 o pkg/dic:
   -fix bug in fe_chem.F for multi-tile (nSx*nSy > 1) set-up;
     (note: not presently tested in any forward verification exp.)
