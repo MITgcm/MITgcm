@@ -6,9 +6,9 @@
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62d
-(PID.TID 0000.0001) // Build user:        heimbach
+(PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Thu Apr  8 11:16:10 EDT 2010
+(PID.TID 0000.0001) // Build date:        Mon Apr 12 23:23:46 EDT 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -744,7 +744,7 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dic_pCO2 = /* Atmospheric pCO2 to be read in data.dic */
-(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)                 2.780000000000000E-04
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) OPTIM_READPARMS: opening data.optim
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.optim
@@ -3301,28 +3301,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025058E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025039E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052422E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446343E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334232E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052424E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446312E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334225E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876254E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460469E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681195576E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875043E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459716E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681195022E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762759E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377173E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762733E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377144E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3417,28 +3417,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251917E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251840E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908144E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831711E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174487E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908155E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831586E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174453E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353374E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026428E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733036061E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348569E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023442E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733033714E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393014E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392883E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3456,7 +3456,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126860489918E+11
+ global fc =  0.753126859820748E+11
 S/R EXTERNAL_FIELDS_LOAD: Reading new data:   12    1   5184000  2.239488000000E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
@@ -3577,28 +3577,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025058E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025039E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052422E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446343E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334232E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052424E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446312E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334225E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876254E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460469E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681195576E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875043E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459716E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681195022E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762759E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377173E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762733E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377144E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3613,28 +3613,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251917E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251840E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908144E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831711E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174487E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908155E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831586E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174453E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353374E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026428E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733036061E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348569E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023442E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733033714E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393014E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392883E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3650,28 +3650,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251917E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251840E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908144E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831711E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174487E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908155E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831586E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174453E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353374E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026428E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733036061E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348569E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023442E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733033714E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393014E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392883E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3684,28 +3684,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494474158E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414786032682E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619513599778E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329531867910E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5365266440293E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618251773797E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329531867905E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5365266440271E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618251773796E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9501071923176E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641941883240E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631798102998E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3365249144765E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963640878667E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9177985365585E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266215538701E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9826637890300E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2302988093666E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9757132042099E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631798103000E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3365249144768E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963640878666E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9177985374064E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266215538702E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9826637890268E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2302988093652E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9757132040648E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8986232625537E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993857184727E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6066671632857E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2534134724527E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8343194865965E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993857183516E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6066671632104E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2534134723805E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8343194865799E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195378265424E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3400581501239E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1030430308652E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195378265422E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3400581501212E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1030430308606E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3722,28 +3722,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025058E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025039E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052422E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446343E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334232E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052424E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446312E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334225E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876254E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460469E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681195576E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875043E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459716E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681195022E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762759E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377173E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762733E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377144E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3780,7 +3780,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- cg2d: Sum(rhs),rhsMax =  -4.44089209850063E-15  4.81567812396562E+03
+ cg2d: Sum(rhs),rhsMax =   6.66133814775094E-16  4.81567812411823E+03
  cg2d: Sum(rhs),rhsMax =  -2.93570465714765E-07  8.32517797868775E+00
  mean surface dic  1.97241409  34.8558916
  QQ myiter, totcost =  5184002  4.9365995E+10
@@ -3850,7 +3850,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- cg2d: Sum(rhs),rhsMax =   2.53130849614536E-14  2.03053008418724E+04
+ cg2d: Sum(rhs),rhsMax =   3.55271367880050E-14  2.03053008413303E+04
 S/R EXTERNAL_FIELDS_LOAD: Reading new data:   12    1   5184000  2.239488000000E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
@@ -3977,7 +3977,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- cg2d: Sum(rhs),rhsMax =  -4.81836792687318E-14  2.52108437015901E+04
+ cg2d: Sum(rhs),rhsMax =  -5.37347943918576E-14  2.52108437012152E+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.001.002.data
@@ -4629,34 +4629,34 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288026062E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288026043E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052520E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446344E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334368E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052523E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446313E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334361E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876258E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460534E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681189615E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875048E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459781E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681189061E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116163E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762757E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931379797E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762731E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931379767E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =  -2.93779603310895E-07  8.31923404225753E+00
  mean surface dic  1.97258948  34.8559463
- QQ myiter, totcost =  5184004  7.5312686E+10
+ QQ myiter, totcost =  5184004  7.53126859E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4665,28 +4665,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945253176E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945253099E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908264E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831712E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174691E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908276E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831587E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174657E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353379E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026507E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733029661E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348574E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023521E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733027314E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075408E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236396255E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075305E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236396124E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4704,8 +4704,8 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126859505791E+11
- ph-check fcpertplus =   7.5312686E+10
+ global fc =  0.753126858836622E+11
+ ph-check fcpertplus =   7.53126859E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
@@ -5128,28 +5128,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024055E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024036E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052323E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446342E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334096E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023090E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052326E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446311E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334089E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876250E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460405E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681201538E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875039E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459651E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681200984E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762760E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931374549E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762734E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931374519E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5164,28 +5164,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945250658E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945250580E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416398E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908024E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831710E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174282E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908035E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831585E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174248E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353369E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026350E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733042461E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348564E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023363E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733040114E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075413E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236389772E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075310E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236389642E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5203,16 +5203,16 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126861473877E+11
+ global fc =  0.753126860804710E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
- grad-res     0    1   61    5    1    1    1    1   0.753126860490E+11 0.753126859506E+11 0.753126861474E+11
- grad-res     0    1    1    1 1300    1    1    1   -.984678889256E+07 -.984042968750E+07 0.645815110949E-03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126860489918E+10
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -9.84678889256114E+06
+ grad-res     0    1   61    5    1    1    1    1   0.753126859821E+11 0.753126858837E+11 0.753126860805E+11
+ grad-res     0    1    1    1 1300    1    1    1   -.984678889256E+07 -.984043960571E+07 0.644807857485E-03
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126859820748E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -9.84678889256181E+06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
  ph-grd -->hit<--  62 5 1 1
@@ -5637,34 +5637,34 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025961E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025942E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052548E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446344E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334544E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052551E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446313E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334537E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876255E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460509E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681197953E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875045E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459755E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681197399E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116163E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762759E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377078E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762733E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377049E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =  -2.93779805815575E-07  8.31923404225753E+00
  mean surface dic  1.97258948  34.8559463
- QQ myiter, totcost =  5184004  7.53126858E+10
+ QQ myiter, totcost =  5184004  7.53126857E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5673,28 +5673,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945253050E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945252973E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908305E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831712E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174866E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416410E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908317E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831587E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174832E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353376E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026478E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733038657E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348571E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023492E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733036310E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392913E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392783E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5712,8 +5712,8 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126857723504E+11
- ph-check fcpertplus =   7.53126858E+10
+ global fc =  0.753126857054335E+11
+ ph-check fcpertplus =   7.53126857E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
@@ -6136,28 +6136,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024155E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024136E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052296E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446343E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381333920E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023090E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052298E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446311E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381333913E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876253E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460430E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681193199E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875042E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459677E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681192646E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762758E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377268E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762732E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377239E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6172,28 +6172,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340331E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945250784E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340312E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945250707E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416398E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931907983E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831710E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174108E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931907994E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831585E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174073E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353372E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026378E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733033464E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348567E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023392E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733031117E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393114E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392984E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6211,15 +6211,15 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126863256292E+11
+ global fc =  0.753126862587126E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
- grad-res     0    2   62    5    1    1    1    1   0.753126860490E+11 0.753126857724E+11 0.753126863256E+11
- grad-res     0    2    2    2 1300    1    1    1   -.276620261743E+08 -.276639381409E+08 -.691188170485E-04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126860489918E+10
+ grad-res     0    2   62    5    1    1    1    1   0.753126859821E+11 0.753126857054E+11 0.753126862587E+11
+ grad-res     0    2    2    2 1300    1    1    1   -.276620261743E+08 -.276639556885E+08 -.697531743175E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126859820748E+10
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.76620261743428E+07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
@@ -6645,34 +6645,34 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025191E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025172E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052472E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446344E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334183E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052475E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446313E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334176E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876252E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460500E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681193618E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875041E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459747E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681193064E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116163E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762759E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931376521E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762733E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931376491E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =  -2.93779731208588E-07  8.31923404225746E+00
  mean surface dic  1.97258948  34.8559463
- QQ myiter, totcost =  5184004  7.53126858E+10
+ QQ myiter, totcost =  5184004  7.53126857E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6681,28 +6681,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945252114E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945252037E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908210E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831712E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174440E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416410E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908222E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831587E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174406E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353371E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026468E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733033791E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348566E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023482E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733031444E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392173E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392043E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6720,8 +6720,8 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126857546454E+11
- ph-check fcpertplus =   7.53126858E+10
+ global fc =  0.753126856877284E+11
+ ph-check fcpertplus =   7.53126857E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
@@ -7144,28 +7144,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024926E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024907E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052372E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446343E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334282E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023090E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052374E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446311E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334275E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876256E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460438E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681197534E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875046E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459685E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681196980E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762758E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377825E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762732E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377796E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7180,28 +7180,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340331E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251720E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340312E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251643E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416398E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908078E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831710E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174533E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908090E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831585E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174499E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353378E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026388E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733038331E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348573E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023402E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733035984E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075410E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393854E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075308E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393724E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7219,16 +7219,16 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126863433386E+11
+ global fc =  0.753126862764218E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
- grad-res     0    3   63    5    1    1    1    1   0.753126860490E+11 0.753126857546E+11 0.753126863433E+11
- grad-res     0    3    3    3 1300    1    1    1   -.294356820372E+08 -.294346603394E+08 0.347094998249E-04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126860489918E+10
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.94356820371560E+07
+ grad-res     0    3   63    5    1    1    1    1   0.753126859821E+11 0.753126856877E+11 0.753126862764E+11
+ grad-res     0    3    3    3 1300    1    1    1   -.294356820372E+08 -.294346687317E+08 0.344243921244E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126859820748E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.94356820371503E+07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
  ph-grd -->hit<--  64 5 1 1
@@ -7653,34 +7653,34 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025370E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288025351E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052421E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446344E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334343E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023090E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052423E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446312E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334337E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876247E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460478E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681197609E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875037E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459725E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681197055E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116163E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762752E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377099E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762726E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377070E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =  -2.93779759630297E-07  8.31923404225745E+00
  mean surface dic  1.97258948  34.8559463
- QQ myiter, totcost =  5184004  7.53126857E+10
+ QQ myiter, totcost =  5184004  7.53126856E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7689,28 +7689,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945252297E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945252219E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416398E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908144E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831711E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174620E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908156E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831586E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174585E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353365E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026440E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733038551E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169625E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348560E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023453E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733036204E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075402E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392854E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075300E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236392724E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7728,8 +7728,8 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126856573534E+11
- ph-check fcpertplus =   7.53126857E+10
+ global fc =  0.753126855904365E+11
+ ph-check fcpertplus =   7.53126856E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
@@ -8152,28 +8152,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429498302105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6414467100280E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619514116602E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231166E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024747E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572396E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329589231161E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359288024728E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618238572395E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500717705318E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641942073397E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023088E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052423E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871281E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467227619E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174009E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446343E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334121E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588388652E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9631606023091E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3358948052425E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963794871280E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9151467236102E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266217174010E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9827071446312E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2289381334114E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9762588387200E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8945773645944E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964876261E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073460461E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681193543E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531969E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8993964875050E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.6073073459707E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2378681192989E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8347652531804E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791917997605E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116164E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762765E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377246E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195380116162E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3401590762739E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.0995931377217E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8188,28 +8188,28 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.4429494513387E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6415156187253E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619532986230E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340332E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251537E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042437E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0329033340313E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   3.5359945251460E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5618387042433E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9500617588105E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641939724464E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416399E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908144E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193080E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850741941E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373532E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831711E-04
-(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174354E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128331306E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9632159416409E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   2.3353931908155E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2963642193076E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9308850775609E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266377373537E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer03_sd         =   6.9823412831586E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer03_del2       =   2.2301659174320E-07
+(PID.TID 0000.0001) %MON trcstat_ptracer04_max        =   2.9676128325563E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer04_min        =  -1.8933493090500E-07
-(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022353384E-06
-(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493026417E-05
-(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733033571E-08
-(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149169624E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer04_mean       =   5.8832022348579E-06
+(PID.TID 0000.0001) %MON trcstat_ptracer04_sd         =   2.5995493023431E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer04_del2       =   3.2444733031224E-08
+(PID.TID 0000.0001) %MON trcstat_ptracer05_max        =   3.8331149168970E-01
 (PID.TID 0000.0001) %MON trcstat_ptracer05_min        =   3.9791966753115E-03
-(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996383E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075419E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393173E-05
+(PID.TID 0000.0001) %MON trcstat_ptracer05_mean       =   1.6195067996375E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   7.3397278075316E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   3.1002236393043E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8227,16 +8227,16 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1   5184000  2.239488000000E+
  --> objf_tracer(bi,bj) =  0.000000000000000E+00
  --> objf_atl(bi,bj)    =  0.000000000000000E+00
   local fc =  0.000000000000000E+00
- global fc =  0.753126864406305E+11
+ global fc =  0.753126863737137E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
- grad-res     0    4   64    5    1    1    1    1   0.753126860490E+11 0.753126856574E+11 0.753126864406E+11
- grad-res     0    4    4    4 1300    1    1    1   -.391635637743E+08 -.391638526917E+08 -.737719765942E-05
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126860489918E+10
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -3.91635637742994E+07
+ grad-res     0    4   64    5    1    1    1    1   0.753126859821E+11 0.753126855904E+11 0.753126863737E+11
+ grad-res     0    4    4    4 1300    1    1    1   -.391635637743E+08 -.391638587952E+08 -.753304464673E-05
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.53126859820748E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -3.91635637742916E+07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  4, ichknum =  4
 (PID.TID 0000.0001) 
@@ -8249,16 +8249,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
 (PID.TID 0000.0001) grdchk output:                 0               1              61               5               1 0.000000000E+00 -.100000000E-04
-(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126860E+11 0.753126861E+11 -.984042969E+07 -.984678889E+07 0.645815111E-03
+(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126859E+11 0.753126861E+11 -.984043961E+07 -.984678889E+07 0.644807857E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2              62               5               1 0.000000000E+00 -.100000000E-04
-(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126858E+11 0.753126863E+11 -.276639381E+08 -.276620262E+08 -.691188170E-04
+(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126857E+11 0.753126863E+11 -.276639557E+08 -.276620262E+08 -.697531743E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3              63               5               1 0.000000000E+00 -.100000000E-04
-(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126858E+11 0.753126863E+11 -.294346603E+08 -.294356820E+08 0.347094998E-04
+(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126857E+11 0.753126863E+11 -.294346687E+08 -.294356820E+08 0.344243921E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4              64               5               1 0.000000000E+00 -.100000000E-04
-(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126857E+11 0.753126864E+11 -.391638527E+08 -.391635638E+08 -.737719766E-05
+(PID.TID 0000.0001) grdchk output:                   0.753126860E+11 0.753126856E+11 0.753126864E+11 -.391638588E+08 -.391635638E+08 -.753304465E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -8266,153 +8266,153 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  404.784477
-(PID.TID 0000.0001)         System time:  9.70652365
-(PID.TID 0000.0001)     Wall clock time:  1064.9365
+(PID.TID 0000.0001)           User time:  402.88375
+(PID.TID 0000.0001)         System time:  7.77381784
+(PID.TID 0000.0001)     Wall clock time:  660.069905
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.10283203
-(PID.TID 0000.0001)         System time:  0.155976007
-(PID.TID 0000.0001)     Wall clock time:  1.62968397
+(PID.TID 0000.0001)           User time:  1.08983404
+(PID.TID 0000.0001)         System time:  0.178972997
+(PID.TID 0000.0001)     Wall clock time:  1.36278915
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  177.957951
-(PID.TID 0000.0001)         System time:  6.61299519
-(PID.TID 0000.0001)     Wall clock time:  582.127813
+(PID.TID 0000.0001)           User time:  177.010087
+(PID.TID 0000.0001)         System time:  5.57715181
+(PID.TID 0000.0001)     Wall clock time:  402.30911
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.677861691
-(PID.TID 0000.0001)         System time:  0.0739862323
-(PID.TID 0000.0001)     Wall clock time:  6.26508951
+(PID.TID 0000.0001)           User time:  0.667020321
+(PID.TID 0000.0001)         System time:  0.0519929528
+(PID.TID 0000.0001)     Wall clock time:  1.70349646
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.569887638
-(PID.TID 0000.0001)         System time:  0.0619894862
-(PID.TID 0000.0001)     Wall clock time:  4.86323023
+(PID.TID 0000.0001)           User time:  0.552136421
+(PID.TID 0000.0001)         System time:  0.047991097
+(PID.TID 0000.0001)     Wall clock time:  2.76782417
 (PID.TID 0000.0001)          No. starts: 48
 (PID.TID 0000.0001)           No. stops: 48
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0009765625
-(PID.TID 0000.0001)         System time:  0.00100040436
-(PID.TID 0000.0001)     Wall clock time:  0.00164008141
+(PID.TID 0000.0001)           User time:  0.000991821289
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00162386894
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  20.3589892
-(PID.TID 0000.0001)         System time:  0.138983786
-(PID.TID 0000.0001)     Wall clock time:  36.6980033
+(PID.TID 0000.0001)           User time:  20.2538619
+(PID.TID 0000.0001)         System time:  0.0789862275
+(PID.TID 0000.0001)     Wall clock time:  21.6896079
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00296020508
+(PID.TID 0000.0001)           User time:  0.000991821289
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00178956985
+(PID.TID 0000.0001)     Wall clock time:  0.00162100792
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  125.501997
-(PID.TID 0000.0001)         System time:  0.62189728
-(PID.TID 0000.0001)     Wall clock time:  201.966158
+(PID.TID 0000.0001)           User time:  125.214106
+(PID.TID 0000.0001)         System time:  0.294956207
+(PID.TID 0000.0001)     Wall clock time:  126.88218
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  43.9262543
-(PID.TID 0000.0001)         System time:  0.242963314
-(PID.TID 0000.0001)     Wall clock time:  73.8436227
+(PID.TID 0000.0001)           User time:  43.6592474
+(PID.TID 0000.0001)         System time:  0.0949889421
+(PID.TID 0000.0001)     Wall clock time:  44.0012257
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.12435341
-(PID.TID 0000.0001)         System time:  0.0150004625
-(PID.TID 0000.0001)     Wall clock time:  6.73063493
+(PID.TID 0000.0001)           User time:  4.11339378
+(PID.TID 0000.0001)         System time:  0.00799697638
+(PID.TID 0000.0001)     Wall clock time:  4.13589144
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.79374409
-(PID.TID 0000.0001)         System time:  0.0149985552
-(PID.TID 0000.0001)     Wall clock time:  2.90708399
+(PID.TID 0000.0001)           User time:  1.78865814
+(PID.TID 0000.0001)         System time:  0.00199991465
+(PID.TID 0000.0001)     Wall clock time:  1.8019743
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.72373581
-(PID.TID 0000.0001)         System time:  0.00699722767
-(PID.TID 0000.0001)     Wall clock time:  2.59730935
+(PID.TID 0000.0001)           User time:  1.71781826
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  1.72039485
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  28.6835585
-(PID.TID 0000.0001)         System time:  0.125978172
-(PID.TID 0000.0001)     Wall clock time:  47.9677141
+(PID.TID 0000.0001)           User time:  28.5447388
+(PID.TID 0000.0001)         System time:  0.0469910502
+(PID.TID 0000.0001)     Wall clock time:  29.2694778
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.7187767
-(PID.TID 0000.0001)         System time:  0.0060005188
-(PID.TID 0000.0001)     Wall clock time:  2.68224955
+(PID.TID 0000.0001)           User time:  1.71071625
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  1.72093153
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.40964222
-(PID.TID 0000.0001)         System time:  0.0199986696
-(PID.TID 0000.0001)     Wall clock time:  4.54979777
+(PID.TID 0000.0001)           User time:  2.39761829
+(PID.TID 0000.0001)         System time:  0.00300002098
+(PID.TID 0000.0001)     Wall clock time:  2.40308022
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.04585743
-(PID.TID 0000.0001)         System time:  0.00299882889
-(PID.TID 0000.0001)     Wall clock time:  1.8133409
+(PID.TID 0000.0001)           User time:  1.04684925
+(PID.TID 0000.0001)         System time:  0.0029989481
+(PID.TID 0000.0001)     Wall clock time:  1.04752064
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0009765625
+(PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00170469284
+(PID.TID 0000.0001)     Wall clock time:  0.00159311295
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.30761719
-(PID.TID 0000.0001)         System time:  0.24196589
-(PID.TID 0000.0001)     Wall clock time:  26.5370109
+(PID.TID 0000.0001)           User time:  9.18853474
+(PID.TID 0000.0001)         System time:  0.232962966
+(PID.TID 0000.0001)     Wall clock time:  11.9144864
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  7.23190117
-(PID.TID 0000.0001)         System time:  0.667899609
-(PID.TID 0000.0001)     Wall clock time:  25.3684614
+(PID.TID 0000.0001)           User time:  7.10690689
+(PID.TID 0000.0001)         System time:  0.58991158
+(PID.TID 0000.0001)     Wall clock time:  10.9481153
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  225.723694
-(PID.TID 0000.0001)         System time:  2.93755245
-(PID.TID 0000.0001)     Wall clock time:  481.178753
+(PID.TID 0000.0001)           User time:  224.783829
+(PID.TID 0000.0001)         System time:  2.01769304
+(PID.TID 0000.0001)     Wall clock time:  256.397784
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  18.5461731
-(PID.TID 0000.0001)         System time:  1.20981359
-(PID.TID 0000.0001)     Wall clock time:  88.287019
+(PID.TID 0000.0001)           User time:  18.5751343
+(PID.TID 0000.0001)         System time:  0.952856541
+(PID.TID 0000.0001)     Wall clock time:  32.5334172
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  205.40181
-(PID.TID 0000.0001)         System time:  1.60475826
-(PID.TID 0000.0001)     Wall clock time:  382.139466
+(PID.TID 0000.0001)           User time:  204.522964
+(PID.TID 0000.0001)         System time:  0.966853619
+(PID.TID 0000.0001)     Wall clock time:  220.239373
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  197.279007
-(PID.TID 0000.0001)         System time:  1.52376938
-(PID.TID 0000.0001)     Wall clock time:  361.078786
+(PID.TID 0000.0001)           User time:  196.457169
+(PID.TID 0000.0001)         System time:  0.877866268
+(PID.TID 0000.0001)     Wall clock time:  205.949661
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00122928619
+(PID.TID 0000.0001)     Wall clock time:  0.00115299225
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001) // ======================================================
