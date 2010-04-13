@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.4 2008/07/25 16:34:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.5 2010/04/13 04:35:53 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 C     !ROUTINE: ZERO_ADJ_LOC
 C     !INTERFACE:
       SUBROUTINE ZERO_ADJ_LOC(
-     I             NrIn,myThid,FieldFwd)
+     I             NrIn,FieldFwd,myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o zero out a local (no nsx,nsy dims.) adjoint field
@@ -33,7 +33,7 @@ C     myThid - Thread number for this instance of the routine.
 C     !ROUTINE: ZERO_ADJ
 C     !INTERFACE:
       SUBROUTINE ZERO_ADJ(
-     I             NrIn,myThid,FieldFwd)
+     I             NrIn,FieldFwd,myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o zero out a full (incl. nsx,nsy dims.) adjoint field
