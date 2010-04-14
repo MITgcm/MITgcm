@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.11 2010/04/13 06:57:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.12 2010/04/14 23:02:18 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -571,7 +571,7 @@ c     from the beginning of the year.
       _BARRIER
 
 #if defined(ALLOW_ZENITHANGLE) && defined(SHORTWAVE_HEATING)
-      IF ( useExfZenithAngle ) THEN
+      IF ( useExfZenAlbedo .OR. useExfZenIncoming ) THEN
        CALL EXF_ZENITHANGLE_TABLE(myThid)
       ENDIF
 #endif

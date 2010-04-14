@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.57 2010/04/13 06:57:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.58 2010/04/14 23:02:18 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -76,7 +76,8 @@ c     Surface flux data.
      &     exf_iprec_obcs,
      & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
-     & useExfZenithAngle, useRelativeWind, noNegativeEvap,
+     & useRelativeWind, noNegativeEvap,
+     & useExfZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
@@ -210,7 +211,8 @@ c     Set default values.
       year2sec           = 365.*86400.
       exf_monFreq        = monitorFreq
       useExfCheckRange   = .TRUE.
-      useExfZenithAngle  = .FALSE.
+      useExfZenAlbedo    = .FALSE.
+      useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
       readStressOnCgrid  = .FALSE.
       useRelativeWind    = .FALSE.

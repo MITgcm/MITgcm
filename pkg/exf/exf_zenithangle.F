@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.2 2010/04/13 16:24:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.3 2010/04/14 23:02:18 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -93,6 +93,8 @@ c
        TDAY= myDateSeconds / ( 86400 . _d 0 )
 c
 
+       IF ( useExfZenAlbedo ) THEN
+
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
          DO j = 1,sNy
@@ -125,10 +127,10 @@ c       This is not the case for ALLOW_DIURNAL_ALBEDO (see comments below).
           endif
   
           ALBSEA1=
-     &    wTyear1*wLat1*zen_albedo_table(iTyear1,iLat1,bi,bj)+
-     &    wTyear1*wLat2*zen_albedo_table(iTyear1,iLat2,bi,bj)+
-     &    wTyear2*wLat1*zen_albedo_table(iTyear2,iLat1,bi,bj)+
-     &    wTyear2*wLat2*zen_albedo_table(iTyear2,iLat2,bi,bj)
+     &    wTyear1*wLat1*zen_albedo_table(iTyear1,iLat1)+
+     &    wTyear1*wLat2*zen_albedo_table(iTyear1,iLat2)+
+     &    wTyear2*wLat1*zen_albedo_table(iTyear2,iLat1)+
+     &    wTyear2*wLat2*zen_albedo_table(iTyear2,iLat2)
 
 #else
 
@@ -223,6 +225,21 @@ c       (approximation: half direct and half diffu.)
         zen_albedo (i,j,bi,bj) = 
      &          0.5 _d 0 * exf_albedo + 0.5 _d 0 * ALBSEA1
 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       endif!      IF ( useExfZenAlbedo ) THEN
+
+
+      IF ( useExfZenIncoming ) THEN
+
+       DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
+
 c compute incoming flux at the top of the atm.:
 c ---------------------------------------------
 c       (formula from Hartmann textbook, after Spencer 1971)
@@ -273,6 +290,8 @@ c       zen_fsol_daily (i,j,bi,bj) = FSOL
          ENDDO
         ENDDO
        ENDDO
+
+       endif!      IF ( useExfZenIncoming ) THEN
 
 #endif /* ALLOW_ZENITHANGLE */
 #endif /* ALLOW_DOWNWARD_RADIATION */

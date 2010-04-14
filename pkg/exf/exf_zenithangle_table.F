@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.2 2010/04/13 16:24:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.3 2010/04/14 23:02:18 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -47,13 +47,12 @@ C     == local variables ==
 
 C     == end of interface ==
 
+      _BEGIN_MASTER( myThid )
 
 c solar constant
 c --------------
       SOLC   = 1368. _d 0
 
-       DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)
          DO iLat=1,181
           DO iTyear=1,366
 
@@ -114,16 +113,16 @@ c -------------------
 c compute weighted average of albedo
 c ----------------------------------
          if ( 0.5 _d 0 * tmpINT2 .GT. tmpINT1) then
-            zen_albedo_table(iTyear,iLat,bi,bj)=tmpINT1/tmpINT2
+            zen_albedo_table(iTyear,iLat)=tmpINT1/tmpINT2
          else
-            zen_albedo_table(iTyear,iLat,bi,bj)=0.5 _d 0
+            zen_albedo_table(iTyear,iLat)=0.5 _d 0
          endif
 
           ENDDO
          ENDDO
-        ENDDO
-       ENDDO
 
+      _END_MASTER( myThid )
+      _BARRIER
 
 
 c determine interpolation coefficient for each grid point
@@ -133,8 +132,8 @@ c determine interpolation coefficient for each grid point
           DO i = 1,sNx
            LLLAT=yC(i,j,bi,bj)+91. _d 0
 c ensure that it is in valid range   
-           LLLAT=max(LLLAT, 1._d 0)
-           LLLAT=min(LLLAT, 181._d 0)
+           LLLAT=max(LLLAT, 1. _d 0)
+           LLLAT=min(LLLAT, 181. _d 0)
 c store
            zen_albedo_pointer(i,j,bi,bj)=LLLAT
           ENDDO

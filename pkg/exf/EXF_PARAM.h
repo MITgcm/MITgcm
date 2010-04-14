@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.16 2010/04/13 06:57:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.17 2010/04/14 23:02:18 gforget Exp $
 C $Name:  $
 c
 c
@@ -342,10 +342,13 @@ C                                coeff. function of stability (like over
 C                                open ocean) rather than using fixed Coeff.
 C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before computing U/VSTRESS
 C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensation)
+C     useExfZenAlbedo    :: ocean albedo varies with zenith angle
+C     useExfZenIncoming  :: compute incoming solar radiation along with zenith angle
 
       logical useExfYearlyFields, twoDigitYear
       logical useExfCheckRange
-      logical useExfZenithAngle
+      logical useExfZenAlbedo
+      logical useExfZenIncoming
       logical readStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
@@ -355,7 +358,8 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
 
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
-     &                     useExfCheckRange, useExfZenithAngle,
+     &                     useExfCheckRange,
+     &                     useExfZenAlbedo, useExfZenIncoming,
      &                     readStressOnAgrid, readStressOnCgrid,
      &                     stressIsOnCgrid, useStabilityFct_overIce,
      &                     useRelativeWind, noNegativeEvap

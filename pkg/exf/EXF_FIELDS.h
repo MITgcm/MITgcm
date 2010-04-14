@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.10 2010/04/13 06:57:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.11 2010/04/14 23:02:18 gforget Exp $
 C $Name:  $
 c
 c
@@ -238,10 +238,16 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
       _RL lwdown0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_ZENITHANGLE
+C---  COMMON /exf_zenith_angle_r/
+C     zen_albedo_table   :: reference table of daily mean albedo
+C     zen_albedo_pointer :: location of grid point in zen_albedo_table
+C     zen_albedo         :: overall albedo (direct=f(zen) + diffus=cst)
+C     zen_fsol_diurnal   :: incoming solar radiation (daily variable)
+C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       COMMON /exf_zenith_angle_r/ 
      &     zen_albedo_table, zen_albedo_pointer,
      &     zen_albedo, zen_fsol_diurnal, zen_fsol_daily
-      _RL zen_albedo_table (366,181,nSx,nSy)
+      _RL zen_albedo_table (366,181)
       _RL zen_albedo_pointer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zen_albedo (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zen_fsol_diurnal (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
