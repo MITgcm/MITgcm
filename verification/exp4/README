@@ -3,24 +3,22 @@ Example: "Flow over a bump with Open Boundaries and passive tracers"
 
 default paths are (as used in testreport):
   set build_dir = ${cwd}/build
-  set exe       = ${cwd}/build
+  set run_dir   = ${cwd}/run
   set ROOT      = ${cwd}/../../
 
 Configure and compile the code:
-  mkdir ${build_dir}
   cd ${build_dir}
-  ${ROOT}/tools/genmake2 -mods=${cwd}/code
+  ${ROOT}/tools/genmake2 -mods ../code
   make depend
   make
 
 To run:
-  mkdir ${exe_dir}
-  cd ${exe_dir}
-  cp ${cwd}/input/* .
+  cd ${run_dir}
+  cp ../input/* .
   ${build_dir}/mitgcmuv
 
 There is comparison output in the directory:
- ..${cwd}/results
+ results      ( absolute path: ${run_dir}/../results )
 
 Comments:
 The input data is real*8.
