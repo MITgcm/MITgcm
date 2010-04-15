@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.1 2010/04/12 20:27:31 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.2 2010/04/15 20:28:25 dfer Exp $
 # $Name:  $
 
 # tested on pleiades using:
@@ -41,4 +41,4 @@ fi
 
 #- For really big executable (> 2 GB), uncomment following 2 lines
 #FFLAGS="$FFLAGS -mcmodel medium -shared-intel"
-#CFLAGS='-mcmodel medium'
+#CFLAGS='-mcmodel=medium'
