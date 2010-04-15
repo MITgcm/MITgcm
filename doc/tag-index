@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1251 2010/04/13 17:12:55 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1252 2010/04/15 15:25:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62e (2010/04/15)
 o pkg/obcs:
   - fix wrong index in OBCS_SPONGE_V for Eastern-OB (reported by David Hebert).
 o pkg/dic:
