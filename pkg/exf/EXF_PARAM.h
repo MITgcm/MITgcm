@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.17 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.18 2010/04/15 00:47:00 gforget Exp $
 C $Name:  $
 c
 c
@@ -342,19 +342,26 @@ C                                coeff. function of stability (like over
 C                                open ocean) rather than using fixed Coeff.
 C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before computing U/VSTRESS
 C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensation)
-C     useExfZenAlbedo    :: ocean albedo varies with zenith angle
+C     useExfZenAlbedo    :: ocean albedo (direct part) may vary with zenith angle (see select_ZenAlbedo)
+C     select_ZenAlbedo   :: switch to different methods to compute albedo (direct part)
+C                        :: 0 just use exf_albedo
+C                        :: 1 use daily mean albedo from exf_zenithangle_table.F 
+C                        :: 2 use daily mean albedo computed as in pkg/aim_v23
+C                        :: 3 use daily variable albedo 
 C     useExfZenIncoming  :: compute incoming solar radiation along with zenith angle
 
       logical useExfYearlyFields, twoDigitYear
       logical useExfCheckRange
-      logical useExfZenAlbedo
-      logical useExfZenIncoming
       logical readStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
       logical useStabilityFct_overIce
       logical useRelativeWind
       logical noNegativeEvap
+
+      logical useExfZenAlbedo
+      integer select_ZenAlbedo
+      logical useExfZenIncoming
 
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
@@ -364,6 +371,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &                     stressIsOnCgrid, useStabilityFct_overIce,
      &                     useRelativeWind, noNegativeEvap
       common /exf_param_i/
+     &                     select_ZenAlbedo,
      &                     hfluxstartdate1,   hfluxstartdate2,
      &                     atempstartdate1,   atempstartdate2,
      &                     aqhstartdate1,     aqhstartdate2,

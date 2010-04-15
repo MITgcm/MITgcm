@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.12 2009/08/27 17:52:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.13 2010/04/15 00:47:00 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -64,6 +64,39 @@ c     check for consistency
      & 'S/R EXF_CHECK: read-in wind-stress but not u,v_wind components'
       ENDIF
 #endif
+
+#ifndef ALLOW_ZENITHANGLE
+      IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR. 
+     &     select_ZenAlbedo .NE. 0 ) THEN
+        STOP 'S/R EXF_CHECK: unsupported option when 
+     &        ALLOW_ZENITHANGLE is not defined'
+      ENDIF
+#endif
+
+#ifdef ALLOW_ZENITHANGLE
+      IF ( usingCartesianGrid .OR. usingCylindricalGrid ) then
+        STOP 'S/R EXF_CHECK: ALLOW_ZENITHANGLE does not  
+     &        work for carthesian and cylindrical grids'
+      ENDIF
+      IF ( select_ZenAlbedo.LT.0 .OR. select_ZenAlbedo.GT.3 ) then
+        STOP 'S/R EXF_CHECK: unsupported select_ZenAlbedo choice'
+      ENDIF
+      IF ( select_ZenAlbedo.EQ.2 .) then
+        write(standardmessageunit,'(A)') 
+     &  'EXF WARNING: for daily mean albedo, it is advised to 
+     &        use select_ZenAlbedo.EQ.1 instead of 2'
+      ENDIF
+      IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 21600 ) then
+        STOP 'S/R EXF_CHECK: using diurnal albedo formula requires
+     &        diurnal downward shortwave forcing'
+      ENDIF
+      IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 3600 ) then
+        write(standardmessageunit,'(A)')  
+     &  'EXF WARNING: the diurnal albedo formula is likely not safe
+     &  for such coarse temporal resolution downward shortwave forcing'
+      ENDIF
+#endif
+
 
 #ifdef USE_EXF_INTERPOLATION
       if ( climsst_nlat .GT. MAX_LAT_INC )

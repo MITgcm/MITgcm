@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.3 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.4 2010/04/15 00:47:00 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -100,14 +100,18 @@ c
          DO j = 1,sNy
           DO i = 1,sNx
 
-#if !defined(ALLOW_DIURNAL_ALBEDO) && !defined(ALLOW_DAILY_ALBEDO_AIM)
+          if ( select_ZenAlbedo.EQ. 0) then
+
+          ALBSEA1=exf_albedo
+
+          elseif ( select_ZenAlbedo.EQ. 1) then                
 
 c       This is the default option: daily mean albedo (i.e. without diurnal cycle)
 c       obtained from the reference table that was computed in exf_zenithangle_table.F.
 c
 c       Using either daily or 6 hourly fields, this option yields correct values of daily upward sw flux.
 c
-c       This is not the case for ALLOW_DIURNAL_ALBEDO (see comments below).
+c       This is not the case for select_ZenAlbedo.GT.1 (see comments below).
 
           iTyear1= 1 + 365.*TYEAR
           wTyear1= iTyear1 - 365.*TYEAR
@@ -132,7 +136,7 @@ c       This is not the case for ALLOW_DIURNAL_ALBEDO (see comments below).
      &    wTyear2*wLat1*zen_albedo_table(iTyear2,iLat1)+
      &    wTyear2*wLat2*zen_albedo_table(iTyear2,iLat2)
 
-#else
+          else!if ( select_ZenAlbedo.GT. 1) then
 
 c determine solar declination
 c ---------------------------
@@ -195,7 +199,7 @@ c determine direct ocean albedo
 c -----------------------------
 c       (formula from Briegleb, Minnis, et al 1986)
 c
-c       comments on ALLOW_DAILY_ALBEDO_AIM and ALLOW_DIURNAL_ALBEDO:
+c       comments on select_ZenAlbedo.GT.1 methods:
 c       - CZENdaily as computed in aim was found to imply sizable biases in daily upward sw fluxes.
 c         It is not advised to use it, but it is kept in connection to pkg/aim_v23.
 c       - CZENdiurnal should never be used with daily mean input fields. 
@@ -205,19 +209,21 @@ c         will be times when CZENdiurnal correctly reflects that it is night tim
 c         CZENdiurnal may actually be rather harmful in this context, since an inconsistency of phase between
 c         CZENdiurnal and swdown will yield biases in daily mean upward sw fluxes. So ... 
 
-#if (defined (ALLOW_DIURNAL_ALBEDO))
-        CZEN=CZENdiurnal
+        if ( select_ZenAlbedo.EQ. 2) then
+          CZEN=CZENdaily
+        elseif ( select_ZenAlbedo.EQ. 3) then
+          CZEN=CZENdiurnal
+        else
+          print *, 'select_ZenAlbedo is out of range'
+          STOP 'ABNORMAL END: S/R EXF_ZENITHANGLE'
+        endif
+
         ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
      &          + ( 15. _d 0 * (CZEN-0.1 _d 0) * (CZEN-0.5 _d 0)
      &          * (CZEN-1.0 _d 0) ) ) / 100.0 _d 0
-#elif (defined (ALLOW_DAILY_ALBEDO_AIM))
-        CZEN=CZENdaily
-        ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
-     &          + ( 15. _d 0 * (CZEN-0.1 _d 0) * (CZEN-0.5 _d 0)
-     &          * (CZEN-1.0 _d 0) ) ) / 100.0 _d 0
-#endif
 c
-#endif /* !defined(ALLOW_DIURNAL_ALBEDO) ... */
+
+        endif!if ( select_ZenAlbedo.EQ. 0) then
 
 c determine overall albedo 
 c ------------------------

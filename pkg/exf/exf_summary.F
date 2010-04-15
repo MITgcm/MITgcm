@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.22 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.23 2010/04/15 00:47:00 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -179,6 +179,8 @@ C--   Print general parameters:
      & '  /* Sea-water albedo [-] */')
       CALL WRITE_0D_L( useExfZenAlbedo, INDEX_NONE, 'useExfZenAlbedo =',
      &  ' /* Sea-water albedo varies with zenith angle */') 
+      CALL WRITE_0D_I( select_ZenAlbedo,INDEX_NONE,'select_ZenAlbedo =',
+     &  ' /* Sea-water albedo computation method */')
       CALL WRITE_0D_L( useExfZenIncoming, INDEX_NONE,
      &  'useExfZenIncoming =',' /* compute incoming solar radiation */') 
       CALL WRITE_0D_RL( ocean_emissivity, INDEX_NONE,

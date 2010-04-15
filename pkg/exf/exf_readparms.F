@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.58 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.59 2010/04/15 00:47:00 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -77,7 +77,7 @@ c     Surface flux data.
      & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
      & useRelativeWind, noNegativeEvap,
-     & useExfZenAlbedo, useExfZenIncoming,
+     & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
@@ -212,6 +212,7 @@ c     Set default values.
       exf_monFreq        = monitorFreq
       useExfCheckRange   = .TRUE.
       useExfZenAlbedo    = .FALSE.
+      select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
       readStressOnCgrid  = .FALSE.
@@ -764,6 +765,10 @@ C--   Derive other parameters:
 #else
       stressIsOnCgrid = readStressOnCgrid
 #endif
+
+      if ( select_ZenAlbedo.GT.0 ) then
+           useExfZenAlbedo=.TRUE.
+      endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 cgf warning before we overwrite tauThetaClimRelax/thetaClimFile:

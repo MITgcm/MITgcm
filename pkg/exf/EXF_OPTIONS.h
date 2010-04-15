@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.16 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.17 2010/04/15 00:47:00 gforget Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -153,11 +153,7 @@ C   Bulk formulae related flags.
 
 C   Zenith Angle/Albedo related flags.
 #ifdef ALLOW_DOWNWARD_RADIATION
-#undef ALLOW_ZENITHANGLE
-# ifdef ALLOW_ZENITHANGLE
-#  undef ALLOW_DIURNAL_ALBEDO
-#  undef ALLOW_DAILY_ALBEDO_AIM
-# endif
+# undef ALLOW_ZENITHANGLE
 #endif
 
 C   Relaxation to monthly climatologies.
