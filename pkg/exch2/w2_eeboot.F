@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.12 2009/06/28 01:00:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.13 2010/04/16 18:14:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -35,15 +35,15 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     == Local variables ==
-      INTEGER nt_perProc, thisProc
+      INTEGER thisProc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) fName
 c     INTEGER W2_oUnit
       INTEGER stdUnit, iLen
       CHARACTER commFlag
       INTEGER myTileId
-      INTEGER myThid, I, J, II
-      INTEGER np, jp, bi, bj
+      INTEGER myThid, I, J
+      INTEGER np, ii, jj, bi, bj
       INTEGER iErr, tNx, tNy
 
 C     Set dummy myThid value (we are not multi-threaded here)
@@ -69,8 +69,8 @@ C     Initialise to zero EXCH2_TOPOLOGY common blocks
         DO J = 1,W2_maxNeighbours
           exch2_neighbourId(J,I)  = 0
           exch2_opposingSend(J,I) = 0
-          DO II = 1,4
-           exch2_pij(II,J,I) = 0
+          DO ii = 1,4
+           exch2_pij(ii,J,I) = 0
           ENDDO
           exch2_oi(J,I)  = 0
           exch2_oj(J,I)  = 0
@@ -112,7 +112,6 @@ C     functional relationship that was used above.
 C     Fill also W2_procTileList for Single-CPU-IO.
 
 C     Number of tiles I handle is nSx*nSy
-      nt_perProc = nSx*nSy
       thisProc = 1
 #ifdef ALLOW_USE_MPI
       thisProc = 1+myPid
@@ -120,10 +119,21 @@ C     Number of tiles I handle is nSx*nSy
       J = 0
       DO I=1,nTiles
        IF ( exch2_myFace(I) .NE. 0 ) THEN
-        np = 1 + J/nt_perProc
-        jp = MOD(J,nt_perProc)
-        bj = 1 + jp/nSx
-        bi = 1 + MOD(jp,nSx)
+C--   old ordering (makes no difference if nSy*nPy=1 )
+c       np = 1 + J/(nSx*nSy)
+c       jj = MOD(J,nSx*nSy)
+c       bj = 1 + jj/nSx
+c       bi = 1 + MOD(jj,nSx)
+C--   new ordering: for single sub-domain (nFacets=1) case, match default setting
+        jj = J/(nSx*nPx)
+        ii = MOD(J,nSx*nPx)
+C--   natural way to order processors:
+c       np = 1 + ii/nSx + (jj/nSy)*nPx
+C--   switch processor order to match MPI_CART set-up
+        np = 1 + jj/nSy + (ii/nSx)*nPy
+        bj = 1 + MOD(jj,nSy)
+        bi = 1 + MOD(ii,nSx)
+C--
         exch2_tProc(I) = np
         W2_procTileList(bi,bj,np) = I
         IF ( np.EQ.thisProc ) W2_myTileList(bi,bj) = I
@@ -176,9 +186,9 @@ c       WRITE(msgBuf,'(A,I4)') ' TILE: ', myTileId
         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
         DO J=1,exch2_nNeighbours(myTileId)
          commFlag = 'M'
-         DO II=1,nSy
-          DO I=1,nSx
-          IF ( W2_myTileList(I,II).EQ.exch2_neighbourId(J,myTileId) )
+         DO jj=1,nSy
+          DO ii=1,nSx
+          IF ( W2_myTileList(ii,jj).EQ.exch2_neighbourId(J,myTileId) )
      &     commFlag = 'P'
           ENDDO
          ENDDO
