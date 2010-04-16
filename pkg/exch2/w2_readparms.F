@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_readparms.F,v 1.2 2009/05/16 13:34:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_readparms.F,v 1.3 2010/04/16 18:06:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -30,7 +30,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL fileExist, errFlag
@@ -162,7 +162,7 @@ C--   Check if too many values are specified in data.exch2:
       ELSE
         errFlag = .FALSE.
       ENDIF
-C-
+
       errCnt = 0
       DO j=2*W2_maxNbFacets+1,2*namList_NbFacets
         IF ( dimsFacets(j).NE.0 ) errCnt = errCnt + 1
@@ -178,6 +178,17 @@ C-
       IF ( errFlag .OR. errCnt.GT.0 ) THEN
         STOP 'ABNORMAL END: S/R W2_READPARMS'
       ENDIF
+
+C--   Print some Exch2 parameters:
+      WRITE(msgBuf,'(A,L5,A)') 'W2_useE2ioLayOut=', W2_useE2ioLayOut,
+     &  ' ;/* T: use Exch2 glob IO map; F: use model default */'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A,I4,A)') 'W2_mapIO        =', W2_mapIO,
+     & ' ; /* select option for Exch2 global-IO map */'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A,I4,A)') 'W2_printMsg     =', W2_printMsg,
+     & ' ; /* select option for printing information */'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT , myThid )
 
       RETURN
       END
