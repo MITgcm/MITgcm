@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1252 2010/04/15 15:25:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1253 2010/04/16 18:39:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exch2:
+ change tile to processor setting (case nSy*nPy > 1): allows default model mapping
+ (myX and myYGlobalLow) to be used for simple (1 facet, no blank tile) config.
 
 checkpoint62e (2010/04/15)
 o pkg/obcs:
