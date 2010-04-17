@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.38 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.39 2010/04/17 20:40:47 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -1757,7 +1757,8 @@ cph)
               do k=1,NGENCOST
               if (gencost_weight(i,j,bi,bj,k) .ne. 0.) then
                  gencost_weight(i,j,bi,bj,k) =
-     &                1./gencost_weight(i,j,bi,bj,k)/gencost_weight(i,j,bi,bj,k)
+     &                1./gencost_weight(i,j,bi,bj,k)/
+     &                   gencost_weight(i,j,bi,bj,k)
               else
                  gencost_weight(i,j,bi,bj,k) = 0.0 _d 0
               endif

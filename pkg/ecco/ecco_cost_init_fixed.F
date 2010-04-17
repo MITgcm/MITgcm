@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.20 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.21 2010/04/17 20:40:47 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,7 @@ c     == local variables ==
       integer tempDate2(4)
       integer gwunit
       integer ilo,ihi
-      integer irec
+      integer irec,k
       logical exst
       _RL     dummy
       _RL     missingObsFlag
