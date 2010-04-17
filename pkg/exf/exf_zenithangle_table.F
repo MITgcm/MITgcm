@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.3 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.4 2010/04/17 20:57:08 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -88,7 +88,7 @@ c       (formula from Hartmann textbook, after Spencer 1971)
      &         + 0.000077 _d 0 * sin ( 2. _d 0 * ALPHA )
 
         tmpINT1=0. _d 0
-        tmpINT2=0. _d 0	   
+        tmpINT2=0. _d 0   
         DO iTday=1,100
             TDAY=iTday/100. _d 0
 c determine DAILY VARYING cos of solar zenith angle CZEN
