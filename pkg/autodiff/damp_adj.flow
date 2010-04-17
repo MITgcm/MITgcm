@@ -1,0 +1,13 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/damp_adj.flow,v 1.1 2010/04/17 20:47:24 gforget Exp $
+C $Name:  $
+
+c----------------------------------------
+c subroutine damp_adj
+c----------------------------------------
+cadj SUBROUTINE damp_adj FTLNAME = g_damp_adj
+cadj SUBROUTINE damp_adj ADNAME  = addamp_adj
+cadj SUBROUTINE damp_adj INPUT   = 1, 2, 3, 4, 5, 6, 7
+cadj SUBROUTINE damp_adj OUTPUT  =
+cadj SUBROUTINE damp_adj ACTIVE  =                6
+cadj SUBROUTINE damp_adj DEPEND  = 1, 2, 3, 4, 5   , 7
+
