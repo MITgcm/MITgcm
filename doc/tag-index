@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1253 2010/04/16 18:39:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1254 2010/04/17 18:48:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+ horizontal grid initialisation (other than curvilinear): add code for Exch2 IO
+ layout; (not always compatible with delX,delY setting; commented out for now).
 o pkg/exch2:
  change tile to processor setting (case nSy*nPy > 1): allows default model mapping
  (myX and myYGlobalLow) to be used for simple (1 facet, no blank tile) config.
