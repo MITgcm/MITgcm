@@ -1,12 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.21 2009/01/27 15:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.22 2010/04/17 18:25:12 jmc Exp $
 C $Name:  $
 
+c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INI_CARTESIAN_GRID
 C     !INTERFACE:
       SUBROUTINE INI_CARTESIAN_GRID( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_CARTESIAN_GRID
@@ -48,6 +50,11 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+c#ifdef ALLOW_EXCH2
+c#include "W2_EXCH2_SIZE.h"
+c#include "W2_EXCH2_TOPOLOGY.h"
+c#include "W2_EXCH2_PARAMS.h"
+c#endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -56,7 +63,7 @@ C     myThid  ::  Number of this instance of INI_CARTESIAN_GRID
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER iG, jG, bi, bj, I,  J
+      INTEGER iG, jG, bi, bj, i, j
       _RL xG0, yG0
 C     "Long" real for temporary coordinate calculation
 C      NOTICE the extended range of indices!!
@@ -65,8 +72,11 @@ C      NOTICE the extended range of indices!!
 C     These functions return the "global" index with valid values beyond
 C     halo regions
       INTEGER iGl,jGl
-      iGl(I,bi) = 1+mod(myXGlobalLo-1+(bi-1)*sNx+I+Olx*Nx-1,Nx)
-      jGl(J,bj) = 1+mod(myYGlobalLo-1+(bj-1)*sNy+J+Oly*Ny-1,Ny)
+      iGl(i,bi) = 1+MOD(myXGlobalLo-1+(bi-1)*sNx+i+Olx*Nx-1,Nx)
+      jGl(j,bj) = 1+MOD(myYGlobalLo-1+(bj-1)*sNy+j+Oly*Ny-1,Ny)
+c#ifdef ALLOW_EXCH2
+c      INTEGER tN
+c#endif /* ALLOW_EXCH2 */
 CEOP
 
 C     For each tile ...
@@ -76,6 +86,14 @@ C     For each tile ...
 C--     "Global" index (place holder)
         jG = myYGlobalLo + (bj-1)*sNy
         iG = myXGlobalLo + (bi-1)*sNx
+c#ifdef ALLOW_EXCH2
+c        IF ( W2_useE2ioLayOut ) THEN
+cC- note: does not work for non-uniform delX or delY
+c          tN = W2_myTileList(bi,bj)
+c          iG = exch2_txGlobalo(tN)
+c          jG = exch2_tyGlobalo(tN)
+c        ENDIF
+c#endif /* ALLOW_EXCH2 */
 
 C--   First find coordinate of tile corner (meaning outer corner of halo)
         xG0 = xgOrigin
@@ -85,7 +103,7 @@ C       Find the X-coordinate of the outer grid-line of the "real" tile
         ENDDO
 C       Back-step to the outer grid-line of the "halo" region
         DO i=1, Olx
-         xG0 = xG0 - delX( 1+mod(Olx*Nx-1+iG-i,Nx) )
+         xG0 = xG0 - delX( 1+MOD(Olx*Nx-1+iG-i,Nx) )
         ENDDO
 C       Find the Y-coordinate of the outer grid-line of the "real" tile
         yG0 = ygOrigin
@@ -94,121 +112,121 @@ C       Find the Y-coordinate of the outer grid-line of the "real" tile
         ENDDO
 C       Back-step to the outer grid-line of the "halo" region
         DO j=1, Oly
-         yG0 = yG0 - delY( 1+mod(Oly*Ny-1+jG-j,Ny) )
+         yG0 = yG0 - delY( 1+MOD(Oly*Ny-1+jG-j,Ny) )
         ENDDO
 
 C--     Calculate coordinates of cell corners for N+1 grid-lines
-        DO J=1-Oly,sNy+Oly +1
-         xGloc(1-Olx,J) = xG0
-         DO I=1-Olx,sNx+Olx
-c         xGloc(I+1,J) = xGloc(I,J) + delX(1+mod(Nx-1+iG-1+i,Nx))
-          xGloc(I+1,J) = xGloc(I,J) + delX( iGl(I,bi) )
+        DO j=1-Oly,sNy+Oly +1
+         xGloc(1-Olx,j) = xG0
+         DO i=1-Olx,sNx+Olx
+c         xGloc(i+1,j) = xGloc(i,j) + delX(1+mod(Nx-1+iG-1+i,Nx))
+          xGloc(i+1,j) = xGloc(i,j) + delX( iGl(i,bi) )
          ENDDO
         ENDDO
-        DO I=1-Olx,sNx+Olx +1
-         yGloc(I,1-Oly) = yG0
-         DO J=1-Oly,sNy+Oly
-c         yGloc(I,J+1) = yGloc(I,J) + delY(1+mod(Ny-1+jG-1+j,Ny))
-          yGloc(I,J+1) = yGloc(I,J) + delY( jGl(J,bj) )
+        DO i=1-Olx,sNx+Olx +1
+         yGloc(i,1-Oly) = yG0
+         DO j=1-Oly,sNy+Oly
+c         yGloc(i,j+1) = yGloc(i,j) + delY(1+mod(Ny-1+jG-1+j,Ny))
+          yGloc(i,j+1) = yGloc(i,j) + delY( jGl(j,bj) )
          ENDDO
         ENDDO
 
 C--     Make a permanent copy of [xGloc,yGloc] in [xG,yG]
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          xG(I,J,bi,bj) = xGloc(I,J)
-          yG(I,J,bi,bj) = yGloc(I,J)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          xG(i,j,bi,bj) = xGloc(i,j)
+          yG(i,j,bi,bj) = yGloc(i,j)
          ENDDO
         ENDDO
 
 C--     Calculate [xC,yC], coordinates of cell centers
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 C         by averaging
-          xC(I,J,bi,bj) = 0.25*(
-     &     xGloc(I,J)+xGloc(I+1,J)+xGloc(I,J+1)+xGloc(I+1,J+1) )
-          yC(I,J,bi,bj) = 0.25*(
-     &     yGloc(I,J)+yGloc(I+1,J)+yGloc(I,J+1)+yGloc(I+1,J+1) )
+          xC(i,j,bi,bj) = 0.25 _d 0*(
+     &     xGloc(i,j)+xGloc(i+1,j)+xGloc(i,j+1)+xGloc(i+1,j+1) )
+          yC(i,j,bi,bj) = 0.25 _d 0*(
+     &     yGloc(i,j)+yGloc(i+1,j)+yGloc(i,j+1)+yGloc(i+1,j+1) )
          ENDDO
         ENDDO
 
 C--     Calculate [dxF,dyF], lengths between cell faces (through center)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          dXF(I,J,bi,bj) = delX( iGl(I,bi) )
-          dYF(I,J,bi,bj) = delY( jGl(J,bj) )
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dxF(i,j,bi,bj) = delX( iGl(i,bi) )
+          dyF(i,j,bi,bj) = delY( jGl(j,bj) )
          ENDDO
         ENDDO
 
 C--     Calculate [dxG,dyG], lengths along cell boundaries
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          dXG(I,J,bi,bj) = delX( iGl(I,bi) )
-          dYG(I,J,bi,bj) = delY( jGl(J,bj) )
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dxG(i,j,bi,bj) = delX( iGl(i,bi) )
+          dyG(i,j,bi,bj) = delY( jGl(j,bj) )
          ENDDO
         ENDDO
 
 C--     The following arrays are not defined in some parts of the halo
 C       region. We set them to zero here for safety. If they are ever
 C       referred to, especially in the denominator then it is a mistake!
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          dXC(I,J,bi,bj) = 0.
-          dYC(I,J,bi,bj) = 0.
-          dXV(I,J,bi,bj) = 0.
-          dYU(I,J,bi,bj) = 0.
-          rAw(I,J,bi,bj) = 0.
-          rAs(I,J,bi,bj) = 0.
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dxC(i,j,bi,bj) = 0.
+          dyC(i,j,bi,bj) = 0.
+          dxV(i,j,bi,bj) = 0.
+          dyU(i,j,bi,bj) = 0.
+          rAw(i,j,bi,bj) = 0.
+          rAs(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
 
 C--     Calculate [dxC], zonal length between cell centers
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx+1,sNx+Olx ! NOTE range
-          dXC(I,J,bi,bj) = 0.5D0*(dXF(I,J,bi,bj)+dXF(I-1,J,bi,bj))
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx ! NOTE range
+          dxC(i,j,bi,bj) = 0.5 _d 0*(dxF(i,j,bi,bj)+dxF(i-1,j,bi,bj))
          ENDDO
         ENDDO
 
 C--     Calculate [dyC], meridional length between cell centers
-        DO J=1-Oly+1,sNy+Oly ! NOTE range
-         DO I=1-Olx,sNx+Olx
-          dYC(I,J,bi,bj) = 0.5*(dYF(I,J,bi,bj)+dYF(I,J-1,bi,bj))
+        DO j=1-Oly+1,sNy+Oly ! NOTE range
+         DO i=1-Olx,sNx+Olx
+          dyC(i,j,bi,bj) = 0.5 _d 0*(dyF(i,j,bi,bj)+dyF(i,j-1,bi,bj))
          ENDDO
         ENDDO
 
 C--     Calculate [dxV,dyU], length between velocity points (through corners)
-        DO J=1-Oly+1,sNy+Oly ! NOTE range
-         DO I=1-Olx+1,sNx+Olx ! NOTE range
+        DO j=1-Oly+1,sNy+Oly ! NOTE range
+         DO i=1-Olx+1,sNx+Olx ! NOTE range
 C         by averaging (method I)
-          dXV(I,J,bi,bj) = 0.5*(dXG(I,J,bi,bj)+dXG(I-1,J,bi,bj))
-          dYU(I,J,bi,bj) = 0.5*(dYG(I,J,bi,bj)+dYG(I,J-1,bi,bj))
+          dxV(i,j,bi,bj) = 0.5 _d 0*(dxG(i,j,bi,bj)+dxG(i-1,j,bi,bj))
+          dyU(i,j,bi,bj) = 0.5 _d 0*(dyG(i,j,bi,bj)+dyG(i,j-1,bi,bj))
 C         by averaging (method II)
-c         dXV(I,J,bi,bj) = 0.5*(dXG(I,J,bi,bj)+dXG(I-1,J,bi,bj))
-c         dYU(I,J,bi,bj) = 0.5*(dYC(I,J,bi,bj)+dYC(I-1,J,bi,bj))
+c         dxV(i,j,bi,bj) = 0.5*(dxG(i,j,bi,bj)+dxG(i-1,j,bi,bj))
+c         dyU(i,j,bi,bj) = 0.5*(dyC(i,j,bi,bj)+dyC(i-1,j,bi,bj))
          ENDDO
         ENDDO
 
 C--     Calculate vertical face area
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          rA (I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
-          rAw(I,J,bi,bj) = dxC(I,J,bi,bj)*dyG(I,J,bi,bj)
-          rAs(I,J,bi,bj) = dxG(I,J,bi,bj)*dyC(I,J,bi,bj)
-          rAz(I,J,bi,bj) = dxV(I,J,bi,bj)*dyU(I,J,bi,bj)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          rA (i,j,bi,bj) = dxF(i,j,bi,bj)*dyF(i,j,bi,bj)
+          rAw(i,j,bi,bj) = dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
+          rAs(i,j,bi,bj) = dxG(i,j,bi,bj)*dyC(i,j,bi,bj)
+          rAz(i,j,bi,bj) = dxV(i,j,bi,bj)*dyU(i,j,bi,bj)
 C--     Set trigonometric terms & grid orientation:
-          tanPhiAtU(I,J,bi,bj) = 0.
-          tanPhiAtV(I,J,bi,bj) = 0.
-          angleCosC(I,J,bi,bj) = 1.
-          angleSinC(I,J,bi,bj) = 0.
+          tanPhiAtU(i,j,bi,bj) = 0.
+          tanPhiAtV(i,j,bi,bj) = 0.
+          angleCosC(i,j,bi,bj) = 1.
+          angleSinC(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
 
 C--     Cosine(lat) scaling
-        DO J=1-OLy,sNy+OLy
-         cosFacU(J,bi,bj)=1.
-         cosFacV(J,bi,bj)=1.
-         sqcosFacU(J,bi,bj)=1.
-         sqcosFacV(J,bi,bj)=1.
+        DO j=1-OLy,sNy+OLy
+         cosFacU(j,bi,bj)=1.
+         cosFacV(j,bi,bj)=1.
+         sqcosFacU(j,bi,bj)=1.
+         sqcosFacV(j,bi,bj)=1.
         ENDDO
 
 C--   end bi,bj loops

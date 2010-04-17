@@ -1,26 +1,28 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.5 2009/01/27 15:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.6 2010/04/17 18:25:12 jmc Exp $
 C $Name:  $
 
+c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INI_CYLINDER_GRID
 C     !INTERFACE:
       SUBROUTINE INI_CYLINDER_GRID( myThid )
+
 C     !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE INI_CYLINDER_GRID
-C     | o Initialise model coordinate system arrays              |
-C     |==========================================================|
-C     | These arrays are used throughout the code in evaluating  |
-C     | gradients, integrals and spatial avarages. This routine  |
-C     | is called separately by each thread and initialise only  |
-C     | the region of the domain it is "responsible" for.        |
-C     | Under the spherical polar grid mode primitive distances  |
-C     | in X is in degrees and Y in meters.                      |
-C     | Distance in Z are in m or Pa                             |
-C     | depending on the vertical gridding mode.                 |
-C     \==========================================================/
+C     | o Initialise model coordinate system arrays
+C     *==========================================================*
+C     | These arrays are used throughout the code in evaluating
+C     | gradients, integrals and spatial avarages. This routine
+C     | is called separately by each thread and initialise only
+C     | the region of the domain it is "responsible" for.
+C     | Under the spherical polar grid mode primitive distances
+C     | in X is in degrees and Y in meters.
+C     | Distance in Z are in m or Pa
+C     | depending on the vertical gridding mode.
+C     *==========================================================*
 C     \ev
 
 C     !USES:
@@ -30,34 +32,27 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+c#ifdef ALLOW_EXCH2
+c#include "W2_EXCH2_SIZE.h"
+c#include "W2_EXCH2_TOPOLOGY.h"
+c#include "W2_EXCH2_PARAMS.h"
+c#endif /* ALLOW_EXCH2 */
 
 C    !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_CYLINDER
+C     myThid  :: my Thread Id number
       INTEGER myThid
-CEndOfInterface
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     xG, yG - Global coordinate location.
-C     xBase  - South-west corner location for process.
-C     yBase
-C     zUpper - Work arrays for upper and lower
-C     zLower   cell-face heights.
-C     phi    - Temporary scalar
-C     iG, jG - Global coordinate index. Usually used to hold
-C              the south-west global coordinate of a tile.
-C     bi,bj  - Loop counters
-C     zUpper - Temporary arrays holding z coordinates of
-C     zLower   upper and lower faces.
-C     xBase  - Lower coordinate for this threads cells
-C     yBase
-C     lat, latN, - Temporary variables used to hold latitude
-C     latS         values.
-C     I,J,K
+C     xG0,yG0 :: coordinate of South-West tile-corner
+C     iG, jG  :: Global coordinate index. Usually used to hold
+C             :: the south-west global coordinate of a tile.
+C     bi,bj   :: tile indices
+C     i, j    :: loop counters
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I,  J
+      INTEGER i, j
       _RL dtheta, thisRad, xG0, yG0
 
 C     "Long" real for temporary coordinate calculation
@@ -78,17 +73,19 @@ C     Yes, I can explain this since I put this modification to work
 C     with small domain (where Oly > Ny, as for instance, zonal-average
 C     case):
 C     This has no effect on the acuracy of the evaluation of iGl(I,bi)
-C     and jGl(J,bj) since we take mod(a+OLx*Nx,Nx) and mod(b+OLy*Ny,Ny).
+C     and jGl(j,bj) since we take mod(a+OLx*Nx,Nx) and mod(b+OLy*Ny,Ny).
 C     But in case a or b is negative, then the FORTRAN function "mod"
 C     does not return the matematical value of the "modulus" function,
 C     and this is not good for your purpose.
 C     This is why I add +OLx*Nx and +OLy*Ny to be sure that the 1rst
 C     argument of the mod function is positive.
       INTEGER iGl,jGl
-      iGl(I,bi) = 1+mod(myXGlobalLo-1+(bi-1)*sNx+I+Olx*Nx-1,Nx)
-      jGl(J,bj) = 1+mod(myYGlobalLo-1+(bj-1)*sNy+J+Oly*Ny-1,Ny)
+      iGl(i,bi) = 1+MOD(myXGlobalLo-1+(bi-1)*sNx+i+Olx*Nx-1,Nx)
+      jGl(j,bj) = 1+MOD(myYGlobalLo-1+(bj-1)*sNy+j+Oly*Ny-1,Ny)
+c#ifdef ALLOW_EXCH2
+c      INTEGER tN
+c#endif /* ALLOW_EXCH2 */
 CEOP
-
 
 C     For each tile ...
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -97,6 +94,14 @@ C     For each tile ...
 C--     "Global" index (place holder)
         jG = myYGlobalLo + (bj-1)*sNy
         iG = myXGlobalLo + (bi-1)*sNx
+c#ifdef ALLOW_EXCH2
+c        IF ( W2_useE2ioLayOut ) THEN
+cC- note: does not work for non-uniform delX or delY
+c          tN = W2_myTileList(bi,bj)
+c          iG = exch2_txGlobalo(tN)
+c          jG = exch2_tyGlobalo(tN)
+c        ENDIF
+c#endif /* ALLOW_EXCH2 */
 
 C--   First find coordinate of tile corner (meaning outer corner of halo)
         xG0 = xgOrigin
@@ -119,121 +124,119 @@ C       Back-step to the outer grid-line of the "halo" region
         ENDDO
 
 C--     Calculate coordinates of cell corners for N+1 grid-lines
-        DO J=1-Oly,sNy+Oly +1
-         xGloc(1-Olx,J) = xG0
-         DO I=1-Olx,sNx+Olx
-          xGloc(I+1,J) = xGloc(I,J) + delX( iGl(I,bi) )
+        DO j=1-Oly,sNy+Oly +1
+         xGloc(1-Olx,j) = xG0
+         DO i=1-Olx,sNx+Olx
+          xGloc(i+1,j) = xGloc(i,j) + delX( iGl(i,bi) )
          ENDDO
         ENDDO
-        DO I=1-Olx,sNx+Olx +1
-         yGloc(I,1-Oly) = yG0
-         DO J=1-Oly,sNy+Oly
-          yGloc(I,J+1) = yGloc(I,J) + delY( jGl(J,bj) )
+        DO i=1-Olx,sNx+Olx +1
+         yGloc(i,1-Oly) = yG0
+         DO j=1-Oly,sNy+Oly
+          yGloc(i,j+1) = yGloc(i,j) + delY( jGl(j,bj) )
          ENDDO
         ENDDO
 
 C--     Make a permanent copy of [xGloc,yGloc] in [xG,yG]
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          xG(I,J,bi,bj) = xGloc(I,J)
-          yG(I,J,bi,bj) = yGloc(I,J)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          xG(i,j,bi,bj) = xGloc(i,j)
+          yG(i,j,bi,bj) = yGloc(i,j)
          ENDDO
         ENDDO
 
 C--     Calculate [xC,yC], coordinates of cell centers
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 C         by averaging
-          xC(I,J,bi,bj) = 0.25*(
-     &     xGloc(I,J)+xGloc(I+1,J)+xGloc(I,J+1)+xGloc(I+1,J+1) )
-          yC(I,J,bi,bj) = 0.25*(
-     &     yGloc(I,J)+yGloc(I+1,J)+yGloc(I,J+1)+yGloc(I+1,J+1) )
+          xC(i,j,bi,bj) = 0.25 _d 0*(
+     &     xGloc(i,j)+xGloc(i+1,j)+xGloc(i,j+1)+xGloc(i+1,j+1) )
+          yC(i,j,bi,bj) = 0.25 _d 0*(
+     &     yGloc(i,j)+yGloc(i+1,j)+yGloc(i,j+1)+yGloc(i+1,j+1) )
          ENDDO
         ENDDO
 
 C--     Calculate [dxF,dyF], lengths between cell faces (through center)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          thisRad = yC(I,J,bi,bj)
-          dtheta = delX( iGl(I,bi) )
-          dXF(I,J,bi,bj) = thisRad*dtheta*deg2rad
-          dYF(I,J,bi,bj) = delY( jGl(J,bj) )
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          thisRad = yC(i,j,bi,bj)
+          dtheta = delX( iGl(i,bi) )
+          dxF(i,j,bi,bj) = thisRad*dtheta*deg2rad
+          dyF(i,j,bi,bj) = delY( jGl(j,bj) )
          ENDDO
         ENDDO
 
 C--     Calculate [dxG,dyG], lengths along cell boundaries
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          thisRad = 0.5*(yGloc(I,J)+yGloc(I+1,J))
-          dtheta = delX( iGl(I,bi) )
-          dXG(I,J,bi,bj) = thisRad*dtheta*deg2rad
-          dYG(I,J,bi,bj) = delY( jGl(J,bj) )
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          thisRad = 0.5 _d 0*(yGloc(i,j)+yGloc(i+1,j))
+          dtheta = delX( iGl(i,bi) )
+          dxG(i,j,bi,bj) = thisRad*dtheta*deg2rad
+          dyG(i,j,bi,bj) = delY( jGl(j,bj) )
          ENDDO
         ENDDO
 
 C--     The following arrays are not defined in some parts of the halo
 C       region. We set them to zero here for safety. If they are ever
 C       referred to, especially in the denominator then it is a mistake!
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          dXC(I,J,bi,bj) = 0.
-          dYC(I,J,bi,bj) = 0.
-          dXV(I,J,bi,bj) = 0.
-          dYU(I,J,bi,bj) = 0.
-          rAw(I,J,bi,bj) = 0.
-          rAs(I,J,bi,bj) = 0.
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dxC(i,j,bi,bj) = 0.
+          dyC(i,j,bi,bj) = 0.
+          dxV(i,j,bi,bj) = 0.
+          dyU(i,j,bi,bj) = 0.
+          rAw(i,j,bi,bj) = 0.
+          rAs(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
 
 C--     Calculate [dxC], zonal length between cell centers
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx+1,sNx+Olx ! NOTE range
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx ! NOTE range
 C         by averaging
-          dXC(I,J,bi,bj) = 0.5D0*(dXF(I,J,bi,bj)+dXF(I-1,J,bi,bj))
+          dxC(i,j,bi,bj) = 0.5 _d 0*(dxF(i,j,bi,bj)+dxF(i-1,j,bi,bj))
          ENDDO
         ENDDO
 
 C--     Calculate [dyC], meridional length between cell centers
-        DO J=1-Oly+1,sNy+Oly ! NOTE range
-         DO I=1-Olx,sNx+Olx
+        DO j=1-Oly+1,sNy+Oly ! NOTE range
+         DO i=1-Olx,sNx+Olx
 C         by averaging
-          dYC(I,J,bi,bj) = 0.5*(dYF(I,J,bi,bj)+dYF(I,J-1,bi,bj))
+          dyC(i,j,bi,bj) = 0.5 _d 0*(dyF(i,j,bi,bj)+dyF(i,j-1,bi,bj))
          ENDDO
         ENDDO
 
 C--     Calculate [dxV,dyU], length between velocity points (through corners)
-        DO J=1-Oly+1,sNy+Oly ! NOTE range
-         DO I=1-Olx+1,sNx+Olx ! NOTE range
+        DO j=1-Oly+1,sNy+Oly ! NOTE range
+         DO i=1-Olx+1,sNx+Olx ! NOTE range
 C         by averaging (method I)
-          dXV(I,J,bi,bj) = 0.5*(dXG(I,J,bi,bj)+dXG(I-1,J,bi,bj))
-          dYU(I,J,bi,bj) = 0.5*(dYG(I,J,bi,bj)+dYG(I,J-1,bi,bj))
+          dxV(i,j,bi,bj) = 0.5 _d 0*(dxG(i,j,bi,bj)+dxG(i-1,j,bi,bj))
+          dyU(i,j,bi,bj) = 0.5 _d 0*(dyG(i,j,bi,bj)+dyG(i,j-1,bi,bj))
          ENDDO
         ENDDO
 
-
-
 C--     Calculate vertical face area
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 C-      All r(dr)(dtheta)
-          rA (I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
-          rAw(I,J,bi,bj) = dxC(I,J,bi,bj)*dyG(I,J,bi,bj)
-          rAs(I,J,bi,bj) = dxG(I,J,bi,bj)*dyC(I,J,bi,bj)
-          rAz(I,J,bi,bj) = dxV(I,J,bi,bj)*dyU(I,J,bi,bj)
+          rA (i,j,bi,bj) = dxF(i,j,bi,bj)*dyF(i,j,bi,bj)
+          rAw(i,j,bi,bj) = dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
+          rAs(i,j,bi,bj) = dxG(i,j,bi,bj)*dyC(i,j,bi,bj)
+          rAz(i,j,bi,bj) = dxV(i,j,bi,bj)*dyU(i,j,bi,bj)
 C--     Set trigonometric terms & grid orientation:
-          tanPhiAtU(I,J,bi,bj) = 0.
-          tanPhiAtV(I,J,bi,bj) = 0.
-          angleCosC(I,J,bi,bj) = 1.
-          angleSinC(I,J,bi,bj) = 0.
+          tanPhiAtU(i,j,bi,bj) = 0.
+          tanPhiAtV(i,j,bi,bj) = 0.
+          angleCosC(i,j,bi,bj) = 1.
+          angleSinC(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
 
 C--     Cosine(lat) scaling
-        DO J=1-OLy,sNy+OLy
-         cosFacU(J,bi,bj)=1.
-         cosFacV(J,bi,bj)=1.
-         sqcosFacU(J,bi,bj)=1.
-         sqcosFacV(J,bi,bj)=1.
+        DO j=1-OLy,sNy+OLy
+         cosFacU(j,bi,bj)=1.
+         cosFacV(j,bi,bj)=1.
+         sqcosFacU(j,bi,bj)=1.
+         sqcosFacV(j,bi,bj)=1.
         ENDDO
 
        ENDDO ! bi
