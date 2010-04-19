@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.flow,v 1.7 2010/01/26 01:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.flow,v 1.8 2010/04/19 15:08:58 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -12,6 +12,12 @@ CADJ SUBROUTINE MONITOR ACTIVE  =
 CADJ SUBROUTINE MONITOR INFLUENCED
 CADJ SUBROUTINE MONITOR ADNAME  = admonitor
 CADJ SUBROUTINE MONITOR FTLNAME = g_monitor
+
+C----------------------------------------
+C subroutine  MON_SET_PREF
+C----------------------------------------
+CADJ SUBROUTINE MON_SET_PREF INPUT  = 1,2
+CADJ SUBROUTINE MON_SET_PREF OUTPUT =
 
 C----------------------------------------
 C subroutine  MON_PRINTSTATS_RS
