@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.31 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.32 2010/04/19 15:10:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -202,6 +202,7 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
 
       ENDIF
 
+      CALL MON_SET_PREF( mon_string_none, myThid )
       CALL MON_PRINTSTATS_RS(1,fCori,'fCori',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriG,'fCoriG',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriCos,'fCoriCos',myThid)
