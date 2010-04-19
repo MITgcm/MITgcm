@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.20 2009/10/15 05:21:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.21 2010/04/19 15:21:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,9 @@ c     == global variables ==
 #ifdef ALLOW_DIC
 cph-- quickly for testing
 # include "DIC_COST.h"
+#endif
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
 #endif
 
 c     == routine arguments ==
@@ -145,9 +148,14 @@ c--   averaged fields in reverse checkpointing loops
       dumpFreq    = 0.
       pChkptFreq  = 0.
       monitorFreq = 0.
+      useDiagnostics = .FALSE.
+#ifdef ALLOW_MNC
+      monitor_mnc=.FALSE.
+      snapshot_mnc=.FALSE.
+      timeave_mnc=.FALSE.
+#endif
 
 #endif /* ALLOW_COST */
 
       return
       end
-
