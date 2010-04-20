@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.7 2009/04/28 17:55:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.8 2010/04/20 22:10:16 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
-
+#define ORIGINAL_COST_SSH_MEAN
 
       subroutine cost_ssh_mean(
      I                     psmean, offset
@@ -92,8 +92,9 @@ cph)
 #endif
 
       _RL diff
-      Real*8 sumc
+      _RL sumc
       character*(max_len_mbuf) msgbuf
+      _RL sumC0, sumC1, sumC2
 
 c     == end of interface ==
 
@@ -219,7 +220,7 @@ C--   Compute the cost function for the mean SSH.
 
       _BARRIER
 
-#else
+#else /* else ALLOW_EGM96_ERROR_COV */
 
 c--   Compute cost function for SSH by using the diagonal
 c--   of the error covariance only.
@@ -228,6 +229,7 @@ c--   Note: wp is assumed to include latitude dependence
 c--         of error due to meridian convergence;
 c--         --> no weighting by cosphi.
 
+#ifdef ORIGINAL_COST_SSH_MEAN
       sumc = 0.
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -245,16 +247,54 @@ c--         --> no weighting by cosphi.
         enddo
       enddo
 
+c--   Do the global summation.
+      _GLOBAL_SUM_RL( sumc, mythid )
+      _GLOBAL_SUM_RL( num_hmean, mythid )
+      costmean = sumc
+
+#else /* ORIGINAL_COST_SSH_MEAN */
+C-    Expand explicitly cost expression as quadratic function of "offset"
+C     to avoid problems with adjoint of global_sum function.
+C     Because of different truncation, expect also slight difference on 1 proc.
+      sumC0 = 0.
+      sumC1 = 0.
+      sumC2 = 0.
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              diff = psmean(i,j,bi,bj) - tpmean(i,j,bi,bj)
+              sumC0 = sumC0 + wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+              sumC1 = sumC1 + diff
+     &                      * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+              sumC2 = sumC2 + diff*diff
+     &                      * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+              if ( wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj) .ne. 0. )
+     &            num_hmean = num_hmean + 1. _d 0
+              diagnosfld(i,j,bi,bj) =
+     &          ( diff*diff + 2. _d 0*offset*diff + offset*offset )
+     &                      * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+
+C--   Do the global summation.
+      _GLOBAL_SUM_RL( sumC0, mythid )
+      _GLOBAL_SUM_RL( sumC1, mythid )
+      _GLOBAL_SUM_RL( sumC2, mythid )
+      _GLOBAL_SUM_RL( num_hmean, mythid )
+
+      costmean = sumC2 + 2. _d 0*offset*sumC1 + offset*offset*sumC0
+
+#endif /* else ORIGINAL_COST_SSH_MEAN */
+
 cph(
       CALL WRITE_FLD_XY_RL( 'DiagnosSSHmean', ' ', diagnosfld,
      &                           optimcycle, mythid )
 cph)
 
-c--   Do the global summation.
-      CALL GLOBAL_SUM_R8( sumc, mythid )
-      _GLOBAL_SUM_RL( num_hmean, mythid )
-      costmean = sumc
+#endif /* else ALLOW_EGM96_ERROR_COV */
 
-#endif
-
+      return
       end
