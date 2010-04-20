@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.6 2010/03/19 22:04:53 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.7 2010/04/20 20:13:27 jmc Exp $
 #  $Name:  $
 
 # Adapted from linux_amd64_ifort_generic_mpi
@@ -56,7 +56,7 @@ F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 OMPFLAG='-openmp'
 
-NOOPTFLAGS='-O0 -g -m64 -fPIC'
+NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
 INCLUDEDIRS=''
@@ -80,6 +80,7 @@ else
 #   for automatic testing with testreport (but no relation with IEEE arithmetic):
     FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
     FOPTIM="$FOPTIM -noalign -g -traceback"
+    NOOPTFILES='ad_taf_output.f'
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
