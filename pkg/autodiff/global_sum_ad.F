@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.8 2009/06/10 03:53:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.9 2010/04/22 22:23:37 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -60,6 +60,7 @@ C     mpiRC  :: MPI return code
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -80,6 +81,25 @@ C--   broadcast to all processes
       ENDIF
 #endif
 #endif /*  ALLOW_USE_MPI */
+
+C---- Testing stage: print a warning (both to std err & outp) when
+C     current Proc input value is different from Proc-0 value
+      IF ( tmp.NE.adsumPhi ) THEN
+C-    might need to improve this test if some MPI truncation happen
+        WRITE(msgBuf,'(A,1PE22.14)')
+     &    'GLOBAL_ADSUM_R4: ** WARNING ** input =', adsumPhi
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,1PE22.14)')
+     &    'GLOBAL_ADSUM_R4: ** WARNING ** output=', tmp
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+C----
 
       DO I=1,nThreads
          adphi(1,I) = tmp
@@ -146,6 +166,7 @@ C     mpiRC  :: MPI return code
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -166,6 +187,25 @@ C--   broadcast to all processes
       ENDIF
 #endif
 #endif /*  ALLOW_USE_MPI */
+
+C---- Testing stage: print a warning (both to std err & outp) when
+C     current Proc input value is different from Proc-0 value
+      IF ( tmp.NE.adsumPhi ) THEN
+C-    might need to improve this test if some MPI truncation happen
+        WRITE(msgBuf,'(A,1PE22.14)')
+     &    'GLOBAL_ADSUM_R8: ** WARNING ** input =', adsumPhi
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,1PE22.14)')
+     &    'GLOBAL_ADSUM_R8: ** WARNING ** output=', tmp
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+C----
 
       DO I=1,nThreads
          adphi(1,I) = tmp

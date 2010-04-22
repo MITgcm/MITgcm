@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_tile_ad.F,v 1.2 2009/06/10 03:49:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_tile_ad.F,v 1.3 2010/04/22 22:23:37 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -56,6 +56,7 @@ C     mpiRC  :: MPI return code
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -76,10 +77,29 @@ C--   broadcast to all processes
 #endif
 #endif /*  ALLOW_USE_MPI */
 
+C---- Testing stage: print a warning (both to std err & outp) when
+C     current Proc input value is different from Proc-0 value
+      IF ( tmp.NE.adsumPhi ) THEN
+C-    might need to improve this test if some MPI truncation happen
+        WRITE(msgBuf,'(A,1PE22.14)')
+     &    'GLOBAL_ADSUM_TILE_RL: ** WARNING ** input =', adsumPhi
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,1PE22.14)')
+     &    'GLOBAL_ADSUM_TILE_RL: ** WARNING ** output=', tmp
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+C----
+
       phiGSR8(1,0) = tmp
 
       _END_MASTER( myThid )
-C--
+
       _BARRIER
 
 C--   every thread takes its adjoint sum
