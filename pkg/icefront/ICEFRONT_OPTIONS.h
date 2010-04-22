@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT_OPTIONS.h,v 1.2 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT_OPTIONS.h,v 1.3 2010/04/22 18:24:44 yunx Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,6 +16,8 @@ C     \==========================================================/
 #ifdef ALLOW_ICEFRONT
 
 #include "CPP_OPTIONS.h"
+
+#undef ALLOW_SUBGLACIAL_RUNOFF
 
 #endif /* ALLOW_ICEFRONT */
 #endif /* ICEFRONT_OPTIONS_H */
