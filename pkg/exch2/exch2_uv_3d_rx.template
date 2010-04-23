@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.7 2009/06/28 00:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.8 2010/04/23 20:21:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -18,7 +18,7 @@ C     *==========================================================*
 C     | SUBROUTINE EXCH2_UV_3D_RX
 C     | o Handle exchanges for _RX, 3-dimensional vector arrays.
 C     *==========================================================*
-C     | Vector arrays need to be rotated and interchaged for
+C     | Vector arrays need to be rotated and interchanged for
 C     | exchange operations on some grids. This driver routine
 C     | branches to support this.
 C     *==========================================================*

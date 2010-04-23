@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.10 2009/05/16 13:34:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.11 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -35,7 +35,7 @@ C--
 C     W2_oUnit    :: output fortran Unit for printing Std messages
 C     W2_printMsg :: select option for information messages printing
 C             < 0 :: open and print to "w2_tile_topology" log file
-C             = 0 :: print the minimun, to StdOut
+C             = 0 :: print the minimum, to StdOut
 C             = 1 :: no duplicated print from different processes (only Master)
 C             = 2 :: all processes do print (used to check).
       INTEGER preDefTopol
@@ -88,7 +88,7 @@ C       = XX.2 : to Southern.E, XX.3 = Eastern.E, XX.4 = Western.E of face "XX".
       Real*4  facet_link( 4, W2_maxNbFacets )
       COMMON /W2_EXCH2_PARM_R/ facet_link
 
-C--   COMMON /EXCH2_FILLVAL_RX/ real type filling vallue used by EXCH2
+C--   COMMON /EXCH2_FILLVAL_RX/ real type filling value used by EXCH2
 C     e2FillValue_RX :: filling value for null regions (facet-corner
 C                    :: halo regions)
       _RL e2FillValue_RL

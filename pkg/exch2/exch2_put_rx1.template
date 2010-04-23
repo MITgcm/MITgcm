@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_put_rx1.template,v 1.1 2009/05/30 21:18:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_put_rx1.template,v 1.2 2010/04/23 20:21:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -64,7 +64,7 @@ C                   :: coordinate access to e2Bufr1_RX or to regulate message
 C                   :: buffering. In PUT communication sender will increment
 C                   :: handle entry once data is ready in buffer. Receiver will
 C                   :: decrement handle once data is consumed from buffer.
-C                   :: For MPI MSG communication MPI_Wait uses hanlde to check
+C                   :: For MPI MSG communication MPI_Wait uses handle to check
 C                   :: Isend has cleared. This is done in routine after receives.
 C     commSetting   :: Mode of communication used to exchange with this neighbor
 C     myThid        :: my Thread Id. number

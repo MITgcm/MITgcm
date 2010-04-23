@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.6 2009/06/28 00:58:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.7 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -14,7 +14,7 @@ C     *==========================================================*
 C     | 1rst part holds the full topology structure (same for all
 C     |  process) and is independent of tile-processor repartition
 C     |  (needs W2_EXCH2_SIZE.h to be included before)
-C     | 2nd part (put in this header for convienience) holds
+C     | 2nd part (put in this header for convenience) holds
 C     |   Tile Ids and is function of tile-process repartition
 C     |  (needs SIZE.h to be included before)
 C     *==========================================================*

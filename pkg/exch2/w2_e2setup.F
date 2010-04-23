@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.5 2009/06/18 22:37:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.6 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,7 +18,7 @@ C     Set-up W2_EXCH2 tile topology structures
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #ifdef ALLOW_EXCH2
@@ -36,7 +36,7 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     stdUnit    :: Standard-Output IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER stdUnit

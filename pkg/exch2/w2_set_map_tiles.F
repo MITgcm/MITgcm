@@ -1,8 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.2 2009/06/18 22:37:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
+
+C--  File w2_set_map_tiles.F:
+C--   Contents
+C--   o W2_SET_MAP_TILES :: Set tiles and IO mapping
+C--   o FIND_GCD_N       :: Returns the Greatest Common Divisor
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -17,7 +22,7 @@ C     Set-up tiles mapping and IO global mapping
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "W2_EXCH2_SIZE.h"
@@ -35,12 +40,12 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER tNx, tNy, fNx, fNy, nbPts, fBaseX
       INTEGER nbTx, nbTy
       INTEGER j, ii, k, tId, tx, ty
-      INTEGER divise, nnx(W2_maxNbFacets)
+      INTEGER divide, nnx(W2_maxNbFacets)
       INTEGER errCnt, tCnt
       LOGICAL tileIsActive, prtFlag
 CEOP
@@ -54,7 +59,7 @@ C     Set-up tiles mapping and IO global mapping
 
       tNx = sNx
       tNy = sNy
-C--   Check that tile dims divise facet dims
+C--   Check that tile dims divide facet dims
       errCnt = 0
       tCnt = 0
       nbPts = 0
@@ -103,10 +108,10 @@ C     of all x-size (faster to apply GCD to Nb of Tiles in X):
         DO j=1,nFacets
           nnx(j) = facet_dims(2*j-1)/tNx
         ENDDO
-        divise = FIND_GCD_N( nnx, nFacets)
-        W2_mapIO = divise*tNx
+        divide = FIND_GCD_N( nnx, nFacets)
+        W2_mapIO = divide*tNx
         WRITE(msgBuf,'(A,2(I5,A))') ' W2_mapIO =', W2_mapIO,
-     &                              ' (=', divise, '*sNx)'
+     &                              ' (=', divide, '*sNx)'
         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
 
@@ -191,7 +196,6 @@ C         Compact format: piled in the Y direction
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 CBOP
 C     !ROUTINE: FIND_GCD_N
 
@@ -214,7 +218,7 @@ C     nFLd    :: length of the input integer list.
       INTEGER fldList(nFld)
 
 C     !LOCAL VARIABLES:
-      INTEGER mnFld, divise
+      INTEGER mnFld, divide
       INTEGER j, ii
       LOGICAL flag
       LOGICAL localDBg
@@ -229,7 +233,7 @@ c     PARAMETER ( localDBg = .TRUE. )
       IF (localDBg) WRITE(0,'(A,I8)') 'FIND_GCD_N: mnFld=',mnFld
 
       IF (mnFld.GT.1 ) THEN
-        divise = 1
+        divide = 1
         ii = 2
         DO WHILE ( ii.LE.mnFld )
           IF (localDBg) WRITE(0,'(A,I8)') '     GCD  : try',ii
@@ -238,7 +242,7 @@ c     PARAMETER ( localDBg = .TRUE. )
             flag = flag.AND.(MOD(fldList(j),ii).EQ.0 )
           ENDDO
           IF ( flag ) THEN
-            divise = divise*ii
+            divide = divide*ii
             DO j=1,nFld
               fldList(j) = fldList(j)/ii
             ENDDO
@@ -250,16 +254,16 @@ c     PARAMETER ( localDBg = .TRUE. )
             IF (ii.EQ.4) ii=3
           ENDIF
         ENDDO
-C-    Put back the origninal Nb:
+C-    Put back the original Nb:
         IF (localDBg) WRITE(0,'(10I8)') (fldList(j),j=1,nFld)
         DO j=1,nFld
-          fldList(j) = fldList(j)*divise
+          fldList(j) = fldList(j)*divide
         ENDDO
       ELSE
-        divise = MAX( 0, mnFld )
+        divide = MAX( 0, mnFld )
       ENDIF
 
-      FIND_GCD_N = divise
+      FIND_GCD_N = divide
 
       RETURN
       END

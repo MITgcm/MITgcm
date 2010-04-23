@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_put_rx1.template,v 1.1 2009/05/30 21:18:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_put_rx1.template,v 1.2 2010/04/23 20:21:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -22,13 +22,13 @@ C !INTERFACE:
 
 C !DESCRIPTION:
 C---------------
-C  AD: IMPORTANT: all comments (exept AD:) are taken from the Forward S/R
+C  AD: IMPORTANT: all comments (except AD:) are taken from the Forward S/R
 C  AD: and need to be interpreted in the reverse sense: put <-> get,
 C  AD: send <-> recv, source <-> target ...
 C---------------
 C     Scalar field (1 component) Exchange:
 C     Put into buffer exchanged data from this source tile.
-C     Those data are intedended to fill-in the
+C     Those data are intended to fill-in the
 C     target-neighbour-edge overlap region.
 
 C !USES:
@@ -67,7 +67,7 @@ C                   :: coordinate access to e2Bufr1_RX or to regulate message
 C                   :: buffering. In PUT communication sender will increment
 C                   :: handle entry once data is ready in buffer. Receiver will
 C                   :: decrement handle once data is consumed from buffer.
-C                   :: For MPI MSG communication MPI_Wait uses hanlde to check
+C                   :: For MPI MSG communication MPI_Wait uses handle to check
 C                   :: Isend has cleared. This is done in routine after receives.
 C     commSetting   :: Mode of communication used to exchange with this neighbor
 C     myThid        :: my Thread Id. number
@@ -94,7 +94,7 @@ C                 :: isl etc... source local
 C                 :: isc etc... source canonical
 C     tgT         :: Target tile Id. number
 C     itb, jtb    :: Target local to canonical offsets
-C     iBufr       :: number of buffer elements to transfert
+C     iBufr       :: number of buffer elements to transfer
       INTEGER itl, jtl, ktl
       INTEGER itc, jtc
       INTEGER isc, jsc

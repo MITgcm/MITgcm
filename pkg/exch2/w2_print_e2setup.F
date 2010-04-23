@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_e2setup.F,v 1.2 2009/06/03 19:23:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_e2setup.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -19,7 +19,7 @@ C     with standard Fortran src generated topology.
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "W2_EXCH2_SIZE.h"
@@ -33,7 +33,7 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*1 edge(0:4)
       INTEGER tNx, tNy, fNx, fNy
@@ -154,7 +154,7 @@ c     WRITE(msgBuf,'(2A)') 'W2_SET_MAP_TILES:',
      &       ' tile mapping within facet and global Map:'
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
 
-C--   Check that tile dims divise facet dims
+C--   Check that tile dims divide facet dims
 C--   Check that domain size and (SIZE.h + blankList) match:
 C--   Compact IO map (mostly in Y dir): search for Greatest Common Divisor
 C     of all x-size (faster to apply GCD to Nb of Tiles in X):

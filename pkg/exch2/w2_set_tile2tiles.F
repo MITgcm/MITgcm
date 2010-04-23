@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.2 2009/06/19 03:01:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -17,7 +17,7 @@ C     Set-up tile neighbours and index relations for EXCH2.
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "W2_EXCH2_SIZE.h"
@@ -31,7 +31,7 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf  :: Informational/error meesage buffer
+C     msgBuf  :: Informational/error message buffer
 C     tile_edge2edge(nId,tId) :: Tile edge to edge connection (of tile "tId"
 C                                and neighbour "nId"):
 C                1rst digit gives local tile Edge (10,20,30,40 <==> N,S,E,W)
@@ -215,7 +215,7 @@ C-         end loops on tile indices tx,ty
            ENDDO
 C-        end active connection (it > 0)
           ENDIF
-C-       end internal/external Conection
+C-       end internal/external connection
          ENDIF
 C-      end N,S,E,W Edge loop
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube_ad.template,v 1.8 2009/06/29 23:46:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube_ad.template,v 1.9 2010/04/23 20:21:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -64,7 +64,7 @@ C                   :: coordinate access to e2Bufr1_RX or to regulate message
 C                   :: buffering. In PUT communication sender will increment
 C                   :: handle entry once data is ready in buffer. Receiver will
 C                   :: decrement handle once data is consumed from buffer.
-C                   :: For MPI MSG communication MPI_Wait uses hanlde to check
+C                   :: For MPI MSG communication MPI_Wait uses handle to check
 C                   :: Isend has cleared. This is done in routine after receives.
 C     note: a) current implementation does not use e2_msgHandles for communication
 C              between threads: all-threads barriers are used (see CNH note below).
@@ -161,7 +161,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_USE_MPI
 C  AD: all MPI part is acting on buffer and is identical to forward code,
 C  AD: except a) the buffer level: send from lev.2, receive into lev.1
-C  AD:        b) the length of transfered buffer (<- match the ad_put/ad_get)
+C  AD:        b) the length of transferred buffer (<- match the ad_put/ad_get)
 
       _BEGIN_MASTER( myThid )
 

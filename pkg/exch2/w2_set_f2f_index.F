@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_f2f_index.F,v 1.1 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_f2f_index.F,v 1.2 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -17,7 +17,7 @@ C     Set-up index correspondence matrix for connected Facet-Edges
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "W2_EXCH2_SIZE.h"
@@ -31,7 +31,7 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*1 edge(4)
       INTEGER i, j, ii, jj, i1, j1, k, lo, ll

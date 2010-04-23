@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.10 2009/05/30 21:18:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.11 2010/04/23 20:21:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -31,10 +31,10 @@ C !USES:
 
 C !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     thisTile      :: receiveing tile Id. number
+C     thisTile      :: receiving tile Id. number
 C     nN            :: Neighbour entry that we are processing
 C     e2BufrRecSize :: Number of elements in each entry of e2Bufr1_RX
-C     iBufr         :: number of buffer elements to transfert
+C     iBufr         :: number of buffer elements to transfer
 C     e2Bufr1_RX    :: Data transport buffer array. This array is used in one of
 C                   :: two ways. For PUT communication the entry in the buffer
 C                   :: associated with the source for this receive (determined

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_single_facet.F,v 1.2 2009/06/29 03:14:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_single_facet.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -31,7 +31,7 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER j
 CEOP

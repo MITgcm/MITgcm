@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_bgrid_3d_rx.template,v 1.5 2009/06/28 00:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_bgrid_3d_rx.template,v 1.6 2010/04/23 20:21:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -58,7 +58,7 @@ C     exchWidth[XY] :: Extent of regions that will be exchanged.
 C     uPhiNW,uPhiSE :: temporary array to hold corner value (CS grid)
 C     vPhiNW,vPhiSE :: temporary array to hold corner value (CS grid)
 C     uLoc,vLoc     :: local copy of the vector components with haloes filled.
-C     msgBuf        :: Informational/error meesage buffer
+C     msgBuf        :: Informational/error message buffer
 
       INTEGER local_maxDim
       PARAMETER( local_maxDim = 8*Nr )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_cs6_facets.F,v 1.2 2009/05/26 23:08:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_cs6_facets.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -20,7 +20,7 @@ C     and derive single dimension from "SIZE.h".
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "W2_EXCH2_SIZE.h"
@@ -34,7 +34,7 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*1 edge(4)
       INTEGER i, j, ii, jj, lo, ll

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_myown_facets.F,v 1.1 2009/05/12 19:40:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_myown_facets.F,v 1.2 2010/04/23 20:21:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,7 +19,7 @@ C     User specific version to be modified accordingly
 C     !USES:
       IMPLICIT NONE
 
-C      Tile toplogy settings data structures
+C      Tile topology settings data structures
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #ifdef ALLOW_EXCH2
@@ -38,7 +38,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
