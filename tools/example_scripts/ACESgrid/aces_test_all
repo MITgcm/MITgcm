@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.14 2010/04/01 15:46:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.15 2010/04/23 12:57:40 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -34,6 +34,9 @@ TST_DIR="/home/jmc/test_ACES"
 MPACK="MITgcm_tools/mpack-1.6/mpack"
 SUB_DIR="MITgcm_tools/example_scripts/ACESgrid"
 
+LOG_FIL="$TST_DIR/output/tst_all.log"
+rm -f $LOG_FIL
+
 cd $TST_DIR
 
 nbtst=0
@@ -43,13 +46,13 @@ do
   if test -f $SUB_DIR/aces_test_$sfx ; then
     JOB="tst_"$i
     job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
-    if [ $action -ge 2 ] ; then 
+    if [ $action -ge 2 ] ; then
     #-- to submit job
       if test "x_$job_exist" = x_0 ; then
         $QSUB $SUB_DIR/aces_test_$sfx
         eval M_$i='submitted'
         nbtst=`expr $nbtst + 1`
-      else 
+      else
         echo $JOB
         $QSTAT -a | grep $USER | grep $JOB
         echo 'job already exist => skip this test'
@@ -61,7 +64,7 @@ do
         echo -n 'did not find any job: '
         echo $JOB
         eval M_$i='skipped'
-      else 
+      else
         echo -n 'found a job: '
         echo $JOB
         $QSTAT -a | grep $USER | grep $JOB
@@ -69,13 +72,13 @@ do
         nbtst=`expr $nbtst + 1`
       fi
     fi
-  else 
+  else
     echo 'no file:' aces_test_$sfx 'to submit'
     eval M_$i='skipped'
   fi
 done
 
-if test $action = 2 ; then 
+if test $action = 2 ; then
   count=0
 else
 #date_str=`date +%Y%m%d`"_0"
@@ -109,11 +112,14 @@ else
 fi
 
 #- when it's done, retrieve output and send e-mail
-minutes=0
+minutes=0 ; freq=10
+fsec=`expr $freq \* 60`
+echo "Check every $freq mn for $count test(s) to finish" | tee -a $LOG_FIL
+echo "- start at :" `date` | tee -a $LOG_FIL
 while test $count != 0 ; do
 
-    sleep 600
-    minutes=$(( $minutes + 10 ))
+    sleep $fsec
+    minutes=$(( $minutes + $freq ))
 
     for i in $tst_list ; do
 
@@ -134,20 +140,20 @@ while test $count != 0 ; do
               chk=`echo $tdir | grep -c $curday`
             fi
             if test $chk = '0' ; then
-              echo "tdir='$tdir'"
-              echo "Output do not match, no email sent for $i"
+              echo "tdir='$tdir'" | tee -a $LOG_FIL
+              echo "Output do not match, no email sent for $i" | tee -a $LOG_FIL
             else
               rm -f "/tmp/tr_aces-"$i".tar.gz"
               ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
               if test "x$HAVE_MPACK" = xt ; then
                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
-                echo "Email sent for $i"
+                echo "Email sent for $i at:     " `date` | tee -a $LOG_FIL
               else
-                echo " no email sent for $i (no mpack)"
+                echo " no email sent for $i (no mpack)" | tee -a $LOG_FIL
               fi
             fi
           else
-              echo " no output found for $i"
+              echo " no output found for $i" | tee -a $LOG_FIL
           fi
 #-      restart output:
           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^rs_aces' | head -1`
@@ -159,20 +165,20 @@ while test $count != 0 ; do
               chk=`echo $tdir | grep -c $curday`
             fi
             if test $chk = '0' ; then
-              echo "tdir='$tdir'"
-              echo "Restart output do not match, no email sent for $i"
+              echo "tdir='$tdir'" | tee -a $LOG_FIL
+              echo "Restart output do not match, no email sent for $i" | tee -a $LOG_FIL
             else
               rm -f "/tmp/rs_aces-"$i".tar.gz"
               ( cd $run_dir ; tar -czf "/tmp/rs_aces-"$i".tar.gz" ./$tdir )
               if test "x$HAVE_MPACK" = xt ; then
                 $MPACK -s MITgcm-test -m 3555000 "/tmp/rs_aces-"$i".tar.gz" jmc@mitgcm.org
-                echo "Email sent for $i restart"
+                echo "Email sent for $i restart:" `date` | tee -a $LOG_FIL
               else
-                echo " no email sent for $i restart (no mpack)"
+                echo " no email sent for $i restart (no mpack)" | tee -a $LOG_FIL
               fi
             fi
           else
-              echo " no restart output for $i"
+              echo " no restart output for $i" | tee -a $LOG_FIL
           fi
 #-      record successful sending
           eval M_$i=done
@@ -181,7 +187,7 @@ while test $count != 0 ; do
         fi
       fi
     done
-    
+
     #  "long" queue is 24hrs = 24*60min = 1440min
     if test $minutes -gt 2160 ; then
         hrs=$(( $minutes / 60 ));
@@ -192,7 +198,6 @@ while test $count != 0 ; do
 
 done
 
-echo "All $nbtst tests completed successfully."
-echo -n '-- Finished: '
-date
+echo "Retrieving $nbtst tests finish :" `date` | tee -a $LOG_FIL
+exit 0
 
