@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_flow.F,v 1.2 2008/09/22 17:57:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_flow.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -46,7 +46,7 @@ C     myThid    :: my Thread Id number
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     ijd     :: horiz. index of deep water column receiving dense water flow
 C     ijs     :: horiz. index of shallow water column (e.g. shelf)
 C                from which dense water flow originates
@@ -93,7 +93,7 @@ c     downward = rkSign*NINT(gravitySign)
       DO n=1,DWNSLP_NbSite(bi,bj)
         DWNSLP_deepK(n,bi,bj) = 0
 
-C- detect density dradient along the slope => Downsloping flow
+C- detect density gradient along the slope => Downsloping flow
 
         ijd = DWNSLP_ijDeep(n,bi,bj)
         ijr = DWNSLP_shVsD(n,bi,bj)

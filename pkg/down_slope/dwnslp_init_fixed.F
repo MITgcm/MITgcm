@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_init_fixed.F,v 1.1 2008/08/17 02:01:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_init_fixed.F,v 1.2 2010/04/23 13:19:26 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -35,7 +35,7 @@ C     === Routine arguments ===
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     logFname,STATUS='UNKNOWN')
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(19) logFname

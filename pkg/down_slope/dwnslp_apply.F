@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.2 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -63,7 +63,7 @@ C     myThid     :: my Thread Id. number
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
       INTEGER ij, k
       INTEGER n,ijd,ijs,kshelf
       _RL     gTrLoc(0:Nr)
@@ -135,14 +135,14 @@ C--   Set diagnostic suffix for the current tracer
        DO n=1,DWNSLP_NbSite(bi,bj)
         IF (DWNSLP_deepK(n,bi,bj).NE.0) THEN
 
-C- detect density dradient along the slope => Downsloping flow
+C- detect density gradient along the slope => Downsloping flow
 
          ijd = DWNSLP_ijDeep(n,bi,bj)
          ijs = ijd + DWNSLP_shVsD(n,bi,bj)
 
          kshelf = kBottom(ijs,bi,bj)
          tmpFld = tracer(ijs,kshelf,bi,bj)
-c- downsloping flow (in) & upward return flow :
+C- downsloping flow (in) & upward return flow :
          DO k=DWNSLP_deepK(n,bi,bj),kshelf,upward
           gTrLoc(k) = DWNSLP_Transp(n,bi,bj)
      &       *( tmpFld - tracer(ijd,k,bi,bj) )
@@ -152,7 +152,7 @@ c- downsloping flow (in) & upward return flow :
      &                        + deltaTLev(k)*gTrLoc(k)
           tmpFld = tracer(ijd,k,bi,bj)
          ENDDO
-c- downsloping flow (out) & return flow to the shelf
+C- downsloping flow (out) & return flow to the shelf
           k = kshelf
           gTrLoc(0) = DWNSLP_Transp(n,bi,bj)
      &       *( tmpFld - tracer(ijs,k,bi,bj) )

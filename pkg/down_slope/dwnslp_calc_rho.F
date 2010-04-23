@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.2 2008/09/22 17:57:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -51,7 +51,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     tLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     sLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
