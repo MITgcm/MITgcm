@@ -30,6 +30,14 @@
 	  update links.
         </revremark>
       </revision>
+      <revision>
+	<revnumber>0.03</revnumber>
+	<date>2010-04-25</date>
+	<authorinitials>jmc</authorinitials>
+	<revremark>
+	  Add subsection "Developer settings" (under CVS Repository).
+        </revremark>
+      </revision>
     </revhistory>
 
     <abstract>
@@ -102,6 +110,7 @@
 
   <sect1 id="cvs">
     <title>CVS Repository</title>
+
     <sect2>
       <title>Layout</title>
 
@@ -112,46 +121,48 @@
       others.  The tree currently resembles:</para>
 
 <programlisting>gcmpack/
-  MITgcm-contrib        contributed code
   CS-regrid             goes into utils
-  cvspolicy.html        -save-
-  CVSROOT               -save-
-  development           experimental stuff
-  manual                -save-
-  misc                  -?-
+  CVSROOT               -hidden-
 
   MITgcm                code
-       adjoint                  fold into genmake
-       bin                      stub for ecco build
-       compare01                old from 20th century
-       diags                    timeave f77 in pkgs now
-       doc                      tags -- connect to real docs?
-       eesupp                   cnh?
-       exe                      ecco user build
-    ,- jobs                     runtime shell scripts for 
-    |                             various platforms
-    |  lsopt                    line search
-   m|  model                    main dynamics (core)
-   e|    optimization_drivers   ?
-   r|  optim                    line search interface
-   g|  pkg                      alternate and optional numerics, etc.
-   e|- tools
-   ?|  tutorial_examples        documented tests
-    |                             only populated on release1 branch 
-    |                             and not validated during "testreport"
-    '- utils
-       verification             std tests
+       bin                      empty
+       doc                      basic developpment documentation
+       eesupp                   execution environment support code (wrapper)
+       exe                      empty
+       jobs                     runtime shell scripts for 
+                                  various platforms (not maintained)
+       lsopt                    line search
+       model                    main dynamics (core)
+       optim                    line search interface
+       pkg                      alternate and optional numerics, etc.
+       tools                    scripts to build (and test)
+       utils                    pre/post processing tools (matlab, ..)
+       verification             standard regression tests + examples
+                                      + documented examples (tutorials)
+       tutorial_examples        (only in release1 branch)
 
+  MITgcm_contrib        contributed code
 
-  mitgcmdoc -> manual   -remove-
+  acesgrid.org          build acesgrid web site
+  development           experimental stuff
+  gcmpack		an old back-up copy ?
+  gfd_lab               -?-
+  manual                -save-
+  misc                  -?-
   mitgcm.org            build web site
+  mitgcmdoc  -> manual  -remove-
   models                -?-
   packages              -?-
+  pdfs                  some pdfs
+  planetinabottle.org   unfinished web site
   preprocess            -?-
   tmp                   -?-
+  www.ecco-group.org    build ecco web site ?
 </programlisting>
 
+ <!--
       <para>Efforts are underway to reduce the complexity.</para>
+-->
 
     </sect2>
 
@@ -190,7 +201,7 @@
       <title>Branches</title>
 
       <para>As shown in the online <ulink
-      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/doc/tag-index?view=graph">
+      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/model/src/forward_step.F?view=graph">
       ViewCVS-generated tree</ulink>, the MITgcm codebase is split into to two
       branches or "lines" under which development proceeds.  These two lines are
       referred to as the "MAIN" and "ecco" versions of the code.  While not
@@ -208,7 +219,92 @@
     </sect2>
 
     <sect2>
-      <title>Tagging</title>
+      <title> Developer settings </title>
+
+      <para>CVS is a convenient tool to keep up-to-date a personal copy of the 
+      MITgcm code (see: <ulink url="http://mitgcm.org/public/using_cvs.html"> 
+      using CVS </ulink>). The same tool is used by developers to 
+      incorporate any change into the repository. However, this later
+      function requires specific settings, as detailed here after:</para>
+      <orderedlist>
+	<listitem>
+	  <para> You will need an account (loggin access) to the server 
+           "mitgcm.org" with the proper group setting (e.g.,
+            group "gcmctrb" to add/modify code into MITgcm_contrib).
+            This kind of account is granted only upon well motivated request.
+            The access to the server mitgcm.org is through ssh-key authorization
+            which will need to be set properly on both side (on your local machine
+            and on your server account). You need to be able to
+            to ssh to mitgcm.org (or <filename>ssh MY_USER_NAME@mitgcm.org</filename> 
+            in case of different user-name on both sides) to proceed further.</para>
+	</listitem>
+
+	<listitem>
+	  <para> You need to register to the 
+        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-cvs"> 
+      mitgcm-cvs </ulink> mailing list.
+          This ensures that other developers will receive email notification 
+           when you make changes; you will also receive as well such email 
+           when others make changes to the repository.
+          </para>
+	</listitem>
+
+	<listitem>
+	  <para> It is highly recommended that you register also to the 
+        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-devel"> 
+      mitgcm-devel </ulink> mailing list (expect a short delay for
+       this request to be processed).
+          This list is intended for developer discussions.
+          </para>
+	</listitem>
+
+	<listitem>
+	  <para> The standard anonymous mode (using "cvsanon", as mentionned
+        <ulink url="http://mitgcm.org/public/source_code.html"> 
+      here </ulink>) does not allow check-in ("cvs commit") permission.
+         Instead, you will need to set our CVS environment as follow:</para>
+<screen>
+  $ export CVS_RSH=ssh
+  $ export CVSROOT=':ext:MY_USER_NAME@mitgcm.org:/u/gcmpack'
+</screen>
+	  <para> After downloading a directory, e.g.: <filename>myCopy</filename>,
+           from the CVS repository (e.g.,
+            <filename>MITgcm_contrib/thisPart</filename>) using the command:</para>
+<screen>
+  $ cvs co -P -d myCopy MITgcm_contrib/thisPart
+</screen>
+	  <para> the type of CVS environment which has been used 
+	   is stored in the file <filename>myCopy/CVS/Root</filename> 
+           and makes it difficult to re-use, for cvs-commit purpose, 
+           a cvs local copy (<filename>myCopy</filename>) which was obtained 
+           using the CVS anonymous mode.</para>
+	</listitem>
+
+	<listitem>
+	  <para> At this stage, you should be able to send your modified source 
+          file (e.g., <filename>src_file</filename>) from your local copy directory 
+	  (<filename>myCopy</filename>) to the CVS repository
+          (<filename>MITgcm_contrib/thisPart</filename>) using the command
+          "cvs commit":</para>
+<screen>
+  $ cd myCopy
+  $ cvs -n update        (optional; check if new changes have been made)
+  $ cvs diff src_file    (optional; list your changes)
+  $ cvs commit src_file
+</screen>
+	  <para> It is essential that you provide a short description of the 
+          changes you made to <filename>src_file</filename> as you check-in 
+          this file (the "cvs commit" command automatically opens your standard 
+          editor for this purpose).</para>
+	</listitem>
+
+      </orderedlist>
+
+    </sect2>
+
+    <sect2>
+      <title>Main code development</title>
+      <para>(formerly named "Tagging" ; this section needs an update)</para>
 
       <para>The intent of tagging is to create "known-good" checkpoints that
       developers can use as references.  Traditionally, MITgcm tagging has
@@ -284,108 +380,6 @@ checkpoint50d_pre
     </sect2>
   </sect1>
 
-
-  <sect1 id="documentation">
-    <title>Editing the Documentation</title>
-
-    <sect2 id="documentation_getting">
-      <title>Getting the Docs and Code</title>
-
-      <para>The first step towards editing the documentation is to checkout a
-      copy of code, docs, and build scripts from the CVS server using:</para>
-
-<screen>
-  $ export CVS_RSH=ssh
-  $ export CVSROOT=':ext:NAME@mitgcm.org:/u/gcmpack'
-  $ mkdir scratch
-  $ cvs co -P MITgcm manual mitgcm.org
-</screen>
-
-      <para>These commands extract the necessary information from the CVS server
-      and create a temporary (called <filename>scratch</filename>) directory for
-      the storage of the HTML and other files that will be created.  Please note
-      that you must either create <filename>scratch</filename> as shown or edit
-      the various <filename>Makefile</filename>s and scripts used to create the
-      documentation.</para>
-    </sect2>
-
-    <sect2>
-      <title>Editing the Documentation</title>
-
-      <para>The documentation is contained in the <filename>manual</filename>
-      directory in a raw LaTeX format.  The main document is
-      <filename>manual.tex</filename> and it uses <command>\input{}</command>s
-      to include the chapters and subsections.</para>
-
-      <para>Since the same LaTeX source is used to produce PostScript, PDF, and
-      HTML output, care should be taken to follow certain conventions.  Two of
-      the most important are the usage of the <command>\filelink{}{}</command>
-      and <command>\varlink{}{}</command> commands.  Both of these commands have
-      been defined to simplify the connection between the automatically
-      generated ("code browser") HTML and the HTML version of the manual
-      produced by LaTeX2HTML.  They each take two arguments (corresponding to
-      the contents of the two sets of curly braces) which are the text that the
-      author wishes to be "wrapped" within the link, and a specially formatted
-      link thats relative to the <filename>MITgcm</filename> directory within
-      the CVS tree.</para>
-
-      <para>The result is a command that resembles either</para>
-      
-      <orderedlist>
-	<listitem>
-	  <para>a reference to a variable or subroutine name such as
-	  <command>\varlink{tRef}{tRef}</command>, or </para>
-	</listitem>
-
-	<listitem>
-	  <para>a reference to a file such as
-	      <command>\varlink{tRef}{path-to-the-file_name.F}</command>
-	      where the absolute path to the file is of the form
-	      <filename>/foo/MITgcm/path/to/the/file_name.F</filename></para>
-	      <para>(please note how the leading "/foo/MITgcm"
-	      component of the path is dropped leaving the path
-	      <emphasis>relative</emphasis> to the head of the code
-	      directory and each directory separator "/" is turned
-	      into a "-")</para>
-	</listitem>
-      </orderedlist>
-	  
-
-
-    </sect2>
-
-    <sect2>
-      <title>Building the Documentation</title>
-      
-      <para>Given the directory structure of <xref
-      linkend="documentation_getting">, the entire documentation for the web
-      site can be built using:</para>
-
-<screen>
-  $ cd mitgcm.org/devel/buildweb
-  $ make All
-</screen>
-
-      <para>Which builds the PDF from the LaTeX source, creates the HTML output
-      from the LaTeX source, parses the FORTRAN code base to produce a
-      hyperlinked HTML version of the source, and then determines the
-      cross-linking between the various HTML components.</para>
-
-      <para>If there are no errors, the result of the build process (which can
-      take 30+ minutes on a P4/2.5Ghz) will be contained within a single
-      directory called <filename>scratch/dev_docs</filename>.  This is a freshly
-      built version of the entire on-line users manual.  If you have the correct
-      permissions, it can be directly copied to the web server area:</para>
-
-<screen>
-  $ mv scratch/dev_docs /u/u0/httpd/html
-</screen>
-
-      <para>and the update is complete.</para>
-
-    </sect2>
-
-  </sect1>
 
   <sect1 id="coding">
     <title>Coding for MITgcm</title>
@@ -834,7 +828,7 @@ checkpoint50d_pre
 	the generic fluid dynamical engine.</para>
 
       <para>The MITgcmUV packaging structure is described below using generic
-	package names ${pkg}.  A concrete examples of a package is the code for
+	package names ${pkg}. A concrete examples of a package is the code for
 	implementing GM/Redi mixing. This code uses the package name</para>
 
     </sect2>
@@ -1098,6 +1092,108 @@ Summary
 
   </sect1>
 
+
+  <sect1 id="documentation">
+    <title>Editing the Documentation</title>
+
+    <sect2 id="documentation_getting">
+      <title>Getting the Docs and Code</title>
+
+      <para>The first step towards editing the documentation is to checkout a
+      copy of code, docs, and build scripts from the CVS server using:</para>
+
+<screen>
+  $ export CVS_RSH=ssh
+  $ export CVSROOT=':ext:NAME@mitgcm.org:/u/gcmpack'
+  $ mkdir scratch
+  $ cvs co -P MITgcm manual mitgcm.org
+</screen>
+
+      <para>These commands extract the necessary information from the CVS server
+      and create a temporary (called <filename>scratch</filename>) directory for
+      the storage of the HTML and other files that will be created.  Please note
+      that you must either create <filename>scratch</filename> as shown or edit
+      the various <filename>Makefile</filename>s and scripts used to create the
+      documentation.</para>
+    </sect2>
+
+    <sect2>
+      <title>Editing the Documentation</title>
+
+      <para>The documentation is contained in the <filename>manual</filename>
+      directory in a raw LaTeX format.  The main document is
+      <filename>manual.tex</filename> and it uses <command>\input{}</command>s
+      to include the chapters and subsections.</para>
+
+      <para>Since the same LaTeX source is used to produce PostScript, PDF, and
+      HTML output, care should be taken to follow certain conventions.  Two of
+      the most important are the usage of the <command>\filelink{}{}</command>
+      and <command>\varlink{}{}</command> commands.  Both of these commands have
+      been defined to simplify the connection between the automatically
+      generated ("code browser") HTML and the HTML version of the manual
+      produced by LaTeX2HTML.  They each take two arguments (corresponding to
+      the contents of the two sets of curly braces) which are the text that the
+      author wishes to be "wrapped" within the link, and a specially formatted
+      link thats relative to the <filename>MITgcm</filename> directory within
+      the CVS tree.</para>
+
+      <para>The result is a command that resembles either</para>
+      
+      <orderedlist>
+	<listitem>
+	  <para>a reference to a variable or subroutine name such as
+	  <command>\varlink{tRef}{tRef}</command>, or </para>
+	</listitem>
+
+	<listitem>
+	  <para>a reference to a file such as
+	      <command>\varlink{tRef}{path-to-the-file_name.F}</command>
+	      where the absolute path to the file is of the form
+	      <filename>/foo/MITgcm/path/to/the/file_name.F</filename></para>
+	      <para>(please note how the leading "/foo/MITgcm"
+	      component of the path is dropped leaving the path
+	      <emphasis>relative</emphasis> to the head of the code
+	      directory and each directory separator "/" is turned
+	      into a "-")</para>
+	</listitem>
+      </orderedlist>
+	  
+
+
+    </sect2>
+
+    <sect2>
+      <title>Building the Documentation</title>
+      
+      <para>Given the directory structure of <xref
+      linkend="documentation_getting">, the entire documentation for the web
+      site can be built using:</para>
+
+<screen>
+  $ cd mitgcm.org/devel/buildweb
+  $ make All
+</screen>
+
+      <para>Which builds the PDF from the LaTeX source, creates the HTML output
+      from the LaTeX source, parses the FORTRAN code base to produce a
+      hyperlinked HTML version of the source, and then determines the
+      cross-linking between the various HTML components.</para>
+
+      <para>If there are no errors, the result of the build process (which can
+      take 30+ minutes on a P4/2.5Ghz) will be contained within a single
+      directory called <filename>scratch/dev_docs</filename>.  This is a freshly
+      built version of the entire on-line users manual.  If you have the correct
+      permissions, it can be directly copied to the web server area:</para>
+
+<screen>
+  $ mv scratch/dev_docs /u/u0/httpd/html
+</screen>
+
+      <para>and the update is complete.</para>
+
+    </sect2>
+
+  </sect1>
 
 </article>
 
