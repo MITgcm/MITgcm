@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_geoid.F,v 1.5 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_geoid.F,v 1.6 2010/04/26 18:54:03 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -117,7 +117,7 @@ CADJ loop = parallel
 
       _END_MASTER( mythid )
 
-      call global_sum_r8( sphcost, mythid )
+      _GLOBAL_SUM_RL( sphcost, mythid )
 
 #else  /* ALLOW_EGM96_ERROR_COV */
       sphcost = 0.
@@ -125,5 +125,3 @@ CADJ loop = parallel
 #endif /* ALLOW_EGM96_ERROR_COV */
 
       end
-
-
