@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.59 2010/04/15 00:47:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.60 2010/04/26 03:15:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -92,6 +92,7 @@ c     Surface flux data.
      &         wspeedfile,         swfluxfile,    lwfluxfile,
      &      apressurefile,         swdownfile,    lwdownfile,
      &       areamaskfile,        climsstfile,   climsssfile,
+     &                           climustrfile,  climvstrfile,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -113,7 +114,10 @@ c     Surface flux data.
      &  areamaskstartdate1,areamaskstartdate2,areamaskperiod,
      &  climsststartdate1,  climsststartdate2, climsstperiod,
      &  climsssstartdate1,  climsssstartdate2, climsssperiod,
-     &   areamaskTauRelax, climsstTauRelax, climsssTauRelax
+     & climustrstartdate1, climustrstartdate2,climustrperiod,
+     & climvstrstartdate1, climvstrstartdate2,climvstrperiod,
+     &   areamaskTauRelax,    climsstTauRelax, climsssTauRelax,
+     &   climustrTauRelax,climvstrTauRelax
 
       NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
@@ -125,6 +129,7 @@ c     Surface flux data.
      &  exf_inscal_runoff,  exf_inscal_apressure, exf_inscal_snowprecip,
      &  exf_inscal_swdown,  exf_inscal_lwdown,
      & exf_inscal_climsst, exf_inscal_climsss,
+     & exf_inscal_climustr, exf_inscal_climvstr,
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
@@ -133,6 +138,7 @@ c     Surface flux data.
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
      &  areamaskconst, climsstconst,   climsssconst,
+     &  climustrconst, climvstrconst,
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     aqh_exfremo_intercept, aqh_exfremo_slope,
@@ -153,7 +159,9 @@ c     Surface flux data.
      &     apressure_exfremo_intercept, apressure_exfremo_slope,
      &     areamask_exfremo_intercept, areamask_exfremo_slope,
      &     climsst_exfremo_intercept, climsst_exfremo_slope,
-     &     climsss_exfremo_intercept, climsss_exfremo_slope
+     &     climsss_exfremo_intercept, climsss_exfremo_slope,
+     &     climustr_exfremo_intercept, climustr_exfremo_slope,
+     &     climvstr_exfremo_intercept, climvstr_exfremo_slope
 
       NAMELIST /EXF_NML_04/
      & idummy
@@ -191,7 +199,11 @@ c     Surface flux data.
      & climsst_lon0, climsst_lon_inc, climsst_nlon,
      & climsst_lat0, climsst_lat_inc, climsst_nlat,
      & climsss_lon0, climsss_lon_inc, climsss_nlon,
-     & climsss_lat0, climsss_lat_inc, climsss_nlat
+     & climsss_lat0, climsss_lat_inc, climsss_nlat,
+     & climustr_lon0, climustr_lon_inc, climustr_nlon,
+     & climustr_lat0, climustr_lat_inc, climustr_nlat,
+     & climvstr_lon0, climvstr_lon_inc, climvstr_nlon,
+     & climvstr_lat0, climvstr_lat_inc, climvstr_nlat
 #endif
 
       NAMELIST /EXF_NML_OBCS/
@@ -413,6 +425,22 @@ c     Calendar data.
       climsss_exfremo_intercept = 0.0 _d 0
       climsss_exfremo_slope = 0.0 _d 0
 
+      climustrstartdate1  = 0
+      climustrstartdate2  = 0
+      climustrperiod      = 0
+      climustrTauRelax    = 0.0 _d 0
+      climustrconst         = 0.0 _d 0
+      climustr_exfremo_intercept = 0.0 _d 0
+      climustr_exfremo_slope = 0.0 _d 0
+
+      climvstrstartdate1  = 0
+      climvstrstartdate2  = 0
+      climvstrperiod      = 0
+      climvstrTauRelax    = 0.0 _d 0
+      climvstrconst         = 0.0 _d 0
+      climvstr_exfremo_intercept = 0.0 _d 0
+      climvstr_exfremo_slope = 0.0 _d 0
+
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
       obcsNperiod        = 0.0 _d 0
@@ -469,6 +497,8 @@ c     Data files.
       areamaskfile       = ' '
       climsstfile        = ' '
       climsssfile        = ' '
+      climustrfile       = ' '
+      climvstrfile       = ' '
 
 c     Start dates.
       hfluxstartdate     = 0.
@@ -500,6 +530,8 @@ c     Start dates.
       areamaskstartdate  = 0.
       climsststartdate   = 0.
       climsssstartdate   = 0.
+      climustrstartdate  = 0.
+      climvstrstartdate  = 0.
 
 c     Initialise file type and field precision
       exf_iprec            = 32
@@ -532,6 +564,8 @@ c     Input scaling factors.
       exf_inscal_lwdown    =  1. _d 0
       exf_inscal_climsst   =  1. _d 0
       exf_inscal_climsss   =  1. _d 0
+      exf_inscal_climustr  =  1. _d 0
+      exf_inscal_climvstr  =  1. _d 0
 
 c     Output scaling factors.
       exf_outscal_hflux    =  1. _d 0
@@ -620,7 +654,7 @@ c     Output scaling factors.
       apressure_nlat = Ny
       areamask_nlon  = Nx
       areamask_nlat  = Ny
-      Ustress_lon_inc   = delX(1)
+      ustress_lon_inc   = delX(1)
       vstress_lon_inc   = delX(1)
       hflux_lon_inc     = delX(1)
       sflux_lon_inc     = delX(1)
@@ -649,6 +683,17 @@ c     Output scaling factors.
       climsss_nlat    = Ny
       climsst_lon_inc = delX(1)
       climsss_lon_inc = delX(1)
+      climustr_lon0   = xgOrigin
+      climvstr_lon0   = xgOrigin + delX(1)*exf_half
+      climustr_lat0   = ygOrigin + delY(1)*exf_half
+      climvstr_lat0   = ygOrigin
+      climustr_nlon   = Nx
+      climustr_nlat   = Ny
+      climvstr_nlon   = Nx
+      climvstr_nlat   = Ny
+      climustr_lon_inc   = delX(1)
+      climvstr_lon_inc   = delX(1)
+
       DO i=1,MAX_LAT_INC
          IF (i.LT.Ny) THEN
             vstress_lat_inc(i)   =  delY(i)
@@ -672,6 +717,8 @@ c     Output scaling factors.
             areamask_lat_inc(i)  = (delY(i) + delY(i))*exf_half
             climsst_lat_inc(i)   = (delY(i) + delY(i))*exf_half
             climsss_lat_inc(i)   = (delY(i) + delY(i))*exf_half
+            climustr_lat_inc(i)  = (delY(i) + delY(i))*exf_half
+            climvstr_lat_inc(i)  =  delY(i)
          ELSE
             ustress_lat_inc(i)   = 0.
             vstress_lat_inc(i)   = 0.
@@ -694,6 +741,8 @@ c     Output scaling factors.
             areamask_lat_inc(i)  = 0.
             climsst_lat_inc(i)   = 0.
             climsss_lat_inc(i)   = 0.
+            climustr_lat_inc(i)  = 0.
+            climvstr_lat_inc(i)  = 0.
          ENDIF
       ENDDO
 #endif /* USE_EXF_INTERPOLATION */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.11 2010/04/14 23:02:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.12 2010/04/26 03:15:23 heimbach Exp $
 C $Name:  $
 c
 c
@@ -291,5 +291,18 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL climsss       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climsss0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climsss1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
+#ifdef ALLOW_CLIMSTRESS_RELAXATION
+      COMMON /exf_clim_stress_r/
+     &                        climustr, climvstr,
+     &                        climustr0, climustr1
+     &                        climvstr0, climvstr1
+      _RL climustr       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL climustr0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL climustr1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL climvstr       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL climvstr0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL climvstr1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 

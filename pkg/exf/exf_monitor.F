@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.21 2010/03/16 00:18:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.22 2010/04/26 03:15:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -166,6 +166,12 @@ C       Print some statistics about input forcing fields
 #ifdef ALLOW_CLIMSSS_RELAXATION
         CALL MON_WRITESTATS_RL( 1, climsss, '_climsss',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+#endif
+#ifdef ALLOW_CLIMSTRESS_RELAXATION
+          CALL MON_WRITESTATS_RL( 1, climustr, '_climustr',
+     &             maskInW, maskInW, rAw, drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( 1, climvstr, '_climvstr',
+     &             maskInS, maskInS, rAs, drF, dummyRL, myThid )
 #endif
 
         IF ( MASTER_CPU_IO(myThid) ) THEN

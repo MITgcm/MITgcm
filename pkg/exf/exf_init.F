@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.21 2009/02/16 09:10:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.22 2010/04/26 03:15:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -333,8 +333,29 @@ C--   Initialise to zero intermediate fields (in common block)
      &     mythid )
 #endif
 
-c     Initialize climatological fields
-cph      call exf_clim_init     ( mythid )
+#ifdef ALLOW_CLIMSTRESS_RELAXATION
+      interp_method=12
+      call exf_init_gen (
+     &     climustrfile, climustrperiod, exf_inscal_climustr,
+     &     climustrmask, climustrconst, climustr, climustr0, climustr1,
+#ifdef USE_EXF_INTERPOLATION
+     &     climustr_lon0, climustr_lon_inc, 
+     &     climustr_lat0, climustr_lat_inc,
+     &     climustr_nlon, climustr_nlat, xC, yC, interp_method,
+#endif
+     &     mythid )
+c
+      interp_method=22
+      call exf_init_gen (
+     &     climvstrfile, climvstrperiod, exf_inscal_climvstr,
+     &     climvstrmask, climvstrconst, climvstr, climvstr0, climvstr1,
+#ifdef USE_EXF_INTERPOLATION
+     &     climvstr_lon0, climvstr_lon_inc, 
+     &     climvstr_lat0, climvstr_lat_inc,
+     &     climvstr_nlon, climvstr_nlat, xC, yC, interp_method,
+#endif
+     &     mythid )
+#endif /* CLIMSTRESS_RELAXATION */
 
       RETURN
       END

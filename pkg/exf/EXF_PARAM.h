@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.18 2010/04/15 00:47:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.19 2010/04/26 03:15:23 heimbach Exp $
 C $Name:  $
 c
 c
@@ -261,6 +261,28 @@ c     Calendar data.
       character*1 climsssmask
       parameter(  climsssmask = 's' )
 
+      integer climustrstartdate1
+      integer climustrstartdate2
+      _RL     climustrstartdate
+      _RL     climustrperiod
+      _RL     climustrTauRelax
+      _RL     climustrconst
+      _RL     climustr_exfremo_intercept 
+      _RL     climustr_exfremo_slope
+      character*1 climustrmask
+      parameter(  climustrmask = 'u' )
+
+      integer climvstrstartdate1
+      integer climvstrstartdate2
+      _RL     climvstrstartdate
+      _RL     climvstrperiod
+      _RL     climvstrTauRelax
+      _RL     climvstrconst
+      _RL     climvstr_exfremo_intercept 
+      _RL     climvstr_exfremo_slope
+      character*1 climvstrmask
+      parameter(  climvstrmask = 'v' )
+
 c     freezing temperature is the minimum temperature allowed, used
 c     to reset climatological temperatures fields where they have
 c     values below climtempfreeze
@@ -327,6 +349,8 @@ c     File names.
       character*(128) areamaskfile
       character*(128) climsstfile
       character*(128) climsssfile
+      character*(128) climustrfile
+      character*(128) climvstrfile
 
 C     useExfYearlyFields :: when set, automatically add extension
 C                           _YEAR to input file names; the yearly files need
@@ -364,179 +388,190 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
       logical useExfZenIncoming
 
       common /exf_param_l/
-     &                     useExfYearlyFields, twoDigitYear,
-     &                     useExfCheckRange,
-     &                     useExfZenAlbedo, useExfZenIncoming,
-     &                     readStressOnAgrid, readStressOnCgrid,
-     &                     stressIsOnCgrid, useStabilityFct_overIce,
-     &                     useRelativeWind, noNegativeEvap
+     &       useExfYearlyFields, twoDigitYear,
+     &       useExfCheckRange,
+     &       useExfZenAlbedo, useExfZenIncoming,
+     &       readStressOnAgrid, readStressOnCgrid,
+     &       stressIsOnCgrid, useStabilityFct_overIce,
+     &       useRelativeWind, noNegativeEvap
       common /exf_param_i/
-     &                     select_ZenAlbedo,
-     &                     hfluxstartdate1,   hfluxstartdate2,
-     &                     atempstartdate1,   atempstartdate2,
-     &                     aqhstartdate1,     aqhstartdate2,
-     &                     sfluxstartdate1,   sfluxstartdate2,
-     &                     evapstartdate1,    evapstartdate2,
-     &                     runoffstartdate1,  runoffstartdate2,
-     &                     precipstartdate1,  precipstartdate2,
-     &                     snowprecipstartdate1, snowprecipstartdate2,
-     &                     ustressstartdate1, ustressstartdate2,
-     &                     vstressstartdate1, vstressstartdate2,
-     &                     uwindstartdate1,   uwindstartdate2,
-     &                     vwindstartdate1,   vwindstartdate2,
-     &                     wspeedstartdate1,  wspeedstartdate2,
-     &                     swfluxstartdate1,  swfluxstartdate2,
-     &                     lwfluxstartdate1,  lwfluxstartdate2,
-     &                     swdownstartdate1,  swdownstartdate2,
-     &                     lwdownstartdate1,  lwdownstartdate2,
-     &                     obcsNstartdate1,   obcsNstartdate2,
-     &                     obcsSstartdate1,   obcsSstartdate2,
-     &                     obcsEstartdate1,   obcsEstartdate2,
-     &                     obcsWstartdate1,   obcsWstartdate2,
-     &                     siobNstartdate1,   siobNstartdate2,
-     &                     siobSstartdate1,   siobSstartdate2,
-     &                     siobEstartdate1,   siobEstartdate2,
-     &                     siobWstartdate1,   siobWstartdate2,
-     &                     apressurestartdate1,apressurestartdate2,
-     &                     areamaskstartdate1,areamaskstartdate2
+     &       select_ZenAlbedo,
+     &       hfluxstartdate1,   hfluxstartdate2,
+     &       atempstartdate1,   atempstartdate2,
+     &       aqhstartdate1,     aqhstartdate2,
+     &       sfluxstartdate1,   sfluxstartdate2,
+     &       evapstartdate1,    evapstartdate2,
+     &       runoffstartdate1,  runoffstartdate2,
+     &       precipstartdate1,  precipstartdate2,
+     &       snowprecipstartdate1, snowprecipstartdate2,
+     &       ustressstartdate1, ustressstartdate2,
+     &       vstressstartdate1, vstressstartdate2,
+     &       uwindstartdate1,   uwindstartdate2,
+     &       vwindstartdate1,   vwindstartdate2,
+     &       wspeedstartdate1,  wspeedstartdate2,
+     &       swfluxstartdate1,  swfluxstartdate2,
+     &       lwfluxstartdate1,  lwfluxstartdate2,
+     &       swdownstartdate1,  swdownstartdate2,
+     &       lwdownstartdate1,  lwdownstartdate2,
+     &       obcsNstartdate1,   obcsNstartdate2,
+     &       obcsSstartdate1,   obcsSstartdate2,
+     &       obcsEstartdate1,   obcsEstartdate2,
+     &       obcsWstartdate1,   obcsWstartdate2,
+     &       siobNstartdate1,   siobNstartdate2,
+     &       siobSstartdate1,   siobSstartdate2,
+     &       siobEstartdate1,   siobEstartdate2,
+     &       siobWstartdate1,   siobWstartdate2,
+     &       apressurestartdate1,apressurestartdate2,
+     &       areamaskstartdate1,areamaskstartdate2
 
       common /exf_param_r/
-     &                     year2sec,          windstressmax,
-     &                     repeatPeriod,      exf_monFreq,
-     &                     exf_scal_BulkCdn,
-     &                     hfluxperiod,       hfluxstartdate,
-     &                     atempperiod,       atempstartdate,
-     &                     aqhperiod,         aqhstartdate,
-     &                     sfluxperiod,       sfluxstartdate,
-     &                     evapperiod,        evapstartdate,
-     &                     precipperiod,      precipstartdate,
-     &                     snowprecipperiod,  snowprecipstartdate,
-     &                     runoffperiod,      runoffstartdate,
-     &                     ustressperiod,     ustressstartdate,
-     &                     vstressperiod,     vstressstartdate,
-     &                     uwindperiod,       uwindstartdate,
-     &                     vwindperiod,       vwindstartdate,
-     &                     wspeedperiod,      wspeedstartdate,
-     &                     swfluxperiod,      swfluxstartdate,
-     &                     lwfluxperiod,      lwfluxstartdate,
-     &                     swdownperiod,      swdownstartdate,
-     &                     lwdownperiod,      lwdownstartdate,
-     &                     obcsNperiod,       obcsNstartdate,
-     &                     obcsSperiod,       obcsSstartdate,
-     &                     obcsEperiod,       obcsEstartdate,
-     &                     obcsWperiod,       obcsWstartdate,
-     &                     siobNperiod,       siobNstartdate,
-     &                     siobSperiod,       siobSstartdate,
-     &                     siobEperiod,       siobEstartdate,
-     &                     siobWperiod,       siobWstartdate,
-     &                     apressureperiod,   apressurestartdate,
-     &                     areamaskperiod,   areamaskstartdate,
-     &                     hfluxconst,
-     &                     atempconst,
-     &                     aqhconst,
-     &                     sfluxconst,
-     &                     evapconst,
-     &                     precipconst,
-     &                     snowprecipconst,
-     &                     runoffconst,
-     &                     ustressconst,
-     &                     vstressconst,
-     &                     uwindconst,
-     &                     vwindconst,
-     &                     wspeedconst,
-     &                     swfluxconst,
-     &                     lwfluxconst,
-     &                     swdownconst,
-     &                     lwdownconst,
-     &                     apressureconst,
-     &                     areamaskTauRelax,
-     &                     areamaskconst
+     &       year2sec,          windstressmax,
+     &       repeatPeriod,      exf_monFreq,
+     &       exf_scal_BulkCdn,
+     &       hfluxperiod,       hfluxstartdate,
+     &       atempperiod,       atempstartdate,
+     &       aqhperiod,         aqhstartdate,
+     &       sfluxperiod,       sfluxstartdate,
+     &       evapperiod,        evapstartdate,
+     &       precipperiod,      precipstartdate,
+     &       snowprecipperiod,  snowprecipstartdate,
+     &       runoffperiod,      runoffstartdate,
+     &       ustressperiod,     ustressstartdate,
+     &       vstressperiod,     vstressstartdate,
+     &       uwindperiod,       uwindstartdate,
+     &       vwindperiod,       vwindstartdate,
+     &       wspeedperiod,      wspeedstartdate,
+     &       swfluxperiod,      swfluxstartdate,
+     &       lwfluxperiod,      lwfluxstartdate,
+     &       swdownperiod,      swdownstartdate,
+     &       lwdownperiod,      lwdownstartdate,
+     &       obcsNperiod,       obcsNstartdate,
+     &       obcsSperiod,       obcsSstartdate,
+     &       obcsEperiod,       obcsEstartdate,
+     &       obcsWperiod,       obcsWstartdate,
+     &       siobNperiod,       siobNstartdate,
+     &       siobSperiod,       siobSstartdate,
+     &       siobEperiod,       siobEstartdate,
+     &       siobWperiod,       siobWstartdate,
+     &       apressureperiod,   apressurestartdate,
+     &       areamaskperiod,   areamaskstartdate,
+     &       hfluxconst,
+     &       atempconst,
+     &       aqhconst,
+     &       sfluxconst,
+     &       evapconst,
+     &       precipconst,
+     &       snowprecipconst,
+     &       runoffconst,
+     &       ustressconst,
+     &       vstressconst,
+     &       uwindconst,
+     &       vwindconst,
+     &       wspeedconst,
+     &       swfluxconst,
+     &       lwfluxconst,
+     &       swdownconst,
+     &       lwdownconst,
+     &       apressureconst,
+     &       areamaskTauRelax,
+     &       areamaskconst
 
       common /exf_param_trend_removal/
-     &                     hflux_exfremo_intercept,
-     &                     atemp_exfremo_intercept,
-     &                     aqh_exfremo_intercept,
-     &                     sflux_exfremo_intercept,
-     &                     evap_exfremo_intercept,
-     &                     precip_exfremo_intercept,
-     &                     snowprecip_exfremo_intercept,
-     &                     runoff_exfremo_intercept,
-     &                     ustress_exfremo_intercept,
-     &                     vstress_exfremo_intercept,
-     &                     uwind_exfremo_intercept,
-     &                     vwind_exfremo_intercept,
-     &                     wspeed_exfremo_intercept,
-     &                     swflux_exfremo_intercept,
-     &                     lwflux_exfremo_intercept,
-     &                     swdown_exfremo_intercept,
-     &                     lwdown_exfremo_intercept,
-     &                     apressure_exfremo_intercept,
-     &                     areamask_exfremo_intercept,
-     &                     hflux_exfremo_slope,
-     &                     atemp_exfremo_slope,
-     &                     aqh_exfremo_slope,
-     &                     sflux_exfremo_slope,
-     &                     evap_exfremo_slope,
-     &                     precip_exfremo_slope,
-     &                     snowprecip_exfremo_slope,
-     &                     runoff_exfremo_slope,
-     &                     ustress_exfremo_slope,
-     &                     vstress_exfremo_slope,
-     &                     uwind_exfremo_slope,
-     &                     vwind_exfremo_slope,
-     &                     wspeed_exfremo_slope,
-     &                     swflux_exfremo_slope,
-     &                     lwflux_exfremo_slope,
-     &                     swdown_exfremo_slope,
-     &                     lwdown_exfremo_slope,
-     &                     apressure_exfremo_slope,
-     &                     areamask_exfremo_slope
+     &       hflux_exfremo_intercept,
+     &       atemp_exfremo_intercept,
+     &       aqh_exfremo_intercept,
+     &       sflux_exfremo_intercept,
+     &       evap_exfremo_intercept,
+     &       precip_exfremo_intercept,
+     &       snowprecip_exfremo_intercept,
+     &       runoff_exfremo_intercept,
+     &       ustress_exfremo_intercept,
+     &       vstress_exfremo_intercept,
+     &       uwind_exfremo_intercept,
+     &       vwind_exfremo_intercept,
+     &       wspeed_exfremo_intercept,
+     &       swflux_exfremo_intercept,
+     &       lwflux_exfremo_intercept,
+     &       swdown_exfremo_intercept,
+     &       lwdown_exfremo_intercept,
+     &       apressure_exfremo_intercept,
+     &       areamask_exfremo_intercept,
+     &       hflux_exfremo_slope,
+     &       atemp_exfremo_slope,
+     &       aqh_exfremo_slope,
+     &       sflux_exfremo_slope,
+     &       evap_exfremo_slope,
+     &       precip_exfremo_slope,
+     &       snowprecip_exfremo_slope,
+     &       runoff_exfremo_slope,
+     &       ustress_exfremo_slope,
+     &       vstress_exfremo_slope,
+     &       uwind_exfremo_slope,
+     &       vwind_exfremo_slope,
+     &       wspeed_exfremo_slope,
+     &       swflux_exfremo_slope,
+     &       lwflux_exfremo_slope,
+     &       swdown_exfremo_slope,
+     &       lwdown_exfremo_slope,
+     &       apressure_exfremo_slope,
+     &       areamask_exfremo_slope
 
       common /exf_param_c/
-     &                     hfluxfile,
-     &                     atempfile,
-     &                     aqhfile,
-     &                     sfluxfile,
-     &                     evapfile,
-     &                     precipfile,
-     &                     snowprecipfile,
-     &                     runofffile,
-     &                     ustressfile,
-     &                     vstressfile,
-     &                     uwindfile,
-     &                     vwindfile,
-     &                     wspeedfile,
-     &                     swfluxfile,
-     &                     lwfluxfile,
-     &                     swdownfile,
-     &                     lwdownfile,
-     &                     apressurefile,
-     &                     areamaskfile
+     &       hfluxfile,
+     &       atempfile,
+     &       aqhfile,
+     &       sfluxfile,
+     &       evapfile,
+     &       precipfile,
+     &       snowprecipfile,
+     &       runofffile,
+     &       ustressfile,
+     &       vstressfile,
+     &       uwindfile,
+     &       vwindfile,
+     &       wspeedfile,
+     &       swfluxfile,
+     &       lwfluxfile,
+     &       swdownfile,
+     &       lwdownfile,
+     &       apressurefile,
+     &       areamaskfile
 
       common /exf_clim_i/
-     &                        climsststartdate1,  climsststartdate2,
-     &                        climsssstartdate1,  climsssstartdate2
+     &       climsststartdate1,  climsststartdate2,
+     &       climsssstartdate1,  climsssstartdate2,
+     &       climustrstartdate1,  climustrstartdate2,
+     &       climvstrstartdate1,  climvstrstartdate2
 
       common /exf_clim_c/
-     &                        climsstfile,
-     &                        climsssfile
+     &       climsstfile,
+     &       climsssfile,
+     &       climustrfile,
+     &       climvstrfile
 
       common /exf_clim_r/
-     &                        climtempfreeze,
-     &                        climsstperiod,      climsststartdate,
-     &                        climsssperiod,      climsssstartdate,
-     &                        climsstTauRelax,    climsssTauRelax,
-     &                        climsstconst,       climsssconst,
-     &     climsst_exfremo_intercept, climsst_exfremo_slope,
-     &     climsss_exfremo_intercept, climsss_exfremo_slope,
-     &     exf_inscal_climsst, exf_inscal_climsss
+     &       climtempfreeze,
+     &       climsstperiod,      climsststartdate,
+     &       climsssperiod,      climsssstartdate,
+     &       climustrperiod,     climustrstartdate,
+     &       climvstrperiod,     climvstrstartdate,
+     &       climsstTauRelax,    climsssTauRelax,
+     &       climustrTauRelax,   climvstrTauRelax,
+     &       climsstconst,       climsssconst,
+     &       climustrconst,      climvstrconst,
+     &       climsst_exfremo_intercept, climsst_exfremo_slope,
+     &       climsss_exfremo_intercept, climsss_exfremo_slope,
+     &       climustr_exfremo_intercept, climustr_exfremo_slope,
+     &       climvstr_exfremo_intercept, climvstr_exfremo_slope,
+     &       exf_inscal_climsst, exf_inscal_climsss,
+     &       exf_inscal_climustr, exf_inscal_climvstr
 
 c     file precision and field type
 
       common /exf_param_type/
-     &                     exf_iprec,
-     &                     exf_iprec_obcs,
-     &                     exf_yftype
+     &       exf_iprec,
+     &       exf_iprec_obcs,
+     &       exf_yftype
 
       integer exf_iprec
       integer exf_iprec_obcs
@@ -570,6 +605,8 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_lwdown
       _RL     exf_inscal_climsst
       _RL     exf_inscal_climsss
+      _RL     exf_inscal_climustr
+      _RL     exf_inscal_climvstr
 
       _RL     exf_outscal_hflux
       _RL     exf_outscal_sflux
@@ -749,12 +786,25 @@ c for lat interpolation, arraysize currently set to 2176 max data values
       _RL climsss_lon0, climsss_lon_inc
       _RL climsss_lat0, climsss_lat_inc(MAX_LAT_INC)
       INTEGER climsss_nlon, climsss_nlat
+      _RL climustr_lon0, climustr_lon_inc
+      _RL climustr_lat0, climustr_lat_inc(MAX_LAT_INC)
+      INTEGER climustr_nlon, climustr_nlat
+      _RL climvstr_lon0, climvstr_lon_inc
+      _RL climvstr_lat0, climvstr_lat_inc(MAX_LAT_INC)
+      INTEGER climvstr_nlon, climvstr_nlat
+
       common /exf_clim_interpolation/
      & climsst_lon0, climsst_lon_inc,
      & climsst_lat0, climsst_lat_inc,
      & climsst_nlon, climsst_nlat,
      & climsss_lon0, climsss_lon_inc,
      & climsss_lat0, climsss_lat_inc,
-     & climsss_nlon, climsss_nlat
+     & climsss_nlon, climsss_nlat,
+     & climustr_lon0, climustr_lon_inc,
+     & climustr_lat0, climustr_lat_inc,
+     & climustr_nlon, climustr_nlat,
+     & climvstr_lon0, climvstr_lon_inc,
+     & climvstr_lat0, climvstr_lat_inc,
+     & climvstr_nlon, climvstr_nlat
 
 #endif

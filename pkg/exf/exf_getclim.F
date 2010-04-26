@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.15 2010/04/26 01:49:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.16 2010/04/26 03:15:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -91,7 +91,7 @@ c
         enddo
        enddo
       enddo
-
+c
 c--   Update the tile edges.
       _EXCH_XY_RL(climsst, mythid)
 #endif
@@ -109,7 +109,6 @@ c     Get values of climatological sss fields.
 #endif
      &     mytime, myiter, mythid )
 c
-
 c--   Update the tile edges.
       _EXCH_XY_RL(climsss, mythid)
 #endif
@@ -121,6 +120,29 @@ c--   Update the tile edges.
      &     mytime, myiter, mythid )
 #endif
 
+#ifdef ALLOW_CLIMSTRESS_RELAXATION
+c     Get values of climatological ustr fields.
+      call exf_set_uv (
+     &     climustrfile, climustrstartdate, climustrperiod,
+     &     exf_inscal_climustr, climustr, climustr0, climustr1, 
+     &     climustrmask,
+     &     climustr_lon0, climustr_lon_inc, 
+     &     climustr_lat0, climustr_lat_inc,
+     &     climustr_nlon, climustr_nlat,
+     &     climustr_exfremo_intercept, climustr_exfremo_slope,
+     &     climvstrfile, climvstrstartdate, climvstrperiod,
+     &     exf_inscal_climvstr, climvstr, climvstr0, climvstr1, 
+     &     climvstrmask,
+     &     climvstr_lon0, climvstr_lon_inc, 
+     &     climvstr_lat0, climvstr_lat_inc,
+     &     climvstr_nlon, climvstr_nlat,
+     &     climvstr_exfremo_intercept, climvstr_exfremo_slope,
+     &     mytime, myiter, mythid )
+c
+      CALL EXCH_UV_XY_RL( climustr, climvstr, .TRUE., myThid )
+c
+#endif /* CLIMSTRESS_RELAXATION */
+
 #ifdef ALLOW_BULK_OFFLINE
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -128,6 +150,10 @@ c--   Update the tile edges.
           DO i=1-oLx,sNx+oLx
            theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
            salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
+# ifdef ALLOW_CLIMSTRESS_RELAXATION
+           uvel(i,j,1,bi,bj) = climustr(i,j,bi,bj)
+           vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
+# endif
            if ( myiter .EQ. niter0 ) then
               if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
      &             theta(i,j,1,bi,bj) .EQ. 0. ) then
