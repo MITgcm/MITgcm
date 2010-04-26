@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.5 2010/04/22 18:24:44 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.6 2010/04/26 22:12:29 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -121,17 +121,6 @@ C Now set-up any remaining parameters that result from the input parameters
       IF ( ICEFRONTsaltTransCoeff .EQ. UNSET_RL )
      &     ICEFRONTsaltTransCoeff =
      &     5.05 _d -3 *ICEFRONTheatTransCoeff
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-      IF (SGrunoffFile .NE. ' ') THEN
-C If there is subglacial runoff, addMass (in main code) should be turn on by 
-C setting selectAddFluid = 1; temperature is 0 degree Celsius (UNSET_RL by 
-C default otherwise); salinity is 0 by default, and doesn't need to define here;
-C staggerTimeStep should be set to avoid conflict.
-         selectAddFluid = 1
-         temp_EvPrRn = 0
-         staggerTimeStep = .true.
-      ENDIF
-#endif /* ALLOW_SUBGLACIAL_RUNOFF*/
       _END_MASTER(myThid)
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
