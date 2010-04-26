@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.147 2010/02/17 00:21:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.148 2010/04/26 20:37:02 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -218,6 +218,8 @@ C--   Set (free)surface-related parameters
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL
       salt_EvPrRn = 0.
+      temp_addMass = UNSET_RL
+      salt_addMass = UNSET_RL
       balanceEmPmR        = .FALSE.
       balanceQnet         = .FALSE.
       balancePrintMean    = .FALSE.

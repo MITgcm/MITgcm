@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.56 2010/02/16 21:25:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.57 2010/04/26 20:37:02 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -288,15 +288,14 @@ C--   Forcing term
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
-      IF ( selectAddFluid.NE.0 .AND. temp_EvPrRn.NE.UNSET_RL ) THEN
-C-    for now, use same fluid properties as for E-P-R
+      IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
             gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
      &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( temp_EvPrRn - theta(i,j,kLev,bi,bj) )
+     &          *( temp_addMass - theta(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
@@ -307,7 +306,7 @@ C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
           DO i=1,sNx
             gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
      &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( temp_EvPrRn - tRef(kLev) )
+     &          *( temp_addMass - tRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
@@ -473,15 +472,14 @@ C--   Forcing term
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
-      IF ( selectAddFluid.NE.0 .AND. salt_EvPrRn.NE.UNSET_RL ) THEN
-C-    for now, use same fluid properties as for E-P-R
+      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
             gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
      &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( salt_EvPrRn - salt(i,j,kLev,bi,bj) )
+     &          *( salt_addMass - salt(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
@@ -492,7 +490,7 @@ C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
           DO i=1,sNx
             gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
      &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( salt_EvPrRn - sRef(kLev) )
+     &          *( salt_addMass - sRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)

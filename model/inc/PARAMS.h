@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.236 2010/02/17 00:21:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.237 2010/04/26 20:37:02 dimitri Exp $
 C $Name:  $
 C
 
@@ -672,6 +672,8 @@ C     convertFW2Salt :: salinity, used to convert Fresh-Water Flux to Salt Flux
 C                       (use model surface (local) value if set to -1)
 C     temp_EvPrRn :: temperature of Rain & Evap.
 C     salt_EvPrRn :: salinity of Rain & Evap.
+C     temp_addMass :: temperature of addMass array
+C     salt_addMass :: salinity of addMass array
 C        (notes: a) tracer content of Rain/Evap only used if both
 C                     NonLin_FrSurf & useRealFreshWater are set.
 C                b) use model surface (local) value if set to UNSET_RL)
@@ -730,7 +732,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
-     & hFacMinDr, hFacMinDp,
+     & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
@@ -849,6 +851,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL convertFW2Salt
       _RL temp_EvPrRn
       _RL salt_EvPrRn
+      _RL temp_addMass
+      _RL salt_addMass
       _RL ivdc_kappa
       _RL hMixCriteria
       _RL dRhoSmall

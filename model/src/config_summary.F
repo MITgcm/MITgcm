@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.122 2009/12/08 21:47:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.123 2010/04/26 20:37:02 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -287,6 +287,12 @@ C     i, k   :: Loop counters.
       CALL WRITE_0D_RL( salt_EvPrRn, INDEX_NONE,
      &'salt_EvPrRn =',
      &' /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/')
+      CALL WRITE_0D_RL( temp_addMass, INDEX_NONE,
+     &'temp_addMass =',
+     &' /* Temp. of addMass array (UNSET=use local T)(oC)*/')
+      CALL WRITE_0D_RL( salt_addMass, INDEX_NONE,
+     &'salt_addMass =',
+     &' /* Salin. of addMass array (UNSET=use local S)(ppt)*/')
       IF ( .NOT.useRealFreshWaterFlux .OR. selectAddFluid.EQ.-1
      &                                .OR. nonlinFreeSurf.LE.0 ) THEN
       CALL WRITE_0D_RL( convertFW2Salt, INDEX_NONE,
