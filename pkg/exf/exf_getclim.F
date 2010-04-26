@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.14 2010/03/16 00:18:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.15 2010/04/26 01:49:47 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -113,6 +113,7 @@ c
 c--   Update the tile edges.
       _EXCH_XY_RL(climsss, mythid)
 #endif
+
 #ifdef ALLOW_SST_CONTROL
       call ctrl_get_gen (
      &     xx_sst_file, xx_sststartdate, xx_sstperiod,
@@ -126,6 +127,7 @@ c--   Update the tile edges.
          DO j=1-oLy,sNy+oLy
           DO i=1-oLx,sNx+oLx
            theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
+           salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
            if ( myiter .EQ. niter0 ) then
               if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
      &             theta(i,j,1,bi,bj) .EQ. 0. ) then
