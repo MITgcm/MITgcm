@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.9 2009/10/15 05:21:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.10 2010/04/26 15:58:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,11 +49,13 @@ c     == end of interface ==
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
 
-      fc   = 0.0
+      fc   = 0. _d 0
 
 #ifdef ALLOW_AUTODIFF
 
-      adfc = 1.0
+      if ( myProcId .EQ. 0 ) then
+       adfc = 1. _d 0
+      endif
 
       do bj = jtlo,jthi
        do bi = itlo,ithi
