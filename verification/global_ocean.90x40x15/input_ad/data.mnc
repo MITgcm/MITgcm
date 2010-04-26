@@ -5,7 +5,7 @@
 # mnc_use_indir=.FALSE.,
  mnc_use_outdir=.TRUE.,
  mnc_outdir_str='mnc_test_',
- mnc_outdir_date=.TRUE.,
+#mnc_outdir_date=.TRUE.,
  monitor_mnc=.FALSE.,
 #timeave_mnc=.FALSE.,
 #snapshot_mnc=.FALSE.,
