@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.4 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.5 2010/04/26 20:28:37 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -41,7 +41,7 @@ c     == local variables ==
 c     == end of interface ==
 
 c--   Each process has calculated the global part for itself.
-      IF (myProcId .eq. 0) THEN
+cph      IF (myProcId .eq. 0) THEN
          _BEGIN_MASTER( mythid )
 c
            inquire(file='divided.ctrl',exist=exst)
@@ -63,7 +63,7 @@ c
            endif
 c
          _END_MASTER( mythid )
-      ENDIF
+cph      ENDIF
       _BARRIER
 
 #endif
