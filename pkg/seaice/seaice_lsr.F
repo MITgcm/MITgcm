@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.55 2010/03/16 00:23:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.56 2010/04/26 18:58:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1827,12 +1827,12 @@ C--   Compute residual norm and print
          ENDDO
         ENDDO
        ENDDO
-       CALL GLOBAL_SUM_R8( resnorm, myThid )
-       CALL GLOBAL_SUM_R8( EKnorm, myThid )
-       CALL GLOBAL_SUM_R8( counter, myThid )
+       _GLOBAL_SUM_RL( resnorm, myThid )
+       _GLOBAL_SUM_RL( EKnorm, myThid )
+       _GLOBAL_SUM_RL( counter, myThid )
        IF ( counter .gt. 0. _d 0 ) EKnorm = EKnorm/counter
        WRITE(*,'(A,I7,1X,2E22.14)')
-     &      'S/R seaice_lsr: IPSEUDO, RESNORM, EKNORM = ', 
+     &      'S/R seaice_lsr: IPSEUDO, RESNORM, EKNORM = ',
      &      ilcall, sqrt(resnorm), EKnorm
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
