@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/the_main_loop.F,v 1.3 2007/02/22 19:59:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/the_main_loop.F,v 1.4 2010/04/26 01:52:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -104,10 +104,9 @@ c They provide the fields to be stored.
 #  include "OBCS.h"
 # endif
 # ifdef ALLOW_EXF
-#  include "exf_fields.h"
-#  include "exf_clim_fields.h"
+#  include "EXF_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
-#   include "exf_constants.h"
+#   include "EXF_CONSTANTS.h"
 #  endif
 # endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
