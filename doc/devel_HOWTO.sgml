@@ -202,20 +202,18 @@
 
       <para>As shown in the online <ulink
       url="http://mitgcm.org/viewvc/MITgcm/MITgcm/model/src/forward_step.F?view=graph">
-      ViewCVS-generated tree</ulink>, the MITgcm codebase is split into to two
-      branches or "lines" under which development proceeds.  These two lines are
-      referred to as the "MAIN" and "ecco" versions of the code.  While not
-      identical, the bulk of the MAIN and ecco lines are composed of files from
-      the same codebase.
+      ViewCVS-generated tree</ulink>, the MITgcm codebase is split into
+      branches or "lines" under which development proceeds.  The main line
+      of development is referred to as the "MAIN" version of the code.
       </para>
 
       <para>Periodically, a "Release" branch is formed from the "MAIN"
       development branch.  This is done in order to create a relatively stable
       reference point for both users and developers.  The intent is that once a
-      relese branch has been created, only bug-fixes will be added to it.
+      release branch has been created, only bug-fixes will be added to it.
       Meanwhile, development (which might "break" or otherwise render invalid
       the documentation, tutorials, and/or examples contained within a release
-      branch) is allowed to continue along the MAIN and ecco lines.</para>
+      branch) is allowed to continue along the MAIN line.</para>
     </sect2>
 
     <sect2>
