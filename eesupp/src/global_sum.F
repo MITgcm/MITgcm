@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.14 2009/06/10 03:47:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.15 2010/04/27 16:09:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -91,7 +91,7 @@ C--
       CALL BAR2( myThid )
 
 C--   set result for every process
-      sumPhi = phiGSR4(1,1)
+      sumPhi = phiGSR4(1,0)
 
       RETURN
       END
