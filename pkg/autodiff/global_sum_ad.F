@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.9 2010/04/22 22:23:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.10 2010/04/27 16:05:20 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -61,6 +61,8 @@ C     mpiRC  :: MPI return code
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      _GLOBAL_SUM_RS( adsumPhi, myThid )
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -167,6 +169,8 @@ C     mpiRC  :: MPI return code
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      _GLOBAL_SUM_RL( adsumPhi, myThid )
 
 C--   Can not start until everyone is ready
       _BARRIER
