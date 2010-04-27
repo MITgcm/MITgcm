@@ -1,9 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1255 2010/04/26 18:50:14 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1256 2010/04/27 17:43:30 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjoint:
+  global_sum_ad was incomplete (noted many times by many people ;) 
+  nice description by Jean U. as follows:
+  * allreduce(var) in global_sum.F can be interpreted as 
+    reduce(sum) followed by broadcast of sum.  
+  * The adjoint of that is 
+    sum(adjoint) followed by broadcast(summed adjoint value) 
+    or in other words, allreduce(sum, adjoint vars)
+  We were missing the sum(adjoint)!
+  Benign, except(!) for "global" scalars appearing in tile loops (bi,bj)
+  (noted by J.M. Campin, e.g., in cost_ssh_mean, variable offset).
+  The fix should produce 16-digit accuracy between
+  single-CPU multi-tile (e.g. nSx=2, nPx=1) and
+  multi-CPU single-tile (e.g. nSx=1, nPx-2)
+  We'll probably change this yet again shortly
 o pkg/icefront
   - ALLOW_SUBGLACIAL_RUNOFF option adds capability for time-evolving
     specification of addmass array based on a 2D field, which is added
