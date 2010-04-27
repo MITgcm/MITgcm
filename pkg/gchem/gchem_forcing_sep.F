@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.27 2009/10/14 14:18:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.28 2010/04/27 18:41:47 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -35,6 +35,10 @@ C !USES: ===============================================================
 #ifdef ALLOW_DIC
 #include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
+#ifdef ALLOW_DARWIN
+#include "DARWIN_FLUX.h"
+#include "DARWIN_SIZE.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -56,8 +60,8 @@ CEOP
 ccccccccccccccccccccccccc
 c global calculations   c
 ccccccccccccccccccccccccc
-#ifdef ALLOW_DIC
 #ifdef ALLOW_OLD_VIRTUALFLUX
+#ifdef ALLOW_DIC
 c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
@@ -68,8 +72,20 @@ c find global surface averages
        print*,'mean surface dic', gsm_dic,gsm_s
        call tracer_meanarea(
      &             ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk, myThid )
-#endif /* ALLOW_OLD_VIRTUALFLUX */
 #endif
+#ifdef ALLOW_DARWIN
+c find global surface averages
+       gsm_s = 0. _d 0
+       gsm_dic = 0. _d 0
+       gsm_alk = 0. _d 0
+       call tracer_meanarea(salt, 1,gsm_s,myThid)
+       call tracer_meanarea(
+     &             ptracer(1-Olx,1-Oly,1,1,1,iDIC), 1, gsm_dic, myThid )
+       print*,'mean surface dic', gsm_dic,gsm_s
+       call tracer_meanarea(
+     &             ptracer(1-Olx,1-Oly,1,1,1,iALK), 1, gsm_alk, myThid )
+#endif
+#endif /* ALLOW_OLD_VIRTUALFLUX */
 ccccccccccccccccccccccccccccccccccccccccccc
 
 
