@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1256 2010/04/27 17:43:30 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1257 2010/04/27 19:34:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -19,6 +19,8 @@ o adjoint:
   single-CPU multi-tile (e.g. nSx=2, nPx=1) and
   multi-CPU single-tile (e.g. nSx=1, nPx-2)
   We'll probably change this yet again shortly
+o eesupp/src:
+  - fix global_sum_r4 (wrong from previous modif in Jun 2009; ever used ?)
 o pkg/icefront
   - ALLOW_SUBGLACIAL_RUNOFF option adds capability for time-evolving
     specification of addmass array based on a 2D field, which is added
