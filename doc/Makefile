@@ -21,9 +21,11 @@ devel_HOWTO.pdf:  devel_HOWTO.sgml
 
 devel_HOWTO_multipage:  devel_HOWTO.sgml
 	docbook2html -o devel_HOWTO_multipage -d ./ldp.dsl devel_HOWTO.sgml
+	( cd devel_HOWTO_multipage && cp -p t1.htm index.html )
 
 devel_HOWTO_onepage:  devel_HOWTO.sgml
 	docbook2html -u -o devel_HOWTO_onepage -d ./ldp.dsl devel_HOWTO.sgml
+	( cd devel_HOWTO_onepage && mv devel_HOWTO.html index.html )
 
 clean:
-	rm -rf $(ALL) devel_HOWTO.junk
+	rm -rf $(ALL)

@@ -3,27 +3,11 @@
 #  Ed Hill
 #  Wed Nov 19 18:31:21 EST 2003
 
-if test -e ./build_dir ; then
-    rm -rf ./build_dir
-fi
-mkdir ./build_dir
-
-docbook2ps -d ldp.dsl devel_HOWTO.sgml
-docbook2pdf -d ldp.dsl devel_HOWTO.sgml
-mv devel_HOWTO.pdf devel_HOWTO.ps ./build_dir
-
-rm -rf devel_HOWTO
-docbook2html -o devel_HOWTO -d ./ldp.dsl devel_HOWTO.sgml
-( cd devel_HOWTO && ln -s t1.htm index.html )
-mv devel_HOWTO ./build_dir/devel_HOWTO_multipage/
-
-docbook2html -u -o devel_HOWTO -d ./ldp.dsl devel_HOWTO.sgml
-( cd devel_HOWTO && mv devel_HOWTO.html index.html )
-mv devel_HOWTO ./build_dir/devel_HOWTO_onepage/
-
-scp ./build_dir/devel_HOWTO.p* mitgcm.org:/u/httpd/html/public/devel_HOWTO
-scp ./build_dir/devel_HOWTO_onepage/index.html mitgcm.org:/u/httpd/html/public/devel_HOWTO/devel_HOWTO_onepage
-scp ./build_dir/devel_HOWTO_multipage/*.htm* mitgcm.org:/u/httpd/html/public/devel_HOWTO/devel_HOWTO_multipage
+set -x
+scp ./devel_HOWTO.ps mitgcm.org:/u/httpd/html/public/devel_HOWTO
+scp ./devel_HOWTO.pdf mitgcm.org:/u/httpd/html/public/devel_HOWTO
+scp ./devel_HOWTO_onepage/index.html mitgcm.org:/u/httpd/html/public/devel_HOWTO/devel_HOWTO_onepage
+scp ./devel_HOWTO_multipage/*.htm* mitgcm.org:/u/httpd/html/public/devel_HOWTO/devel_HOWTO_multipage
 #ssh mitgcm.org 'chgrp -R gcmpack /u/httpd/html/public/devel_HOWTO/devel_HOWTO.p*'
 #ssh mitgcm.org 'chgrp -R gcmpack /u/httpd/html/public/devel_HOWTO/devel_HOWTO_*/*.htm*'
 
