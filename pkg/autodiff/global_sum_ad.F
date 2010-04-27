@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.10 2010/04/27 16:05:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.11 2010/04/27 19:27:54 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
 C--   File global_adsum.F: Routines that perform adjoint of
-C                          global sum on an array of thread values.
+C                          global sum on all threads and all processors
 C      Contents
 C      o GLOBAL_ADSUM_R4
 C      o GLOBAL_ADSUM_R8
@@ -39,7 +39,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -50,69 +49,8 @@ C     myThid :: My thread id.
 CEOP
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     adphi  :: Array to be summed.
-C     I      :: Loop counters
-C     mpiRC  :: MPI return code
-      Real*4 adphi(lShare4,MAX_NO_THREADS)
-      INTEGER I
-      Real*4  tmp
-#ifdef   ALLOW_USE_MPI
-      INTEGER mpiRC
-#endif /* ALLOW_USE_MPI */
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      _GLOBAL_SUM_RS( adsumPhi, myThid )
-
-C--   Can not start until everyone is ready
-      _BARRIER
-
-C--   broadcast to all processes
-      _BEGIN_MASTER( myThid )
-
-      tmp = adsumPhi
-
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-      IF ( usingMPI ) THEN
-#endif
-         CALL MPI_Bcast(tmp, 1, MPI_REAL, 0
-     &        , MPI_COMM_MODEL, mpiRC
-     &        )
-#ifndef ALWAYS_USE_MPI
-      ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
-
-C---- Testing stage: print a warning (both to std err & outp) when
-C     current Proc input value is different from Proc-0 value
-      IF ( tmp.NE.adsumPhi ) THEN
-C-    might need to improve this test if some MPI truncation happen
-        WRITE(msgBuf,'(A,1PE22.14)')
-     &    'GLOBAL_ADSUM_R4: ** WARNING ** input =', adsumPhi
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,1PE22.14)')
-     &    'GLOBAL_ADSUM_R4: ** WARNING ** output=', tmp
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-C----
-
-      DO I=1,nThreads
-         adphi(1,I) = tmp
-      ENDDO
-
-      _END_MASTER( myThid )
-C--
-      _BARRIER
-C
-C--   every thread takes its adjoint sum
-      adsumPhi = adphi(1,myThid)
+      CALL GLOBAL_SUM_R4( adsumPhi, myThid )
 
       RETURN
       END
@@ -147,7 +85,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -159,68 +96,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     adphi  :: Array to be summed.
-C     I      :: Loop counters
-C     mpiRC  :: MPI return code
-      Real*8 adphi(lShare8,MAX_NO_THREADS)
-      INTEGER I
-      Real*8  tmp
-#ifdef   ALLOW_USE_MPI
-      INTEGER mpiRC
-#endif /* ALLOW_USE_MPI */
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      _GLOBAL_SUM_RL( adsumPhi, myThid )
-
-C--   Can not start until everyone is ready
-      _BARRIER
-
-C--   broadcast to all processes
-      _BEGIN_MASTER( myThid )
-
-      tmp = adsumPhi
-
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-      IF ( usingMPI ) THEN
-#endif
-         CALL MPI_Bcast(tmp, 1, MPI_DOUBLE_PRECISION, 0
-     &        , MPI_COMM_MODEL, mpiRC
-     &        )
-#ifndef ALWAYS_USE_MPI
-      ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
-
-C---- Testing stage: print a warning (both to std err & outp) when
-C     current Proc input value is different from Proc-0 value
-      IF ( tmp.NE.adsumPhi ) THEN
-C-    might need to improve this test if some MPI truncation happen
-        WRITE(msgBuf,'(A,1PE22.14)')
-     &    'GLOBAL_ADSUM_R8: ** WARNING ** input =', adsumPhi
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,1PE22.14)')
-     &    'GLOBAL_ADSUM_R8: ** WARNING ** output=', tmp
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-C----
-
-      DO I=1,nThreads
-         adphi(1,I) = tmp
-      ENDDO
-
-      _END_MASTER( myThid )
-C--
-      _BARRIER
-C
-C--   every thread takes its adjoint sum
-      adsumPhi = adphi(1,myThid)
+      CALL GLOBAL_SUM_R8( adsumPhi, myThid )
 
       RETURN
       END
