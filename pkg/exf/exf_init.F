@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.23 2010/04/28 04:54:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.24 2010/04/28 15:20:19 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -395,12 +395,10 @@ c
      &          climvstrperiod .NE. 0. )
      &          vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
 # endif
-           if ( myiter .EQ. niter0 ) then
-              if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
+           if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
      &             theta(i,j,1,bi,bj) .EQ. 0. ) then
                 print *, 'ph-warn-exf-init ', i, j, theta(i,j,1,bi,bj)
 cph                STOP 'in exf_init'
-              endif
            endif
           ENDDO
          ENDDO
