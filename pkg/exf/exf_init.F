@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.22 2010/04/26 03:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.23 2010/04/28 04:54:54 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -29,6 +29,10 @@ c     == global variables ==
 #include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
+#ifdef ALLOW_BULK_OFFLINE
+# include "PARAMS.h"
+# include "DYNVARS.h"
+#endif
 
 c     == routine arguments ==
 
@@ -356,6 +360,54 @@ c
 #endif
      &     mythid )
 #endif /* CLIMSTRESS_RELAXATION */
+
+#ifdef ALLOW_BULK_OFFLINE
+
+# ifdef ALLOW_CLIMSST_RELAXATION
+      _EXCH_XY_RL(climsst, mythid)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+      _EXCH_XY_RL(climsss, mythid)
+# endif
+# ifdef ALLOW_CLIMSTRESS_RELAXATION
+      CALL EXCH_UV_XY_RL( climustr, climvstr, .TRUE., myThid )
+# endif
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-oLy,sNy+oLy
+          DO i=1-oLx,sNx+oLx
+# ifdef ALLOW_CLIMSST_RELAXATION
+           if ( climsstfile .NE. ' ' .AND. 
+     &          climsstperiod .NE. 0. )
+     &          theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+           if ( climsssfile .NE. ' ' .AND. 
+     &          climsssperiod .NE. 0. )
+     &          salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
+# endif
+# ifdef ALLOW_CLIMSTRESS_RELAXATION
+           if ( climustrfile .NE. ' ' .AND. 
+     &          climustrperiod .NE. 0. )
+     &          uvel(i,j,1,bi,bj) = climustr(i,j,bi,bj)
+           if ( climvstrfile .NE. ' ' .AND. 
+     &          climvstrperiod .NE. 0. )
+     &          vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
+# endif
+           if ( myiter .EQ. niter0 ) then
+              if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
+     &             theta(i,j,1,bi,bj) .EQ. 0. ) then
+                print *, 'ph-warn-exf-init ', i, j, theta(i,j,1,bi,bj)
+cph                STOP 'in exf_init'
+              endif
+           endif
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_BULK_OFFLINE */
 
       RETURN
       END

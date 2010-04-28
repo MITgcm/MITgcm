@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.17 2010/04/26 15:14:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.18 2010/04/28 04:54:54 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -148,12 +148,16 @@ c
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-oLy,sNy+oLy
           DO i=1-oLx,sNx+oLx
+# ifdef ALLOW_CLIMSST_RELAXATION
            if ( climsstfile .NE. ' ' .AND. 
      &          climsstperiod .NE. 0. )
      &          theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
            if ( climsssfile .NE. ' ' .AND. 
      &          climsssperiod .NE. 0. )
      &          salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
+# endif
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
            if ( climustrfile .NE. ' ' .AND. 
      &          climustrperiod .NE. 0. )
