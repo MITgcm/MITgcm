@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.12 2010/04/26 03:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.13 2010/04/28 04:45:08 heimbach Exp $
 C $Name:  $
 c
 c
@@ -296,7 +296,7 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
       COMMON /exf_clim_stress_r/
      &                        climustr, climvstr,
-     &                        climustr0, climustr1
+     &                        climustr0, climustr1,
      &                        climvstr0, climvstr1
       _RL climustr       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climustr0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
