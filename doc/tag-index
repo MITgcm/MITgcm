@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1257 2010/04/27 19:34:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1258 2010/04/28 08:37:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/the_main_loop.F:
+  adjust store directives for seaice evp and multicategory according to
+  pkg/ecco/the_main_loop.F
 o adjoint:
   global_sum_ad was incomplete (noted many times by many people ;) 
   nice description by Jean U. as follows:
