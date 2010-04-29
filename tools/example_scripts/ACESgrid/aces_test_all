@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.15 2010/04/23 12:57:40 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.16 2010/04/29 13:45:53 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -14,7 +14,7 @@ esac
 
 echo -n '-- Starting: '
 date
-start=`date +%Y%m%d`
+today=`date +%Y%m%d`
 
 if test $# = 0
 then
@@ -22,9 +22,6 @@ then
 else
   tst_list=$*
 fi
-
-. /etc/profile.d/modules.sh
-module list > ~/tmp/.module_list 2>&1
 
 # QSUB="/usr/local/bin/qsub"
 # QSTAT="/usr/local/bin/qstat"
@@ -34,8 +31,23 @@ TST_DIR="/home/jmc/test_ACES"
 MPACK="MITgcm_tools/mpack-1.6/mpack"
 SUB_DIR="MITgcm_tools/example_scripts/ACESgrid"
 
-LOG_FIL="$TST_DIR/output/tst_all.log"
-rm -f $LOG_FIL
+TMP_FIL="$TST_DIR/output/TTT.$$"
+LOG_FIL="$TST_DIR/output/tst_all."`date +%m%d`".log"
+rm -f $LOG_FIL ; touch $LOG_FIL
+
+#-- clean up old log files:
+cd $TST_DIR/output
+n=$(( `ls tst_all.*.log | wc -l` - 10 ))
+if test $n -gt 0 ; then
+  echo ' remove old log files:' | tee -a $LOG_FIL
+    ls -lt tst_all.*.log | tail -"$n" | tee -a $LOG_FIL
+    ls -t  tst_all.*.log | tail -"$n" | xargs rm -f
+fi
+
+. /etc/profile.d/modules.sh
+module list > $LOG_FIL 2>&1
+
+#-- now really do something:
 
 cd $TST_DIR
 
@@ -126,7 +138,14 @@ while test $count != 0 ; do
       eval comm=\$M_$i
       if test $comm = 'submitted' ; then
         JOB="tst_"$i
-        ready_to_send=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
+        $QSTAT -a > $TMP_FIL
+        RETVAL=$?
+        ready_to_send=`grep $USER $TMP_FIL | grep $JOB | wc -l`
+        rm -f $TMP_FIL
+        if test "x$RETVAL" != x0 ; then
+           echo " $QSTAT returned with error code: $RETVAL" | tee -a $LOG_FIL
+           continue
+        fi
 
         if test "x_$ready_to_send" = x_0 ; then
           run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
@@ -134,7 +153,7 @@ while test $count != 0 ; do
           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
           if test "x$tdir" != x ; then
             #- check this is the right output
-            chk=`echo $tdir | grep -c $start`
+            chk=`echo $tdir | grep -c $today`
             if test $chk = '0' ; then
               curday=`date +%Y%m%d`
               chk=`echo $tdir | grep -c $curday`
@@ -159,7 +178,7 @@ while test $count != 0 ; do
           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^rs_aces' | head -1`
           if test "x$tdir" != x ; then
             #- check this is the right output
-            chk=`echo $tdir | grep -c $start`
+            chk=`echo $tdir | grep -c $today`
             if test $chk = '0' ; then
               curday=`date +%Y%m%d`
               chk=`echo $tdir | grep -c $curday`
@@ -191,8 +210,8 @@ while test $count != 0 ; do
     #  "long" queue is 24hrs = 24*60min = 1440min
     if test $minutes -gt 2160 ; then
         hrs=$(( $minutes / 60 ));
-        echo "Time expired after $minutes minutes ($hrs hours)"
-        echo ' ' $count '/' $nbtst 'tests not yet finished'
+        echo "Time expired after $minutes minutes ($hrs hours)" | tee -a $LOG_FIL
+        echo ' ' $count '/' $nbtst 'tests not yet finished' | tee -a $LOG_FIL
         exit 1
     fi
 
