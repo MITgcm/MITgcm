@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.4 2010/04/01 15:46:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.5 2010/04/29 13:42:47 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -87,6 +87,7 @@ fi
 #-- in case mpiexec get stuck, run this script in background to check
 if test -x $HERE/check_$sfx ; then
    echo "start check_$sfx in background"
+   mv -f $HERE/check_${sfx}.log $HERE/check_${sfx}.log_bak
    ( cd $HERE ; ./check_$sfx > check_${sfx}.log 2>&1 ) &
 fi
 cd $gcmDIR/verification
