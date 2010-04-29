@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.138 2010/03/30 16:40:03 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.139 2010/04/29 16:58:40 jmc Exp $
 #  $Name:  $
 #
 
@@ -353,19 +353,18 @@ genmakemodel()
 		command="$command -pcls"
 	    fi
 	    fi
-	    printf 'genmake ... ' 1>&2
-	    # $command > make.log 2>&1
+	    printf 'genmake ... '
 	    eval $command > make.log 2>&1
 	    RETVAL=$?
 	    #  Reduce the size of the testing emails!
 	    head -100 Makefile > $CDIR/Makefile_head
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
-		echo "genmakemodel: genmake failed" 1>&2
+		echo "genmakemodel: genmake failed"
 		cp genmake_* make.log $CDIR
 		return 1
 	    else
-		echo "successful" 1>&2
+		echo "successful"
 	    fi
 	)
     fi
@@ -381,16 +380,16 @@ makeclean()
 	    cd $1;
 	    #if test -e $OUTPUTFILE ; then rm -f $OUTPUTFILE ; fi
 	    if test -r Makefile ; then
-		printf 'clean build-dir: make Clean ... ' 2>&1
+		printf 'clean build-dir: make Clean ... '
 		$MAKE Clean >> make.log 2>&1
 		RETVAL=$?
 		if test "x$RETVAL" != x0 ; then
 		    tail make.log
-		    echo "makeclean: \"make Clean\" failed" 1>&2
+		    echo "makeclean: \"make Clean\" failed"
 		    cp make.log $CDIR"/make.log"
 		    return 1
 		fi
-		echo successful 1>&2
+		echo successful
 	    else
 		echo ''
 	    fi
@@ -407,7 +406,7 @@ run_clean()
     else
 	(
 	    cd $1;
-	    printf 'clean run-dir ... ' 2>&1
+	    printf 'clean run-dir ... '
 	    # part of what is done after "make clean" when doing "make CLEAN"
 	    find . -name "*.meta" -exec rm {} \;
 	    find . -name "*.data" -exec rm {} \;
@@ -416,7 +415,7 @@ run_clean()
 	    rm -f $EXECUTABLE *.txt STD* *diagnostics.log datetime
 	    rm -rf mnc_test_*
  	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
-	    echo successful 1>&2
+	    echo successful
 	    exit 0
 	)
     fi
@@ -430,16 +429,16 @@ makedependmodel()
     else
 	(
 	    cd $1;
-	    printf 'make depend ... ' 1>&2
+	    printf 'make depend ... '
 	    $MAKE depend >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
-		echo "makedependmodel: make depend failed" 1>&2
+		echo "makedependmodel: make depend failed"
 		cp make.log $CDIR"/make.log"
 		return 1
 	    else
-		echo successful 1>&2
+		echo successful
 	    fi
 	)
     fi
@@ -460,7 +459,7 @@ makemodel()
     else
 	cd $1;
 	if test -r Makefile ; then
-	    printf 'make ... ' 1>&2
+	    printf 'make ... '
 	    if test "x$ADM" = xt ; then
 		$MAKE adall >> make.log 2>&1
 	    elif test "x$OADM" = xt ; then
@@ -475,12 +474,12 @@ makemodel()
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
-		echo failed 1>&2
+		echo failed
 		cp make.log $CDIR"/make.log"
 		rm -f $EXECUTABLE
 		return 1
 	    else
-		echo successful 1>&2
+		echo successful
 	    fi
 	fi
     fi
@@ -543,6 +542,7 @@ linkdata()
     if test -d $1 ; then
 	(
 	    cd $1 ; shift
+	    echo 'linkdata from dirs:' $*
             inpMPI=`(cd ../$1 ; find . -name "*.mpi" -print | sed 's:^\./::')`
 	    for xx in $inpMPI ; do
 	      if test -r "../"$1"/"$xx ; then
@@ -553,7 +553,7 @@ linkdata()
 		    if test -h $yy ; then rm -f $yy ; fi
 		    if test ! -r $yy ; then
 			ln -sf "../"$1"/"$xx $yy ;
-			printf "$xx " 1>&2
+			printf " $xx" 1>&2
 		    fi
 		else
 		# not mpi test: remove symbolic link
@@ -568,7 +568,7 @@ linkdata()
 		    if test -h eedata ; then rm -f eedata ; fi
 		    if test ! -r eedata ; then
 			ln -sf "../"$1"/eedata.mth" eedata ;
-			printf 'eedata.mth ' 1>&2
+			printf ' eedata.mth' 1>&2
 		    fi
 		else
 		# not multi-threaded test: remove eedata symbolic link
@@ -578,7 +578,7 @@ linkdata()
 	    prevDir='NONE'
 	    for ldir in $* ; do
 		if test -d "../"$ldir -a $ldir != $prevDir ; then
-                    printf 'ldir='${ldir} 1>&2
+                    printf " ldir=${ldir}:" 1>&2
 		    files=`( cd "../"$ldir ; ls -1 | grep -v CVS )`
 		    for i in $files ; do
 			if test ! -d "../"$ldir/$i ; then
@@ -588,10 +588,12 @@ linkdata()
 			    fi
 			fi
 		    done
+		    printf ' ;' 1>&2
 		    if test -x "../"$ldir"/"prepare_run ; then
-			"../"$ldir"/"prepare_run
+			"../"$ldir"/"prepare_run 1>&2
+		    else
+			echo '' 1>&2
 		    fi
-		    printf ' ; ' 1>&2
 		fi
 		prevDir=$ldir
 	    done
@@ -607,9 +609,7 @@ runmodel()
     #  (where "$COMMAND" is relative to "directory")
     (
 	cd $1
-	printf 'runmodel in %s ...' $1 1>&2
-	# make output.txt
-	echo
+	printf 'runmodel in %s ... ' $1
 	if test -L $EXECUTABLE ; then
 	  if test -x "../"$builddir"/"$EXECUTABLE ; then
 	    diff -q $EXECUTABLE "../"$builddir"/"$EXECUTABLE > /dev/null 2>&1
@@ -650,20 +650,23 @@ runmodel()
 	fi
 	rm -f run.log_tmp
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
-	    tail $RUNLOG
-	    echo successful 1>&2
+	    echo successful
+	    printf '=> output from running in %s :\n' $1 1>&2
+	    tail $RUNLOG | sed 's/^.*/> &/g' 1>&2
 	    # === Reduce the size of the testing emails!
 	    #cp $OUTPUTFILE $CDIR"/"$OUTPUTFILE
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 0
 	elif [ $RETVAL -ne 0 -a $ENDVAL -gt 0 ] ; then
 	    #-- for some weird cases (run is finihed but with error code)
-	    tail $RUNLOG
-	    echo finished with error '(run:' $RETVAL ' end:' $ENDVAL ')' 1>&2
+	    echo 'finished with error (run:' $RETVAL ' end:' $ENDVAL ')'
+	    printf '=> output from running in %s :\n' $1 1>&2
+	    tail $RUNLOG | sed 's/^.*/> &/g' 1>&2
 	    return 0
 	else
-	    tail $RUNLOG
-	    echo failed '(run:' $RETVAL ' end:' $ENDVAL ')' 1>&2
+	    echo 'failed (run:' $RETVAL ' end:' $ENDVAL ')'
+	    printf '=> output from running in %s :\n' $1 1>&2
+	    tail $RUNLOG | sed 's/^.*/> &/g' 1>&2
 	    cp $RUNLOG $CDIR"/"$RUNLOG
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 1
@@ -1155,7 +1158,6 @@ if test "x$ADM" = x -a "x$OADM" = x; then
     then line_0="default  "$MATCH_CRIT ;
     else line_0="default "$MATCH_CRIT ; fi
        line_0="$line_0  ----T-----  ----S-----  ----U-----  ----V-----"
-#   line_0="            ----T-----  ----S-----  ----U-----  ----V-----"
     line_1="G D M    c        m  s        m  s        m  s        m  s"
     line_2="E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
     line_3="N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
@@ -1188,6 +1190,7 @@ N n k u  s  a
 
 EOF
 fi
+echo "-------------------------------------------------------------------------------"
 
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
@@ -1277,7 +1280,6 @@ for dir in $TESTDIRS ; do
 	fi
     done
 
-    echo "-------------------------------------------------------------------------------"
     echo
     if test "x$extra_runs" = "x" ; then
        echo "Experiment:  $dir"
@@ -1297,26 +1299,24 @@ for dir in $TESTDIRS ; do
 	    run=N
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
-	    && run_clean $dir/$rundir \
             && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y
     else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
-	    && run_clean $dir/$rundir \
             && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
+	    && run_clean $dir/$rundir \
 	    && linkdata $dir/$rundir $inputdir input \
 	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput_run $dir $rundir $ref_outp`
     fi
-
     #echo "results='$results'"
-    echo
+
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
-	echo
+	echo 1>&2
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	touch $locDIR"/summary.txt"
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
@@ -1346,7 +1346,7 @@ for dir in $TESTDIRS ; do
 	    && results=`testoutput_run $dir tr_run.$ex $refExOut`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
-	    echo
+	    echo 1>&2
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    touch $locDIR"/summary.txt"
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
@@ -1364,7 +1364,7 @@ for dir in $TESTDIRS ; do
 	    fi
 	done
 
-    if test -f $DRESULTS"/"genmake_state ; then : ; else 
+    if test -f $DRESULTS"/"genmake_state ; then : ; else
 	if test -f $dir/$builddir/Makefile ; then
 	    mkOpt=`grep '^# OPTFILE=' $dir/$builddir/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
 	    echo "from '$dir/$builddir/Makefile', extract:" > $DRESULTS/genmake_state
