@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1258 2010/04/28 08:37:41 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1259 2010/04/29 13:56:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62f (2010/04/29)
 o model/src/the_main_loop.F:
   adjust store directives for seaice evp and multicategory according to
   pkg/ecco/the_main_loop.F
