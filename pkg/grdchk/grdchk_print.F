@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.10 2010/04/26 21:29:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.11 2010/04/30 18:41:50 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -97,21 +97,21 @@ c--   Print header.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT, mythid )
 
-      write(msgbuf,'(A,2X,A,1X,3A6,A8,11X,A12))')
+      write(msgbuf,'(A,2X,A,1X,3A6,A8,11X,A12)')
      & 'grdchk output h.p:', 'Id', 'Itile', 'Jtile',
      & 'LAYER', 'X(Id)', 'X(Id)+/-EPS'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid )
-      write(msgbuf,'(A,2X,A,A4,1X,2A21))')
+      write(msgbuf,'(A,2X,A,A4,1X,2A21)')
      &     'grdchk output h.c:', 'Id', 'FC', 'FC1', 'FC2'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT, mythid )
 #ifdef ALLOW_TANGENTLINEAR_RUN
-      write(msgbuf,'(A,2X,A,2X,2A18,4X,A18))')
+      write(msgbuf,'(A,2X,A,2X,2A18,4X,A18)')
      &     'grdchk output h.g:', 'Id',
      &     'FC1-FC2/(2*EPS)', 'TLM GRAD(FC)', '1-FDGRD/TLMGRD'
 #else
-      write(msgbuf,'(A,2X,A,2X,2A18,4X,A18))')
+      write(msgbuf,'(A,2X,A,2X,2A18,4X,A18)')
      &     'grdchk output h.g:', 'Id',
      &     'FC1-FC2/(2*EPS)', 'ADJ GRAD(FC)', '1-FDGRD/ADGRD'
 #endif
@@ -155,17 +155,17 @@ c--   Individual checks.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT, mythid )
         if ( ierr .eq. 0 ) then
-          write(msgbuf,'(A,I4,1P3E21.13))')
+          write(msgbuf,'(A,I4,1P3E21.13)')
      &          'grdchk output (c):',
      &          i, fcref, fcpertplus, fcpertminus
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT, mythid )
 #ifdef ALLOW_TANGENTLINEAR_RUN
-          write(msgbuf,'(A,I4,3x,1P3E21.13))')
+          write(msgbuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &         i, gfd, ftlxxmemo, ratio_ftl
 #else
-          write(msgbuf,'(A,I4,3x,1P3E21.13))')
+          write(msgbuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &          i, gfd, adxxmemo, ratio_ad
 #endif
