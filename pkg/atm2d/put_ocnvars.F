@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/put_ocnvars.F,v 1.5 2009/04/28 18:33:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/put_ocnvars.F,v 1.6 2010/04/30 20:25:59 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -28,7 +28,7 @@ C     === Global Atmosphere Variables ===
 #  include "FFIELDS.h"
 #  include "SURFACE.h"
 #  ifdef ALLOW_DIC
-#    include "DIC_ABIOTIC.h"
+#    include "DIC_VARS.h"
 #  endif
 #endif
 
