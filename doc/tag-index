@@ -1,20 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1259 2010/04/29 13:56:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1260 2010/04/30 13:11:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o testreport (AD-tests):
+  no longer link files from dir "../input" (1rst link files from
+  "../input_ad.[xx]" if secondary test "xx" and then from "../input_ad")
 
 checkpoint62f (2010/04/29)
 o model/src/the_main_loop.F:
   adjust store directives for seaice evp and multicategory according to
   pkg/ecco/the_main_loop.F
 o adjoint:
-  global_sum_ad was incomplete (noted many times by many people ;) 
+  global_sum_ad was incomplete (noted many times by many people ;)
   nice description by Jean U. as follows:
-  * allreduce(var) in global_sum.F can be interpreted as 
-    reduce(sum) followed by broadcast of sum.  
-  * The adjoint of that is 
-    sum(adjoint) followed by broadcast(summed adjoint value) 
+  * allreduce(var) in global_sum.F can be interpreted as
+    reduce(sum) followed by broadcast of sum.
+  * The adjoint of that is
+    sum(adjoint) followed by broadcast(summed adjoint value)
     or in other words, allreduce(sum, adjoint vars)
   We were missing the sum(adjoint)!
   Benign, except(!) for "global" scalars appearing in tile loops (bi,bj)
