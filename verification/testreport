@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.139 2010/04/29 16:58:40 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.140 2010/04/30 13:07:19 jmc Exp $
 #  $Name:  $
 #
 
@@ -1309,7 +1309,7 @@ for dir in $TESTDIRS ; do
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
 	    && run_clean $dir/$rundir \
-	    && linkdata $dir/$rundir $inputdir input \
+	    && linkdata $dir/$rundir $inputdir \
 	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput_run $dir $rundir $ref_outp`
     fi
@@ -1341,7 +1341,7 @@ for dir in $TESTDIRS ; do
 	    CDIR=`pwd`"/$locDIR"
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
 	    run_clean $dir/tr_run.$ex
-	    linkdata $dir/tr_run.$ex $inputdir.$ex $inputdir input
+	    linkdata $dir/tr_run.$ex $inputdir.$ex $inputdir
 	    runmodel $dir/tr_run.$ex && run=Y \
 	    && results=`testoutput_run $dir tr_run.$ex $refExOut`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
