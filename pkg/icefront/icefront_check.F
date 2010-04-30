@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.4 2010/04/26 22:12:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.5 2010/04/30 22:10:39 yunx Exp $
 C $Name:  $
 #include "ICEFRONT_OPTIONS.h"
 
@@ -41,6 +41,15 @@ C     So far, ICEFRONT works only with oceanic z-coordinates
       ENDIF
 
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
+#ifndef ALLOW_ADDFLUID
+C--  If there is subglacial runoff, addMass (in main code) should be 
+C    turned on by setting #define ALLOW_ADDFLUID in 'CPP_OPTIONS.h'
+      WRITE(msgBuf,'(A,A)')
+     &       'SUBGLACIAL_RUNOFF requires ALLOW_ADDFLUID turned on ',
+     &       'in CPP_OPTIONS.h'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
+#endif
       IF (SGrunoffFile .NE. ' ') THEN
 C--   If there is subglacial runoff, addMass (in main code) should
 C     be turned on by setting selectAddFluid = 1;
