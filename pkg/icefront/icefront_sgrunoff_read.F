@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/Attic/icefront_sgrunoff_read.F,v 1.2 2010/04/26 22:12:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/Attic/icefront_sgrunoff_read.F,v 1.3 2010/04/30 22:36:53 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -30,7 +30,7 @@ c     == routine arguments ==
       integer myIter
       integer myThid
 
-#if (defined(ALLOW_ICEFRONT) && defined(ALLOW_SUBGLACIAL_RUNOFF))
+#if (defined(ALLOW_ADDFLUID) && defined(ALLOW_SUBGLACIAL_RUNOFF))
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     msgBuf       :: Informational/error message buffer
@@ -119,7 +119,7 @@ C ??? if there is another source of addmass ???
         ENDDO
        ENDDO
 
-#endif /* ALLOW_ICEFRONT and ALLOW_SUBGLACIAL_RUNOFF */
+#endif /* ALLOW_ADDFLUID and ALLOW_SUBGLACIAL_RUNOFF */
       RETURN
       END
 
