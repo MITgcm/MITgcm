@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.1 2009/12/11 13:56:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.2 2010/05/01 16:57:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,6 +43,7 @@ C     == Local variables ==
       INTEGER bi,bj
       INTEGER i,j,k
       INTEGER ks
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
@@ -58,7 +59,10 @@ c       ENDIF
       ELSE
 C--   Case where restarting from a pickup
 
-       write(0,*) 'INI_NH_FIELDS: dPhiNHstatus=',dPhiNHstatus
+       WRITE(msgBuf,'(A,I4)')
+     &   'INI_NH_FIELDS: dPhiNHstatus=', dPhiNHstatus
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
        IF ( exactConserv .AND. dPhiNHstatus.EQ.0 ) THEN
 c      IF ( exactConserv ) THEN
 C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
