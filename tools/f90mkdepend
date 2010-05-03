@@ -1,10 +1,10 @@
 #!/bin/bash
-# $Header: /u/gcmpack/MITgcm/tools/f90mkdepend,v 1.5 2010/05/01 17:48:17 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/f90mkdepend,v 1.6 2010/05/03 14:35:01 jahn Exp $
 # $Name:  $
 #
 # Generate some make file dependency entries for a Fortran 90 file that employs "use".
 #
-# For every "use" statement, generate a dependency on tolower(modulename).o
+# For every "use" statement, generate a dependency on lowercase(modulename).o
 #
 # Note: We assume that the name of a module and the same of source are the same.
 #       The name of the source file should be all lower case (except for the extension).
@@ -18,7 +18,7 @@ for filename in *.F90 *.F *.h; do
   # quick check for "use" to speed up processing
   if grep -i '^ *use ' $filename > /dev/null; then
     # extract module name in lower case
-    modreflist=$(grep -i '^ *use ' $filename | awk '{sub(/,.*/,"",$2); print tolower($2)}')
+    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed 's/,.*$//') 
 
     echo "$filename => $modreflist" >> f90mkdepend.log
 
