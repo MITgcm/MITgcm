@@ -1,40 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.5 2010/03/22 02:15:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.6 2010/05/04 16:01:39 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SUBROUTINEs
-C     |              adexch_uv_agrid_3d_rs                       |
-C     |              adexch_uv_agrid_3d_rl                       |
-C     | o adjoint routines to exchange routines                  |
-C     |==========================================================|
-C     | These routines essentially are calling the original      |
-C     | routines in reverse mode.                                |
-C     | These are regular adjoint routines with no innermost     |
-C     | dimension added.                                         |
-C     | Calls to these routines will be generated automatically  |
-C     | by TAMC if correct flow directives are given             |
-C     |   tamc -reverse ....                                     |
-C     |                                                          |
-C     | written and tested by Ralf Giering, Jan. 14th 1999       |
-C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01    |
-C     \==========================================================/
-
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+C--  File exch_agrid_3d_ad.F: adjoint routines to 3-D exch Agrid vector routines
+C--   Contents
+C--   o ADEXCH_UV_AGRID_3D_RS
+C--   o ADEXCH_UV_AGRID_3D_RL
+
+C     *==========================================================*
+C     | These routines essentially are calling the original
+C     | routines in reverse mode.
+C     | These are regular adjoint routines with no innermost
+C     | dimension added.
+C     | Calls to these routines will be generated automatically
+C     | by TAMC if correct flow directives are given
+C     |   tamc -reverse ....
+C     |
+C     | written and tested by Ralf Giering, Jan. 14th 1999
+C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01
+C     *==========================================================*
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ADEXCH_UV_AGRID_3D_RS
 
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_AGRID_3D_RS(
-     I                          withSigns, myNz, myThid,
-     U                          adUphi, adVphi
-     &                                )
+     I                           withSigns, myNz, myThid,
+     U                           adUphi, adVphi )
 #else
       SUBROUTINE ADEXCH_UV_AGRID_3D_RS(
-     U                          adUphi, adVphi,
-     I                          withSigns, myNz, myThid
-     &                                )
+     U                           adUphi, adVphi,
+     I                           withSigns, myNz, myThid )
 #endif
 
 C     !DESCRIPTION:
@@ -52,8 +52,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -71,16 +69,13 @@ C     myThid :: My thread id.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       :: Overlap extents in west, east, north, south.
-C     exchWidth[XY]  :: Extent of regions that will be exchanged.
+C     OL[wens]      :: Overlap extents in west, east, north, south.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
 
 CEOP
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_3D_RS(
-     U                     adUphi, adVphi,
-     I                     withSigns, myNz, myThid )
-      RETURN
+      STOP 'ABNORMAL END: Should never enter EXCH_AGRID_3D_AD_RS'
 #endif
 
       OLw        = OLx
@@ -89,12 +84,6 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        STOP 'EXCH_AGRID_3D_AD: AGRID EXCH not implemented for c.s.'
       ELSE
@@ -111,20 +100,19 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ADEXCH_UV_AGRID_3D_RL
 
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_AGRID_3D_RL(
-     I                          withSigns, myNz, myThid,
-     U                          adUphi, adVphi
-     &                                )
+     I                           withSigns, myNz, myThid,
+     U                           adUphi, adVphi )
 #else
       SUBROUTINE ADEXCH_UV_AGRID_3D_RL(
-     U                          adUphi, adVphi,
-     I                          withSigns, myNz, myThid
-     &                                )
+     U                           adUphi, adVphi,
+     I                           withSigns, myNz, myThid )
 #endif
 
 C     !DESCRIPTION:
@@ -142,8 +130,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -161,16 +147,13 @@ C     myThid :: My thread id.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       :: Overlap extents in west, east, north, south.
-C     exchWidth[XY]  :: Extent of regions that will be exchanged.
+C     OL[wens]      :: Overlap extents in west, east, north, south.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
 
 CEOP
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_3D_RL(
-     U                     adUphi, adVphi,
-     I                     withSigns, myNz, myThid )
-      RETURN
+      STOP 'ABNORMAL END: Should never enter EXCH_AGRID_3D_AD_RL'
 #endif
 
       OLw        = OLx
@@ -179,12 +162,6 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        STOP 'EXCH_AGRID_3D_AD: AGRID EXCH not implemented for c.s.'
       ELSE
