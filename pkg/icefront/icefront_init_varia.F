@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.5 2010/02/16 21:25:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.6 2010/05/04 21:41:59 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -43,6 +43,13 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_SUBGLACIAL_RUNOFF
+      call exf_init_runoff (
+     &     sgrunofffile, sgrunoffperiod,
+     &     exf_inscal_sgrunoff, sgrunoffmask, sgrunoffconst,
+     &     sgrunoff, sgrunoff0, sgrunoff1, mythid )
+#endif /* ALLOW_SUBGLACIAL_RUNOFF */
 
 #endif /* ALLOW_ICEFRONT */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.8 2010/04/22 18:24:44 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.9 2010/05/04 21:41:59 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -35,20 +35,18 @@ C                                the bottom
 C     ICEFRONTlatentHeat       - latent heat of fusion (J/kg)
 C     applyIcefrontTendT/S     -  
 C
-C-    Namelist /SGRUNOFF_PARMS/
-C     SGrunoffFile             - name of subglacial runoff file (kg/s)
-C                                2D file containing the mass of subglacial runoff
-C                                added at the bottom of ocean
-C     SGRUNOFF_period          - period of subglacial runoff (eg. 1 month) in seconds
-C                                use constant subglacial runoff when it equals 0.0
-C     SGRUNOFF_cycle           - repeat time of forcing (eg. 1 year) in seconds
-C
-C--   Fields
 C     K_icefront             - # of icefront model levels at every horizontal location (2D)
 C     R_icefront             - icefront depth [m] (2D)
 C     icefrontlength         - icefront horizontal length divided by grid cell area [m/m^2] (2D)
 C     icefront_TendT         - temperature tendency (Kelvin/s)
 C     icefront_TendS         - salinity tendency (psu/s)
+C
+C     SGrunoffFile           - name of subglacial runoff file (kg/s)
+C                              2D file containing mass of subglacial runoff
+C                              added at bottom of model ocean
+C     SGrunoff               - subglacial runoff (kg/s)
+C     Arrays *0 and *1 below are used for temporal interpolation.
+C
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -99,10 +97,11 @@ CEOP
 
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
       CHARACTER*(MAX_LEN_FNAM) SGrunoffFile
-      _RL  SGRUNOFF_Period, SGRUNOFF_Cycle
       COMMON /SUBGLACIAL_RUNOFF/
-     &     SGRUNOFF_Period, SGRUNOFF_Cycle,
      &     SGrunoffFile
+      _RL SGrunoff (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SGrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SGrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_SUBGLACIAL_RUNOFF */
 
 #endif /* ALLOW_ICEFRONT */

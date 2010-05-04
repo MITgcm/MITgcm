@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.88 2010/03/28 14:15:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.89 2010/05/04 21:41:59 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -130,6 +130,20 @@ C--   dummy statement to end declaration part
      &       doDiagsRho = doDiagsRho + 4
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_ADDFLUID
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO K=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           addmass(I,J,K,bi,bj) =  0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_ADDFLUID */
 
 #ifdef  ALLOW_OBCS
       IF (useOBCS) THEN
