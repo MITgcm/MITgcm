@@ -1,11 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.flow,v 1.2 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.flow,v 1.3 2010/05/04 16:43:07 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
+#include "PACKAGES_CONFIG.h"
+
+C     *==========================================================*
 C     | TAMC flow directives                                     |
 C     | for library subroutines    exch_*_3d_rs                  |
 C     |                            exch_*_3d_rl                  |
-C     |==========================================================|
+C     *==========================================================*
 C     | These directives are for standard adjoint code           |
 C     | generation (vector Jacobian product).                    |
 C     |   tamc -reverse  ....                                    |
@@ -13,11 +15,17 @@ C     |                                                          |
 C     | written and tested by Ralf Giering, Jan. 14th 1999       |
 C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
 C     | extended to tangent linear code heimbach@mit.edu Jan-02  |
-C     |==========================================================|
+C     *==========================================================*
 C     | SUBROUTINE EXCH_*_R* is linear                           |
 C     | only the array argument is active                        |
 C     | only myThid is required for the adjoint subroutine       |
-C     \==========================================================/
+C     *==========================================================*
+
+#ifdef ALLOW_EXCH2
+
+C   Suppress these flow directives in conjunction with EXCH2 adjoint
+
+#else
 
 CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL INPUT   = 1, 2, 3, 4, 5
 CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL OUTPUT  = 1, 2
@@ -33,4 +41,4 @@ CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS DEPEND  = 3, 4, 5
 CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS ADNAME  = ADEXCH_UV_AGRID_3D_RS
 CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS FTLNAME = EXCH_UV_AGRID_3D_RS
 
-
+#endif /* ALLOW_EXCH2 */
