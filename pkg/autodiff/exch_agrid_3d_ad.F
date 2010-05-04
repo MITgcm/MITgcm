@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.6 2010/05/04 16:01:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.7 2010/05/04 16:41:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -21,6 +21,18 @@ C     |
 C     | written and tested by Ralf Giering, Jan. 14th 1999
 C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01
 C     *==========================================================*
+
+#ifdef ALLOW_EXCH2
+
+C     For exch2 all exch_xy* routines are shown to TAF
+C     and hand-written code below is not needed.
+
+      SUBROUTINE DUMMY_EXCH_AGRID_3D_AD
+
+      RETURN
+      END
+
+#else
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -177,3 +189,5 @@ CEOP
 
       RETURN
       END
+
+#endif /* ALLOW_EXCH2 */
