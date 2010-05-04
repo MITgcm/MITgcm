@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.19 2010/04/26 03:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.20 2010/05/04 18:33:17 dimitri Exp $
 C $Name:  $
 c
 c
@@ -288,6 +288,19 @@ c     to reset climatological temperatures fields where they have
 c     values below climtempfreeze
       _RL climtempfreeze
 
+c     the following variables are used in conjunction
+c     with pkg/icefront to specify sub-glacial runoff
+      integer sgrunoffstartdate1
+      integer sgrunoffstartdate2
+      _RL     sgrunoffstartdate
+      _RL     sgrunoffperiod
+      _RL     sgrunoffconst
+      _RL     sgrunoff_exfremo_intercept 
+      _RL     sgrunoff_exfremo_slope
+      _RL     exf_inscal_sgrunoff
+      character*1 sgrunoffmask
+      parameter(  sgrunoffmask = 's' )
+
 c     the following variables are used in conjunction with pkg/obcs
 c     to describe S/T/U/V open boundary condition files
       integer obcsNstartdate1
@@ -402,6 +415,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       sfluxstartdate1,   sfluxstartdate2,
      &       evapstartdate1,    evapstartdate2,
      &       runoffstartdate1,  runoffstartdate2,
+     &       sgrunoffstartdate1,sgrunoffstartdate2,
      &       precipstartdate1,  precipstartdate2,
      &       snowprecipstartdate1, snowprecipstartdate2,
      &       ustressstartdate1, ustressstartdate2,
@@ -436,6 +450,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precipperiod,      precipstartdate,
      &       snowprecipperiod,  snowprecipstartdate,
      &       runoffperiod,      runoffstartdate,
+     &       sgrunoffperiod,    sgrunoffstartdate,
      &       ustressperiod,     ustressstartdate,
      &       vstressperiod,     vstressstartdate,
      &       uwindperiod,       uwindstartdate,
@@ -463,6 +478,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precipconst,
      &       snowprecipconst,
      &       runoffconst,
+     &       sgrunoffconst,
      &       ustressconst,
      &       vstressconst,
      &       uwindconst,
@@ -485,6 +501,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precip_exfremo_intercept,
      &       snowprecip_exfremo_intercept,
      &       runoff_exfremo_intercept,
+     &       sgrunoff_exfremo_intercept,
      &       ustress_exfremo_intercept,
      &       vstress_exfremo_intercept,
      &       uwind_exfremo_intercept,
@@ -504,6 +521,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precip_exfremo_slope,
      &       snowprecip_exfremo_slope,
      &       runoff_exfremo_slope,
+     &       sgrunoff_exfremo_slope,
      &       ustress_exfremo_slope,
      &       vstress_exfremo_slope,
      &       uwind_exfremo_slope,
@@ -637,6 +655,7 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_inscal_evap
      &                    , exf_inscal_apressure
      &                    , exf_inscal_runoff
+     &                    , exf_inscal_sgrunoff
      &                    , exf_inscal_swdown
      &                    , exf_inscal_lwdown
      &                    , exf_outscal_hflux
