@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1260 2010/04/30 13:11:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1261 2010/05/04 16:03:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - include PACKAGES_CONFIG.h in exch*ad.flow & exch*ad.F 
+    (not supposed to be in CPP_OPTIONS.h) to get ALLOW_EXCH2 defined correctly.
+   + clean-up comments (_RS is not always real*4)
+  - fix bug in ADEXCH_UV_3D_RX (without EXCH2, was calling the forward exch S/R)
+  - add a stop in ADEXCH_UV_AGRID_3D_RX if trying to use it with EXCH2:
+    was calling a forward exch2, which is wrong ; used in SEAICE & EXF pkgs.
 o testreport (AD-tests):
   no longer link files from dir "../input" (1rst link files from
   "../input_ad.[xx]" if secondary test "xx" and then from "../input_ad")
