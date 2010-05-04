@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.flow,v 1.6 2008/06/14 16:15:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.flow,v 1.7 2010/05/04 00:31:31 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "PACKAGES_CONFIG.h"
 
-C     /==========================================================\
+C     *==========================================================*
 C     | TAMC flow directives                                     |
 C     | for library subroutines    exch_uv_xy_rs  exch_uv_xyz_rs |
 C     |                            exch_uv_xy_rl  exch_uv_xyz_rl |
-C     |==========================================================|
+C     *==========================================================*
 C     | These directives are for standard adjoint code           |
 C     | generation (vector Jacobian product).                    |
 C     |   tamc -reverse  ....                                    |
@@ -15,11 +15,11 @@ C     |                                                          |
 C     | written and tested by Ralf Giering, Jan. 14th 1999       |
 C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
 C     | extended to tangent linear code heimbach@mit.edu Jan-02  |
-C     |==========================================================|
+C     *==========================================================*
 C     | SUBROUTINE EXCH_UV_*_R* is linear                        |
 C     | only the array argument is active                        |
 C     | only myThid is required for the adjoint subroutine       |
-C     \==========================================================/
+C     *==========================================================*
 
 #ifdef ALLOW_EXCH2
 
