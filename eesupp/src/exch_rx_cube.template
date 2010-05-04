@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_rx_cube.template,v 1.5 2009/09/17 18:09:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_rx_cube.template,v 1.6 2010/05/04 00:39:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -91,8 +91,8 @@ C     theCornerMode     :: Holds working copy of corner mode
 C     I,J,K,bl,bt,bn,bs :: Loop and index counters
 C     be,bw
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER theSimulationMode
-      INTEGER theCornerMode
+c     INTEGER theSimulationMode
+c     INTEGER theCornerMode
       INTEGER I,J,K
       INTEGER bl,bt,bn,bs,be,bw
 C     == Statement function ==
@@ -102,6 +102,11 @@ C               six face cube.
       tilemod(I)=1+mod(I-1+6,6)
 CEOP
 
+      IF ( simulationMode.EQ.REVERSE_SIMULATION ) THEN
+        WRITE(msgBuf,'(A)') 'EXCH_RX_CUBE: AD mode not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: EXCH_RX_CUBE: no AD code'
+      ENDIF
       IF ( sNx.NE.sNy .OR.
      &     nSx.NE.6 .OR. nSy.NE.1 .OR.
      &     nPx.NE.1 .OR. nPy.NE.1 ) THEN
@@ -113,8 +118,8 @@ CEOP
         STOP 'ABNORMAL END: EXCH_RX_CUBE: Wrong Tiling'
       ENDIF
 
-      theSimulationMode = simulationMode
-      theCornerMode     = cornerMode
+c     theSimulationMode = simulationMode
+c     theCornerMode     = cornerMode
 
 C     For now tile<->tile exchanges are sequentialised through
 C     thread 1. This is a temporary feature for preliminary testing until
