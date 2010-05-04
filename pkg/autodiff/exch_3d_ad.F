@@ -1,29 +1,33 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.5 2010/03/22 02:15:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.6 2010/05/04 16:00:18 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SUBROUTINEs
-C     |              adexch_3d_rs                                |
-C     |              adexch_3d_rl                                |
-C     |              adexch_uv_3d_rs                             |
-C     |              adexch_uv_3d_rl                             |
-C     |              adexch_z_3d_rs                              |
-C     |              adexch_z_3d_rl                              |
-C     | o adjoint routines to exchange routines                  |
-C     |==========================================================|
-C     | These routines essentially are calling the original      |
-C     | routines in reverse mode.                                |
-C     | These are regular adjoint routines with no innermost     |
-C     | dimension added.                                         |
-C     | Calls to these routines will be generated automatically  |
-C     | by TAMC if correct flow directives are given             |
-C     |   tamc -reverse ....                                     |
-C     |                                                          |
-C     | written and tested by Ralf Giering, Jan. 14th 1999       |
-C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01    |
-C     \==========================================================/
-
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+C--  File exch_3d_ad.F: adjoint routines to 3-D exchange routines
+C--   Contents
+C--   o DUMMY_EXCH_3D_AD
+C--   o ADEXCH_3D_RS
+C--   o ADEXCH_3D_RL
+C--   o ADEXCH_UV_3D_RS
+C--   o ADEXCH_UV_3D_RL
+C--   o ADEXCH_Z_3D_RS
+C--   o ADEXCH_Z_3D_RL
+
+C     *==========================================================*
+C     | These routines essentially are calling the original
+C     | routines in reverse mode.
+C     | These are regular adjoint routines with no innermost
+C     | dimension added.
+C     | Calls to these routines will be generated automatically
+C     | by TAMC if correct flow directives are given
+C     |   tamc -reverse ....
+C     |
+C     | written and tested by Ralf Giering, Jan. 14th 1999
+C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01
+C     *==========================================================*
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_EXCH2
 
@@ -37,20 +41,19 @@ C     and hand-written code below is not needed.
 
 #else
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ADEXCH_3D_RS
 
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_3D_RS(
-     I                       myNz, myThid,
-     U                       adphi
-     &                       )
+     I                         myNz, myThid,
+     U                         adphi )
 #else
       SUBROUTINE ADEXCH_3D_RS(
-     U                       adphi,
-     I                       myNz, myThid
-     &                       )
+     U                         adphi,
+     I                         myNz, myThid )
 #endif
 
 C     !DESCRIPTION:
@@ -67,8 +70,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -81,16 +82,10 @@ C     myThid :: My thread id.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       :: Overlap extents in west, east, north, south.
-C     exchWidth[XY]  :: Extent of regions that will be exchanged.
+C     OL[wens]      :: Overlap extents in west, east, north, south.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-
 CEOP
-
-#ifdef ALLOW_EXCH2
-      CALL EXCH2_3D_RS( adphi, myNz, myThid )
-      RETURN
-#endif
 
       OLw        = OLx
       OLe        = OLx
@@ -98,12 +93,6 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_RS_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -119,20 +108,19 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ADEXCH_3D_RL
 
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_3D_RL(
-     I                       myNz, myThid,
-     U                       adphi
-     &                       )
+     I                         myNz, myThid,
+     U                         adphi )
 #else
       SUBROUTINE ADEXCH_3D_RL(
-     U                       adphi,
-     I                       myNz, myThid
-     &                       )
+     U                         adphi,
+     I                         myNz, myThid )
 #endif
 
 C     !DESCRIPTION:
@@ -149,8 +137,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -163,16 +149,10 @@ C     myThid :: My thread id.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       :: Overlap extents in west, east, north, south.
-C     exchWidth[XY]  :: Extent of regions that will be exchanged.
+C     OL[wens]      :: Overlap extents in west, east, north, south.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-
 CEOP
-
-#ifdef ALLOW_EXCH2
-      CALL EXCH2_3D_RL( adphi, myNz, myThid )
-      RETURN
-#endif
 
       OLw        = OLx
       OLe        = OLx
@@ -180,12 +160,6 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_RL_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -201,19 +175,19 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ADEXCH_UV_3D_RS
 
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_3D_RS(
-     I                          withSigns, myNz, myThid,
-     U                          adUphi, adVphi )
+     I                            withSigns, myNz, myThid,
+     U                            adUphi, adVphi )
 #else
       SUBROUTINE ADEXCH_UV_3D_RS(
-     U                          adUphi, adVphi,
-     I                          withSigns, myNz, myThid
-     &                          )
+     U                            adUphi, adVphi,
+     I                            withSigns, myNz, myThid )
 #endif
 
 C     !DESCRIPTION:
@@ -231,8 +205,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -250,17 +222,10 @@ C     myThid :: My thread id.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       :: Overlap extents in west, east, north, south.
-C     exchWidth[XY]  :: Extent of regions that will be exchanged.
+C     OL[wens]      :: Overlap extents in west, east, north, south.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-
 CEOP
-#ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_3D_RS(
-     U                     adUphi, adVphi,
-     I                     withSigns, myNz, myThid )
-      RETURN
-#endif
 
       OLw        = OLx
       OLe        = OLx
@@ -268,31 +233,26 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_UV_RS_CUBE( adUphi, adVphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ELSE
        CALL EXCH_RS( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
        CALL EXCH_RS( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ADEXCH_UV_3D_RL
 
@@ -304,8 +264,7 @@ C     !INTERFACE:
 #else
       SUBROUTINE ADEXCH_UV_3D_RL(
      U                          adUphi, adVphi,
-     I                          withSigns, myNz, myThid
-     &                          )
+     I                          withSigns, myNz, myThid )
 #endif
 
 C     !DESCRIPTION:
@@ -323,8 +282,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -342,17 +299,10 @@ C     myThid :: My thread id.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       :: Overlap extents in west, east, north, south.
-C     exchWidth[XY]  :: Extent of regions that will be exchanged.
+C     OL[wens]      :: Overlap extents in west, east, north, south.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-
 CEOP
-#ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_3D_RL(
-     U                     adUphi, adVphi,
-     I                     withSigns, myNz, myThid )
-      RETURN
-#endif
 
       OLw        = OLx
       OLe        = OLx
@@ -360,76 +310,78 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_UV_RL_CUBE( adUphi, adVphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ELSE
        CALL EXCH_RL( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
        CALL EXCH_RL( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
       END
 
-CStartOfInterface
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: ADEXCH_Z_3D_RS
+
+C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_z_3d_rs(
-     I                         myNz, myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_Z_3D_RS(
+     I                           myNz, myThid,
+     U                           adphi )
 #else
-      SUBROUTINE adexch_z_3d_rs(
-     U                         adphi,
-     I                         myNz, myThid
-     &                       )
+      SUBROUTINE ADEXCH_Z_3D_RS(
+     U                           adphi,
+     I                           myNz, myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_Z_3D_RS   adjoint of  EXCH_Z_3D_RS     |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_Z_3D_RS   adjoint of  EXCH_Z_3D_RS
+C     | o Handle exchanges for _RS, two-dimensional arrays.
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     phi    - Array which overlap regions are to be exchanged
-C     myThid - My thread id.
-      INTEGER myNz
+C     phi    :: Array with overlap regions are to be exchanged
+C     myNz   :: 3rd dimension of array to exchange
+C     myThid :: My thread id.
       _RS     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      INTEGER myNz
       INTEGER myThid
-CEndOfInterface
-C     == Local variables ==
-C     OL[wens]       - Overlap extents in west, east, north, south.
-C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
 
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     OL[wens]       :: Overlap extents in west, east, north, south.
+C     exchWidth[XYZ] :: Extent of regions that will be exchanged.
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+CEOP
+
+#ifdef ALLOW_EXCH2
+      STOP 'ABNORMAL END: Should never enter ADEXCH_Z_3D_RS'
+#endif
       OLw        = OLx
       OLe        = OLx
       OLn        = OLy
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_Z_RS_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -445,53 +397,59 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: ADEXCH_UV_3D_RL
+
+C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_z_3d_rl(
-     I                         myNz, myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_Z_3D_RL(
+     I                         myNz, myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_z_3d_rl(
+      SUBROUTINE ADEXCH_Z_3D_RL(
      U                         adphi,
-     I                         myNz, myThid
-     &                       )
+     I                         myNz, myThid )
 #endif
 
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_Z_3D_RL   adjoint of  EXCH_Z_3D_RL   |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_Z_3D_RL   adjoint of  EXCH_Z_3D_RL
+C     | o Handle exchanges for _RL, two-dimensional arrays.
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     phi    - Array which overlap regions are to be exchanged
-C     myThid - My thread id.
-      INTEGER myNz
+C     phi    :: Array with overlap regions are to be exchanged
+C     myNz   :: 3rd dimension of array to exchange
+C     myThid :: My thread id.
       _RL     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      INTEGER myNz
       INTEGER myThid
-CEndOfInterface
-C     == Local variables ==
-C     OL[wens]       - Overlap extents in west, east, north, south.
-C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
 
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     OL[wens]       :: Overlap extents in west, east, north, south.
+C     exchWidth[XYZ] :: Extent of regions that will be exchanged.
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+CEOP
+
+#ifdef ALLOW_EXCH2
+      STOP 'ABNORMAL END: Should never enter ADEXCH_Z_3D_RS'
+#endif
       OLw        = OLx
       OLe        = OLx
       OLn        = OLy
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_Z_RL_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
