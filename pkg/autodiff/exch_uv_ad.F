@@ -1,24 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.5 2010/03/22 02:15:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.6 2010/05/04 15:08:45 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SUBROUTINEs  adexch_uv_xy_rs adexch_uv_xyz_rs            |
-C     |              adexch_uv_xy_rl adexch_uv_xyz_rl            |
-C     | o adjoint routines to exchange routines                  |
-C     |==========================================================|
-C     | These routines essentially are calling the original      |
-C     | routines in reverse mode.                                |
-C     | These are regular adjoint routines with no innermost     |
-C     | dimension added.                                         |
-C     | Calls to these routines will be generated automatically  |
-C     | by TAMC if correct flow directives are given             |
-C     |   tamc -reverse ....                                     |
-C     |                                                          |
-C     | written and tested by Ralf Giering, Jan. 14th 1999       |
-C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01    |
-C     \==========================================================/
-
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+C--  File exch_uv_ad.F: adjoint routines to exchange vector routines
+C--   Contents
+C--   o DUMMY_EXCH_UV_AD
+C--   o ADEXCH_UV_XY_RS
+C--   o ADEXCH_UV_XY_RL
+C--   o ADEXCH_UV_XYZ_RS
+C--   o ADEXCH_UV_XYZ_RL
+
+C     *==========================================================*
+C     | These routines essentially are calling the original
+C     | routines in reverse mode.
+C     | These are regular adjoint routines with no innermost
+C     | dimension added.
+C     | Calls to these routines will be generated automatically
+C     | by TAMC if correct flow directives are given
+C     |   tamc -reverse ....
+C     |
+C     | written and tested by Ralf Giering, Jan. 14th 1999
+C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01
+C     *==========================================================*
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_EXCH2
 
@@ -34,25 +41,23 @@ C     and hand-written code below is not needed.
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_uv_xy_rs(
-     I                       withSigns, myThid,
-     U                       aduphi, advphi
-     &                       )
+      SUBROUTINE ADEXCH_UV_XY_RS(
+     I                        withSigns, myThid,
+     U                        aduphi, advphi )
 #else
-      SUBROUTINE adexch_uv_xy_rs(
-     U                       aduphi, advphi,
-     I                       withSigns, myThid
-     &                       )
+      SUBROUTINE ADEXCH_UV_XY_RS(
+     U                        aduphi, advphi,
+     I                        withSigns, myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_UV_XY_RS   adjoint of  EXCH_UV_XY_RS   |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_UV_XY_RS   adjoint of  EXCH_UV_XY_RS
+C     | o Handle exchanges for _RS, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
       implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -105,28 +110,27 @@ c       _EXCH_XY_RS( advphi, myThid )
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_uv_xy_rl(
-     I                       withSigns, myThid,
-     U                       aduphi, advphi
-     &                       )
+      SUBROUTINE ADEXCH_UV_XY_RL(
+     I                        withSigns, myThid,
+     U                        aduphi, advphi )
 #else
-      SUBROUTINE adexch_uv_xy_rl(
-     U                       aduphi, advphi,
-     I                       withSigns, myThid
-     &                       )
+      SUBROUTINE ADEXCH_UV_XY_RL(
+     U                        aduphi, advphi,
+     I                        withSigns, myThid )
 #endif
 
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_UV_XY_RL   adjoint of  EXCH_UV_XY_RL   |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_UV_XY_RL   adjoint of  EXCH_UV_XY_RL
+C     | o Handle exchanges for _RL, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -179,27 +183,26 @@ c       _EXCH_XY_RL( advphi, myThid )
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_uv_xyz_rs(
-     I                       withSigns, myThid,
-     U                       aduphi, advphi
-     &                       )
+      SUBROUTINE ADEXCH_UV_XYZ_RS(
+     I                         withSigns, myThid,
+     U                         aduphi, advphi )
 #else
-      SUBROUTINE adexch_uv_xyz_rs(
-     U                       aduphi, advphi,
-     I                       withSigns, myThid
-     &                       )
+      SUBROUTINE ADEXCH_UV_XYZ_RS(
+     U                         aduphi, advphi,
+     I                         withSigns, myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_UV_XYZ_RS   adjoint of  EXCH_UV_XYZ_RS |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_UV_XYZ_RS   adjoint of  EXCH_UV_XYZ_RS
+C     | o Handle exchanges for _RS, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -252,28 +255,27 @@ c       _EXCH_XY_RS( advphi, myThid )
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_uv_xyz_rl(
-     I                       withSigns, myThid,
-     U                       aduphi, advphi
-     &                       )
+      SUBROUTINE ADEXCH_UV_XYZ_RL(
+     I                         withSigns, myThid,
+     U                         aduphi, advphi )
 #else
-      SUBROUTINE adexch_uv_xyz_rl(
-     U                       aduphi, advphi,
-     I                       withSigns, myThid
-     &                       )
+      SUBROUTINE ADEXCH_UV_XYZ_RL(
+     U                         aduphi, advphi,
+     I                         withSigns, myThid )
 #endif
 
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_UV_XYZ_RL   adjoint of  EXCH_UV_XYZ_RL |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_UV_XYZ_RL   adjoint of  EXCH_UV_XYZ_RL
+C     | o Handle exchanges for _RL, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged

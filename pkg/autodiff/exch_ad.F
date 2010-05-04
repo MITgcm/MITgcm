@@ -1,26 +1,35 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_ad.F,v 1.7 2010/03/22 02:15:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_ad.F,v 1.8 2010/05/04 15:08:45 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SUBROUTINEs  adexch_xy_rs adexch_xyz_rs                  |
-C     |              adexch_xy_rl adexch_xyz_rl                  |
-C     |              adexch_xz_rs adexch_yz_rs                   |
-C     |              adexch_xz_rl adexch_yz_rl                   |
-C     | o adjoint routines to exchange routines                  |
-C     |==========================================================|
-C     | These routines essentially are calling the original      |
-C     | routines in reverse mode.                                |
-C     | These are regular adjoint routines with no innermost     |
-C     | dimension added.                                         |
-C     | Calls to these routines will be generated automatically  |
-C     | by TAMC if correct flow directives are given             |
-C     |   tamc -reverse ....                                     |
-C     |                                                          |
-C     | written and tested by Ralf Giering, Jan. 14th 1999       |
-C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01    |
-C     \==========================================================/
-
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+C--  File exch_ad.F: adjoint routines to exchange routines
+C--   Contents
+C--   o DUMMY_EXCH_AD
+C--   o ADEXCH_XY_RS
+C--   o ADEXCH_XY_RL
+C--   o ADEXCH_XYZ_RS
+C--   o ADEXCH_XYZ_RL
+C--   o ADEXCH_XZ_RS
+C--   o ADEXCH_XZ_RL
+C--   o ADEXCH_YZ_RS
+C--   o ADEXCH_YZ_RL
+
+C     *==========================================================*
+C     | These routines essentially are calling the original
+C     | routines in reverse mode.
+C     | These are regular adjoint routines with no innermost
+C     | dimension added.
+C     | Calls to these routines will be generated automatically
+C     | by TAMC if correct flow directives are given
+C     |   tamc -reverse ....
+C     |
+C     | written and tested by Ralf Giering, Jan. 14th 1999
+C     | added new S/R for _xz_ , _yz_ heimbach@mit.edu May-01
+C     *==========================================================*
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_EXCH2
 
@@ -36,25 +45,23 @@ C     and hand-written code below is not needed.
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_xy_rs(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_XY_RS(
+     I                         myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_xy_rs(
-     U                         adphi
-     I                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_XY_RS(
+     U                         adphi,
+     I                         myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_XY_RS   adjoint of  EXCH_XY_RS         |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_XY_RS   adjoint of  EXCH_XY_RS
+C     | o Handle exchanges for _RS, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
       implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -77,12 +84,6 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_RS_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -98,27 +99,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_xy_rl(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_XY_RL(
+     I                         myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_xy_rl(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_XY_RL(
+     U                         adphi,
+     I                         myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_XY_RL   adjoint of  EXCH_XY_RL         |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_XY_RL   adjoint of  EXCH_XY_RL
+C     | o Handle exchanges for _RL, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -141,12 +141,6 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_RL_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -162,27 +156,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_xyz_rs(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_XYZ_RS(
+     I                          myThid,
+     U                          adphi )
 #else
-      SUBROUTINE adexch_xyz_rs(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_XYZ_RS(
+     U                          adphi,
+     I                          myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_XYZ_RS   adjoint of  EXCH_XYZ_RS       |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_XYZ_RS   adjoint of  EXCH_XYZ_RS
+C     | o Handle exchanges for _RS, tree-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -205,12 +198,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_RS_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -226,27 +213,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_xyz_rl(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_XYZ_RL(
+     I                          myThid,
+     U                          adphi )
 #else
-      SUBROUTINE adexch_xyz_rl(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_XYZ_RL(
+     U                          adphi,
+     I                          myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_XYZ_RL   adjoint of  EXCH_XYZ_RL       |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_XYZ_RL   adjoint of  EXCH_XYZ_RL
+C     | o Handle exchanges for _RL, tree-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -269,12 +255,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
        CALL EXCH_RL_CUBE( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
@@ -290,27 +270,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_xz_rs(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_XZ_RS(
+     I                         myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_xz_rs(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_XZ_RS(
+     U                         adphi,
+     I                         myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_XZ_RS   adjoint of  EXCH_XZ_RS         |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_XZ_RS   adjoint of  EXCH_XZ_RS
+C     | o Handle exchanges for _RS, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -333,12 +312,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = 1
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       CALL EXCH_RS( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -347,27 +320,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_xz_rl(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_XZ_RL(
+     I                         myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_xz_rl(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_XZ_RL(
+     U                         adphi,
+     I                         myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_XZ_RL   adjoint of  EXCH_XZ_RL         |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_XZ_RL   adjoint of  EXCH_XZ_RL
+C     | o Handle exchanges for _RL, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -390,12 +362,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = 1
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       CALL EXCH_RL( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -404,27 +370,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_yz_rs(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_YZ_RS(
+     I                         myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_yz_rs(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_YZ_RS(
+     U                         adphi,
+     I                         myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_YZ_RS   adjoint of  EXCH_YZ_RS         |
-C     | o Handle exchanges for real*4, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_YZ_RS   adjoint of  EXCH_YZ_RS
+C     | o Handle exchanges for _RS, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -447,12 +412,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = 1
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       CALL EXCH_RS( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -461,27 +420,26 @@ C                begine.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-      SUBROUTINE adexch_yz_rl(
-     I                         myThid
-     U                       , adphi
-     &                       )
+      SUBROUTINE ADEXCH_YZ_RL(
+     I                         myThid,
+     U                         adphi )
 #else
-      SUBROUTINE adexch_yz_rl(
-     I                         adphi
-     U                       , myThid
-     &                       )
+      SUBROUTINE ADEXCH_YZ_RL(
+     U                         adphi,
+     I                         myThid )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE ADEXCH_YZ_RL   adjoint of  EXCH_YZ_RL         |
-C     | o Handle exchanges for real*8, two-dimensional arrays.   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE ADEXCH_YZ_RL   adjoint of  EXCH_YZ_RL
+C     | o Handle exchanges for _RL, two-dimensional arrays.
+C     *==========================================================*
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+c#include "EESUPPORT.h"
 
 C     === Routine arguments ===
 C     phi    - Array which overlap regions are to be exchanged
@@ -504,12 +462,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = 1
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       CALL EXCH_RL( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
