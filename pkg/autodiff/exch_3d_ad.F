@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.6 2010/05/04 16:00:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.7 2010/05/05 19:44:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -362,8 +362,8 @@ C     === Routine arguments ===
 C     phi    :: Array with overlap regions are to be exchanged
 C     myNz   :: 3rd dimension of array to exchange
 C     myThid :: My thread id.
-      _RS     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myNz
+      _RS     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -430,8 +430,8 @@ C     === Routine arguments ===
 C     phi    :: Array with overlap regions are to be exchanged
 C     myNz   :: 3rd dimension of array to exchange
 C     myThid :: My thread id.
-      _RL     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myNz
+      _RL     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
