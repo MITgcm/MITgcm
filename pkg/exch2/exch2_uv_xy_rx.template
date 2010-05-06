@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.13 2009/06/28 00:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.14 2010/05/06 23:28:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -73,11 +73,11 @@ CEOP
        CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
        CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
       IF (useCubedSphereExchange) THEN
        DO bj=myByLo(myThid),myByHi(myThid)

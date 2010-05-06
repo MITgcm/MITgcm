@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_z_3d_rx.template,v 1.5 2010/04/23 20:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_z_3d_rx.template,v 1.6 2010/05/06 23:28:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -86,14 +86,14 @@ C-     save 2 corners value (in case we find 1 "missing corner")
        ENDDO
       ENDIF
 
-       CALL EXCH2_RX1_CUBE( phi, 'T ',
+       CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX1_CUBE( phi, 'T ',
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
       IF (useCubedSphereExchange) THEN
 

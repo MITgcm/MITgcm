@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.6 2009/06/28 00:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.7 2010/05/06 23:28:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -72,23 +72,23 @@ CEOP
 
 C--   First call the exchanges for the two components
 
-       CALL EXCH2_RX1_CUBE( uPhi, 'T ',
+       CALL EXCH2_RX1_CUBE( uPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX1_CUBE( uPhi, 'T ',
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH2_RX1_CUBE( uPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
-       CALL EXCH2_RX1_CUBE( vPhi, 'T ',
+       CALL EXCH2_RX1_CUBE( vPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX1_CUBE( vPhi, 'T ',
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH2_RX1_CUBE( vPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
 C- note: can substitute the low-level S/R calls above with:
 c      CALL EXCH2_3D_RX( uPhi, myNz, myThid )
@@ -103,8 +103,7 @@ C--   Loops on tile indices:
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C-    Now choose what to do at each edge of the halo based on which face
-C     (we assume that bj is always=1)
+C-    Choose what to do at each edge of the halo based on which face we are
          myTile = W2_myTileList(bi,bj)
          myFace = exch2_myFace(myTile)
 

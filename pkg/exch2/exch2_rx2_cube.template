@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.13 2010/04/23 20:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.14 2010/05/06 23:28:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
      I            signOption, fieldCode,
      I            myOLw, myOLe, myOLn, myOLs, myNz,
      I            exchWidthX, exchWidthY,
-     I            simulationMode, cornerMode, myThid )
+     I            cornerMode, myThid )
 
 C     !DESCRIPTION:
 C     Two components vector field Exchange:
@@ -54,7 +54,6 @@ C     myThid      :: Thread number of this instance of S/R EXCH...
       CHARACTER*2 fieldCode
       INTEGER exchWidthX
       INTEGER exchWidthY
-      INTEGER simulationMode
       INTEGER cornerMode
       INTEGER myThid
 

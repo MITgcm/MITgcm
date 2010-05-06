@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.12 2010/04/23 20:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.13 2010/05/06 23:28:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -9,10 +9,10 @@ C     !ROUTINE: EXCH_RX_CUBE
 C     !INTERFACE:
       SUBROUTINE EXCH2_RX1_CUBE(
      U            array,
-     I            fieldCode,
+     I            signOption, fieldCode,
      I            myOLw, myOLe, myOLn, myOLs, myNz,
      I            exchWidthX, exchWidthY,
-     I            simulationMode, cornerMode, myThid )
+     I            cornerMode, myThid )
 
 C     !DESCRIPTION:
 C     Scalar field (1 component) Exchange:
@@ -32,6 +32,8 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     array       :: Array with edges to exchange.
+C     signOption  :: Flag controlling whether field sign depends on orientation
+C                 :: (signOption not yet implemented but needed for SM exch)
 C     fieldCode   :: field code (position on staggered grid)
 C     myOLw,myOLe :: West and East overlap region sizes.
 C     myOLn,myOLs :: North and South overlap region sizes.
@@ -44,10 +46,10 @@ C     myThid      :: my Thread Id. number
       _RX array(1-myOLw:sNx+myOLe,
      &          1-myOLs:sNy+myOLn,
      &          myNz, nSx, nSy)
+      LOGICAL signOption
       CHARACTER*2 fieldCode
       INTEGER exchWidthX
       INTEGER exchWidthY
-      INTEGER simulationMode
       INTEGER cornerMode
       INTEGER myThid
 

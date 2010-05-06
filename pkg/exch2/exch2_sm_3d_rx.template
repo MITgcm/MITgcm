@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_sm_3d_rx.template,v 1.4 2009/06/28 00:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_sm_3d_rx.template,v 1.5 2010/05/06 23:28:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -9,8 +9,8 @@ C     !ROUTINE: EXCH2_SM_3D_RX
 
 C     !INTERFACE:
       SUBROUTINE EXCH2_SM_3D_RX(
-     U                                 phi,
-     I                                 withSigns, myNz, myThid )
+     U                           phi,
+     I                           withSigns, myNz, myThid )
 
 C     !DESCRIPTION:
 C*=====================================================================*
@@ -68,14 +68,14 @@ CEOP
 
 C--   First call the exchanges
 
-       CALL EXCH2_RX1_CUBE( phi, 'T ',
+       CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX1_CUBE( phi, 'T ',
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
 C- note: can substitute the low-level S/R call above with:
 c      CALL EXCH2_3D_RX( phi, myNz, myThid )
@@ -83,16 +83,14 @@ c      CALL EXCH2_3D_RX( phi, myNz, myThid )
       IF ( useCubedSphereExchange ) THEN
 C---  using CubedSphereExchange:
 
-C--   Then we may need to switch u and v components
-C     and/or the signs depending on which cube face we are located.
+C--   Then we may need to switch the signs depending on which cube face
+C     we are located.
 
 C--   Loops on tile indices:
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C--   Then we may need to switch the signs depending on which cube face
-C      we are located (we assume that bj is always=1).
-C     Choose what to do at each edge of the halo based on which face
+C     Choose what to do at each edge of the halo based on which face we are
          myTile = W2_myTileList(bi,bj)
          myFace = exch2_myFace(myTile)
 
