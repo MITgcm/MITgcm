@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.11 2009/06/26 16:51:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.12 2010/05/06 14:02:35 jmc Exp $
 
 #  Ed Hill
 
@@ -14,12 +14,20 @@ export LC_ALL="en_US.UTF-8"
 #  Turn off stack limit for FIZHI & AD-tests
 ulimit -s unlimited
 
+#- method to acces CVS:
+ # export CVSROOT='/u/gcmpack'
+ # export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
+ # export CVS_RSH='ssh' ; cvs co -P MITgcm > /dev/null
+ # cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
+cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack'
+cmdCVS='cvs -d /u/gcmpack'
+
 TESTDIR="/tmp/jmc/test_"`hostname -s`
 MC=10
 checkOut=1
 sepDir=0
 option=
-#tst_list='adm g77 pgi gfo ifc mth'
+#tst_list='g77 adm ifc mth pgi+rs'
 tst_list='adm g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
@@ -29,12 +37,12 @@ tdir=$TESTDIR
 if test $checkOut = '0' ; then
  if test -e $tdir/MITgcm/CVS ; then
   echo $tdir/MITgcm/CVS 'exist'
-  echo -n "Update the MITgcm code from CVS pserver..."
+  echo -n "Update the MITgcm code using: $cmdCVS ..."
   cd $tdir/MITgcm
   if test $sepDir = 1 ; then
-   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d > /dev/null
+    $cmdCVS update -P -d > /dev/null
   else
-   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+    $cmdCVS update -P -d
   fi
   echo "  done"
  else
@@ -43,19 +51,17 @@ if test $checkOut = '0' ; then
  fi
 fi
 if test $checkOut = '1' ; then
-  echo -n "Creating a temp directory ..."
-  if test -e $tdir
-  then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
-  else mkdir $tdir
+  if test -e $tdir ; then
+    echo -n "Removing working copy: $tdir/MITgcm ..."
+    test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+  else
+    echo -n "Creating a working dir: $tdir ..."
+    mkdir $tdir
   fi
   echo "  done"
-  echo -n "Downloading the MITgcm code from CVS pserver..."
+  echo -n "Downloading the MITgcm code using: $cmdCVS ..."
   cd $tdir
- #export CVSROOT='/u/gcmpack'
- #export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
- #export CVS_RSH='ssh'
- #cvs co -P MITgcm > /dev/null
-  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
+  $cmdCVS co -P MITgcm > /dev/null
   echo "  done"
 else
   cd $tdir
@@ -76,8 +82,8 @@ do
   new_dir="MITgcm_$typ"
   if test -d $new_dir/CVS -a $checkOut = '0' ; then
     pushd $new_dir
-    echo -n "Update the MITgcm code from CVS pserver..."
-    cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+    echo -n "Update the MITgcm code using: $cmdCVS ..."
+    $cmdCVS update -P -d
     echo "  done"
   else
     test -e $new_dir  &&  rm -rf $new_dir
@@ -253,6 +259,7 @@ do
   export PGI=/usr/local/pkg/pgi/pgi-6.1-5
   echo "Running testreport using:"
   comm="./testreport -match $MC -dd"
+  #comm="$comm -skd tutorial_advection_in_gyre"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -264,6 +271,7 @@ do
   echo
   echo "Running testreport using:"
   comm="./testreport -match $MC -q -a jmc@mitgcm.org"
+  #comm="$comm -skd tutorial_advection_in_gyre"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
