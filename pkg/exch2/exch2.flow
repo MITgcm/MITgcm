@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2.flow,v 1.3 2009/04/27 03:44:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2.flow,v 1.4 2010/05/06 23:30:42 jmc Exp $
 C $Name:  $
 
 C------------------------------------------
@@ -35,31 +35,31 @@ c$taf SUBROUTINE exch2_r81_cube FTLNAME = exch2_r81_cube
 C------------------------------------------
 C TAF flow directives for exch2_RX2_cube
 C------------------------------------------
-c$taf SUBROUTINE exch2_rl2_cube INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14
+c$taf SUBROUTINE exch2_rl2_cube  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
 c$taf SUBROUTINE exch2_rl2_cube  OUTPUT = 1,2
 c$taf SUBROUTINE exch2_rl2_cube  ACTIVE = 1,2
-c$taf SUBROUTINE exch2_rl2_cube  DEPEND =   3,4,5,6,7,8,9,10,11,12,13,14
+c$taf SUBROUTINE exch2_rl2_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12,13
 c$taf SUBROUTINE exch2_rl2_cube  ADNAME = exch2_rl2_cube_ad
 c$taf SUBROUTINE exch2_rl2_cube FTLNAME = exch2_rl2_cube
 
-c$taf SUBROUTINE exch2_rs2_cube INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14
+c$taf SUBROUTINE exch2_rs2_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13
 c$taf SUBROUTINE exch2_rs2_cube  OUTPUT = 1,2
 c$taf SUBROUTINE exch2_rs2_cube  ACTIVE = 1,2
-c$taf SUBROUTINE exch2_rs2_cube  DEPEND =   3,4,5,6,7,8,9,10,11,12,13,14
+c$taf SUBROUTINE exch2_rs2_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12,13
 c$taf SUBROUTINE exch2_rs2_cube  ADNAME = exch2_rs2_cube_ad
 c$taf SUBROUTINE exch2_rs2_cube FTLNAME = exch2_rs2_cube
 
-c$taf SUBROUTINE exch2_r42_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch2_r42_cube  OUTPUT = 1
-c$taf SUBROUTINE exch2_r42_cube  ACTIVE = 1
-c$taf SUBROUTINE exch2_r42_cube  DEPEND =   2,3,4,5,6,7,8,9,10,11,12
+c$taf SUBROUTINE exch2_r42_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13
+c$taf SUBROUTINE exch2_r42_cube  OUTPUT = 1,2
+c$taf SUBROUTINE exch2_r42_cube  ACTIVE = 1,2
+c$taf SUBROUTINE exch2_r42_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12,13
 c$taf SUBROUTINE exch2_r42_cube  ADNAME = exch2_r42_cube_ad
 c$taf SUBROUTINE exch2_r42_cube FTLNAME = exch2_r42_cube
 
-c$taf SUBROUTINE exch2_r82_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch2_r82_cube  OUTPUT = 1
-c$taf SUBROUTINE exch2_r82_cube  ACTIVE = 1
-c$taf SUBROUTINE exch2_r82_cube  DEPEND =   2,3,4,5,6,7,8,9,10,11,12
+c$taf SUBROUTINE exch2_r82_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13
+c$taf SUBROUTINE exch2_r82_cube  OUTPUT = 1,2
+c$taf SUBROUTINE exch2_r82_cube  ACTIVE = 1,2
+c$taf SUBROUTINE exch2_r82_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12,13
 c$taf SUBROUTINE exch2_r82_cube  ADNAME = exch2_r82_cube_ad
 c$taf SUBROUTINE exch2_r82_cube FTLNAME = exch2_r82_cube
 
