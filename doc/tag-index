@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1263 2010/05/06 23:42:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1264 2010/05/07 18:37:44 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - new S/R rotate_uv2en_rl (..._rs) that rotates vector fields.
 o pkg/exch2:
   - remove "simulationMode" from arg. list of S/R EXCH2_RX1,2_CUBE ; 
   - add argument "signOption" to EXCH2_RX1_CUBE (will be needed for SM exch).
