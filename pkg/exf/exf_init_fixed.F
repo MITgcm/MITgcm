@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.13 2010/04/26 03:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.14 2010/05/07 23:34:09 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -28,6 +28,9 @@ C     === Global variables ===
 #include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#ifdef ALLOW_ICEFRONT
+# include "ICEFRONT.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS.h"
 #endif
@@ -306,6 +309,25 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
 #endif /* ALLOW_RUNOFF */
+
+#ifdef ALLOW_ICEFRONT
+      IF ( sgrunofffile .NE. ' ' .AND. sgrunoffperiod .GT. 0. ) THEN
+       CALL cal_FullDate  ( sgrunoffstartdate1, sgrunoffstartdate2,
+     &      date_array, myThid )
+       IF ( useExfYearlyFields ) THEN
+        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
+        yearStartDate(2) = 0
+        yearStartDate(3) = date_array(3)
+        yearStartDate(4) = date_array(4)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime, sgrunoffstartdate      ,myThid)
+       ELSE
+        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime, sgrunoffstartdate      ,myThid)
+        sgrunoffstartdate  =  modelstart + sgrunoffstartdate
+       ENDIF
+      ENDIF
+#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN
