@@ -1,13 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1265 2010/05/09 17:05:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1266 2010/05/09 23:12:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o model/src:
-  1rst version of a new driver S/R to turn-off output freq and flags after the
-  1rst forward sweep, to avoid over-writing output files during recomputations
-  (& grdchk); called from cost_final.F (and ctrl_init_ctrlvar.F ?).
+ a) 1rst version of a new driver S/R to turn-off output freq and flags after the
+   1rst forward sweep, to avoid over-writing output files during recomputations
+   recomputations (& grdchk); called from cost_final.F (& ctrl_init_ctrlvar.F ?)
+ b) 2nd version:
+  - add specific pkg S/R for seaice & ptracers (called from S/R TURNOFF_MODEL_IO);
+  - switch-off more output flags (exf_monFreq, chkPtFreq, dumpInitAndLast,
+     writePickupAtEnd) + seaice & ptracers output;
+  - do not switch off MNC flags (otherwise, won't get admonitor netcdf file)
 o model/src:
   - new S/R rotate_uv2en_rl (..._rs) that rotates vector fields.
 o pkg/exch2:
