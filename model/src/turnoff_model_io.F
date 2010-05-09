@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.1 2010/05/09 16:17:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.2 2010/05/09 22:54:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -15,7 +15,7 @@ C     | SUBROUTINE TURNOFF_MODEL_IO
 C     | o Turn off some of the model output flags
 C     *==========================================================*
 C     | Used in adjoint simulation (and called after the first
-C     |  forward sweep) to avoid writing outputmultiple times (if
+C     |  forward sweep) to avoid writing output multiple times (if
 C     |  recomputations and/or grdchk) with the same iter number.
 C     *==========================================================*
 C     \ev
@@ -26,19 +26,14 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-# include "MNC_PARAMS.h"
+c#ifdef ALLOW_MNC
+c# include "MNC_PARAMS.h"
+c#endif
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
 #endif
-c#ifdef ALLOW_EXF
-c# include "EXF_PARAM.h"
-c#endif
-c#ifdef ALLOW_SEAICE
-c# include "SEAICE_PARAMS.h"
-c#endif
-
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     seqFlag :: flag that indicates where this S/R is called from:
 C             :: =0 called at the end of S/R COST_FINAL
 C             :: =1 called at initialisation when using DIVA
@@ -47,39 +42,37 @@ C     myThid  :: My Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi,bj
-      INTEGER i,j,k
-      INTEGER ks
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       _BARRIER
 
+C--   only master-thread resets shared flags (in common block)
       _BEGIN_MASTER( myThid )
+
 C--   Set output freq. to zero to avoid re-write of
 C     averaged fields in reverse checkpointing loops
       monitorFreq  = 0.
       dumpFreq     = 0.
       taveFreq     = 0.
-c     chkPtFreq    = 0.
+      chkPtFreq    = 0.
       pChkPtFreq   = 0.
-c     dumpInitAndLast = .FALSE.
+      dumpInitAndLast = .FALSE.
+      writePickupAtEnd= .FALSE.
 
 #ifdef ALLOW_MNC
-      monitor_mnc  = .FALSE.
-      snapshot_mnc = .FALSE.
-      timeave_mnc  = .FALSE.
+C--   Not the best solution to fix some MNC output, since it is likely
+C     that the same problem exists when we do not use MNC. A better fix
+C     is to switch off the specific output freq; leave this commented out.
+c     monitor_mnc  = .FALSE.
+c     snapshot_mnc = .FALSE.
+c     timeave_mnc  = .FALSE.
 #endif
 
-c#ifdef ALLOW_EXF
-c     exf_monFreq = 0.
-c#endif
-c#ifdef ALLOW_SEAICE
-c     SEAICE_monFreq  = 0.
-c     SEAICE_dumpFreq = 0.
-c     SEAICE_taveFreq = 0.
-c#endif
+#ifdef ALLOW_EXF
+C-    should call a S/R EXF_TURNOFF_IO (like SEAICE) to reset this flag
+      IF ( useEXF ) exf_monFreq = 0.
+#endif
 
 C--   Disable SBO output
       useSBO       = .FALSE.
@@ -90,6 +83,21 @@ C     this if we want to use diagnostics to output adjoint-variables)
 
       _END_MASTER( myThid )
 
+C--   Package specific S/R to turn-off IO flags (all threads do call S/R)
+
+#ifdef ALLOW_SEAICE
+      IF ( useSEAICE ) THEN
+        CALL SEAICE_TURNOFF_IO( seqFlag, myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) THEN
+        CALL PTRACERS_TURNOFF_IO( seqFlag, myThid )
+      ENDIF
+#endif
+
+C--   each thread waits for flags to be reset.
       _BARRIER
 
       RETURN
