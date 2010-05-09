@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.4 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.5 2010/05/09 22:40:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,11 +13,11 @@ C     | SUBROUTINE UPDATE_MASKS_ETC
 C     | o Re-initialise masks and topography factors after a new
 C     |   hFacC has been calculated by the minimizer
 C     *==========================================================*
-C     | These arrays are used throughout the code and describe    
-C     | the topography of the domain through masks (0s and 1s)    
-C     | and fractional height factors (0<hFac<1). The latter      
-C     | distinguish between the lopped-cell and full-step         
-C     | topographic representations.                              
+C     | These arrays are used throughout the code and describe
+C     | the topography of the domain through masks (0s and 1s)
+C     | and fractional height factors (0<hFac<1). The latter
+C     | distinguish between the lopped-cell and full-step
+C     | topographic representations.
 C     *==========================================================*
 C     | code taken from ini_masks_etc.F
 C     *==========================================================*
@@ -34,7 +34,7 @@ C     === Global variables ===
 Cml we need optimcycle for storing the new hFaC(C/W/S) and depth
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "optim.h"
-#endif 
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -157,15 +157,16 @@ CmlC     - end bi,bj loops.
 Cml       ENDDO
 Cml      ENDDO
 
-C     CALL PLOT_FIELD_XYRS( tmpfld, 
-C    &         'Model Depths K Index' , 1, myThid )
-CML I assume that R_low is not changed anywhere else in the code
-CML and since it is not changed in this routine, we do not need to 
+      IF ( debugLevel.GE.debLevB ) THEN
+        _BARRIER
+        CALL PLOT_FIELD_XYRS( R_low,
+     &         'Model R_low (update_masks_etc)', 1, myThid )
+CML I assume that Ro_surf is not changed anywhere else in the code
+CML and since it is not changed in this routine, we do not need to
 CML print it again.
-CML      CALL PLOT_FIELD_XYRS(R_low,
-CML     &         'Model R_low (ini_masks_etc)', 1, myThid)
-      CALL PLOT_FIELD_XYRS(Ro_surf,
-     &         'Model Ro_surf (update_masks_etc)', 1, myThid)
+CML     CALL PLOT_FIELD_XYRS( Ro_surf,
+CML  &         'Model Ro_surf (update_masks_etc)', 1, myThid )
+      ENDIF
 
 C     Calculate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -192,7 +193,7 @@ CML   function MIN is involved which does not have a continuous derivative
 CML   for MIN(x,y) at y=x.
 CML   The thin walls representation has been moved into this loop, that is
 CML   before the call to EXCH_UV_XVY_RS, because TAMC will prefer it this
-CML   way. On the other hand, this might cause difficulties in some 
+CML   way. On the other hand, this might cause difficulties in some
 CML   configurations.
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -238,11 +239,11 @@ Cml              hFacS(I,J,K,bi,bj)=
 #if (defined (ALLOW_AUTODIFF_TAMC) && \
      defined (ALLOW_AUTODIFF_MONITOR) && \
      defined (ALLOW_DEPTH_CONTROL))
-C     Include call to a dummy routine. Its adjoint will be 
+C     Include call to a dummy routine. Its adjoint will be
 C     called at the proper place in the adjoint code.
-C     The adjoint routine will print out adjoint values 
-C     if requested. The location of the call is important, 
-C     it has to be after the adjoint of the exchanges 
+C     The adjoint routine will print out adjoint values
+C     if requested. The location of the call is important,
+C     it has to be after the adjoint of the exchanges
 C     (DO_GTERM_BLOCKING_EXCHANGES).
 Cml      CALL DUMMY_IN_HFAC( 'W', 0, myThid )
 Cml      CALL DUMMY_IN_HFAC( 'S', 0, myThid )
@@ -252,35 +253,38 @@ Cml      CALL EXCH_UV_XYZ_RL(hFacW,hFacS,.FALSE.,myThid)
 #if (defined (ALLOW_AUTODIFF_TAMC) && \
      defined (ALLOW_AUTODIFF_MONITOR) && \
      defined (ALLOW_DEPTH_CONTROL))
-C     Include call to a dummy routine. Its adjoint will be 
+C     Include call to a dummy routine. Its adjoint will be
 C     called at the proper place in the adjoint code.
-C     The adjoint routine will print out adjoint values 
-C     if requested. The location of the call is important, 
-C     it has to be after the adjoint of the exchanges 
+C     The adjoint routine will print out adjoint values
+C     if requested. The location of the call is important,
+C     it has to be after the adjoint of the exchanges
 C     (DO_GTERM_BLOCKING_EXCHANGES).
 Cml      CALL DUMMY_IN_HFAC( 'W', 1, myThid )
 Cml      CALL DUMMY_IN_HFAC( 'S', 1, myThid )
 #endif
 
 C-    Write to disk: Total Column Thickness & hFac(C,W,S):
-      _BARRIER
-      _BEGIN_MASTER( myThid )
       WRITE(suff,'(I10.10)') optimcycle
       CALL WRITE_FLD_XY_RS( 'Depth.',suff,tmpfld,optimcycle,myThid)
       CALL WRITE_FLD_XYZ_RS( 'hFacC.',suff,hFacC,optimcycle,myThid)
       CALL WRITE_FLD_XYZ_RS( 'hFacW.',suff,hFacW,optimcycle,myThid)
       CALL WRITE_FLD_XYZ_RS( 'hFacS.',suff,hFacS,optimcycle,myThid)
-      _END_MASTER(myThid)
 
+      IF ( debugLevel.GE.debLevB ) THEN
+        _BARRIER
 C--   Write to monitor file (standard output)
-      CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 1, myThid )
-      CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 1, myThid )
-      CALL PLOT_FIELD_XYZRS( hFacS, 'hFacS' , Nr, 1, myThid )
+        CALL PLOT_FIELD_XYZRS( hFacC,'hFacC (update_masks_etc)',
+     &                                          Nr, 1, myThid )
+        CALL PLOT_FIELD_XYZRS( hFacW,'hFacW (update_masks_etc)',
+     &                                          Nr, 1, myThid )
+        CALL PLOT_FIELD_XYZRS( hFacS,'hFacS (update_masks_etc)',
+     &                                          Nr, 1, myThid )
+      ENDIF
 
 C     Masks and reciprocals of hFac[CWS]
 Cml   The masks should stay constant, so they are not recomputed at this time
 Cml   implicitly implying that no cell that is wet in the begin will ever dry
-Cml   up! This is a strong constraint and should be implementent as a hard 
+Cml   up! This is a strong constraint and should be implementent as a hard
 Cml   inequality contraint when performing optimization (m1qn3 cannot do that)
 Cml   Also, I am assuming here that the new hFac(s) never become zero during
 Cml   optimization!
@@ -342,7 +346,7 @@ Cml           IF (hFacS(I,J,K,bi,bj).NE.0.) THEN
            IF (maskS(I,J,K,bi,bj).NE.0.) THEN
               ksurfS(I,J,bi,bj) = k
 
-           ENDIF	
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -427,7 +431,7 @@ c
       end if
 
       return
-      end 
+      end
 
       _RL function smoothAbs_R8( x )
 
@@ -464,7 +468,7 @@ c
       end if
 
       return
-      end 
+      end
 #endif /* USE_SMOOTH_MIN */
 
 Cml#ifdef ALLOW_DEPTH_CONTROL
@@ -495,8 +499,8 @@ Cml      end
 
 #ifdef ALLOW_DEPTH_CONTROL
 cadj SUBROUTINE dummy_in_hfac INPUT   = 1, 2, 3
-cadj SUBROUTINE dummy_in_hfac OUTPUT  = 
-cadj SUBROUTINE dummy_in_hfac ACTIVE  = 
+cadj SUBROUTINE dummy_in_hfac OUTPUT  =
+cadj SUBROUTINE dummy_in_hfac ACTIVE  =
 cadj SUBROUTINE dummy_in_hfac DEPEND  = 1, 2, 3
 cadj SUBROUTINE dummy_in_hfac REQUIRED
 cadj SUBROUTINE dummy_in_hfac INFLUENCED
