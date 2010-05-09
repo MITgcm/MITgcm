@@ -1,19 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1264 2010/05/07 18:37:44 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1265 2010/05/09 17:05:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o model/src:
+  1rst version of a new driver S/R to turn-off output freq and flags after the
+  1rst forward sweep, to avoid over-writing output files during recomputations
+  (& grdchk); called from cost_final.F (and ctrl_init_ctrlvar.F ?).
+o model/src:
   - new S/R rotate_uv2en_rl (..._rs) that rotates vector fields.
 o pkg/exch2:
-  - remove "simulationMode" from arg. list of S/R EXCH2_RX1,2_CUBE ; 
+  - remove "simulationMode" from arg. list of S/R EXCH2_RX1,2_CUBE ;
   - add argument "signOption" to EXCH2_RX1_CUBE (will be needed for SM exch).
 o pkg/autodiff & exch2:
   process exch_uv_agrid_3d_rx.f & exch2_uv_agrid_3d_rx.f through TAF
   (for now, only if ALLOW_EXCH2 is defined).
 o pkg/autodiff:
-  - include PACKAGES_CONFIG.h in exch*ad.flow & exch*ad.F 
+  - include PACKAGES_CONFIG.h in exch*ad.flow & exch*ad.F
     (not supposed to be in CPP_OPTIONS.h) to get ALLOW_EXCH2 defined correctly.
    + clean-up comments (_RS is not always real*4)
   - fix bug in ADEXCH_UV_3D_RX (without EXCH2, was calling the forward exch S/R)
