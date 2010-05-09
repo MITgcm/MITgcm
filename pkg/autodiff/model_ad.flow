@@ -1,5 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.5 2010/01/08 19:45:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.6 2010/05/09 16:18:36 jmc Exp $
 C $Name:  $
+
+C----------------------------------------
+C subroutine  calc_oce_mxlayer
+C----------------------------------------
+CADJ SUBROUTINE calc_oce_mxlayer  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE calc_oce_mxlayer  OUTPUT =
 
 C----------------------------------------
 C subroutine  do_the_model_io
@@ -8,6 +14,12 @@ CADJ SUBROUTINE do_the_model_io  INPUT  = 1,2,3,4
 CADJ SUBROUTINE do_the_model_io  OUTPUT =
 CADJ SUBROUTINE do_the_model_io  DEPEND = 1,2,3,4
 CADJ SUBROUTINE do_the_model_io  REQUIRED
+
+C----------------------------------------
+C subroutine  turnoff_model_io
+C----------------------------------------
+CADJ SUBROUTINE TURNOFF_MODEL_IO INPUT  = 1,2
+CADJ SUBROUTINE TURNOFF_MODEL_IO OUTPUT =
 
 C----------------------------------------
 C subroutine  modeldata_example
@@ -68,10 +80,4 @@ C subroutine  write_state
 C----------------------------------------
 CADJ SUBROUTINE write_state  INPUT  = 1,2,3
 CADJ SUBROUTINE write_state  OUTPUT =
-
-C----------------------------------------
-C subroutine  calc_oce_mxlayer
-C----------------------------------------
-CADJ SUBROUTINE calc_oce_mxlayer  INPUT  = 1,2,3,4,5,6,7
-CADJ SUBROUTINE calc_oce_mxlayer  OUTPUT =
 
