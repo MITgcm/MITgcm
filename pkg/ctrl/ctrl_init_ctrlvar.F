@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.7 2008/10/01 14:51:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.8 2010/05/09 16:24:45 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -38,9 +38,6 @@ c     == global variables ==
 #include "GRID.h"
 #include "ctrl.h"
 #include "optim.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_fname
@@ -60,8 +57,7 @@ c     == local variables ==
       character*( 80) fname(2)
       logical  exst
 
-      _BEGIN_MASTER( mythid )
-
+c     _BEGIN_MASTER( mythid )
       ncvarindex(ivarindex)    = ncvarindex_loc
       ncvarrecs (ivarindex)    = ncvarrecs_loc
       ncvarrecstart(ivarindex) = ncvarrecstart_loc
@@ -70,13 +66,17 @@ c     == local variables ==
       ncvarymax (ivarindex)    = ncvarymax_loc
       ncvarnrmax(ivarindex)    = ncvarnrmax_loc
       ncvargrd  (ivarindex)    = ncvargrd_loc
+c     _END_MASTER( mythid )
 
 cph add following flag to make pack/unpack only less error-prone
 #ifndef CTRL_DO_PACK_UNPACK_ONLY
 
       call ctrl_set_fname( xx_fname, fname, mythid )
 
+c     _BEGIN_MASTER( mythid )
       inquire( file='costfinal', exist=exst )
+c     _END_MASTER( mythid )
+
       IF ( .NOT. exst) THEN
 
          if ( whichxyz .EQ. '3d') then
@@ -105,23 +105,13 @@ cph add following flag to make pack/unpack only less error-prone
 
       ELSE
 
-c-- for DIVA, avoid rorward-related output in adjoint part
-         taveFreq   = 0.
-         dumpFreq   = 0.
-         pChkptFreq = 0.
-         monitorFreq = 0.
-         useDiagnostics = .FALSE.
-#ifdef ALLOW_MNC
-         monitor_mnc=.FALSE.
-         snapshot_mnc=.FALSE.
-         timeave_mnc=.FALSE.
-#endif
+c-- for DIVA, avoid forward-related output in adjoint part
+         CALL TURNOFF_MODEL_IO( 1, myThid )
 
       ENDIF
 
 #endif /* CTRL_DO_PACK_UNPACK_ONLY */
 
-      _END_MASTER( mythid )
 
       return
       end
