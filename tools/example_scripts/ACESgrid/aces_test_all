@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.17 2010/05/10 14:03:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.18 2010/05/10 15:08:19 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -32,12 +32,14 @@ SUB_DIR="MITgcm_tools/example_scripts/ACESgrid"
 TMP_FIL="$TST_DIR/output/TTT.$$"
 LOG_FIL="$TST_DIR/output/tst_all."`date +%m%d`".log"
 
-rm -f $LOG_FIL ; touch $LOG_FIL
+#-- clean up old log files and start a new one:
+cd $TST_DIR/output
+
+rm -f tst_all.*.log_bak
+if test -f $LOG_FIL ; then mv -f $LOG_FIL ${LOG_FIL}_bak ; fi
 echo -n '-- Starting: ' | tee -a $LOG_FIL
 date | tee -a $LOG_FIL
 
-#-- clean up old log files:
-cd $TST_DIR/output
 n=$(( `ls tst_all.*.log | wc -l` - 10 ))
 if test $n -gt 0 ; then
   echo ' remove old log files:' | tee -a $LOG_FIL
@@ -49,7 +51,6 @@ fi
 module list >> $LOG_FIL 2>&1
 
 #-- now really do something:
-
 cd $TST_DIR
 
 nbtst=0
