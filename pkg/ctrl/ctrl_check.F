@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.5 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.6 2010/05/11 15:47:10 mlosch Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -111,5 +111,32 @@ C     Can not have both atmos. state and flux field as control
 #endif
 #endif
 
+#ifdef ALLOW_SEAICE
+C     pkg/seaice requires a particular set of control parameters
+C     which in turn require a particular set of input fields
+#ifndef ALLOW_ATM_WIND
+      WRITE(msgBuf,'(A)') 
+     &     'The SEAICE adjoint requires ALLOW_ATM_WIND'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R CTRL_CHECK'
+#endif
+#if (defined ALLOW_HFLUX_CONTROL || defined ALLOW_SFLUX_CONTROL || \
+     defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
+      WRITE(msgBuf,'(A)') 
+     &     'The SEAICE adjoint does not allow the surface fluxes'
+      CALL PRINT_ERROR( msgBuf , 1)
+      WRITE(msgBuf,'(A)') 'ALLOW_HFLUX_CONTROL'
+      CALL PRINT_ERROR( msgBuf , 1)
+      WRITE(msgBuf,'(A)') 'ALLOW_SFLUX_CONTROL'
+      CALL PRINT_ERROR( msgBuf , 1)
+      WRITE(msgBuf,'(A)') 'ALLOW_USTRESS_CONTROL'
+      CALL PRINT_ERROR( msgBuf , 1)
+      WRITE(msgBuf,'(A)') 'ALLOW_VSTRESS_CONTROL'
+      CALL PRINT_ERROR( msgBuf , 1)
+      WRITE(msgBuf,'(A)') 'to be control vaiables'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R CTRL_CHECK'
+#endif
+#endif /* ALLOW_SEAICE */
       return
       end
