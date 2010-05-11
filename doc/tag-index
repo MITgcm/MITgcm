@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1266 2010/05/09 23:12:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1267 2010/05/11 15:48:00 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl: require a specific set of control variables and exf-flags for
+  adjoint of seaice (stop in ctrl_check.F if conditions are not satisfied)
 o model/src:
  a) 1rst version of a new driver S/R to turn-off output freq and flags after the
    1rst forward sweep, to avoid over-writing output files during recomputations
