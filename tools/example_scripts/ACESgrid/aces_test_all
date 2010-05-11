@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.18 2010/05/10 15:08:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.19 2010/05/11 18:33:32 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -63,7 +63,7 @@ do
     if [ $action -ge 2 ] ; then
     #-- to submit job
       if test "x_$job_exist" = x_0 ; then
-        echo -n $JOB | tee -a $LOG_FIL
+        echo -n " $JOB : " | tee -a $LOG_FIL
         $QSUB $SUB_DIR/aces_test_$sfx | tee -a $LOG_FIL
         eval M_$i='submitted'
         nbtst=`expr $nbtst + 1`
@@ -76,12 +76,10 @@ do
     else
     #-- to get outp back:
       if test "x_$job_exist" = x_0 ; then
-        echo -n 'did not find any job: ' | tee -a $LOG_FIL
-        echo $JOB | tee -a $LOG_FIL
+        echo -n "did not find any job: $JOB" | tee -a $LOG_FIL
         eval M_$i='skipped'
       else
-        echo -n 'found a job: ' | tee -a $LOG_FIL
-        echo $JOB | tee -a $LOG_FIL
+        echo -n "found a job: $JOB" | tee -a $LOG_FIL
         $QSTAT -a | grep $USER | grep $JOB | tee -a $LOG_FIL
         eval M_$i='submitted'
         nbtst=`expr $nbtst + 1`
