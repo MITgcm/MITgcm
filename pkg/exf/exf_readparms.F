@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.61 2010/05/04 18:33:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.62 2010/05/12 01:08:14 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -454,7 +454,7 @@ c     Calendar data.
       sgrunoffconst              = 0.0 _d 0
       sgrunoff_exfremo_intercept = 0.0 _d 0
       sgrunoff_exfremo_slope     = 0.0 _d 0
-      exf_inscal_runoff          = 1. _d 0
+      exf_inscal_sgrunoff        = 1. _d 0
 
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0

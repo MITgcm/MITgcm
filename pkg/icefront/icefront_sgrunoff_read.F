@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/Attic/icefront_sgrunoff_read.F,v 1.4 2010/05/04 21:41:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/Attic/icefront_sgrunoff_read.F,v 1.5 2010/05/12 01:08:14 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -18,6 +18,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 #include "ICEFRONT.h"
 #ifdef ALLOW_EXF

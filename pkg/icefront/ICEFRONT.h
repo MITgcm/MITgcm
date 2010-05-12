@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.9 2010/05/04 21:41:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.10 2010/05/12 01:08:14 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -97,11 +97,12 @@ CEOP
 
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
       CHARACTER*(MAX_LEN_FNAM) SGrunoffFile
-      COMMON /SUBGLACIAL_RUNOFF/
-     &     SGrunoffFile
       _RL SGrunoff (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SGrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SGrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /SUBGLACIAL_RUNOFF/
+     &     SGrunoffFile,
+     &     SGrunoff, SGrunoff0,SGrunoff1
 #endif /* ALLOW_SUBGLACIAL_RUNOFF */
 
 #endif /* ALLOW_ICEFRONT */

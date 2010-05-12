@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.6 2010/05/04 21:41:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.7 2010/05/12 01:08:14 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -19,6 +19,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ICEFRONT.h"
+#ifdef ALLOW_SUBGLACIAL_RUNOFF
+# include "EXF_PARAM.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of ICEFRONT_INIT_VARIA

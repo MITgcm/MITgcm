@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.6 2010/04/26 22:12:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.7 2010/05/12 01:08:14 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -46,12 +46,9 @@ CEOP
      &     ICEFRONTthetaSurface,
      &     applyIcefrontTendT,applyIcefrontTendS,
      &     ICEFRONTdepthFile, ICEFRONTlengthFile
-
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
-      NAMELIST /SGRUNOFF_PARMS/
-     &     SGRUNOFF_period, SGRUNOFF_cycle,
-     &     SGrunoffFile
-#endif /* ALLOW_SUBGLACIAL_RUNOFF*/
+     &   , SGrunoffFile
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -88,12 +85,9 @@ C Default values when SHELFICE is not used
       ICEFRONTdepthFile        = ' '
       applyIcefrontTendS       = .TRUE.
       applyIcefrontTendT       = .TRUE.
-
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
       SGrunoffFile             = ' '
-      SGRUNOFF_period          = 0.0
-      SGRUNOFF_cycle           = 31104000.0
-#endif /* ALLOW_SUBGLACIAL_RUNOFF*/
+#endif
 
 C Open and read the data.icefront file
       WRITE(msgBuf,'(A)') ' ICEFRONT_READPARMS: opening data.icefront'
@@ -104,9 +98,6 @@ C Open and read the data.icefront file
      O                   iUnit,
      I                   myThid )
       READ(UNIT=iUnit,NML=ICEFRONT_PARM01)
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-      READ(UNIT=iUnit,NML=SGRUNOFF_PARMS)
-#endif /* ALLOW_SUBGLACIAL_RUNOFF*/
       WRITE(msgBuf,'(A)')
      &  ' ICEFRONT_READPARMS: finished reading data.icefront'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
