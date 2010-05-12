@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.12 2010/05/06 14:02:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.13 2010/05/12 21:41:17 jmc Exp $
 
 #  Ed Hill
 
@@ -27,7 +27,7 @@ MC=10
 checkOut=1
 sepDir=1
 option=
-tst_list='g77 adm ifc mth pgi+rs'
+tst_list='g77 adm ifc mth gfo pgi+rs'
 #tst_list='adm g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
@@ -97,6 +97,8 @@ do
  cd verification
 
  case $typ in
+  'g77') OPTFILE='../tools/build_options/linux_ia32_g77' ;;
+  'adm') OPTFILE='../tools/build_options/linux_ia32_g77' ;;
   'gfo') OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
   'ifc') OPTFILE='../tools/build_options/linux_ia32_ifort+authors' ;;
   'mth') OPTFILE='../tools/build_options/linux_ia32_ifort+authors'
@@ -121,6 +123,7 @@ do
 
   echo "Running testreport using:"
   comm="./testreport -a jmc@mitgcm.org"
+# comm="./testreport -match $MC -a jmc@mitgcm.org"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -149,6 +152,7 @@ do
  then
 
   echo "Running testreport using:"
+# comm="./testreport -a jmc@mitgcm.org"
   comm="./testreport -match $MC -a jmc@mitgcm.org"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
@@ -159,18 +163,6 @@ do
   $comm > $tdir/output_$typ 2>&1
   tail -100 $tdir/output_$typ
   echo
-#-- also test restart (test 2+2=4)
-  if test $tt != $typ
-  then
-   echo "testing restart using:"
-   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-   echo "  \"$comm\""
-   echo "======================"
-   $comm > $tdir/output_2+2 2>&1
-  #tail -100 $tdir/output_2+2
-   echo ; cat tst_2+2_out.txt
-   echo
-  fi
 
  fi
 
@@ -205,18 +197,6 @@ do
   $comm > $tdir/output_$typ 2>&1
   tail -100 $tdir/output_$typ
   echo
-#-- also test restart (test 2+2=4)
-  if test $tt != $typ
-  then
-   echo "testing restart using:"
-   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-   echo "  \"$comm\""
-   echo "======================"
-   $comm > $tdir/output_2+2 2>&1
-  #tail -100 $tdir/output_2+2
-   echo ; cat tst_2+2_out.txt
-   echo
-  fi
 
  fi
 
@@ -235,19 +215,6 @@ do
   $comm > $tdir/output_$typ 2>&1
   tail -100 $tdir/output_$typ
   echo
-#-- also test restart (test 2+2=4)
-  if test $tt != $typ
-  then
-   echo "testing restart using:"
-   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-   echo "  \"$comm\""
-   echo "======================"
-   $comm > $tdir/output_2+2 2>&1
-  #tail -100 $tdir/output_2+2
-   echo ; cat tst_2+2_out.txt
-   echo
-  fi
-  export OMP_NUM_THREADS=1
 
  fi
 
@@ -278,9 +245,12 @@ do
   $comm > $tdir/output_${typ}_2 2>&1
   tail -100 $tdir/output_${typ}_2
   echo
+
+ fi
+
 #-- also test restart (test 2+2=4)
-  if test $tt != $typ
-  then
+ if test $tt != $typ
+ then
    echo "testing restart using:"
    comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
    echo "  \"$comm\""
@@ -289,9 +259,8 @@ do
   #tail -100 $tdir/output_2+2
    echo ; cat tst_2+2_out.txt
    echo
-  fi
-
  fi
+ export OMP_NUM_THREADS=1
 
  if test $sepDir = 0 ; then
 #-- cleaning:
