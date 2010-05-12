@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.19 2010/05/11 18:33:32 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.20 2010/05/12 21:52:00 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -16,7 +16,7 @@ today=`date +%Y%m%d`
 
 if test $# = 0
 then
-  tst_list='gnu ifc pgi adm mp2 mth tuv'
+  tst_list='g77 gnu ifc pgi adm mp2 mth tuv'
 else
   tst_list=$*
 fi
@@ -56,7 +56,13 @@ cd $TST_DIR
 nbtst=0
 for i in $tst_list
 do
-  sfx=`echo ${i}"_mpi" | sed 's/mth_mpi/ifc_mth/' | sed 's/tuv_mpi/op64_tuv/' | sed 's/mp2_mpi/mp2_mth/'`
+  case $i in
+    'mth') sfx='ifc_'${i}  ;;
+    'tuv') sfx='op64_'${i} ;;
+    'mp2') sfx=${i}'_mth'  ;;
+    'g77') sfx=${i}'_adm'  ;;
+        *) sfx=${i}'_mpi'  ;;
+  esac
   if test -f $SUB_DIR/aces_test_$sfx ; then
     JOB="tst_"$i
     job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
@@ -105,7 +111,7 @@ else
     echo "Error building the mpack tools at: $MPACK_DIR" | tee -a $LOG_FIL
     if test -x $MPACK ; then
        HAVE_MPACK=t
-       echo "  use (old ?) executable:" | tee -a $LOG_FIL 
+       echo "  use (old ?) executable:" | tee -a $LOG_FIL
        ls -l $MPACK | tee -a $LOG_FIL
     else
        HAVE_MPACK=f
