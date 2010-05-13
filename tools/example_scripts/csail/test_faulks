@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.13 2010/05/12 21:41:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.14 2010/05/13 17:53:14 jmc Exp $
 
 #  Ed Hill
 
@@ -27,7 +27,7 @@ MC=10
 checkOut=1
 sepDir=1
 option=
-tst_list='g77 adm ifc mth gfo pgi+rs'
+tst_list='g77 adm gfo ifc mth pgi+rs'
 #tst_list='adm g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
@@ -98,7 +98,7 @@ do
 
  case $typ in
   'g77') OPTFILE='../tools/build_options/linux_ia32_g77' ;;
-  'adm') OPTFILE='../tools/build_options/linux_ia32_g77' ;;
+  'adm') OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
   'gfo') OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
   'ifc') OPTFILE='../tools/build_options/linux_ia32_ifort+authors' ;;
   'mth') OPTFILE='../tools/build_options/linux_ia32_ifort+authors'
@@ -170,7 +170,8 @@ do
  then
 
   echo "Running testreport using:"
-  comm="./testreport -adm -a jmc@mitgcm.org"
+# comm="./testreport -adm -a jmc@mitgcm.org"
+  comm="./testreport -adm -match $MC -a jmc@mitgcm.org"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
