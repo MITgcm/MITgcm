@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1267 2010/05/11 15:48:00 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1268 2010/05/14 11:35:35 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/matlab/rdmnc.m: adapt to be able to use the generic matlab netcdf API
 o pkg/ctrl: require a specific set of control variables and exf-flags for
   adjoint of seaice (stop in ctrl_check.F if conditions are not satisfied)
 o model/src:
