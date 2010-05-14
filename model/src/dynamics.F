@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.145 2010/01/20 03:50:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.146 2010/05/14 23:21:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -324,8 +324,10 @@ cph)
           fVerV  (i,j,2) = 0. _d 0
           phiHydF (i,j)  = 0. _d 0
           phiHydC (i,j)  = 0. _d 0
+#ifndef INCLUDE_PHIHYD_CALCULATION_CODE
           dPhiHydX(i,j)  = 0. _d 0
           dPhiHydY(i,j)  = 0. _d 0
+#endif
           phiSurfX(i,j)  = 0. _d 0
           phiSurfY(i,j)  = 0. _d 0
           guDissip(i,j)  = 0. _d 0

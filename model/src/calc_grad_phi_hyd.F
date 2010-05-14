@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.11 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.12 2010/05/14 23:21:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -139,6 +139,12 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
       ENDIF
 
 C--   Zonal & Meridional gradient of potential anomaly
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        dPhiHydX(i,j)  = 0. _d 0
+        dPhiHydY(i,j)  = 0. _d 0
+       ENDDO
+      ENDDO
       DO j=jMin,jMax
        DO i=iMin+1,iMax
         dPhiHydX(i,j) = _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
