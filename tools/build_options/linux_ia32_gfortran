@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.7 2010/02/19 22:23:22 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.8 2010/05/14 21:59:32 jmc Exp $
 #  $Name:  $
 #
 
@@ -88,7 +88,7 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
     LIBS="-L${NETCDF_LIBDIR}"
 elif test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
-    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3'
 elif test -d /usr/include/netcdf ; then
     INCLUDES='-I/usr/include/netcdf'
 elif test -d /usr/local/netcdf ; then
@@ -96,5 +96,5 @@ elif test -d /usr/local/netcdf ; then
     LIBS='-L/usr/local/netcdf/lib'
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
-    LIBS='-L/usr/local/lib64'
+    LIBS='-L/usr/local/lib'
 fi
