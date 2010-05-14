@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.19 2009/11/24 13:09:16 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.20 2010/05/14 11:29:16 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -40,6 +40,10 @@ filepaths={};
 files={};
 varlist={};
 iters=[];
+
+% find out if matlab's generic netcdf API is available
+% if not assume that Chuck Denham's netcdf toolbox is installed
+usemexcdf = isempty(which('netcdf.open'));
 
 % Process function arguments
 for iarg=1:nargin;
@@ -95,11 +99,21 @@ if isempty(iters)
     iters = [];
     for ieachfile=1:length(files)
         eachfile = [filepaths{ieachfile},files{ieachfile}];
-        nc=netcdf(char(eachfile),'read');
-        nciters = nc{'iter'}(:);
-        if isempty(nciters), nciters = nc{'T'}(:); end
+        if usemexcdf
+          nc=netcdf(char(eachfile),'read');
+          nciters = nc{'iter'}(:);
+          if isempty(nciters), nciters = nc{'T'}(:); end
+        else
+          nc=netcdf.open(char(eachfile),'NC_NOWRITE');
+          nciters = ncgetvar(nc,'iter');
+          if isempty(nciters), nciters = ncgetvar(nc,'T'); end
+        end
         iters = [iters,nciters'];
-        close(nc);
+        if usemexcdf
+          close(nc);
+        else
+          netcdf.close(nc);
+        end
     end
     iters = unique(iters');
 end
@@ -109,11 +123,18 @@ S.attributes=[];
 for ieachfile=1:length(files)
     eachfile = [filepaths{ieachfile},files{ieachfile}];
     if dBug > 0, fprintf([' open: ',eachfile]); end
-    nc=netcdf(char(eachfile),'read');
-    S=rdmnc_local(nc,varlist,iters,S,dBug);
-    close(nc);
+    if usemexcdf
+      nc=netcdf(char(eachfile),'read');
+      S=rdmnc_local(nc,varlist,iters,S,dBug);
+      close(nc);
+    else
+      nc=netcdf.open(char(eachfile),'NC_NOWRITE');
+      S=rdmnc_local_matlabAPI(char(eachfile),nc,varlist,iters,S,dBug);
+      netcdf.close(nc);
+    end
 end
 
+return
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                             Local functions                             %
@@ -261,4 +282,214 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     error('Something didn''t work!!!');
   end
   
+  return
+
+function [S] = rdmnc_local_matlabAPI(fname,nc,varlist,iters,S,dBug)
+
+  fiter = ncgetvar(nc,'iter');                           % File iterations present
+  if isempty(fiter), fiter = ncgetvar(nc,'T'); end
+  if isinf(iters); iters = fiter(end); end
+  if isnan(iters); iters = fiter; end
+  [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
+  dii = dii(find(dii ~= 0));                           % Data interation index
+  if dBug > 0,
+    fprintf(' ; fii='); fprintf(' %i',fii); 
+    fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
+  end
+
+  % get basic information about netcdf file
+  [ndims nvars natts dimm] = netcdf.inq(nc);
+
+  % No variables specified? Default to all
+  if isempty(varlist), 
+    for k=0:nvars-1
+      varlist{k+1} = netcdf.inqVar(nc,k);
+    end
+  end
+  
+  % Attributes for structure
+  if iters>0; S.iters_from_file=iters; end
+  S.attributes.global=ncgetatt(nc,'global');
+  [pstr,netcdf_fname,ext] = fileparts(fname);
+  if strcmp(netcdf_fname(end-3:end),'glob')
+    % assume it is a global file produced by gluemnc and change some
+    % attributes 
+    S.attributes.global.sNx = S.attributes.global.Nx;
+    S.attributes.global.sNy = S.attributes.global.Ny;
+    S.attributes.global.nPx = 1;
+    S.attributes.global.nSx = 1;
+    S.attributes.global.nPy = 1;
+    S.attributes.global.nSy = 1;
+    S.attributes.global.tile_number = 1;
+    S.attributes.global.nco_openmp_thread_number = 1;
+  end
+    
+  % Read variable data
+  for ivar=1:size(varlist,2)
+    
+    cvar=char(varlist{ivar});
+    varid=ncfindvarid(nc,cvar);
+    if isempty(varid)
+      disp(['No such variable ''',cvar,''' in MNC file ',fname]);
+      continue
+    end
+    
+    [varname,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
+    
+    % Dimensions
+    clear sizVar dims
+    for k=1:length(dimids)
+      [dims{k}, sizVar(k)] = netcdf.inqDim(nc,dimids(k));
+    end
+    if length(sizVar)==1; sizVar(2) = 1; end;
+    nDims=length(sizVar);
+    if dims{1} == 'T'
+      if isempty(find(fii)), error('Iters not found'); end
+      it = length(dims);
+      tmpdata = netcdf.getVar(nc,varid,'double');
+      tmpdata = tmpdata(fii,:);
+      % leading unity dimensions get lost; add them back:
+      tmpdata=reshape(tmpdata,[length(fii) sizVar(2:end)]);
+    else
+      it = 0;
+      tmpdata = netcdf.getVar(nc,varid,'double');
+      % leading unity dimensions get lost; add them back:
+      tmpdata=reshape(tmpdata,sizVar);
+    end
+    
+    if dBug > 1,
+      fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',sizVar);
+      fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
+    end
+    [ni nj nk nm nn no np]=size(tmpdata);
+      
+    [i0,j0,fn]=findTileOffset(S);
+    cdim=dims{1}; if cdim(1)~='X'; i0=0; end
+    cdim=dims{1}; if cdim(1)=='Y'; i0=j0; j0=0; end
+    if length(dims)>1;
+      cdim=dims{2}; if cdim(1)~='Y'; j0=0; end
+    else
+      j0=0;
+    end
+    if dBug > 1,
+      fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
+    end
+    
+    Sstr = '';
+    for istr = 1:max(nDims,length(dims)),
+      if     istr == it,  Sstr = [Sstr,'dii,'];
+      elseif istr == 1,   Sstr = [Sstr,'i0+(1:ni),'];
+      elseif istr == 2,   Sstr = [Sstr,'j0+(1:nj),'];
+      elseif istr == 3,   Sstr = [Sstr,'(1:nk),'];
+      elseif istr == 4,   Sstr = [Sstr,'(1:nm),'];
+      elseif istr == 5,   Sstr = [Sstr,'(1:nn),'];
+      elseif istr == 6,   Sstr = [Sstr,'(1:no),'];
+      elseif istr == 7,   Sstr = [Sstr,'(1:np),'];
+      else, error('Can''t handle this many dimensions!');
+      end
+    end
+    eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
+    %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
+    if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
+    
+    S.attributes.(cvar)=ncgetatt(nc,cvar);
+    % replace missing or FillValues with NaN
+    if isfield(S.attributes.(cvar),'missing_value');
+      misval = S.attributes.(cvar).missing_value;
+      S.(cvar)(S.(cvar) == misval) = NaN;
+    end
+    if isfield(S.attributes.(cvar),'FillValue_');
+      misval = S.attributes.(cvar).FillValue_;
+      S.(cvar)(S.(cvar) == misval) = NaN;
+    end
+    
+  end % for ivar
+    
+  if isempty(S)
+    error('Something didn''t work!!!');
+  end
+  
+  return
+
+function vf = ncgetvar(nc,varname)
+% read a netcdf variable
+  
+% find out basics about the files
+  [ndims nvars natts dimm] = netcdf.inq(nc);
+  vf = [];
+  varid = [];
+  for k=0:nvars-1
+    if strcmp(netcdf.inqVar(nc,k),varname)
+      varid = netcdf.inqVarId(nc,varname);
+    end
+  end
+  if ~isempty(varid); 
+    [varn,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
+    % get data
+    vf = double(netcdf.getVar(nc,varid));
+  else
+    % do nothing
+  end
+
+  return
+
+function misval = ncgetmisval(nc,varid)
+
+  [varname,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
+  misval = [];
+  for k=0:natts-1
+    attn = netcdf.inqAttName(nc,varid,k);
+    if strcmp(attn,'missing_value') | strcmp(attn,'_FillValue')
+      misval = double(netcdf.getAtt(nc,varid,attname));
+    end
+  end
+  
+function A = ncgetatt(nc,varname)
+% get all attributes and put them into a struct
+  
+% 1. get global properties of file
+  [ndims nvars natts dimm] = netcdf.inq(nc);
+
+  % get variable ID and properties
+  if strcmp('global',varname)
+    % "variable" is global
+    varid = netcdf.getConstant('NC_GLOBAL');
+  else
+    % find variable ID and properties
+    varid = ncfindvarid(nc,varname);
+    if ~isempty(varid)
+      [varn,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
+    else
+      warning(sprintf('variable %s not found',varname))
+    end
+  end
+
+  if natts > 1
+    for k=0:natts-1
+      attn = netcdf.inqAttName(nc,varid,k);
+      [xtype attlen]=netcdf.inqAtt(nc,varid,attn);
+      attval = netcdf.getAtt(nc,varid,attn);
+      if ~ischar(attval)
+        attval = double(attval);
+      end
+      A.(char(attn))=attval;
+    end
+  else
+      A = 'none';
+  end
+  
+  return
+
+  
+function varid = ncfindvarid(nc,varname)
+
+  [ndims nvars natts dimm] = netcdf.inq(nc);
+  varid=[];
+  for k=0:nvars-1
+    if strcmp(netcdf.inqVar(nc,k),varname);
+      varid = netcdf.inqVarId(nc,varname);
+      break
+    end
+  end
+
   return
