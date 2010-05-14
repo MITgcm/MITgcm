@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.11 2010/04/11 20:59:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.12 2010/05/14 21:52:33 jahn Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -109,6 +109,12 @@ C--   Print out nlev values :
         CALL DIC_MNC_INIT( myThid )
       ENDIF
 #endif /* ALLOW_MNC */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDIAGNOSTICS ) THEN
+        CALL DIC_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_DIC */
 
