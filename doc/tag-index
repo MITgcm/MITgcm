@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1268 2010/05/14 11:35:35 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1269 2010/05/15 02:51:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+  fix AD EXCH code for 2-D domain special cases (Nx=1 or Ny=1).
+o model/src:
+  initialise dPhiHydX,dPhiHydY inside calc_grad_phi_hyd.F (so that TAF does
+  not drop it in S/R mddynamics, producing NaN in hs94.1x64x5 AD-test exp).
 o utils/matlab/rdmnc.m: adapt to be able to use the generic matlab netcdf API
 o pkg/ctrl: require a specific set of control variables and exf-flags for
   adjoint of seaice (stop in ctrl_check.F if conditions are not satisfied)
