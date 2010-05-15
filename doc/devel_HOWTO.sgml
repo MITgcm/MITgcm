@@ -1,4 +1,8 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+<!--
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.13 2010/05/15 01:44:50 jmc Exp $
+ $Name:  $
+-->
 
 <article id="MITgcm-Development-HOWTO">
 
@@ -121,7 +125,6 @@
       others.  The tree currently resembles:</para>
 
 <programlisting>gcmpack/
-  CS-regrid             goes into utils
   CVSROOT               -hidden-
 
   MITgcm                code
@@ -145,18 +148,16 @@
 
   acesgrid.org          build acesgrid web site
   development           experimental stuff
-  gcmpack		an old back-up copy ?
   gfd_lab               -?-
-  manual                -save-
-  misc                  -?-
+  manual                source of MITgcm documentation
   mitgcm.org            build web site
-  mitgcmdoc  -> manual  -remove-
-  models                -?-
-  packages              -?-
+  old_develop           old and early development source 
+       misc                 -?-
+       models               -?-
+       packages             -?-
+       preprocess           -?-
   pdfs                  some pdfs
   planetinabottle.org   unfinished web site
-  preprocess            -?-
-  tmp                   -?-
   www.ecco-group.org    build ecco web site ?
 </programlisting>
 
