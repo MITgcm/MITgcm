@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.20 2010/05/14 11:29:16 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.21 2010/05/16 08:56:43 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -103,17 +103,15 @@ if isempty(iters)
           nc=netcdf(char(eachfile),'read');
           nciters = nc{'iter'}(:);
           if isempty(nciters), nciters = nc{'T'}(:); end
-        else
-          nc=netcdf.open(char(eachfile),'NC_NOWRITE');
-          nciters = ncgetvar(nc,'iter');
-          if isempty(nciters), nciters = ncgetvar(nc,'T'); end
-        end
-        iters = [iters,nciters'];
-        if usemexcdf
           close(nc);
         else
-          netcdf.close(nc);
+	  % the parser complains about "netcdf.open" when the matlab netcdf
+          % API is not available, even when it is not used so we have to
+          % avoid the use of "netcdf.open", etc in this function
+          nciters = ncgetvar(char(eachfile),'iter');
+          if isempty(nciters), nciters = ncgetvar(char(eachfile),'T'); end
         end
+        iters = [iters,nciters'];
     end
     iters = unique(iters');
 end
@@ -128,9 +126,10 @@ for ieachfile=1:length(files)
       S=rdmnc_local(nc,varlist,iters,S,dBug);
       close(nc);
     else
-      nc=netcdf.open(char(eachfile),'NC_NOWRITE');
-      S=rdmnc_local_matlabAPI(char(eachfile),nc,varlist,iters,S,dBug);
-      netcdf.close(nc);
+      % the parser complains about "netcdf.open" when the matlab netcdf
+      % API is not available, even when it is not used so we have to
+      % avoid the use of "netcdf.open", etc in this function
+      S=rdmnc_local_matlabAPI(char(eachfile),varlist,iters,S,dBug);
     end
 end
 
@@ -284,10 +283,10 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
   
   return
 
-function [S] = rdmnc_local_matlabAPI(fname,nc,varlist,iters,S,dBug)
+function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
 
-  fiter = ncgetvar(nc,'iter');                           % File iterations present
-  if isempty(fiter), fiter = ncgetvar(nc,'T'); end
+  fiter = ncgetvar(fname,'iter');                     % File iterations present
+  if isempty(fiter), fiter = ncgetvar(fname,'T'); end
   if isinf(iters); iters = fiter(end); end
   if isnan(iters); iters = fiter; end
   [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
@@ -297,6 +296,8 @@ function [S] = rdmnc_local_matlabAPI(fname,nc,varlist,iters,S,dBug)
     fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
   end
 
+  % now open the file for reading
+  nc = netcdf.open(fname,'NC_NOWRITE');
   % get basic information about netcdf file
   [ndims nvars natts dimm] = netcdf.inq(nc);
 
@@ -404,17 +405,21 @@ function [S] = rdmnc_local_matlabAPI(fname,nc,varlist,iters,S,dBug)
     end
     
   end % for ivar
-    
+
+  % close the file
+  netcdf.close(nc);
+  
   if isempty(S)
     error('Something didn''t work!!!');
   end
   
   return
 
-function vf = ncgetvar(nc,varname)
+function vf = ncgetvar(fname,varname)
 % read a netcdf variable
   
-% find out basics about the files
+  nc=netcdf.open(fname,'NC_NOWRITE');
+  % find out basics about the files
   [ndims nvars natts dimm] = netcdf.inq(nc);
   vf = [];
   varid = [];
@@ -430,7 +435,8 @@ function vf = ncgetvar(nc,varname)
   else
     % do nothing
   end
-
+  netcdf.close(nc);
+  
   return
 
 function misval = ncgetmisval(nc,varid)
