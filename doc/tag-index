@@ -1,11 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1269 2010/05/15 02:51:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1270 2010/05/17 02:32:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o eesupp/src:
-  fix AD EXCH code for 2-D domain special cases (Nx=1 or Ny=1).
+o eesupp/src (exch-1):
+  - Fix AD EXCH code for 2-D domain special cases (Nx=1 or Ny=1).
+  - Separate buffer filling and MPI sending: allow EXCH-1 to work for local
+    array (non-shared) when using MPI+MTH. Also reduces number of BARRIER
+    (even without using MPI).
+  - Message mode: move RecvAck setting (indicator of buffer being ready)
+    from send_put to recv_get S/R (was useless before, but not sure if
+    it's much more useful now);
+  - switch the order of sync: MPI-proc 1rst and then threads;
+  - take out spin-waiting code (#undef EXCH_USE_SPINNING), use BARRIER instead.
 o model/src:
   initialise dPhiHydX,dPhiHydY inside calc_grad_phi_hyd.F (so that TAF does
   not drop it in S/R mddynamics, producing NaN in hs94.1x64x5 AD-test exp).
