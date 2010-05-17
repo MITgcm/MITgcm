@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.13 2009/01/09 22:51:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.14 2010/05/17 02:28:06 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -14,11 +14,11 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_RX_SEND_PUT_X                             
-C     | o "Send" or "put" X edges for RX array.                   
+C     | SUBROUTINE EXCH_RX_SEND_PUT_X
+C     | o "Send" or "put" X edges for RX array.
 C     *==========================================================*
-C     | Routine that invokes actual message passing send or       
-C     | direct "put" of data to update X faces of an XY[R] array. 
+C     | Routine that invokes actual message passing send or
+C     | direct "put" of data to update X faces of an XY[R] array.
 C     *==========================================================*
 
 C     !USES:
@@ -37,9 +37,9 @@ C     myOLn
 C     myOLs
 C     exchWidthX :: Width of data region exchanged.
 C     exchWidthY
-C     theSimulationMode :: Forward or reverse mode exchange ( provides 
+C     theSimulationMode :: Forward or reverse mode exchange ( provides
 C                          support for adjoint integration of code. )
-C     theCornerMode     :: Flag indicating whether corner updates are 
+C     theCornerMode     :: Flag indicating whether corner updates are
 C                          needed.
 C     myThid            :: Thread number of this instance of S/R EXCH...
 C     eBl               :: Edge buffer level
@@ -49,7 +49,7 @@ C     eBl               :: Edge buffer level
       INTEGER myOLn
       INTEGER myNz
       _RX array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+     &          1-myOLs:sNy+myOLn,
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -59,8 +59,8 @@ C     eBl               :: Edge buffer level
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     I, J, K, iMin, iMax, iB    :: Loop counters and extents
-C     bi, bj  
+C     i, j, k, iMin, iMax, iB    :: Loop counters and extents
+C     bi, bj
 C     biW, bjW                   :: West tile indices
 C     biE, bjE                   :: East tile indices
 C     eBl                        :: Current exchange buffer level
@@ -69,7 +69,7 @@ C     theSize
 C     westCommMode               :: Working variables holding type
 C     eastCommMode                  of communication a particular
 C                                   tile face uses.
-      INTEGER I, J, K, iMin, iMax, iB
+      INTEGER i, j, k, iMin, iMax, iB
       INTEGER bi, bj, biW, bjW, biE, bjE
       INTEGER eBl
       INTEGER westCommMode
@@ -83,7 +83,7 @@ C                                   tile face uses.
 # endif
 #endif
 C--   Write data to exchange buffer
-C     Various actions are possible depending on the communication mode 
+C     Various actions are possible depending on the communication mode
 C     as follows:
 C       Mode      Action
 C     --------   ---------------------------
@@ -104,315 +104,177 @@ C                tile
 C                Write data-ready Ack for west edge of east-neighbor
 C                tile
 C                Sync. memory
-C      
+C
 CEOP
-
-       INTEGER myBxLoSave(MAX_NO_THREADS)
-       INTEGER myBxHiSave(MAX_NO_THREADS)
-       INTEGER myByLoSave(MAX_NO_THREADS)
-       INTEGER myByHiSave(MAX_NO_THREADS)
-       LOGICAL doingSingleThreadedComms
-
-       doingSingleThreadedComms = .FALSE.
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-      IF ( usingMPI ) THEN
-#endif
-C      Set default behavior to have MPI comms done by a single thread.
-C      Most MPI implementations do not support concurrent comms from
-C      several threads.
-       IF ( nThreads .GT. 1 ) THEN
-        _BARRIER
-        _BEGIN_MASTER( myThid )
-         DO I=1,nThreads
-          myBxLoSave(I) = myBxLo(I)
-          myBxHiSave(I) = myBxHi(I)
-          myByLoSave(I) = myByLo(I)
-          myByHiSave(I) = myByHi(I)
-         ENDDO
-C        Comment out loop below and myB[xy][Lo|Hi](1) settings below
-C        if you want to get multi-threaded MPI comms.
-         DO I=1,nThreads
-          myBxLo(I) = 0
-          myBxHi(I) = -1
-          myByLo(I) = 0
-          myByHi(I) = -1
-         ENDDO
-         myBxLo(1) = 1
-         myBxHi(1) = nSx
-         myByLo(1) = 1
-         myByHi(1) = nSy
-         doingSingleThreadedComms = .TRUE.
-        _END_MASTER( myThid )
-        _BARRIER
-      ENDIF
-#ifndef ALWAYS_USE_MPI
-      ENDIF
-#endif
-#endif
 
 #ifdef ALLOW_AUTODIFF_OPENAD_AMPI
 # ifdef ALLOW_USE_MPI
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
 #  ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
+      IF ( usingMPI ) THEN
 #  endif
-          CALL ampi_awaitall ( 
-     & exchNReqsX(1,bi,bj) , 
-     & exchReqIdX(1,1,bi,bj) ,
-     & mpiStatus , 
-     & mpiRC )
-#  ifndef ALWAYS_USE_MPI
-         ENDIF
-#  endif
+      _BEGIN_MASTER(myThid)
+       DO bj=1,nSy
+        DO bi=1,nSx
+          CALL ampi_awaitall (
+     &         exchNReqsX(1,bi,bj) ,
+     &         exchReqIdX(1,1,bi,bj) ,
+     &         mpiStatus ,
+     &         mpiRC )
+        ENDDO
        ENDDO
-      ENDDO
+      _END_MASTER(myThid)
+#  ifndef ALWAYS_USE_MPI
+      ENDIF
+#  endif
 # endif
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Prevent anyone to access shared buffer while an other thread modifies it
+      _BARRIER
+
+C     Fill shared buffers from array values
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-        ebL = exchangeBufLevel(1,bi,bj)
-        westCommMode  = _tileCommModeW(bi,bj)
-        eastCommMode  = _tileCommModeE(bi,bj)
-        biE =  _tileBiE(bi,bj)
-        bjE =  _tileBjE(bi,bj)
-        biW =  _tileBiW(bi,bj)
-        bjW =  _tileBjW(bi,bj)
+        eBl = exchangeBufLevel(1,bi,bj)
+        westCommMode = _tileCommModeW(bi,bj)
+        eastCommMode = _tileCommModeE(bi,bj)
+        biE = _tileBiE(bi,bj)
+        bjE = _tileBjE(bi,bj)
+        biW = _tileBiW(bi,bj)
+        bjW = _tileBjW(bi,bj)
+
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+
+        IF ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
 
 C       o Send or Put west edge
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-
-        IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          iMin = 1
          iMax = 1+exchWidthX-1
-        IF ( westCommMode .EQ. COMM_MSG  ) THEN
-         iB = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            westSendBuf_RX(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
+         IF ( westCommMode .EQ. COMM_MSG  ) THEN
+          iB = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             westSendBuf_RX(iB,eBl,bi,bj) = array(i,j,k,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-C        Send the data
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidW(bi,bj)
-         theTag  = _tileTagSendW(bi,bj)
-         theSize = iB
-         theType = _MPI_TYPE_RX
-# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
-         CALL MPI_Isend(westSendBuf_RX(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
-# else
-         pReqI=exchNReqsX(1,bi,bj)+1
-         CALL ampi_isend_RX(
-     & westSendBuf_RX(1,eBl,bi,bj), 
-     & theSize, 
-     & theType,
-     & theProc, 
-     & theTag, 
-     & MPI_COMM_MODEL,
-     & exchReqIdX(pReqI,1,bi,bj),
-     & exchNReqsX(1,bi,bj), 
-     & mpiStatus , 
-     & mpiRc )
-# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
-#ifndef ALWAYS_USE_MPI
+         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
+          iB  = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             eastRecvBuf_RX(iB,eBl,biW,bjW) = array(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( westCommMode .NE. COMM_NONE
+     &    .AND.   westCommMode .NE. COMM_GET ) THEN
+          STOP ' S/R EXCH: Invalid commW mode.'
          ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-         eastRecvAck(eBl,biW,bjW) = 1
-        ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            eastRecvBuf_RX(iB,eBl,biW,bjW) = array(I,J,K,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSEIF ( westCommMode .NE. COMM_NONE 
-     &   .AND.   westCommMode .NE. COMM_GET ) THEN
-         STOP ' S/R EXCH: Invalid commW mode.'
-        ENDIF
 
 C       o Send or Put east edge
          iMin = sNx-exchWidthX+1
          iMax = sNx
-        IF ( eastCommMode .EQ. COMM_MSG  ) THEN
-         iB = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            eastSendBuf_RX(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
+         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
+          iB = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             eastSendBuf_RX(iB,eBl,bi,bj) = array(i,j,k,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-C        Send the data
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidE(bi,bj)
-         theTag  = _tileTagSendE(bi,bj)
-         theSize = iB
-         theType = _MPI_TYPE_RX
-# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
-         CALL MPI_Isend(eastSendBuf_RX(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
-# else
-         pReqI=exchNReqsX(1,bi,bj)+1
-         CALL ampi_isend_RX(
-     & eastSendBuf_RX(1,eBl,bi,bj) , 
-     & theSize , 
-     & theType ,
-     & theProc , 
-     & theTag , 
-     & MPI_COMM_MODEL ,
-     & exchReqIdX(pReqI,1,bi,bj) , 
-     & exchNReqsX(1,bi,bj),
-     & mpiStatus , 
-     & mpiRc  )
-# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
-#ifndef ALWAYS_USE_MPI
+         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
+          iB  = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             westRecvBuf_RX(iB,eBl,biE,bjE) = array(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( eastCommMode .NE. COMM_NONE
+     &    .AND.   eastCommMode .NE. COMM_GET  ) THEN
+          STOP ' S/R EXCH: Invalid commE mode.'
          ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-         westRecvAck(eBl,biE,bjE) = 1
-        ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            westRecvBuf_RX(iB,eBl,biE,bjE) = array(I,J,K,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSEIF ( eastCommMode .NE. COMM_NONE
-     &   .AND.   eastCommMode .NE. COMM_GET  ) THEN
-         STOP ' S/R EXCH: Invalid commE mode.'
-        ENDIF
 
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
+
+C       o Send or Put west edge
          iMin = 1-exchWidthX
          iMax = 0
-        IF ( westCommMode .EQ. COMM_MSG  ) THEN
-         iB = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            westSendBuf_RX(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
-            array(I,J,K,bi,bj) = 0.0
+         IF ( westCommMode .EQ. COMM_MSG  ) THEN
+          iB = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             westSendBuf_RX(iB,eBl,bi,bj) = array(i,j,k,bi,bj)
+             array(i,j,k,bi,bj) = 0.0
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-C        Send the data
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidW(bi,bj)
-         theTag  = _tileTagSendW(bi,bj)
-         theSize = iB
-         theType = _MPI_TYPE_RX
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
-         CALL MPI_Isend(westSendBuf_RX(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
-#ifndef ALWAYS_USE_MPI
+         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
+          iB  = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             eastRecvBuf_RX(iB,eBl,biW,bjW) = array(i,j,k,bi,bj)
+             array(i,j,k,bi,bj) = 0.0
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( westCommMode .NE. COMM_NONE
+     &    .AND.   westCommMode .NE. COMM_GET ) THEN
+          STOP ' S/R EXCH: Invalid commW mode.'
          ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-         eastRecvAck(eBl,biW,bjW) = 1
-        ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            eastRecvBuf_RX(iB,eBl,biW,bjW) = array(I,J,K,bi,bj)
-            array(I,J,K,bi,bj) = 0.0
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSEIF ( westCommMode .NE. COMM_NONE 
-     &   .AND.   westCommMode .NE. COMM_GET ) THEN
-         STOP ' S/R EXCH: Invalid commW mode.'
-        ENDIF
 
 C       o Send or Put east edge
          iMin = sNx+1
          iMax = sNx+exchWidthX
-        IF ( eastCommMode .EQ. COMM_MSG  ) THEN
-         iB = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            eastSendBuf_RX(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
-            array(I,J,K,bi,bj) = 0.0
+         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
+          iB = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             eastSendBuf_RX(iB,eBl,bi,bj) = array(i,j,k,bi,bj)
+             array(i,j,k,bi,bj) = 0.0
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-C        Send the data
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidE(bi,bj)
-         theTag  = _tileTagSendE(bi,bj)
-         theSize = iB
-         theType = _MPI_TYPE_RX
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
-         CALL MPI_Isend(eastSendBuf_RX(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
-#ifndef ALWAYS_USE_MPI
+         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
+          iB  = 0
+          DO k=1,myNz
+           DO j=1,sNy
+            DO i=iMin,iMax
+             iB = iB + 1
+             westRecvBuf_RX(iB,eBl,biE,bjE) = array(i,j,k,bi,bj)
+             array(i,j,k,bi,bj) = 0.0
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( eastCommMode .NE. COMM_NONE
+     &    .AND.   eastCommMode .NE. COMM_GET  ) THEN
+          STOP ' S/R EXCH: Invalid commE mode.'
          ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-         westRecvAck(eBl,biE,bjE) = 1
-        ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            westRecvBuf_RX(iB,eBl,biE,bjE) = array(I,J,K,bi,bj)
-            array(I,J,K,bi,bj) = 0.0
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSEIF ( eastCommMode .NE. COMM_NONE
-     &   .AND.   eastCommMode .NE. COMM_GET  ) THEN
-         STOP ' S/R EXCH: Invalid commE mode.'
-        ENDIF
 
         ENDIF
 
        ENDDO
       ENDDO
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Signal completetion ( making sure system-wide memory state is
 C--                         consistent ).
 
@@ -424,7 +286,7 @@ C     overlap region data that will be exchanged is up to date.
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        ebL = exchangeBufLevel(1,bi,bj)
+        eBl = exchangeBufLevel(1,bi,bj)
         biE = _tileBiE(bi,bj)
         bjE = _tileBjE(bi,bj)
         biW = _tileBiW(bi,bj)
@@ -444,26 +306,101 @@ C     sure that processes that might spin on the above Ack settings
 C     will see the setting.
 C     ** NOTE ** On some machines we wont spin on the Ack setting
 C     ( particularly the T90 ), instead we will use s system barrier.
-C     On the T90 the system barrier is very fast and switches out the 
+C     On the T90 the system barrier is very fast and switches out the
 C     thread while it waits. On most machines the system barrier
 C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
-      _BARRIER
-      IF ( doingSingleThreadedComms ) THEN
-C      Restore saved settings that were stored to allow
-C      single thred comms.
-       _BEGIN_MASTER(myThid)
-        DO I=1,nThreads
-         myBxLo(I) = myBxLoSave(I)
-         myBxHi(I) = myBxHiSave(I)
-         myByLo(I) = myByLoSave(I)
-         myByHi(I) = myByHiSave(I)
-        ENDDO
-       _END_MASTER(myThid)
-      ENDIF                
+C     Wait until all threads finish filling buffer
       _BARRIER
 
-      RETURN 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+      IF ( usingMPI ) THEN
+#endif
+C--   Send buffer data: Only Master Thread do proc communication
+      _BEGIN_MASTER(myThid)
+
+      DO bj=1,nSy
+       DO bi=1,nSx
+
+        eBl = exchangeBufLevel(1,bi,bj)
+        westCommMode = _tileCommModeW(bi,bj)
+        eastCommMode = _tileCommModeE(bi,bj)
+        biE = _tileBiE(bi,bj)
+        bjE = _tileBjE(bi,bj)
+        biW = _tileBiW(bi,bj)
+        bjW = _tileBjW(bi,bj)
+        theType = _MPI_TYPE_RX
+        theSize = sNy*exchWidthX*myNz
+
+        IF ( westCommMode .EQ. COMM_MSG  ) THEN
+C       Send buffer data (copied from west edge)
+         theProc = tilePidW(bi,bj)
+         theTag  = _tileTagSendW(bi,bj)
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
+         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
+         CALL MPI_Isend( westSendBuf_RX(1,eBl,bi,bj), theSize,
+     &                   theType, theProc, theTag, MPI_COMM_MODEL,
+     &                   exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj),
+     &                   mpiRc )
+# else
+         pReqI=exchNReqsX(1,bi,bj)+1
+         CALL ampi_isend_RX(
+     &        westSendBuf_RX(1,eBl,bi,bj),
+     &        theSize,
+     &        theType,
+     &        theProc,
+     &        theTag,
+     &        MPI_COMM_MODEL,
+     &        exchReqIdX(pReqI,1,bi,bj),
+     &        exchNReqsX(1,bi,bj),
+     &        mpiStatus ,
+     &        mpiRc )
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
+c        eastRecvAck(eBl,biW,bjW) = 1
+        ENDIF
+
+        IF ( eastCommMode .EQ. COMM_MSG  ) THEN
+C       Send buffer data (copied from east edge)
+         theProc = tilePidE(bi,bj)
+         theTag  = _tileTagSendE(bi,bj)
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
+         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
+         CALL MPI_Isend( eastSendBuf_RX(1,eBl,bi,bj), theSize,
+     &                   theType, theProc, theTag, MPI_COMM_MODEL,
+     &                   exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj),
+     &                   mpiRc )
+# else
+         pReqI=exchNReqsX(1,bi,bj)+1
+         CALL ampi_isend_RX(
+     &        eastSendBuf_RX(1,eBl,bi,bj) ,
+     &        theSize ,
+     &        theType ,
+     &        theProc ,
+     &        theTag ,
+     &        MPI_COMM_MODEL ,
+     &        exchReqIdX(pReqI,1,bi,bj) ,
+     &        exchNReqsX(1,bi,bj),
+     &        mpiStatus ,
+     &        mpiRc )
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
+c        westRecvAck(eBl,biE,bjE) = 1
+        ENDIF
+
+       ENDDO
+      ENDDO
+
+      _END_MASTER(myThid)
+
+#ifndef ALWAYS_USE_MPI
+      ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      RETURN
       END
