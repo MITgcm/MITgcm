@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.5 2008/11/17 23:08:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.6 2010/05/17 14:17:14 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -73,21 +73,24 @@ C     ssq      :: saturation specific humidity [kg/kg] in eq. with Sea-Surface w
 
       _RL czol
       _RL Tsf                ! surface temperature [K]
-      _RL Ts2                ! surface temperature square [K^2]
-      _RL ws
       _RL wsm                ! limited wind speed [m/s] (> umin)
       _RL t0                 ! virtual temperature [K]
-      _RL delq               ! specific humidity difference [kg/kg]
-      _RL deltap
-      _RL ustar              ! friction velocity [m/s]
-      _RL tstar              ! turbulent temperature scale [K]
-      _RL qstar              ! turbulent humidity scale  [kg/kg]
+C     these need to be 2D-arrays for vectorizing code
+      _RL tstar (1:sNx,1:sNy) ! turbulent temperature scale [K]
+      _RL qstar (1:sNx,1:sNy) ! turbulent humidity scale  [kg/kg]
+      _RL ustar (1:sNx,1:sNy) ! friction velocity [m/s]
+      _RL tau   (1:sNx,1:sNy) ! surface stress coef = rhoA * Ws * sqrt(Cd)
+      _RL rdn   (1:sNx,1:sNy) ! neutral, zref (=10m) values of rd
+      _RL rd    (1:sNx,1:sNy) ! = sqrt(Cd)          [-]
+      _RL delq  (1:sNx,1:sNy) ! specific humidity difference [kg/kg]
+      _RL deltap(1:sNx,1:sNy)
+C
+      _RL dzTmp
       _RL SSTtmp
       _RL ssq
-      _RL rd                 ! = sqrt(Cd)          [-]
       _RL re                 ! = Ce / sqrt(Cd)     [-]
       _RL rh                 ! = Ch / sqrt(Cd)     [-]
-      _RL rdn, ren, rhn      ! neutral, zref (=10m) values of rd, re, rh
+      _RL ren, rhn           ! neutral, zref (=10m) values of re, rh
       _RL usn, usm
       _RL stable             ! = 1 if stable ; = 0 if unstable
       _RL huol               ! stability parameter at zwd [-] (=z/Monin-Obuklov length)
@@ -99,7 +102,6 @@ C     ssq      :: saturation specific humidity [kg/kg] in eq. with Sea-Surface w
       _RL psixh              ! latent & sensib. stability function
       _RL zwln               ! = log(zwd/zref)
       _RL ztln               ! = log(zth/zref)
-      _RL tau                ! surface stress coef = rhoA * Ws * sqrt(Cd)
       _RL windStress         ! surface wind-stress (@ grid cell center)
       _RL tmpbulk
       INTEGER iter
@@ -164,40 +166,36 @@ C-   Surface Temp.
      &             *  maskC(i,j,2,bi,bj)
             Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
           ENDIF
-          Ts2 = Tsf*Tsf
 C-   Wind speed
-          ws  = wspeed(i,j,bi,bj)
           wsm = sh(i,j,bi,bj)
 
 C--- Compute turbulent surface fluxes
 C-   Pot. Temp and saturated specific humidity
-          if ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) then
+          IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 c
-            t0     = atemp(i,j,bi,bj)*
-     &          (exf_one + humid_fac*aqh(i,j,bi,bj))
             tmpbulk = cvapor_fac*exp(-cvapor_exp/Tsf)
             ssq = saltsat*tmpbulk/atmrho
-            deltap = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
-            delq   = aqh(i,j,bi,bj) - ssq
+            deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
+            delq(i,j)   = aqh(i,j,bi,bj) - ssq
 C--  no negative evaporation over ocean:
-            IF ( noNegativeEvap ) delq   = MIN( 0. _d 0, delq )
+            IF ( noNegativeEvap ) delq(i,j) = MIN( 0. _d 0, delq(i,j) )
 
 C--  initial guess for exchange coefficients:
 C    take U_N = del.U ; stability from del.Theta ;
-            stable = exf_half + SIGN(exf_half, deltap)
+            stable = exf_half + SIGN(exf_half, deltap(i,j))
 
 #ifndef ALLOW_ATM_WIND
            IF ( solve4Stress ) THEN
 #endif
             tmpbulk = cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
-            rdn = SQRT(tmpbulk)
-            ustar=rdn*wsm
+            rdn(i,j) = SQRT(tmpbulk)
+            ustar(i,j)=rdn(i,j)*wsm
 #ifndef ALLOW_ATM_WIND
            ELSE
             windStress = wStress(i,j,bi,bj)
-            ustar = sqrt(windStress/atmrho)
-c           tau   = windStress/ustar
-            tau   = sqrt(windStress*atmrho)
+            ustar(i,j) = sqrt(windStress/atmrho)
+c           tau(i,j)   = windStress/ustar(i,j)
+            tau(i,j)   = sqrt(windStress*atmrho)
            ENDIF
 #endif /* ALLOW_ATM_WIND */
 
@@ -205,11 +203,24 @@ C--  initial guess for exchange other coefficients:
             rhn = (exf_one-stable)*cstanton_1 + stable*cstanton_2
             ren = cDalton
 C--  calculate turbulent scales
-            tstar=rhn*deltap
-            qstar=ren*delq
+            tstar(i,j)=rhn*deltap(i,j)
+            qstar(i,j)=ren*delq(i,j)
 
+          ELSE
+C     atemp(i,j,bi,bj) .EQ. 0. 
+           tstar (i,j) = 0. _d 0
+           qstar (i,j) = 0. _d 0
+           ustar (i,j) = 0. _d 0
+           tau   (i,j) = 0. _d 0
+           rdn   (i,j) = 0. _d 0
+          ENDIF
+         ENDDO
+        ENDDO
+        DO iter=1,niter_bulk
+         DO j = 1,sNy
+          DO i = 1,sNx
+           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C--- iterate with psi-functions to find transfer coefficients
-            DO iter=1,niter_bulk
 
 #ifdef ALLOW_AUTODIFF_TAMC
               ikey_2 = iter
@@ -219,17 +230,19 @@ C--- iterate with psi-functions to find transfer coefficients
      &            + niter_bulk*sNx*sNy*max1*act2
      &            + niter_bulk*sNx*sNy*max1*max2*act3
      &            + niter_bulk*sNx*sNy*max1*max2*max3*act4
-CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
-CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
-CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
-CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE rdn(i,j)    = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar(i,j)  = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar(i,j)  = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar(i,j)  = comlev1_exf_2, key = ikey_2
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 CADJ STORE wspeed(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
-              huol = ( tstar/t0 +
-     &                 qstar/(exf_one/humid_fac+aqh(i,j,bi,bj))
-     &               )*czol/(ustar*ustar)
+              t0   = atemp(i,j,bi,bj)*
+     &          (exf_one + humid_fac*aqh(i,j,bi,bj))
+              huol = ( tstar(i,j)/t0 +
+     &                 qstar(i,j)/(exf_one/humid_fac+aqh(i,j,bi,bj))
+     &               )*czol/(ustar(i,j)*ustar(i,j))
 cph The following is different in Large&Pond1981 code:
 cph huol = max(huol,zolmin) with zolmin = -100
               tmpbulk = MIN(abs(huol),10. _d 0)
@@ -264,16 +277,18 @@ cph xsq = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
              IF ( solve4Stress ) THEN
 #endif
 C-   Shift wind speed using old coefficient
-              usn = ws/(exf_one + rdn/karman*(zwln-psimh) )
+              dzTmp = (zwln-psimh)/karman
+              usn = wspeed(i,j,bi,bj)
+     &             /(exf_one + rdn(i,j)*dzTmp )
               usm = MAX(usn, umin)
 
 C-   Update the 10m, neutral stability transfer coefficients (momentum)
               tmpbulk = cdrag_1/usm + cdrag_2 + cdrag_3*usm
-              rdn = SQRT(tmpbulk)
-              rd = rdn/(exf_one + rdn*(zwln-psimh)/karman)
-              ustar = rd*wsm
+              rdn(i,j) = SQRT(tmpbulk)
+              rd(i,j) = rdn(i,j)/(exf_one + rdn(i,j)*dzTmp)
+              ustar(i,j) = rd(i,j)*sh(i,j,bi,bj)
 C-   Coeff:
-              tau   = atmrho*rd*ws
+              tau(i,j)   = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
 #ifndef ALLOW_ATM_WIND
              ENDIF
 #endif
@@ -287,38 +302,44 @@ C-   Shift all coefficients to the measurement height and stability.
               re = ren/(exf_one + ren*(ztln-psixh)/karman)
 
 C--  Update ustar, tstar, qstar using updated, shifted coefficients.
-              qstar = re*delq
-              tstar = rh*deltap
+              qstar(i,j) = re*delq(i,j)
+              tstar(i,j) = rh*deltap(i,j)
 
+           ENDIF
+          ENDDO
+         ENDDO
 c end of iteration loop
-            ENDDO
+        ENDDO
+        DO j = 1,sNy
+         DO i = 1,sNx
+          IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ustar  = comlev1_exf_1, key = ikey_1
-CADJ STORE qstar  = comlev1_exf_1, key = ikey_1
-CADJ STORE tstar  = comlev1_exf_1, key = ikey_1
-CADJ STORE tau    = comlev1_exf_1, key = ikey_1
+CADJ STORE ustar(i,j)  = comlev1_exf_1, key = ikey_1
+CADJ STORE qstar(i,j)  = comlev1_exf_1, key = ikey_1
+CADJ STORE tstar(i,j)  = comlev1_exf_1, key = ikey_1
+CADJ STORE tau(i,j)    = comlev1_exf_1, key = ikey_1
 CADJ STORE cw(i,j,bi ,bj)     = comlev1_exf_1, key = ikey_1
 CADJ STORE sw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
 
 C-   Turbulent Fluxes
-            hs(i,j,bi,bj) = atmcp*tau*tstar
-            hl(i,j,bi,bj) = flamb*tau*qstar
+            hs(i,j,bi,bj) = atmcp*tau(i,j)*tstar(i,j)
+            hl(i,j,bi,bj) = flamb*tau(i,j)*qstar(i,j)
 #ifndef EXF_READ_EVAP
 C   change sign and convert from kg/m^2/s to m/s via rhoConstFresh
 C   but older version was using rhonil instead:
-c           evap(i,j,bi,bj) = -recip_rhonil*tau*qstar
-            evap(i,j,bi,bj) = -tau*qstar/rhoConstFresh
+c           evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
+            evap(i,j,bi,bj) = -tau(i,j)*qstar(i,j)/rhoConstFresh
 #endif
 #ifdef ALLOW_ATM_WIND
-c           ustress(i,j,bi,bj) = tau*rd*ws*cw(i,j,bi,bj)
-c           vstress(i,j,bi,bj) = tau*rd*ws*sw(i,j,bi,bj)
+c           ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*cw(i,j,bi,bj)
+c           vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*sw(i,j,bi,bj)
 C- jmc: below is how it should be written ; different from above when
 C       both wind-speed & 2 compon. of the wind are specified, and in
 C-      this case, formula below is better.
-            ustress(i,j,bi,bj) = tau*rd*uwind(i,j,bi,bj)
-            vstress(i,j,bi,bj) = tau*rd*vwind(i,j,bi,bj)
+            ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*uwind(i,j,bi,bj)
+            vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*vwind(i,j,bi,bj)
 #endif
 
 c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
