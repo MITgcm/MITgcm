@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.12 2009/06/07 14:54:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.13 2010/05/17 20:40:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -36,7 +36,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bXPerThread - Blocks of size sNx per thread.
 C     byPerThread - Blocks of size sNy per thread.
-C     Thid        - Thread index. Temporary used in loops
+C     thId        - Thread index. Temporary used in loops
 C                   which set per. thread values on a
 C                   cartesian grid.
 C     bxLo, bxHi  - Work vars. for thread index
@@ -51,13 +51,15 @@ C                   ( this routine "INI_THREADING_ENVIRONMENT" is
 C                     called before multi-threading has started.)
       INTEGER bxPerThread
       INTEGER byPerThread
-      INTEGER Thid
+      INTEGER thId
       INTEGER bxLo, bxHi
       INTEGER byLo, byHi
-      INTEGER I, J, nT
+      INTEGER I, J
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER myThid
-
+#ifndef ALLOW_EXCH2
+      LOGICAL flag
+#endif
 CEOP
 
 C--   Set default for all threads of having no blocks to
@@ -146,20 +148,20 @@ C--   Initialise exchange mechanism
         byHi = byLo+byPerThread-1
         bxLo = 1
         DO I=1,nTx
-         Thid = (J-1)*nTx+I
+         thId = (J-1)*nTx+I
          bxHi = bxLo+bxPerThread-1
-         myBxLo(Thid) = bxLo
-         myBxHi(Thid) = bxHi
-         myByLo(Thid) = byLo
-         myByHi(Thid) = byHi
+         myBxLo(thId) = bxLo
+         myBxHi(thId) = bxHi
+         myByLo(thId) = byLo
+         myByHi(thId) = byHi
          bxLo = bxHi+1
         ENDDO
         byLo = byHi+1
        ENDDO
       ENDIF
 
-      DO nT=1,nThreads
-       CALL INI_COMMUNICATION_PATTERNS( nT )
+      DO thId=1,nThreads
+       CALL INI_COMMUNICATION_PATTERNS( thId )
       ENDDO
 
 C--   Print mapping of threads to grid points.
@@ -279,6 +281,37 @@ C       o North communication method
       ENDDO
       WRITE(msgBuf,'(A)')  ' '
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT, 1)
+#endif /* ndef ALLOW_EXCH2 */
+
+C--   Check threading options
+#ifndef ALLOW_EXCH2
+      IF ( nThreads.GT.1 .AND. useCubedSphereExchange ) THEN
+C-    multi-threads not working for local arrays; could remove the stop if 
+C     we are sure that only shared array (=in common blocks) are exchanged.
+        WRITE(msgBuf,'(2A)') 'EXCH-1 useCubedSphereExchange',
+     &                       ' unsafe with multi-threads'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R INI_THREADING_ENVIRONMENT'
+      ENDIF
+      IF ( nThreads.GT.1 ) THEN
+       flag = .FALSE.
+       DO J=1,nSy
+        DO I=1,nSx
+          flag = flag
+     &       .OR. tileCommModeW(I,J).EQ.COMM_GET
+     &       .OR. tileCommModeE(I,J).EQ.COMM_GET
+     &       .OR. tileCommModeS(I,J).EQ.COMM_GET
+     &       .OR. tileCommModeN(I,J).EQ.COMM_GET
+        ENDDO
+       ENDDO
+       IF ( flag ) THEN
+C-    multi-threads not working for local arrays; not safe neither for shared arrays
+        WRITE(msgBuf,'(3A)') 'EXCH-1 using Comm = ',
+     &   commName(COMM_GET), ' unsafe with multi-threads'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R INI_THREADING_ENVIRONMENT'
+       ENDIF
+      ENDIF
 #endif /* ndef ALLOW_EXCH2 */
 
       RETURN
