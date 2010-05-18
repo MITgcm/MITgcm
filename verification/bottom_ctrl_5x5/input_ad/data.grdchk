@@ -5,7 +5,7 @@
  &GRDCHK_NML
  grdchk_eps       = 1.d-04,
  nbeg             = 1,
- nstep            = 1,
+ nstep            = 3,
  nend             = 25,
  grdchkvarindex   = 20,
  /
