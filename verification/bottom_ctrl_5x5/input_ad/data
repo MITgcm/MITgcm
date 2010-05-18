@@ -41,8 +41,8 @@
  &
 # Time stepping parameters
  &PARM03
- niter0=0,
- ntimesteps=100,
+ nIter0=0,
+ nTimeSteps=100,
 #startTime = 0.,
 #endTime = 7776000,
  deltaTmom=3600.0,
@@ -51,14 +51,15 @@
  pChkptFreq= 7776000.0,
  chkptFreq=  0.0,
 #dumpFreq=   1.0,
- monitorFreq=1.0,
+ monitorFreq = 43200.,
+ monitorSelect=1,
  &
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
  usingSphericalPolarGrid=.FALSE.,
- delX=5*200E3,
- delY=5*200E3,
+ delX=5*200.E3,
+ delY=5*200.E3,
 # 1 layer
 #delZ=5001.,500.,500.,500.,
 # 2 layers
