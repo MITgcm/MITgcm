@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.20 2007/09/28 19:39:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.21 2010/05/18 12:21:32 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -156,7 +156,7 @@ c     == local variables ==
       _RL     ssq
       _RL     stable
       _RL     t0
-      _RL     umps
+      _RL     wsm                ! limited wind speed [m/s] (> umin)
       _RL     uzn
       _RL     shn
       _RL     xsq
@@ -247,9 +247,9 @@ c             deltap : potential temperature diff (K)
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
 #ifdef ALLOW_ATM_WIND
-           umps        = sh(i,j,bi,bj)
+           wsm         = sh(i,j,bi,bj)
            tmpbulk     = exf_scal_BulkCdn *
-     &          ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
+     &          ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
            rdn(i,j)    = sqrt(tmpbulk)
            ustar(i,j)  = rdn(i,j)*sh(i,j,bi,bj)
 #else /* ifndef ALLOW_ATM_WIND */
@@ -265,12 +265,16 @@ c    &                   )
            tau(i,j)    = wStress(i,j,bi,bj)
            ustar(i,j)  = sqrt(tau(i,j)/atmrho)
 #endif /* ifndef ALLOW_ATM_WIND */
+
+C--  initial guess for exchange other coefficients:
            tmpbulk     = (exf_one-stable)*cstanton_1 
      &          + stable*cstanton_2
+C--  calculate turbulent scales
            tstar(i,j)  = tmpbulk*deltap(i,j)
            qstar(i,j)  = cdalton*delq(i,j)
 
           else
+C     atemp(i,j,bi,bj) .EQ. 0. 
            tstar (i,j) = 0. _d 0
            qstar (i,j) = 0. _d 0
            ustar (i,j) = 0. _d 0
@@ -376,12 +380,12 @@ c        end of bulk_iter loop
      &         + sNx*sNy*max1*act2
      &         + sNx*sNy*max1*max2*act3
      &         + sNx*sNy*max1*max2*max3*act4
-CADJ STORE ustar(i,j)        = comlev1_exf_1, key = ikey_1
-CADJ STORE qstar(i,j)        = comlev1_exf_1, key = ikey_1
-CADJ STORE tstar(i,j)        = comlev1_exf_1, key = ikey_1
-CADJ STORE tau(i,j)          = comlev1_exf_1, key = ikey_1
-CADJ STORE cw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
-CADJ STORE sw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
+CADJ STORE ustar(i,j)    = comlev1_exf_1, key = ikey_1
+CADJ STORE qstar(i,j)    = comlev1_exf_1, key = ikey_1
+CADJ STORE tstar(i,j)    = comlev1_exf_1, key = ikey_1
+CADJ STORE tau(i,j)      = comlev1_exf_1, key = ikey_1
+CADJ STORE cw(i,j,bi,bj) = comlev1_exf_1, key = ikey_1
+CADJ STORE sw(i,j,bi,bj) = comlev1_exf_1, key = ikey_1
 #endif
            hs(i,j,bi,bj) = atmcp*tau(i,j)*tstar(i,j)/ustar(i,j)
            hl(i,j,bi,bj) = flamb*tau(i,j)*qstar(i,j)/ustar(i,j)
@@ -395,6 +399,8 @@ cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
            ustress(i,j,bi,bj) = tau(i,j)*cw(i,j,bi,bj)
            vstress(i,j,bi,bj) = tau(i,j)*sw(i,j,bi,bj)
 #endif /* ALLOW_ATM_WIND */
+
+c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
           else
 #ifdef ALLOW_ATM_WIND
            ustress(i,j,bi,bj) = 0. _d 0
@@ -403,13 +409,15 @@ cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
            hflux  (i,j,bi,bj) = 0. _d 0
            hs(i,j,bi,bj)      = 0. _d 0
            hl(i,j,bi,bj)      = 0. _d 0
+
+c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
           endif
 
 #else  /* ifndef ALLOW_ATM_TEMP */
 #ifdef ALLOW_ATM_WIND
-          umps               = sh(i,j,bi,bj)
+          wsm                = sh(i,j,bi,bj)
           tmpbulk            = exf_scal_BulkCdn *
-     &         ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
+     &         ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
           ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
      &         uwind(i,j,bi,bj)
           vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
