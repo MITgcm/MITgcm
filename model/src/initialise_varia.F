@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.63 2010/03/30 17:45:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.64 2010/05/18 21:45:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,8 +33,6 @@ C       |
 C       |-- INI_MASKS_ETC
 C       |
 C       |-- INI_LINEAR_PHISURF
-C       |
-C       |-- INI_CORI
 C       |
 C       |-- INI_CG2D
 C       |
@@ -127,12 +125,6 @@ C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
       IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
 # endif
       CALL INI_LINEAR_PHISURF( myThid )
-
-C--   Set coriolis operators
-# ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INI_CORI',myThid)
-# endif
-      CALL INI_CORI( myThid )
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
 # ifdef ALLOW_DEBUG
