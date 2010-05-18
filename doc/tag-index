@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1271 2010/05/17 14:23:42 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1272 2010/05/18 12:26:54 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/exf/exf_bulk_largeyeager04.F: rewrite for better vectorization, changes
+o pkg/exf: 
+  - rewrite exf_bulk_largeyeager04.F for better vectorization, changes
   global_ocean.cs32x15/input.icedyn (11 digits of agreement), updated
+  - fix adjoint (used worked for ALLOW_ATM_WIND defined, works for this now)
+  - cosmetic changes to exf_bulkformulae.F to make it look more like 
+    exf_bulk_largeyeager04.F 
 o eesupp/src (exch-1):
   - Fix AD EXCH code for 2-D domain special cases (Nx=1 or Ny=1).
   - Separate buffer filling and MPI sending: allow EXCH-1 to work for local
