@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.7 2010/05/18 12:26:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.8 2010/05/18 15:18:15 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -229,13 +229,13 @@ C     atemp(i,j,bi,bj) .EQ. 0.
 C--- iterate with psi-functions to find transfer coefficients
 
 #ifdef ALLOW_AUTODIFF_TAMC
-            ikey_2 = iter
-     &           + niter_bulk*(i-1)
-     &           + niter_bulk*sNx*(j-1)
-     &           + niter_bulk*sNx*sNy*act1
-     &           + niter_bulk*sNx*sNy*max1*act2
-     &           + niter_bulk*sNx*sNy*max1*max2*act3
-     &           + niter_bulk*sNx*sNy*max1*max2*max3*act4
+            ikey_2 = i
+     &           + sNx*(j-1)
+     &           + sNx*sNy*(iter-1)
+     &           + sNx*sNy*niter_bulk*act1
+     &           + sNx*sNy*niter_bulk*max1*act2
+     &           + sNx*sNy*niter_bulk*max1*max2*act3
+     &           + sNx*sNy*niter_bulk*max1*max2*max3*act4
 CADJ STORE rdn(i,j)          = comlev1_exf_2, key = ikey_2
 CADJ STORE ustar(i,j)        = comlev1_exf_2, key = ikey_2
 CADJ STORE qstar(i,j)        = comlev1_exf_2, key = ikey_2
