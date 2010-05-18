@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1272 2010/05/18 12:26:54 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1273 2010/05/18 22:53:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o test experiment bottom_ctrl_5x5:
+   new output_adm.txt with fewer grdchk & less monitor output. 
+o model/src:
+  remove the call to ini_cori in initialise_varia.F (just keep the usual one
+   in initialise_fixed.F). More consistent with coriolis & horizontal grid 
+   beeing treated in the same way (ini_grid is not called a 2nd time).
 o pkg/exf: 
   - rewrite exf_bulk_largeyeager04.F for better vectorization, changes
   global_ocean.cs32x15/input.icedyn (11 digits of agreement), updated
@@ -18,8 +24,9 @@ o eesupp/src (exch-1):
   - Message mode: move RecvAck setting (indicator of buffer being ready)
     from send_put to recv_get S/R (was useless before, but not sure if
     it's much more useful now);
-  - switch the order of sync: MPI-proc 1rst and then threads;
+  - Switch the order of sync: MPI-proc 1rst and then threads;
   - take out spin-waiting code (#undef EXCH_USE_SPINNING), use BARRIER instead.
+  - fix AD code for communication mode ='get' (but not used).
 o model/src:
   initialise dPhiHydX,dPhiHydY inside calc_grad_phi_hyd.F (so that TAF does
   not drop it in S/R mddynamics, producing NaN in hs94.1x64x5 AD-test exp).
