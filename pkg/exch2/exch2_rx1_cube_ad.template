@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube_ad.template,v 1.9 2010/05/06 23:28:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube_ad.template,v 1.10 2010/05/19 01:25:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
       SUBROUTINE EXCH2_RX1_CUBE_AD(
      U            array,
      I            signOption, fieldCode,
-     I            myOLw, myOLe, myOLn, myOLs, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
      I            cornerMode, myThid )
 
@@ -38,16 +38,13 @@ C     signOption  :: Flag controlling whether field sign depends on orientation
 C                 :: (signOption not yet implemented but needed for SM exch)
 C     fieldCode   :: field code (position on staggered grid)
 C     myOLw,myOLe :: West and East overlap region sizes.
-C     myOLn,myOLs :: North and South overlap region sizes.
+C     myOLs,myOLn :: South and North overlap region sizes.
 C     exchWidthX  :: Width of data regi exchanged in X.
 C     exchWidthY  :: Width of data region exchanged in Y.
 C     cornerMode  :: halo-corner-region treatment: update/ignore corner region
 C     myThid      :: Thread number of this instance of S/R EXCH...
-      INTEGER myOLw
-      INTEGER myOLe
-      INTEGER myOLs
-      INTEGER myOLn
-      INTEGER myNz
+
+      INTEGER myOLw, myOLe, myOLs, myOLn, myNz
       _RX array(1-myOLw:sNx+myOLe,
      &          1-myOLs:sNy+myOLn,
      &          myNZ, nSx, nSy)
