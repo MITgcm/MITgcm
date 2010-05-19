@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.7 2010/05/05 19:44:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.8 2010/05/19 01:54:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -94,15 +94,15 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_RS_CUBE( adphi,
+       CALL EXCH1_RS_CUBE_AD( adphi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RS( adphi,
+       CALL EXCH1_RS_AD( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -161,15 +161,15 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_RL_CUBE( adphi,
+       CALL EXCH1_RL_CUBE_AD( adphi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RL( adphi,
+       CALL EXCH1_RL_AD( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -234,19 +234,19 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RS_CUBE( adUphi, adVphi, withSigns,
+       CALL EXCH1_UV_RS_CUBE_AD( adUphi, adVphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RS( adUphi,
+       CALL EXCH1_RS_AD( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RS( adVphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RS_AD( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -311,19 +311,19 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RL_CUBE( adUphi, adVphi, withSigns,
+       CALL EXCH1_UV_RL_CUBE_AD( adUphi, adVphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RL( adUphi,
+       CALL EXCH1_RL_AD( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( adVphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RL_AD( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -383,15 +383,15 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_Z_RS_CUBE( adphi,
+       CALL EXCH1_Z_RS_CUBE_AD( adphi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RS( adphi,
+       CALL EXCH1_RS_AD( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -451,15 +451,15 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_Z_RL_CUBE( adphi,
+       CALL EXCH1_Z_RL_CUBE_AD( adphi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RL( adphi,
+       CALL EXCH1_RL_AD( adphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN

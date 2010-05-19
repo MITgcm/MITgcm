@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.6 2010/05/04 15:08:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.7 2010/05/19 01:54:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,22 +89,19 @@ C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RS_CUBE( aduphi, advphi, withSigns,
+       CALL EXCH1_UV_RS_CUBE_AD( aduphi, advphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RS( aduphi,
+       CALL EXCH1_RS_AD( aduphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RS( advphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RS_AD( advphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
-c       _EXCH_XY_RS( aduphi, myThid )
-c       _EXCH_XY_RS( advphi, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -162,22 +159,19 @@ C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RL_CUBE( aduphi, advphi, withSigns,
+       CALL EXCH1_UV_RL_CUBE_AD( aduphi, advphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RL( aduphi,
+       CALL EXCH1_RL_AD( aduphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( advphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RL_AD( advphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
-c       _EXCH_XY_RL( aduphi, myThid )
-c       _EXCH_XY_RL( advphi, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -234,22 +228,19 @@ C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RS_CUBE( aduphi, advphi, withSigns,
+       CALL EXCH1_UV_RS_CUBE_AD( aduphi, advphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RS( aduphi,
+       CALL EXCH1_RS_AD( aduphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RS( advphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RS_AD( advphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
-c       _EXCH_XY_RS( aduphi, myThid )
-c       _EXCH_XY_RS( advphi, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -307,22 +298,19 @@ C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RL_CUBE( aduphi, advphi, withSigns,
+       CALL EXCH1_UV_RL_CUBE_AD( aduphi, advphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RL( aduphi,
+       CALL EXCH1_RL_AD( aduphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( advphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RL_AD( advphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
-c       _EXCH_XY_RL( aduphi, myThid )
-c       _EXCH_XY_RL( advphi, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN

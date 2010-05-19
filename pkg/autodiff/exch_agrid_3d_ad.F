@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.7 2010/05/04 16:41:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.8 2010/05/19 01:54:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,14 +99,14 @@ CEOP
       IF (useCubedSphereExchange) THEN
        STOP 'EXCH_AGRID_3D_AD: AGRID EXCH not implemented for c.s.'
       ELSE
-       CALL EXCH_RS( adUphi,
+       CALL EXCH1_RS_AD( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RS( adVphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RS_AD( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -177,14 +177,14 @@ CEOP
       IF (useCubedSphereExchange) THEN
        STOP 'EXCH_AGRID_3D_AD: AGRID EXCH not implemented for c.s.'
       ELSE
-       CALL EXCH_RL( adUphi,
+       CALL EXCH1_RL_AD( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( adVphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RL_AD( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
