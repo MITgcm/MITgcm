@@ -1,0 +1,312 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_uv_rx_cube.template,v 1.1 2010/05/19 01:46:11 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
+
+CBOP
+C     !ROUTINE: EXCH1_UV_RX_CUBE
+
+C     !INTERFACE:
+      SUBROUTINE EXCH1_UV_RX_CUBE(
+     U                 Uarray, Varray,
+     I                 withSigns,
+     I                 myOLw, myOLe, myOLs, myOLn, myNz,
+     I                 exchWidthX, exchWidthY,
+     I                 cornerMode, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EXCH1_UV_RX_CUBE
+C     | o Forward-mode edge exchanges for RX vector on CS config.
+C     *==========================================================*
+C     | Controlling routine for exchange of XY edges of an array
+C     | distributed in X and Y. The routine interfaces to
+C     | communication routines that can use messages passing
+C     | exchanges, put type exchanges or get type exchanges.
+C     |  This allows anything from MPI to raw memory channel to
+C     | memmap segments to be used as a inter-process and/or
+C     | inter-thread communiation and synchronisation
+C     | mechanism.
+C     | Notes --
+C     | 1. Some low-level mechanisms such as raw memory-channel
+C     | or SGI/CRAY shmem put do not have direct Fortran bindings
+C     | and are invoked through C stub routines.
+C     | 2. Although this routine is fairly general but it does
+C     | require nSx and nSy are the same for all innvocations.
+C     | There are many common data structures ( myByLo,
+C     | westCommunicationMode, mpiIdW etc... ) tied in with
+C     | (nSx,nSy). To support arbitray nSx and nSy would require
+C     | general forms of these.
+C     | 3. Exchanges on the cube of vector quantities need to be
+C     | paired to allow rotations and sign reversal to be applied
+C     | consistently between vector components as they rotate.
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     Uarray      :: (u-type) Array with edges to exchange.
+C     Varray      :: (v-type) Array with edges to exchange.
+C     withSigns   :: sign of Uarray,Varray depends on orientation
+C     myOLw,myOLe :: West  and East  overlap region sizes.
+C     myOLs,myOLn :: South and North overlap region sizes.
+C     exchWidthX  :: Width of data region exchanged in X.
+C     exchWidthY  :: Width of data region exchanged in Y.
+C                    Note --
+C                    1. In theory one could have a send width and
+C                    a receive width for each face of each tile. The only
+C                    restriction would be that the send width of one
+C                    face should equal the receive width of the sent to
+C                    tile face. Dont know if this would be useful. I
+C                    have left it out for now as it requires additional
+C                    bookeeping.
+C     cornerMode  :: Flag indicating whether corner updates are needed.
+C     myThid      :: my Thread Id number
+
+      INTEGER myOLw, myOLe, myOLs, myOLn, myNz
+      _RX     Uarray( 1-myOLw:sNx+myOLe,
+     &                1-myOLs:sNy+myOLn,
+     &                myNz, nSx, nSy )
+      _RX     Varray( 1-myOLw:sNx+myOLe,
+     &                1-myOLs:sNy+myOLn,
+     &                myNz, nSx, nSy )
+      LOGICAL withSigns
+      INTEGER exchWidthX
+      INTEGER exchWidthY
+      INTEGER cornerMode
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     theSimulationMode :: Holds working copy of simulation mode
+C     theCornerMode     :: Holds working copy of corner mode
+C     I,J,K             :: Loop and index counters
+C     bl,bt,bn,bs,be,bw :: tile indices
+C     negOne, Utmp,Vtmp :: Temps used in swapping and rotating vectors
+c     INTEGER theSimulationMode
+c     INTEGER theCornerMode
+      INTEGER I,J,K, repeat
+      INTEGER bl,bt,bn,bs,be,bw
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RX negOne, Utmp, Vtmp
+
+C     == Statement function ==
+C     tilemod :: Permutes indices to return neighboring tile index
+C                on six face cube.
+      INTEGER tilemod
+      tilemod(I)=1+mod(I-1+6,6)
+CEOP
+
+c     theSimulationMode = FORWARD_SIMULATION
+c     theCornerMode     = cornerMode
+
+c     IF ( simulationMode.EQ.REVERSE_SIMULATION ) THEN
+c       WRITE(msgBuf,'(A)')'EXCH1_UV_RX_CUBE: AD mode not implemented'
+c       CALL PRINT_ERROR( msgBuf, myThid )
+c       STOP 'ABNORMAL END: EXCH1_UV_RX_CUBE: no AD code'
+c     ENDIF
+      IF ( sNx.NE.sNy .OR.
+     &     nSx.NE.6 .OR. nSy.NE.1 .OR.
+     &     nPx.NE.1 .OR. nPy.NE.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'EXCH1_UV_RX_CUBE: Wrong Tiling'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'EXCH1_UV_RX_CUBE: ',
+     &   'works only with sNx=sNy & nSx=6 & nSy=nPx=nPy=1'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: EXCH1_UV_RX_CUBE: Wrong Tiling'
+      ENDIF
+
+      negOne = 1.
+      IF (withSigns) negOne = -1.
+
+C     For now tile<->tile exchanges are sequentialised through
+C     thread 1. This is a temporary feature for preliminary testing until
+C     general tile decomposistion is in place (CNH April 11, 2001)
+      CALL BAR2( myThid )
+      IF ( myThid .EQ. 1 ) THEN
+
+       DO repeat=1,2
+
+       DO bl = 1, 5, 2
+
+        bt = bl
+        bn=tilemod(bt+2)
+        bs=tilemod(bt-1)
+        be=tilemod(bt+1)
+        bw=tilemod(bt-2)
+
+        DO K = 1,myNz
+
+C        Tile Odd:Odd+2 [get] [North<-West]
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Uarray(J,sNy+I,K,bt,1) = negOne*Varray(I,sNy+2-J,K,bn,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Varray(J,sNy+I,K,bt,1) = Uarray(I,sNy+1-J,K,bn,1)
+          ENDDO
+         ENDDO
+C        Tile Odd:Odd-1 [get] [South<-North]
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Uarray(J,1-I,K,bt,1) = Uarray(J,sNy+1-I,K,bs,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Varray(J,1-I,K,bt,1) = Varray(J,sNy+1-I,K,bs,1)
+          ENDDO
+         ENDDO
+C        Tile Odd:Odd+1 [get] [East<-West]
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Uarray(sNx+I,J,K,bt,1) = Uarray(I,J,K,be,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Varray(sNx+I,J,K,bt,1) = Varray(I,J,K,be,1)
+          ENDDO
+         ENDDO
+C        Tile Odd:Odd-2 [get] [West<-North]
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Uarray(1-I,J,K,bt,1) = Varray(sNx+1-J,sNy+1-I,K,bw,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Varray(1-I,J,K,bt,1) = negOne*Uarray(sNx+2-J,sNy+1-I,K,bw,1)
+          ENDDO
+         ENDDO
+
+        ENDDO
+
+        bt = bl+1
+        bn=tilemod(bt+1)
+        bs=tilemod(bt-2)
+        be=tilemod(bt+2)
+        bw=tilemod(bt-1)
+
+        DO K = 1,myNz
+
+C        Tile Even:Even+1 [get] [North<-South]
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Uarray(J,sNy+I,K,bt,1) = Uarray(J,I,K,bn,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Varray(J,sNy+I,K,bt,1) = Varray(J,I,K,bn,1)
+          ENDDO
+         ENDDO
+C        Tile Even:Even-2 [get] [South<-East]
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Uarray(J,1-I,K,bt,1) = negOne*Varray(sNx+1-I,sNy+2-J,K,bs,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Varray(J,1-I,K,bt,1) = Uarray(sNx+1-I,sNy+1-J,K,bs,1)
+          ENDDO
+         ENDDO
+C        Tile Even:Even+2 [get] [East<-South]
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Uarray(sNx+I,J,K,bt,1) = Varray(sNx+1-J,I,K,be,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Varray(sNx+I,J,K,bt,1) = negOne*Uarray(sNx+2-J,I,K,be,1)
+          ENDDO
+         ENDDO
+C        Tile Even:Even-1 [get] [West<-East]
+         DO J = 1,sNy
+          DO I = 1,exchWidthX
+           Uarray(1-I,J,K,bt,1) = Uarray(sNx+1-I,J,K,bw,1)
+          ENDDO
+         ENDDO
+         DO J = 1,sNy+1
+          DO I = 1,exchWidthX
+           Varray(1-I,J,K,bt,1) = Varray(sNx+1-I,J,K,bw,1)
+          ENDDO
+         ENDDO
+
+        ENDDO
+
+       ENDDO
+
+C-     Add one valid uVel,vVel value next to the corner, that allows
+C       to compute vorticity on a wider stencil (e.g., vort3(0,1) & (1,0))
+       DO bt = 1,6
+        DO K = 1,myNz
+C      SW corner:
+          Uarray(0,0,K,bt,1)=Varray(1,0,K,bt,1)
+          Varray(0,0,K,bt,1)=Uarray(0,1,K,bt,1)
+C      NW corner:
+          Uarray(0,sNy+1,K,bt,1)= negOne*Varray(1,sNy+2,K,bt,1)
+          Varray(0,sNy+2,K,bt,1)= negOne*Uarray(0,sNy,K,bt,1)
+C      SE corner:
+          Uarray(sNx+2,0,K,bt,1)= negOne*Varray(sNx,0,K,bt,1)
+          Varray(sNx+1,0,K,bt,1)= negOne*Uarray(sNx+2,1,K,bt,1)
+C      NE corner:
+          Uarray(sNx+2,sNy+1,K,bt,1)=Varray(sNx,sNy+2,K,bt,1)
+          Varray(sNx+1,sNy+2,K,bt,1)=Uarray(sNx+2,sNy,K,bt,1)
+        ENDDO
+       ENDDO
+
+C      Fix degeneracy at corners
+       IF (.FALSE.) THEN
+c      IF (withSigns) THEN
+        DO bt = 1, 6
+         DO K = 1,myNz
+C         Top left
+          Utmp=0.5*(Uarray(1,sNy,K,bt,1)+Uarray(0,sNy,K,bt,1))
+          Vtmp=0.5*(Varray(0,sNy+1,K,bt,1)+Varray(0,sNy,K,bt,1))
+          Varray(0,sNx+1,K,bt,1)=(Vtmp-Utmp)*0.70710678
+          Utmp=0.5*(Uarray(1,sNy+1,K,bt,1)+Uarray(2,sNy+1,K,bt,1))
+          Vtmp=0.5*(Varray(1,sNy+1,K,bt,1)+Varray(1,sNy+2,K,bt,1))
+          Uarray(1,sNy+1,K,bt,1)=(Utmp-Vtmp)*0.70710678
+C         Bottom right
+          Utmp=0.5*(Uarray(sNx+1,1,K,bt,1)+Uarray(sNx+2,1,K,bt,1))
+          Vtmp=0.5*(Varray(sNx+1,1,K,bt,1)+Varray(sNx+1,2,K,bt,1))
+          Varray(sNx+1,1,K,bt,1)=(Vtmp-Utmp)*0.70710678
+          Utmp=0.5*(Uarray(sNx+1,0,K,bt,1)+Uarray(sNx,0,K,bt,1))
+          Vtmp=0.5*(Varray(sNx,1,K,bt,1)+Varray(sNx,0,K,bt,1))
+          Uarray(sNx+1,0,K,bt,1)=(Utmp-Vtmp)*0.70710678
+C         Bottom left
+          Utmp=0.5*(Uarray(1,1,K,bt,1)+Uarray(0,1,K,bt,1))
+          Vtmp=0.5*(Varray(0,1,K,bt,1)+Varray(0,2,K,bt,1))
+          Varray(0,1,K,bt,1)=(Vtmp+Utmp)*0.70710678
+          Utmp=0.5*(Uarray(1,0,K,bt,1)+Uarray(2,0,K,bt,1))
+          Vtmp=0.5*(Varray(1,1,K,bt,1)+Varray(1,0,K,bt,1))
+          Uarray(1,0,K,bt,1)=(Utmp+Vtmp)*0.70710678
+C         Top right
+          Utmp=0.5*(Uarray(sNx+1,sNy,K,bt,1)+Uarray(sNx+2,sNy,K,bt,1))
+          Vtmp=0.5*(Varray(sNx+1,sNy+1,K,bt,1)+Varray(sNx+1,sNy,K,bt,1))
+          Varray(sNx+1,sNy+1,K,bt,1)=(Vtmp+Utmp)*0.70710678
+          Utmp=0.5*(Uarray(sNx+1,sNy+1,K,bt,1)+Uarray(sNx,sNy+1,K,bt,1))
+          Vtmp=0.5*(Varray(sNx,sNy+1,K,bt,1)+Varray(sNx,sNy+2,K,bt,1))
+          Uarray(sNx+1,sNy+1,K,bt,1)=(Utmp+Vtmp)*0.70710678
+         ENDDO
+        ENDDO
+       ENDIF
+
+       ENDDO
+
+      ENDIF
+      CALL BAR2(myThid)
+
+      RETURN
+      END
