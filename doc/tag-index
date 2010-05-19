@@ -1,16 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1273 2010/05/18 22:53:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1274 2010/05/19 02:12:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src (exch-1):
+ - split exch_rx.F into Forward S/R (exch1_rx.F) and Adjoint S/R (exch1_rx_ad.F)
+   and remove argument "simulationMode"; same thing for all exch_*rx_cube.F
+   (renamed to exch1_*rx_cube.F).
+ - change accordingly exch_*_rx.template and AD version in pkg/autodiff
+   to call new exch1 S/R ; update Makefile and .cvsignore.
+ - replace call to exch2_xy_rx S/R with exch2_*3d_rx(myNz=1) (will remove
+   exch2_xy_rx later)
+  Note: after updating your code, need to run "make clean" in eesupp/src
 o test experiment bottom_ctrl_5x5:
-   new output_adm.txt with fewer grdchk & less monitor output. 
+   new output_adm.txt with fewer grdchk & less monitor output.
 o model/src:
   remove the call to ini_cori in initialise_varia.F (just keep the usual one
-   in initialise_fixed.F). More consistent with coriolis & horizontal grid 
+   in initialise_fixed.F). More consistent with coriolis & horizontal grid
    beeing treated in the same way (ini_grid is not called a 2nd time).
-o pkg/exf: 
+o pkg/exf:
   - rewrite exf_bulk_largeyeager04.F for better vectorization, changes
   global_ocean.cs32x15/input.icedyn (11 digits of agreement), updated
   - fix adjoint (used worked for ALLOW_ATM_WIND defined, works for this now)
