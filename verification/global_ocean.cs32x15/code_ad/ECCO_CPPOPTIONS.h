@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2010/05/19 08:14:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2010/05/19 08:33:34 mlosch Exp $
 C $Name:  $
 
 C
@@ -77,13 +77,13 @@ C   Do more printout for the protocol file than usual.
 
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
-#define   ALLOW_ATM_WIND
+#undef   ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
 #if (defined (ALLOW_ATM_TEMP) || \
      defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
-# define ALLOW_BULK_LARGEYEAGER04
+# undef  ALLOW_BULK_LARGEYEAGER04
 #endif
 
 C   Relaxation to monthly climatologies.
