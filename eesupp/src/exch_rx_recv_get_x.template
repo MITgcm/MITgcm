@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.14 2010/05/17 02:28:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.15 2010/05/19 08:14:16 mlosch Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 #undef EXCH_USE_SPINNING
@@ -194,7 +194,6 @@ C     (done after mpi waitall in case waitall is really needed)
       ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-#
 C--   Threads wait for buffers I am going to read to be ready.
 C     note: added BARRIER in exch_send_put S/R and here above (message mode)
 C           so that we no longer needs this (undef EXCH_USE_SPINNING)
