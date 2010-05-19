@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1274 2010/05/19 02:12:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1275 2010/05/19 19:35:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62g (2010/05/19)
 o eesupp/src (exch-1):
  - split exch_rx.F into Forward S/R (exch1_rx.F) and Adjoint S/R (exch1_rx_ad.F)
    and remove argument "simulationMode"; same thing for all exch_*rx_cube.F
