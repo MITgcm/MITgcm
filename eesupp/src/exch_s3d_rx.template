@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_s3d_rx.template,v 1.4 2007/08/17 18:34:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_s3d_rx.template,v 1.5 2010/05/19 01:53:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,8 +27,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "EESUPPORT.h"
-c#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -59,22 +57,16 @@ CEOP
       OLs        = 1
       exchWidthX = 1
       exchWidthY = 1
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_RX_CUBE( phi,
+       CALL EXCH1_RX_CUBE( phi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            EXCH_IGNORE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RX( phi,
+       CALL EXCH1_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            EXCH_IGNORE_CORNERS, myThid )
       ENDIF
 
       RETURN

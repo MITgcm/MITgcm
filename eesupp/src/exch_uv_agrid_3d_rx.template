@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.4 2007/08/17 18:34:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.5 2010/05/19 01:53:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,8 +37,6 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "EESUPPORT.h"
-c#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Argument list variables ==
@@ -86,14 +84,14 @@ C---  using CubedSphereExchange:
 
 C First call the exchanges for the two components
 
-       CALL EXCH_RX_CUBE( Uphi,
+       CALL EXCH1_RX_CUBE( Uphi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RX_CUBE( Vphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RX_CUBE( Vphi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
 C Then if we are on the sphere we may need to switch u and v components
 C and/or the signs depending on which cube face we are located.
@@ -173,14 +171,14 @@ C--    end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
-       CALL EXCH_RX( Uphi,
+       CALL EXCH1_RX( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RX( Vphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RX( Vphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
 
 C---  using or not using CubedSphereExchange: end
       ENDIF

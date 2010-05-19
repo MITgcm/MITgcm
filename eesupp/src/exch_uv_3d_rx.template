@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_3d_rx.template,v 1.4 2007/08/17 18:34:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_3d_rx.template,v 1.5 2010/05/19 01:53:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,20 +27,18 @@ C     *==========================================================*
 
 C     !USES:
       IMPLICIT NONE
+
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "EESUPPORT.h"
-c#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     phi    :: Array with overlap regions are to be exchanged
-C               Note - The interface to EXCH_RX assumes that
-C               the standard Fortran 77 sequence association rules
-C               apply.
-C     myNz   :: 3rd dimension of array to exchange
-C     myThid :: My thread id.
+C     Uphi      :: 2 components of a vector field with overlap regions
+C     Vphi      :: to be exchanged
+C     withSigns :: Flag controlling whether vector is signed.
+C     myNz      :: 3rd dimension of array to exchange
+C     myThid    :: my Thread Id. number
       INTEGER myNz
       _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
@@ -75,26 +73,20 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RX_CUBE( Uphi, Vphi, withSigns,
+       CALL EXCH1_UV_RX_CUBE( Uphi, Vphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH_RX( Uphi,
+       CALL EXCH1_RX( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RX( Vphi,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RX( Vphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN

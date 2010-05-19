@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.11 2009/04/28 15:17:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.12 2010/05/19 01:53:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,8 +13,8 @@ C     !ROUTINE: EXCH_UV_XYZ_RX
 
 C     !INTERFACE:
       SUBROUTINE EXCH_UV_XYZ_RX(
-     U                       Uphi, Vphi,
-     I                       withSigns, myThid )
+     U                          Uphi, Vphi,
+     I                          withSigns, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -28,19 +28,17 @@ C     *==========================================================*
 
 C     !USES:
       IMPLICIT NONE
+
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-cph-mpi#include "EESUPPORT.h"
-c#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     phi    :: Array with overlap regions are to be exchanged
-C               Note - The interface to EXCH_RX assumes that
-C               the standard Fortran 77 sequence association rules
-C               apply.
-C     myThid :: My thread id.
+C     Uphi      :: 2 components of a vector field with overlap regions
+C     Vphi      :: to be exchanged
+C     withSigns :: Flag controlling whether vector is signed.
+C     myThid    :: my Thread Id. number
       _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       LOGICAL withSigns
@@ -75,31 +73,20 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
       IF (useCubedSphereExchange) THEN
-       CALL EXCH_UV_RX_CUBE( Uphi, Vphi, withSigns,
+       CALL EXCH1_UV_RX_CUBE( Uphi, Vphi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-c      CALL EXCH_RX( Uphi,
-c    I            OLw, OLe, OLs, OLn, myNz,
-c    I            exchWidthX, exchWidthY,
-c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c      CALL EXCH_RX( Vphi,
-c    I            OLw, OLe, OLs, OLn, myNz,
-c    I            exchWidthX, exchWidthY,
-c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
-c      _EXCH_XYZ_RX( Uphi, myThid )
-c      _EXCH_XYZ_RX( Vphi, myThid )
-       CALL EXCH_XYZ_RX( Uphi, myThid )
-       CALL EXCH_XYZ_RX( Vphi, myThid )
+       CALL EXCH1_RX( Uphi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RX( Vphi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
