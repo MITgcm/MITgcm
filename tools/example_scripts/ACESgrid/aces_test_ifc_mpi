@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_ifc.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.14 2010/04/01 15:46:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.15 2010/05/20 19:22:30 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI test using ifort (default=v8) & mpich
@@ -56,7 +56,7 @@ if [ $checkOut -eq 1 ] ; then
     /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
-    ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
+    ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2

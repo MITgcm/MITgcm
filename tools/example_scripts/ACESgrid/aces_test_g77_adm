@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_g77.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.1 2010/05/12 21:52:00 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.2 2010/05/20 19:22:30 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -49,7 +49,7 @@ if [ $checkOut -eq 1 ] ; then
     /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
-    ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
+    ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
