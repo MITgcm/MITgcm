@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1275 2010/05/19 19:35:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1276 2010/05/20 03:22:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+
+o adjoint of exch-1:
+ - pass high-level EXCH S/R through TAF (eesupp/src/exch_ad_diff.list)
+   (note: was already like this when using EXCH-2) and remove flow dir
+   and hand-written AD version of high-level EXCH S/R (pkg/autodiff);
+ - provide flow-dir for low-level exch1 S/R (eesupp/src/exch1_ad.flow);
+ - update pkg/exch2 diff list.
 
 checkpoint62g (2010/05/19)
 o eesupp/src (exch-1):
