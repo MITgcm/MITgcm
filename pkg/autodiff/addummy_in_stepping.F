@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.45 2008/06/20 21:43:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.46 2010/05/20 03:00:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,10 +110,12 @@ c
 # endif
 # else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
        call adexch_xy_rl( adetan, mythid )
+#  ifndef ALLOW_BULK_OFFLINE
        call adexch_xyz_rl( adtheta, mythid )
        call adexch_xyz_rl( adsalt, mythid )
        call adexch_xyz_rl( adwvel, mythid )
        call adexch_uv_xyz_rl( aduvel,advvel, .true. ,mythid )
+#  endif 
 c
        call adexch_xy_rl( adfu, mythid )
        call adexch_xy_rl( adfv, mythid )
@@ -142,9 +144,6 @@ c
        call adexch_xy_rl( adbottomdragfld, mythid )
 # endif
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
-
-       _BARRIER
-       _BEGIN_MASTER( myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
@@ -213,9 +212,6 @@ cph        IF ( useEXF ) CALL EXF_AD_DUMP( mytime, myiter, myThid )
         IF ( useSEAICE ) CALL SEAICE_AD_DUMP( mytime, myiter, myThid )
 #endif
 
-       _END_MASTER( myThid )
-       _BARRIER
-
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 c
@@ -267,7 +263,8 @@ c
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
 
-      end
+      RETURN
+      END
 
 
 
