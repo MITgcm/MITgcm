@@ -1,122 +1,150 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.22 2010/05/21 07:50:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.23 2010/05/21 10:08:44 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_bulkformulae(mytime, myiter, mythid)
+CBOP
+C     !ROUTINE: EXF_BULKFORMULAE
+C     !INTERFACE:
+      SUBROUTINE EXF_BULKFORMULAE( myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_bulkformulae
-c     ==================================================================
-c
-c     o Use bulk formulae to estimate turbulent and/or radiative
-c       fluxes at the surface.
-c
-c     NOTES:
-c     ======
-c
-c     See EXF_OPTIONS.h for a description of the various possible
-c     ocean-model forcing configurations.
-c
-c     The bulk formulae of pkg/exf are not valid for sea-ice covered
-c     oceans but they can be used in combination with a sea-ice model,
-c     for example, pkg/seaice, to specify open water flux contributions.
-c
-c     ==================================================================
-c
-c       The calculation of the bulk surface fluxes has been adapted from
-c       the NCOM model which uses the formulae given in Large and Pond
-c       (1981 & 1982 )
-c
-c
-c       Header taken from NCOM version: ncom1.4.1
-c       -----------------------------------------
-c
-c       Following procedures and coefficients in Large and Pond
-c       (1981 ; 1982)
-c
-c       Output: Bulk estimates of the turbulent surface fluxes.
-c       -------
-c
-c       hs  - sensible heat flux  (W/m^2), into ocean
-c       hl  - latent   heat flux  (W/m^2), into ocean
-c
-c       Input:
-c       ------
-c
-c       us  - mean wind speed (m/s)     at height hu (m)
-c       th  - mean air temperature (K)  at height ht (m)
-c       qh  - mean air humidity (kg/kg) at height hq (m)
-c       sst - sea surface temperature (K)
-c       tk0 - Kelvin temperature at 0 Celsius (K)
-c
-c       Assume 1) a neutral 10m drag coefficient =
-c
-c                 cdn = .0027/u10 + .000142 + .0000764 u10
-c
-c              2) a neutral 10m stanton number =
-c
-c                 ctn = .0327 sqrt(cdn), unstable
-c                 ctn = .0180 sqrt(cdn), stable
-c
-c              3) a neutral 10m dalton number =
-c
-c                 cen = .0346 sqrt(cdn)
-c
-c              4) the saturation humidity of air at
-c
-c                 t(k) = exf_BulkqSat(t)  (kg/m^3)
-c
-c       Note:  1) here, tstar = <wt>/u*, and qstar = <wq>/u*.
-c              2) wind speeds should all be above a minimum speed,
-c                 say 0.5 m/s.
-c              3) with optional iteration loop, niter=3, should suffice.
-c              4) this version is for analyses inputs with hu = 10m and
-c                 ht = hq.
-c              5) sst enters in Celsius.
-c
-c     ==================================================================
-c
-c       started: Christian Eckert eckert@mit.edu 27-Aug-1999
-c
-c       changed: Christian Eckert eckert@mit.edu 14-Jan-2000
-c              - restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c              - Changed Routine names (package prefix: exf_)
-c
-c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c              - changed the handling of precip and sflux with respect
-c                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
-c              - included some CPP flags ALLOW_BULKFORMULAE to make
-c                sure ALLOW_ATM_TEMP, ALLOW_ATM_WIND are used only in
-c                conjunction with defined ALLOW_BULKFORMULAE
-c              - statement functions discarded
-c
-c              Ralf.Giering@FastOpt.de 25-Mai-2000
-c              - total rewrite using new subroutines
-c
-c              Detlef Stammer: include river run-off. Nov. 21, 2001
-c
-c              heimbach@mit.edu, 10-Jan-2002
-c              - changes to enable field swapping
-c
-c       mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c     ==================================================================
-c     SUBROUTINE exf_bulkformulae
-c     ==================================================================
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE EXF_BULKFORMULAE
+C     | o Calculate bulk formula fluxes over open ocean
+C     |   either following
+C     |   Large and Pond, 1981 & 1982 
+C     |   or (if defined ALLOW_BULK_LARGEYEAGER04)
+C     |   Large and Yeager, 2004, NCAR/TN-460+STR.
+C     *==========================================================*
+C     \ev
+C
+C
+C     NOTES:
+C     ======
+C
+C     See EXF_OPTIONS.h for a description of the various possible
+C     ocean-model forcing configurations.
+C
+C     The bulk formulae of pkg/exf are not valid for sea-ice covered
+C     oceans but they can be used in combination with a sea-ice model,
+C     for example, pkg/seaice, to specify open water flux contributions.
+C
+C     ==================================================================
+C
+C     for Large and Pond, 1981 & 1982
+C
+C     The calculation of the bulk surface fluxes has been adapted from
+C     the NCOM model which uses the formulae given in Large and Pond
+C     (1981 & 1982 )
+C
+C
+C     Header taken from NCOM version: ncom1.4.1
+C     -----------------------------------------
+C
+C     Following procedures and coefficients in Large and Pond
+C     (1981 ; 1982)
+C
+C     Output: Bulk estimates of the turbulent surface fluxes.
+C     -------
+C
+C     hs  - sensible heat flux  (W/m^2), into ocean
+C     hl  - latent   heat flux  (W/m^2), into ocean
+C
+C     Input:
+C     ------
+C
+C     us  - mean wind speed (m/s)     at height hu (m)
+C     th  - mean air temperature (K)  at height ht (m)
+C     qh  - mean air humidity (kg/kg) at height hq (m)
+C     sst - sea surface temperature (K)
+C     tk0 - Kelvin temperature at 0 Celsius (K)
+C
+C     Assume 1) a neutral 10m drag coefficient =
+C
+C               cdn = .0027/u10 + .000142 + .0000764 u10
+C
+C            2) a neutral 10m stanton number =
+C
+C               ctn = .0327 sqrt(cdn), unstable
+C               ctn = .0180 sqrt(cdn), stable
+C
+C            3) a neutral 10m dalton number =
+C
+C               cen = .0346 sqrt(cdn)
+C
+C            4) the saturation humidity of air at
+C
+C               t(k) = exf_BulkqSat(t)  (kg/m^3)
+C
+C     Note:  1) here, tstar = <wt>/u*, and qstar = <wq>/u*.
+C            2) wind speeds should all be above a minimum speed,
+C               say 0.5 m/s.
+C            3) with optional iteration loop, niter=3, should suffice.
+C            4) this version is for analyses inputs with hu = 10m and
+C               ht = hq.
+C            5) sst enters in Celsius.
+C
+C     ==================================================================
+C
+C       started: Christian Eckert eckert@mit.edu 27-Aug-1999
+C
+C     changed: Christian Eckert eckert@mit.edu 14-Jan-2000
+C            - restructured the original version in order to have a
+C              better interface to the MITgcmUV.
+C
+C            Christian Eckert eckert@mit.edu  12-Feb-2000
+C            - Changed Routine names (package prefix: exf_)
+C
+C            Patrick Heimbach, heimbach@mit.edu  04-May-2000
+C            - changed the handling of precip and sflux with respect
+C              to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
+C            - included some CPP flags ALLOW_BULKFORMULAE to make
+C              sure ALLOW_ATM_TEMP, ALLOW_ATM_WIND are used only in
+C              conjunction with defined ALLOW_BULKFORMULAE
+C            - statement functions discarded
+C
+C            Ralf.Giering@FastOpt.de 25-Mai-2000
+C            - total rewrite using new subroutines
+C
+C            Detlef Stammer: include river run-off. Nov. 21, 2001
+C
+C            heimbach@mit.edu, 10-Jan-2002
+C            - changes to enable field swapping
+C
+C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C
+C     martin.losch@awi.de: merged with exf_bulk_largeyeager04, 21-May-2010
+C
+C     ==================================================================
+C
+C     for Large and Yeager, 2004
+C
+C === Turbulent Fluxes :
+C  * use the approach "B": shift coeff to height & stability of the
+C    atmosphere state (instead of "C": shift temp & humid to the height
+C    of wind, then shift the coeff to this height & stability of the atmos).
+C  * similar to EXF (except over sea-ice) ; default parameter values
+C    taken from Large & Yeager.
+C  * assume that Qair & Tair inputs are from the same height (zq=zt)
+C  * formulae in short:
+C     wind stress = (ust,vst) = rhoA * Cd * Ws * (del.u,del.v)
+C     Sensib Heat flux = fsha = rhoA * Ch * Ws * del.T * CpAir
+C     Latent Heat flux = flha = rhoA * Ce * Ws * del.Q * Lvap
+C                      = -Evap * Lvap
+C   with Ws = wind speed = sqrt(del.u^2 +del.v^2) ;
+C        del.T = Tair - Tsurf ; del.Q = Qair - Qsurf ;
+C        Cd,Ch,Ce = drag coefficient, Stanton number and Dalton number
+C              respectively [no-units], function of height & stability
 
-      implicit none
-
-c     == global variables ==
-
+C     !USES:
+       IMPLICIT NONE
+C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-c #include "GRID.h"
+#include "GRID.h"
 
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
@@ -126,85 +154,103 @@ c #include "GRID.h"
 #include "tamc.h"
 #endif
 
-c     == routine arguments ==
-
-      integer mythid
-      integer myiter
-      _RL     mytime
+C     !INPUT/OUTPUT PARAMETERS:
+C     input:
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: My Thread Id number
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+C     output:
+CEOP
 
 #ifdef ALLOW_BULKFORMULAE
+C     == external Functions
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
+C     == Local variables ==
+C     i,j      :: grid point indices
+C     bi,bj    :: tile indices
+C     ssq      :: saturation specific humidity [kg/kg] in eq. with Sea-Surface water
+      INTEGER i,j,bi,bj
 
       _RL czol
-      _RL zwln               ! = log(zwd/zref)
-      _RL ztln               ! = log(zth/zref)
-      _RL windStress         ! surface wind-stress (@ grid cell center)
-
-      integer iter
-      _RL     tmpbulk
-      _RL     hqol
-      _RL     htol
-      _RL     huol
-      _RL     psimh
-      _RL     psixh
-      _RL     re                ! = Ce / sqrt(Cd)     [-]
-      _RL     rh                ! = Ch / sqrt(Cd)     [-]
-      _RL     ren, rhn          ! neutral, zref (=10m) values of re, rh
-      _RL     tsf
-      _RL     ssq
-      _RL     stable
-      _RL     t0
-      _RL     wsm                ! limited wind speed [m/s] (> umin)
-      _RL     uzn
-      _RL     shn
-      _RL     xsq
-      _RL     x
-      _RL     recip_rhoConstFresh
-C     these need to 2D-arrays for vectorizing code
-      _RL tstar (1:sNx,1:sNy)
-      _RL qstar (1:sNx,1:sNy)
-      _RL ustar (1:sNx,1:sNy)
-      _RL tau   (1:sNx,1:sNy)
-      _RL rd    (1:sNx,1:sNy)
-      _RL rdn   (1:sNx,1:sNy)
-      _RL delq  (1:sNx,1:sNy)
+      _RL Tsf                   ! surface temperature [K]
+      _RL wsm                   ! limited wind speed [m/s] (> umin)
+      _RL t0                    ! virtual temperature [K]
+C     these need to be 2D-arrays for vectorizing code
+      _RL tstar (1:sNx,1:sNy)   ! turbulent temperature scale [K]
+      _RL qstar (1:sNx,1:sNy)   ! turbulent humidity scale  [kg/kg]
+      _RL ustar (1:sNx,1:sNy)   ! friction velocity [m/s]
+      _RL tau   (1:sNx,1:sNy)   ! surface stress coef = rhoA * Ws * sqrt(Cd)
+      _RL rdn   (1:sNx,1:sNy)   ! neutral, zref (=10m) values of rd
+      _RL rd    (1:sNx,1:sNy)   ! = sqrt(Cd)          [-]
+      _RL delq  (1:sNx,1:sNy)   ! specific humidity difference [kg/kg]
       _RL deltap(1:sNx,1:sNy)
+C
+      _RL dzTmp
+      _RL SSTtmp
+      _RL ssq
+      _RL re                    ! = Ce / sqrt(Cd)     [-]
+      _RL rh                    ! = Ch / sqrt(Cd)     [-]
+      _RL ren, rhn              ! neutral, zref (=10m) values of re, rh
+      _RL usn, usm
+      _RL stable                ! = 1 if stable ; = 0 if unstable
+      _RL huol                  ! stability parameter at zwd [-] (=z/Monin-Obuklov length)
+      _RL htol                  ! stability parameter at zth [-]
+      _RL hqol
+      _RL x                     ! stability function  [-]
+      _RL xsq                   ! = x^2               [-]
+      _RL psimh                 ! momentum stability function
+      _RL psixh                 ! latent & sensib. stability function
+      _RL zwln                  ! = log(zwd/zref)
+      _RL ztln                  ! = log(zth/zref)
+      _RL windStress            ! surface wind-stress (@ grid cell center)
+      _RL tmpbulk
+      _RL recip_rhoConstFresh
+      INTEGER ksrf, ksrfp1
+      INTEGER iter
+C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculation
+      LOGICAL solve4Stress
+#ifdef ALLOW_ATM_WIND
+      PARAMETER ( solve4Stress = .TRUE. )
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ikey_1
       integer ikey_2
 #endif
 
-c     == external functions ==
+#ifndef ALLOW_ATM_WIND
+#ifdef ALLOW_BULK_LARGEYEAGER04
+      solve4Stress = wspeedfile .NE. ' '
+#else
+      solve4Stress = .FALSE.
+#endif
+#endif
 
-      integer  ilnblnk
-      external ilnblnk
-
-c     == end of interface ==
-
+C-- Set surface parameters :
       zwln = LOG(hu/zref)
       ztln = LOG(ht/zref)
       czol = hu*karman*gravity_mks
+C--   abbreviation
       recip_rhoConstFresh = 1. _d 0/rhoConstFresh
-c--   Use atmospheric state to compute surface fluxes.
-
+      
 c     Loop over tiles.
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
 #endif
-      do bj = mybylo(mythid),mybyhi(mythid)
+      DO bj = myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT
 #endif
-       do bi = mybxlo(mythid),mybxhi(mythid)
-        k = 1
-        do j = 1,sny
-         do i = 1,snx
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        ksrf   = 1
+        ksrfp1 = 2
+        DO j = 1,sNy
+         DO i = 1,sNx
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -223,75 +269,79 @@ CHPF$  INDEPENDENT
      &         + sNx*sNy*max1*max2*max3*act4
 #endif
 
-c--   Compute the turbulent surface fluxes.
-
 #ifdef ALLOW_ATM_TEMP
-
-c             Initial guess: z/l=0.0; hu=ht=hq=z
-c             Iterations:    converge on z/l and hence the fluxes.
-c             t0     : virtual temperature (K)
-c             ssq    : sea surface humidity (kg/kg)
-c             deltap : potential temperature diff (K)
 
 #ifdef ALLOW_AUTODIFF_TAMC
           deltap(i,j) = 0. _d 0
           delq(i,j)   = 0. _d 0
 #endif
-          if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
-           tsf         = theta(i,j,k,bi,bj) + cen2kel
-           tmpbulk     = cvapor_fac * exp( - cvapor_exp/tsf )
-           ssq         = saltsat*tmpbulk/atmrho
-           deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht - tsf
+C--- Compute turbulent surface fluxes
+C-   Pot. Temp and saturated specific humidity
+          IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
+C-   Surface Temp.
+           Tsf = theta(i,j,ksrf,bi,bj) + cen2kel
+           IF ( sstExtrapol.GT.0. _d 0 ) THEN
+            SSTtmp = sstExtrapol
+     &              *( theta(i,j,ksrf,bi,bj)-theta(i,j,ksrfp1,bi,bj) )
+     &              *  maskC(i,j,ksrfp1,bi,bj)
+            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
+           ENDIF
+c
+           tmpbulk = cvapor_fac*exp(-cvapor_exp/Tsf)
+           ssq = saltsat*tmpbulk/atmrho
+           deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
            delq(i,j)   = aqh(i,j,bi,bj) - ssq
-           stable      = exf_half + sign(exf_half, deltap(i,j))
+C--  no negative evaporation over ocean:
+           IF ( noNegativeEvap ) delq(i,j) = MIN( 0. _d 0, delq(i,j) )
+
+C--  initial guess for exchange coefficients:
+C    take U_N = del.U ; stability from del.Theta ;
+           stable = exf_half + SIGN(exf_half, deltap(i,j))
+
+#ifndef ALLOW_ATM_WIND
+           IF ( solve4Stress ) THEN
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
-#endif
-#ifdef ALLOW_ATM_WIND
-           wsm         = sh(i,j,bi,bj)
-           tmpbulk     = exf_scal_BulkCdn *
-     &          ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
-           rdn(i,j)    = sqrt(tmpbulk)
-           ustar(i,j)  = rdn(i,j)*wsm
-#else /* ifndef ALLOW_ATM_WIND */
-C     in this case ustress and vstress are defined a u and v points
-C     respectively, and we need to average to mass points to avoid
-C     tau = 0 near coasts or other boundaries
-c            tau(i,j)   = sqrt(0.5*
-c    &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
-c    &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
-c    &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
-c    &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
-c    &                   )
-           windStress  = wStress(i,j,bi,bj)
-           ustar(i,j)  = sqrt(windStress/atmrho)
-c          tau(i,j)    = wStress/ustar
-           tau(i,j)    = sqrt(windStress*atmrho)
-#endif /* ifndef ALLOW_ATM_WIND */
+#endif /* ALLOW_AUTODIFF_TAMC */
+C--   Wind speed
+            wsm        = sh(i,j,bi,bj)
+            tmpbulk    = exf_scal_BulkCdn *
+     &           ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
+            rdn(i,j)   = SQRT(tmpbulk)
+            ustar(i,j) = rdn(i,j)*wsm
+#ifndef ALLOW_ATM_WIND
+           ELSE
+            windStress = wStress(i,j,bi,bj)
+            ustar(i,j) = sqrt(windStress/atmrho)
+c           tau(i,j)   = windStress/ustar(i,j)
+            tau(i,j)   = sqrt(windStress*atmrho)
+           ENDIF
+#endif /* ALLOW_ATM_WIND */
 
 C--  initial guess for exchange other coefficients:
            rhn = (exf_one-stable)*cstanton_1 + stable*cstanton_2
-           ren = cdalton
+           ren = cDalton
 C--  calculate turbulent scales
-           tstar(i,j)  = rhn*deltap(i,j)
-           qstar(i,j)  = ren*delq(i,j)
+           tstar(i,j)=rhn*deltap(i,j)
+           qstar(i,j)=ren*delq(i,j)
 
-          else
+          ELSE
 C     atemp(i,j,bi,bj) .EQ. 0. 
            tstar (i,j) = 0. _d 0
            qstar (i,j) = 0. _d 0
            ustar (i,j) = 0. _d 0
            tau   (i,j) = 0. _d 0
            rdn   (i,j) = 0. _d 0
-          end if
-         end do
-        end do
+          ENDIF
+         ENDDO
+        ENDDO
+        DO iter=1,niter_bulk
+         DO j = 1,sNy
+          DO i = 1,sNx
+           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
+C--- iterate with psi-functions to find transfer coefficients
 
-        do iter = 1,niter_bulk
-         do j = 1,sny
-          do i = 1,snx
-           if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
-            
 #ifdef ALLOW_AUTODIFF_TAMC
             ikey_2 = i
      &           + sNx*(j-1)
@@ -300,106 +350,148 @@ C     atemp(i,j,bi,bj) .EQ. 0.
      &           + sNx*sNy*niter_bulk*max1*act2
      &           + sNx*sNy*niter_bulk*max1*max2*act3
      &           + sNx*sNy*niter_bulk*max1*max2*max3*act4
-CADJ STORE rdn(i,j)              = comlev1_exf_2, key = ikey_2
-CADJ STORE ustar(i,j)            = comlev1_exf_2, key = ikey_2
-CADJ STORE qstar(i,j)            = comlev1_exf_2, key = ikey_2
-CADJ STORE tstar(i,j)            = comlev1_exf_2, key = ikey_2
-CADJ STORE sh(i,j,bi,bj)         = comlev1_exf_2, key = ikey_2
-CADJ STORE wspeed(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+CADJ STORE rdn   (i,j)       = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar (i,j)       = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar (i,j)       = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar (i,j)       = comlev1_exf_2, key = ikey_2
+CADJ STORE sh    (i,j,bi,bj) = comlev1_exf_2, key = ikey_2
+CADJ STORE wspeed(i,j,bi,bj) = comlev1_exf_2, key = ikey_2
 #endif
 
-            t0     = atemp(i,j,bi,bj)*
+            t0   = atemp(i,j,bi,bj)*
      &           (exf_one + humid_fac*aqh(i,j,bi,bj))
-            huol   = ( tstar(i,j)/t0 +
-     &                 qstar(i,j)/(exf_one/humid_fac+aqh(i,j,bi,bj))
-     &                )*czol/(ustar(i,j)*ustar(i,j))
+            huol = ( tstar(i,j)/t0 +
+     &               qstar(i,j)/(exf_one/humid_fac+aqh(i,j,bi,bj))
+     &              )*czol/(ustar(i,j)*ustar(i,j))
+#ifdef ALLOW_BULK_LARGEYEAGER04
+            tmpbulk = MIN(abs(huol),10. _d 0)
+            huol   = SIGN(tmpbulk , huol)
+#else
+C--   Large&Pond1981:
             huol   = max(huol,zolmin)
+#endif /* ALLOW_BULK_LARGEYEAGER04 */
             htol   = huol*ht/hu
             hqol   = huol*hq/hu
             stable = exf_half + sign(exf_half, huol)
-            
-c     Evaluate all stability functions assuming hq = ht.
-#ifdef ALLOW_ATM_WIND
-            xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
-            x      = sqrt(xsq)
-            psimh  = -psim_fac*huol*stable
-     &              +(exf_one-stable)*
-     &               ( LOG( (exf_one + exf_two*x + xsq)*
-     &                      (exf_one+xsq)*.125 _d 0 )
-     &                 -exf_two*ATAN(x) + exf_half*pi )
-#endif /* ALLOW_ATM_WIND */
-            xsq    = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
+
+c                 Evaluate all stability functions assuming hq = ht.
+#ifndef ALLOW_ATM_WIND
+            IF ( solve4Stress ) THEN
+#endif
+#ifdef ALLOW_BULK_LARGEYEAGER04
+C--   Large&Yeager04:
+             xsq    = SQRT( ABS(exf_one - huol*16. _d 0) )
+#else
+C--   Large&Pond1981:
+             xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
+#endif /* ALLOW_BULK_LARGEYEAGER04 */
+             x      = SQRT(xsq)
+             psimh  = -psim_fac*huol*stable
+     &               +(exf_one-stable)*
+     &                ( LOG( (exf_one + exf_two*x + xsq)*
+     &                       (exf_one+xsq)*.125 _d 0 )
+     &                  -exf_two*ATAN(x) + exf_half*pi )
+#ifndef ALLOW_ATM_WIND
+            ENDIF
+#endif
+#ifdef ALLOW_BULK_LARGEYEAGER04
+C--   Large&Yeager04:
+            xsq   = SQRT( ABS(exf_one - htol*16. _d 0) )
+#else
+C--   Large&Pond1981:
+            xsq   = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
+#endif /* ALLOW_BULK_LARGEYEAGER04 */
             psixh = -psim_fac*htol*stable + (exf_one-stable)*
      &               ( exf_two*LOG(exf_half*(exf_one+xsq)) )
-            
-#ifdef ALLOW_ATM_WIND
-c     Shift wind speed using old coefficient
+
+#ifndef ALLOW_ATM_WIND
+            IF ( solve4Stress ) THEN
+#endif
+C-   Shift wind speed using old coefficient
+#ifdef ALLOW_BULK_LARGEYEAGER04
+C--   Large&Yeager04:
+             dzTmp = (zwln-psimh)/karman
+             usn   = wspeed(i,j,bi,bj)/(exf_one + rdn(i,j)*dzTmp )
+#else
+C--   Large&Pond1981:
 c           rd(i,j)= rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh )
-c           shn    = sh(i,j,bi,bj)*rd(i,j)/rdn(i,j)
-c     ML: the original formulation above is replaced below, but does
-c     not give the same results, strange
-            shn    = sh(i,j,bi,bj)/(exf_one - rdn(i,j)/karman*psimh )
-            uzn    = max(shn, umin)
+c           usn    = sh(i,j,bi,bj)*rd(i,j)/rdn(i,j)
+c     ML: the original formulation above is replaced below to be
+c     similar to largeyeager04, but does not give the same results, strange
+             usn   = sh(i,j,bi,bj)/(exf_one - rdn(i,j)/karman*psimh)
+#endif /* ALLOW_BULK_LARGEYEAGER04 */
+             usm   = MAX(usn, umin)
 
-c     Update the transfer coefficients at 10 meters
-c     and neutral stability.
+C-   Update the 10m, neutral stability transfer coefficients (momentum)
+             tmpbulk  = exf_scal_BulkCdn *
+     &            ( cdrag_1/usm + cdrag_2 + cdrag_3*usm )
+             rdn(i,j)   = SQRT(tmpbulk)
+#ifdef ALLOW_BULK_LARGEYEAGER04
+             rd(i,j)    = rdn(i,j)/(exf_one + rdn(i,j)*dzTmp)
+#else
+             rd(i,j)    = rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh)
+#endif /* ALLOW_BULK_LARGEYEAGER04 */
+             ustar(i,j) = rd(i,j)*sh(i,j,bi,bj)
+C-   Coeff:
+             tau(i,j)   = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
+#ifndef ALLOW_ATM_WIND
+            ENDIF
+#endif
 
-            tmpbulk  = exf_scal_BulkCdn *
-     &           ( cdrag_1/uzn + cdrag_2 + cdrag_3*uzn )
-            rdn(i,j) = sqrt(tmpbulk)
-
-c     Shift all coefficients to the measurement height
-c     and stability.
-            rd(i,j)  = rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh)
-#endif /* ALLOW_ATM_WIND */
+C-   Update the 10m, neutral stability transfer coefficients (sens&evap)
             rhn = (exf_one-stable)*cstanton_1 + stable*cstanton_2
-            ren = cdalton
-            rh     = rhn/( exf_one + rhn/karman*(ztln - psixh) )
-            re     = ren/( exf_one + ren/karman*(ztln - psixh) )
+            ren = cDalton
 
-c                 Update ustar, tstar, qstar using updated, shifted
-c                 coefficients.
+C-   Shift all coefficients to the measurement height and stability.
+            rh = rhn/(exf_one + rhn*(ztln-psixh)/karman)
+            re = ren/(exf_one + ren*(ztln-psixh)/karman)
+
+C--  Update ustar, tstar, qstar using updated, shifted coefficients.
             qstar(i,j) = re*delq(i,j)
             tstar(i,j) = rh*deltap(i,j)
-#ifdef ALLOW_ATM_WIND
-            ustar(i,j) = rd(i,j)*sh(i,j,bi,bj)
-            tau(i,j)   = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
-#endif /* ALLOW_ATM_WIND */
 
-           endif
-          enddo
-         enddo
-c        end of bulk_iter loop
-        enddo
-
-        do j = 1,sny
-         do i = 1,snx
-          if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
+           ENDIF
+          ENDDO
+         ENDDO
+c end of iteration loop
+        ENDDO
+        DO j = 1,sNy
+         DO i = 1,sNx
+          IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          ikey_1 = i
-     &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
+           ikey_1 = i
+     &          + sNx*(j-1)
+     &          + sNx*sNy*act1
+     &          + sNx*sNy*max1*act2
+     &          + sNx*sNy*max1*max2*act3
+     &          + sNx*sNy*max1*max2*max3*act4
 CADJ STORE qstar(i,j)    = comlev1_exf_1, key = ikey_1
 CADJ STORE tstar(i,j)    = comlev1_exf_1, key = ikey_1
-CADJ STORE tau(i,j)      = comlev1_exf_1, key = ikey_1
-CADJ STORE rd(i,j)       = comlev1_exf_1, key = ikey_1
-#endif
+CADJ STORE tau  (i,j)    = comlev1_exf_1, key = ikey_1
+CADJ STORE rd   (i,j)    = comlev1_exf_1, key = ikey_1
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C-   Turbulent Fluxes
            hs(i,j,bi,bj) = atmcp*tau(i,j)*tstar(i,j)
            hl(i,j,bi,bj) = flamb*tau(i,j)*qstar(i,j)
 #ifndef EXF_READ_EVAP
-cdm        evap(i,j,bi,bj) = tau(i,j)*qstar(i,j)
-cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
+C   change sign and convert from kg/m^2/s to m/s via rhoConstFresh
+c          evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
            evap(i,j,bi,bj) = -recip_rhoConstFresh*tau(i,j)*qstar(i,j)
+C   but older version was using rhonil instead:
+c           evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 #endif
 #ifdef ALLOW_ATM_WIND
+c       ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*cw(i,j,bi,bj)
+c       vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*sw(i,j,bi,bj)
+C- jmc: below is how it should be written ; different from above when
+C       both wind-speed & 2 compon. of the wind are specified, and in
+C-      this case, formula below is better.
            tmpbulk =  tau(i,j)*rd(i,j)
            ustress(i,j,bi,bj) = tmpbulk*uwind(i,j,bi,bj)
            vstress(i,j,bi,bj) = tmpbulk*vwind(i,j,bi,bj)
-#endif /* ALLOW_ATM_WIND */
+#endif
 
 c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
           else
@@ -408,29 +500,30 @@ c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
            vstress(i,j,bi,bj) = 0. _d 0
 #endif /* ALLOW_ATM_WIND */
            hflux  (i,j,bi,bj) = 0. _d 0
-           hs(i,j,bi,bj)      = 0. _d 0
-           hl(i,j,bi,bj)      = 0. _d 0
+           evap   (i,j,bi,bj) = 0. _d 0
+           hs     (i,j,bi,bj) = 0. _d 0
+           hl     (i,j,bi,bj) = 0. _d 0
 
 c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
           endif
 
 #else  /* ifndef ALLOW_ATM_TEMP */
 #ifdef ALLOW_ATM_WIND
-          wsm                = sh(i,j,bi,bj)
-          tmpbulk            = exf_scal_BulkCdn *
+          wsm     = sh(i,j,bi,bj)
+          tmpbulk = exf_scal_BulkCdn *
      &         ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
           ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
-     &         uwind(i,j,bi,bj)
+     &                         uwind(i,j,bi,bj)
           vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
-     &         vwind(i,j,bi,bj)
+     &                         vwind(i,j,bi,bj)
 #endif
 #endif /* ifndef ALLOW_ATM_TEMP */
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_BULKFORMULAE */
 
-      return
-      end
+      RETURN
+      END
