@@ -1,6 +1,5 @@
 exf_init.f
 exf_bulkformulae.f
-exf_bulk_largeyeager04.f
 exf_filter_rl.f
 exf_filter_rs.f
 exf_getclim.f
