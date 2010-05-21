@@ -1,10 +1,33 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1276 2010/05/20 03:22:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1277 2010/05/21 10:16:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
+o pkg/exf: merge exf_bulk_largeyeager04 into exf_bulkformulae because these
+  files are nearly the same anyway.
+  Step 1: make exf_bulkformulae look like exf_bulk_largeyeager04:
+   - redefinition of tau(i,i) (by a factor of ustar)
+   - 1./exf(Const/T) -> exf(-Const/T) (big change in the results)
+   - replace rhonil by rhoConstFresh in computation of evap (bug fix)
+   - replace u/vstress=tau*rd*ws*cw by tau*rd*u/vwind (changes results)
+   - replace 
+     rd(i,j)= rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh )
+     shn    = sh(i,j,bi,bj)*rd(i,j)/rdn(i,j)
+     by
+     shn    = sh(i,j,bi,bj)/(exf_one - rdn(i,j)/karman*psimh )
+     (changes results)
+   -> exf_bulkformulae v1.22, 
+      update verification experiments lab_sea, offline_exf_seaice, seaice_obcs
+      (lab_sea: output.hb87.txt 1.11, output.lsr.txt 1.25, output.salt_plume.txt 1.13,
+                output.txt 1.63       
+       offline_exf_seaice: output.seaicetd.txt 1.7
+       seaice_obcs: output.txt 1.10)
+  Step 2: do the actual merge and remove exf_bulk_largeyeager04.F
+   -> exf_bulkformulae v1.23,
+      unfortunately requires updating lab_sea.salt_plume (6 matching digits),
+      and global_ocean.cs32x15.icedyn (only 11 matching digits)
 o adjoint of exch-1:
  - pass high-level EXCH S/R through TAF (eesupp/src/exch_ad_diff.list)
    (note: was already like this when using EXCH-2) and remove flow dir
