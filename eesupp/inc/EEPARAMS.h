@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.27 2010/03/18 13:06:01 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.28 2010/05/22 23:45:23 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -150,23 +150,28 @@ C     TANGENT_SIMULATION
      &            TANGENT_SIMULATION = 2 )
 
 C--   COMMON /EEPARAMS_L/ Execution environment public logical variables.
-C     eeBootError - Flag indicating error during multi-processing
-C     eeEndError    initialisation/termination.
-C     fatalError  - Flag used to indicate that the model is ended with an error
-C     printMapIncludesZeros :: Flag that controls whether character constant
-C                              map code ignores exact zero values.
-C     useCoupler  - use Coupler for a multi-components set-up
+C     eeBootError    :: Flags indicating error during multi-processing
+C     eeEndError     :: initialisation and termination.
+C     fatalError     :: Flag used to indicate that the model is ended with an error
+C     useSingleCpuIO :: When useSingleCpuIO is set, MDS_WRITE_FIELD outputs from
+C                       master MPI process only. -- NOTE: read from main parameter
+C                       file "data" and not set until call to INI_PARMS.
+C     printMapIncludesZeros  :: Flag that controls whether character constant
+C                               map code ignores exact zero values.
+C     useCubedSphereExchange :: use Cubed-Sphere topology domain.
+C     useCoupler     :: use Coupler for a multi-components set-up.
 C     useNEST_PARENT :: use Parent Nesting interface (pkg/nest_parent)
 C     useNEST_CHILD  :: use Child  Nesting interface (pkg/nest_child)
       COMMON /EEPARAMS_L/
      &  eeBootError, fatalError, eeEndError,
-     &  printMapIncludesZeros,
-     &  useCubedSphereExchange, useCoupler, 
+     &  useSingleCpuIO, printMapIncludesZeros,
+     &  useCubedSphereExchange, useCoupler,
      &  useNEST_PARENT, useNEST_CHILD,
      &  useSETRLSTK, useSIGREG
       LOGICAL eeBootError
       LOGICAL eeEndError
       LOGICAL fatalError
+      LOGICAL useSingleCpuIO
       LOGICAL printMapIncludesZeros
       LOGICAL useCubedSphereExchange
       LOGICAL useCoupler
