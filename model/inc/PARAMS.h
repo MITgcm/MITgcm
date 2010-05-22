@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.237 2010/04/26 20:37:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.238 2010/05/22 23:45:18 jmc Exp $
 C $Name:  $
 C
 
@@ -82,8 +82,8 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                delRFile, delRcFile,
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile,
-     &                viscAhDfile, viscAhZfile, 
-     &                viscA4Dfile, viscA4Zfile, 
+     &                viscAhDfile, viscAhZfile,
+     &                viscA4Dfile, viscA4Zfile,
      &                hydrogThetaFile, hydrogSaltFile, diffKrFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile,
@@ -323,11 +323,10 @@ C     allowFreezing  :: Allows surface water to freeze and form ice
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     periodicExternalForcing :: Set true if forcing is time-dependant
 C- I/O parameters -
-C     globalFiles    :: Selects between "global" and "tiled" files
-C     useSingleCpuIO :: On SGI platforms, option globalFiles is either
-C                       slow (f77) or does not work (f90).  When
-C                       useSingleCpuIO is set, mdsio_writefield.F
-C                       outputs from master mpi process only.
+C     globalFiles    :: Selects between "global" and "tiled" files.
+C                       On some platforms with MPI, option globalFiles is either
+C                       slow or does not work. Use useSingleCpuIO instead.
+C     useSingleCpuIO :: moved to EEPARAMS.h
 C     pickupStrictlyMatch :: check and stop if pickup-file do not stricly match
 C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup
 C     usePickupBeforeC54 :: start from old-pickup files, generated with code from
@@ -375,7 +374,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & doThetaClimRelax, doSaltClimRelax,
      & allowFreezing, useOldFreezing,
      & periodicExternalForcing,
-     & globalFiles, useSingleCpuIO,
+     & globalFiles,
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & writePickupAtEnd,
@@ -463,7 +462,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useOldFreezing
       LOGICAL periodicExternalForcing
       LOGICAL globalFiles
-      LOGICAL useSingleCpuIO
       LOGICAL pickupStrictlyMatch
       LOGICAL usePickupBeforeC54
       LOGICAL startFromPickupAB2
