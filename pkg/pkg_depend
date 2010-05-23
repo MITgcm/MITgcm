@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.27 2008/03/28 18:48:05 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.28 2010/05/23 03:47:48 jmc Exp $
 # $Name:  $
 
 #  This file contains a terse list of package dependencies that
@@ -15,8 +15,8 @@
 #  The default behavior (that is, nothing specified) assumes that any
 #  two packages can be compiled together.
 
-exf             +cal
-profiles        +cal
+#  needed to compile model/src:
+model		+rw
 
 #  the following probably don't have any dependencies
 generic_advdiff
@@ -25,29 +25,24 @@ gmredi
 #  Known dependencies
 mom_fluxform	+mom_common
 mom_vecinv	+mom_common
-cd_code         +mom_common
+cd_code		+mom_common
 shap_filt	+mom_vecinv
 ptracers	+generic_advdiff
-gchem           +ptracers
-dic             +gchem
-cfc             +gchem
-fizhi           -aim
-fizhi           +gridalt
-fizhi           +diagnostics
-fizhi           +atm_common
-aim             +atm_common
-aim_v23         +atm_common
-rw              +mdsio
-flt             +mdsio
-sbo             +mdsio
-exf             +mdsio
-matrix          +ptracers
-matrix          -gchem
-showflops       +runclock
+matrix		+ptracers	-gchem
+gchem		+ptracers
+dic		+gchem
+cfc		+gchem
+fizhi		+gridalt	+diagnostics	-aim
+fizhi		+atm_common
+aim		+atm_common
+aim_v23		+atm_common
+rw		+mdsio
+flt		+mdsio
+sbo		+mdsio
+exf		+mdsio
+exf		+cal
+profiles	+cal
 seaice		+exf
-grdchk          +autodiff
-grdchk          +cost
-grdchk          +ctrl
+grdchk		+autodiff	+cost		+ctrl
+showflops	+runclock
 
-#  Need more information on the following:
-obcs
