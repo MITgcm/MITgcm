@@ -1,85 +1,44 @@
 C ###########################################################
-C      SUBROUTINE EXCH_UV_XY_RS(
-C     U                       Uphi, Vphi,
-C     I                       withSigns, myThid )
-C      IMPLICIT NONE
-C#include "SIZE.h"
-C#include "EEPARAMS.h"
-C#include "EESUPPORT.h"
-C#include "EXCH.h"
+      SUBROUTINE EXCH1_RL(
+     U                 array,
+     I                 myOLw, myOLe, myOLs, myOLn, myNz,
+     I                 exchWidthX, exchWidthY,
+     I                 cornerMode, myThid )
+
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EXCH.h"
+      INTEGER myOLw, myOLe, myOLs, myOLn, myNz
+      _RL     array( 1-myOLw:sNx+myOLe,
+     &               1-myOLs:sNy+myOLn,
+     &               myNz, nSx, nSy )
+      INTEGER exchWidthX
+      INTEGER exchWidthY
+      INTEGER cornerMode
+      INTEGER myThid
+      end subroutine
+C ###########################################################
+C      SUBROUTINE EXCH1_RS(
+C     U                 array,
+C     I                 myOLw, myOLe, myOLs, myOLn, myNz,
+C     I                 exchWidthX, exchWidthY,
+C     I                 cornerMode, myThid )
 C
-C      _RS Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RS Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RS temp
-C      LOGICAL withSigns
-C      INTEGER myThid
-C      temp=Uphi(1,1,1,1)
-C      Uphi(1,1,1,1)=Vphi(1,1,1,1)
-C      Vphi(1,1,1,1)=temp
-C      end subroutine
-C ###########################################################
-      SUBROUTINE EXCH_UV_XYZ_RL(
-     U                       Uphi, Vphi,
-     I                       withSigns, myThid )
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
-      _RL Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL temp
-      LOGICAL withSigns
-      INTEGER myThid
-      temp=Uphi(1,1,1,1,1)
-      Uphi(1,1,1,1,1)=Vphi(1,1,1,1,1)
-      Vphi(1,1,1,1,1)=temp
-      end subroutine
-C ###########################################################
-C      SUBROUTINE EXCH_UV_XYZ_RS(
-C     U                       Uphi, Vphi,
-C     I                       withSigns, myThid )
 C      IMPLICIT NONE
 C#include "SIZE.h"
 C#include "EEPARAMS.h"
-C#include "EESUPPORT.h"
 C#include "EXCH.h"
-C      _RS Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-C      _RS Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-C      _RL temp
-C      LOGICAL withSigns
+C      INTEGER myOLw, myOLe, myOLs, myOLn, myNz
+C      _RS     array( 1-myOLw:sNx+myOLe,
+C     &               1-myOLs:sNy+myOLn,
+C     &               myNz, nSx, nSy )
+C      INTEGER exchWidthX
+C      INTEGER exchWidthY
+C      INTEGER cornerMode
 C      INTEGER myThid
-C      temp=Uphi(1,1,1,1,1)
-C      Uphi(1,1,1,1,1)=Vphi(1,1,1,1,1)
-C      Vphi(1,1,1,1,1)=temp
 C      end subroutine
 C ###########################################################
-      SUBROUTINE EXCH_XY_RL(
-     U                       phi,
-     I                       myThid )
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
-      _RL phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER myThid
-      phi(1,1,1,1)=2*phi(1,1,1,1)
-      end subroutine
-C ###########################################################
-      SUBROUTINE EXCH_XYZ_RL(
-     U                       phi,
-     I                       myThid )
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
-      _RL phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER myThid
-      phi(1,1,1,1,1)=2*phi(1,1,1,1,1)
-      end subroutine
-CC ###########################################################
 C      SUBROUTINE GLOBAL_MAX_R8(
 C     U                       maxphi,
 C     I                       myThid )
