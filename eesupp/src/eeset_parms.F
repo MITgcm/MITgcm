@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.27 2009/11/24 00:16:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.28 2010/05/23 01:35:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -111,6 +111,10 @@ C     Text map plots of fields ignore exact zero values
       printMapIncludesZeros = .FALSE.
 C     Maximum length for printing (to Std-Msg-Unit) 1-D array
       maxLengthPrt1D = 65
+
+C     To write output to global-files and from Master MPI process only
+C     NOTE: read from main parameter file "data"
+      useSingleCpuIO = .FALSE.
 
 C--   Read in data from eedata file
 C     We really ought to be using our environment file reading
