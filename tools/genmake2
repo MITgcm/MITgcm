@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.204 2010/03/10 15:49:54 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.205 2010/05/23 03:45:58 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -480,12 +480,16 @@ get_pdepend_list()  {
     #  strip the comments and then convert the dependency file into
     #  two arrays: PNAME, DNAME
     cat $1 | sed -e 's/#.*$//g' \
-	| $AWK 'BEGIN{nn=0;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME["nn"]="$1"\nDNAME["nn"]="$i} }' \
+	| $AWK 'BEGIN{nn=-1;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME_"nn"="$1"\nDNAME_"nn"="$i}} END{print "nname="nn}' \
 	> ./.pd_tmp
+    RETVAL=$?
+    if test ! "x${RETVAL}" = x0 ; then
+      echo "Error: unable to parse package dependencies -- please check PDEPEND=\"$1\""
+      exit 1
+    fi
     . ./.pd_tmp
     rm -f ./.pd_tmp
 
-    printf "PNAME = "${}
 }
 
 
@@ -1861,6 +1865,19 @@ THIS_SCRIPT=`echo ${0} | sed 's:'$TOOLSDIR':\$(TOOLSDIR):'`
 
 EXECUTABLE=${EXECUTABLE:-mitgcmuv}
 
+#  Set Standard Code Directories:
+if test "x$STANDARDDIRS" = xUSE_THE_DEFAULT ; then
+    STANDARDDIRS="eesupp model"
+fi
+#  if model in Standard-Code-Dir, add eesupp (needed to compile model)
+echo " $STANDARDDIRS " | grep ' model ' > /dev/null 2>&1
+ckM=$?
+echo " $STANDARDDIRS " | grep ' eesupp ' > /dev/null 2>&1
+ckE=$?
+if test $ckM = 0 -a $ckE = 1 ; then 
+    STANDARDDIRS="$STANDARDDIRS eesupp"
+fi
+
 #  We have a special set of source files in eesupp/src which are
 #  generated from some template source files. We'll make them first so
 #  they appear as regular source code
@@ -1911,20 +1928,11 @@ fi
 echo "  getting package dependency info from  $PDEPEND"
 #  Strip the comments and then convert the dependency file into
 #  two arrays: PNAME, DNAME
-cat $PDEPEND | sed -e 's/#.*$//g' \
-    | $AWK 'BEGIN{nn=-1;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME_"nn"="$1"\nDNAME_"nn"="$i}} END{print "nname="nn}' \
-    > ./.pd_tmp
-RETVAL=$?
-if test ! "x${RETVAL}" = x0 ; then
-    echo "Error: unable to parse package dependencies -- please check PDEPEND=\"$PDEPEND\""
-    exit 1
-fi
-. ./.pd_tmp
-rm -f ./.pd_tmp
+get_pdepend_list $PDEPEND
 
 #  Search for default packages.  Note that a "$ROOTDIR/pkg/pkg_groups"
-#  file should eventually be added so that, for convenience, one can 
-#  specify groups of packages using names like "ocean" and "atmosphere".
+#  file has been added so that, for convenience, one can specify 
+#  groups of packages using names like "ocean" and "atmosphere".
 echo "  checking default package list:  "
 if test "x${PDEFAULT}" = x ; then
     for i in "." $MODS ; do
@@ -1955,14 +1963,15 @@ else
 	for i in $def ; do
 	    PACKAGES="$PACKAGES $i"
 	done
-	echo "    before group expansion packages are: $PACKAGES"
+	echo "    before group expansion packages are:$PACKAGES"
 	RET=1
         while test $RET = 1 ; do expand_pkg_groups; RET=$?; done
-	echo "    after group expansion packages are:  $PACKAGES"
+	echo "    after group expansion packages are: $PACKAGES"
     fi
 fi
 
 echo "  applying DISABLE settings"
+echo "" > ./.tmp_pack
 for i in $PACKAGES ; do
     echo $i >> ./.tmp_pack
 done
@@ -2000,11 +2009,11 @@ for i in `grep -v "-" ./.tmp_pack | sort | uniq` ; do
     PACKAGES="$PACKAGES $i"
 done
 rm -f ./.tmp_pack
-echo "    packages are:  $PACKAGES"
+echo "    packages are: $PACKAGES"
 
 #  Check for package MNC: if NetCDF is available, then build the MNC 
 #  template files ; otherwise, delete mnc from the list of packages.
-echo $PACKAGES | grep ' mnc ' > /dev/null 2>&1
+echo " $PACKAGES " | grep ' mnc ' > /dev/null 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     if test "x$HAVE_NETCDF" != xt ; then
@@ -2039,7 +2048,7 @@ fi
 
 #  Check for package PROFILES: if NetCDF is not available,
 #  then delete profiles from the list of available packages.
-echo $PACKAGES | grep ' profiles ' > /dev/null 2>&1
+echo " $PACKAGES " | grep ' profiles ' > /dev/null 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     if test "x$HAVE_NETCDF" != xt ; then
@@ -2079,6 +2088,10 @@ while test "x$ck" != xtt ; do
 	    if test "x$p" = "x$pname" ; then
 		pin="t"
 	    fi
+	done
+	#  or in the current $STANDARDDIRS list?
+	for p in $STANDARDDIRS ; do
+	    if test "x$p" = "x$pname" ; then pin="t" ; fi
 	done
 
 	#  Is the DNAME entry a (+) or (-) rule ?
@@ -2132,7 +2145,7 @@ while test "x$ck" != xtt ; do
     done
     ck=$ck"t"
 done
-echo "    packages are:  $PACKAGES"
+echo "    packages are: $PACKAGES"
 for i in $PACKAGES ; do
     adr="$ROOTDIR/pkg/$i"
     if test -d $adr ; then
@@ -2188,11 +2201,8 @@ for i in $PACKAGES ; do
 
 done
 
-echo "  Adding STANDARDDIRS"
+echo "  Adding STANDARDDIRS='$STANDARDDIRS'"
 BUILDDIR=${BUILDDIR:-.}
-if test "x$STANDARDDIRS" = xUSE_THE_DEFAULT ; then
-    STANDARDDIRS="eesupp model"
-fi
 if test "x$STANDARDDIRS" != x ; then
     for d in $STANDARDDIRS ; do
 	adr="$ROOTDIR/$d/src"
@@ -2487,7 +2497,7 @@ for xx in "$@" ; do nw=`echo $xx | wc -w`
 done
 
 if test -f $MAKEFILE ; then
-    mv -f $MAKEFILE "$MAKEFILE.bak"
+    mv -f $MAKEFILE "$MAKEFILE.old"
 fi
 echo "  Writing makefile: $MAKEFILE"
 echo "# Multithreaded + multi-processing makefile for:" > $MAKEFILE
@@ -2506,7 +2516,7 @@ EXE_SVD=$EXECUTABLE"_svd"
 cat >>$MAKEFILE <<EOF
 #
 # OPTFILE="$OPTFILE"
-# 
+#
 # BUILDDIR     : Directory where object files are written
 # SOURCEDIRS   : Directories containing the source (.F) files
 # INCLUDEDIRS  : Directories containing the header-source (.h) files
@@ -2526,7 +2536,7 @@ cat >>$MAKEFILE <<EOF
 # LIBS         : Library flags /or/ additional optimization/debugging flags
 
 ROOTDIR     = ${ROOTDIR}
-BUILDDIR    = ${BUILDDIR}  
+BUILDDIR    = ${BUILDDIR}
 SOURCEDIRS  = ${SOURCEDIRS}
 INCLUDEDIRS = ${INCLUDEDIRS}
 EXEDIR      = ${EXEDIR}
@@ -2607,10 +2617,10 @@ rm -f F77srclist.tmp nonADF77srclist.tmp csrclist.tmp F90srclist.tmp hsrclist.tm
 
 echo >> $MAKEFILE
 
-# add definitions for preprocessed sources 
-# and note that not all systems allow case sensitive extensions 
-# hence the $FS and $FS90 here. 
-# for fixed format f90 files we use ff90 or FF90 resp 
+# add definitions for preprocessed sources
+# and note that not all systems allow case sensitive extensions
+# hence the $FS and $FS90 here.
+# for fixed format f90 files we use ff90 or FF90 resp
 # but these are not expected to be the original source files
 
 echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'      >> $MAKEFILE
@@ -2657,7 +2667,7 @@ Clean:
 	@make cleanlinks
 	-rm -f \$(SPECIAL_FILES)
 	-rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
-	-rm -f make.log run.log f90mkdepend.log *.bak
+	-rm -f make.log run.log f90mkdepend.log *.bak "$MAKEFILE.old"
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log
 CLEAN:
 	@make Clean
@@ -2699,7 +2709,7 @@ if test "x$EMBED_SRC" = xt ; then
 
 decode_files.o : EMBEDDED_FILES.h
 
-##  \$(F77_PP_SRC_FILES) 
+##  \$(F77_PP_SRC_FILES)
 all_fF.tar.gz : \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_PP_SRC_FILES) Makefile
 	@echo Creating \$@ ...
 	-tar -hcf all_fF.tar \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_PP_SRC_FILES) Makefile
