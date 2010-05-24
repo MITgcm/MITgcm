@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 #
 # Converts -Dmacro to #define macro
 #      and -Umacro to #undef macro 
@@ -8,7 +8,7 @@
 #
 # usage: convert_cpp_cmd2defines [-Dmacro1|-Umacro1] [...]
 #
-# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.4 2003/11/25 17:22:47 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.5 2010/05/24 12:03:51 jmc Exp $
 # $Name:  $
 
 cat << EOF
@@ -23,7 +23,7 @@ EOF
 BARRIER=
 
 # Process arguments
-for arg in $@
+for arg in "$@"
 do
  case $arg in
   -b*)
