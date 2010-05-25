@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1278 2010/05/21 20:47:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1279 2010/05/25 00:39:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o tools/genmake2
+  - extend pkg_depend rules to model & eesupp (e.g., if model depend on [pkg]))
+  - fix details of checking for mnc & profile pkg when NetCDF is unavailable.
 o pkg/exf: merge exf_bulk_largeyeager04 into exf_bulkformulae because these
   files are nearly the same anyway.
   Step 1: make exf_bulkformulae look like exf_bulk_largeyeager04:
