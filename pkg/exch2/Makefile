@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.15 2009/05/30 21:26:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.16 2010/05/25 23:29:49 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -127,6 +127,9 @@ OLD_FILES = exch2_xyz_rl.F exch2_xyz_rs.F exch2_xyz_r4.F exch2_xyz_r8.F \
  exch2_send_rl2_ad.F exch2_send_rs2_ad.F exch2_send_r42_ad.F exch2_send_r82_ad.F
 
 all: $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES)
+
+clean_old:
+	-rm -f $(OLD_FILES)
 
 clean:
 	-rm -f $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES) $(OLD_FILES)
