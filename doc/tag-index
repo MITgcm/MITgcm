@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1279 2010/05/25 00:39:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1280 2010/05/25 22:22:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/adjustment.cs-32x32x1:
+   add a "minimal" set-up test (code_min & input_min) which only compiles
+   eesupp/src and the 2 pkgs (exch2 & debug) which don't need model/src & inc.
 o tools/genmake2
   - extend pkg_depend rules to model & eesupp (e.g., if model depend on [pkg]))
   - fix details of checking for mnc & profile pkg when NetCDF is unavailable.
