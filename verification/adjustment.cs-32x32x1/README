@@ -1,18 +1,20 @@
-Simple 1 layer, Barotropic adjustment on the Sphere, using the 
-cubed-sphere grid 32x32x32
+Simple 1 layer, Barotropic adjustment on the Sphere, using the
+                cubed-sphere grid 32x32x32
+Contains also a "minimal" test case (just compile eesupp/src + pkgs)
+                that does not do much.
 =================================================================
 
 General Description:
-* using the same executable, 2 set-up can be tested, corresponding 
+* using the same executable, 2 set-up can be tested, corresponding
   to input dir. "input" and "input.nlfs".
 * Default set-up (input & parameter files in dir "input"):
-  Oceanic set-up with flat bottom and a large quasi-rectangular 
-  continent is initially at rest. An initial free-surface large-scale 
-  anomaly centered at the equator triggers a barotropic adjustment 
+  Oceanic set-up with flat bottom and a large quasi-rectangular
+  continent is initially at rest. An initial free-surface large-scale
+  anomaly centered at the equator triggers a barotropic adjustment
   and generates External Inertial-Gravity waves (Poincare waves).
   Use linear Free-Surface and linear dynamics (no momentum advection)
 * Additional set-up (input & parameter files in dir "input.nlfs"):
-  Atmospheric set-up, without orography, initially at rest. 
+  Atmospheric set-up, without orography, initially at rest.
   An initial large-scale surface pressure anomaly generated pure
   external gravity waves.
   Use non-linear Free-Surface, linear dynamics (no momentum advection)
@@ -21,7 +23,7 @@ General Description:
 IMPORTANT: For the purpose of testing multiple tiles and "blank-tiles":
 * Use multiple tiles (8) per cube-face (tile size: 16x8),
   which results in a total of 48 tiles:
-    code/SIZE.h 
+    code/SIZE.h
     code/W2_EXCH2_TOPOLOGY.h : to replace pkg/exch2/W2_EXCH2_TOPOLOGY.h
                                ( = 6-tiles default version )
     code/w2_e2setup.F        : to replace pkg/exch2/W2_EXCH2_TOPOLOGY.h
@@ -29,21 +31,46 @@ IMPORTANT: For the purpose of testing multiple tiles and "blank-tiles":
         MITgcm/utils/exch2/matlab-topology-generator/driver.m
 * The oceanic-set-up contains 4 empty tiles (tiles: 11,12,13,14)
   associated with the large continent.
-  This gives the opportunity to test the "blank-tiles" option of 
-  the EXCH2 pkg. An MPI version of this set-up is available to 
+  This gives the opportunity to test the "blank-tiles" option of
+  the EXCH2 pkg. An MPI version of this set-up is available to
   test this "blank-tiles" option:
     code/SIZE.h_mpi          : to replace code/SIZE.h
     code/W2_EXCH2_TOPOLOGY.h : to replace pkg/exch2/W2_EXCH2_TOPOLOGY.h
     code/w2_e2setup.F_mpi    : to replace code/CPP_EEOPTIONS.h_mpi
-      generated with matlab script: 
+      generated with matlab script:
         MITgcm/utils/exch2/matlab-topology-generator/driver.m
       using the blank-list file: code/blanklist.txt
     code/CPP_EEOPTIONS.h_mpi : to replace eesupp/inc/CPP_EEOPTIONS.h
-  However, this particular (MPI) executable cannot be used for the 
-  atmospheric set-up (input.nlfs) and, in this case, an error 
+  However, this particular (MPI) executable cannot be used for the
+  atmospheric set-up (input.nlfs) and, in this case, an error
   from S/R EXCH2_CHECK_DEPTHS will stop the execution.
-  
+
 Forcing : none
 Input Files (initial conditions) :
 
 Comments:
+
+=================================================================
+"minimal" test case:
+ provide an example of a minimal set-up which only compiles eesupp/src
+ and the 2 pkgs (exch2 & debug) which don't need model/src & inc.
+
+code_min:
+  CPP_OPTIONS.h (standard version, needed here since model/inc is not linked)
+  packages.conf (2 pkgs: exch2 & debug)
+  main.F        (copied from eesupp/src, but skip the call to THE_MODEL_MAIN)
+  SIZE.h	(same as code/SIZE.h)
+  SIZE.h_mpi    (same as code/SIZE.h_mpi)
+
+input_min
+  eedataa	(standard version)
+  eedata.mth    (to test running 2 threads)
+  data.exch2.mpi (to test blank-tiles with exch2 and MPI built)
+
+to build:
+ in order not to compile model/src, need to:
+ either put (in build dir) a "genmake_local" file with STANDARDDIRS="eesupp"
+ - or -
+ use genmake2 command line: "genmake2 -standarddirs eesupp" -mods ../code_min"
+
+=================================================================
