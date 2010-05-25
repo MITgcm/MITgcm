@@ -1,0 +1,11 @@
+# Example "eedata" file
+# Lines beginning "#" are comments
+# nTx - No. threads per process in X
+# nTy - No. threads per process in Y
+ &EEPARMS
+ useCubedSphereExchange=.TRUE.,
+ nTx=2,
+ nTy=1,
+ &
+# Note: Some systems use & as the namelist terminator (as shown here). 
+#       Other systems use a / character.
