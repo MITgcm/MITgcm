@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.5 2009/02/27 00:31:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.6 2010/05/25 19:07:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,7 +29,6 @@ C     !USES:
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
