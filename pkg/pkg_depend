@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.28 2010/05/23 03:47:48 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.29 2010/05/26 22:02:19 jmc Exp $
 # $Name:  $
 
 #  This file contains a terse list of package dependencies that
@@ -6,7 +6,7 @@
 #  simultaneously.  The format is:
 #
 #    package0   +package1 -package2
-#  
+#
 #  where:
 #
 #    "+" ==> "must be used" (and will be added automatically)
@@ -36,13 +36,13 @@ fizhi		+gridalt	+diagnostics	-aim
 fizhi		+atm_common
 aim		+atm_common
 aim_v23		+atm_common
-rw		+mdsio
-flt		+mdsio
-sbo		+mdsio
-exf		+mdsio
 exf		+cal
 profiles	+cal
 seaice		+exf
+flt		+mdsio
+autodiff	+mdsio
+ctrl		+mdsio
+ecco		+mdsio
 grdchk		+autodiff	+cost		+ctrl
 showflops	+runclock
 
