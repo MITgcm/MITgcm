@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.206 2010/05/23 18:34:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.207 2010/05/26 00:08:18 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1883,7 +1883,8 @@ fi
 #  they appear as regular source code
 if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
     echo "  Making source files in eesupp from templates"
-    ( cd $ROOTDIR"/eesupp/src/" && $MAKE ) > make_eesupp.errors 2>&1
+    ( cd $ROOTDIR"/eesupp/src/" && $MAKE clean_old && $MAKE \
+    ) > make_eesupp.errors 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
 	rm -f make_eesupp.errors
@@ -1898,7 +1899,8 @@ fi
 for pdir in exch2 regrid ; do
     if test -r $ROOTDIR"/pkg/${pdir}/Makefile" ; then
 	echo "  Making source files in pkg/${pdir} from templates"
-	( cd $ROOTDIR"/pkg/"${pdir} && $MAKE ) > make_${pdir}.errors 2>&1
+	( cd $ROOTDIR"/pkg/"${pdir} && $MAKE clean_old && $MAKE \
+	) > make_${pdir}.errors 2>&1
 	RETVAL=$?
 	if test "x${RETVAL}" = x0 ; then
 	    rm -f make_${pdir}.errors
@@ -2272,6 +2274,7 @@ if test -f ./adSrcFiles.tmp ; then
     rm -f ./adSrcFiles.tmp
 fi
 echo "  Creating the list of files for the adjoint compiler."
+touch adSrcFiles.tmp
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *.list 2>/dev/null )`
     for j in $list_files ; do
