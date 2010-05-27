@@ -1,10 +1,21 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.10 2007/10/08 22:12:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.11 2010/05/27 02:08:41 jmc Exp $
 # $Name:  $
 
-#
-#  This is the package "groups" definition file where groups of packages
-#  are defined so they can be conveniently substituted.
-#
+#-------------------------------
+#  This file contains:
+#  a) the package "groups" definition where groups of packages
+#     are defined so they can be conveniently substituted.
+#  b) the default package list (defined as a pkg group "default_pkg_list")
+#     that genmake2 will, by default, add to MITgcm.
+#  Note: genmake2 will use this default package list when no customized package 
+#   list file "packages.conf" can be found
+#        a) where MITgcm is compiled
+#     or b) in the path of modified sources (genmake2, argument: -mods)
+#-------------------------------
+
+#  package "groups" definition (including default "default_pkg_list"):
+
+default_pkg_list : gfd
 
 gfd : mom_common mom_fluxform mom_vecinv generic_advdiff debug mdsio rw monitor
 
