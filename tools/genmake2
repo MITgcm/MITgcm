@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.207 2010/05/26 00:08:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.208 2010/05/27 02:09:13 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -56,7 +56,6 @@ test_for_string_in_file() {
 # the package list.
 expand_pkg_groups() {
     new_packages=
-    PKG_GROUPS=$ROOTDIR"/pkg/pkg_groups"
     if test -r $PKG_GROUPS ; then
 	cat $PKG_GROUPS | sed -e 's/#.*$//g' | sed -e 's/:/ : /g' > ./p1.tmp
 	cat ./p1.tmp | $AWK '(NF>2 && $2==":"){ print $0 }' > ./p2.tmp
@@ -67,7 +66,7 @@ expand_pkg_groups() {
 	    if test "x$RETVAL" = x0 ; then
 		matched=1
 		replace=`echo $line | $AWK '{ $1=""; $2=""; print $0 }'`
-		echo "    replacing \"$i\" with: $replace"
+		echo "    replacing \"$i\" with:$replace"
 		new_packages="$new_packages $replace"
 	    else
 		new_packages="$new_packages $i"
@@ -484,7 +483,7 @@ get_pdepend_list()  {
 	> ./.pd_tmp
     RETVAL=$?
     if test ! "x${RETVAL}" = x0 ; then
-      echo "Error: unable to parse package dependencies -- please check PDEPEND=\"$1\""
+      echo "Error: unable to parse package dependencies -- please check PKG_DEPEND=\"$1\""
       exit 1
     fi
     . ./.pd_tmp
@@ -519,9 +518,9 @@ Usage: "$0" [OPTIONS]
       -pdepend=NAME | --pdepend=NAME
           Get package dependency information from "NAME".
 
-    -pdefault NAME | --pdefault NAME
-      -pdefault=NAME | --pdefault=NAME
-          Get the default package list from "NAME".
+    -pgroups NAME | --pgroups NAME
+      -pgroups=NAME | --pgroups=NAME
+          Get the package groups information from "NAME".
 
     -bash NAME
           Explicitly specify the Bourne or BASH shell to use
@@ -1051,9 +1050,9 @@ ENABLE=
 DISABLE=
 # MAKEFILE=
 # MAKEDEPEND=
-PDEPEND=
+PKG_DEPEND=
+PKG_GROUPS=
 DUMPSTATE=t
-PDEFAULT=
 OPTFILE=
 INCLUDES="-I. $INCLUDES"
 FFLAGS=
@@ -1138,17 +1137,16 @@ FTL_TAF_FLAGS=
 SVD_TAMC_FLAGS=
 TAMC_EXTRA=
 
-
 #  The following state can be set directly by command-line switches
-gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
+gm_s1="OPTFILE PKG_DEPEND PKG_GROUPS MAKEFILE MAKEDEPEND PLATFORM ROOTDIR MODS DISABLE ENABLE"
 gm_s2="FC IEEE USE_R4 TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI OMP DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
-gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM FEXTRAFLAGS"
-gm_s4="CFLAGS KFLAGS1 KFLAGS2 LIBS KPPFILES NOOPTFILES NOOPTFLAGS"
-gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOST THISUSER THISDATE THISVER MACHINE"
+gm_s3="LN S64 LINK MAKE PACKAGES INCLUDES FFLAGS FOPTIM FEXTRAFLAGS"
+gm_s4="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
+gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD THISHOST THISUSER THISDATE THISVER MACHINE"
 gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
-gm_s7="HAVE_SYSTEM HAVE_FDATE FC_NAMEMANGLE HAVE_ETIME"
+gm_s7="FC_NAMEMANGLE HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME"
 
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
@@ -1215,14 +1213,14 @@ for ac_option in "$@" ; do
 	    AD_OPTFILE=$ac_optarg ;;
 	
 	-pdepend | --pdepend)
-	    ac_prev=PDEPEND ;;
+	    ac_prev=PKG_DEPEND ;;
 	-pdepend=* | --pdepend=*)
-	    PDEPEND=$ac_optarg ;;
+	    PKG_DEPEND=$ac_optarg ;;
 	
-	-pdefault | --pdefault)
-	    ac_prev=PDEFAULT ;;
-	-pdefault=* | --pdefault=*)
-	    PDEFAULT=$ac_optarg ;;
+	-pgroups | --pgroups)
+	    ac_prev=PKG_GROUPS ;;
+	-pgroups=* | --pgroups=*)
+	    PKG_GROUPS=$ac_optarg ;;
 	
 	-make | --make | -m | --m)
 	    ac_prev=MAKE ;;
@@ -1913,63 +1911,82 @@ for pdir in exch2 regrid ; do
 done
 
 printf "\n===  Determining package settings  ===\n"
-if  test "x${PDEPEND}" = x ; then
+if  test "x${PKG_DEPEND}" = x ; then
     tmp=$ROOTDIR"/pkg/pkg_depend"
-    if test -r $tmp ; then
-	PDEPEND=$tmp
-    else
+    if test -r $tmp ; then PKG_DEPEND=$tmp ; fi
+fi
+if  test "x${PKG_DEPEND}" = x ; then
 	echo "Warning:  No package dependency information was specified."
 	echo "  Please check that ROOTDIR/pkg/pkg_depend exists."
-    fi
 else
-    if test ! -r ${PDEPEND} ; then
-	echo "Error:  can't read package dependency info from PDEPEND=\"$PDEPEND\""
+    if test ! -r ${PKG_DEPEND} ; then
+	echo "Error:  can't read package dependency info from PKG_DEPEND=\"$PKG_DEPEND\""
 	exit 1
     fi
+    echo "  getting package dependency info from  $PKG_DEPEND"
+#  Strip the comments and then convert the dependency file into arrays: PNAME, DNAME
+    get_pdepend_list $PKG_DEPEND
 fi
-echo "  getting package dependency info from  $PDEPEND"
-#  Strip the comments and then convert the dependency file into
-#  two arrays: PNAME, DNAME
-get_pdepend_list $PDEPEND
 
-#  Search for default packages.  Note that a "$ROOTDIR/pkg/pkg_groups"
-#  file has been added so that, for convenience, one can specify
-#  groups of packages using names like "ocean" and "atmosphere".
-echo "  checking default package list:  "
-if test "x${PDEFAULT}" = x ; then
+# A default package groups file "$ROOTDIR/pkg/pkg_groups" is provided
+#  to define the "default_pkg_list" and package groups (for convenience, one
+#  can specify a group of packages using names like "ocean" and "atmosphere").
+if test "x${PKG_GROUPS}" = x ; then
+    tmp=$ROOTDIR"/pkg/pkg_groups"
+    if test -r $tmp ; then PKG_GROUPS=$tmp ; fi
+fi
+if test "x${PKG_GROUPS}" = x ; then
+	echo "Warning:  No package groups information was specified."
+	echo "  Please check that ROOTDIR/pkg/pkg_groups exists."
+else
+    if test ! -r ${PKG_GROUPS} ; then
+	echo "Error:  can't read package groups info from PKG_GROUPS=\"$PKG_GROUPS\""
+	exit 1
+    fi
+    echo "  getting package groups info from      $PKG_GROUPS"
+fi
+
+#  Search for packages to compile.
+echo "  checking list of packages to compile:"
+PKG_LIST=
+if test "x${PKG_LIST}" = x ; then
     for i in "." $MODS ; do
 	if test -r $i"/packages.conf" ; then
-		PDEFAULT=$i"/packages.conf"
+		PKG_LIST=$i"/packages.conf"
 		break
 	fi
     done
 fi
-if test "x${PDEFAULT}" = x ; then
-    PDEFAULT="$ROOTDIR/pkg/pkg_default"
-fi
-if test "x${PDEFAULT}" = xNONE ; then
-    echo "    default packages file disabled"
+if test "x${PKG_LIST}" = x ; then
+    pkg_list='default_pkg_list'
+    if test "x${PKG_GROUPS}" = x ; then
+	echo "Error:  need package groups info to expand pkg_list=\"$pkg_list\""
+	exit 1
+    fi
 else
-    if test ! -r $PDEFAULT ; then
-	echo "Warning:  can't read default packages from PDEFAULT=\"$PDEFAULT\""
+    if test ! -r $PKG_LIST ; then
+	echo "Error:  can't read package list from PKG_LIST=\"$PKG_LIST\""
+	exit 1
     else
-	echo "    using PDEFAULT=\"$PDEFAULT\""
+	echo "    using PKG_LIST=\"$PKG_LIST\""
         #  Strip the comments and add all the names
-	def=`cat $PDEFAULT | sed -e 's/#.*$//g' | $AWK '(NF>0){print $0}'`
+	pkg_list=`cat $PKG_LIST | sed -e 's/#.*$//g' | $AWK '(NF>0){print $0}'`
 	RETVAL=$?
 	if test "x${RETVAL}" != x0 ; then
-	    printf "Error: can't parse default package list "
-	    echo "-- please check PDEFAULT=\"$PDEFAULT\""
+	    printf "Error: can't parse package list "
+	    echo "-- please check PKG_LIST=\"$PKG_LIST\""
 	    exit 1
 	fi
-	for i in $def ; do
-	    PACKAGES="$PACKAGES $i"
-	done
-	echo "    before group expansion packages are:$PACKAGES"
-	RET=1
-        while test $RET = 1 ; do expand_pkg_groups; RET=$?; done
-	echo "    after group expansion packages are: $PACKAGES"
     fi
+fi
+for i in $pkg_list ; do
+    PACKAGES="$PACKAGES $i"
+done
+echo     "    before group expansion packages are:$PACKAGES"
+if test "x${PKG_GROUPS}" != x ; then
+    RET=1
+    while test $RET = 1 ; do expand_pkg_groups; RET=$?; done
+    echo "    after group expansion packages are: $PACKAGES"
 fi
 
 echo "  applying DISABLE settings"
@@ -2001,7 +2018,7 @@ PACKAGES="$PACKAGES $ENABLE"
 for i in $PACKAGES ; do
     j=`echo $i | sed 's/[-+]//'`
     if test ! -d "$ROOTDIR/pkg/$j" ; then
-	echo "Error: can't find package $i at \"$ROOTDIR/pkg/$i\""
+	echo "Error: dir '$ROOTDIR/pkg/$i' missing for package '$i'"
  	exit 1
     fi
     echo $i >> ./.tmp_pack
@@ -2020,7 +2037,6 @@ mnc_in=$?
 if test "x$HAVE_NETCDF" != xt ; then
     if test "x$mnc_in" = x0 ; then
 	cat <<EOF
-
 *********************************************************************
 WARNING: the "mnc" package was enabled but tests failed to compile
   NetCDF applications.  Please check that:
@@ -2031,7 +2047,6 @@ WARNING: the "mnc" package was enabled but tests failed to compile
 
   Due to this failure, the "mnc" package is now DISABLED.
 *********************************************************************
-
 EOF
 	PACKAGES=`echo $PACKAGES | sed -e 's/mnc//g'`
 	DISABLE="$DISABLE mnc"
@@ -2063,7 +2078,6 @@ if test "x$HAVE_NETCDF" != xt ; then
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	cat <<EOF
-
 *********************************************************************
 WARNING: the "profiles" package was enabled but tests failed to
   compile NetCDF applications.  Please check that:
@@ -2074,7 +2088,6 @@ WARNING: the "profiles" package was enabled but tests failed to
 
   Due to this failure, the "profiles" package is now DISABLED.
 *********************************************************************
-
 EOF
 	PACKAGES=`echo $PACKAGES | sed -e 's/profiles//g'`
 	DISABLE="$DISABLE profiles"
@@ -2084,9 +2097,10 @@ EOF
     fi
 fi
 
-echo "  applying package dependency rules"
-ck=
-while test "x$ck" != xtt ; do
+if  test "x${PKG_DEPEND}" != x ; then
+  echo "  applying package dependency rules"
+  ck=
+  while test "x$ck" != xtt ; do
     i=0
     # rtot=${#PNAME[@]}
     rtot=$nname
@@ -2157,8 +2171,9 @@ while test "x$ck" != xtt ; do
 	#i=$(( $i + 1 ))
     done
     ck=$ck"t"
-done
-echo "    packages are: $PACKAGES"
+  done
+  echo "    packages are: $PACKAGES"
+fi
 for i in $PACKAGES ; do
     adr="$ROOTDIR/pkg/$i"
     if test -d $adr ; then
