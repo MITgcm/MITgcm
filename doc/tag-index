@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1280 2010/05/25 22:22:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1281 2010/05/27 15:21:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+ - remove exch2_*xy_rx files: call was replaced with exch2_*3d_rx(myNz=1).
+o tools/genmake2
+  - remove "-pdefault" option: redundant with the use of "packages.conf";
+  - remove file pkg/pkg_default : set the default as a pkg group
+    ("default_pkg_list") defined in pkg/pkg_groups;
+  - fix for case pkg/pkg_depend is missing (was hanging before);
+  - add option "-pgroups" to specify a different pkg_groups than the default.
 o verification/adjustment.cs-32x32x1:
    add a "minimal" set-up test (code_min & input_min) which only compiles
    eesupp/src and the 2 pkgs (exch2 & debug) which don't need model/src & inc.
