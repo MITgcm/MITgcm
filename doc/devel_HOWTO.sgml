@@ -1,6 +1,6 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <!--
- $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.13 2010/05/15 01:44:50 jmc Exp $
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.14 2010/05/28 01:47:32 jmc Exp $
  $Name:  $
 -->
 
@@ -303,7 +303,8 @@
 
     <sect2>
       <title>Main code development</title>
-      <para>(formerly named "Tagging" ; this section needs an update)</para>
+      <para><emphasis>(formerly named "Tagging" ; this section needs an update)
+        </emphasis></para>
 
       <para>The intent of tagging is to create "known-good" checkpoints that
       developers can use as references.  Traditionally, MITgcm tagging has
@@ -393,7 +394,7 @@ checkpoint50d_pre
 	For MITgcm, the process is similar.  Typical commands are:</para>
 
 <screen>
-  $ genmake -mods=../code
+  $ genmake2 -mods=../code
   $ make depend
   $ make
 </screen>
@@ -404,9 +405,8 @@ checkpoint50d_pre
       <sect3 id="genmake">
 	<title>The <filename>genmake2</> Utility</title>
 
-	<para><emphasis>Please note that the older <filename>genmake</> is
-	    deprecated and will eventually be replaced by <filename>genmake2</>.
-	    This HOWTO only describes the newer tool.</emphasis></para>
+	<para><emphasis>(Note: the older <filename>genmake</>
+	    has been replaced by <filename>genmake2</>)</emphasis></para>
 
 	<para>The first step in any MITgcm build is to create a Unix-style
 	  <filename>Makefile</filename> which will be parsed by
@@ -462,6 +462,12 @@ checkpoint50d_pre
 	    <para>an "options file" as specified by the command-line option
 	      <filename>-optfile='FILENAME'</filename></para>
 	  </listitem>
+	  <listitem>
+	    <para> a <filename>packages.conf</filename> file (in the current
+	      directory or in one of the "MODS" directories, see below)
+	      which contains the specific list of packages to compile
+            </para>
+	  </listitem>
 	</orderedlist>
 
 	<para>then checking certain dependency rules (the package dependencies),
@@ -515,33 +521,6 @@ checkpoint50d_pre
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><filename>-pdepend=/PATH/FILENAME</></term>
-
-	    <listitem>
-	      <para>This specifies the dependency file used for packages.  If
-	      not specified, the default dependency file is
-	      <filename>$ROOTDIR/pkg/pkg_depend</>.  The syntax for this file is
-	      parsed on a line-by-line basis where each line containes either a
-	      comment ("#") or a simple "PKGNAME1 (+|-)PKGNAME2" pairwise rule
-	      where the "+" or "-" symbol specifies a "must be used with" or a
-	      "must not be used with" relationship, respectively.  If no rule is
-	      specified, then it is assumed that the two packages are compatible
-	      and will function either with or without each other.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry>
-	    <term><filename>-pdefault=PKG</></term>
-	    <term><filename>-pdefault='PKG1 [PKG2 PKG3 ...]'</></term>
-	    <listitem>
-	      <para>This option specifies the default set of packages
-	      to be used.  If not set, the default package list will
-	      be read from
-	      <filename>$ROOTDIR/pkg/pkg_default</>.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry>
 	    <term><filename>-adof=/path/to/file</></term>
 	    <term><filename>-adoptfile=/path/to/file</></term>
 	    <listitem>
@@ -569,7 +548,6 @@ checkpoint50d_pre
 		will be overridden by any identically-named sources within the
 		"MODS" directories.  The order of precedence for this
 		"name-hiding" is as follows:</para>
-	      
 	      <itemizedlist>
 		<listitem><para>"MODS" directories (in the order given)
 		  </para></listitem>
@@ -581,7 +559,38 @@ checkpoint50d_pre
 		<listitem><para>The "standard dirs" (which may have been
 		    specified by the "-standarddirs" option)</para></listitem>
 	      </itemizedlist>
+	    </listitem>
+	  </varlistentry>
 
+	  <varlistentry>
+	    <term><filename>-pgroups=/PATH/FILENAME</></term>
+	    <listitem>
+	      <para>This option specifies the file where package groups are
+	      defined.  If not set, the package-groups definition will
+	      be read from
+	      <filename>$ROOTDIR/pkg/pkg_groups</>.</para>
+	      <para>
+	      It also contains the default list of packages (defined
+	      as the group <filename>"default_pkg_list"</>) which is used
+	      when no specific package list (file: <filename>packages.conf</>)
+	      is found in current directory or in any "MODS" directory.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-pdepend=/PATH/FILENAME</></term>
+
+	    <listitem>
+	      <para>This specifies the dependency file used for packages.  If
+	      not specified, the default dependency file is
+	      <filename>$ROOTDIR/pkg/pkg_depend</>.  The syntax for this file is
+	      parsed on a line-by-line basis where each line containes either a
+	      comment ("#") or a simple "PKGNAME1 (+|-)PKGNAME2" pairwise rule
+	      where the "+" or "-" symbol specifies a "must be used with" or a
+	      "must not be used with" relationship, respectively.  If no rule is
+	      specified, then it is assumed that the two packages are compatible
+	      and will function either with or without each other.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -607,7 +616,7 @@ checkpoint50d_pre
 	<para>In general, it is best to use <filename>genmake2</> on a "clean"
 	  directory that is free of all source (*.[F,f],*.[F,f]90) and header
 	  (*.h,*.inc) files.  Generally, this can be accomplished in an
-	  "un-clean" directory by running "make CLEAN" followed by "make
+	  "un-clean" directory by running "make Clean" followed by "make
 	  makefile".</para>
 
       </sect3>
@@ -620,16 +629,18 @@ checkpoint50d_pre
 	  simulator) executable using:</para>
 
 <screen>
-  $ make CLEAN
+  $ make Clean
   $ make depend
   $ make
 </screen>
 
-	<para>The "make CLEAN" step will remove any stale source files, include
+	<para>The "make Clean" step will remove any stale source files, include
 	  files, and links.  It is strongly recommended for "un-clean"
 	  directories which may contain the (perhaps partial) results of
-	  previous builds.  Such "debris" can interfere with the next stage of
-	  the build.</para>
+	  previous builds. Such "debris" can interfere with the next stage of
+	  the build. 
+	  A more agressive cleaning option, "make CLEAN", can be used to also 
+	  remove the executable and output files from a previous run.</para>
 
 	<para>The "make depend" step will create a large number of symbolic
 	  links from the local directory to the source file locations.  It also
