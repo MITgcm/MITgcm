@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.21 2010/05/16 08:56:43 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.22 2010/05/28 07:16:43 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -299,7 +299,7 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
   % now open the file for reading
   nc = netcdf.open(fname,'NC_NOWRITE');
   % get basic information about netcdf file
-  [ndims nvars natts dimm] = netcdf.inq(nc);
+  [ndims nvars natts recdim] = netcdf.inq(nc);
 
   % No variables specified? Default to all
   if isempty(varlist), 
@@ -336,34 +336,65 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     end
     
     [varname,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
+    % does this variable contain a record (unlimited) dimension?
+    [isrecvar,recpos] = ismember(recdim,dimids);
     
     % Dimensions
     clear sizVar dims
     for k=1:length(dimids)
       [dims{k}, sizVar(k)] = netcdf.inqDim(nc,dimids(k));
     end
-    if length(sizVar)==1; sizVar(2) = 1; end;
     nDims=length(sizVar);
-    if dims{1} == 'T'
+    if isrecvar
       if isempty(find(fii)), error('Iters not found'); end
       it = length(dims);
-      tmpdata = netcdf.getVar(nc,varid,'double');
-      tmpdata = tmpdata(fii,:);
-      % leading unity dimensions get lost; add them back:
-      tmpdata=reshape(tmpdata,[length(fii) sizVar(2:end)]);
+      if length(dimids) == 1
+        % just a time or iteration variable, this will result in a vector
+        % and requires special treatment
+        icount=1;
+        tmpdata = zeros(length(fii),1);
+        for k=1:length(fii)
+          istart = fii(k)-1;
+          tmpdata(k) = netcdf.getVar(nc,varid,istart,icount,'double');
+        end
+      else
+        % from now on we assume that the record dimension is always the
+        % last dimension. This may not always be the case
+        if recpos ~= nDims
+          error(sprintf('%s\n%s\n%s%s%i%s%i', ...
+                        ['The current code assumes that the record ' ...
+                         'dimension is the last dimension,'], ...
+                        'this is not the case for variable', cvar, ...
+                        ': nDims = ', nDims,  ...
+                        ', position of recDim = ', recpos))
+        end
+        istart = zeros(1,it); % indexing starts a 0
+        icount = sizVar;
+        % we always want to get only on time slice at a time 
+        icount(recpos) = 1; 
+        % make your life simpler by putting the time dimension first
+        tmpdata = zeros([length(fii) sizVar(1:end-1)]);
+        for k=1:length(fii)
+          istart(recpos) = fii(k)-1; % indexing starts at 0
+          tmp = netcdf.getVar(nc,varid,istart,icount,'double');
+          tmpdata(k,:) = tmp(:);
+        end
+        % move time dimension to the end ...
+        tmpdata = shiftdim(tmpdata,1);
+        % ... and restore original shape
+        tmpdata = reshape(tmpdata,[sizVar(1:end-1) length(fii)]);
+      end
     else
       it = 0;
       tmpdata = netcdf.getVar(nc,varid,'double');
-      % leading unity dimensions get lost; add them back:
-      tmpdata=reshape(tmpdata,sizVar);
     end
-    
+    %
     if dBug > 1,
       fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',sizVar);
       fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
     end
     [ni nj nk nm nn no np]=size(tmpdata);
-      
+    %
     [i0,j0,fn]=findTileOffset(S);
     cdim=dims{1}; if cdim(1)~='X'; i0=0; end
     cdim=dims{1}; if cdim(1)=='Y'; i0=j0; j0=0; end
@@ -375,7 +406,7 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     if dBug > 1,
       fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
     end
-    
+    %
     Sstr = '';
     for istr = 1:max(nDims,length(dims)),
       if     istr == it,  Sstr = [Sstr,'dii,'];
@@ -392,7 +423,7 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
     %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
     if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
-    
+    %
     S.attributes.(cvar)=ncgetatt(nc,cvar);
     % replace missing or FillValues with NaN
     if isfield(S.attributes.(cvar),'missing_value');
