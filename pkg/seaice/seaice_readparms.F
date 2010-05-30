@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.81 2009/11/21 01:26:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.82 2010/05/30 16:56:28 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -27,12 +27,12 @@ C     === Global variables ===
 #endif
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of SEAICE_READPARMS
+C     myThid :: Number of this instance of SEAICE_READPARMS
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf :: Informational/error message buffer
+C     iUnit  :: Work variable for IO unit number
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
@@ -122,8 +122,16 @@ C--   set default sea ice parameters
       SEAICEadvHeff      = .TRUE.
       SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .TRUE.
+#ifdef SEAICE_SALINITY
       SEAICEadvSalt      = .TRUE.
+#else
+      SEAICEadvSalt      = .FALSE.
+#endif
+#ifdef SEAICE_AGE
       SEAICEadvAge       = .TRUE.
+#else
+      SEAICEadvAge       = .FALSE.
+#endif
 #ifdef ALLOW_SEAICE_FLOODING
       SEAICEuseFlooding  = .TRUE.
 #else
