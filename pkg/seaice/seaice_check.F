@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.35 2009/10/26 08:38:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.36 2010/05/30 17:43:24 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
       SUBROUTINE SEAICE_CHECK( myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_CHECK                                  |
-C     | o Validate basic package setup and inter-package         |
-C     | dependencies.                                            |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_CHECK
+C     | o Validate basic package setup and inter-package
+C     | dependencies.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -23,11 +23,11 @@ C     === Global variables ===
 #endif
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of SEAICE_CHECK
+C     myThid ::  Number of this instance of SEAICE_CHECK
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
       LOGICAL checkAdvSchSalt, checkAdvSchAge
@@ -92,7 +92,7 @@ C--   Check advection schemes
      &     checkAdvSchSnow .OR. checkAdvSchSalt .OR.
      &     checkAdvSchAge ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: allowed advection schemes',
-     &          ' for heff, area, snow, salt, and ice age are: '
+     &          ' for heff, area, snow, salt, and ice-age are: '
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,7I3)') 'SEAICE_CHECK:',
      &      ENUM_UPWIND_1RST, ENUM_CENTERED_2ND, ENUM_DST2,
@@ -100,23 +100,82 @@ C--   Check advection schemes
      &      ENUM_OS7MP
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &      ' one of the following is not allowed'
+     &      ' the following Adv.Scheme are not allowed:'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &      ' SEAICEadvSchArea = ',  SEAICEadvSchArea
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &      ' SEAICEadvSchHeff = ',  SEAICEadvSchHeff
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &      ' SEAICEadvSchSnow = ',  SEAICEadvSchSnow
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &      ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
-       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &      ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
-       CALL PRINT_ERROR( msgBuf, myThid )
+       IF ( checkAdvSchArea ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &       ' SEAICEadvSchArea = ',  SEAICEadvSchArea
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
+       IF ( checkAdvSchHeff ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &       ' SEAICEadvSchHeff = ',  SEAICEadvSchHeff
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
+       IF ( checkAdvSchSnow ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &       ' SEAICEadvSchSnow = ',  SEAICEadvSchSnow
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
+       IF ( checkAdvSchSalt ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &       ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
+       IF ( checkAdvSchAge  ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &       ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND ) THEN
+C-- for now, the code does not allow to use the default advection scheme
+C    (Centered 2nd order) for 1 ice-field and an other advection scheme
+C    for an other ice-field. In this case, stop here.
+        checkAdvSchArea = SEAICEadvArea .AND.
+     &     SEAICEadvSchArea.NE.ENUM_CENTERED_2ND
+        checkAdvSchHEFF = SEAICEadvHeff .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_CENTERED_2ND
+        checkAdvSchSnow = SEAICEadvSnow .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_CENTERED_2ND
+        checkAdvSchSalt = SEAICEadvSalt .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_CENTERED_2ND
+        checkAdvSchAge  = SEAICEadvAge  .AND.
+     &     SEAICEadvSchAge .NE.ENUM_CENTERED_2ND
+       IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR.
+     &      checkAdvSchSnow .OR. checkAdvSchSalt .OR.
+     &      checkAdvSchAge ) THEN
+        WRITE(msgBuf,'(A,I3,A)') 'SEAICE_CHECK: SEAICEadvScheme=',
+     &   SEAICEadvScheme, ' not compatible with those Adv.Scheme:'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        IF ( checkAdvSchArea ) THEN
+         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &        ' SEAICEadvSchArea = ',  SEAICEadvSchArea
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( checkAdvSchHeff ) THEN
+         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &        ' SEAICEadvSchHeff = ',  SEAICEadvSchHeff
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( checkAdvSchSnow ) THEN
+         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &        ' SEAICEadvSchSnow = ',  SEAICEadvSchSnow
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( checkAdvSchSalt ) THEN
+         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &        ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( checkAdvSchAge  ) THEN
+         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &        ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
       ENDIF
 
 C--
