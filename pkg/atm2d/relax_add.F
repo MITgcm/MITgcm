@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/relax_add.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/relax_add.F,v 1.4 2010/06/16 21:04:22 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -126,8 +126,14 @@ C         ONLY if seaice is present
           qrelflux= lambdaTheta*(sstFromOcn(i,j)-sstRelax(i,j))/
      &              (recip_Cp*recip_rhoNil*recip_drF(1))*nearIce
 
-          qneto_2D(i,j)= qneto_2D(i,j) + qrelflux
-          qneti_2D(i,j)= qneti_2D(i,j) + qrelflux
+C         no longer restore on top of ice, but effectively full gridpoint UNDER ice
+C         (unless gridpoint is fully ice covered)
+          IF (iceMask(i,j,1,1) .LT. 0.999 _d 0) THEN
+               qneto_2D(i,j)= qneto_2D(i,j) + qrelflux
+     &                / (1. _d 0 - iceMask(i,j,1,1))
+          ENDIF
+C          qneto_2D(i,j)= qneto_2D(i,j) + qrelflux
+C          qneti_2D(i,j)= qneti_2D(i,j) + qrelflux
 
           frelflux= -lambdaSalt*(sssFromOcn(i,j)-sssRelax(i,j))/
      &                  (convertFW2Salt *recip_drF(1))*nearIce

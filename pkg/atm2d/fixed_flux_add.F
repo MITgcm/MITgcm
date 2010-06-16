@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/fixed_flux_add.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/fixed_flux_add.F,v 1.4 2010/06/16 21:04:22 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -16,6 +16,7 @@ C     *==========================================================*
 C     === Global Atmos/Ocean/Seaice Interface Variables ===
 #include "ATMSIZE.h"
 #include "SIZE.h"
+#include "GRID.h"
 #include "EEPARAMS.h"
 #include "THSICE_VARS.h"
 #include "ATM2D_VARS.h"
@@ -36,6 +37,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
 C     LOCAL VARIABLES:
+      _RL qfadj     ! temp variable for qflux adjustment
       INTEGER i,j   ! loop counters
 C     save below in common block so continual reloading isn't necessary
       COMMON /OCEANMEAN/
@@ -115,6 +117,7 @@ C      data for the period ahead and the period behind current time.
 C--   Interpolate and add to anomaly
       DO j=1,sNy
         DO i=1,sNx
+         IF (maskC(i,j,1,1,1).EQ.1.) THEN
 
           fu_2D(i,j)= fu_2D(i,j) +
      &                (wght0*tau0(i,j,1,1) + wght1*tau1(i,j,1,1))
@@ -122,13 +125,13 @@ C--   Interpolate and add to anomaly
      &                (wght0*tav0(i,j,1,1) + wght1*tav1(i,j,1,1))
           wspeed_2D(i,j)= wspeed_2D(i,j) +
      &                (wght0*wind0(i,j,1,1) + wght1*wind1(i,j,1,1))
-          qneto_2D(i,j)= qneto_2D(i,j) +
-     &                (wght0*qnet0(i,j,1,1) + wght1*qnet1(i,j,1,1))
 
-c note below is different from older code...
-          IF (iceMask(i,j,1,1) .NE. 0. _d 0)
-     &      qneti_2D(i,j)= qneti_2D(i,j) +
-     &                     (wght0*qnet0(i,j,1,1) + wght1*qnet1(i,j,1,1))
+          qfadj = (wght0*qnet0(i,j,1,1) + wght1*qnet1(i,j,1,1))
+          IF ( (qfadj .NE. 0. _d 0) .AND. 
+     &       (iceMask(i,j,1,1) .LT. 0.999 _d 0)) THEN
+               qneto_2D(i,j)= qneto_2D(i,j) + qfadj
+     &                / (1. _d 0 - iceMask(i,j,1,1))
+          ENDIF
 
 C 9/08/06 assume evap is + in file, thus subtract
           IF (useObsEmP) THEN
@@ -158,6 +161,7 @@ C 9/08/06 assume evap is + in file, thus subtract
               runoff_2D(i,j)= runoff_2D(i,j) +
      &                (wght0*runoff0(i,j,1,1) + wght1*runoff1(i,j,1,1))
           ENDIF
+         ENDIF
         ENDDO
       ENDDO
 
