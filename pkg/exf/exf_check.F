@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.13 2010/04/15 00:47:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.14 2010/06/17 21:45:16 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -29,6 +29,9 @@ c     mythid - thread number for this instance of the routine.
       integer mythid
 
 c     == local variables ==
+
+C     msgBuf   :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 
@@ -68,32 +71,41 @@ c     check for consistency
 #ifndef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR. 
      &     select_ZenAlbedo .NE. 0 ) THEN
-        STOP 'S/R EXF_CHECK: unsupported option when 
-     &        ALLOW_ZENITHANGLE is not defined'
+        WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: unsupported option',
+     &        ' when ALLOW_ZENITHANGLE is not defined'
+        CALL PRINT_ERROR( msgBuf , mythid)
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
 #endif
 
 #ifdef ALLOW_ZENITHANGLE
       IF ( usingCartesianGrid .OR. usingCylindricalGrid ) then
-        STOP 'S/R EXF_CHECK: ALLOW_ZENITHANGLE does not  
-     &        work for carthesian and cylindrical grids'
+        WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: ALLOW_ZENITHANGLE does ',
+     &        'not work for carthesian and cylindrical grids'
+        CALL PRINT_ERROR( msgBuf , mythid)
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
       IF ( select_ZenAlbedo.LT.0 .OR. select_ZenAlbedo.GT.3 ) then
-        STOP 'S/R EXF_CHECK: unsupported select_ZenAlbedo choice'
+        WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: unsupported ',
+     &        'select_ZenAlbedo choice'
+        CALL PRINT_ERROR( msgBuf , mythid)
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
       IF ( select_ZenAlbedo.EQ.2 .) then
-        write(standardmessageunit,'(A)') 
-     &  'EXF WARNING: for daily mean albedo, it is advised to 
-     &        use select_ZenAlbedo.EQ.1 instead of 2'
+        write(standardmessageunit,'(A,A)') 
+     &  'EXF WARNING: for daily mean albedo, it is advised ',
+     &        'to use select_ZenAlbedo.EQ.1 instead of 2'
       ENDIF
       IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 21600 ) then
-        STOP 'S/R EXF_CHECK: using diurnal albedo formula requires
-     &        diurnal downward shortwave forcing'
+       WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: using diurnal albedo ',
+     &        'formula requires diurnal downward shortwave forcing'
+        CALL PRINT_ERROR( msgBuf , mythid)
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
       IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 3600 ) then
-        write(standardmessageunit,'(A)')  
-     &  'EXF WARNING: the diurnal albedo formula is likely not safe
-     &  for such coarse temporal resolution downward shortwave forcing'
+        write(standardmessageunit,'(A,A)')  
+     &  'EXF WARNING: the diurnal albedo formula is likely not safe ',
+     &  'for such coarse temporal resolution downward shortwave forcing'
       ENDIF
 #endif
 
