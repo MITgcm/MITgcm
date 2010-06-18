@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1281 2010/05/27 15:21:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1282 2010/06/18 15:20:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62h (2010/06/18)
 o pkg/exch2:
  - remove exch2_*xy_rx files: call was replaced with exch2_*3d_rx(myNz=1).
 o tools/genmake2
