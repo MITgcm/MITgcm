@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.20 2010/05/04 18:33:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.21 2010/06/22 16:14:42 dimitri Exp $
 C $Name:  $
 c
 c
@@ -31,10 +31,14 @@ c     ==================================================================
 c     HEADER exf_param
 c     ==================================================================
 
-c     year in seconds
+c     Year in seconds
       _RL     year2sec
 
-c     Calendar data.
+c     Repeat period for forcing fields (s)
+c     For example, for yearly repeat period: repeatPeriod=31556925.
+c     Note: this option is not yet coded for sub-daily
+c           forcing and for leap years but this limitation can be
+c           circumvented by using a 4-year (1461-day) repeatPeriod
       _RL     repeatPeriod
 
 c     Monitor Frequency (s)
@@ -46,6 +50,10 @@ c     Drag coefficient scaling factor
 c     Maximum absolute windstress, used to reset unreastically high
 c     data values
       _RL     windstressmax
+
+c     Description of contents of surface boundary condition files
+c     Note: fieldperiod=0 means input file is one time-constant field
+c           fieldperiod=-12 means input file contains 12 monthly means
 
       integer hfluxstartdate1
       integer hfluxstartdate2
