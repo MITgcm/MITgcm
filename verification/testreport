@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.140 2010/04/30 13:07:19 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.141 2010/06/23 18:46:43 jmc Exp $
 #  $Name:  $
 #
 
@@ -33,6 +33,7 @@ usage()
     echo "  (-adm|-ad)               perform an adjoint run"
     echo "  (-oad)                   perform an OpenAD adjoint run"
     echo "  (-command|-c) STRING     command to run"
+    echo "  (-makedepend|-md) STRING command to use for \"makedepend\""
     echo "  (-make|-m) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
     echo "  (-odir) STRING           used to build output directory name"
@@ -40,7 +41,7 @@ usage()
     echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
     echo "                             (DEF=\"1 2 3 4 5\")"
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
-    echo "                             (DEF=\"12\")"
+    echo "                             (DEF=\"$MATCH_CRIT\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
@@ -317,6 +318,9 @@ genmakemodel()
 	(
 	    cd $1;
 	    command="$GENMAKE2  -ds -m $MAKE"
+	    if test "x$MKDEPEND" != x ; then
+		command="$command -makedepend=$MKDEPEND"
+	    fi
 	    if test "x$ADM" = xt ; then
 		command="$command --mods=../code_ad"
 	    elif test "x$OADM" = xt ; then
@@ -829,6 +833,7 @@ MPACKDIR="../tools/mpack-1.6"
 HAVE_MPACK=
 MPACK=
 COMMAND=
+MKDEPEND=
 if test "x$MAKE" = x ; then
     MAKE=make
 fi
@@ -902,6 +907,11 @@ for ac_option ; do
 	    ac_prev=COMMAND ;;
 	-command=* | --command=* | -c=* | --c=*)
 	    COMMAND=$ac_optarg ;;
+
+	-makedepend | --makedepend | -md | --md)
+	    ac_prev=MKDEPEND ;;
+	-makedepend=* | --makedepend=* | -md=* | --md=*)
+	    MKDEPEND=$ac_optarg ;;
 
 	-make | --make | -m | --m)
 	    ac_prev=MAKE ;;
