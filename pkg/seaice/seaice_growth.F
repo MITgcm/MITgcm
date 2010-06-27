@@ -1,17 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.65 2010/06/22 23:19:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.66 2010/06/27 20:19:16 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_GROWTH
+C     !INTERFACE:
       SUBROUTINE SEAICE_GROWTH( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE seaice_growth                                 |
-C     | o Updata ice thickness and snow depth                    |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE seaice_growth
+C     | o Updata ice thickness and snow depth
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -33,17 +37,18 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-C     myThid - Thread no. that called this routine.
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: Thread no. that called this routine.
       _RL myTime
       INTEGER myIter, myThid
-CEndOfInterface
+CEOP
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     i,j,bi,bj - Loop counters
-
+C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
 C     number of surface interface layer
       INTEGER kSurface
@@ -102,6 +107,11 @@ C     local copy of AREA
       _RL FICEP         (1:sNx,1:sNy)
       _RL QSWIP         (1:sNx,1:sNy)
 #endif
+
+#ifdef SEAICE_AGE
+C     old_AREA :: hold sea-ice fraction field before any seaice-thermo update
+      _RL old_AREA     (1:sNx,1:sNy)
+#endif /* SEAICE_AGE */
 
 #ifdef ALLOW_DIAGNOSTICS
       _RL DIAGarray     (1:sNx,1:sNy)
@@ -181,6 +191,17 @@ CADJ &                       key = iicekey, byte = isbyte
 #endif
          ENDDO
         ENDDO
+
+#ifdef SEAICE_AGE
+C     store the initial ice fraction over the domain
+        DO J=1,sNy
+         DO I=1,sNx
+           old_AREA(i,j) = AREA(I,J,bi,bj)
+         ENDDO
+        ENDDO
+#endif /* SEAICE_AGE */
+
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
 CADJ &                        key = iicekey, byte = isbyte
@@ -903,18 +924,26 @@ C     turn GHEFF into a rate
         ENDIF
 
 #ifdef SEAICE_AGE
-C     Sources and sinks for sea ice age
+C     Sources and sinks for sea ice age:
+C     assume that a) freezing: new ice fraction forms with zero age
+C                 b) melting: ice fraction vanishes with current age
         DO J=1,sNy
          DO I=1,sNx
           IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
-           IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) +
-     &          AREA(I,J,bi,bj) * SEAICE_deltaTtherm
+           IF ( AREA(i,j,bi,bj) .LT. old_AREA(i,j) ) THEN
+C--   scale effective ice-age to account for ice-age sink associated with melting
+            IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
+     &         *AREA(i,j,bi,bj)/old_AREA(i,j)
+           ENDIF
+C--   account for aging:
+           IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
+     &        + AREA(i,j,bi,bj) * SEAICE_deltaTtherm
           ELSE
            IceAge(i,j,bi,bj) = ZERO
           ENDIF
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_AGE */
 
        ENDDO
       ENDDO
