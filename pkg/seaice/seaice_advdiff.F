@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.39 2010/06/27 20:14:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.40 2010/06/27 20:17:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -390,7 +390,6 @@ C     somewhere after doing the advection)
          ENDDO
         ENDDO
        ENDDO
-#endif /* SEAICE_AGE */
       ENDIF
 
       RETURN
