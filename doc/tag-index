@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1282 2010/06/18 15:20:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1283 2010/06/27 20:21:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice:
+ - account for melting in seaice age evolution.
 
 checkpoint62h (2010/06/18)
 o pkg/exch2:
