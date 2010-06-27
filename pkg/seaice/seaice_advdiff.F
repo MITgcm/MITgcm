@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.38 2010/03/29 12:35:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.39 2010/06/27 20:14:21 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -390,24 +390,6 @@ C     somewhere after doing the advection)
          ENDDO
         ENDDO
        ENDDO
-#ifdef SEAICE_AGE
-C     Sources and sinks for sea ice age (otherwise added in seaice_growth)
-       IF ( .TRUE. ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1,sNy
-           DO I=1,sNx
-            IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
-             IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) +
-     &            AREA(I,J,bi,bj) * SEAICE_deltaTtherm
-            ELSE
-             IceAge(i,j,bi,bj) = ZERO
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
 #endif /* SEAICE_AGE */
       ENDIF
 
