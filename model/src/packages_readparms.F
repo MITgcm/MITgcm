@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.64 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.65 2010/06/29 18:06:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,6 +68,7 @@ C       |-- BULKF_READPARMS
 C       |
 C       |-- THSICE_READPARMS
 C       |
+C       |-- LONGSTEP_READPARMS
 C       |-- PTRACERS_READPARMS
 C       |
 C       |-- GCHEM_READPARMS
@@ -211,11 +212,7 @@ C--   Initialize ICEFRONT parameters
 #endif
 
 #ifdef ALLOW_OFFLINE
-      CALL OFFLINE_READPARMS( myThid )
-#endif
-
-#ifdef ALLOW_LONGSTEP
-      IF (usePTRACERS) call LONGSTEP_READPARMS( myThid )
+      IF (useOffLine) CALL OFFLINE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE
@@ -228,6 +225,10 @@ C -- initialize Therm.Sea-Ice parameters
       IF (useThSIce) CALL THSICE_READPARMS( myThid )
 #endif
 
+#ifdef ALLOW_LONGSTEP
+C-- note: need to call LONGSTEP_READPARMS before PTRACERS_READPARMS
+      IF (usePTRACERS) CALL LONGSTEP_READPARMS( myThid )
+#endif
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
 #endif
