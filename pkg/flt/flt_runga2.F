@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.14 2009/02/27 00:44:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.15 2010/06/30 01:51:03 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -192,6 +192,10 @@ C geographical coordinate.
               ENDIF
 #endif /* ALLOW_3D_FLT */
 
+C--  new horizontal grid indices
+              ic = MAX( 1-Olx, MIN( NINT(ipart(ip,bi,bj)), sNx+Olx ) )
+              jc = MAX( 1-Oly, MIN( NINT(jpart(ip,bi,bj)), sNy+Oly ) )
+
 #ifdef ALLOW_3D_FLT
 C If float is 3D, make sure that it remains in water
               IF (iup(ip,bi,bj).EQ.-1.) THEN
@@ -200,8 +204,24 @@ C reflect on surface
      &                                      +kzlo-kpart(ip,bi,bj)
 C stop at bottom
                 IF (kpart(ip,bi,bj).GT.kzhi) kpart(ip,bi,bj)=kzhi
+C-to work also with non flat-bottom set-up:
+c               IF ( kpart(ip,bi,bj).GT.kLowC(ic,jc,bi,bj)+0.5 )
+c    &               kpart(ip,bi,bj) = kLowC(ic,jc,bi,bj)+0.5
               ENDIF
 #endif /* ALLOW_3D_FLT */
+
+#ifdef ALLOW_OBCS
+              IF ( useOBCS ) THEN
+C--  stop floats which enter the OB region:
+               IF ( maskInC(ic,jc,bi,bj).EQ.0. .AND.
+     &              maskC(ic,jc,1,bi,bj).EQ.1. ) THEN
+C    for now, just reset "tend" to myTime-deltaT
+C    (a better way would be to remove this one & re-order the list of floats)
+                  tend(ip,bi,bj) = myTime - flt_deltaT
+               ENDIF
+              ENDIF
+#endif /* ALLOW_OBCS */
+
             ENDIF
            ENDIF
 

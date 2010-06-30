@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.3 2009/02/27 00:44:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.4 2010/06/30 01:51:03 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -58,14 +58,14 @@ C     Read parameters from open data file
 C     Close the open data file
       CLOSE(iUnit)
 
-C DO some checks
-      IF ( useFLT .AND. useOBCS ) THEN
-        WRITE(msgBuf,'(A,A)')
-     &   'S/R FLT_READPARMS: floats currently not implemented',
-     &   ' with open boundaries'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R FLT_READPARMS'
-      ENDIF
+C     Do some checks
+c     IF ( useFLT .AND. useOBCS ) THEN
+c       WRITE(msgBuf,'(A,A)')
+c    &   'S/R FLT_READPARMS: floats currently not implemented',
+c    &   ' with open boundaries'
+c       CALL PRINT_ERROR( msgBuf , myThid)
+c       STOP 'ABNORMAL END: S/R FLT_READPARMS'
+c     ENDIF
 
       _END_MASTER(myThid)
       _BARRIER
