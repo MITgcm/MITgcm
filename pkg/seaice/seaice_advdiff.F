@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.41 2010/06/28 14:39:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.42 2010/06/30 02:13:54 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -358,22 +358,6 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 C--   end if multiDimAdvection
       ENDIF
 
-#ifdef SEAICE_AGE
-C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
-      IF ( .TRUE. ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1,sNy
-          DO I=1,sNx
-           IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj)
-     &          / MAX(ONE,AREA(I,J,bi,bj))
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /* SEAICE_AGE */
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE AREA   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
@@ -385,6 +369,11 @@ C     somewhere after doing the advection)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
+#ifdef SEAICE_AGE
+C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
+           IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj)
+     &          / MAX(ONE,AREA(I,J,bi,bj))
+#endif /* SEAICE_AGE */
            AREA(I,J,bi,bj) = MIN(ONE,AREA(I,J,bi,bj))
           ENDDO
          ENDDO
