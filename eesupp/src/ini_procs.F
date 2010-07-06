@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.28 2009/11/24 00:16:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.29 2010/07/06 23:12:51 zhc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -299,7 +299,7 @@ C--    Print summary of processor mapping on standard output
      &  ') on processor grid (0:',nPx-1,',0:',nPy-1,')'
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
      &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4,A,I4,A,I4,A,I4,A)') ' Origin at  (',
+       WRITE(msgBuffer,'(A,I6,A,I6,A,I6,A,I6,A)') ' Origin at  (',
      &  mpiXGlobalLo,',',mpiYGLobalLo,
      &  ') on global grid (1:',nPx*sNx*nSx,',1:',nPy*sNy*nSy,')'
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,

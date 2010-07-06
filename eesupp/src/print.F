@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.31 2009/06/19 03:05:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.32 2010/07/06 23:12:51 zhc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -864,14 +864,14 @@ C--   Write field title and statistics
      & '//                  0.0: ','.'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-       WRITE(msgBuf,'(A,3(A,I4),A)')
+       WRITE(msgBuf,'(A,3(A,I6),A)')
      & '// RANGE I (Lo:Hi:Step):',
      &  '(',myXGlobalLo-1+(bxMin-1)*sNx+iMin,
      &  ':',myXGlobalLo-1+(bxMax-1)*sNx+iMax,
      &  ':',iStr,')'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-       WRITE(msgBuf,'(A,3(A,I4),A)')
+       WRITE(msgBuf,'(A,3(A,I6),A)')
      & '// RANGE J (Lo:Hi:Step):',
      &  '(',myYGlobalLo-1+(byMin-1)*sNy+jMin,
      &  ':',myYGlobalLo-1+(byMax-1)*sNy+jMax,
@@ -1298,14 +1298,14 @@ C--   Write field title and statistics
      & '//                  0.0: ','.'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-       WRITE(msgBuf,'(A,3(A,I4),A)')
+       WRITE(msgBuf,'(A,3(A,I6),A)')
      & '// RANGE I (Lo:Hi:Step):',
      &  '(',myXGlobalLo-1+(bxMin-1)*sNx+iMin,
      &  ':',myXGlobalLo-1+(bxMax-1)*sNx+iMax,
      &  ':',iStr,')'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-       WRITE(msgBuf,'(A,3(A,I4),A)')
+       WRITE(msgBuf,'(A,3(A,I6),A)')
      & '// RANGE J (Lo:Hi:Step):',
      &  '(',myYGlobalLo-1+(byMin-1)*sNy+jMin,
      &  ':',myYGlobalLo-1+(byMax-1)*sNy+jMax,
