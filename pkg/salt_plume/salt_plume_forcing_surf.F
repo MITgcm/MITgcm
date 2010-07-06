@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_forcing_surf.F,v 1.3 2009/06/15 23:42:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_forcing_surf.F,v 1.4 2010/07/06 00:14:29 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -60,15 +60,6 @@ C     ks                   :: surface level index
      &       - saltPlumeFlux(i,j,bi,bj) * mass2rUnit
        ENDDO
       ENDDO
-
-      IF ( .NOT. SaltPlumeSouthernOcean ) THEN
-       DO j = jMin, jMax
-        DO i = iMin, iMax
-         IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
-     &        saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
-        ENDDO
-       ENDDO
-      ENDIF
 
 #endif /* ALLOW_SALT_PLUME */
 
