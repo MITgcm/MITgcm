@@ -12,3 +12,5 @@ exch_uv_xyz_rs.f
 exch_uv_xyz_rl.f
 exch_uv_agrid_3d_rs.f
 exch_uv_agrid_3d_rl.f
+exch_uv_dgrid_3d_rs.f
+exch_uv_dgrid_3d_rl.f

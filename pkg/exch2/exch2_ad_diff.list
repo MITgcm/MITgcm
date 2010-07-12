@@ -4,3 +4,5 @@ exch2_uv_3d_rs.f
 exch2_uv_3d_rl.f
 exch2_uv_agrid_3d_rs.f
 exch2_uv_agrid_3d_rl.f
+exch2_uv_dgrid_3d_rs.f
+exch2_uv_dgrid_3d_rl.f

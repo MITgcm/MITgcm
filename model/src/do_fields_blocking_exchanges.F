@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.26 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.27 2010/07/12 22:49:42 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,12 +62,7 @@ c    & _EXCH_XY_RL( etaN , myThid )
 #endif
 
 #ifdef ALLOW_CD_CODE
-# ifdef ALLOW_AUTODIFF_TAMC
-      CALL EXCH_3D_RL( uVelD, Nr, myThid )
-      CALL EXCH_3D_RL( vVelD, Nr, myThid )
-# else
       CALL EXCH_UV_DGRID_3D_RL( uVelD,vVelD, .TRUE., Nr, myThid )
-# endif
 #endif
       IF ( useDynP_inEos_Zc )
      & _EXCH_XYZ_RL( totPhiHyd , myThid )
