@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.42 2009/02/16 09:10:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.43 2010/07/13 00:02:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -47,6 +47,13 @@ c     == local variables ==
 
       integer i, j, bi, bj, interp_method
       parameter(interp_method=1)
+
+#ifdef ALLOW_ROTATE_UV_CONTROLS
+      _RL     tmpUE(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpVN(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpUX(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpVY(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
 
 c     == end of interface ==
 
@@ -437,6 +444,8 @@ c-- Control variables for atmos. state
      &     mytime, myiter, mythid )
 #endif
 
+#ifndef ALLOW_ROTATE_UV_CONTROLS
+
 #ifdef ALLOW_UWIND_CONTROL
       call ctrl_get_gen (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
@@ -452,6 +461,53 @@ c-- Control variables for atmos. state
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     mytime, myiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
+
+#else
+
+#if defined(ALLOW_UWIND_CONTROL) && defined(ALLOW_VWIND_CONTROL)
+
+        do bj = mybylo(mythid),mybyhi(mythid)
+         do bi = mybxlo(mythid),mybxhi(mythid)
+          do j = 1-oly,sny+oly
+           do i = 1-olx,snx+olx
+             tmpUE(i,j,bi,bj) = 0. _d 0
+             tmpVN(i,j,bi,bj) = 0. _d 0
+             tmpUX(i,j,bi,bj) = 0. _d 0
+             tmpVY(i,j,bi,bj) = 0. _d 0
+           enddo
+          enddo
+         enddo
+        enddo
+
+      call ctrl_get_gen (
+     &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
+     &     maskc, tmpUE, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
+     &     mytime, myiter, mythid )
+
+      call ctrl_get_gen (
+     &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
+     &     maskc, tmpVN, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
+     &     mytime, myiter, mythid )
+
+      call rotate_uv2en_rl(tmpUX,tmpVY,tmpUE,tmpVN,
+     &     .FALSE.,.FALSE.,.TRUE.,1,mythid)
+
+        do bj = mybylo(mythid),mybyhi(mythid)
+         do bi = mybxlo(mythid),mybxhi(mythid)
+          do j = 1,sny
+           do i = 1,snx
+             uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+tmpUX(i,j,bi,bj)
+             vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+tmpVY(i,j,bi,bj)
+           enddo
+          enddo
+         enddo
+        enddo
+
+#endif
+#endif /* ALLOW_ROTATE_UV_CONTROLS */
+
 
 cdm transferred from exf_init_runoff.F
 cdm functionality needs to be checked before turning on

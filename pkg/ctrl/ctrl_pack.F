@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.33 2008/05/30 02:48:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.34 2010/07/13 00:02:06 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -261,7 +261,11 @@ C     place holder of obsolete variable jG
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauu"
           call ctrl_set_pack_xy(
+#ifndef ALLOW_ROTATE_UV_CONTROLS
      &         cunit, ivartype, fname_tauu(ictrlgrad), "maskCtrlW",
+#else
+     &         cunit, ivartype, fname_tauu(ictrlgrad), "maskCtrlC",
+#endif
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -270,7 +274,11 @@ C     place holder of obsolete variable jG
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauv"
           call ctrl_set_pack_xy(
+#ifndef ALLOW_ROTATE_UV_CONTROLS
      &         cunit, ivartype, fname_tauv(ictrlgrad), "maskCtrlS",
+#else
+     &         cunit, ivartype, fname_tauv(ictrlgrad), "maskCtrlC",
+#endif
      &         weighttype, lxxadxx, mythid)
 #endif
 

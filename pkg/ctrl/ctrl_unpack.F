@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.32 2008/05/30 02:48:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.33 2010/07/13 00:02:06 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -352,8 +352,13 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauu"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+#ifndef ALLOW_ROTATE_UV_CONTROLS
      &         fname_tauu(ictrlgrad), "maskCtrlW",
      &         weighttype, nwetwglobal, mythid)
+#else
+     &         fname_tauu(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
 #endif
 
 #if (defined (ALLOW_VSTRESS_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
@@ -361,8 +366,13 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauv"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+#ifndef ALLOW_ROTATE_UV_CONTROLS
      &         fname_tauv(ictrlgrad), "maskCtrlS",
      &         weighttype, nwetsglobal, mythid)
+#else
+     &         fname_tauv(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_ATEMP_CONTROL

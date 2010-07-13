@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.6 2004/12/03 00:49:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.7 2010/07/13 00:02:09 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -129,6 +129,10 @@ C       >>> Atmospheric state.
 #undef  ALLOW_UWIND_CONTROL
 #undef  ALLOW_VWIND_CONTROL
 #undef  ALLOW_PRECIP_CONTROL
+
+C  o Rotation of wind/stress controls adjustments
+C    from Eastward/Northward to model grid directions
+#undef ALLOW_ROTATE_UV_CONTROLS
 
 C ********************************************************************
 C ***             External forcing Package                         ***

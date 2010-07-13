@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.12 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.13 2010/07/13 00:02:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -40,6 +40,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "EXF_FIELDS.h"
+#include "EXF_PARAM.h"
 #ifdef ALLOW_AUTODIFF
 # include "ctrl.h"
 # include "ctrl_dummy.h"
@@ -52,6 +53,15 @@ c     == routine arguments ==
       integer mythid
 
 c     == global variables ==
+
+#ifdef ALLOW_ROTATE_UV_CONTROLS
+      _RL     tmpUE(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpVN(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpUX(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpVY(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      integer i,j,bi,bj
+#endif
+
 
 c     == end of interface ==
 
@@ -71,6 +81,8 @@ c     == end of interface ==
      &     mytime, myiter, mythid )
 #endif
 
+#ifndef ALLOW_ROTATE_UV_CONTROLS
+
 #ifdef ALLOW_USTRESS_CONTROL
       call ctrl_get_gen ( 
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
@@ -86,5 +98,62 @@ c     == end of interface ==
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     mytime, myiter, mythid )
 #endif
+
+#else
+
+#if defined(ALLOW_USTRESS_CONTROL) && defined(ALLOW_VSTRESS_CONTROL)
+
+        do bj = mybylo(mythid),mybyhi(mythid)
+         do bi = mybxlo(mythid),mybxhi(mythid)
+          do j = 1-oly,sny+oly
+           do i = 1-olx,snx+olx
+             tmpUE(i,j,bi,bj) = 0. _d 0
+             tmpVN(i,j,bi,bj) = 0. _d 0
+             tmpUX(i,j,bi,bj) = 0. _d 0
+             tmpVY(i,j,bi,bj) = 0. _d 0
+           enddo
+          enddo
+         enddo
+        enddo
+
+      call ctrl_get_gen ( 
+     &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
+     &     maskc, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
+     &     mytime, myiter, mythid )
+
+      call ctrl_get_gen ( 
+     &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
+     &     maskc, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
+     &     mytime, myiter, mythid )
+
+      _EXCH_XY_RL(tmpUE,myThid)
+      _EXCH_XY_RL(tmpVN,myThid)
+
+      call rotate_uv2en_rl(tmpUX,tmpVY,tmpUE,tmpVN,
+     &     .FALSE.,stressIsOnCgrid,.TRUE.,1,mythid)
+
+      IF ( stressIsOnCgrid ) THEN
+        CALL EXCH_UV_XY_RL( tmpUX, tmpVY, .TRUE., myThid )
+      ELSE
+        CALL EXCH_UV_AGRID_3D_RL( tmpUX, tmpVY, .TRUE., 1, myThid)
+      ENDIF  
+
+        do bj = mybylo(mythid),mybyhi(mythid)
+         do bi = mybxlo(mythid),mybxhi(mythid)
+          do j = 1-oly,sny+oly
+           do i = 1-olx,snx+olx
+             ustress(i,j,bi,bj)=ustress(i,j,bi,bj)+tmpUX(i,j,bi,bj)
+             vstress(i,j,bi,bj)=vstress(i,j,bi,bj)+tmpVY(i,j,bi,bj)
+           enddo
+          enddo
+         enddo
+        enddo
+
+#endif
+#endif /* ALLOW_ROTATE_UV_CONTROLS */
+
+
 
       end
