@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.14 2010/01/08 20:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.15 2010/07/14 22:19:22 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -62,7 +62,7 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       INTEGER iloop_ocn
 #endif
 
-!     print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
+C     print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
       idyear= int((iloop-1)*dtcouple/365.0/24.0) + 1
       iyr= idyear + startYear -1
       inyr = mod(iloop*dtcouple, 365*24)
@@ -72,8 +72,8 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       ENDDO
       inday= mod(iloop*dtcouple, 24)
       dayid= int((inyr-dtcouple-jdofmhr(monid-1))/24.0) +1
-!     print *,'*** idyear,iyr,inyr,monid,inday,dayid',
-!    &             idyear,iyr,inyr,monid,inday,dayid
+C     print *,'*** idyear,iyr,inyr,monid,inday,dayid',
+C    &             idyear,iyr,inyr,monid,inday,dayid
 
       IF (inyr.EQ.dtcouple) THEN !do this block at start of new year
         PRINT *,'*** Starting a new year'
@@ -326,45 +326,58 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         IF (iloop.EQ.nTimeSteps) CALL ATM2D_FINISH(myThid)
 #endif
 
-#ifdef CPL_TEM
-#  ifdef CPL_OCEANCO2
+#if (defined CPL_TEM || defined CPL_OCEANCO2)
+        OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
+
+#  if (defined CPL_TEM && defined CPL_OCEANCO2)
         PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
      &         ' NEP=',nepan,' OCU=',ocuptp
+        WRITE(333,*)iyr,nepan,ocuptp
 #  else
+
+#     ifdef CPL_TEM
         PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
      &         ' NEP=',nepan
-#  endif
-
-#  ifdef IPCC_EMI
-        PRINT 'a6,i6,(a5,f10.4)','Year=',iyr,
-     &         ' CO2AN=',xco2ann/12.
-        CALL emissipcc_yr
-#  endif
-
-#  ifdef CPL_NEM
+        WRITE(333,*)iyr,nepan,nepan
+#      ifdef CPL_NEM
         PRINT *,' CH4=',ch4ann,' N2O=',n2oann
+#      endif
+#     endif
+
+#     ifdef CPL_OCEANCO2
+        PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
+     &         ' OCU=',ocuptp
+        WRITE(333,*)iyr,ocuptp,ocuptp
+#     endif
+
 #  endif
-        OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
-C        WRITE(333,'(2f9.5)')nepan,ocuptp
-        WRITE(333,*)iyr,nepan,ocuptp
         CLOSE(333)
-#  if defined (CPL_OCEANCO2) && defined (ML_2D)
+#endif
+
+#if (defined CPL_OCEANCO2 && defined ML_2D)
         WRITE(602)iyr
         CALL wrgary
         CALL zerogary
-#  endif
 #endif
+
+#ifdef IPCC_EMI
+        PRINT 'a6,i6,(a5,f10.4)','Year=',iyr,
+     &         ' CO2AN=',xco2ann/12.
+        CALL emissipcc_yr
+#endif
+
 #ifdef CPL_OCEANCO2
         DO j=1,jm0
-#if ( defined OCEAN_3D )
+#  ifdef OCEAN_3D 
           co24ocnan(j)=co24ocnan(j)*dtatm/24.0/365.0
-#else
+#  else
           co24ocnan(j)=co24ocnan(j)/365.0
-#endif
+#  endif
         ENDDO
         PRINT *,' CO2 for ocean model',' ncallatm=',ncall_atm
         PRINT '12f7.1,/,2(11f7.1,/),12f7.1',co24ocnan
 #endif
+
 #ifdef CPL_CHEM
         PRINT *,' TEMUPTANN=',temuptann,' TOTAL UPTAKE='
      &          ,ocuptp+temuptann
