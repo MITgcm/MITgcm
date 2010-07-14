@@ -2,6 +2,7 @@ exch_3d_rl.F
 exch_uv_3d_rl.F
 exch_uv_3d_rs.F
 exch_uv_agrid_3d_rl.F
+exch_uv_dgrid_3d_rl.F
 exch_uv_xyz_rl.F
 exch_xy_rl.F
 exch_xyz_rl.F
