@@ -1,27 +1,25 @@
 Example: "Internal Wave Forced by Open Boundary"
 ================================================
 
-This uses a simply EOS (rho = - rho_o alpha T') and treats
-salt as a passive tracer. 
-
-To apply the changes to the default configuration of MITgcmUV:
-  cp ../verification/internal_wave/code/SIZE.h ../model/inc/
-  cp ../verification/internal_wavinternal_wave/code/CPP_OPTIONS.h ../model/inc/
-  cp ../verification/internal_wave/code/set_obcs.F ../model/src/
+This uses a simply EOS (rho = - rho_o alpha T')
+ and treats salt as a passive tracer. 
 
 Configure and compile the code:
-  cd bin
-  ../tools/genmake -makefile
+  cd build
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
 
 To run:
-  cd ../exe
-  cp ../verification/internal_wave/input/* .
-  ./mitgcmuv
+  cd run
+  ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
+  ./mitgcmuv > output.txt
 
 There is comparison output in:
- ../verification/internal_wave/results
+  results/output.txt
 
 Comments:
-The input data is real*8.
+  The input data is real*8 and generated using the MATLAB script
+  input/gendata.m
+
