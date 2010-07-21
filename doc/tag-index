@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1284 2010/06/30 17:51:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1285 2010/07/21 19:52:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62i (2010/07/21)
 o pkg/flt:
   - with OBCS: stop floats which enter the OB region
 o model/src:
