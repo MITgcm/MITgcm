@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.26 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.27 2010/07/30 15:02:43 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -51,98 +51,106 @@ C  bioac               :: biological productivity (will be split
 C                         between export and dissolved pool)
       _RL bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR)
 
-#ifdef ALLOW_PTRACERS
-#ifdef DIC_BIOTIC
+#if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
        INTEGER I,J,k
-      _RL sfac(1-OLy:sNy+OLy)
-      _RL lit, atten
+      _RL sfac    (1-OLy:sNy+OLy)
+      _RL lit     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL atten
       _RL nutlimit
       _RL tmppo4
-#ifdef ALLOW_FE
+#ifdef ALLOW_FE      
       _RL tmpfe
 #endif
 #ifdef AD_SAFE
-      _RL thx, thy, theps
+      _RL thx, thy, theps, thaux
 #endif
 CEOP
 
 
 #ifndef READ_PAR
 #ifndef USE_QSW
-        CALL INSOL(myTime,sfac,bi,bj,myThid)
+      CALL INSOL(myTime,sfac,bi,bj,myThid)
 #endif
 #endif
-        DO j=jmin,jmax
-         DO i=imin,imax
+      DO j=jmin,jmax
+       DO i=imin,imax
 cph: following init assumes nlev=nr
 cph: set in dic_init_fixed.F (ALLOW_AUTODIFF)
 C$TAF INIT bio_export = static, nr
 C FORTRAN-77 dynamic memory uses adstore adresto
 CRG C$TAF INIT bio_export = memory
 #ifdef READ_PAR
-           lit=PAR(i,j,bi,bj)
+        lit(i,j)=PAR(i,j,bi,bj)
 #elif (defined USE_QSW)
-           lit=-parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+        lit(i,j)=-parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #else
-           lit=sfac(j)
+        lit(i,j)=sfac(j)
 #endif
 
-           IF ( .NOT. QSW_underice ) THEN
+        IF ( .NOT. QSW_underice ) THEN
 c if using Qsw but not seaice/thsice or coupled, then
 c ice fraction needs to be taken into account
-              lit=lit*(1. _d 0 - FIce(i,j,bi,bj))
-           ENDIF
+         lit(i,j)=lit(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
+        ENDIF
+       ENDDO
+      ENDDO
 c
-           DO k=1,nlev
-C$TAF STORE lit = bio_export
-             atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5 _d 0)
-             if (k.gt.1) atten=atten+(k0*drF(k-1)
+      DO k=1,nlev
+       DO j=jmin,jmax
+        DO i=imin,imax
+C$TAF STORE lit(i,j) = bio_export
+         atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5 _d 0)
+         if (k.gt.1) atten=atten+(k0*drF(k-1)
      &                         *hFacC(i,j,k-1,bi,bj)*.5 _d 0)
-             lit=lit*exp(-atten)
-             IF (lit.LT.0. _d 0.OR.lit.GT.350. _d 0) THEN
-                 print*,'QQ lit', lit
-             ENDIF
+         lit(i,j)=lit(i,j)*exp(-atten)
+#ifndef TARGET_NEC_SX
+C     this statement breaks vectorization and causes a dramatic
+C     performance drop on vector computers
+         IF (lit(i,j).LT.0. _d 0.OR.lit(i,j).GT.350. _d 0) THEN
+          print*,'QQ lit',i,j,lit(i,j)
+         ENDIF
+#endif 
 
 #ifdef DIC_NO_NEG
-             tmppo4=max(0. _d 0, PTR_PO4(i,j,k))
-             lit=max(0. _d 0,lit)
+         tmppo4=max(0. _d 0, PTR_PO4(i,j,k))
+         lit(i,j)=max(0. _d 0,lit(i,j))
 #else
-             tmppo4=PTR_PO4(i,j,k)
+         tmppo4=PTR_PO4(i,j,k)
 #endif
 
 #ifdef ALLOW_FE
 #ifdef DIC_NO_NEG
-             tmpfe=max(0. _d 0,PTR_FE(i,j,k))
+         tmpfe=max(0. _d 0,PTR_FE(i,j,k))
 #else
-             tmpfe=PTR_FE(i,j,k)
+         tmpfe=PTR_FE(i,j,k)
 #endif
 #ifdef AD_SAFE
-             thx = tmppo4/(tmppo4+KPO4)
-             thy = tmpfe/(tmpfe+KFE)
-c            thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
-c            thy = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)
-             theps = 1. _d -6
-             nutlimit= ( 1. _d 0 - tanh((thx-thy)/theps) ) * thx/2. _d 0
-     &                +( 1. _d 0 + tanh((thx-thy)/theps) ) * thy/2. _d 0
+         thx = tmppo4/(tmppo4+KPO4)
+         thy = tmpfe/(tmpfe+KFE)
+c        thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
+c        thy = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)
+c        theps = 1. _d -6
+c        thaux = tanh( (thx-thy)/theps )
+         thaux = tanh( (thx-thy)*1. _d 6 )
+         nutlimit= ( 1. _d 0 - thaux ) * thx * 0.5 _d 0
+     &        +    ( 1. _d 0 + thaux ) * thy * 0.5 _d 0
 #else
-             nutlimit=   min(tmppo4/(tmppo4+KPO4),
-     &                        tmpfe/(tmpfe+KFE) )
+         nutlimit=min( tmppo4/(tmppo4+KPO4),tmpfe/(tmpfe+KFE) )
 #endif
 #else
-             nutlimit=    tmppo4/(tmppo4+KPO4)
+         nutlimit=     tmppo4/(tmppo4+KPO4)
 #endif
 
-             bioac(i,j,k)=alpha(i,j,bi,bj)*
-     &                    lit/(lit+lit0)*maskC(i,j,k,bi,bj)*
-     &                    nutlimit
-            ENDDO
-          ENDDO
+         bioac(i,j,k)=alpha(i,j,bi,bj)*
+     &        lit(i,j)/(lit(i,j)+lit0)*maskC(i,j,k,bi,bj)*
+     &        nutlimit
         ENDDO
+       ENDDO
+      ENDDO
 c
-#endif
-#endif
-       RETURN
-       END
+#endif /* definded ALLOW_PTRACERS && defined DIC_BIOTIC */
+      RETURN
+      END
