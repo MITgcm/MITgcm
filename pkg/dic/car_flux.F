@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.13 2010/08/02 10:32:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.14 2010/08/02 13:54:18 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -47,11 +47,13 @@ c  caexport               :: flux of carbonate from base each "productive"
 c                            layer
 c  depth_l                :: depth and lower interface
 c  flux_u, flux_l         :: flux through upper and lower interfaces
+c  reminFac               :: abbreviation
 c  zbase                  :: depth of bottom of current productive layer
       INTEGER I,J,k, ko, kop1
       _RL maskp1
       _RL zbase
       _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL reminFac
       _RL depth_l
       _RL flux_u  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flux_l
@@ -89,12 +91,23 @@ C--   Upper flux
         kop1   = MIN(Nr,ko+1)
         maskp1 = 1. _d 0
         IF (ko.GE.Nr) maskp1 = 0. _d 0
+#ifndef NONLIN_FRSRURF
+C     For the linear free surface, hFacC can be omitted, buying another
+C     performance increase of a factor of six on a vector computer.
+C     For now this is not implemented via run time flags, in order to 
+C     avoid making this code too complicated.
+        depth_l  = -rF(ko) + drF(ko)
+        reminFac = exp(-(depth_l-zbase)/zca)
+#endif
         DO j=jmin,jmax
          DO i=imin,imax
           IF ( caexport(i,j) .NE. 0. _d 0 ) THEN
 C--   Lower flux (no flux to ocean bottom)
-           depth_l=-rF(ko) + drF(ko) * _hFacC(i,j,ko,bi,bj)
-           flux_l=caexport(i,j)*exp(-(depth_l-zbase)/zca)
+#ifdef NONLIN_FRSRURF
+           depth_l  = -rF(ko) + drF(ko) * _hFacC(i,j,ko,bi,bj)
+           reminFac = exp(-(depth_l-zbase)/zca)
+#endif
+           flux_l   = caexport(i,j)*reminFac
      &          *maskp1*maskC(i,j,kop1,bi,bj)
            
            cflux(i,j,ko)=cflux(i,j,ko) + (flux_u(i,j)-flux_l)
