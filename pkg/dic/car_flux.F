@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.12 2010/03/16 00:18:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.13 2010/08/02 10:32:13 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -38,79 +38,80 @@ C !OUTPUT PARAMETERS: ===================================================
 C  cflux                :: carbonate flux
       _RL cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-#ifdef ALLOW_PTRACERS
-#ifdef DIC_BIOTIC
+#if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
 c  ko                     :: loop-within-loop index
 c  caexport               :: flux of carbonate from base each "productive"
 c                            layer
-c  depth_u, depth_l       :: depths of upper and lower interfaces
+c  depth_l                :: depth and lower interface
 c  flux_u, flux_l         :: flux through upper and lower interfaces
 c  zbase                  :: depth of bottom of current productive layer
-       _RL zbase
-       _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER I,J,k, ko, kop1, maskp1
-       _RL depth_u, depth_l
-       _RL flux_u, flux_l
+      INTEGER I,J,k, ko, kop1
+      _RL maskp1
+      _RL zbase
+      _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL depth_l
+      _RL flux_u  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flux_l
 CEOP
 
 C- Calculate carbonate flux from base of each layer
+      DO k=1,nlev
        DO j=jmin,jmax
         DO i=imin,imax
-         DO k=1,nlev
-          IF (hFacC(i,j,k,bi,bj).GT.0. _d 0) THEN
+         caexport(i,j) = 0. _d 0
+         IF (hFacC(i,j,k,bi,bj).GT.0. _d 0) THEN
+C--   If no layer below initial layer (because of bottom or
+C--   topography), then remineralize in here
+          IF (k.EQ.Nr) THEN
+           cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
+          ELSEIF (hFacC(i,j,k+1,bi,bj).EQ.0. _d 0) THEN
+           cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
+          ELSE
 C- flux out of layer k
-           caexport(i,j) = CAR_S(i,j,k)*drF(k)*hFacC(i,j,k,bi,bj) 
-C- calculate flux to each layer from base of k
-
-C- if no layer below initial layer (because of bottom or
-C- topography), then remineralize in place
-
-           IF (k.EQ.Nr) THEN
-             cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
-           ELSEIF (hFacC(i,j,k+1,bi,bj).EQ.0. _d 0) THEN
-             cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
-           ELSE
-
-C- else, let us flux it downward
-
-             zbase=-rF(k+1)
-             DO ko=k+1,Nr
-
-C- Upper flux
-cdfer              depth_u=-rF(ko)
-cdfer              flux_u=caexport(i,j)*exp(-(depth_u-zbase)/zca)
-              IF (ko.EQ.k+1) THEN
-                 depth_u = zbase
-                 flux_u  = caexport(i,j)
-              ELSE
-                 depth_u = depth_l
-                 flux_u  = flux_l
-              ENDIF
-
-C- Lower flux (no flux to ocean bottom)
-              depth_l=depth_u+
-     &                  drF(ko)*hFacC(i,j,ko,bi,bj)
-              kop1 = MIN(Nr,ko+1)
-              maskp1=1.
-              IF (ko.GE.Nr) maskp1=0.
-              flux_l=caexport(i,j)*exp(-(depth_l-zbase)/zca)
-     &              *maskp1*maskC(i,j,kop1,bi,bj)
-
-              cflux(i,j,ko)=cflux(i,j,ko) +
-     &          (flux_u-flux_l)*recip_drF(ko)*recip_hFacC(i,j,ko,bi,bj)
-
-             ENDDO
-
-           ENDIF
+           caexport(i,j) = CAR_S(i,j,k)*drF(k) * _hFacC(i,j,k,bi,bj) 
           ENDIF
-         ENDDO
+         ENDIF
         ENDDO
        ENDDO
+C--   If availabe, flux carbon export downward;
+C--   calculate flux to each layer from base of k
+       zbase=-rF(k+1)
+C--   Upper flux
+       DO j=jmin,jmax
+        DO i=imin,imax
+         flux_u(i,j)  = caexport(i,j)
+        ENDDO
+       ENDDO
+       DO ko=k+1,Nr
+        kop1   = MIN(Nr,ko+1)
+        maskp1 = 1. _d 0
+        IF (ko.GE.Nr) maskp1 = 0. _d 0
+        DO j=jmin,jmax
+         DO i=imin,imax
+          IF ( caexport(i,j) .NE. 0. _d 0 ) THEN
+C--   Lower flux (no flux to ocean bottom)
+           depth_l=-rF(ko) + drF(ko) * _hFacC(i,j,ko,bi,bj)
+           flux_l=caexport(i,j)*exp(-(depth_l-zbase)/zca)
+     &          *maskp1*maskC(i,j,kop1,bi,bj)
+           
+           cflux(i,j,ko)=cflux(i,j,ko) + (flux_u(i,j)-flux_l)
+     &          *recip_drF(ko)*recip_hFacC(i,j,ko,bi,bj)
+C--   Store flux through upper layer for the next k-level
+           flux_u(i,j)  = flux_l
+
+C     endif carexport .ne. 0
+          ENDIF
+C     i,j-loops
+         ENDDO
+        ENDDO
+C     ko-loop
+       ENDDO
+C     k-loop
+      ENDDO
 c
-#endif
-#endif
-       RETURN
-       END
+#endif /* defined ALLOW_PTRACERS && defined DIC_BIOTIC */
+      RETURN
+      END
