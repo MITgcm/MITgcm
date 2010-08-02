@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1286 2010/07/30 15:03:11 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1287 2010/08/02 10:34:13 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/dic:
-  -small bug fix in insol for the unlikely case of a cartesian grid
-  -first step towards vectorizing the dic package: bio_export.F
+  - small bug fix in insol for the unlikely case of a cartesian grid
+  - towards vectorizing the dic package: bio_export.F, car_flux.F, phos_flux.F
+    + now vectorize, which also removes adjoint recomputations;
+    + replace integer maksp1 by _RL maskp1
 
 checkpoint62i (2010/07/21)
 o pkg/flt:
