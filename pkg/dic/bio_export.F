@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.27 2010/07/30 15:02:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.28 2010/08/02 07:10:52 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -75,13 +75,13 @@ CEOP
       CALL INSOL(myTime,sfac,bi,bj,myThid)
 #endif
 #endif
-      DO j=jmin,jmax
-       DO i=imin,imax
 cph: following init assumes nlev=nr
 cph: set in dic_init_fixed.F (ALLOW_AUTODIFF)
-C$TAF INIT bio_export = static, nr
+C$TAF INIT bio_export = static, nsx*nsy*nr
 C FORTRAN-77 dynamic memory uses adstore adresto
 CRG C$TAF INIT bio_export = memory
+      DO j=jmin,jmax
+       DO i=imin,imax
 #ifdef READ_PAR
         lit(i,j)=PAR(i,j,bi,bj)
 #elif (defined USE_QSW)
@@ -99,9 +99,9 @@ c ice fraction needs to be taken into account
       ENDDO
 c
       DO k=1,nlev
+C$TAF STORE lit = bio_export
        DO j=jmin,jmax
         DO i=imin,imax
-C$TAF STORE lit(i,j) = bio_export
          atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5 _d 0)
          if (k.gt.1) atten=atten+(k0*drF(k-1)
      &                         *hFacC(i,j,k-1,bi,bj)*.5 _d 0)
