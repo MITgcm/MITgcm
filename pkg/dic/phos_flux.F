@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.13 2010/08/02 13:54:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.14 2010/08/03 12:47:35 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -99,7 +99,9 @@ C     performance increase of a factor of six on a vector computer.
 C     For now this is not implemented via run time flags, in order to 
 C     avoid making this code too complicated.
         depth_l  = -rF(ko) + drF(ko)
-        reminFac = (depth_l/zbase)**(-Kremin)
+C       reminFac = (depth_l/zbase)**(-Kremin)
+C     The following form does the same, but is faster 
+        reminFac = exp(-Kremin*log(depth_l/zbase))
 #endif
         DO j=jmin,jmax
          DO i=imin,imax
@@ -107,7 +109,9 @@ C     avoid making this code too complicated.
 C--   Lower flux (no flux to ocean bottom)
 #ifdef NONLIN_FRSRURF
            depth_l  = -rF(ko) + drF(ko) * _hFacC(i,j,ko,bi,bj)
-           reminFac = (depth_l/zbase)**(-Kremin)
+C          reminFac = (depth_l/zbase)**(-Kremin)
+C     The following form does the same, but is faster 
+           reminFac = exp(-Kremin*log(depth_l/zbase))
 #endif
            flux_l   = bexport(i,j)*reminFac
      &          *maskp1*maskC(i,j,kop1,bi,bj)
