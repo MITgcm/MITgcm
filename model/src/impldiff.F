@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.27 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.28 2010/08/03 12:46:44 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -104,22 +104,37 @@ cph)
 
 C--   Initialise
       DO k=1,Nr
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
          gYNm1(i,j,k,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
 
 C--   Old aLower
+#ifdef TARGET_NEC_SX
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+#else
       DO j=jMin,jMax
        DO i=iMin,iMax
+#endif
          a(i,j,1) = 0. _d 0 
        ENDDO
       ENDDO
       DO k=2,Nr
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
           a(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
      &               *recip_deepFac2C(k)*recip_rhoFacC(k)
      &               *KappaRX(i,j, k )*recip_drC( k )
@@ -131,8 +146,13 @@ C--   Old aLower
 
 C--   Old aUpper
       DO k=1,Nr-1
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
           c(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
      &               *recip_deepFac2C(k)*recip_rhoFacC(k)
      &               *KappaRX(i,j,k+1)*recip_drC(k+1)
@@ -141,16 +161,26 @@ C--   Old aUpper
         ENDDO
        ENDDO
       ENDDO
+#ifdef TARGET_NEC_SX
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+#else
       DO j=jMin,jMax
        DO i=iMin,iMax
+#endif
          c(i,j,Nr) = 0. _d 0
        ENDDO
       ENDDO
 
 C--   Old aCenter
       DO k=1,Nr
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
         ENDDO
        ENDDO
@@ -158,8 +188,13 @@ C--   Old aCenter
 
 C--   Old and new gam, bet are the same
       DO k=1,Nr
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
           bet(i,j,k) = 1. _d 0
           gam(i,j,k) = 0. _d 0
         ENDDO
@@ -171,8 +206,13 @@ C--   Only need do anything if Nr>1
 
        k = 1
 C--    Beginning of forward sweep (top level)
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
          IF (b(i,j,1).NE.0.) bet(i,j,1) = 1. _d 0 / b(i,j,1)
         ENDDO
        ENDDO
@@ -185,8 +225,13 @@ C--   Middle of forward sweep
 CADJ loop = sequential
        DO k=2,Nr
 
+#ifdef TARGET_NEC_SX
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#else
         DO j=jMin,jMax
          DO i=iMin,iMax
+#endif
           gam(i,j,k) = c(i,j,k-1)*bet(i,j,k-1)
           IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.) 
      &        bet(i,j,k) = 1. _d 0 / ( b(i,j,k) - a(i,j,k)*gam(i,j,k) )
@@ -198,14 +243,24 @@ CADJ loop = sequential
       ENDIF
 
 
+#ifdef TARGET_NEC_SX
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+#else
       DO j=jMin,jMax
        DO i=iMin,iMax
+#endif
         gYNm1(i,j,1,bi,bj) = gXNm1(i,j,1,bi,bj)*bet(i,j,1)
        ENDDO
       ENDDO
       DO k=2,Nr
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
        DO j=jMin,jMax
         DO i=iMin,iMax
+#endif
          gYnm1(i,j,k,bi,bj) = bet(i,j,k)*
      &        (gXnm1(i,j,k,bi,bj) - a(i,j,k)*gYnm1(i,j,k-1,bi,bj))
         ENDDO
@@ -216,8 +271,13 @@ CADJ loop = sequential
 C--    Backward sweep
 CADJ loop = sequential
        DO k=Nr-1,1,-1
+#ifdef TARGET_NEC_SX
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+#else
         DO j=jMin,jMax
          DO i=iMin,iMax
+#endif
           gYnm1(i,j,k,bi,bj)=gYnm1(i,j,k,bi,bj)
      &              -gam(i,j,k+1)*gYnm1(i,j,k+1,bi,bj)
          ENDDO
@@ -225,8 +285,13 @@ CADJ loop = sequential
        ENDDO
 
        DO k=1,Nr
+#ifdef TARGET_NEC_SX
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#else
         DO j=jMin,jMax
          DO i=iMin,iMax
+#endif
           gXnm1(i,j,k,bi,bj)=gYnm1(i,j,k,bi,bj)
          ENDDO
         ENDDO
@@ -260,8 +325,13 @@ C         otherwise counter is not incremented !!
              ENDDO
             ENDDO
           ELSEIF ( tracerId.GE.1 ) THEN
+#ifdef TARGET_NEC_SX
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+#else
             DO j=1,sNy
              DO i=1,sNx
+#endif
                df(i,j) =
      &             -rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)
@@ -269,8 +339,13 @@ C         otherwise counter is not incremented !!
              ENDDO
             ENDDO
           ELSEIF ( tracerId.EQ.-1 ) THEN
+#ifdef TARGET_NEC_SX
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+#else
             DO j=1,sNy
              DO i=1,sNx+1
+#endif
                df(i,j) =
      &             -rAw(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)
@@ -280,8 +355,13 @@ C         otherwise counter is not incremented !!
              ENDDO
             ENDDO
           ELSEIF ( tracerId.EQ.-2 ) THEN
+#ifdef TARGET_NEC_SX
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+#else
             DO j=1,sNy+1
              DO i=1,sNx
+#endif
                df(i,j) =
      &             -rAs(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)
