@@ -1,14 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1287 2010/08/02 10:34:13 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1288 2010/08/03 12:47:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/dic:
+  - model/src/impldiff.F: if TARGET_NEC_SX, extend loop ranges for better
+    vectorization
   - small bug fix in insol for the unlikely case of a cartesian grid
   - towards vectorizing the dic package: bio_export.F, car_flux.F, phos_flux.F
     + now vectorize, which also removes adjoint recomputations;
     + replace integer maksp1 by _RL maskp1
+    + replace a**x by exp(x*log(a)) in phos_flux.F for speed
 
 checkpoint62i (2010/07/21)
 o pkg/flt:
