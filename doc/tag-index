@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1289 2010/08/06 07:26:07 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1290 2010/08/06 18:45:41 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: minor changes
+  - GGL90diffKrS was removed --> always use GGL90diffKr
+  - GGL90viscAr was removed --> replaced with GGL90viscArU, GGL90viscArV
+  - hack of mxlMaxFlag=2 --> ensure mixing between first and second level (commented out for now)
+  - change in max/min operations to ensure that smoothing is ok
+  - smoothing of GGL90viscAr was moved to ggl90_calc.F (as done for GGL90diffKr)
+  - always use diffKrNrT as background profile (i.e. never use diffKr field)
 o pkg/cfc: bug fix, AREA(i,j,1,bi,bj) -> AREA(i,j,bi,bj)
 o pkg/dic:
   - model/src/impldiff.F: if TARGET_NEC_SX, extend loop ranges for better
