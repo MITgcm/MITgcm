@@ -1,6 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.flow,v 1.3 2008/06/11 18:29:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.flow,v 1.4 2010/08/06 18:41:03 gforget Exp $
 C $Name:  $
 
+c----------------------------------------
+c subroutine zero_adj_1d
+c----------------------------------------
+cadj SUBROUTINE zero_adj_1d FTLNAME = g_zero_adj_1d
+cadj SUBROUTINE zero_adj_1d ADNAME  = adzero_adj_1d
+cadj SUBROUTINE zero_adj_1d INPUT   = 1, 2, 3
+cadj SUBROUTINE zero_adj_1d OUTPUT  =
+cadj SUBROUTINE zero_adj_1d ACTIVE  =    2
+cadj SUBROUTINE zero_adj_1d DEPEND  = 1,    3
 c----------------------------------------
 c subroutine zero_adj_loc
 c----------------------------------------

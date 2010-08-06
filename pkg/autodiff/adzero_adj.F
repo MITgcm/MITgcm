@@ -1,7 +1,39 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adzero_adj.F,v 1.5 2010/02/15 20:03:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adzero_adj.F,v 1.6 2010/08/06 18:41:03 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+
+C     !ROUTINE: ADZERO_ADJ_1D
+C     !INTERFACE:
+      SUBROUTINE ADZERO_ADJ_1D(
+     I             NrIn, adFieldFwd, myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o zero out a 1D adjoint field
+C     | author: Gael Forget
+C     *==========================================================*
+
+      IMPLICIT NONE
+
+C     == Global arguments ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     == Routine arguments ==
+C     myThid - Thread number for this instance of the routine.
+      integer NrIn,myThid
+      _RL adFieldFwd(NrIn)
+
+C     == Local arguments ==
+      integer bi,bj,i,j,k
+
+      DO k=1,NrIn
+         adFieldFwd(k) = 0. _d 0
+      ENDDO
+
+      end
+
 
 C     !ROUTINE: ADZERO_ADJ_LOC
 C     !INTERFACE:
