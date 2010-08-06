@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_output.F,v 1.2 2010/01/03 18:55:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_output.F,v 1.3 2010/08/06 18:37:05 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -83,8 +83,10 @@ C----------------------------------------------------------------
 C       Write each snap-shot as a new file
         WRITE(suff,'(I10.10)') myIter
         IF ( myIter.NE.nIter0 ) THEN
-         CALL WRITE_FLD_XYZ_RL( 'GGL90viscAr.', suff,
-     &                           GGL90viscAr, myIter, myThid )
+         CALL WRITE_FLD_XYZ_RL( 'GGL90viscArU.', suff,
+     &                           GGL90viscArU, myIter, myThid )
+         CALL WRITE_FLD_XYZ_RL( 'GGL90viscArV.', suff,
+     &                           GGL90viscArV, myIter, myThid )
          CALL WRITE_FLD_XYZ_RL( 'GGL90diffKr.', suff,
      &                           GGL90diffKr, myIter, myThid )
         ENDIF
@@ -105,7 +107,8 @@ C----------------------------------------------------------------
 C     Initialize averages to zero
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_RESET( GGL90viscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90viscArUtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90viscArVtave, Nr, bi, bj, myThid )
           CALL TIMEAVE_RESET( GGL90diffKrtave, Nr, bi, bj, myThid )
           CALL TIMEAVE_RESET( GGL90TKEtave,    Nr, bi, bj, myThid )
           GGL90_timeAve(bi,bj) = 0.
@@ -117,7 +120,9 @@ C     Cumulate GGL90 fields (for Time Average)
         DDTT=deltaTclock
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_CUMULATE( GGL90viscArtave, GGL90viscAr,
+          CALL TIMEAVE_CUMULATE( GGL90viscArUtave, GGL90viscArU,
+     &                           Nr, DDTT, bi, bj, myThid )
+          CALL TIMEAVE_CUMULATE( GGL90viscArVtave, GGL90viscArV,
      &                           Nr, DDTT, bi, bj, myThid )
           CALL TIMEAVE_CUMULATE( GGL90diffKrtave, GGL90diffKr,
      &                           Nr, DDTT, bi, bj, myThid )
@@ -137,7 +142,9 @@ C     Dump files and restart average computation if needed
 C     Normalize by integrated time
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_NORMALIZE( GGL90viscArtave,
+          CALL TIMEAVE_NORMALIZE( GGL90viscArUtave,
+     &                            GGL90_timeAve, Nr, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( GGL90viscArVtave,
      &                            GGL90_timeAve, Nr, bi, bj, myThid )
           CALL TIMEAVE_NORMALIZE( GGL90diffKrtave,
      &                            GGL90_timeAve, Nr, bi, bj, myThid )
@@ -148,8 +155,10 @@ C     Normalize by integrated time
 
 C     Write each snap-shot as a new file
         WRITE(suff,'(I10.10)') myIter
-        CALL WRITE_FLD_XYZ_RL( 'GGL90viscAr-T.', suff,
-     &                          GGL90viscArTave, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL( 'GGL90viscArU-T.', suff,
+     &                          GGL90viscArUtave, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL( 'GGL90viscArV-T.', suff,
+     &                          GGL90viscArVtave, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL( 'GGL90diffKr-T.', suff,
      &                          GGL90diffKrTave, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL( 'GGL90TKE-T.',    suff,
@@ -158,7 +167,8 @@ C     Write each snap-shot as a new file
 C     Reset averages to zero
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_RESET( GGL90viscArtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90viscArUtave, Nr, bi, bj, myThid )
+          CALL TIMEAVE_RESET( GGL90viscArVtave, Nr, bi, bj, myThid )
           CALL TIMEAVE_RESET( GGL90diffKrtave, Nr, bi, bj, myThid )
           CALL TIMEAVE_RESET( GGL90TKEtave,    Nr, bi, bj, myThid )
           GGL90_timeAve(bi,bj) = 0.

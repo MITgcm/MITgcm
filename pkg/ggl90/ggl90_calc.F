@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.15 2009/11/14 14:27:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.16 2010/08/06 18:37:05 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -84,7 +84,7 @@ c     _RL     SQRTTKE
       _RL     RiNumber
       _RL     TKEdissipation
       _RL     tempU, tempV, prTemp
-      _RL     MaxLength, tmpmlx
+      _RL     MaxLength, tmpmlx, tmpVisc
       _RL     TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -94,6 +94,7 @@ c     _RL     SQRTTKE
       _RL     rhoKm1           (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     totalDepth       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gTKE             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C-    tri-diagonal matrix
       _RL     a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -108,7 +109,7 @@ C-    dfx, dfy - diffusive flux across lateral faces
       _RL     dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_GGL90_HORIZDIFF */
 #ifdef ALLOW_GGL90_SMOOTH
-      _RL p4, p8, p16, tmpdiffKrS
+      _RL p4, p8, p16
       p4=0.25 _d 0
       p8=0.125 _d 0
       p16=0.0625 _d 0
@@ -240,6 +241,13 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 C-
+cgf ensure mixing between first and second level
+c      DO J=jMin,jMax
+c        DO I=iMin,iMax
+c         GGL90mixingLength(I,J,2)=drF(1)
+c        ENDDO
+c      ENDDO
+cgf
        DO k=2,Nr
         DO J=jMin,jMax
          DO I=iMin,iMax
@@ -325,6 +333,7 @@ c       ENDDO
 c      ENDDO
 c     ENDDO
 
+
       DO k=2,Nr
        Km1 = K-1
        DO J=jMin,jMax
@@ -346,18 +355,13 @@ c         TKEPrandtlNumber(I,J,K) = 1. _d 0
 
 C     viscosity and diffusivity
          KappaM = GGL90ck*GGL90mixingLength(I,J,K)*SQRTTKE(i,j,k)
+         GGL90visctmp(I,J,K) = MAX(KappaM,diffKrNrT(k))
+     &                            * maskC(I,J,K,bi,bj)
+c        note: storing GGL90visctmp like this, and using it later to compute
+c              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
+         KappaM = MAX(KappaM,viscArNr(k)) * maskC(I,J,K,bi,bj)
          KappaH = KappaM/TKEPrandtlNumber(I,J,K)
-
-C     Set a minium (= background) and maximum value
-         KappaM = MAX(KappaM,viscArNr(k))
-         KappaH = MAX(KappaH,diffKrNrT(k))
-         KappaM = MIN(KappaM,GGL90viscMax)
-         KappaH = MIN(KappaH,GGL90diffMax)
-
-C     Mask land points and storage
-         GGL90viscAr(I,J,K,bi,bj) = KappaM * maskC(I,J,K,bi,bj)
-         GGL90diffKr(I,J,K,bi,bj) = KappaH * maskC(I,J,K,bi,bj)
-         KappaE(I,J,K) = GGL90alpha * GGL90viscAr(I,J,K,bi,bj)
+         KappaE(I,J,K) = GGL90alpha * KappaM * maskC(I,J,K,bi,bj)
 
 C     dissipation term
          TKEdissipation = ab05*GGL90ceps
@@ -519,10 +523,6 @@ C     solve tri-diagonal system, and store solution on gTKE (previously rhs)
      U                        gTKE,
      O                        errCode,
      I                        bi, bj, myThid )
-c     CALL GGL90_SOLVE( bi, bj, iMin, iMax, jMin, jMax,
-c    I     a, b, c,
-c    U     gTKE,
-c    I     myThid )
 
 C     now update TKE
       DO K=1,Nr
@@ -538,21 +538,21 @@ C     impose minimum TKE to avoid numerical undershoots below zero
 C     end of time step
 C     ===============================
 
-#ifdef ALLOW_GGL90_SMOOTH
       DO K=1,Nr
        DO J=jMin,jMax
         DO I=iMin,iMax
-         tmpdiffKrS=
+#ifdef ALLOW_GGL90_SMOOTH
+         tmpVisc=
      &  (
-     &   p4 *  GGL90viscAr(i  ,j  ,k,bi,bj) * mskCor(i  ,j  ,bi,bj)
-     &  +p8 *( GGL90viscAr(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
-     &       + GGL90viscAr(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
-     &       + GGL90viscAr(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
-     &       + GGL90viscAr(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
-     &  +p16*( GGL90viscAr(i+1,j+1,k,bi,bj) * mskCor(i+1,j+1,bi,bj)
-     &       + GGL90viscAr(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj)
-     &       + GGL90viscAr(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
-     &       + GGL90viscAr(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj))
+     &   p4 *  GGL90visctmp(i  ,j  ,k) * mskCor(i  ,j  ,bi,bj)
+     &  +p8 *( GGL90visctmp(i-1,j  ,k) * mskCor(i-1,j  ,bi,bj)
+     &       + GGL90visctmp(i  ,j-1,k) * mskCor(i  ,j-1,bi,bj)
+     &       + GGL90visctmp(i+1,j  ,k) * mskCor(i+1,j  ,bi,bj)
+     &       + GGL90visctmp(i  ,j+1,k) * mskCor(i  ,j+1,bi,bj))
+     &  +p16*( GGL90visctmp(i+1,j+1,k) * mskCor(i+1,j+1,bi,bj)
+     &       + GGL90visctmp(i+1,j-1,k) * mskCor(i+1,j-1,bi,bj)
+     &       + GGL90visctmp(i-1,j+1,k) * mskCor(i-1,j+1,bi,bj)
+     &       + GGL90visctmp(i-1,j-1,k) * mskCor(i-1,j-1,bi,bj))
      &  )
      & /(p4
      &  +p8 *(       maskC(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
@@ -564,18 +564,92 @@ C     ===============================
      &       +       maskC(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
      &       +       maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj))
      &  )*maskC(i,j,k,bi,bj)*mskCor(i,j,bi,bj)
-     &   /TKEPrandtlNumber(i,j,k)
-         GGL90diffKrS(I,J,K,bi,bj)= MAX( tmpdiffKrS , diffKrNrT(k) )
+#else
+         tmpVisc = GGL90visctmp(I,J,K)
+#endif
+         tmpVisc = MIN(tmpVisc/TKEPrandtlNumber(i,j,k),GGL90diffMax)
+         GGL90diffKr(I,J,K,bi,bj)= MAX( tmpVisc , diffKrNrT(k) )
         ENDDO
        ENDDO
       ENDDO
+
+
+
+      DO K=1,Nr
+       DO J=jMin,jMax
+        DO I=iMin,iMax
+#ifdef ALLOW_GGL90_SMOOTH
+        tmpVisc = 
+     & (
+     &   p4 *(GGL90visctmp(i  ,j  ,k) * mskCor(i  ,j  ,bi,bj)
+     &       +GGL90visctmp(i-1,j  ,k) * mskCor(i-1,j  ,bi,bj))
+     &  +p8 *(GGL90visctmp(i-1,j-1,k) * mskCor(i-1,j-1,bi,bj)
+     &       +GGL90visctmp(i-1,j+1,k) * mskCor(i-1,j+1,bi,bj)
+     &       +GGL90visctmp(i  ,j-1,k) * mskCor(i  ,j-1,bi,bj)
+     &       +GGL90visctmp(i  ,j+1,k) * mskCor(i  ,j+1,bi,bj))
+     &  )
+     & /(p4 * 2. _d 0
+     &  +p8 *(      maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj)
+     &       +      maskC(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
+     &       +      maskC(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
+     &       +      maskC(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
+     &  )
+     &  *maskC(i  ,j,k,bi,bj)*mskCor(i  ,j,bi,bj)
+     &  *maskC(i-1,j,k,bi,bj)*mskCor(i-1,j,bi,bj)
+#else
+        tmpVisc = _maskW(i,j,k,bi,bj) *
+     &                   (.5 _d 0*(GGL90visctmp(i,j,k)
+     &                            +GGL90visctmp(i-1,j,k))
+     &                   )
 #endif
+        tmpVisc = MIN( tmpVisc , GGL90viscMax ) 
+        GGL90viscArU(i,j,k,bi,bj) = MAX( tmpVisc , viscArNr(k)  ) 
+        ENDDO
+       ENDDO
+      ENDDO
+
+
+      DO K=1,Nr
+       DO J=jMin,jMax
+        DO I=iMin,iMax
+#ifdef ALLOW_GGL90_SMOOTH
+        tmpVisc =
+     & (
+     &   p4 *(GGL90visctmp(i  ,j  ,k) * mskCor(i  ,j  ,bi,bj)
+     &       +GGL90visctmp(i  ,j-1,k) * mskCor(i  ,j-1,bi,bj))
+     &  +p8 *(GGL90visctmp(i-1,j  ,k) * mskCor(i-1,j  ,bi,bj)
+     &       +GGL90visctmp(i-1,j-1,k) * mskCor(i-1,j-1,bi,bj)
+     &       +GGL90visctmp(i+1,j  ,k) * mskCor(i+1,j  ,bi,bj)
+     &       +GGL90visctmp(i+1,j-1,k) * mskCor(i+1,j-1,bi,bj))
+     &  )
+     & /(p4 * 2. _d 0
+     &  +p8 *(      maskC(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
+     &       +      maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj)
+     &       +      maskC(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
+     &       +      maskC(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj))
+     &  )
+     &   *maskC(i,j  ,k,bi,bj)*mskCor(i,j  ,bi,bj)
+     &   *maskC(i,j-1,k,bi,bj)*mskCor(i,j-1,bi,bj)
+#else
+        tmpVisc = _maskS(i,j,k,bi,bj) *
+     &                   (.5 _d 0*(GGL90visctmp(i,j,k)
+     &                            +GGL90visctmp(i,j-1,k))
+     &                   )
+
+#endif
+        tmpVisc = MIN( tmpVisc , GGL90viscMax )
+        GGL90viscArV(i,j,k,bi,bj) = MAX( tmpVisc , viscArNr(k)  )
+        ENDDO
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( GGL90TKE   ,'GGL90TKE',
      &                          0,Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( GGL90viscAr,'GGL90Ar ',
+         CALL DIAGNOSTICS_FILL( GGL90viscArU,'GGL90ArU',
+     &                          0,Nr, 1, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( GGL90viscArV,'GGL90ArV',
      &                          0,Nr, 1, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( GGL90diffKr,'GGL90Kr ',
      &                          0,Nr, 1, bi, bj, myThid )

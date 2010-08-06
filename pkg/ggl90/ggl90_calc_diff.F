@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_diff.F,v 1.5 2009/08/02 19:30:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_diff.F,v 1.6 2010/08/06 18:37:05 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -51,16 +51,8 @@ C-    do all levels :
          DO j=jMin,jMax
           DO i=iMin,iMax
             KappaRx(i,j,k) = KappaRx(i,j,k)
-#ifdef ALLOW_GGL90_SMOOTH
-     &                  +( GGL90diffKrS(i,j,k,bi,bj)
-#else
      &                  +( GGL90diffKr(i,j,k,bi,bj)
-#endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
-     &                     - diffKr(i,j,k,bi,bj) )
-#else
      &                     - diffKrNrT(k) )
-#endif
           ENDDO
          ENDDO
         ENDDO
@@ -70,16 +62,8 @@ C-    do level k=kArg only :
          DO j=jMin,jMax
           DO i=iMin,iMax
             KappaRx(i,j,k) = KappaRx(i,j,k)
-#ifdef ALLOW_GGL90_SMOOTH
-     &                  +( GGL90diffKrS(i,j,kArg,bi,bj)
-#else
      &                  +( GGL90diffKr(i,j,kArg,bi,bj)
-#endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
-     &                     - diffKr(i,j,kArg,bi,bj) )
-#else
      &                     - diffKrNrT(kArg) )
-#endif
           ENDDO
          ENDDO
       ENDIF

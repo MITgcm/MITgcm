@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.2 2010/01/03 18:48:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.3 2010/08/06 18:37:05 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -64,8 +64,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'GGL90Ar'
-        diagTitle = 'GGL90 eddy viscosity coefficient'
+        diagName  = 'GGL90ArU'
+        diagTitle = 'GGL90 eddy viscosity at U-point'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GGL90ArV'
+        diagTitle = 'GGL90 eddy viscosity at V-point'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
