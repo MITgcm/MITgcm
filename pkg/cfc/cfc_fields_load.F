@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.15 2009/04/28 18:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.16 2010/08/06 07:25:32 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -175,7 +175,7 @@ C
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           FIce(I,J,bi,bj) = AREA(I,J,1,bi,bj)
+           FIce(I,J,bi,bj) = AREA(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
