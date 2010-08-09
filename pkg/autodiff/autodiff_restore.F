@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.12 2009/10/12 14:36:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.13 2010/08/09 16:05:22 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,16 +127,29 @@ C-      3D arrays
           DO I=1-Olx,sNx+Olx
        gs(I,J,K,bi,bj)       = StoreDynVars3D(I,J,K,bi,bj,1)
        gt(I,J,K,bi,bj)       = StoreDynVars3D(I,J,K,bi,bj,2)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+       gtnm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,3)
+       gsnm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,4)
+       gunm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,5)
+       gvnm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,6)
+#else
        gtnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,3)
        gsnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,4)
        gunm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,5)
        gvnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,6)
+#endif
        theta(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,7)        
        salt(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,8)       
        uvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,9)    
        vvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,10)     
        wvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,11)
        totphihyd(I,J,K,bi,bj)= StoreDynVars3D(I,J,K,bi,bj,12)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+       gtnm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,13)
+       gsnm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,14)
+       gunm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,15)
+       gvnm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,16)
+#endif
           ENDDO
          ENDDO
         ENDDO

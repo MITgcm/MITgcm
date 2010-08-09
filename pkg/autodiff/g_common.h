@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.20 2009/10/22 12:35:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.21 2010/08/09 16:05:22 gforget Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -25,21 +25,32 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                     g_uvel, g_vvel, g_wvel,
      &                     g_theta, g_salt,
      &                     g_gu, g_gv, g_gt, g_gs,
+#ifdef ALLOW_ADAMSBASHFORTH_3
+     &                     g_gunm, g_gvnm, g_gtnm, g_gsnm
+#else
      &                     g_gunm1, g_gvnm1, g_gtnm1, g_gsnm1
+#endif
       _RL g_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_gs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL g_gsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL g_gtnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gu(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL g_gunm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gv(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL g_gvnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_salt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_theta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_uvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_wvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      _RL g_gtnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+      _RL g_gsnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+      _RL g_gunm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+      _RL g_gvnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+#else
+      _RL g_gtnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL g_gsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL g_gunm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL g_gvnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       common /g_dynvars_r_2/
      &                     g_etah

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.45 2010/08/06 18:40:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.46 2010/08/09 16:05:22 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -47,10 +47,21 @@ c
 c
 CADJ STORE gs  = tapelev2, key = ilev_2
 CADJ STORE gt  = tapelev2, key = ilev_2             
+#ifdef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gtnm(:,:,:,:,1)   = tapelev2, key = ilev_2
+CADJ STORE gsnm(:,:,:,:,1)   = tapelev2, key = ilev_2
+CADJ STORE gunm(:,:,:,:,1)   = tapelev2, key = ilev_2
+CADJ STORE gvnm(:,:,:,:,1)   = tapelev2, key = ilev_2
+CADJ STORE gtnm(:,:,:,:,2)   = tapelev2, key = ilev_2
+CADJ STORE gsnm(:,:,:,:,2)   = tapelev2, key = ilev_2
+CADJ STORE gunm(:,:,:,:,2)   = tapelev2, key = ilev_2
+CADJ STORE gvnm(:,:,:,:,2)   = tapelev2, key = ilev_2
+#else
 CADJ STORE gtnm1  = tapelev2, key = ilev_2             
 CADJ STORE gsnm1  = tapelev2, key = ilev_2             
 CADJ STORE gunm1  = tapelev2, key = ilev_2             
 CADJ STORE gvnm1  = tapelev2, key = ilev_2             
+#endif
 CADJ STORE theta  = tapelev2, key = ilev_2             
 CADJ STORE salt  = tapelev2, key = ilev_2             
 CADJ STORE uvel  = tapelev2, key = ilev_2             

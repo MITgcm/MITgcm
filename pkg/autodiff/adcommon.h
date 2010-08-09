@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.23 2009/10/22 12:35:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.24 2010/08/09 16:05:22 gforget Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -26,21 +26,32 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                     aduvel, advvel, adwvel,
      &                     adtheta, adsalt,
      &                     adgu, adgv, adgt, adgs,
+#ifdef ALLOW_ADAMSBASHFORTH_3
+     &                     adgunm, adgvnm, adgtnm, adgsnm
+#else
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
+#endif
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgtnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgu(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgunm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgv(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgvnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adsalt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adtheta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL aduvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#ifdef ALLOW_ADAMSBASHFORTH_3     
+      _RL adgtnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+      _RL adgsnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+      _RL adgunm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+      _RL adgvnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
+#else
+      _RL adgtnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adgsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adgunm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adgvnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       common /addynvars_r_2/
      &                     adetah
