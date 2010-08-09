@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.16 2010/08/06 18:37:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.17 2010/08/09 20:34:02 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -137,6 +137,7 @@ C     Initialize local fields
          KappaE(I,J,K)            = 0. _d 0
          TKEPrandtlNumber(I,J,K)  = 1. _d 0
          GGL90mixingLength(I,J,K) = GGL90mixingLengthMin
+         GGL90visctmp(I,J,K)      = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -538,9 +539,9 @@ C     impose minimum TKE to avoid numerical undershoots below zero
 C     end of time step
 C     ===============================
 
-      DO K=1,Nr
-       DO J=jMin,jMax
-        DO I=iMin,iMax
+      DO K=2,Nr
+       DO J=1,sNy
+        DO I=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
          tmpVisc=
      &  (
@@ -575,9 +576,9 @@ C     ===============================
 
 
 
-      DO K=1,Nr
-       DO J=jMin,jMax
-        DO I=iMin,iMax
+      DO K=2,Nr
+       DO J=1,sNy
+        DO I=1,sNx+1
 #ifdef ALLOW_GGL90_SMOOTH
         tmpVisc = 
      & (
@@ -609,9 +610,9 @@ C     ===============================
       ENDDO
 
 
-      DO K=1,Nr
-       DO J=jMin,jMax
-        DO I=iMin,iMax
+      DO K=2,Nr
+       DO J=1,sNy+1
+        DO I=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
         tmpVisc =
      & (

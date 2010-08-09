@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.5 2010/01/03 18:48:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.6 2010/08/09 20:34:03 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -37,6 +37,9 @@ C-      3D arrays
 c        Km1 = MAX(K-1,1)
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
+           GGL90viscArU(I,J,K,bi,bj) = 0. _d 0
+           GGL90viscArV(I,J,K,bi,bj) = 0. _d 0
+           GGL90diffKr(I,J,K,bi,bj)  = 0. _d 0
 CML           GGL90TKE(I,J,K,bi,bj)=0. _d 0
            GGL90TKE(I,J,K,bi,bj)=GGL90TKEmin*maskC(I,J,K,bi,bj)
 C
