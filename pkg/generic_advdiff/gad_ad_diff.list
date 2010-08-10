@@ -2,6 +2,7 @@ gad_advection.f
 gad_biharm_x.f
 gad_biharm_y.f
 gad_c2_adv_r.f
+gad_c2_impl_r.f
 gad_c2_adv_x.f
 gad_c2_adv_y.f
 gad_c4_adv_r.f
@@ -13,6 +14,7 @@ gad_diff_r.f
 gad_diff_x.f
 gad_diff_y.f
 gad_dst2u1_adv_r.f
+gad_dst2u1_impl_r.f
 gad_dst2u1_adv_x.f
 gad_dst2u1_adv_y.f
 gad_dst3_adv_x.f
@@ -21,16 +23,20 @@ gad_dst3_adv_r.f
 gad_dst3fl_adv_x.f
 gad_dst3fl_adv_y.f
 gad_dst3fl_adv_r.f
+gad_dst3fl_impl_r.f
 gad_fluxlimit_adv_r.f
+gad_fluxlimit_impl_r.f
 gad_fluxlimit_adv_x.f
 gad_fluxlimit_adv_y.f
 gad_grad_x.f
 gad_grad_y.f
+gad_implicit_r.f
 gad_init_varia.f
 gad_os7mp_adv_x.f
 gad_os7mp_adv_y.f
 gad_os7mp_adv_r.f
 gad_u3_adv_r.f
+gad_u3c4_impl_r.f
 gad_u3_adv_x.f
 gad_u3_adv_y.f
 gad_som_exchanges.f
