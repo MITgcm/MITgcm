@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.54 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.55 2010/08/10 17:58:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -116,6 +116,18 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &   'but implicitDiffusion=T with non-uniform dTtracerLev'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF ( momImplVertAdv ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: momImplVertAdv is not yet'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: supported in adjoint mode'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF

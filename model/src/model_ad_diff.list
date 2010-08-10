@@ -78,6 +78,8 @@ rotate_uv2en.f
 seawater.f
 solve_for_pressure.f
 state_summary.f	
+solve_pentadiagonal.f
+solve_tridiagonal.f
 taueddy_external_forcing.f
 taueddy_init_varia.f
 timestep.f	

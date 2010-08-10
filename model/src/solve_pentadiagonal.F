@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.3 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.4 2010/08/10 17:58:30 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+
+C o Switch to code that has the k-loop inside the 
+C   ij-loops, which matters in adjoint mode.
+#ifdef ALLOW_AUTODIFF 
+#define ALLOW_SOLVERS_KLOOPINSIDE
+#endif
 
 CBOP
 C     !ROUTINE: SOLVE_PENTADIAGONAL
@@ -57,7 +63,15 @@ C     errCode :: > 0 if singular matrix
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
+#ifdef ALLOW_SOLVERS_KLOOPINSIDE
+      _RL y5d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL a5d_prime(Nr), b5d_prime(Nr)
+      _RL c5d_prime(Nr), d5d_prime(Nr), e5d_prime(Nr)
+      _RL y5d_prime(Nr), y5d_update(Nr), tmpval
+#endif
 CEOP
+
+#ifndef ALLOW_SOLVERS_KLOOPINSIDE
 
       errCode = 0
 
@@ -148,6 +162,115 @@ C--   Backward sweep (starting from bottom)
 C-      end if k= .. ; end of k loop
        ENDIF
       ENDDO
+
+#else  /* ALLOW_SOLVERS_KLOOPINSIDE */
+
+      errCode = 0
+
+C--   Temporary array
+      DO j=jMin,jMax
+      DO i=iMin,iMax
+      DO k=1,Nr
+         y5d_m1(i,j,k) = y5d(i,j,k,bi,bj)
+      ENDDO
+      ENDDO
+      ENDDO
+
+C--   Main loop
+      DO j=jMin,jMax
+      DO i=iMin,iMax
+
+      DO k=1,Nr
+        a5d_prime(k) = 0. _d 0
+        b5d_prime(k) = 0. _d 0
+        c5d_prime(k) = 0. _d 0
+        d5d_prime(k) = 0. _d 0
+        e5d_prime(k) = 0. _d 0
+        y5d_prime(k) = 0. _d 0
+        y5d_update(k) = 0. _d 0
+      ENDDO
+
+      DO k=1,Nr
+C--   forward sweep (starting from top)
+
+          IF (k.EQ.1) THEN
+c just copy terms
+           a5d_prime(k) = 0. _d 0
+           b5d_prime(k) = 0. _d 0
+           c5d_prime(k) = c5d(i,j,k)
+           d5d_prime(k) = d5d(i,j,k)
+           e5d_prime(k) = e5d(i,j,k)
+           y5d_prime(k) = y5d_m1(i,j,k)
+          ELSEIF (k.EQ.2) THEN
+c subtract one term
+           a5d_prime(k) = 0. _d 0
+           b5d_prime(k) = 0. _d 0
+           c5d_prime(k) = c5d(i,j,k)
+     &      -b5d(i,j,k)*d5d_prime(k-1)
+           d5d_prime(k) = d5d(i,j,k)
+     &      -b5d(i,j,k)*e5d_prime(k-1)
+           e5d_prime(k) = e5d(i,j,k)
+           y5d_prime(k) = y5d_m1(i,j,k)
+     &      -b5d(i,j,k)*y5d_prime(k-1)
+          ELSE
+c subtract two terms
+           a5d_prime(k) = 0. _d 0
+           b5d_prime(k) = 0. _d 0
+           c5d_prime(k) = c5d(i,j,k)
+     &      -a5d(i,j,k)*e5d_prime(k-2)
+     &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(k-2))*d5d_prime(k-1)
+           d5d_prime(k) = d5d(i,j,k)
+     &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(k-2))*e5d_prime(k-1)
+           e5d_prime(k) = e5d(i,j,k)
+           y5d_prime(k) = y5d_m1(i,j,k)
+     &      -a5d(i,j,k)*y5d_prime(k-2)
+     &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(k-2))*y5d_prime(k-1)
+          ENDIF
+
+c normalization
+          tmpval=c5d_prime(k)
+          IF ( tmpval.NE.0. _d 0 ) THEN
+           a5d_prime(k) = a5d_prime(k) / tmpval
+           b5d_prime(k) = b5d_prime(k) / tmpval
+           c5d_prime(k) = 1. _d 0
+           d5d_prime(k) = d5d_prime(k) / tmpval
+           e5d_prime(k) = e5d_prime(k) / tmpval
+           y5d_prime(k) = y5d_prime(k) / tmpval
+          ELSE
+           a5d_prime(k) = 0. _d 0
+           b5d_prime(k) = 0. _d 0
+           c5d_prime(k) = 0. _d 0
+           d5d_prime(k) = 0. _d 0
+           e5d_prime(k) = 0. _d 0
+           y5d_prime(k) = 0. _d 0
+           errCode = 1
+          ENDIF
+
+      ENDDO
+
+C--   Backward sweep (starting from bottom)
+      DO k=Nr,1,-1
+       IF (k.EQ.Nr) THEN
+          y5d_update(k) =   y5d_prime(k)
+       ELSEIF (k.EQ.Nr-1) THEN
+          y5d_update(k) =   y5d_prime(k)
+     &     - y5d_update(k+1)*d5d_prime(k)
+       ELSE
+          y5d_update(k) =   y5d_prime(k)
+     &     - y5d_update(k+1)*d5d_prime(k)
+     &     - y5d_update(k+2)*e5d_prime(k)
+       ENDIF
+      ENDDO
+
+C--   Update array
+      DO k=1,Nr
+         y5d(i,j,k,bi,bj)=y5d_update(k)
+      ENDDO
+
+      ENDDO
+      ENDDO
+
+#endif  /* ALLOW_SOLVERS_KLOOPINSIDE */
 
       RETURN
       END
