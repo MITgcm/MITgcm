@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.17 2010/08/09 20:34:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.18 2010/08/11 03:32:29 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -523,7 +523,7 @@ C     solve tri-diagonal system, and store solution on gTKE (previously rhs)
      I                        a, b, c,
      U                        gTKE,
      O                        errCode,
-     I                        bi, bj, myThid )
+     I                        1, 1, myThid )
 
 C     now update TKE
       DO K=1,Nr
