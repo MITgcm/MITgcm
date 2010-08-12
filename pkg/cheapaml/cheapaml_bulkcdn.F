@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cheapaml_bulkcdn.F,v 1.2 2010/03/15 22:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cheapaml_bulkcdn.F,v 1.3 2010/08/12 21:33:40 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -38,6 +38,7 @@ c     ==================================================================
 c     == global variables ==
 
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "CHEAPAML.h"
 
 c     == function arguments ==
@@ -46,7 +47,7 @@ c      real*8 umps
 
 c     == end of interface ==
 
-	write(*,*)'in bulkcdn ',cdrag_1,cdrag_2,cdrag_3
+      write(*,*)'in bulkcdn ',cdrag_1,cdrag_2,cdrag_3
       cheapaml_BulkCdn = cdrag_1/umps + cdrag_2 + cdrag_3*umps
 
 #else
