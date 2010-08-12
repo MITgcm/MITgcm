@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.8 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.9 2010/08/12 21:49:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,7 +26,7 @@ C--   == Global data ==
 
 C--   == Routine arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k			
+      INTEGER k
       _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL buoy  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
@@ -34,23 +34,23 @@ C--   == Routine arguments ==
 C--   == Local variables ==
       INTEGER i,j
 
-      IF    ( buoyancyRelation .eq. 'ATMOSPHERIC'  ) THEN
+      IF    ( buoyancyRelation .EQ. 'ATMOSPHERIC'  ) THEN
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         buoy(i,j)=(theta(i,j,k,bi,bj)-tRef(K))/tRef(K)
+         buoy(i,j)=(theta(i,j,k,bi,bj)-tRef(k))/tRef(k)
         ENDDO
        ENDDO
-       
-      ELSEIF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
+
+      ELSEIF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         buoy(i,j)=-Gravity*recip_rhoConst*rholoc(i,j)
+         buoy(i,j)=-gravity*recip_rhoConst*rholoc(i,j)
         ENDDO
        ENDDO
 
-      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
+      ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
 
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -63,11 +63,10 @@ C--   == Local variables ==
 
       ELSE
 
-       STOP 
+       STOP
      &'CALC_BUOANCY: variable "buoyancyRelation" has an illegal value'
 
       ENDIF
-
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.12 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.13 2010/08/12 21:49:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -149,7 +149,7 @@ Cml        CALL WRITE_FLD_XYZ_RL( 'PINI.',msgBuf,pressure,npiter,myThid)
 
 C --   end npiter loop
        ENDDO
-C     print some diagnostics	
+C     print some diagnostics
        _BEGIN_MASTER( myThid )
        IF ( rmspp .NE. 0. ) THEN
         IF ( rmspp .EQ. rmsppold ) THEN
