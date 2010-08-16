@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.14 2010/08/03 12:47:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.15 2010/08/16 10:38:50 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -93,7 +93,7 @@ C--   Upper flux
         kop1   = MIN(Nr,ko+1)
         maskp1 = 1. _d 0
         IF (ko.GE.Nr) maskp1 = 0. _d 0
-#ifndef NONLIN_FRSRURF
+#ifndef NONLIN_FRSURF
 C     For the linear free surface, hFacC can be omitted, buying another
 C     performance increase of a factor of six on a vector computer.
 C     For now this is not implemented via run time flags, in order to 
@@ -107,7 +107,7 @@ C     The following form does the same, but is faster
          DO i=imin,imax
           IF ( bexport(i,j) .NE. 0. _d 0 ) THEN
 C--   Lower flux (no flux to ocean bottom)
-#ifdef NONLIN_FRSRURF
+#ifdef NONLIN_FRSURF
            depth_l  = -rF(ko) + drF(ko) * _hFacC(i,j,ko,bi,bj)
 C          reminFac = (depth_l/zbase)**(-Kremin)
 C     The following form does the same, but is faster 
