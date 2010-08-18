@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1290 2010/08/06 18:45:41 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1291 2010/08/18 12:20:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic: car_flux.F, phos_flux.F
+  - reduce number of exp-calls in order to improve performance
+  - clean up a little (replace fields by their macros, etc., fix 
+    typo in CPP-flag)
 o pkg/ggl90: minor changes
   - GGL90diffKrS was removed --> always use GGL90diffKr
   - GGL90viscAr was removed --> replaced with GGL90viscArU, GGL90viscArV
