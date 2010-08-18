@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.15 2010/08/16 10:38:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.16 2010/08/18 12:20:13 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -36,7 +36,7 @@ C  BIOac                :: biological productivity
 
 C !OUTPUT PARAMETERS: ===================================================
 C  pflux                :: changes to PO4 due to flux and reminerlization
-      _RL pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL pflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
@@ -51,7 +51,6 @@ c  flux_u, flux_l         :: flux through upper and lower interfaces
 c  reminFac               :: abbreviation
 c  zbase                  :: depth of bottom of current productive layer
       INTEGER I,J,k, ko, kop1
-      _RL maskp1
       _RL zbase
       _RL bexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL reminFac
@@ -65,7 +64,7 @@ C- Calculate PO4 flux from base of each layer
        DO j=jmin,jmax
         DO i=imin,imax
          bexport(i,j) = 0. _d 0
-         IF (hFacC(i,j,k,bi,bj).gt.0. _d 0) THEN
+         IF ( _hFacC(i,j,k,bi,bj).gt.0. _d 0 ) THEN
 C--   If no layer below initial layer (because of bottom or
 C--   topography), then remineralize in here
           IF (k.EQ.Nr) THEN
@@ -89,10 +88,11 @@ C--   Upper flux
          flux_u(i,j)  = bexport(i,j)
         ENDDO
        ENDDO
-       DO ko=k+1,Nr
+C     Instead of running the loop to ko=Nr and masking the last
+C     flux_l, let ko reach only Nr-1 and do a special loop for ko=Nr,
+C     in order to save a few expensive exp-function calls
+       DO ko=k+1,Nr-1
         kop1   = MIN(Nr,ko+1)
-        maskp1 = 1. _d 0
-        IF (ko.GE.Nr) maskp1 = 0. _d 0
 #ifndef NONLIN_FRSURF
 C     For the linear free surface, hFacC can be omitted, buying another
 C     performance increase of a factor of six on a vector computer.
@@ -114,10 +114,10 @@ C     The following form does the same, but is faster
            reminFac = exp(-Kremin*log(depth_l/zbase))
 #endif
            flux_l   = bexport(i,j)*reminFac
-     &          *maskp1*maskC(i,j,kop1,bi,bj)
-            
+     &          *maskC(i,j,kop1,bi,bj)
+C     
            pflux(i,j,ko)=pflux(i,j,ko) + (flux_u(i,j)-flux_l)
-     &          *recip_drF(ko)*recip_hFacC(i,j,ko,bi,bj)
+     &          *recip_drF(ko) * _recip_hFacC(i,j,ko,bi,bj)
            exportflux(i,j,ko)=exportflux(i,j,ko)+flux_u(i,j)
 C--   Store flux through upper layer for the next k-level
            flux_u(i,j) = flux_l
@@ -127,6 +127,16 @@ C     i,j-loops
          ENDDO
         ENDDO
 C     ko-loop
+       ENDDO
+C     now do ko = Nr
+       ko = Nr
+       flux_l = 0. _d 0
+       DO j=jmin,jmax
+        DO i=imin,imax
+         pflux(i,j,ko)=pflux(i,j,ko) + (flux_u(i,j)-flux_l)
+     &        *recip_drF(ko) * _recip_hFacC(i,j,ko,bi,bj)
+         exportflux(i,j,ko)=exportflux(i,j,ko)+flux_u(i,j)
+        ENDDO
        ENDDO
 C     k-loop
       ENDDO
