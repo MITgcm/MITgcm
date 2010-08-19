@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.89 2010/05/04 21:41:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.90 2010/08/19 23:43:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -696,7 +696,7 @@ C--     Compute GGL90 mixing coefficients
 #endif
           CALL TIMER_START('GGL90_CALC [DO_OCEANIC_PHYS]', myThid)
           CALL GGL90_CALC(
-     I                  bi, bj, myTime, myThid )
+     I                  bi, bj, myTime, myIter, myThid )
           CALL TIMER_STOP ('GGL90_CALC [DO_OCEANIC_PHYS]', myThid)
         ENDIF
 #endif /* ALLOW_GGL90 */
