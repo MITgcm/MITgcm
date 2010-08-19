@@ -1,17 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1291 2010/08/18 12:20:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1292 2010/08/19 23:56:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+   other minor changes: remove 3-D temp array gTKE (+ add argument myIter)
 o pkg/dic: car_flux.F, phos_flux.F
   - reduce number of exp-calls in order to improve performance
-  - clean up a little (replace fields by their macros, etc., fix 
+  - clean up a little (replace fields by their macros, etc., fix
     typo in CPP-flag)
 o pkg/ggl90: minor changes
   - GGL90diffKrS was removed --> always use GGL90diffKr
   - GGL90viscAr was removed --> replaced with GGL90viscArU, GGL90viscArV
-  - hack of mxlMaxFlag=2 --> ensure mixing between first and second level (commented out for now)
+  - hack of mxlMaxFlag=2 --> ensure mixing between first and second level
+    (commented out for now)
   - change in max/min operations to ensure that smoothing is ok
   - smoothing of GGL90viscAr was moved to ggl90_calc.F (as done for GGL90diffKr)
   - always use diffKrNrT as background profile (i.e. never use diffKr field)
