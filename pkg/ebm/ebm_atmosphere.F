@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.7 2009/08/06 13:52:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.8 2010/08/24 14:14:30 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -131,7 +131,7 @@ c----------------------------------------
      &     (T_var(3)*T_var(2) - T_var(4)*T_var(1))
         T0(1) = TtS - 0.5*T2(1)*((T_var(3)/T_var(1)) - 1.)
 c----------------------------------------
-c	Northern hemisphere
+c     Northern hemisphere
 c----------------------------------------
         T2(2) =  2.*(TtN - TmlN)*T_var(1)*T_var(2)/
      &     (T_var(3)*T_var(2) - T_var(4)*T_var(1))

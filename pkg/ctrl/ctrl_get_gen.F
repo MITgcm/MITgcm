@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.13 2007/06/19 03:42:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.14 2010/08/24 14:13:13 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 
       subroutine ctrl_get_gen(
      I          xx_gen_file, xx_genstartdate, xx_genperiod,
-     I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy, 
+     I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
      I          xx_gen_remo_intercept, xx_gen_remo_slope,
      I          mytime, myiter, mythid
      &                     )
@@ -104,7 +104,7 @@ c--   Now, read the control vector.
 
       if (optimcycle .ge. 0) then
         ilgen=ilnblnk( xx_gen_file )
-        write(fnamegen(1:80),'(2a,i10.10)') 
+        write(fnamegen(1:80),'(2a,i10.10)')
      &       xx_gen_file(1:ilgen), '.', optimcycle
       endif
 
@@ -139,7 +139,7 @@ c--   Get the counters, flags, and the interpolation factor.
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #ifdef ALLOW_CTRL_SMOOTH
-	if ( xx_gen_file .EQ. xx_tauu_file .OR.
+        if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
      &     call ctrl_smooth(xx_gen1,genmask)
 #endif
@@ -160,7 +160,7 @@ c--   Get the counters, flags, and the interpolation factor.
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #ifdef ALLOW_CTRL_SMOOTH
-	if ( xx_gen_file .EQ. xx_tauu_file .OR.
+        if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
      &     call ctrl_smooth(xx_gen1,genmask)
 #endif
@@ -178,7 +178,7 @@ c--   Add control to model variable.
 cph(
 cph this flag ported from the SIO code
 cph Initial wind stress adjustments are too vigorous.
-      if ( gencount0 .LE. 2 .AND. 
+      if ( gencount0 .LE. 2 .AND.
      &     ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file ) .AND.
      &     ( xx_genperiod .NE. 0 ) ) then
@@ -207,7 +207,7 @@ c--       Calculate mask for tracer cells (0 => land, 1 => water).
               genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
      &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
      &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
-              genfld(i,j,bi,bj) = 
+              genfld(i,j,bi,bj) =
      &             genmask(i,j,k,bi,bj)*( genfld (i,j,bi,bj) -
      &             ( xx_gen_remo_intercept +
      &               xx_gen_remo_slope*(mytime-starttime) ) )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.7 2009/04/07 14:43:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.8 2010/08/24 14:13:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,9 +47,9 @@ C     *==========================================================*
         x2p5=(x2+x3)/2.0
         l2p5=(x3-x2)/2.0
 
-C  x0<x1<x2<x3 	=> ctrl_bound and adctrl_bound   act on xx/adxx
-C  x0=x3 	=> ctrl_bound and adctrl_bound   do nothing
-C  otherwise	=> error
+C  x0<x1<x2<x3  => ctrl_bound and adctrl_bound   act on xx/adxx
+C  x0=x3        => ctrl_bound and adctrl_bound   do nothing
+C  otherwise    => error
 
       if ( x0.LT.x3 ) then
         if ( (x0.LT.x1).AND.(x1.LT.x2).AND.(x2.LT.x3) ) then
@@ -133,9 +133,9 @@ C     *==========================================================*
         x2p5=(x2+x3)/2.0
         l2p5=(x3-x2)/2.0
 
-C  x0<x1<x2<x3 	=> ctrl_bound and adctrl_bound   act on xx/adxx
-C  x0=x3 	=> ctrl_bound and adctrl_bound   do nothing
-C  otherwise	=> error
+C  x0<x1<x2<x3  => ctrl_bound and adctrl_bound   act on xx/adxx
+C  x0=x3        => ctrl_bound and adctrl_bound   do nothing
+C  otherwise    => error
 
       if ( x0.LT.x3 ) then
         if ( (x0.LT.x1).AND.(x1.LT.x2).AND.(x2.LT.x3) ) then

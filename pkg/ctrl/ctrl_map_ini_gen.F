@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.6 2009/10/25 02:04:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.7 2010/08/24 14:13:13 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
 
-      subroutine ctrl_map_ini_gen3D(xxFileCur, wFileCur, xxDummyCur, 
+      subroutine ctrl_map_ini_gen3D(xxFileCur, wFileCur, xxDummyCur,
      & boundsVec, paramFld3d, maskFld3d, paramSmooth, mythid )
 
 c     ==================================================================
@@ -14,7 +14,7 @@ c
 c     started: Gael Forget gforget@mit.edu 8-Feb-2008
 c
 c              - Generetic routine for an individual 3D control term
-c		(to be called from ctrl_map_ini in a loop e.g.)
+c                (to be called from ctrl_map_ini in a loop e.g.)
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_map_ini_gen3D
@@ -136,7 +136,7 @@ c apply Weaver And Courtier correlation operator
       if (paramSmooth.NE.0) then
        call smooth_correl3D(xxFld3d,paramSmooth,mythid)
       endif
-#endif 
+#endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -145,7 +145,7 @@ c apply Weaver And Courtier correlation operator
               do i = imin,imax
 #ifdef ALLOW_SMOOTH_CORREL3D
 c scale param adjustment
-      if ( (maskFld3d(i,j,k,bi,bj).NE.0.) 
+      if ( (maskFld3d(i,j,k,bi,bj).NE.0.)
      & .AND. (wFld3d(i,j,k,bi,bj).GT.0.) ) then
       xxFld3d(i,j,k,bi,bj)=xxFld3d(i,j,k,bi,bj)
      & /sqrt( wFld3d(i,j,k,bi,bj) )
@@ -153,7 +153,7 @@ c scale param adjustment
       xxFld3d(i,j,k,bi,bj)=0.
       endif
 #endif
-      paramFld3d(i,j,k,bi,bj) = paramFld3d(i,j,k,bi,bj) 
+      paramFld3d(i,j,k,bi,bj) = paramFld3d(i,j,k,bi,bj)
      & + xxFld3d(i,j,k,bi,bj)
               enddo
             enddo
@@ -176,7 +176,7 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
 
 
-      subroutine ctrl_map_ini_gen2D(xxFileCur, wFileCur, xxDummyCur, 
+      subroutine ctrl_map_ini_gen2D(xxFileCur, wFileCur, xxDummyCur,
      & boundsVec, paramFld2d, maskFld3d, paramSmooth, mythid )
 
 c     ==================================================================
@@ -186,7 +186,7 @@ c
 c     started: Gael Forget gforget@mit.edu 8-Feb-2008
 c
 c              - Generetic routine for an individual 2D control term
-c		(to be called from ctrl_map_ini in a loop e.g.)
+c                (to be called from ctrl_map_ini in a loop e.g.)
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_map_ini_gen3D
@@ -306,7 +306,7 @@ c apply Weaver And Courtier correlation operator
       if (paramSmooth.NE.0) then
        call smooth_correl2d(xxFld2d,maskFld3d,paramSmooth,mythid)
       endif
-#endif 
+#endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -322,7 +322,7 @@ c scale param adjustment
       xxFld2d(i,j,bi,bj)=0.
       endif
 #endif
-      paramFld2d(i,j,bi,bj) = paramFld2d(i,j,bi,bj) 
+      paramFld2d(i,j,bi,bj) = paramFld2d(i,j,bi,bj)
      & + xxFld2d(i,j,bi,bj)
               enddo
             enddo
