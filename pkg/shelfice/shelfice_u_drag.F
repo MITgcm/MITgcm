@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.6 2007/03/14 15:43:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.7 2010/08/24 15:09:53 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE.h"
@@ -15,7 +15,7 @@ C !INTERFACE: ==========================================================
      I        myThid)
 
 C !DESCRIPTION:
-C Calculates the drag due to friction and the no-slip condition at the 
+C Calculates the drag due to friction and the no-slip condition at the
 C bottom of the shelf-ice (in analogy to bottom drag)
 C \begin{equation*}
 C G^u_{drag} = - ( r_b + C_D |v| + \frac{2}{\Delta r_c} ) u
@@ -64,7 +64,7 @@ C-  No-slip BCs impose a drag at top
        kTop    = Nr
        kUp     = min(k+1,kTop)
        kUpC    = kUp
-      ENDIF	
+      ENDIF
       rdrckp1=recip_drC(kUpC)
 CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
@@ -75,7 +75,7 @@ CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
 CML        IF (k.EQ.kTop) maskUp=0.
         uDragTerms(i,j)=
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &   *( 
+     &   *(
      &     - 2.*KappaRU(i,j,kUpC)*rdrckp1*viscFac
      &     + SHELFICEDragLinear
      &    )*(1.-maskUp)*uFld(i,j)

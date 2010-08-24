@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.2 2008/10/14 17:41:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.3 2010/08/24 15:07:31 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,7 +22,7 @@ c     ==================================================================
 c
 c     o Based on cost_generic
 c     o in case where there is observed sea-ice we not only constrain 
-c	model(area)=obs(area) but also model(sst)@freezing point
+c       model(area)=obs(area) but also model(sst)@freezing point
 c
 c     ==================================================================
 c     SUBROUTINE seaice_cost_areasst

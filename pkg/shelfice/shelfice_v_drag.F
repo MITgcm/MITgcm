@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.6 2007/03/14 15:43:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.7 2010/08/24 15:09:53 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -46,7 +46,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  vDragTerms           :: drag term
       _RL vDragTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef ALLOW_SHELFICE 
+#ifdef ALLOW_SHELFICE
 C !LOCAL VARIABLES : ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
@@ -64,7 +64,7 @@ C-  No-slip BCs impose a drag at top
        kTop    = Nr
        kUp     = min(k+1,kTop)
        kUpC    = kUp
-      ENDIF	
+      ENDIF
       rdrckp1=recip_drC(kUpC)
 CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
@@ -75,7 +75,7 @@ CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
 CML        IF (k.EQ.kTop) maskUp=0.
         vDragTerms(i,j)=
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &   *( 
+     &   *(
      &     - 2.*KappaRV(i,j,kUpC)*rdrckp1*viscFac
      &     + bottomDragLinear
      &    )*(1.-maskUp)*vFld(i,j)

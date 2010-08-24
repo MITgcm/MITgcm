@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.8 2009/07/08 21:58:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.9 2010/08/24 15:09:53 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -32,8 +32,8 @@ C  none
 #ifdef ALLOW_SHELFICE
 
 C !LOCAL VARIABLES: ====================================================
-C  iUnit		:: unit number for I/O
-C  msgBuf		:: message buffer
+C  iUnit                :: unit number for I/O
+C  msgBuf               :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP

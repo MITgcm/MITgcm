@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.6 2009/06/15 23:42:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.7 2010/08/24 15:08:30 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SALT_PLUME
@@ -36,7 +36,7 @@ C                       rejected during sea ice growth
 C     saltPlumeFlux :: Net downward salt flux in psu.kg/m^2/s
 C              Note: a) only used when salty sea-ice forms.
 C                    b) units: when salinity (unit= psu) is expressed
-C              	        in g/kg, saltPlumeFlux unit becomes g/m^2/s.
+C                       in g/kg, saltPlumeFlux unit becomes g/m^2/s.
 C              > 0 for increasing in SSS.
 C              Southwest C-grid tracer point
       _RL SaltPlumeDepth (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
