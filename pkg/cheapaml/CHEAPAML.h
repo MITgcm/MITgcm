@@ -1,22 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.1 2008/08/05 21:49:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.2 2010/08/24 14:07:52 jmc Exp $
 C $Name:  $
 
-C #ifdef ALLOW_CHEAPAML
-cswdblk
-c     !ROUTINE: CHEAPAML.h
-c -------------------------------
-c   CHEAPAML.h
+c #ifdef ALLOW_CHEAPAML
+C     !ROUTINE: CHEAPAML.h
+C -------------------------------
+C   CHEAPAML.h
 C   Parameters for cheap atmos mixed layer model
-c -------------------------------
+C -------------------------------
 C     Tr :: Relaxation temperature profile for lateral boundary region
-c     qr :: Relaxation specific humidity profile for lateral boundary region
-c     Tair :: atmosphere boundary layer temperature
-c     gTairm :: atmosphere temperature tendency
-c     qair :: atmosphere specific humidity
-c     uwind :: zonal wind
-c     vwind :: meridional wind
-c     solar :: short wave insolation
-c
+C     qr :: Relaxation specific humidity profile for lateral boundary region
+C     Tair :: atmosphere boundary layer temperature
+C     gTairm :: atmosphere temperature tendency
+C     qair :: atmosphere specific humidity
+C     uwind :: zonal wind
+C     vwind :: meridional wind
+C     solar :: short wave insolation
+C
       COMMON /CHEAPAML_PARMS/
      &       Tr,qr,uwind,vwind,solar,
      &       ustress, vstress,Tair,gTairm,
@@ -51,7 +50,7 @@ c     &       cheapaml_dtc,rhoa,cpair,stefan,
       _RL    cdrag_1, cdrag_2, cdrag_3
       _RL     dsolms,dsolmn
       _RL     xphaseinit
-	INTEGER cheapaml_ntim
+      INTEGER cheapaml_ntim
       CHARACTER*(MAX_LEN_FNAM) AirTempFile
       CHARACTER*(MAX_LEN_FNAM) AirQFile
       CHARACTER*(MAX_LEN_FNAM) SolarFile
@@ -60,4 +59,4 @@ c     &       cheapaml_dtc,rhoa,cpair,stefan,
       CHARACTER*(MAX_LEN_FNAM) TRFile 
       CHARACTER*(MAX_LEN_FNAM) QrFile 
       LOGICAL useFreshwaterFlux
-C #endif /* ALLOW_CHEAPAML */
+c #endif /* ALLOW_CHEAPAML */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_y.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_y.F,v 1.2 2010/08/24 14:07:52 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DIFF_Y
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DIFF_2d_Y( 
+      SUBROUTINE GAD_DIFF_2d_Y(
      I           bi,bj,
      I           diffKh,
      I           tracer,
@@ -58,7 +58,7 @@ CEOP
      &      *CosFacV(j,bi,bj)
 #endif
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
-	if(jG.eq.ny.or.jG.eq.1)dfy(i,j)=0.d0
+        if(jG.eq.ny.or.jG.eq.1)dfy(i,j)=0.d0
        ENDDO
       ENDDO
 

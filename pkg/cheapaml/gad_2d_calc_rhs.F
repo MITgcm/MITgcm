@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.2 2010/08/24 14:07:52 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,10 +7,10 @@ CBOP
 C !ROUTINE: GAD_2d_CALC_RHS
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_2d_CALC_RHS( 
+      SUBROUTINE GAD_2d_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           uTrans,vTrans,
-     I           uVel, vVel, 
+     I           uVel, vVel,
      I           diffKh, Tracer,
      U           gTracer,
      I           myTime, myIter, myThid )
@@ -77,7 +77,7 @@ C df               :: diffusive flux
 C localT           :: local copy of tracer field
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
-      CHARACTER*4 GAD_DIAG_SUFX, diagSufx 
+      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
       EXTERNAL    GAD_DIAG_SUFX
 #endif
       INTEGER i,j
@@ -164,11 +164,11 @@ C--   Divergence of fluxes
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         gTracer(i,j,bi,bj)=gTracer(i,j,bi,bj)
-     &   -(recip_dxC(i,j,bi,bj)
-     &   *(fZon(i+1,j)-fZon(i,j))
-     &     +recip_dyC(i,j,bi,bj)*
-     &	   (fMer(i,j+1)-fMer(i,j))
-     &                  )
+     &   - (recip_dxC(i,j,bi,bj)
+     &      *(fZon(i+1,j)-fZon(i,j))
+     &     +recip_dyC(i,j,bi,bj)
+     &      *(fMer(i,j+1)-fMer(i,j))
+     &     )
        ENDDO
       ENDDO
 

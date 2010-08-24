@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.2 2010/08/24 14:07:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,21 +30,21 @@ C--   Bulk Formula parameter
      &  cheapaml_ntim, cheapaml_h,
 c     &  cheapaml_kdiff, cheapaml_taurelax1,
 c     &  cheapaml_taurelax2, cheapaml_xf,
-     &  cheapaml_kdiff, 
-     &  cheapaml_taurelax2, 
+     &  cheapaml_kdiff,
+     &  cheapaml_taurelax2,
      &  cdrag_1,cdrag_2,cdrag_3,
      &  rhoa, cpair, stefan,
      &       dsolms,dsolmn,
      &       xphaseinit
 c     &  cheapaml_dtc, rhoa, cpair, stefan
       NAMELIST /CHEAPAML_PARM01/
-     &         AirTempFile, 
-     &         SolarFile, 
-     &  	UWindFile,
-     &         VWindFile, 
-     &		TRFile
+     &         AirTempFile,
+     &         SolarFile,
+     &         UWindFile,
+     &         VWindFile,
+     &         TRFile
       NAMELIST /CHEAPAML_PARM02/
-     &         useFreshwaterFlux 
+     &         useFreshwaterFlux
 
 
       _BEGIN_MASTER(myThid)
@@ -52,9 +52,7 @@ c     &  cheapaml_dtc, rhoa, cpair, stefan
       WRITE(msgBuf,'(A)') ' BULKF_READPARMS: opening data.cheapaml'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-    
 
-     
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.cheapaml', 'CHEAPAML_READPARMS',
      O                          iUnit,
@@ -63,19 +61,16 @@ c     &  cheapaml_dtc, rhoa, cpair, stefan
       WRITE (msgBuf,'(A)') 'Test 1 ********************************'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-               
 
-
-
-C--   Default values 
+C--   Default values
 C-    Physical constant :
       cheapaml_ntim = 5
       cheapaml_h=1000.d0
       cheapaml_kdiff=1.d4
-c	cheapaml_taurelax1 = 30.d0
+c       cheapaml_taurelax1 = 30.d0
       cheapaml_taurelax2 = .1d0
-c	cheapaml_xf=2.d0
-c	cheapaml_dtc=1.d0
+c       cheapaml_xf=2.d0
+c       cheapaml_dtc=1.d0
       rhoa   = 1.3 _d 0
       cpair  = 1004.d0
       stefan = 5.67 _d -8
@@ -100,9 +95,6 @@ C-    e-p option turned off by default
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-                 
-
-
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)
 
@@ -110,13 +102,9 @@ C--   Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-           
-
-      
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_CONST'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_PARM01)
@@ -124,12 +112,9 @@ C--   Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-
       WRITE (msgBuf,'(A)') 'Test 4444444444444444444444444444444444'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
-           
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_PARM02)
@@ -138,19 +123,13 @@ C--   Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-            
-      
-      
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_PARM02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-
       WRITE (msgBuf,'(A)') 'Test 6666666666666666666666666666666666'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-                 
-
 
 C--   Close the open data file
       CLOSE(iUnit)
