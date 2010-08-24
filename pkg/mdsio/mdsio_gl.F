@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.17 2010/01/05 02:55:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.18 2010/08/24 14:56:24 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -23,13 +23,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
 C Arguments:
 C
-C fName		string	base name for file to read
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to read into, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myThid	integer thread identifier
+C fName     (string)  :: base name for file to read
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C arrType   (char(2)) :: type of array "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr        (RS/RL)  :: array to read into, arr(:,:,nNz,:,:)
+C irecord   (integer) :: record number to read
+C myThid    (integer) :: thread identifier
 C
 C MDSREADFIELD first checks to see if the file "fName" exists, then
 C if the file "fName.data" exists and finally the tiled files of the
@@ -416,14 +416,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
 C Arguments:
 C
-C fName		string	base name for file to written
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to write, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myIter	integer	time step number
-C myThid	integer thread identifier
+C fName     (string)  :: base name for file to write
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C arrType   (char(2)) :: type of array "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr        (RS/RL)  :: array to write, arr(:,:,nNz,:,:)
+C irecord   (integer) :: record number to write
+C myIter    (integer) :: time step number
+C myThid    (integer) :: thread identifier
 C
 C MDSWRITEFIELD creates either a file of the form "fName.data" and
 C "fName.meta" if the logical flag "globalFile" is set true. Otherwise
@@ -783,13 +783,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
 C Arguments:
 C
-C fName		string	base name for file to read
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to read into, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myThid	integer thread identifier
+C fName     (string)  :: base name for file to read
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C arrType   (char(2)) :: type of array "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr        (RS/RL)  :: array to read into, arr(:,:,nNz,:,:)
+C irecord   (integer) :: record number to read
+C myThid    (integer) :: thread identifier
 C
 C MDSREADFIELD first checks to see if the file "fName" exists, then
 C if the file "fName.data" exists and finally the tiled files of the
@@ -1177,14 +1177,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
 C Arguments:
 C
-C fName		string	base name for file to written
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to write, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myIter	integer	time step number
-C myThid	integer thread identifier
+C fName     (string)  :: base name for file to write
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C arrType   (char(2)) :: type of array "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr        (RS/RL)  :: array to write, arr(:,:,nNz,:,:)
+C irecord   (integer) :: record number to write
+C myIter    (integer) :: time step number
+C myThid    (integer) :: thread identifier
 C
 C MDSWRITEFIELD creates either a file of the form "fName.data" and
 C "fName.meta" if the logical flag "globalFile" is set true. Otherwise

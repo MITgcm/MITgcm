@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.18 2009/09/01 19:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.19 2010/08/24 14:56:24 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -25,7 +25,7 @@ C fName     (string)  :: base name for file to write
 C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C globalFile (logical):: selects between writing a global or tiled file
 C arrType   (char(2)) :: which array (fldRL/RS) to write, either "RL" or "RS"
-C nNz	    (integer) :: size of third dimension: normally either 1 or Nr
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
 C fldRL       ( RL )  :: array to write if arrType="RL", fldRL(:,:,nNz)
 C fldRS       ( RS )  :: array to write if arrType="RS", fldRS(:,:,nNz)
 C biArg     (integer) :: tile X-index argument
