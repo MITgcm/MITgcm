@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.10 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.11 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -162,7 +162,7 @@ c--           Determine the weights to be used.
                 do i = imin,imax
                   cmask(i,j) = cosphi(i,j,bi,bj)
                   if ( xbtobs(i,j,k,bi,bj) .lt. spval .or.
-     &		       xbtobs(i,j,k,bi,bj) .gt. spmax .or.
+     &                 xbtobs(i,j,k,bi,bj) .gt. spmax .or.
      &                 xbtobs(i,j,k,bi,bj) .eq. 0. ) then
                     cmask(i,j) = 0. _d 0
                   endif

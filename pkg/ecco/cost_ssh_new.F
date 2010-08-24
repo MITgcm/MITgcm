@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.5 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.6 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -276,7 +276,7 @@ c--   Do a global summation.
       else
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a,d22.15)')
-     &  	' cost_ssh: offset_sum = ',offset_sum
+     &          ' cost_ssh: offset_sum = ',offset_sum
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
@@ -376,7 +376,7 @@ c--             The array ersobs contains SSH anomalies.
      &                              *ersmask(i,j,bi,bj)
      &                              *cosphi(i,j,bi,bj)
 #ifndef ALLOW_SSH_TOT
-                junk = ( psbar(i,j,bi,bj) 
+                junk = ( psbar(i,j,bi,bj)
      &                   - psmeaners(i,j,bi,bj) - ersobs(i,j,bi,bj) )
                 objf_ers(bi,bj) = objf_ers(bi,bj)
      &              + junk*junk*wwwers2(i,j,bi,bj)

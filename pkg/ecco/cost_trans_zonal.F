@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.5 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -201,10 +201,10 @@ c--     Assign the first value to the array holding the average.
      $                     + hFacC(i-1,j,k,bi,bj))*ubar(i,j,k,bi,bj)
      $                     * _dyG(i,j,bi,bj)
      &                     *  drF(k)*_hFacW(i,j,k,bi,bj)
-		   endif
+                   endif
                 enddo
               enddo
-	      mulev(isect,k) = mu(isect)
+              mulev(isect,k) = mu(isect)
             enddo
           enddo
         enddo
@@ -213,31 +213,31 @@ c--     Assign the first value to the array holding the average.
         _GLOBAL_SUM_RL( su(isect), mythid )
         _GLOBAL_SUM_RL( mu(isect), mythid )
 c
-	do k =1,nr
+        do k =1,nr
            _GLOBAL_SUM_RL( mulev(isect,k), mythid )
         enddo
         mumin(isect) = mulev(isect,1)
-	mumax(isect) = mulev(isect,1)
-	do k = 2,nr
-	   if ( mulev(isect,k) .GT. mulev(isect,k-1) ) then
-	      mumax(isect) = mulev(isect,k)
-	      kmax(isect) = k
+        mumax(isect) = mulev(isect,1)
+        do k = 2,nr
+           if ( mulev(isect,k) .GT. mulev(isect,k-1) ) then
+              mumax(isect) = mulev(isect,k)
+              kmax(isect) = k
            endif
-	   if ( mulev(isect,k) .LT. mulev(isect,k-1) ) then
-	      mumin(isect) = mulev(isect,k)
-	      kmin(isect) = k
+           if ( mulev(isect,k) .LT. mulev(isect,k-1) ) then
+              mumin(isect) = mulev(isect,k)
+              kmin(isect) = k
            endif
         enddo
 
         musum(isect) = musum(isect) + mu(isect)
 
-	write(msgbuf,'(a,i3,i5,2i3,5(X,D15.8))')
+        write(msgbuf,'(a,i3,i5,2i3,5(X,D15.8))')
      &       'ECCO_TRANS_ZON ', isect, irec, kmin(isect), kmax(isect),
      &       tu(isect), su(isect), mu(isect), mumin(isect), mumax(isect)
         call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT, mythid )
 c
-	write(msgbuf,'(a,i3,1(X,D22.15))')
+        write(msgbuf,'(a,i3,1(X,D22.15))')
      &     'ECCO_TRANS_ZON_SUM  musum ', isect, musum(isect)
         call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT, mythid )

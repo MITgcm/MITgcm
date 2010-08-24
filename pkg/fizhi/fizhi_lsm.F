@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.8 2010/03/16 00:19:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.9 2010/08/24 14:36:55 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -17,7 +17,7 @@ C $Name:  $
      O                 STRDG5, STRDG6, STRDG7, STRDG8, STRDG9
      &                )
 
-C   SCCS VERSION @(#)lsm.f	1.2 11/3/92 
+C   SCCS VERSION @(#)lsm.f      1.2 11/3/92
 
 C****
 C****       This subroutine computes the outgoing fluxes of sensible and
@@ -40,7 +40,7 @@ C****
       _RL  RSOIL1(NCH), RSOIL2(NCH),    RDC(NCH),  U2FAC(NCH),
      &     QSATTC(NCH), DQSDTC(NCH),  ALWRAD(NCH), BLWRAD(NCH),
      &          TC(NCH),     TD(NCH),     QA(NCH),   BOMB(NCH),
-     &       SWET1(NCH),  SWET2(NCH),  SWET3(NCH),  CAPAC(NCH), 
+     &       SWET1(NCH),  SWET2(NCH),  SWET3(NCH),  CAPAC(NCH),
      &        SNOW(NCH),   EVAP(NCH), SHFLUX(NCH), RUNOFF(NCH)
       _RL   EINT(NCH),    ESOI(NCH),   EVEG(NCH),   ESNO(NCH),
      &     STRDG1(NCH),  STRDG2(NCH), STRDG3(NCH), STRDG4(NCH),
@@ -90,11 +90,11 @@ C****
      9               8.704,   73.984,    130.56,
      1               4.000,   4.000,    130.56
      &              /
-      DATA VGBEE /    4.,    4.,    4.,    4.,  1.69,    4., 
+      DATA VGBEE /    4.,    4.,    4.,    4.,  1.69,    4.,
      &                4.,  1.69,  1.69, 1.69/
-C      DATA VGBEE /    7.,    7.,    7.,    7.,  1.69,    7., 
+C      DATA VGBEE /    7.,    7.,    7.,    7.,  1.69,    7.,
 C     &                7.,  1.69,  1.69, 1.69/
-c      DATA VGBEE /    4.,    4.,    4.,    4.,  0.95,    4., 
+c      DATA VGBEE /    4.,    4.,    4.,    4.,  0.95,    4.,
 c     &                4.,  0.95,  0.95, 0.95/
 C      DATA VGBEE /7, 7, 7, 7, 2, 7, 7, 4, 2, 4/
       DATA VGPSAT/    -0.281,     -0.281,       -0.281,       -0.281,
@@ -150,10 +150,10 @@ c      DATA VGSLOP / 1., 1., 1.,  1., 1., 1.,  1., 1., 1.,1./
       DATA VGRPLN /0.245E+09, 0.245E+09, 0.245E+09, 0.250E+09,
      5             0.250E+09, 0.250E+09, 0.245E+09,   0.1E+09,
      9               0.1E+09, 0.100E+09 /
-C**** 
+C****
       DATA DELTC /0.01/, DELEA /0.001/
 
-c Note: SNWMID & CSOIL0 parameters modified from (Koster/Suarez) 
+c Note: SNWMID & CSOIL0 parameters modified from (Koster/Suarez)
 c       to obtain improved albedo, radswg, and annual/diurnal cycle (L.Takacs 2/17/00)
 c ------------------------------------------------------------------------------------
       DATA CSOIL0 /175000.,175000.,175000.,175000.,175000.,
@@ -161,7 +161,7 @@ c ------------------------------------------------------------------------------
 #include "snwmid.h"
 
 C****
-C**** --------------------------------------------------------------------- 
+C**** ---------------------------------------------------------------------
 C****
 CFPP$ EXPAND (TMPFAC, RCANOP, SOIL, WUPDAT, SMFAC)
 C****
@@ -251,7 +251,7 @@ C****
      &            )
 
       CALL VPDFAC (
-     I             NCH,  ITYP,  ESATTC, EA,   
+     I             NCH,  ITYP,  ESATTC, EA,
      O             VPDSTR
      &            )
 
@@ -364,9 +364,9 @@ C****         EIRFRC=fraction of total evap. coming from interception res.
   200 CONTINUE
 
       CALL FLUXES (
-     I                NCH,   ITYP, DTSTEP, ESATTC, DESDTC,   ALHX, 
-     I              ETURB,  DEDEA,  DEDTC, HSTURB, DHSDEA, DHSDTC, 
-     I                 RC, DRCDEA, DRCDTC, 
+     I                NCH,   ITYP, DTSTEP, ESATTC, DESDTC,   ALHX,
+     I              ETURB,  DEDEA,  DEDTC, HSTURB, DHSDEA, DHSDTC,
+     I                 RC, DRCDEA, DRCDTC,
      I              SWNET, HLWDWN, ALWRAD, BLWRAD, ESNFRC,
      I                 TM,     EM,  CSOIL,   PSUR, EMAXRT, VGWMAX,
      U                 TC,     TD,     EA,   SWET,   SNOW,
@@ -393,7 +393,7 @@ C****
      O               EINT, ESOI, EVEG, ESNO, RUNSRF,FWSOIL
      &              )
 
-C**** 
+C****
 C**** Correct any energy balance inconsistency.
 C****
       DO 300 CHNO=1,NCH
@@ -493,7 +493,7 @@ C**** /////////////////////////////////////////////////////////////////
 C**** -----------------------------------------------------------------
 C****
 C**** [ BEGIN INTERC ]
-C**** 
+C****
       SUBROUTINE INTERC (
      I                   NCH, ITYP, DTSTEP, TRAINL, TRAINC,
      I                   TSNOW, SATCAP, WMAX, CSOIL, WETEQ1,
@@ -501,7 +501,7 @@ C****
      U                   SMELT, FWSOIL
      &                  )
 C****
-C**** This routine uses the precipitation forcing to determine 
+C**** This routine uses the precipitation forcing to determine
 C**** changes in interception, snowcover, and soil moisture storage.
 C****
 C**** Note:  In this formulation, rain that falls on frozen ground
@@ -513,8 +513,8 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
-      _RL  TRAINL(NCH), TRAINC(NCH), TSNOW(NCH),  SATCAP(NCH),  
-     &      WMAX(NLAY,NTYPS), TC(NCH),   CSOIL(NCH),   CAPAC(NCH),     
+      _RL  TRAINL(NCH), TRAINC(NCH), TSNOW(NCH),  SATCAP(NCH),
+     &      WMAX(NLAY,NTYPS), TC(NCH),   CSOIL(NCH),   CAPAC(NCH),
      &      SNOW(NCH), SWET1(NCH),  RUNOFF(NCH),  SMELT(NCH),
      &     RUNSRF(NCH), FWSOIL(NCH), WETEQ1(NCH), WETINT
       _RL DTSTEP, SNOWM, WATADD, CAVAIL, THRUC, WRUNC, WRUNL,
@@ -551,7 +551,7 @@ C****
 C**** Determine XTCORR, the fraction of a storm that falls on a previously
 C**** wet surface due to the time correlation of precipitation position.
 C**** (Time scale TIMFRL for large scale storms set to one for FWETL=1
-C**** to reflect the effective loss of "position memory" when storm 
+C**** to reflect the effective loss of "position memory" when storm
 C**** covers entire grid square.)
 
         XTCORR= (1.-TIMFRL) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/
@@ -559,9 +559,9 @@ C**** covers entire grid square.)
 
 C****
 C**** Fill interception reservoir with precipitation.
-C**** THRU1 is first calculated as the amount falling through the 
-C****    canopy under the assumption that all rain falls randomly.  
-C****    only a fraction 1-XTCORR falls randomly, though, so the result 
+C**** THRU1 is first calculated as the amount falling through the
+C****    canopy under the assumption that all rain falls randomly.
+C****    only a fraction 1-XTCORR falls randomly, though, so the result
 C****    is multiplied by 1-XTCORR.
 C****
       WATADD = TRAINL(ChNo)*DTSTEP + SMELT(CHNO)*DTSTEP
@@ -594,9 +594,9 @@ C**** wet surface due to the time correlation of precipitation position.
 
 C****
 C**** Fill interception reservoir with precipitation.
-C**** THRU1 is first calculated as the amount falling through the 
-C****    canopy under the assumption that all rain falls randomly.  
-C****    only a fraction 1-XTCORR falls randomly, though, so the result 
+C**** THRU1 is first calculated as the amount falling through the
+C****    canopy under the assumption that all rain falls randomly.
+C****    only a fraction 1-XTCORR falls randomly, though, so the result
 C****    is multiplied by 1-XTCORR.
 C****
       WATADD = TRAINC(ChNo)*DTSTEP
@@ -619,7 +619,7 @@ C**** to 'position memory'.
 C****
 C***** =================================================================
 C****
-C**** Add precipitation moisture to soil, generate runoff.  if 
+C**** Add precipitation moisture to soil, generate runoff.  if
 C**** temperature is below freezing, all precipitation runs off.
 C****
 C**** STEP 1: Large scale condensation:
@@ -633,7 +633,7 @@ C****
       CAVAIL = ( 1.-WETFRC)*FWETL*WMAX(1,ITYP(ChNo))*(1-WETEQ1(CHNO))
       IF ( THRUL * (1-WETFRC) .LT. CAVAIL ) THEN
           WRUNL = THRUL * WETFRC
-          SWET1(ChNo) = SWET1(ChNo)  
+          SWET1(ChNo) = SWET1(ChNo)
      *    + THRUL * ( 1. - WETFRC) / WMAX(1,ITYP(ChNo))
         ELSE
           WRUNL = THRUL - CAVAIL
@@ -652,7 +652,7 @@ C****
       CAVAIL = (1.-WETFRC)*FWETC*WMAX(1,ITYP(ChNo))*(1-WETEQ1(CHNO))
       IF ( THRUC * (1-WETFRC) .LT. CAVAIL ) THEN
           WRUNC = THRUC * WETFRC
-          SWET1(ChNo) = SWET1(ChNo)  
+          SWET1(ChNo) = SWET1(ChNo)
      *    + THRUC * ( 1. - WETFRC) / WMAX(1,ITYP(ChNo))
         ELSE
           WRUNC = THRUC - CAVAIL
@@ -695,7 +695,7 @@ C****
       _RL  SUNANG(NCH),   PDIR(NCH),   PAR(NCH),   ZLAI(NCH),
      &      SQSCAT(NCH),  GREEN(NCH),  RCUN(NCH)
 
-      _RL   VGCHIL(NTYPS), VGZMEW(NTYPS),         
+      _RL   VGCHIL(NTYPS), VGZMEW(NTYPS),
      &       VGRST1(NTYPS), VGRST2(NTYPS), VGRST3(NTYPS)
 
       _RL            RHO4,         EXTK1,         EXTK2,
@@ -898,7 +898,7 @@ C****
           STRDG9(ChNo)=A11
 
 C****
-C**** Compute matrix elements A21, A22, and F0 (canopy water budget  
+C**** Compute matrix elements A21, A22, and F0 (canopy water budget
 C**** equation) and solve for fluxes.  Three cases are considered:
 C****
 C**** 1. Standard case: RC>0.
@@ -906,7 +906,7 @@ C**** 2. RC = 0.  Can only occur if CIR is full or ETURB is negative.
 C****
       CHOKE = .TRUE.
 
-      IF( RC(CHNO) .GT. 0.) THEN 
+      IF( RC(CHNO) .GT. 0.) THEN
           EPLANT = CONST * (ESATTC(ChNo) - EA(ChNo)) / RC(ChNo)
           IF(EPLANT*ETURB(ChNo).GE.0.) THEN
               EHARMN = 2.*EPLANT*ETURB(CHNO) / (EPLANT + ETURB(ChNo))
@@ -916,7 +916,7 @@ C****
 C****
 C****            Some limitations to A21 and A22 are applied:
 C****            we assume that the increase in plant evaporation
-C****            due to an increase in either TC or EA balances 
+C****            due to an increase in either TC or EA balances
 C****            or outweighs any decrease due to RC changes.
 C****
 
@@ -929,7 +929,7 @@ C****
           DETERM = MIN( A12*A21/(A11*A22) - 1., -0.1 _d 0)
           DEA = ( Q0*A21 - A11*F0 ) / ( DETERM * A11*A22 )
           DTC = ( Q0 - A12*DEA ) / A11
- 
+
           STRDG1(ChNo)=DTC
           STRDG2(ChNo)=DEA
           STRDG8(ChNo)=-A12*DEA/A11
@@ -969,7 +969,7 @@ C****      snow is melted.
 
         Q0X=Q0-ALHM*SNLEFT/DTSTEP
         SMELT(CHNO)=SNLEFT/DTSTEP
-      
+
             DEA = ( Q0X*A21 - A11*F0 ) / DENOM
             DTC = ( Q0X - A12*DEA ) / A11
 
@@ -987,7 +987,7 @@ C****      Set TC to TF.
           STRDG1(ChNo)=DTC
           STRDG2(ChNo)=DEA
           STRDG8(ChNo)=-A12*DEA/A11
- 
+
         EVAP(ChNo) = ETURB(ChNo) + DEDEA(ChNo)*DEA +
      &                   DEDTC(ChNo)*DTC
         SHFLUX(ChNo) = HSTURB(ChNo) + DHSDEA(ChNo)*DEA +
@@ -1004,14 +1004,14 @@ C****
       IF( EVAP(CHNO) .GT. EMAXRT(CHNO) ) THEN
         CHOKE = .FALSE.
         DEA = EM(CHNO) - EA(CHNO)
-        DTC = 
+        DTC =
      &   (Q0 + ALHX(CHNO)*(ETURB(ChNo)-EMAXRT(CHNO)) - DHSDEA(CHNO)*DEA)
      &          /  ( A11 - ALHX(CHNO)*DEDTC(ChNo) )
- 
+
           STRDG1(ChNo)=DTC
           STRDG2(ChNo)=DEA
           STRDG8(ChNo)=0.
- 
+
         EVAP(CHNO) = EMAXRT(CHNO)
         SHFLUX(ChNo) = HSTURB(ChNo) + DHSDEA(ChNo)*DEA +
      &                                            DHSDTC(ChNo)*DTC
@@ -1025,22 +1025,22 @@ C****
 
 
 
-C**** 2. Pathological cases. 
+C**** 2. Pathological cases.
 
 C**** Case 1: EVAP is positive in presence of negative gradient.
-C**** Case 2: EVAP and ETURB have opposite sign, implying that 
+C**** Case 2: EVAP and ETURB have opposite sign, implying that
 C**** "virtual effects" derivatives are meaningless and thus that we
 C**** do not know the proper tendency terms.
 C**** In both cases, assume zero evaporation for the time step.
 
 C      IF( ( EVAP(CHNO) .LT. 0. .AND. EM(CHNO).LT.ESATNW )
-C     &    .OR. ( EVAP(CHNO)*ETURB(CHNO) .LT. 0. ) )  THEN 
-      IF( EVAP(CHNO) .LT. 0. .AND. EM(CHNO).LT.ESATNW )  THEN 
+C     &    .OR. ( EVAP(CHNO)*ETURB(CHNO) .LT. 0. ) )  THEN
+      IF( EVAP(CHNO) .LT. 0. .AND. EM(CHNO).LT.ESATNW )  THEN
         CHOKE = .FALSE.
         DEA = EM(CHNO) - EA(CHNO)
-        DTC = ( Q0 + ALHX(CHNO)*ETURB(ChNo) - DHSDEA(CHNO)*DEA ) / 
+        DTC = ( Q0 + ALHX(CHNO)*ETURB(ChNo) - DHSDEA(CHNO)*DEA ) /
      &            ( A11 - ALHX(CHNO)*DEDTC(ChNo) )
- 
+
           STRDG1(ChNo)=DTC
           STRDG2(ChNo)=DEA
           STRDG8(ChNo)=0.
@@ -1052,7 +1052,7 @@ C     &    .OR. ( EVAP(CHNO)*ETURB(CHNO) .LT. 0. ) )  THEN
         IF(TC(CHNO)+DTC .GT. TF .AND. SNOW(CHNO).GT.0.) THEN
           Q0X=Q0-ALHM*SNOW(CHNO)/DTSTEP
           SMELT(CHNO)=SNOW(CHNO)/DTSTEP
-          DTC = ( Q0X + ALHX(CHNO)*ETURB(ChNo) - DHSDEA(CHNO)*DEA ) / 
+          DTC = ( Q0X + ALHX(CHNO)*ETURB(ChNo) - DHSDEA(CHNO)*DEA ) /
      &              ( A11 - ALHX(CHNO)*DEDTC(ChNo) )
           IF(TC(CHNO)+DTC .LT. TF) THEN
             DTC=TF-TC(CHNO)
@@ -1071,7 +1071,7 @@ C**** 3. Exceesive dea change: apply "choke".
       IF( CHOKE .AND. ABS(DEA) .GT. 0.5*EA(CHNO) ) THEN
         DEA = SIGN(.5*EA(CHNO),DEA)
         DTC = ( Q0 - A12*DEA ) / A11
- 
+
           STRDG1(ChNo)=DTC
           STRDG2(ChNo)=DEA
           STRDG8(ChNo)=-A12*DEA/A11
@@ -1101,7 +1101,7 @@ C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       EA(ChNo) = EA(ChNo) + DEA
       TD(ChNo) = TD(ChNo) +
 c  CHANGED THIS: deep layer 2 times deeper
-     &     DTSTEP * CDEEPS * (TC(ChNo) - TD(ChNo)) / 
+     &     DTSTEP * CDEEPS * (TC(ChNo) - TD(ChNo)) /
      .       (CSOIL(ChNo)*67.73*deepfac(ityp(ChNo)))
       HLWUP(CHNO) = HLWTC + DHLWTC*DTC
 
@@ -1186,7 +1186,7 @@ C****
      &       VGTCF3(MemFac*NTYPS)
 C****
       DATA VGTLL /MemFac*273., MemFac*273., MemFac*268., MemFac*283.,
-     5            MemFac*283., MemFac*273., MemFac*  0., MemFac*  0., 
+     5            MemFac*283., MemFac*273., MemFac*  0., MemFac*  0.,
      9            MemFac*  0., MemFac*  0. /
       DATA VGTU /MemFac*318., MemFac*318., MemFac*313., MemFac*328.,
      5           MemFac*323., MemFac*323., MemFac*  0., MemFac*  0.,
@@ -1198,7 +1198,7 @@ C****
      9                       MemFac* 0. , MemFac*  0./
       DATA VGTCF2 / MemFac* 7.95859E-04,  MemFac* 3.72064E-04,
      3              MemFac*-7.65944E-05,  MemFac* 8.24060E-04,
-     5              MemFac* 1.57617E-03,  MemFac* 8.44847E-05, 
+     5              MemFac* 1.57617E-03,  MemFac* 8.44847E-05,
      7                       MemFac* 0.,           MemFac* 0.,
      9                       MemFac* 0. , MemFac*  0./
       DATA VGTCF3 / MemFac*-1.11575E-01,  MemFac*-5.21533E-02,
@@ -1241,7 +1241,7 @@ C****
      O                  RC
      &                 )
 C****
-C**** This subroutine estimates RC after computing the 
+C**** This subroutine estimates RC after computing the
 C**** leaf water potential stress.
 C****
       IMPLICIT NONE
@@ -1298,7 +1298,7 @@ C****
       IMPLICIT NONE
       INTEGER NCH
       INTEGER ChNo
-      _RL     UM(NCH),   U2FAC(NCH),     Z2(NCH),    RDC(NCH), 
+      _RL     UM(NCH),   U2FAC(NCH),     Z2(NCH),    RDC(NCH),
      &        WET(NCH),  ESATTC(NCH),     EA(NCH),
      &         RC(NCH),     RX1(NCH),    RX2(NCH)
       _RL  U2, RSURF, HESAT
@@ -1345,7 +1345,7 @@ C****
      U                   RC
      &                  )
 C****
-C**** The effective latent heat resistance RC depends on the quantity 
+C**** The effective latent heat resistance RC depends on the quantity
 C**** of interception reservoir water and the snow cover.  POTFRC
 C**** is the fraction of the tile from which potential evaporation
 C**** occurs.
@@ -1364,7 +1364,7 @@ C**** -----------------------------------------------------------------
 
       DO 100 ChNo = 1, NCH
 
-C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 C**** Case 1: Vegetation present (SATCAP GT .001).  Potential evap. from
 c**** both interception reservoir and snow.
 
@@ -1373,7 +1373,7 @@ c**** both interception reservoir and snow.
      &                ( 1.+POTFRC(CHNO)*RC(ChNo)/RA(ChNo) )
         ENDIF
 
-C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 C**** Case 2: Vegetation absent (SATCAP LE .001).  Potential evap. from
 c**** snow only.
 
@@ -1479,7 +1479,7 @@ C****
 C**** Translate ESOI and EVEG into evaporation fluxes from layers 1 and 2:
 C****
       IF( WTOTAL .GT. 0. ) THEN
-          FWS = EVEG(CHNO) / WTOTAL 
+          FWS = EVEG(CHNO) / WTOTAL
         ELSE
           FWS = 1.
         ENDIF
@@ -1512,7 +1512,7 @@ C**** Remove moisture from reservoirs:
 C****
       SNOW(ChNo) = SNOW(ChNo) - ESNO(CHNO)
       CAPAC(ChNo) = CAPAC(ChNo) - EINT(CHNO)
-      SWET(ChNo,SFCLY) = (WLAY1 - ELAY1) / VGWMAX(SFCLY,ITYP(ChNo)) 
+      SWET(ChNo,SFCLY) = (WLAY1 - ELAY1) / VGWMAX(SFCLY,ITYP(ChNo))
       SWET(ChNo,ROOTLY) = (WLAY2 - ELAY2) / VGWMAX(ROOTLY,ITYP(CHNO))
 C****
 C**** Ensure against numerical precision problems:
@@ -1524,15 +1524,15 @@ C****
 C****
 C**** -------------------------------------------------
 C**** DEWFALL:
-C**** 
-C**** If dewfall adds to cir, insure that it does not fill 
-C**** beyond capacity.  If resulting throughfall adds to top soil layer, 
+C****
+C**** If dewfall adds to cir, insure that it does not fill
+C**** beyond capacity.  If resulting throughfall adds to top soil layer,
 C**** insure that it also does not fill beyond capacity.
-C**** 
+C****
       IF( CAPAC(ChNo) .GT. SATCAP(ChNo) ) THEN
         THRU = CAPAC(ChNo) - SATCAP(ChNo)
         CAPAC(ChNo) = SATCAP(ChNo)
-        SWET(ChNo,SFCLY) = SWET(ChNo,SFCLY) + 
+        SWET(ChNo,SFCLY) = SWET(ChNo,SFCLY) +
      &                         THRU / VGWMAX(SFCLY,ITYP(ChNo))
         DEWRUN=0.
         IF ( SWET(ChNo,SFCLY) .GT. 1. ) THEN
@@ -1541,7 +1541,7 @@ C****
           RUNOFF(ChNo) = RUNOFF(ChNo) + DEWRUN/DTSTEP
           RUNSRF(ChNo) = RUNSRF(ChNo) + DEWRUN/DTSTEP
           ENDIF
-        FWSOIL(CHNO) = FWSOIL(CHNO) + (THRU-DEWRUN)/DTSTEP     
+        FWSOIL(CHNO) = FWSOIL(CHNO) + (THRU-DEWRUN)/DTSTEP
         ENDIF
 C****
  100  CONTINUE
@@ -1606,7 +1606,7 @@ C****
       HALFMX=0.5*ABS( SWET(CHNO,SFCLY)-WETEQ1(CHNO) )
      &                               * WSMAX(SFCLY,ITYP(CHNO))
       IF (GWFLUX .GE. 0.) THEN
-          GWFLUX = MIN( GWFLUX, 
+          GWFLUX = MIN( GWFLUX,
      &               SWET(ChNo,SFCLY) * WSMAX(SFCLY,ITYP(ChNo)) )
           GWFLUX = MIN( GWFLUX,    WSMAX(ROOTLY,ITYP(ChNo)) -
      &              SWET(ChNo,ROOTLY) * WSMAX(ROOTLY,ITYP(ChNo)) )
@@ -1631,7 +1631,7 @@ C**** Update water contents
       SWET(ChNo,ROOTLY) = SWET(ChNo,ROOTLY) +
      &                        GWFLUX / WSMAX(ROOTLY,ITYP(ChNo))
 C****
-C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 C**** Diffusion between root and recharge layers:
       ZDEP23 = VGZDEX(ROOTLY,ChNo) + VGZDEX(RECHLY,ChNo)
       DHDZ=1. + 2. * (PHLAY(ChNo,ROOTLY) - PHLAY(ChNo,RECHLY)) / ZDEP23

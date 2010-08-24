@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.40 2010/07/13 00:02:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.41 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -147,10 +147,10 @@ c--   Initialize variance (weight) fields.
               wudrift (i,j,bi,bj) = 0. _d 0
               wvdrift (i,j,bi,bj) = 0. _d 0
 cph(
-	      whflux2 (i,j,bi,bj) = 0. _d 0
-	      wsflux2 (i,j,bi,bj) = 0. _d 0
-	      wtauu2  (i,j,bi,bj) = 0. _d 0
-	      wtauv2  (i,j,bi,bj) = 0. _d 0
+              whflux2 (i,j,bi,bj) = 0. _d 0
+              wsflux2 (i,j,bi,bj) = 0. _d 0
+              wtauu2  (i,j,bi,bj) = 0. _d 0
+              wtauv2  (i,j,bi,bj) = 0. _d 0
 cph)
               wbottomdrag (i,j,bi,bj) = wbottomdrag0
             enddo
@@ -770,7 +770,7 @@ c--   convert to units of meters
         enddo
       enddo
 
-      call active_write_xy_loc( 'wsshv4', wsshv4tmp, 
+      call active_write_xy_loc( 'wsshv4', wsshv4tmp,
      &   num_var, 0, mythid, dummy)
 
       enddo
@@ -958,7 +958,7 @@ c--           Test for missing values.
               endif
               wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*0.1
               wtauv(i,j,bi,bj) = max(wtauv(i,j,bi,bj),wtau0)
-#ifndef ALLOW_ROTATE_UV_CONTROLS              
+#ifndef ALLOW_ROTATE_UV_CONTROLS
               wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*masks(i,j,k,bi,bj)
      &                            *frame(i,j)
 cph(

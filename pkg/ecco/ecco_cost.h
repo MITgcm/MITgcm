@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.48 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.49 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -82,7 +82,7 @@ c     objf_gencost - gencost user defined contribution
 
       common /ecco_gencost_i_1/
      &       gencost_nrec
-      integer gencost_nrec(NGENCOST)      
+      integer gencost_nrec(NGENCOST)
 
       common /ecco_gencost_c/
      &       gencost_errfile,
@@ -147,8 +147,8 @@ c             intantaneous field.
      &                    wlmean,
      &                    Sfmean,
      &                    Tfmean,
-     &			  sbar_gen,
-     &			  tbar_gen,
+     &                    sbar_gen,
+     &                    tbar_gen,
      &                    wfmean
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
@@ -419,7 +419,7 @@ c                  function contributions.
      &     objf_runoff,     objf_runoffm,     objf_runoffsmoo,
      &     objf_uwind,      objf_uwindm,      objf_uwindsmoo,
      &     objf_vwind,      objf_vwindm,      objf_vwindsmoo,
-     &     objf_obcsn, objf_obcss, objf_obcsw, objf_obcse, 
+     &     objf_obcsn, objf_obcss, objf_obcsw, objf_obcse,
      &     objf_obcsvol,
      &     objf_curmtr,
      &     objf_ageos,
@@ -1139,15 +1139,13 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wmean_apressure
       _RL wmean_runoff
       _RL wmean_wind
-						
+
       common /ecco_cost_weights_2_r/
      &                      whflux2,wsflux2,wtauu2,wtauv2
       _RL whflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wsflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauu2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauv2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-						
-		
 
 #if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCSN_CONTROL))

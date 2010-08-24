@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.11 2010/02/06 02:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.12 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -135,9 +135,9 @@ c--       Initialise temperature average (2d).
           do j = jmin,jmax
             do i =  imin,imax
               sstbar(i,j,bi,bj) = 0. _d 0
-	    enddo
-	  enddo 
-	  xx_sstbar_mean_dummy = 0. _d 0
+            enddo
+          enddo
+          xx_sstbar_mean_dummy = 0. _d 0
 #endif
 
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \

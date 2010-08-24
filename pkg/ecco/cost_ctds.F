@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctds.F,v 1.8 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctds.F,v 1.9 2010/08/24 14:34:19 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -174,7 +174,7 @@ c--           Determine the weights to be used.
      &                             (tmpbar(i,j)-tmpobs(i,j))
                      if ( wtmp(i,j)*www(i,j) .ne. 0. )
      &                    num_ctds(bi,bj) = num_ctds(bi,bj) + 1. _d 0
-		  endif
+                  endif
                 enddo
               enddo
             enddo
