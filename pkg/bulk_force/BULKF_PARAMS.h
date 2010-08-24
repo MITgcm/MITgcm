@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.4 2006/05/25 17:30:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.5 2010/08/24 13:56:02 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_BULK_FORCE
@@ -55,7 +55,6 @@ C      dTstab :: potential temp. increment for stability function derivative
 C      FSTAB  :: Amplitude of stability correction (fraction)
 C.. Albedo
 C     ocean_albedo :: ocean surface albedo [0-1]
-	
       _RL  rhoA
 c     _RL  rhoSW
       _RL  rhoFW

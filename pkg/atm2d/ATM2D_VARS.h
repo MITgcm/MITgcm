@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.12 2007/11/19 22:57:31 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.13 2010/08/24 13:52:54 jmc Exp $
 C $Name:  $
 
       INTEGER nForcingPer
@@ -107,7 +107,7 @@ C     Files: basic state 3D wind fields, and E,P, and qnet prescibed fluxes (if 
 
 c
 c ocean data zonal means
-      COMMON/OCN_ZONALMN/ ctocn, ctice, cfice, csAlb, csAlbNIR, 
+      COMMON/OCN_ZONALMN/ ctocn, ctice, cfice, csAlb, csAlbNIR,
      &                    ocnArea, cco2flux
        _RL ctocn(jm0)    ! zonal mean ice-free ocean temp
        _RL ctice(jm0)    ! zonal mean seaice surface temp
@@ -161,8 +161,8 @@ c
        _RL endwgt1            ! weighting of atmos polar cap
        _RL endwgt2            ! weighting of atmos cell next polar cap
        _RL rsumwgt            ! recip of sum of above
-       INTEGER tauv_jpt(sNy)  ! lookup of (first) atm grid for ocean tauv on C-grid          
-       _RL tauv_jwght(sNy)    ! weight of (first) atm grid for ocean tauv           
+       INTEGER tauv_jpt(sNy)  ! lookup of (first) atm grid for ocean tauv on C-grid
+       _RL tauv_jwght(sNy)    ! weight of (first) atm grid for ocean tauv
 
 
 C     Fields use to sum 2D ocean fluxes over several atm timesteps
@@ -187,7 +187,7 @@ C     Also sum of atm E,P  for seaice growth step, and sum of seaice bottom flux
        _RL sum_evapIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)! total evap over ice (kg/m2/s, +=out of ocean)
        _RL sum_sHeat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! surf heating, post ice temp step, to melt ice/snow
        _RL sum_flxCnB(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! heat flux conducted through ice to bottom surface
-				                   ! W/m2, +=down
+C                                                  ! W/m2, +=down
 
 
 C     These are the fluxes actually passed to the ocean model (w/some unit/sign conversion)
@@ -212,9 +212,9 @@ C     These are the fluxes actually passed to the ocean model (w/some unit/sign 
       COMMON/ICE_FLUXES_PASS/ netSW, sFlx, dTsurf, pass_prcAtm
        _RL netSW(sNx,sNy)    ! net shortwave flux to ice (W/m2) (+= down)
        _RL sFlx(sNx,sNy,0:2) ! input variables to seaice temp solver:
-			     ! 0: sFlx(:,1) - Tsurf * dF/dT (W/m2)
-			     ! 1: surface heat flux to ice, no SW (Ts=Ts^n) (W/m2) (+=down)
-			     ! 2: dF/dT (over ice), (- def, as for +=down HF)
+C                            ! 0: sFlx(:,1) - Tsurf * dF/dT (W/m2)
+C                            ! 1: surface heat flux to ice, no SW (Ts=Ts^n) (W/m2) (+=down)
+C                            ! 2: dF/dT (over ice), (- def, as for +=down HF)
        _RL dTsurf(sNx,sNy)   ! surf temp adjustment Ts^n+1 - Ts^n
        _RL pass_prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! total precip -> seaice top (kg/m2/s, +=precip to ice)
 

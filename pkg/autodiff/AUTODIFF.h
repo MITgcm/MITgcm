@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.7 2010/08/09 16:05:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.8 2010/08/24 13:54:02 jmc Exp $
 C $Name:  $
 
       integer ilev_1
@@ -19,7 +19,7 @@ C $Name:  $
       PARAMETER (NEXF2  = 18)
       PARAMETER (NCTRL1 = 18)
       PARAMETER (NOB = 18)
-      PARAMETER (NSI = 19)	
+      PARAMETER (NSI = 19)
       _RL StoreDynVars3D
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,NDV3D)
       _RL StoreDynVars2D
