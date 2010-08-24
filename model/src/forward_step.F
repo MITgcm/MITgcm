@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.177 2010/01/12 23:56:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.178 2010/08/24 02:36:56 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,6 +124,9 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
+# endif
+# ifdef ALLOW_GGL90
+#  include "GGL90.h"
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
