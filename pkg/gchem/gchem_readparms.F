@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.17 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.18 2010/08/24 14:41:32 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -31,8 +31,8 @@ C  none
 C !LOCAL VARIABLES: ====================================================
 C  tIter0               :: retired parameter
 C  iTracer              :: loop indices
-C  iUnit		:: unit number for I/O
-C  msgBuf		:: message buffer
+C  iUnit                :: unit number for I/O
+C  msgBuf               :: message buffer
       INTEGER tIter0
       INTEGER iTracer
       INTEGER iUnit

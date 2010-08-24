@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_mdsreadvector.F,v 1.3 2008/12/03 02:34:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_mdsreadvector.F,v 1.4 2010/08/24 14:40:19 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -26,15 +26,15 @@ C $Name:  $
 C
 C Arguments:
 C
-C fName		string	base name for file to read
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C narr		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to read into, arr(narr)
-ce bi           integer x tile index
-ce bj           integer y tile index
-C irecord	integer	record number to read
-C myThid	integer thread identifier
+C fName      string   base name for file to read
+C filePrec   integer  number of bits per word in file (32 or 64)
+C arrType    char(2)  declaration of "arr": either "RS" or "RL"
+C narr       integer  size of third dimension: normally either 1 or Nr
+C arr        RS/RL    array to read into, arr(narr)
+ce bi        integer  x tile index
+ce bj        integer  y tile index
+C irecord    integer  record number to read
+C myThid     integer  thread identifier
 C
 C Created: 03/26/99 eckert@mit.edu
 C Modified: 03/29/99 adcroft@mit.edu + eckert@mit.edu

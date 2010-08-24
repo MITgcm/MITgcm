@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.29 2010/03/22 02:20:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.30 2010/08/24 14:42:33 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -459,7 +459,7 @@ c******************************************************
      &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-c	 
+c 
                WRITE(msgBuf,'(A34,1PE24.14)') 
      &              ' TLM  precision_derivative_cost =', fcref
                CALL PRINT_MESSAGE
