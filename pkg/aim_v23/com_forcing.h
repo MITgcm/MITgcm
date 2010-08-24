@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.5 2010/01/21 00:10:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.6 2010/08/24 13:29:00 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -42,7 +42,7 @@ C     stl1   - land-surface temperature    [K]
 C     snow1  - snow depth (mm water)
 C     soilw1 - soil wetness (mm water)
 C     alb1   - surface albedo (1:land, 2:ocean, 3:sea-ice, 0:average)
-C     dTsurf - surface temperature changes form 1 it to the next one	
+C     dTsurf - surface temperature changes form 1 it to the next one
 c     COMMON /FORDAY/ sst1, oice1, stl1, snow1, soilw1, alb1
       COMMON /FORDAY/ sst1, sti1, stl1, soilw1, alb1, dTsurf
       _RL sst1   (NGP,MAX_NO_THREADS)
