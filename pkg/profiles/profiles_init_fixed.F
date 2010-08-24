@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.14 2009/08/03 14:25:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.15 2010/08/24 02:49:57 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -133,7 +133,19 @@ c1)  read the number of profiles :
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
 c2) read the dates and positions :
-      err = NF_INQ_VARID(fid,'depth', varid1a )
+      err = NF_INQ_VARID(fid,'prof_depth', varid1a )
+      if (err.NE.NF_NOERR) then
+c       if no prof_depth is found, then try old variable name:
+        err = NF_INQ_VARID(fid,'depth', varid1a )
+      endif
+      if (err.NE.NF_NOERR) then
+c       if neither is found, then stop
+            WRITE(errorMessageUnit,'(A,X,I4.4,/,A)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
+     & '.nc file is not in the ECCO format (depth)'
+      stopProfiles=1. _d 0
+      endif
+
       do k=1,ProfDepthNo(num_file,bi,bj)
       err = NF_GET_VAR1_DOUBLE(fid,varid1a,k,
      & prof_depth(num_file,k,bi,bj))
