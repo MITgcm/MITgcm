@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.7 2010/03/16 00:16:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.8 2010/08/24 14:58:48 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -139,7 +139,7 @@ CML     &      Dd(k),Pd(k,1),Pd(k,2)
 CML compute vertical velocity at cell centers from GCM velocity
        Wd(k)= - .5*(wVel(K)+wVel(K+1))
 CML(
-CML	avoid division by zero
+CML    avoid division by zero
 CML       IF (Wd(K) .EQ. 0.D0) Wd(K) = 2.23e-16
 CML)
 c
@@ -351,7 +351,7 @@ c
          DO ktr = 1, nTracerInUse
           Pda(k2,ktr) = Pd(k2,ktr)
           Paa(k2,ktr) = tracerEnv(k2+1,ktr)
-         ENDDO	
+         ENDDO
 c
         enddo
         dt = min(dt,dtts)
@@ -365,7 +365,7 @@ c
 #endif /* ALLOW_OPPS_DEBUG */
         DO ktr=1,nTracerInUse
          Pda(maxdepth,ktr) = Pd(maxdepth,ktr)
-        ENDDO	
+        ENDDO
 C
         kmx = maxdepth-1
         do nn=1,ntime
@@ -375,7 +375,7 @@ C
          DO ktr = 1,nTracerInUse
           tracerEnv(k,ktr) =  tracerEnv(k,ktr)-
      &        (mda(k)*(Pda(k,ktr)-Paa(k,ktr)))*dt*recip_drF(k)
-         ENDDO	
+         ENDDO
 c
 c now do inner points if there are any
 c
@@ -411,7 +411,7 @@ c
           DO k2=1,kmx
            paa(k2,ktr) = tracerEnv(k2+1,ktr)
           ENDDO
-         ENDDO	
+         ENDDO
 c
 c end loop on number of time integration steps
 c

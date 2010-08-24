@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.7 2007/10/09 00:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.8 2010/08/24 15:03:15 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine profiles_init_ncfile                          |
-C     | o initialization of model counterparts files 		 |
-C     |   for netcdf profiles data 		                 |
+C     | o initialization of model counterparts files             |
+C     |   for netcdf profiles data                               |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_readparms.F,v 1.1 2004/09/16 11:28:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_readparms.F,v 1.2 2010/08/24 14:58:49 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -29,8 +29,8 @@ C  none
 #ifdef ALLOW_OPPS
 
 C !LOCAL VARIABLES: ====================================================
-C  iUnit		:: unit number for I/O
-C  msgBuf		:: message buffer
+C  iUnit                :: unit number for I/O
+C  msgBuf               :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -38,11 +38,11 @@ CEOP
       NAMELIST /OPPS_PARM01/
      &     MAX_ABE_ITERATIONS,
      &     OPPSdebugLevel,
-     &     PlumeRadius,         
+     &     PlumeRadius,
      &     STABILITY_THRESHOLD,
      &     FRACTIONAL_AREA,
-     &     MAX_FRACTIONAL_AREA, 
-     &     VERTICAL_VELOCITY,   
+     &     MAX_FRACTIONAL_AREA,
+     &     VERTICAL_VELOCITY,
      &     ENTRAINMENT_RATE,
      &     useGCMwVel,
      &     OPPSdumpFreq,
@@ -56,12 +56,12 @@ C internal flag to indicate we are in business
 C Set defaults values for parameters in OPPS.h
       MAX_ABE_ITERATIONS   =  1
       OPPSdebugLevel       =  0
-      PlumeRadius          = 100.   _d 0 
-      STABILITY_THRESHOLD  =  -1.   _d -4 
-      FRACTIONAL_AREA      =    .1  _d 0   
-      MAX_FRACTIONAL_AREA  =    .8  _d 0   
-      VERTICAL_VELOCITY    =    .03 _d 0  
-      ENTRAINMENT_RATE     =   -.05 _d 0 
+      PlumeRadius          = 100.   _d 0
+      STABILITY_THRESHOLD  =  -1.   _d -4
+      FRACTIONAL_AREA      =    .1  _d 0
+      MAX_FRACTIONAL_AREA  =    .8  _d 0
+      VERTICAL_VELOCITY    =    .03 _d 0
+      ENTRAINMENT_RATE     =   -.05 _d 0
       OPPSdumpFreq         = dumpFreq
       OPPStaveFreq         = taveFreq
       OPPSwriteState       = .FALSE.
@@ -89,7 +89,7 @@ C Close the open data file
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-C Now set-up any remaining parameters that result from the input parameters 
+C Now set-up any remaining parameters that result from the input parameters
       e2    =   2.*ENTRAINMENT_RATE
 #endif /* ALLOW_OPPS */
 

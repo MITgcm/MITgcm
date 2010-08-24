@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.13 2008/02/22 21:16:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.14 2010/08/24 15:03:15 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
-C     | subroutine cost_profiles				 |
-C     | o computes the cost for netcdf profiles data		 |
+C     | subroutine cost_profiles                                 |
+C     | o computes the cost for netcdf profiles data             |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
@@ -51,7 +51,7 @@ C     ========= Local variables =======================
 #endif
       character*(max_len_mbuf) msgbuf
 c     == end of interface ==
- 
+
         _BEGIN_MASTER( mythid )
 
       DO bj=1,nSy
@@ -96,7 +96,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 
 #endif
              else
-#endif 
+#endif
               do K=1,ProfDepthNo(num_file,bi,bj)
                prof_traj1D_mean(K)=0.
               enddo
@@ -119,7 +119,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 
              do K=1,ProfDepthNo(num_file,bi,bj)
                objf_profiles(num_file,num_var,bi,bj)=
-     &             objf_profiles(num_file,num_var,bi,bj) 
+     &             objf_profiles(num_file,num_var,bi,bj)
      &             +prof_weights1D(K)*prof_mask1D_cur(K,bi,bj)
      &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
      &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
@@ -131,7 +131,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
              enddo
             endif
 
-           enddo !do num_var... 
+           enddo !do num_var...
           endif !if (prof_num.LE.ProfNo(num_file,bi,bj)) then
          enddo !do prof_num=..
 

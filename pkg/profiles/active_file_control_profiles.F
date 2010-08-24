@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.5 2007/10/09 00:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.6 2010/08/24 15:03:14 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -7,8 +7,8 @@ C     o==========================================================o
 C     | subroutine active_file_control_profile                   |
 C     | o handles the i/o of active variables for the adjoint    |
 C     |   calculations, related to netcdf profiles data files    |
-C     | o active_read_profile_rl, active_write_profile_rl	 |
-C     | started: Gael Forget 15-March-2006			 |
+C     | o active_read_profile_rl, active_write_profile_rl        |
+C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
       subroutine active_read_profile_rl(
