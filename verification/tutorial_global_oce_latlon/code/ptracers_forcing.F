@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/Attic/ptracers_forcing.F,v 1.3 2007/11/05 19:27:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/Attic/ptracers_forcing.F,v 1.4 2010/08/24 15:15:00 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -44,7 +44,7 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gPtracer		:: updates tendency array
+C  gPtracer             :: updates tendency array
 
 #ifdef ALLOW_PTRACERS
 

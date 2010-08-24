@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/FFIELDS.h,v 1.1 2008/01/15 21:16:42 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/FFIELDS.h,v 1.2 2010/08/24 15:15:00 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -38,7 +38,7 @@ C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
 C              flux of Salt taken out of the ocean per time unit (second).
 C              Note: a) only used when salty sea-ice forms or melts.
 C                    b) units: when salinity (unit= psu) is expressed
-C              	        in g/kg, saltFlux unit becomes g/m^2/s.
+C                       in g/kg, saltFlux unit becomes g/m^2/s.
 C              > 0 for decrease in SSS.
 C              Southwest C-grid tracer point
 C

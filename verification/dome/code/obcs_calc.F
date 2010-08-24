@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.6 2010/03/16 00:27:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.7 2010/08/24 15:15:00 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -170,7 +170,7 @@ c      endif
            ENDIF
 c       if ((x.ge.0).and.(x.le.Width)) then
 c        print *,'z(k)',z(k),'zt',zt,'Fz',Fz
-c	endif
+c       endif
             OBNv(I,K,bi,bj)=0.
      &     -  sqrt(gp_inflow*Dinf)*exp(-x)
      &                            *(1. _d 0 - Fz)
@@ -187,7 +187,7 @@ c           endif
            ENDIF
 c           if ((x.ge.0).and.(x.le.Width)) then
 c       print *,'T=',OBNt(I,K,bi,bj)
-c	    endif
+c           endif
 c            OBNt(I,K,bi,bj)=tRef(K)
 c     & - dTemp
 c     & *(1.0 - Fz)
