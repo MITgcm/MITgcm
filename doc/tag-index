@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1292 2010/08/19 23:56:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1293 2010/08/25 19:37:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62j (2010/08/25)
 o pkg/ggl90:
    other minor changes: remove 3-D temp array gTKE (+ add argument myIter)
 o pkg/dic: car_flux.F, phos_flux.F
