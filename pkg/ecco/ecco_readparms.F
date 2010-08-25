@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.48 2010/04/17 20:40:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.49 2010/08/25 22:25:34 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -61,7 +61,7 @@ c--   Read the namelist input.
      &                   scatstartdate1, scatstartdate2,
      &                   scatperiod, scatxdatfile, scatydatfile,
      &                   scatx_errfile, scaty_errfile,
-     &                   ssh_errfile, 
+     &                   ssh_errfile, sshv4cost_scalefile, 
      &                   sshv4cost_errfile, sshv4cost_errfactor,
      &                   tp_errfile, ers_errfile, gfo_errfile,
      &                   tmistartdate1, tmistartdate2, tmidatfile,
@@ -258,8 +258,9 @@ c--     Set default values.
          usercost_errfile(k)   =    ' '
         enddo
         do k=1,NSSHV4COST
-         sshv4cost_errfile(k) =    ' '
-         sshv4cost_errfactor(k)=     1. _d 0
+         sshv4cost_scalefile(k) =    ' '
+         sshv4cost_errfile(k)   =    ' '
+         sshv4cost_errfactor(k) =     1. _d 0
         enddo
         tpTimeMaskFile        =    ' '
         ersTimeMaskFile       =    ' '

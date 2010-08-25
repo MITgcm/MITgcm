@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.4 2010/08/25 21:09:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.5 2010/08/25 22:25:34 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -272,7 +272,8 @@ c--   smooth mean_slaobs:
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,mean_slaobs,1,1,mythid)
 
-      call smooth_basic2D(mean_slaobs,maskc,150000. _d 0,1000,mythid)
+      call smooth_hetero2d(mean_slaobs,maskc,
+     &     sshv4cost_scalefile(1),300,mythid)
 
       write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -534,8 +535,8 @@ c--    smooth mean_psMssh_all
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_psMssh_all,1,1,mythid)
 
-      call smooth_basic2D(mean_psMssh_all,maskc,
-     &    150000. _d 0,1000,mythid)
+      call smooth_hetero2d(mean_psMssh_all,maskc,
+     &     sshv4cost_scalefile(1),300,mythid)
 
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -545,8 +546,8 @@ c--    smooth mean_psMssh_all
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_slaobs2,1,1,mythid)
 
-      call smooth_basic2D(mean_slaobs2,maskc,
-     &    150000.d0,1000,mythid)
+      call smooth_hetero2d(mean_slaobs2,maskc,
+     &     sshv4cost_scalefile(1),300,mythid)
 
       write(fname4test(1:80),'(1a)') 'sla2model_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -777,10 +778,12 @@ c ----------------------------------------
      & 1,anom_slaobs,irec,1,mythid)
 #endif
 
-      call smooth_basic2D(anom_psMslaobs,maskc,300000. _d 0,2000,mythid)
+      call smooth_hetero2d(anom_psMslaobs,maskc,
+     &     sshv4cost_scalefile(5),300,mythid)
 
 #ifdef ALLOW_SSHV4_OUTPUT
-      call smooth_basic2D(anom_slaobs,maskc,300000. _d 0,2000,mythid)   
+      call smooth_hetero2d(anom_slaobs,maskc,
+     &     sshv4cost_scalefile(5),300,mythid)
 
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
