@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.2 2010/08/24 14:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.3 2010/08/25 20:18:45 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -108,12 +108,15 @@ c for PART 4/5: compute smooth/raw anomalies
 
       _RL anom_psMtpobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_psMtpobs_NUM (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_tpobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL anom_psMersobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_psMersobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_ersobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL anom_psMgfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_psMgfoobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_gfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       integer tpmean_y0,tpmean_y1,year,day
       integer num_var
@@ -238,7 +241,7 @@ c--   Compute mean_slaobs: sample mean SLA over the time period of tpmean.
           do j = jmin,jmax
             do i = imin,imax
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-c     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ).AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs(i,j,bi,bj) = mean_slaobs(i,j,bi,bj) /
      &                 mean_slaobs_NUM(i,j,bi,bj)
@@ -299,6 +302,7 @@ cgf =======================================================
               mean_psMersobs(i,j,bi,bj) = 0. _d 0
               mean_psMgfoobs(i,j,bi,bj) = 0. _d 0
               mean_psMssh_all(i,j,bi,bj) = 0. _d 0
+              anom_slaobs(i,j,bi,bj)  = 0. _d 0
 
               mean_psMtpobs_NUM(i,j,bi,bj)  = 0. _d 0
               mean_psMersobs_NUM(i,j,bi,bj) = 0. _d 0
@@ -351,6 +355,8 @@ cgf =======================================================
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
                 if ( tpmask(i,j,bi,bj)*wsshv4(i,j,2,bi,bj)
      &               *tpTimeMask(irec) .NE. 0. ) then
+                   anom_slaobs(i,j,bi,bj)=
+     &                 anom_slaobs(i,j,bi,bj)+tpobs(i,j,bi,bj)
                    mean_psMtpobs(i,j,bi,bj) =
      &                 mean_psMtpobs(i,j,bi,bj) +
      &                 psbar(i,j,bi,bj)-tpobs(i,j,bi,bj)
@@ -361,6 +367,8 @@ cgf =======================================================
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
                 if ( ersmask(i,j,bi,bj)*wsshv4(i,j,3,bi,bj)
      &               *ersTimeMask(irec) .NE. 0. ) then
+                   anom_slaobs(i,j,bi,bj)=
+     &                 anom_slaobs(i,j,bi,bj)+ersobs(i,j,bi,bj)
                    mean_psMersobs(i,j,bi,bj) =
      &                 mean_psMersobs(i,j,bi,bj) +
      &                 psbar(i,j,bi,bj)-ersobs(i,j,bi,bj)
@@ -371,6 +379,8 @@ cgf =======================================================
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
                 if ( gfomask(i,j,bi,bj)*wsshv4(i,j,4,bi,bj)
      &               *gfoTimeMask(irec) .NE. 0. ) then
+                   anom_slaobs(i,j,bi,bj)=
+     &                 anom_slaobs(i,j,bi,bj)+gfoobs(i,j,bi,bj)
                    mean_psMgfoobs(i,j,bi,bj) =
      &                 mean_psMgfoobs(i,j,bi,bj) +
      &                 psbar(i,j,bi,bj)-gfoobs(i,j,bi,bj)
@@ -433,8 +443,11 @@ c--   END loop over records for the first time.
                endif
 #endif
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .NE. 0. ).AND.
-c     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ).AND.
+c     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) ) then
+                  anom_slaobs(i,j,bi,bj) =
+     &                 anom_slaobs(i,j,bi,bj) /
+     &                 mean_psMssh_all_NUM(i,j,bi,bj)
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) /
      &                 mean_psMssh_all_NUM(i,j,bi,bj)-tpmean(i,j,bi,bj)
@@ -443,6 +456,7 @@ c     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ).AND.
      &                 mean_psMssh_all_NUM(i,j,bi,bj)
                   offset_sum=offset_sum+mean_psMssh_all_NUM(i,j,bi,bj)
                else
+                  anom_slaobs(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
                   mean_psMssh_all_MSK(i,j,bi,bj) = 0. _d 0
                endif
@@ -461,7 +475,7 @@ c--   Do a global summation.
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
-        stop   '  ... stopped in cost_ssh.'
+c        stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a,d22.15)')
@@ -500,6 +514,17 @@ c--    smooth mean_psMssh_all
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_psMssh_all,1,1,mythid)
+
+      write(fname4test(1:80),'(1a)') 'sla2model_raw'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     &    1,anom_slaobs,1,1,mythid)
+
+      call smooth_basic2D(anom_slaobs,maskc,
+     &    150000.d0,1000,mythid)
+
+      write(fname4test(1:80),'(1a)') 'sla2model_smooth'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     &    1,anom_slaobs,1,1,mythid)
 
 cgf at this point:
 cgf     1) mean_psMssh_all is the sample mean <psbar-slaobs-tpmean-offset>,
@@ -717,6 +742,7 @@ c ------------------------------------------------------
 c PART 4.2: smooth anom_psMslaobs in space
 c ----------------------------------------
 
+#ifdef ALLOW_SSHV4_OUTPUT
       write(fname4test(1:80),'(1a)') 'sladiff_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMslaobs,irec,1,mythid)
@@ -724,9 +750,12 @@ c ----------------------------------------
       write(fname4test(1:80),'(1a)') 'slaobs_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_slaobs,irec,1,mythid)
+#endif
 
       call smooth_basic2D(anom_psMslaobs,maskc,300000. _d 0,2000,mythid)
-      call smooth_basic2D(anom_slaobs,maskc,300000. _d 0,2000,mythid)
+
+#ifdef ALLOW_SSHV4_OUTPUT
+      call smooth_basic2D(anom_slaobs,maskc,300000. _d 0,2000,mythid)   
 
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -735,6 +764,7 @@ c ----------------------------------------
       write(fname4test(1:80),'(1a)') 'slaobs_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_slaobs,irec,1,mythid)
+#endif
 
 c PART 4.3: compute cost function term
 c ------------------------------------
@@ -792,6 +822,9 @@ cgf =======================================================
               anom_psMtpobs(i,j,bi,bj)  = 0. _d 0
               anom_psMersobs(i,j,bi,bj) = 0. _d 0
               anom_psMgfoobs(i,j,bi,bj) = 0. _d 0
+              anom_tpobs(i,j,bi,bj)  = 0. _d 0
+              anom_ersobs(i,j,bi,bj) = 0. _d 0
+              anom_gfoobs(i,j,bi,bj) = 0. _d 0
           enddo
          enddo
         enddo
@@ -803,27 +836,37 @@ cgf =======================================================
           do i = imin,imax
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
       if ( tpmask(i,j,bi,bj)*mean_psMtpobs_MSK(i,j,bi,bj).NE.0. )
-     &    anom_psMtpobs(i,j,bi,bj)=
+     & then
+         anom_psMtpobs(i,j,bi,bj)=
      &       psbar(i,j,bi,bj) - tpobs(i,j,bi,bj)
      &       - mean_psMtpobs(i,j,bi,bj)
+         anom_tpobs(i,j,bi,bj)=tpobs(i,j,bi,bj)
+      endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
       if ( ersmask(i,j,bi,bj)*mean_psMersobs_MSK(i,j,bi,bj).NE.0. )
-     &    anom_psMersobs(i,j,bi,bj)=
+     & then
+         anom_psMersobs(i,j,bi,bj)=
      &       psbar(i,j,bi,bj) - ersobs(i,j,bi,bj)
      &       - mean_psMersobs(i,j,bi,bj)
+         anom_ersobs(i,j,bi,bj)=ersobs(i,j,bi,bj)
+      endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
       if ( gfomask(i,j,bi,bj)*mean_psMgfoobs_MSK(i,j,bi,bj).NE.0. )
-     &    anom_psMgfoobs(i,j,bi,bj)=
+     & then
+         anom_psMgfoobs(i,j,bi,bj)=
      &       psbar(i,j,bi,bj) - gfoobs(i,j,bi,bj)
      &       - mean_psMgfoobs(i,j,bi,bj)
+         anom_gfoobs(i,j,bi,bj)=gfoobs(i,j,bi,bj)
+      endif
 #endif
           enddo
          enddo
         enddo
        enddo
 
+#ifdef ALLOW_SSHV4_OUTPUT
       write(fname4test(1:80),'(1a)') 'sladiff_tp_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMtpobs,irec,1,mythid)
@@ -834,6 +877,16 @@ cgf =======================================================
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMgfoobs,irec,1,mythid)
 
+      write(fname4test(1:80),'(1a)') 'slaobs_tp_raw'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_tpobs,irec,1,mythid)
+      write(fname4test(1:80),'(1a)') 'slaobs_ers_raw'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_ersobs,irec,1,mythid)
+      write(fname4test(1:80),'(1a)') 'slaobs_gfo_raw'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_gfoobs,irec,1,mythid)
+#endif 
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
