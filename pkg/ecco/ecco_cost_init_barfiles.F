@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.19 2010/08/27 21:23:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.20 2010/08/28 18:35:16 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -419,6 +419,7 @@ c initialize smr sss bar
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c--   Save gencost_barfile on file.
       do k=1,NGENCOST
+      if ( gencost_barfile(k) .ne. ' ' ) then
       ilt=ilnblnk( gencost_barfile(k) )
       write(fname_gencostbar,'(2a,i10.10)')
      &     gencost_barfile(k)(1:ilt), '.', optimcycle
@@ -430,6 +431,7 @@ c--   Save gencost_barfile on file.
      &       optimcycle, mythid, xx_genbar_dummy(k) )
 #endif
       enddo
+      endif
       enddo 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

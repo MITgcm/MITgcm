@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.51 2010/08/27 18:41:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.52 2010/08/28 18:35:16 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -85,12 +85,14 @@ c     objf_gencost - gencost user defined contribution
       integer gencost_nrec(NGENCOST)
 
       common /ecco_gencost_c/
+     &       gencost_name,
      &       gencost_scalefile,
      &       gencost_errfile,
      &       gencost_datafile,
      &       gencost_barfile,
      &       gencost_avgperiod,
      &       gencost_mask
+      character*(MAX_LEN_FNAM) gencost_name(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_scalefile(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_errfile(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)

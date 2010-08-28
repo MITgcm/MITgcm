@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.50 2010/08/27 18:41:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.51 2010/08/28 18:35:16 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -131,6 +131,7 @@ c--   Read the namelist input.
       namelist /ecco_gencost_nml/
      &         gencost_barfile,
      &         gencost_datafile, 
+     &         gencost_name,
      &         gencost_scalefile,
      &         gencost_errfile,
      &         gencost_mask,
@@ -447,12 +448,13 @@ c--   Set default values.
       do k=1,NGENCOST
          gencost_avgperiod(k)  = '     '
          gencost_datafile(k)   = ' '
+         gencost_name(k)       = 'gencost'
          gencost_scalefile(k)  = ' '
          gencost_errfile(k)    = ' '
          gencost_mask(k)       = 'c'
-         write(gencost_barfile(k)(1:8),'(a,i2.2)')
-     &        'genbar', k
-cph         gencost_barfile(k)    = ' '
+cgf         write(gencost_barfile(k)(1:8),'(a,i2.2)')
+cgf     &        'genbar', k
+         gencost_barfile(k)    = ' '
          gencost_spmin         = 0. _d 0
          gencost_spmax         = 0. _d 0
          gencost_spzero        = 9876. _d 0
