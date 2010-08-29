@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.2 2010/03/13 23:12:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.3 2010/08/29 19:28:50 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -74,8 +74,10 @@ c     == end of interface ==
             ingen(num_var)      = inyear
             sum1gen(num_var)    = sum1year
             genrec(num_var)     = yearrec
+#ifndef ALLOW_GENCOST_FREEFORM
          else
             STOP 'gencost_avgperiod wrongly specified'
+#endif
          end if
       end do
       

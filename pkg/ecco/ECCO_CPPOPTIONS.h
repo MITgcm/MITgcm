@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.7 2010/07/13 00:02:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.8 2010/08/29 19:28:50 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -89,6 +89,23 @@ C       >>> Cost function contributions
 C       >>> Projection onto Spherical Harmonics
 #undef  ALLOW_SPH_PROJECTION
 
+C       >>> ALLOW_GENCOST_CONTRIBUTION: interactive way to add basic 2D cost function terms.
+C       > In data.ecco, this requires the specification of data file (name, frequency, 
+C         etc.), bar file name for corresp. model average, standard error file name, etc.
+C       > In addition, adding such cost terms requires editing ecco_cost.h to increase 
+C         NGENCOST, and editing cost_gencost_customize.F to implement the actual
+C         model average (i.e. the bar file content).
+#undef ALLOW_GENCOST_CONTRIBUTION
+C       >>> free form version of GENCOST: allows one to use otherwise defined elements (e.g.
+C         psbar and and topex data) while taking advantage of the cost function/namelist slots
+C         that can be made available using ALLOW_GENCOST_CONTRIBUTION. To this end 
+C         ALLOW_GENCOST_CONTRIBUTION simply switches off tests that check whether all of the
+C         gencost elements (e.g. gencost_barfile and gencost_datafile) are specified in data.ecco.
+C       > While this option increases flexibility within the gencost framework, it implies more room 
+C         for error, so it should be used cautiously, and with good knowledge of the rest of pkg/ecco.
+C       > It requires providing a specific cost function routine, and editing cost_gencost_all.F accordingly.
+#undef ALLOW_GENCOST_FREEFORM
+ 
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************

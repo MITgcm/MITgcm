@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.21 2010/04/17 20:40:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.22 2010/08/29 19:28:50 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,9 +282,11 @@ c
      &        gencost_avgperiod(k) .EQ. 'YEAR' ) then
             STOP
      &       'COST_GENCOST_ALL: yearly data not yet implemented'
+#ifndef ALLOW_GENCOST_FREEFORM         
          else
             STOP 
      &       'COST_GENCOST_ALL: gencost_avgperiod wrongly specified'
+#endif
          endif
       enddo
 
