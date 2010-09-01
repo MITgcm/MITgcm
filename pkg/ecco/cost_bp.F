@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.3 2010/02/15 23:10:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.4 2010/09/01 17:23:36 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -56,8 +56,6 @@ c     == local variables ==
       integer i,j
       integer itlo,ithi
       integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
       integer irec
       integer ilps
 
@@ -76,6 +74,9 @@ c     == local variables ==
       character*(MAX_LEN_MBUF) msgbuf
       _RL fac
 
+      _RL offset
+      _RL offset_sum
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -87,10 +88,6 @@ c     == end of interface ==
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1
-      jmax = sny
-      imin = 1
-      imax = snx
 
 c--   Initialise local variables.
 cgf convert phibot from m2/s2 to cm
@@ -98,8 +95,8 @@ cgf convert phibot from m2/s2 to cm
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1,sny
+            do i = 1,snx
               bpdifmean(i,j,bi,bj) = 0. _d 0
               bpdifanom(i,j,bi,bj) = 0. _d 0
               bpdatmean(i,j,bi,bj) = 0. _d 0
@@ -133,16 +130,16 @@ c--     Compute the mean over all bpdat records.
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-      if (bpmask(i,j,bi,bj).NE.0.) then
-                bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
-     &              ( fac*maskc(i,j,1,bi,bj)*bpbar(i,j,bi,bj) 
-     &              - bpdat(i,j,bi,bj) )
-                bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
-     &                bpdat(i,j,bi,bj) 
-                bpcount(i,j,bi,bj) = bpcount(i,j,bi,bj) +1.
-      endif
+            do j = 1,sny
+              do i = 1,snx
+                if ( (bpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                  bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
+     &              ( fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj) )
+                  bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
+     &              bpdat(i,j,bi,bj) 
+                  bpcount(i,j,bi,bj) = bpcount(i,j,bi,bj) + 1. _d 0
+                endif
               enddo
             enddo
           enddo
@@ -152,12 +149,14 @@ c--     Compute the mean over all bpdat records.
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-      if (bpcount(i,j,bi,bj).GT.0.) then
-        bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
-        bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
-      endif
+            do j = 1,sny
+              do i = 1,snx
+                if (bpcount(i,j,bi,bj).GT. 0. _d 0) then
+                  bpdifmean(i,j,bi,bj) = 
+     &              bpdifmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
+                  bpdatmean(i,j,bi,bj) = 
+     &              bpdatmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
+                endif
               enddo
             enddo
           enddo
@@ -179,33 +178,74 @@ c--   Loop over records for the second time.
 c--    Compute field of anomalies
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-                bpdifanom(i,j,bi,bj) = 
-     &                      ( fac*maskc(i,j,1,bi,bj)*bpbar(i,j,bi,bj) 
-     &                      - bpdat(i,j,bi,bj) - bpdifmean(i,j,bi,bj)
-     &                      )*bpmask(i,j,bi,bj)
-                bpdatanom(i,j,bi,bj) =
-     &                     ( bpdat(i,j,bi,bj) - bpdatmean(i,j,bi,bj)
-     &                     )*bpmask(i,j,bi,bj)
+            do j = 1,sny
+              do i = 1,snx
+                if ( (bpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                  bpdifanom(i,j,bi,bj) = 
+     &              ( fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj) ) 
+     &              - bpdifmean(i,j,bi,bj)
+                  bpdatanom(i,j,bi,bj) =
+     &              bpdat(i,j,bi,bj) - bpdatmean(i,j,bi,bj)
+                else
+                  bpdifanom(i,j,bi,bj) = 0. _d 0
+                  bpdatanom(i,j,bi,bj) = 0. _d 0
+                endif
               enddo
             enddo
           enddo
         enddo
 
-      _EXCH_XY_RL ( bpdifanom, myThid )
-      _EXCH_XY_RL ( bpdatanom, myThid )
+c--    Remove global mean value
+      offset     = 0. _d 0
+      offset_sum = 0. _d 0
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1,sny
+            do i = 1,snx
+              if ( (bpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                offset  = offset + RA(i,j,bi,bj)*bpdifanom(i,j,bi,bj)
+                offset_sum = offset_sum + RA(i,j,bi,bj)
+              endif
+            enddo
+          enddo
+        enddo
+      enddo
+
+      _GLOBAL_SUM_RL( offset     , mythid )
+      _GLOBAL_SUM_RL( offset_sum , mythid )
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = 1,sny
+              do i = 1,snx
+                if ((offset_sum.GT. 0. _d 0).AND.
+     &              (bpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &              (maskc(i,j,1,bi,bj).NE. 0. _d 0)) then
+                  bpdifanom(i,j,bi,bj) = bpdifanom(i,j,bi,bj)
+     &                                 - offset/offset_sum
+                endif
+              enddo
+            enddo
+          enddo
+        enddo
 
 c--    Smooth field of anomalies
+#ifdef ALLOW_BP_COST_OUTPUT
       write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdifanom,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdatanom,irec,1,mythid)
+#endif
 
-      call smooth_basic2D(bpdifanom,bpmask,750000. _d 0,5000,mythid)
-      call smooth_basic2D(bpdatanom,bpmask,750000. _d 0,5000,mythid)
+      call smooth_basic2D(bpdifanom,maskc,750000. _d 0,5000,mythid)
+
+#ifdef ALLOW_BP_COST_OUTPUT
+      call smooth_basic2D(bpdatanom,maskc,750000. _d 0,5000,mythid)
 
       write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -213,21 +253,21 @@ c--    Smooth field of anomalies
       write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdatanom,irec,1,mythid)
+#endif
 
 c--    Compute cost function
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-c--             The array bpdat contains SSH anomalies.
-                junkweight = wbp(i,j,bi,bj) *cosphi(i,j,bi,bj)
-     &                      *bpmask(i,j,bi,bj)*maskc(i,j,1,bi,bj)
-                junk       = bpdifanom(i,j,bi,bj)
-                objf_bp(bi,bj) = objf_bp(bi,bj)
-     &              + junk*junk*junkweight
-                if ( junkweight .ne. 0. )
-     &               num_bp(bi,bj) = num_bp(bi,bj) + 1. _d 0
-
+            do j = 1,sny
+              do i = 1,snx
+                if ( (wbp(i,j,bi,bj).NE. 0. _d 0).AND.
+     &               (bpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                  junk = bpdifanom(i,j,bi,bj)
+                  objf_bp(bi,bj) = objf_bp(bi,bj)
+     &              + junk*junk*wbp(i,j,bi,bj)
+                  num_bp(bi,bj) = num_bp(bi,bj) + 1. _d 0
+                endif
               enddo
             enddo
           enddo
