@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.6 2010/03/21 17:59:54 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.7 2010/09/02 14:12:41 jahn Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -25,8 +25,15 @@ FC='mpif77'
 CC='mpicc'
 F90C='mpif90 -fixed -c '
 LINK='mpif77'
+for path in $(echo "$CPATH" | sed 's/:/ /g'); do
+  CPPFLAGS="$CPPFLAGS -I$path"
+done
 INCLUDES="$CPPFLAGS"
+# for static linkage:
+#LIBS="$LDFLAGS -static"
+# for dynamic linkage:
 LIBS="$LDFLAGS -shared-intel"
+
 
 # -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DIFORT'
@@ -40,8 +47,9 @@ if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     NOOPTFLAGS='-O2'
     # use this for exact checkpointing (slightly slower):
-    # FOPTIM='-O2 -pc64 -mieee-fp -align'
-    FOPTIM='-O2 -align'
+    FOPTIM='-O2 -pc64 -mieee-fp -align'
+    # use this for flighty faster execution but with roundoff errors in checkpointing:
+    # FOPTIM='-O2 -align'
     # ifort options:
     # -132        fixed-form line length is 132 characters
     # -r8         REAL is REAL*8
