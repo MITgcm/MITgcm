@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.13 2009/10/26 08:40:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.14 2010/09/03 23:33:49 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -40,16 +40,6 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 
-C--   By default for B-grid dynamics solver wind stress under sea-ice is
-C     set to the same value as it would be if there was no sea-ice.
-C     Define following CPP flag for B-grid ice-ocean stress coupling.
-#undef SEAICE_TEST_ICE_STRESS_1
-
-C--   By default for B-grid dynamics solver surface tilt is obtained
-C     indirectly via geostrophic velocities.  Define following CPP
-C     in order to ues ETAN instead.
-#undef EXPLICIT_SSH_SLOPE
-
 C--   By default the freezing point of water is set to the value of 
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
 C     simple linear dependence of the freezing point on salinity, 
@@ -65,7 +55,12 @@ C--   By default sea ice is fresh.  Set following flag for salty ice.
 #define SEAICE_SALINITY
 
 C--   Track sea ice age.
+C     By default sea ice age is associated with ice area.
+C     Define SEAICE_AGE_VOL to associate age with volume.
 #define SEAICE_AGE
+#ifdef SEAICE_AGE
+# define SEAICE_AGE_VOL
+#endif
 
 C--   By default the seaice model is discretized on a B-Grid (for 
 C     historical reasons). Define the following flag to use a new
@@ -75,16 +70,26 @@ C     (not thoroughly) test version on a C-grid
 C--   Only for the C-grid version it is possible to 
 #ifdef SEAICE_CGRID
 C     enable EVP code by defining the following flag
-#define SEAICE_ALLOW_EVP
-#ifdef SEAICE_ALLOW_EVP
+# define SEAICE_ALLOW_EVP
+# ifdef SEAICE_ALLOW_EVP
 C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit
 C--   viscosities from below and above in seaice_evp
 C--   not necessary, and not recommended, but used here for backward
 C--   compatibility
-#define SEAICE_ALLOW_CLIPZETA
-#endif /* SEAICE_ALLOW_EVP */
+#  define SEAICE_ALLOW_CLIPZETA
+# endif /* SEAICE_ALLOW_EVP */
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
-#undef SEAICE_ALLOW_TEM
+# undef SEAICE_ALLOW_TEM
+#else /* not SEAICE_CGRID, but old B-grid */
+C--   By default for B-grid dynamics solver wind stress under sea-ice is
+C     set to the same value as it would be if there was no sea-ice.
+C     Define following CPP flag for B-grid ice-ocean stress coupling.
+# define SEAICE_BICE_STRESS
+
+C--   By default for B-grid dynamics solver surface tilt is obtained
+C     indirectly via geostrophic velocities. Define following CPP
+C     in order to use ETAN instead.
+# define EXPLICIT_SSH_SLOPE
 #endif /* SEAICE_CGRID */
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth

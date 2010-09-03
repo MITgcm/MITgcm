@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.67 2010/07/06 00:14:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.68 2010/09/03 23:33:49 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -111,6 +111,11 @@ C     local copy of AREA
 #ifdef SEAICE_AGE
 C     old_AREA :: hold sea-ice fraction field before any seaice-thermo update
       _RL old_AREA     (1:sNx,1:sNy)
+# ifdef SEAICE_AGE_VOL
+C     old_HEFF :: hold sea-ice effective thicness field before any seaice-thermo update
+      _RL old_HEFF     (1:sNx,1:sNy)
+      _RL age_actual
+# endif /* SEAICE_AGE_VOL */
 #endif /* SEAICE_AGE */
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -197,6 +202,9 @@ C     store the initial ice fraction over the domain
         DO J=1,sNy
          DO I=1,sNx
            old_AREA(i,j) = AREA(I,J,bi,bj)
+# ifdef SEAICE_AGE_VOL
+           old_HEFF(i,j) = HEFF(I,J,bi,bj)
+# endif
          ENDDO
         ENDDO
 #endif /* SEAICE_AGE */
@@ -930,6 +938,7 @@ C     turn GHEFF into a rate
         ENDIF
 
 #ifdef SEAICE_AGE
+# ifndef SEAICE_AGE_VOL
 C     Sources and sinks for sea ice age:
 C     assume that a) freezing: new ice fraction forms with zero age
 C                 b) melting: ice fraction vanishes with current age
@@ -949,6 +958,32 @@ C--   account for aging:
           ENDIF
          ENDDO
         ENDDO
+# else /* ifdef SEAICE_AGE_VOL */
+C     Sources and sinks for sea ice age:
+C     assume that a) freezing: new ice volume forms with zero age
+C                 b) melting: ice volume vanishes with current age
+        DO J=1,sNy
+         DO I=1,sNx
+C--   compute actual age from effective age:
+          IF (OLD_AREA(i,j).GT.0. _d 0) THEN
+           age_actual=IceAge(i,j,bi,bj)/OLD_AREA(i,j)
+          ELSE
+           age_actual=0. _d 0
+          ENDIF         
+          IF ( (OLD_HEFF(i,j).LT.HEFF(i,j,bi,bj)).AND.
+     &         (AREA(i,j,bi,bj).GT.0.15) ) THEN
+           age_actual=age_actual*OLD_HEFF(i,j)/
+     &          HEFF(i,j,bi,bj)+SEAICE_deltaTtherm
+          ELSEIF (AREA(i,j,bi,bj).LE.0.15) THEN
+           age_actual=0. _d 0
+          ELSE
+           age_actual=age_actual+SEAICE_deltaTtherm
+          ENDIF
+C--   re-scale to effective age:
+          IceAge(i,j,bi,bj) = age_actual*AREA(i,j,bi,bj)
+         ENDDO
+        ENDDO
+# endif /* SEAICE_AGE_VOL */
 #endif /* SEAICE_AGE */
 
        ENDDO
