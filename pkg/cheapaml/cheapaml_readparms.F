@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.2 2010/08/24 14:07:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.3 2010/09/05 03:55:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -83,10 +83,12 @@ c       cheapaml_dtc=1.d0
 
 C-    Input data files names :
       AirTempFile=' '
+      AirQFile =' '
       SolarFile=' '
       UWindFile=' '
       VWindFile=' '
       TRFile=' '
+      QrFile=' '
 
 C-    e-p option turned off by default
         useFreshwaterFlux=.FALSE.
