@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.5 2010/09/05 03:53:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.6 2010/09/05 04:30:01 jmc Exp $
 C $Name:  $
 #include "CHEAPAML_OPTIONS.h"
 
@@ -56,7 +56,13 @@ C     aWght, bWght :: Interpolation weights
      &                 trair0,
      &                 trair1,
      &                 qrair0,
-     &                 qrair1
+     &                 qrair1,
+     &                 Solar0,
+     &                 Solar1,
+     &                 uwind0,
+     &                 uwind1,
+     &                 vwind0,
+     &                 vwind1
 
       _RS  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  trair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -116,7 +122,7 @@ c for the MITGCM.
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RS(solar, mythid)
+         _EXCH_XY_RL(solar, mythid)
 c relaxation temperature in radiative equilibrium
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -124,7 +130,7 @@ c relaxation temperature in radiative equilibrium
             DO i=1,sNx
           jG = myYGlobalLo-1+(bj-1)*sNy+j
           local=solar(i,j,bi,bj)
-          local=(2.d0*local/stefan)**(0.25d0)-273.16
+          local=(2.d0*local/stefan)**(0.25d0)-273.16 _d 0
           bump=-5.d0*EXP(-(float(jg-127)*float(jg-127))/1920.0)
           local=local+bump
           TR(i,j,bi,bj) = local
@@ -132,7 +138,7 @@ c relaxation temperature in radiative equilibrium
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RS(TR, mythid)
+         _EXCH_XY_RL(TR, mythid)
 c default specific humidity profile to 80% relative humidity
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -146,7 +152,7 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RS(qr, mythid)
+         _EXCH_XY_RL(qr, mythid)
 c u wind field
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -159,7 +165,7 @@ c u wind field
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RS(uwind, mythid)
+         _EXCH_XY_RL(uwind, mythid)
 c v wind field
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -171,7 +177,7 @@ c v wind field
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RS(vwind, mythid)
+         _EXCH_XY_RL(vwind, mythid)
       ELSE
 
 c here for usual interpolative forcings
@@ -286,7 +292,7 @@ c end of periodic forcing options, on to steady option
       ELSE
        IF ( myIter .EQ. nIter0 ) THEN
         IF ( SolarFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( SolarFile, ' ', solar, 0, myThid )
+         CALL READ_FLD_XY_RL( SolarFile, ' ', solar, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -301,9 +307,9 @@ c end of periodic forcing options, on to steady option
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RS(solar, mythid)
+        _EXCH_XY_RL(solar, mythid)
         IF ( TrFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( TrFile, ' ', tr, 0, myThid )
+         CALL READ_FLD_XY_RL( TrFile, ' ', tr, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -311,7 +317,7 @@ c end of periodic forcing options, on to steady option
             DO i=1,sNx
         jG = myYGlobalLo-1+(bj-1)*sNy+j
         local=solar(i,j,bi,bj)
-        local=(2.d0*local/stefan)**(0.25d0)-273.16
+        local=(2.d0*local/stefan)**(0.25d0)-273.16 _d 0 
         bump=-5.d0*EXP(-(float(jg-127)*float(jg-127))/1920.0)
         local=local+bump
                   TR(i,j,bi,bj) = local
@@ -320,10 +326,10 @@ c end of periodic forcing options, on to steady option
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RS(TR, mythid)
+        _EXCH_XY_RL(TR, mythid)
 c do specific humidity
         IF ( QrFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( QrFile, ' ', qr, 0, myThid )
+         CALL READ_FLD_XY_RL( QrFile, ' ', qr, 0, myThid )
         ELSE
 c default specific humidity profile to 80% relative humidity
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -339,9 +345,9 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RS(qr, mythid)
+        _EXCH_XY_RL(qr, mythid)
         IF ( UWindFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( UWindFile, ' ', uwind, 0, myThid )
+         CALL READ_FLD_XY_RL( UWindFile, ' ', uwind, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -358,10 +364,10 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RS(uwind, mythid)
+         _EXCH_XY_RL(uwind, mythid)
         ENDIF
         IF ( VWindFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( VWindFile, ' ', vwind, 0, myThid )
+         CALL READ_FLD_XY_RL( VWindFile, ' ', vwind, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -374,7 +380,7 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RS(vwind, mythid)
+        _EXCH_XY_RL(vwind, mythid)
        ENDIF
 
 C endif for periodicForcing
