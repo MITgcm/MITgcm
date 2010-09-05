@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.178 2010/08/24 02:36:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.179 2010/09/05 03:51:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -273,7 +273,7 @@ C--   Call external chepaml forcing package
       IF ( useCheapAML  ) THEN
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('CHEAPAML_FIELDS_LOAD',myThid)
+     &    CALL DEBUG_CALL('CHEAPAML',myThid)
 #endif
        CALL TIMER_START('CHEAPAML      [FORWARD_STEP]',mythid)
 C-    calculate qnet (and wind stress)
