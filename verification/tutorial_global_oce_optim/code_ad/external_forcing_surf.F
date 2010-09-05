@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.3 2009/12/21 00:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.4 2010/09/05 22:32:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -57,6 +57,10 @@ C     ks     :: index of surface interface layer
       INTEGER i,j
       INTEGER ks
 CEOP
+#ifdef ALLOW_PTRACERS
+C     relaxForcingS :: Salt forcing due to surface relaxation
+      _RL relaxForcingS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_PTRACERS */
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
@@ -114,7 +118,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    T,S surface forcing will be applied (thermodynamics) after the update
 C     of surf.thickness (hFac): account for change in surf.thickness
        IF (staggerTimeStep.AND.nonlinFreeSurf.GT.0) THEN
-        IF (select_rStar.GT.0) THEN
+        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -170,6 +174,17 @@ C--   No restoring for T & S : set surfaceForcingT,S to zero :
 
 C--   end restoring / no restoring block.
       ENDIF
+
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) THEN
+C--   save salt forcing due to surface relaxation
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+         relaxForcingS(i,j) = surfaceForcingS(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_PTRACERS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -336,6 +351,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_PTRACERS
       IF ( usePTRACERS ) THEN
          CALL PTRACERS_FORCING_SURF(
+     I        relaxForcingS,
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime,myIter,myThid )
       ENDIF
