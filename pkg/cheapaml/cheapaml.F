@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.2 2009/04/28 18:34:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.3 2010/09/05 03:54:28 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -54,13 +54,14 @@ c     == routine arguments ==
 
 C     == Local variables ==
       integer bi,bj
-      integer i,j,k,nt
+      integer i,j, nt
+c     integer k
 
 c  integer cheapaml_ntim atmospheric timesteps per ocean time step
 
 c variables to include seaice effect
-      _RL     tmp
-      _RL     albedo
+c     _RL     tmp
+c     _RL     albedo
       integer iceornot
 
 c local variables
@@ -74,12 +75,14 @@ C       AML timestep
         _RL deltaTTracer
         _RL uss,usm,uw,vw,hm
         _RL cheapaml_BulkCdn
-        _RL xrel,to
+c       _RL xrel
+        _RL to
         _RL xgs,t
         _RL xef
         _RL xefi
         _RL dtemp,xflu,xfld,xrelf
-        _RL xgamm,xgam,xalw,xolw
+c       _RL xgamm,xgam
+        _RL xalw, xolw
         _RL t0,humid_fac,Qa,gamma_blk
         _RL ssq,ssq0,ssq1,ssq2
         _RL lath,p0,deltap,delq
@@ -135,7 +138,7 @@ c       write(*,*) 'i,j,bi,bj, latent, sensible, long, short, qnet'
 c relaxation time scales from input
 c cheapaml_taurelax1 holds over the ocean
 c cheapaml_taurelax2 holds over the buffer zones
-        xrel=1.d0/cheapaml_taurelax1/8.64d4
+c       xrel=1.d0/cheapaml_taurelax1/8.64d4
         xgs=1.d0/cheapaml_taurelax2/8.64d4
         xrelf=1.d0/(1.d0+xgs*deltaT)
 
@@ -158,7 +161,7 @@ c     determine wind stress
              if (hFacC(i,j,1,bi,bj).ne.0. _d 0) then
 #ifdef ALLOW_THSICE
                if (ICEMASK(i,j,bi,bj).gt.0. _d 0) then
-                 tmp=Tsrf(i,j,bi,bj)
+c                tmp=Tsrf(i,j,bi,bj)
                 if (snowheight(i,j,bi,bj).gt.3. _d -1) then
                    iceornot=2
                  else
