@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.8 2010/04/02 19:27:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.9 2010/09/05 22:28:14 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -201,6 +201,13 @@ C--    add diagnostics for other pkg contribution to ptracer solution
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO
+
+      diagName  = 'Add2EmP '
+      diagTitle = 'additional EmP from salt relaxation'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 

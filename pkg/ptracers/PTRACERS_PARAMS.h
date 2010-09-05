@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.7 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.8 2010/09/05 22:28:14 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -64,7 +64,8 @@ C     PTRACERS_SOM_Advection :: internal flag (depend on the advection scheme),
 C                               true if this tracer uses 2nd-order moment advection
 C     PTRACERS_AdamsBashGtr  :: internal flag (depend on the advection scheme),
 C                               true if applies Adams-Bashforth on tracer tendency
-C     PTRACERS_useDWNSLP(n) :: true if Down-Sloping flow applies to pTracer n
+C     PTRACERS_useDWNSLP(n)  :: true if Down-Sloping flow applies to pTracer n
+C     PTRACERS_addSrelax2EmP :: add Salt relaxation to EmP
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
       LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
       LOGICAL PTRACERS_SOM_Advection(PTRACERS_num)
@@ -72,6 +73,7 @@ C     PTRACERS_useDWNSLP(n) :: true if Down-Sloping flow applies to pTracer n
       LOGICAL PTRACERS_useGMRedi(PTRACERS_num)
       LOGICAL PTRACERS_useDWNSLP(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
+      LOGICAL PTRACERS_addSrelax2EmP
       LOGICAL PTRACERS_useRecords
       LOGICAL
      &     PTRACERS_monitor_mnc, PTRACERS_monitor_stdio,
@@ -88,6 +90,7 @@ C     PTRACERS_useDWNSLP(n) :: true if Down-Sloping flow applies to pTracer n
      &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
      &     PTRACERS_useRecords,
+     &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
      &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
      &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,

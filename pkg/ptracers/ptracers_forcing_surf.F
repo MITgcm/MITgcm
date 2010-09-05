@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.9 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.10 2010/09/05 22:28:14 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,6 +8,7 @@ C !ROUTINE: PTRACERS_FORCING_SURF
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_FORCING_SURF(
+     I                            relaxForcingS,
      I                            bi, bj, iMin, iMax, jMin, jMax,
      I                            myTime,myIter,myThid )
 
@@ -23,17 +24,19 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#include "DYNVARS.h"
 #include "FFIELDS.h"
-c #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
+C  relaxForcingS        :: Salt forcing due to surface relaxation
 C  bi,bj                :: tile indices
 C  myTime               :: model time
 C  myIter               :: time-step number
 C  myThid               :: thread number
+      _RL relaxForcingS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi, bj, iMin, iMax, jMin, jMax
       _RL myTime
       INTEGER myIter
@@ -47,6 +50,8 @@ C  iTrc                 :: tracer index
 C  ks                   :: surface level index
       INTEGER i, j
       INTEGER iTrc, ks
+      _RL add2EmP(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL epsil, cutoff, tmpVar
 CEOP
 
       IF ( usingPCoords ) THEN
@@ -66,6 +71,47 @@ c    &               surfaceForcingS(i,j,bi,bj)
           ENDDO
       ENDDO
 
+C--   Option to convert Salt-relaxation into additional EmP contribution
+      IF ( PTRACERS_addSrelax2EmP ) THEN
+C-    here we assume that salt_EvPrRn = 0
+C     set cutoff value to prevent too large additional EmP:
+C       current limit is set to 0.1 CFL
+        epsil = 1. _d -10
+        cutoff = 0.1 _d 0 *drF(ks)/PTRACERS_dTLev(ks)
+        IF ( ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
+     &         .AND. useRealFreshWaterFlux )
+     &     .OR.convertFW2Salt .EQ. -1. ) THEN
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+            tmpVar = MAX( salt(i,j,ks,bi,bj), epsil )
+            add2EmP(i,j) = relaxForcingS(i,j)/tmpVar
+            add2EmP(i,j) = rUnit2mass
+     &                  *MAX( -cutoff, MIN( add2EmP(i,j), cutoff ) )
+          ENDDO
+         ENDDO
+        ELSE
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+            add2EmP(i,j) = relaxForcingS(i,j)/convertFW2Salt
+            add2EmP(i,j) = rUnit2mass
+     &                  *MAX( -cutoff, MIN( add2EmP(i,j), cutoff ) )
+          ENDDO
+         ENDDO
+        ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(add2EmP,'Add2EmP ',0,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+      ELSE
+        DO j = jMin, jMax
+          DO i = iMin, iMax
+            add2EmP(i,j) = 0. _d 0
+          ENDDO
+        ENDDO
+      ENDIF
+C-- end of "addEmP" setting
+
 #ifdef EXACT_CONSERV
       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
@@ -81,7 +127,7 @@ c
            DO i = iMin, iMax
              surfaceForcingPTr(i,j,bi,bj,iTrc) =
      &          surfaceForcingPTr(i,j,bi,bj,iTrc)
-     &        + PmEpR(i,j,bi,bj)
+     &        + ( PmEpR(i,j,bi,bj) - add2EmP(i,j) )
      &          *( PTRACERS_EvPrRn(iTrc) - pTracer(i,j,ks,bi,bj,iTrc) )
      &          *mass2rUnit
            ENDDO
@@ -111,7 +157,7 @@ C        local surface tracer
            DO i = iMin, iMax
             surfaceForcingPTr(i,j,bi,bj,iTrc) =
      &          surfaceForcingPTr(i,j,bi,bj,iTrc)
-     &        + EmPmR(i,j,bi,bj)
+     &        + ( EmPmR(i,j,bi,bj) + add2EmP(i,j) )
      &          *( pTracer(i,j,ks,bi,bj,iTrc) - PTRACERS_EvPrRn(iTrc) )
      &          *mass2rUnit
            ENDDO
@@ -132,7 +178,7 @@ C     surface tracer (=PTRACERS_ref)
            DO i = iMin, iMax
             surfaceForcingPTr(i,j,bi,bj,iTrc) =
      &          surfaceForcingPTr(i,j,bi,bj,iTrc)
-     &        + EmPmR(i,j,bi,bj)
+     &        + ( EmPmR(i,j,bi,bj) + add2EmP(i,j) )
      &            *( PTRACERS_ref(ks,iTrc) - PTRACERS_EvPrRn(iTrc) )
      &            *mass2rUnit
            ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.35 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.36 2010/09/05 22:28:14 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,6 +60,7 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
      &     PTRACERS_EvPrRn,
+     &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
@@ -117,6 +118,7 @@ C     Set defaults values for parameters in PTRACERS.h
           PTRACERS_units(iTracer)(ic:ic) = ' '
         ENDDO
       ENDDO
+      PTRACERS_addSrelax2EmP    = .FALSE.
       PTRACERS_useRecords       = .FALSE.
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = useMNC .AND. timeave_mnc
@@ -294,6 +296,8 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_I( PTRACERS_Iter0, INDEX_NONE,
      &   'PTRACERS_Iter0 =',
      &   ' /* timestep number when tracers are initialized */')
+      CALL WRITE_0D_L( PTRACERS_addSrelax2EmP, INDEX_NONE,
+     &   'PTRACERS_addSrelax2EmP =','/* add Salt relaxation to EmP */')
       CALL WRITE_1D_RL( PTRACERS_dTLev, Nr, INDEX_K,
      &   'PTRACERS_dTLev =',
      &'   /* Ptracer timestep ( s ) */')
