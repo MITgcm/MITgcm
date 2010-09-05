@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.4 2009/04/28 18:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.5 2010/09/05 03:53:39 jmc Exp $
 C $Name:  $
 #include "CHEAPAML_OPTIONS.h"
 
@@ -71,7 +71,7 @@ C     aWght, bWght :: Interpolation weights
 
       INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
-      _RL ssq0,ssq1,ssq2,lath,p0,ssqa,q
+      _RL ssq0,ssq1,ssq2,lath,p0,ssqa
 c xsolph - phase of year, assuming time zero is mid winter
 c xinxx - cos ( xsolph )
       _RL xsolph,xinxx
@@ -286,7 +286,7 @@ c end of periodic forcing options, on to steady option
       ELSE
        IF ( myIter .EQ. nIter0 ) THEN
         IF ( SolarFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( SolarFile,solar,' ',0,myThid )
+         CALL READ_FLD_XY_RS( SolarFile, ' ', solar, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -303,7 +303,7 @@ c end of periodic forcing options, on to steady option
         ENDIF
         _EXCH_XY_RS(solar, mythid)
         IF ( TrFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( TrFile,tr,' ',0,myThid )
+         CALL READ_FLD_XY_RS( TrFile, ' ', tr, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -323,7 +323,7 @@ c end of periodic forcing options, on to steady option
         _EXCH_XY_RS(TR, mythid)
 c do specific humidity
         IF ( QrFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( QrFile,qr,' ',0,myThid )
+         CALL READ_FLD_XY_RS( QrFile, ' ', qr, 0, myThid )
         ELSE
 c default specific humidity profile to 80% relative humidity
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -341,7 +341,7 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
         ENDIF
         _EXCH_XY_RS(qr, mythid)
         IF ( UWindFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( UWindFile,uwind,' ',0,myThid )
+         CALL READ_FLD_XY_RS( UWindFile, ' ', uwind, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -361,7 +361,7 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
          _EXCH_XY_RS(uwind, mythid)
         ENDIF
         IF ( VWindFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RS( VWindFile,vwind,' ',0,myThid )
+         CALL READ_FLD_XY_RS( VWindFile, ' ', vwind, 0, myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.2 2010/08/24 14:07:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.3 2010/09/05 03:53:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,7 +43,7 @@ c     CHARACTER*(MAX_LEN_FNAM) fn
 
       IF ( AirTempFile .NE. ' ' ) THEN
         write(*,*)'Tair initialized from  ->',AirTempFile
-         CALL READ_FLD_XY_RL( AirTempFile,Tair,' ',0,myThid )
+         CALL READ_FLD_XY_RL( AirTempFile, ' ', Tair, 0, myThid )
       ELSE
         write(*,*)'Tair initialized using standard profile'
         DO bj=1,nSy
