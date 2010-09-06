@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1293 2010/08/25 19:37:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1294 2010/09/06 00:13:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ptracers:
+   option for ptracer to convert Salt Relax into additional EmP.
+    tested in exp. global_ocean.90x40x15.dwnslp (update output)
 
 checkpoint62j (2010/08/25)
 o pkg/ggl90:
