@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.6 2010/03/13 23:12:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.7 2010/09/07 21:20:39 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -52,6 +52,14 @@ c     == end of interface ==
 
       do k = 1, NGENCOST
 
+         if ( (gencost_name(k).NE.'sshv4-mdt').AND.
+     &        (gencost_name(k).NE.'sshv4-tp').AND.
+     &        (gencost_name(k).NE.'sshv4-ers').AND.
+     &        (gencost_name(k).NE.'sshv4-gfo').AND.
+     &        (gencost_name(k).NE.'sshv4-lsc').AND.
+     &        (gencost_name(k).NE.'sstv4-amsre').AND.
+     &        (gencost_name(k).NE.'sstv4-amsre-lsc') ) then
+
          write(msgbuf,'(a,x,i2.2)') 'ph-cost gencost #', k
          call print_message( msgbuf, standardmessageunit,
      &        SQUEEZE_RIGHT , mythid)
@@ -69,7 +77,17 @@ c     == end of interface ==
      &        objf_gencost(1,1,k), num_gencost(1,1,k),
      &        myiter, mytime, mythid )
 
+         endif
+
       end do
+
+# if (defined(ALLOW_GENCOST_SSHV4))
+      call cost_gencost_sshv4( myiter, mytime, mythid )
+#endif /* ALLOW_GENCOST_SSHV4 */
+
+# if (defined(ALLOW_GENCOST_SSTV4)) 
+      call cost_gencost_sstv4( myiter, mytime, mythid )
+#endif /* ALLOW_GENCOST_SSTV4 */
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
