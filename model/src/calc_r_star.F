@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.16 2010/01/31 17:39:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.17 2010/09/10 17:52:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,9 +44,11 @@ C     etaFld :: current eta field used to update the hFactor
 
 C     !LOCAL VARIABLES:
 C     Local variables
-C     i,j, bi,bj   :: loop counter
-C     numbWrite    :: count the Number of warning written on STD-ERR file
-C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
+C     rStarAreaWeight :: use area weighted average for rStarFac at U & V point
+C     i,j, bi,bj      :: loop counter
+C     numbWrite       :: count the Number of warning written on STD-ERR file
+C     numbWrMax       ::  maximum  Number of warning written on STD-ERR file
+      LOGICAL rStarAreaWeight
       INTEGER i,j,bi,bj
       INTEGER numbWrite, numbWrMax
       INTEGER icntc1, icntc2, icntw, icnts
@@ -54,6 +56,13 @@ C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       _RL tmpfldW, tmpfldS
 c     CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
+
+      rStarAreaWeight = .TRUE.
+C-    Area-weighted average consistent with KE (& vert. advection):
+c     IF ( vectorInvariantMomentum .AND.
+c    &     (selectKEscheme.EQ.1 .OR. selectKEscheme.EQ.3)
+c    &   ) rStarAreaWeight =.FALSE.
+
 #ifdef W2_FILL_NULL_REGIONS
       INTEGER ii,jj
 #endif
@@ -91,6 +100,8 @@ C-- Compute the new column thikness :
           ENDIF
          ENDDO
         ENDDO
+       IF ( rStarAreaWeight ) THEN
+C-     Area weighted average
         DO j=1,sNy
          DO i=1,sNx+1
           IF ( kSurfW(i,j,bi,bj).LE.Nr ) THEN
@@ -119,6 +130,33 @@ C-- Compute the new column thikness :
           ENDIF
          ENDDO
         ENDDO
+       ELSE
+C-     Simple average
+        DO j=1,sNy
+         DO i=1,sNx+1
+          IF ( kSurfW(i,j,bi,bj).LE.Nr ) THEN
+           tmpfldW = rSurfW(i,j,bi,bj) - rLowW(i,j,bi,bj)
+           rStarFacW(i,j,bi,bj) =
+     &       ( 0.5 _d 0 *( etaFld(i-1,j,bi,bj) + etaFld(i,j,bi,bj) )
+     &        +tmpfldW )/tmpfldW
+          ELSE
+           rStarFacW(i,j,bi,bj) = 1.
+          ENDIF
+         ENDDO
+        ENDDO
+        DO j=1,sNy+1
+         DO i=1,sNx
+          IF ( kSurfS(i,j,bi,bj).LE.Nr ) THEN
+           tmpfldS = rSurfS(i,j,bi,bj) - rLowS(i,j,bi,bj)
+           rStarFacS(i,j,bi,bj) =
+     &       ( 0.5 _d 0 *( etaFld(i,j-1,bi,bj) + etaFld(i,j,bi,bj) )
+     &        +tmpfldS )/tmpfldS
+          ELSE
+           rStarFacS(i,j,bi,bj) = 1.
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
 
 C-    Needs to do something when r* ratio is too small ;
 C     for now, just stop
