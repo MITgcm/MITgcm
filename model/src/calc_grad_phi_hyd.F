@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.12 2010/05/14 23:21:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.13 2010/09/10 17:23:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,6 +99,7 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
      &                    -(                 rC(k) /atm_Po)**atm_kappa
      &                  )
            varLoc(i,j) = factPI*alphRho(i,j)
+     &                 + phi0surf(i,j,bi,bj)
           ELSEIF (Ro_surf(i,j,bi,bj).NE.0. _d 0) THEN
            factPI = (rC(k)/Ro_surf(i,j,bi,bj))**atm_kappa
            varLoc(i,j) = phiHydC(i,j)
