@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.6 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.7 2010/09/11 21:27:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -12,9 +12,9 @@ C     !INTERFACE:
      I                     myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R FREESURF_RESCALE_G                                    
-C     | o Re-scale Gs to account for change in free-surface       
-C     |   hieght. Only meaningful with non-linear free-surface.   
+C     | S/R FREESURF_RESCALE_G
+C     | o Re-scale Gs to account for change in free-surface
+C     |   hieght. Only meaningful with non-linear free-surface.
 C     *==========================================================*
 C     \ev
 
@@ -39,22 +39,34 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF (nonlinFreeSurf.GT.0) THEN
-       IF (select_rStar.GT.0) THEN
-#ifndef DISABLE_RSTAR_CODE
+      IF ( nonlinFreeSurf.GT.0 ) THEN
+       IF ( select_rStar.GT.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
      &                          /rStarExpC(i,j,bi,bj)
          ENDDO
         ENDDO
-#endif /* DISABLE_RSTAR_CODE */
+# endif /* DISABLE_RSTAR_CODE */
+       ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+# ifndef DISABLE_SIGMA_CODE
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
+     &        /( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &                    *dBHybSigF(k)*recip_drF(k)
+     &                    *recip_hFacC(i,j,k,bi,bj)
+     &         )
+         ENDDO
+        ENDDO
+# endif /* DISABLE_SIGMA_CODE */
        ELSE
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          IF (k.EQ.ksurfC(i,j,bi,bj)) THEN
+          IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-     &           *_hFacC(i,j,k,bi,bj)/hFac_surfC(i,j,bi,bj) 
+     &           *_hFacC(i,j,k,bi,bj)/hFac_surfC(i,j,bi,bj)
           ENDIF
          ENDDO
         ENDDO

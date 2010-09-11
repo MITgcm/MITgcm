@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.1 2010/03/30 17:45:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.2 2010/09/11 21:27:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,6 +23,7 @@ C     == Global variables
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -100,16 +101,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
          DO j=1,sNy
           DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            IF (ks.LE.Nr) THEN
              Rmin_tmp = rF(ks+1)
-             IF ( ks.EQ.ksurfW(i,j,bi,bj))
+             IF ( ks.EQ.kSurfW(i,j,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i-1,j,bi,bj))
-             IF ( ks.EQ.ksurfW(i+1,j,bi,bj))
+             IF ( ks.EQ.kSurfW(i+1,j,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i+1,j,bi,bj))
-             IF ( ks.EQ.ksurfS(i,j,bi,bj))
+             IF ( ks.EQ.kSurfS(i,j,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j-1,bi,bj))
-             IF ( ks.EQ.ksurfS(i,j+1,bi,bj))
+             IF ( ks.EQ.kSurfS(i,j+1,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j+1,bi,bj))
 
              Rmin_surf(i,j,bi,bj) =
@@ -120,10 +121,29 @@ C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
           ENDDO
          ENDDO
 
+C-- Set etaH @ column lateral edges
+         DO j=2-Oly,sNy+Oly
+          DO i=2-Olx,sNx+Olx
+            etaHw(i,j,bi,bj) = 0.5 _d 0
+     &                       *( etaH(i-1,j,bi,bj) + etaH(i,j,bi,bj) )
+            etaHs(i,j,bi,bj) = 0.5 _d 0
+     &                       *( etaH(i,j-1,bi,bj) + etaH(i,j,bi,bj) )
+c           etaHw(i,j,bi,bj) = 0.5 _d 0
+c    &                       *( etaH (i-1,j,bi,bj)*rA(i-1,j,bi,bj)
+c    &                        + etaH ( i ,j,bi,bj)*rA( i ,j,bi,bj)
+c    &                        )*recip_rAw(i,j,bi,bj)
+c           etaHs(i,j,bi,bj) = 0.5 _d 0
+c    &                       *( etaH (i,j-1,bi,bj)*rA(i,j-1,bi,bj)
+c    &                        + etaH (i, j ,bi,bj)*rA(i, j ,bi,bj)
+c    &                        )*recip_rAs(i,j,bi,bj)
+          ENDDO
+         ENDDO
+
 C-    end bi,bj loop.
        ENDDO
       ENDDO
 
+      CALL EXCH_UV_XY_RL( etaHw, etaHs, .FALSE., myThid )
       CALL EXCH_XY_RL( Rmin_surf, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.51 2010/01/23 00:04:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.52 2010/09/11 21:27:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -293,21 +293,40 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
 #ifdef NONLIN_FRSURF
       IF ( .NOT. vectorInvariantMomentum
      &     .AND. nonlinFreeSurf.GT.1 ) THEN
-       IF (select_rStar.GT.0) THEN
+       IF ( select_rStar.GT.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
         DO j=jMin,jMax
          DO i=iMin,iMax
            gUtmp(i,j) = gUtmp(i,j)/rStarExpW(i,j,bi,bj)
            gVtmp(i,j) = gVtmp(i,j)/rStarExpS(i,j,bi,bj)
          ENDDO
         ENDDO
+# endif /* DISABLE_RSTAR_CODE */
+       ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+# ifndef DISABLE_SIGMA_CODE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gUtmp(i,j) = gUtmp(i,j)
+     &        /( 1. _d 0 + dEtaWdt(i,j,bi,bj)*deltaTfreesurf
+     &                    *dBHybSigF(k)*recip_drF(k)
+     &                    *recip_hFacW(i,j,k,bi,bj)
+     &         )
+           gVtmp(i,j) = gVtmp(i,j)
+     &        /( 1. _d 0 + dEtaSdt(i,j,bi,bj)*deltaTfreesurf
+     &                    *dBHybSigF(k)*recip_drF(k)
+     &                    *recip_hFacS(i,j,k,bi,bj)
+     &         )
+         ENDDO
+        ENDDO
+# endif /* DISABLE_SIGMA_CODE */
        ELSE
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF ( k.EQ.ksurfW(i,j,bi,bj) ) THEN
+          IF ( k.EQ.kSurfW(i,j,bi,bj) ) THEN
            gUtmp(i,j) = gUtmp(i,j)
      &         *_hFacW(i,j,k,bi,bj)/hFac_surfW(i,j,bi,bj)
           ENDIF
-          IF ( k.EQ.ksurfS(i,j,bi,bj) ) THEN
+          IF ( k.EQ.kSurfS(i,j,bi,bj) ) THEN
            gVtmp(i,j) = gVtmp(i,j)
      &         *_hFacS(i,j,k,bi,bj)/hFac_surfS(i,j,bi,bj)
           ENDIF

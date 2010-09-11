@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.179 2010/09/05 03:51:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.180 2010/09/11 21:27:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -670,7 +670,7 @@ C        boundaries such as weeks, months, years, etc.
 C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
 C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
-      IF ( nonlinFreeSurf.GT.0) THEN
+      IF ( nonlinFreeSurf.GT.0 ) THEN
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -714,6 +714,10 @@ CADJ &     kind = isbyte
 CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
+# endif /* DISABLE_RSTAR_CODE */
+       ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+# ifndef DISABLE_SIGMA_CODE
+        CALL UPDATE_SIGMA( etaH, myTime, myIter, myThid )
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -844,7 +848,7 @@ C--   r* : compute the future level thickness according to etaH(n+1)
         CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
         CALL TIMER_STOP ('CALC_R_STAR         [FORWARD_STEP]',myThid)
 # endif /* DISABLE_RSTAR_CODE */
-      ELSEIF ( nonlinFreeSurf.GT.0) THEN
+      ELSEIF ( nonlinFreeSurf.GT.0 .AND. selectSigmaCoord.EQ.0 ) THEN
 C--   compute the future surface level thickness according to etaH(n+1)
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE etaH          = comlev1, key = ikey_dynamics,

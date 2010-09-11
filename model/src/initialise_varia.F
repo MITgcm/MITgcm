@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.64 2010/05/18 21:45:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.65 2010/09/11 21:27:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,7 @@ C       |-- INI_NLFS_VARS
 C       |
 C       |-- CALC_R_STAR
 C       |-- UPDATE_R_STAR
+C       |-- UPDATE_SIGMA
 C       |-- CALC_SURF_DR
 C       |-- UPDATE_SURF_DR
 C       |
@@ -237,6 +238,10 @@ C     and modify hFac(C,W,S) accordingly :
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
         CALL UPDATE_R_STAR( startTime, nIter0, myThid )
+# endif /* DISABLE_RSTAR_CODE */
+       ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+# ifndef DISABLE_SIGMA_CODE
+        CALL UPDATE_SIGMA( etaH, startTime, nIter0, myThid )
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
         CALL CALC_SURF_DR(etaH, startTime, -1 , myThid )

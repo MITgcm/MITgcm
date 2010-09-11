@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.14 2009/11/28 20:59:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.15 2010/09/11 21:27:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -113,8 +113,8 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
           ENDDO
         ENDIF
 #ifdef NONLIN_FRSURF
-      ELSEIF (select_rStar .NE. 0) THEN
 # ifndef DISABLE_RSTAR_CODE
+      ELSEIF ( select_rStar.NE.0 ) THEN
 C-  o rStar case: zero under-ground and at r_lower boundary
 C     can be non-zero at surface (useRealFreshWaterFlux).
         IF (k.EQ.Nr) THEN
@@ -140,6 +140,30 @@ C     can be non-zero at surface (useRealFreshWaterFlux).
           ENDDO
         ENDIF
 # endif /* DISABLE_RSTAR_CODE */
+# ifndef DISABLE_SIGMA_CODE
+      ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+C-  o Hybrid Sigma coordinate:
+        IF (k.EQ.Nr) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+             wFld(i,j,k,bi,bj) =
+     &        ( conv2d(i,j)*recip_rA(i,j,bi,bj)
+     &         -dEtaHdt(i,j,bi,bj)*dBHybSigF(k)
+     &        )*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1,sNy
+           DO i=1,sNx
+             wFld(i,j,k,bi,bj) =
+     &        ( wFld(i,j,k+1,bi,bj)
+     &         +conv2d(i,j)*recip_rA(i,j,bi,bj)
+     &         -dEtaHdt(i,j,bi,bj)*dBHybSigF(k)
+     &        )*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+# endif /* DISABLE_SIGMA_CODE */
 #endif /* NONLIN_FRSURF */
       ELSE
 C-  o Free Surface case (r-Coordinate):
