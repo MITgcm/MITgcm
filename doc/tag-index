@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1294 2010/09/06 00:13:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1295 2010/09/11 21:39:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+   first check-in of sigma & hybrid-sigma coordinate code ; also includes
+   non-linear free-surface parts ; but pressure-gradient not yet coded.
 o pkg/ptracers:
    option for ptracer to convert Salt Relax into additional EmP.
     tested in exp. global_ocean.90x40x15.dwnslp (update output)
