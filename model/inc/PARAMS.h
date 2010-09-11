@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.238 2010/05/22 23:45:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.239 2010/09/11 21:23:08 jmc Exp $
 C $Name:  $
 C
 
@@ -38,6 +38,7 @@ C     sRefFile      :: File containing reference salinity/spec.humid. sRef (1.D)
 C     rhoRefFile    :: File containing reference density profile rhoRef (1.D)
 C     delRFile      :: File containing vertical grid spacing delR  (1.D array)
 C     delRcFile     :: File containing vertical grid spacing delRc (1.D array)
+C     hybSigmFile   :: File containing hybrid-sigma vertical coord. coeff. (2x 1.D)
 C     delXFile      :: File containing X-spacing grid definition (1.D array)
 C     delYFile      :: File containing Y-spacing grid definition (1.D array)
 C     horizGridFile :: File containing horizontal-grid definition
@@ -79,7 +80,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                buoyancyRelation, eosType,
      &                pickupSuff, mdsioLocalDir,
      &                tRefFile, sRefFile, rhoRefFile,
-     &                delRFile, delRcFile,
+     &                delRFile, delRcFile, hybSigmFile,
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile,
      &                viscAhDfile, viscAhZfile,
@@ -103,6 +104,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) rhoRefFile
       CHARACTER*(MAX_LEN_FNAM) delRFile
       CHARACTER*(MAX_LEN_FNAM) delRcFile
+      CHARACTER*(MAX_LEN_FNAM) hybSigmFile
       CHARACTER*(MAX_LEN_FNAM) delXFile
       CHARACTER*(MAX_LEN_FNAM) delYFile
       CHARACTER*(MAX_LEN_FNAM) horizGridFile
@@ -155,6 +157,7 @@ C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
 C     selectNHfreeSurf    :: option for Non-Hydrostatic (free-)Surface formulation:
 C                           =0 (default) hydrostatic surf. ; > 0 add NH effects.
+C     selectSigmaCoord    :: option related to sigma vertical coordinate
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
@@ -182,6 +185,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
      &        selectNHfreeSurf,
+     &        selectSigmaCoord,
      &        selectAddFluid,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
@@ -202,6 +206,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
       INTEGER selectNHfreeSurf
+      INTEGER selectSigmaCoord
       INTEGER selectAddFluid
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
@@ -681,6 +686,7 @@ C     hMixSmooth  :: Smoothing parameter for mixed-layer diag (default=0=no smoo
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
 C     Ro_SeaLevel :: standard position of Sea-Level in "R" coordinate, used as
 C                    starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
+C     rSigmaBnd   :: vertical position (in r-unit) of r/sigma transition (Hybrid-Sigma)
 C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides)
 C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
@@ -731,7 +737,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
-     & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth, Ro_SeaLevel,
+     & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
+     & Ro_SeaLevel, rSigmaBnd,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
      & tCylIn, tCylOut,
@@ -856,6 +863,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL dRhoSmall
       _RL hMixSmooth
       _RL Ro_SeaLevel
+      _RL rSigmaBnd
       _RL sideDragFactor
       _RL bottomDragLinear
       _RL bottomDragQuadratic

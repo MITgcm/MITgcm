@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.19 2008/09/05 20:15:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.20 2010/09/11 21:24:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,10 +31,13 @@ C     myThid   :: my Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     k        :: loop index
-C     msgBuf   :: Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       INTEGER k
       _RL     tmpRatio, checkRatio1, checkRatio2
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL maxErrC, maxErrF, epsil, tmpError
+      _RL rFullDepth, recip_fullDepth
+      _RS rSigBndRS, tmpRS
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -161,6 +164,215 @@ C-    Calculate reciprol vertical grid spacing :
        recip_drC(k)   = 1. _d 0/drC(k)
        recip_drF(k)   = 1. _d 0/drF(k)
       ENDDO
+
+C---  Hybrid-Sigma vertical coordinate:
+      IF ( selectSigmaCoord .EQ. 0 ) THEN
+       DO k=1,Nr+1
+         aHybSigmF(k) = 0. _d 0
+         bHybSigmF(k) = 0. _d 0
+         dAHybSigC(k) = 0. _d 0
+         dAHybSigC(k) = 0. _d 0
+       ENDDO
+       DO k=1,Nr
+         aHybSigmC(k) = 0. _d 0
+         bHybSigmC(k) = 0. _d 0
+         dAHybSigF(k) = 0. _d 0
+         dAHybSigF(k) = 0. _d 0
+       ENDDO
+      ELSE
+       rFullDepth = rF(1) - rF(Nr+1)
+       recip_fullDepth = 0. _d 0
+       IF ( rFullDepth.GT.0. ) recip_fullDepth = 1. _d 0 / rFullDepth
+       rSigBndRS = rSigmaBnd
+       IF ( hybSigmFile.EQ.' ' .AND. rSigmaBnd.EQ.UNSET_RL ) THEN
+C-    Default is pure sigma:
+         IF ( usingPCoords ) rSigBndRS = rF(Nr+1)
+         IF ( usingZCoords ) rSigBndRS = rF(1)
+       ENDIF
+c      IF ( hybSigmFile.EQ.' ' .AND. rSigmaBnd.EQ.UNSET_RL ) THEN
+C-     compute coeff as pure sigma coordinate
+c        DO k=1,Nr+1
+c          aHybSigmF(k) = 0.
+c          bHybSigmF(k) = (rF(k)-rF(Nr+1))*recip_fullDepth
+c        ENDDO
+c        DO k=1,Nr
+c          aHybSigmC(k) = 0.
+c          bHybSigmC(k) = (rC(k)-rF(Nr+1))*recip_fullDepth
+c        ENDDO
+c      ELSEIF ( hybSigmFile.EQ.' ' ) THEN
+       IF ( hybSigmFile.EQ.' ' ) THEN
+C--    compute coeff assuming fixed r-coord above rSigmaBnd and pure sigma below
+        IF ( usingPCoords .AND. setInterFDr ) THEN
+C-     Alternative method : p = pTop + A*DeltaFullP + B*(eta+Pr_surf - rSigmaBnd)
+c          aHybSigmF(k) = ( MIN(rF(k),rSigmaBnd) - rF(Nr+1) )
+c    &                   *recip_fullDepth
+c          bHybSigmF(k) = ( MAX(rF(k),rSigmaBnd) - rSigmaBnd )
+c    &                   /( rF(1) - rSigmaBnd )
+C-     Standard method : p = pTop + A*DeltaFullP + B*(eta+Ro_surf - pTop)
+C        sigma part goes from 0 @ rSigmaBnd (and above) to 1 @ surface
+         DO k=1,Nr+1
+C-     separate the 2 cases:
+c         IF ( rF(k).LE.rSigmaBnd ) THEN
+c          bHybSigmF(k) = 0.
+c          aHybSigmF(k) = ( rF(k) - rF(Nr+1) )*recip_fullDepth
+c         ELSE
+c          bHybSigmF(k) = (rF(k)-rSigmaBnd)/(rF(1)-rSigmaBnd)
+c          aHybSigmF(k) = (1. _d 0 - bHybSigmF(k))
+c    &                  *(rSigmaBnd-rF(Nr+1) )*recip_fullDepth
+c         ENDIF
+C-     unique formula using min fct:
+          tmpRS = MIN( rF(k), rSigBndRS )
+          bHybSigmF(k) = ( rF(k) - tmpRS )/(rF(1)-rSigBndRS)
+          aHybSigmF(k) = (1. _d 0 - bHybSigmF(k))
+     &                  *( tmpRS -rF(Nr+1) )*recip_fullDepth
+         ENDDO
+        ENDIF
+        IF ( usingPCoords .AND. setCenterDr ) THEN
+         DO k=1,Nr
+C-     separate the 2 cases:
+c         IF ( rC(k).LE.rSigmaBnd ) THEN
+c          bHybSigmC(k) = 0.
+c          aHybSigmC(k) = ( rC(k) - rF(Nr+1) )*recip_fullDepth
+c         ELSE
+c          bHybSigmC(k) = (rC(k)-rSigmaBnd)/(rF(1)-rSigmaBnd)
+c          aHybSigmC(k) = (1. _d 0 - bHybSigmC(k))
+c    &                  *(rSigmaBnd-rF(Nr+1) )*recip_fullDepth
+c         ENDIF
+C-     unique formula using min fct:
+          tmpRS = MIN( rC(k), rSigBndRS )
+          bHybSigmC(k) = ( rC(k) - tmpRS )/(rF(1)-rSigBndRS)
+          aHybSigmC(k) = (1. _d 0 - bHybSigmC(k))
+     &                  *( tmpRS -rF(Nr+1) )*recip_fullDepth
+         ENDDO
+        ENDIF
+        IF ( usingZCoords .AND. setInterFDr ) THEN
+C-     Standard method : z = zBot + A*DeltaFullZ + B*(eta+Ro_surf - zBot)
+C        sigma part goes from 1 @ rSigmaBnd (and above) to 0 @ bottom
+         DO k=1,Nr+1
+C-     separate the 2 cases:
+c         IF ( rF(k).GE.rSigmaBnd ) THEN
+c          bHybSigmF(k) = 1.
+c          aHybSigmF(k) = ( rF(k)-rF(1) )*recip_fullDepth
+c         ELSE
+c          bHybSigmF(k) = ( rF(k)-rF(Nr+1) )/( rSigmaBnd-rF(Nr+1) )
+c          aHybSigmF(k) = bHybSigmF(k)*(rSigmaBnd-rF(1))*recip_fullDepth
+c         ENDIF
+C-     unique formula using max fct:
+          tmpRS = MAX( rF(k), rSigBndRS )
+          bHybSigmF(k) = ( rF(k)-rF(Nr+1) )/( tmpRS-rF(Nr+1) )
+          aHybSigmF(k) = bHybSigmF(k)*( tmpRS-rF(1) )*recip_fullDepth
+         ENDDO
+        ENDIF
+        IF ( usingZCoords .AND. setCenterDr ) THEN
+         DO k=1,Nr
+C-     separate the 2 cases:
+c         IF ( rC(k).GE.rSigmaBnd ) THEN
+c          bHybSigmC(k) = 1.
+c          aHybSigmC(k) = ( rC(k)-rF(1) )*recip_fullDepth
+c         ELSE
+c          bHybSigmC(k) = ( rC(k)-rF(Nr+1) )/( rSigmaBnd-rF(Nr+1) )
+c          aHybSigmC(k) = bHybSigmC(k)*(rSigmaBnd-rF(1))*recip_fullDepth
+c         ENDIF
+C-     unique formula using max fct:
+          tmpRS = MAX( rC(k), rSigBndRS )
+          bHybSigmC(k) = ( rC(k)-rF(Nr+1) )/( tmpRS-rF(Nr+1) )
+          aHybSigmC(k) = bHybSigmC(k)*( tmpRS-rF(1) )*recip_fullDepth
+         ENDDO
+        ENDIF
+       ELSE
+C--    Coeff at interface are read from file
+        IF (setCenterDr) THEN
+         STOP 'ABNORMAL END: S/R INI_VERTICAL_GRID: Missing Code'
+        ENDIF
+       ENDIF
+
+C--    Finish setting (if not done) using simple averaging
+       IF ( .NOT.setInterFDr ) THEN
+C-     Interface position at the middle between 2 centers
+        bHybSigmF(1) = 1. _d 0
+        aHybSigmF(1) = 0. _d 0
+        bHybSigmF(Nr+1) = 0. _d 0
+        aHybSigmF(Nr+1) = 0. _d 0
+        DO k=2,Nr
+          bHybSigmF(k) = ( bHybSigmC(k) + bHybSigmC(k-1) )*0.5 _d 0
+          aHybSigmF(k) = ( aHybSigmC(k) + aHybSigmC(k-1) )*0.5 _d 0
+        ENDDO
+       ENDIF
+       IF ( .NOT.setCenterDr ) THEN
+C-     Center position at the middle between 2 interfaces
+        DO k=1,Nr
+          bHybSigmC(k) = ( bHybSigmF(k) + bHybSigmF(k+1) )*0.5 _d 0
+          aHybSigmC(k) = ( aHybSigmF(k) + aHybSigmF(k+1) )*0.5 _d 0
+        ENDDO
+       ENDIF
+
+C--    Vertical increment:
+       DO k=1,Nr
+         dAHybSigF(k) = ( aHybSigmF(k+1) - aHybSigmF(k) )*rkSign
+         dBHybSigF(k) = ( bHybSigmF(k+1) - bHybSigmF(k) )*rkSign
+       ENDDO
+       DO k=2,Nr
+         dAHybSigC(k) = ( aHybSigmC(k) - aHybSigmC(k-1) )*rkSign
+         dBHybSigC(k) = ( bHybSigmC(k) - bHybSigmC(k-1) )*rkSign
+       ENDDO
+       dAHybSigC(1) = ( aHybSigmC(1) - aHybSigmF(1) )*rkSign
+       dBHybSigC(1) = ( bHybSigmC(1) - bHybSigmF(1) )*rkSign
+       dAHybSigC(Nr+1) = ( aHybSigmF(Nr+1) - aHybSigmC(Nr) )*rkSign
+       dBHybSigC(Nr+1) = ( bHybSigmF(Nr+1) - bHybSigmC(Nr) )*rkSign
+
+C--   Check for miss-match between vertical discretization :
+       maxErrC = 0.
+       maxErrF = 0.
+       epsil = 1. _d -9
+       DO k=1,Nr
+         tmpError = ( rC(k)-rF(Nr+1) )*recip_fullDepth
+     &            - ( aHybSigmC(k)+bHybSigmC(k) )
+         IF ( ABS(tmpError).GT.epsil ) THEN
+          IF ( maxErrC.LE.epsil ) THEN
+           WRITE(msgBuf,'(2A)') 'S/R INI_VERTICAL_GRID:',
+     &      ' rC and Hybrid-Sigma Coeff miss-match'
+           CALL PRINT_ERROR( msgBuf, myThid )
+          ENDIF
+          WRITE(msgBuf,'(A,I4,2(A,1PE14.6),A,1P2E14.6)')
+     &     ' k=', k,' , err=', tmpError, ' ; rC=', rC(k),
+     &     ' , a & b=', aHybSigmC(k), bHybSigmC(k)
+          CALL PRINT_ERROR( msgBuf, myThid )
+         ENDIF
+         maxErrC = MAX( maxErrC, ABS(tmpError) )
+       ENDDO
+       DO k=1,Nr+1
+         tmpError = ( rF(k)-rF(Nr+1) )*recip_fullDepth
+     &            - ( aHybSigmF(k)+bHybSigmF(k) )
+         IF ( ABS(tmpError).GT.epsil ) THEN
+          IF ( maxErrF.LE.epsil ) THEN
+           WRITE(msgBuf,'(2A)') 'S/R INI_VERTICAL_GRID:',
+     &      ' rF and Hybrid-Sigma Coeff miss-match'
+           CALL PRINT_ERROR( msgBuf, myThid )
+          ENDIF
+          WRITE(msgBuf,'(A,I4,2(A,1PE14.6),A,1P2E14.6)')
+     &     ' k=', k,' , err=', tmpError, ' ; rF=', rF(k),
+     &     ' , a & b=', aHybSigmF(k), bHybSigmF(k)
+          CALL PRINT_ERROR( msgBuf, myThid )
+         ENDIF
+         maxErrF = MAX( maxErrF, ABS(tmpError) )
+       ENDDO
+       WRITE(msgBuf,'(2A,1PE14.6)') 'S/R INI_VERTICAL_GRID:',
+     &      ' matching of aHybSigmC & rC :', maxErrC
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A,1PE14.6)') 'S/R INI_VERTICAL_GRID:',
+     &      ' matching of aHybSigmF & rF :', maxErrF
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       IF ( maxErrC.GT.epsil .OR. maxErrF.GT.epsil ) THEN
+         WRITE(msgBuf,'(2A)') 'S/R INI_VERTICAL_GRID:',
+     &      ' rC,rF and Hybrid-Sigma Coeff miss-match'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R INI_VERTICAL_GRID'
+       ENDIF
+
+C---  End setting-up Hybrid-Sigma vertical coordinate:
+      ENDIF
 
       _END_MASTER(myThid)
       _BARRIER

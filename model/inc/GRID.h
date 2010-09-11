@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.40 2010/01/31 17:32:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.41 2010/09/11 21:23:09 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -388,6 +388,15 @@ C                      orthogonal coordinate frames (with appropriate
 C                      metric terms).
 C     rC        :: R-coordinate of center of cell f[Z] (units of r).
 C     rF        :: R-coordinate of face of cell f[Z] (units of r).
+C - *HybSigm* - :: Hybrid-Sigma vert. Coord coefficients
+C     aHybSigmF    at level-interface (*HybSigmF) and level-center (*HybSigmC)
+C     aHybSigmC    aHybSigm* = constant r part, bHybSigm* = sigma part, such as
+C     bHybSigmF    r(ij,k,t) = rLow(ij) + aHybSigm(k)*[rF(1)-rF(Nr+1)]
+C     bHybSigmC              + bHybSigm(k)*[eta(ij,t)+Ro_surf(ij) - rLow(ij)]
+C     dAHybSigF :: vertical increment of Hybrid-Sigma coefficient: constant r part,
+C     dAHybSigC    between interface (dAHybSigF) and between center (dAHybSigC)
+C     dBHybSigF :: vertical increment of Hybrid-Sigma coefficient: sigma part,
+C     dBHybSigC    between interface (dBHybSigF) and between center (dBHybSigC)
 C     tanPhiAtU :: tan of the latitude at U point. Used for spherical polar
 C                  metric term in U equation.
 C     tanPhiAtV :: tan of the latitude at V point. Used for spherical polar
@@ -414,6 +423,8 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  maskC, maskW, maskS,
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
      &  drC, drF, recip_drC, recip_drF, rC, rF,
+     &  aHybSigmF, bHybSigmF, aHybSigmC, bHybSigmC,
+     &  dAHybSigF, dBHybSigF, dBHybSigC, dAHybSigC,
      &  tanPhiAtU, tanPhiAtV, angleCosC, angleSinC,
      &  fCori, fCoriG, fCoriCos
 c    & , maskH
@@ -471,6 +482,14 @@ c     _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_drF      (Nr)
       _RS rC             (Nr)
       _RS rF             (Nr+1)
+      _RS aHybSigmF      (Nr+1)
+      _RS bHybSigmF      (Nr+1)
+      _RS aHybSigmC      (Nr)
+      _RS bHybSigmC      (Nr)
+      _RS dAHybSigF      (Nr)
+      _RS dBHybSigF      (Nr)
+      _RS dBHybSigC      (Nr+1)
+      _RS dAHybSigC      (Nr+1)
       _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS angleCosC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

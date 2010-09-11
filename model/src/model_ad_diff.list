@@ -60,6 +60,7 @@ ini_p_ground.f
 ini_pressure.f	
 ini_psurf.f	
 ini_salt.f	
+ini_sigma_hfac.f
 ini_spherical_polar_grid.f
 ini_theta.f	
 ini_dynvars.f	

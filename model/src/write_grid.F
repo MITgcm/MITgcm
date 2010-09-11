@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.31 2009/12/17 23:48:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.32 2010/09/11 21:24:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,6 +111,16 @@ C     Write vertical grid arrays
         CALL WRITE_GLVEC_RS( 'RF', ' ', rF, 1+Nr,-1, myThid )
         CALL WRITE_GLVEC_RS( 'DRC',' ', drC, Nr, -1, myThid )
         CALL WRITE_GLVEC_RS( 'DRF',' ', drF, Nr, -1, myThid )
+        IF ( selectSigmaCoord.NE.0 ) THEN
+         CALL WRITE_GLVEC_RS( 'AHybSigF',' ',aHybSigmF,1+Nr,-1,myThid )
+         CALL WRITE_GLVEC_RS( 'BHybSigF',' ',bHybSigmF,1+Nr,-1,myThid )
+         CALL WRITE_GLVEC_RS( 'AHybSigC',' ',aHybSigmC, Nr, -1,myThid )
+         CALL WRITE_GLVEC_RS( 'BHybSigC',' ',bHybSigmC, Nr, -1,myThid )
+         CALL WRITE_GLVEC_RS('DAHybSigF',' ',dAHybSigF, Nr, -1,myThid )
+         CALL WRITE_GLVEC_RS('DBHybSigF',' ',dBHybSigF, Nr, -1,myThid )
+         CALL WRITE_GLVEC_RS('DAHybSigC',' ',dAHybSigC,1+Nr,-1,myThid )
+         CALL WRITE_GLVEC_RS('DBHybSigC',' ',dBHybSigC,1+Nr,-1,myThid )
+        ENDIF
 C--  comment out the "if": also usefull for the Ocean (to get the full Presure)
 c       IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
         DO k=1,Nr+1

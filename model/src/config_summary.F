@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.123 2010/04/26 20:37:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.124 2010/09/11 21:24:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -81,62 +81,61 @@ C     i, k   :: Loop counters.
       CALL WRITE_0D_C( buoyancyRelation, -1, INDEX_NONE,
      & 'buoyancyRelation =', ' /* Type of relation to get Buoyancy */')
       CALL WRITE_0D_L( fluidIsAir,   INDEX_NONE,
-     & 'fluidIsAir  =', '  /* fluid major constituent is Air */')
+     & 'fluidIsAir   =', '  /* fluid major constituent is Air */')
       CALL WRITE_0D_L( fluidIsWater, INDEX_NONE,
-     & 'fluidIsWater=', '  /* fluid major constituent is Water */')
+     & 'fluidIsWater =', '  /* fluid major constituent is Water */')
       CALL WRITE_0D_L( usingPCoords, INDEX_NONE,
      & 'usingPCoords =', '  /* use p (or p*) vertical coordinate */')
       CALL WRITE_0D_L( usingZCoords, INDEX_NONE,
      & 'usingZCoords =', '  /* use z (or z*) vertical coordinate */')
       CALL WRITE_1D_RL( tRef, Nr, INDEX_K, 'tRef =',
-     &'   /* Reference temperature profile ( oC or K ) */')
+     & '   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_RL( sRef, Nr, INDEX_K, 'sRef =',
-     &'   /* Reference salinity profile ( psu ) */')
-      CALL WRITE_0D_RL( viscAh, INDEX_NONE,'viscAh =',
-     &'   /* Lateral eddy viscosity ( m^2/s ) */')
+     & '   /* Reference salinity profile ( psu ) */')
+      CALL WRITE_0D_RL( viscAh, INDEX_NONE, 'viscAh  =  ',
+     & ' /* Lateral eddy viscosity ( m^2/s ) */')
       IF ( viscAhD.NE.viscAh )
-     & CALL WRITE_0D_RL( viscAhD, INDEX_NONE,'viscAhD =',
-     & '  /* Lateral eddy viscosity (Divergence)( m^2/s ) */')
+     & CALL WRITE_0D_RL( viscAhD, INDEX_NONE, 'viscAhD =  ',
+     & ' /* Lateral eddy viscosity (Divergence)( m^2/s ) */')
       IF ( viscAhZ.NE.viscAh )
-     & CALL WRITE_0D_RL( viscAhZ, INDEX_NONE,'viscAhZ =',
-     & '  /* Lateral eddy viscosity (Vorticity) ( m^2/s ) */')
-      CALL WRITE_0D_RL( viscAhMax, INDEX_NONE,'viscAhMax =',
-     &'   /* Maximum lateral eddy viscosity ( m^2/s ) */')
-      CALL WRITE_0D_RL( viscAhGrid, INDEX_NONE,'viscAhGrid =',
-     &'   /* Grid dependent lateral eddy viscosity ( non-dim. ) */')
-      CALL WRITE_0D_L( useFullLeith, INDEX_NONE,
-     &'useFullLeith =',
-     &'   /* Use Full Form of Leith Viscosity on/off flag*/')
+     & CALL WRITE_0D_RL( viscAhZ, INDEX_NONE, 'viscAhZ =  ',
+     & ' /* Lateral eddy viscosity (Vorticity) ( m^2/s ) */')
+      CALL WRITE_0D_RL( viscAhMax, INDEX_NONE, 'viscAhMax =',
+     & ' /* Maximum lateral eddy viscosity ( m^2/s ) */')
+      CALL WRITE_0D_RL( viscAhGrid, INDEX_NONE, 'viscAhGrid =',
+     & ' /* Grid dependent lateral eddy viscosity ( non-dim. ) */')
+      CALL WRITE_0D_L( useFullLeith, INDEX_NONE, 'useFullLeith =',
+     & ' /* Use Full Form of Leith Viscosity on/off flag*/')
       CALL WRITE_0D_L( useStrainTensionVisc, INDEX_NONE,
-     &'useStrainTensionVisc =',
-     &'   /* Use StrainTension Form of Viscous Operator on/off flag*/')
+     & 'useStrainTensionVisc=',
+     & ' /* Use StrainTension Form of Viscous Operator flag*/')
       CALL WRITE_0D_L( useAreaViscLength, INDEX_NONE,
-     &'useAreaViscLength =',
-     &'   /* Use area for visc length instead of geom. mean*/')
-      CALL WRITE_0D_RL( viscC2leith, INDEX_NONE,'viscC2leith =',
-     &' /* Leith harmonic visc. factor (on grad(vort),non-dim.) */')
-      CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE,'viscC2leithD =',
-     &' /* Leith harmonic viscosity factor (on grad(div),non-dim.) */')
-      CALL WRITE_0D_RL( viscC2smag, INDEX_NONE,'viscC2smag =',
-     &'   /* Smagorinsky harmonic viscosity factor (non-dim.) */')
-      CALL WRITE_0D_RL( viscA4, INDEX_NONE,'viscA4 =',
-     &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
+     & 'useAreaViscLength =',
+     & ' /* Use area for visc length instead of geom. mean*/')
+      CALL WRITE_0D_RL( viscC2leith, INDEX_NONE, 'viscC2leith =',
+     & ' /* Leith harmonic visc. factor (on grad(vort),non-dim.) */')
+      CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE, 'viscC2leithD =',
+     & ' /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/')
+      CALL WRITE_0D_RL( viscC2smag, INDEX_NONE, 'viscC2smag =',
+     & ' /* Smagorinsky harmonic viscosity factor (non-dim.) */')
+      CALL WRITE_0D_RL( viscA4, INDEX_NONE, 'viscA4  =  ',
+     & ' /* Lateral biharmonic viscosity ( m^4/s ) */')
       IF ( viscA4D.NE.viscA4 )
-     & CALL WRITE_0D_RL( viscA4D, INDEX_NONE,'viscA4D =',
-     & '  /* Lateral biharmonic viscosity (Divergence)( m^4/s ) */')
+     & CALL WRITE_0D_RL( viscA4D, INDEX_NONE, 'viscA4D =  ',
+     & ' /* Lateral biharmonic viscosity (Divergence)( m^4/s ) */')
       IF ( viscA4Z.NE.viscA4 )
-     & CALL WRITE_0D_RL( viscA4Z, INDEX_NONE,'viscA4Z =',
-     & '  /* Lateral biharmonic viscosity (Vorticity) ( m^4/s ) */')
-      CALL WRITE_0D_RL( viscA4Max, INDEX_NONE,'viscA4Max =',
-     &'   /* Maximum biharmonic viscosity ( m^2/s ) */')
-      CALL WRITE_0D_RL( viscA4Grid, INDEX_NONE,'viscA4Grid =',
-     &'   /* Grid dependent biharmonic viscosity ( non-dim. ) */')
+     & CALL WRITE_0D_RL( viscA4Z, INDEX_NONE, 'viscA4Z =  ',
+     & ' /* Lateral biharmonic viscosity (Vorticity) ( m^4/s ) */')
+      CALL WRITE_0D_RL( viscA4Max, INDEX_NONE, 'viscA4Max =',
+     & ' /* Maximum biharmonic viscosity ( m^2/s ) */')
+      CALL WRITE_0D_RL( viscA4Grid, INDEX_NONE, 'viscA4Grid =',
+     & ' /* Grid dependent biharmonic viscosity ( non-dim. ) */')
       CALL WRITE_0D_RL( viscC4leith, INDEX_NONE,'viscC4leith =',
-     &' /* Leith biharm viscosity factor (on grad(vort), non-dim.) */')
+     & ' /* Leith biharm viscosity factor (on grad(vort), non-dim.)*/')
       CALL WRITE_0D_RL( viscC4leithD, INDEX_NONE,'viscC4leithD =',
-     &' /* Leith biharm viscosity factor (on grad(div), non-dim.) */')
+     & ' /* Leith biharm viscosity factor (on grad(div), non-dim.) */')
       CALL WRITE_0D_RL( viscC4Smag, INDEX_NONE,'viscC4Smag =',
-     &' /* Smagorinsky biharm viscosity factor (non-dim) */')
+     & ' /* Smagorinsky biharm viscosity factor (non-dim) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
       CALL WRITE_0D_RL( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
@@ -176,10 +175,10 @@ C     i, k   :: Loop counters.
      &  ' /* Turning depth for Bryan and Lewis 1979 ( m ) */')
       CALL WRITE_0D_RL( ivdc_kappa, INDEX_NONE,'ivdc_kappa =',
      &  ' /* Implicit Vertical Diffusivity for Convection ('
-     &  //rUnits//'^2/s ) */')
+     &  //rUnits//'^2/s) */')
       CALL WRITE_0D_RL( hMixCriteria, INDEX_NONE,'hMixCriteria=',
      & '  /* Criteria for mixed-layer diagnostic */')
-      CALL WRITE_0D_RL( dRhoSmall, INDEX_NONE,'dRhoSmall=',
+      CALL WRITE_0D_RL( dRhoSmall, INDEX_NONE,'dRhoSmall =',
      & '  /* Parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_RL( hMixSmooth, INDEX_NONE,'hMixSmooth=',
      & '  /* Smoothing parameter for mixed-layer diagnostic */')
@@ -237,67 +236,68 @@ C     i, k   :: Loop counters.
      &'   /* Reference coriolis parameter ( 1/s ) */')
       CALL WRITE_0D_RL( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
-      CALL WRITE_0D_RL( freeSurfFac, INDEX_NONE,'freeSurfFac =',
-     &'   /* Implicit free surface factor */')
+      CALL WRITE_0D_L( rigidLid, INDEX_NONE, 'rigidLid =',
+     &'   /* Rigid lid on/off flag */')
       CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
      &                 'implicitFreeSurface =',
      &'   /* Implicit free surface on/off flag */')
-      CALL WRITE_0D_L( rigidLid, INDEX_NONE,
-     &                 'rigidLid =',
-     &'   /* Rigid lid on/off flag */')
+      CALL WRITE_0D_RL( freeSurfFac, INDEX_NONE,'freeSurfFac =',
+     &'   /* Implicit free surface factor */')
       CALL WRITE_0D_RL( implicSurfPress, INDEX_NONE,
-     &'implicSurfPress =',
-     &'   /* Surface Pressure implicit factor (0-1)*/')
+     & 'implicSurfPress =',
+     & '  /* Surface Pressure implicit factor (0-1)*/')
       CALL WRITE_0D_RL( implicDiv2Dflow, INDEX_NONE,
-     &'implicDiv2Dflow =',
-     &'   /* Barot. Flow Div. implicit factor (0-1)*/')
+     & 'implicDiv2Dflow =',
+     & '  /* Barot. Flow Div. implicit factor (0-1)*/')
       CALL WRITE_0D_L( exactConserv, INDEX_NONE,
-     &'exactConserv =',
-     &'   /* Exact Volume Conservation on/off flag*/')
+     & 'exactConserv =',
+     & '  /* Exact Volume Conservation on/off flag*/')
       CALL WRITE_0D_L( linFSConserveTr, INDEX_NONE,
-     &'linFSConserveTr =',
-     &'   /* Tracer correction for Lin Free Surface on/off flag*/')
+     & 'linFSConserveTr =',
+     &  ' /* Tracer correction for Lin Free Surface on/off flag*/')
       CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
-     &'uniformLin_PhiSurf =',
-     &'   /* use uniform Bo_surf on/off flag*/')
+     & 'uniformLin_PhiSurf =',
+     &  ' /* use uniform Bo_surf on/off flag*/')
+      CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMin = ',
+     & '  /* minimum partial cell factor (hFac) */')
+      CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMinDr =',
+     &  ' /* minimum partial cell thickness ('//rUnits//') */')
       CALL WRITE_0D_I( nonlinFreeSurf, INDEX_NONE,
-     &'nonlinFreeSurf =',
-     &'   /* Non-linear Free Surf. options (-1,0,1,2,3)*/')
+     & 'nonlinFreeSurf =',
+     & '  /* Non-linear Free Surf. options (-1,0,1,2,3)*/')
       WRITE(msgBuf,'(2A)') '     -1,0= Off ; 1,2,3= On,',
      &  ' 2=+rescale gU,gV, 3=+update cg2d solv.'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_RL( hFacInf, INDEX_NONE,
-     &'hFacInf =',
-     &'   /* lower threshold for hFac (nonlinFreeSurf only)*/')
-      CALL WRITE_0D_RL( hFacSup, INDEX_NONE,
-     &'hFacSup =',
-     &'   /* upper threshold for hFac (nonlinFreeSurf only)*/')
+      CALL WRITE_0D_RL( hFacInf, INDEX_NONE, 'hFacInf = ',
+     & '  /* lower threshold for hFac (nonlinFreeSurf only)*/')
+      CALL WRITE_0D_RL( hFacSup, INDEX_NONE, 'hFacSup = ',
+     & '  /* upper threshold for hFac (nonlinFreeSurf only)*/')
       CALL WRITE_0D_I( select_rStar, INDEX_NONE,
-     &'select_rStar =',
-     &' /* r* Vertical coord. options (=0 r coord.; > 0 uses r*) */')
+     & 'select_rStar =',
+     &  ' /* r* Vertical coord. options (=0 r coord.; >0 uses r*)*/')
       CALL WRITE_0D_I( selectAddFluid, INDEX_NONE,
-     &'selectAddFluid =',
-     &' /* option for mass source/sink of fluid (=0: off) */')
+     & 'selectAddFluid =',
+     &  ' /* option for mass source/sink of fluid (=0: off) */')
       CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
-     &'useRealFreshWaterFlux =',
-     &' /* Real Fresh Water Flux on/off flag*/')
+     & 'useRealFreshWaterFlux =',
+     &  ' /* Real Fresh Water Flux on/off flag*/')
       CALL WRITE_0D_RL( temp_EvPrRn, INDEX_NONE,
-     &'temp_EvPrRn =',
-     &' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
+     & 'temp_EvPrRn =',
+     &  ' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_RL( salt_EvPrRn, INDEX_NONE,
-     &'salt_EvPrRn =',
-     &' /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/')
+     &  'salt_EvPrRn =',
+     &  ' /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/')
       CALL WRITE_0D_RL( temp_addMass, INDEX_NONE,
-     &'temp_addMass =',
-     &' /* Temp. of addMass array (UNSET=use local T)(oC)*/')
+     & 'temp_addMass =',
+     &  ' /* Temp. of addMass array (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_RL( salt_addMass, INDEX_NONE,
-     &'salt_addMass =',
-     &' /* Salin. of addMass array (UNSET=use local S)(ppt)*/')
+     & 'salt_addMass =',
+     &  ' /* Salin. of addMass array (UNSET=use local S)(psu)*/')
       IF ( .NOT.useRealFreshWaterFlux .OR. selectAddFluid.EQ.-1
      &                                .OR. nonlinFreeSurf.LE.0 ) THEN
       CALL WRITE_0D_RL( convertFW2Salt, INDEX_NONE,
-     &'convertFW2Salt =',
-     &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
+     & 'convertFW2Salt =',
+     & ' /* convert F.W. Flux to Salt Flux (-1=use local S)(psu)*/')
       ENDIF
 
       CALL WRITE_0D_L( use3Dsolver, INDEX_NONE,
@@ -323,8 +323,8 @@ C     i, k   :: Loop counters.
      & 'momAdvection =', '  /* Momentum advection on/off flag */')
       CALL WRITE_0D_L( momViscosity, INDEX_NONE,
      & 'momViscosity =', '  /* Momentum viscosity on/off flag */')
-      CALL WRITE_0D_L( momImplVertAdv, INDEX_NONE, 'momImplVertAdv =',
-     &                '/* Momentum implicit vert. advection on/off*/')
+      CALL WRITE_0D_L( momImplVertAdv, INDEX_NONE, 'momImplVertAdv=',
+     &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
       CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
@@ -404,13 +404,13 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      & 'useMultiDimAdvec =',
      &'   /* Multi-Dim Advection is/is-not used */')
       CALL WRITE_0D_L( implicitDiffusion, INDEX_NONE,
-     & 'implicitDiffusion =','/* Implicit Diffusion on/off flag */')
+     & 'implicitDiffusion =',' /* Implicit Diffusion on/off flag */')
       CALL WRITE_0D_L( tempStepping,  INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
       CALL WRITE_0D_L( tempAdvection,  INDEX_NONE,
      & 'tempAdvection=', '  /* Temperature advection on/off flag */')
       CALL WRITE_0D_L( tempImplVertAdv,INDEX_NONE,'tempImplVertAdv =',
-     &                '/* Temp. implicit vert. advection on/off */')
+     &                ' /* Temp. implicit vert. advection on/off */')
       CALL WRITE_0D_L( tempForcing,  INDEX_NONE,
      & 'tempForcing  =', '  /* Temperature forcing on/off flag */')
       CALL WRITE_0D_L( tempIsActiveTr, INDEX_NONE, 'tempIsActiveTr =',
@@ -420,7 +420,7 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( saltAdvection,  INDEX_NONE,
      & 'saltAdvection=', '  /* Salinity advection on/off flag */')
       CALL WRITE_0D_L( saltImplVertAdv,INDEX_NONE,'saltImplVertAdv =',
-     &                '/* Sali. implicit vert. advection on/off */')
+     &                ' /* Sali. implicit vert. advection on/off */')
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
       CALL WRITE_0D_L( saltIsActiveTr, INDEX_NONE, 'saltIsActiveTr =',
@@ -441,9 +441,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      & '   debLevB  =', '  /* 2nd  level of debugging */')
       CALL WRITE_0D_I( debugLevel, INDEX_NONE,
      & ' debugLevel =', '  /* select debugging level */')
+
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-
       WRITE(msgBuf,'(A)')
      & '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -574,6 +574,7 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &   'tauSaltClimRelax =',  '   /* relaxation time scale (s) */')
       CALL WRITE_0D_RL( latBandClimRelax, INDEX_NONE,
      &   'latBandClimRelax =', '   /* max. Lat. where relaxation */')
+
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
@@ -593,8 +594,13 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( usingCurvilinearGrid, INDEX_NONE,
      & 'usingCurvilinearGrid =',
      & ' /* Curvilinear coordinates flag ( True/False ) */')
+      CALL WRITE_0D_I( selectSigmaCoord, INDEX_NONE,
+     & 'selectSigmaCoord =',
+     & ' /* Hybrid-Sigma Vert. Coordinate option */')
       CALL WRITE_0D_RL( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
      & ' /* r(1) ( units of r == '//rUnits//' ) */')
+      CALL WRITE_0D_RL( rSigmaBnd, INDEX_NONE, 'rSigmaBnd =',
+     & ' /* r/sigma transition ( units of r == '//rUnits//' ) */')
       CALL WRITE_0D_RL( rkSign, INDEX_NONE,'rkSign =',
      &'   /* index orientation relative to vertical coordinate */')
       CALL WRITE_0D_RL( gravitySign, INDEX_NONE,'gravitySign =',
@@ -615,6 +621,12 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &'   /* C spacing ( units of r ) */')
       CALL WRITE_COPY1D_RS( bufRL, drF, Nr, INDEX_K, 'drF = ',
      &'   /* W spacing ( units of r ) */')
+      IF ( selectSigmaCoord.NE.0 ) THEN
+       CALL WRITE_COPY1D_RS( bufRL,dAHybSigF,Nr,INDEX_K,'dAHybSigF =',
+     &  ' /* vertical increment of Hybrid-sigma Coeff. (-) */')
+       CALL WRITE_COPY1D_RS( bufRL,dBHybSigF,Nr,INDEX_K,'dBHybSigF =',
+     &  ' /* vertical increment of Hybrid-sigma Coeff. (-) */')
+      ENDIF
       IF ( .NOT.usingCurvilinearGrid ) THEN
        CALL WRITE_1D_RL( delX, Nx, INDEX_I, 'delX = ',
      &  ' /* U spacing ( m - cartesian, degrees - spherical ) */')
@@ -639,6 +651,12 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &  ' /* P-point R coordinate (  units of r ) */')
       CALL WRITE_COPY1D_RS( bufRL, rF,Nr+1,INDEX_K, 'rF = ',
      &'   /* W-Interf. R coordinate (  units of r ) */')
+      IF ( selectSigmaCoord.NE.0 ) THEN
+       CALL WRITE_COPY1D_RS(bufRL,aHybSigmF,Nr+1,INDEX_K,'aHybSigmF =',
+     &  ' /* Hybrid-sigma vert. Coord coeff. @ W-Interface (-) */')
+       CALL WRITE_COPY1D_RS(bufRL,bHybSigmF,Nr+1,INDEX_K,'bHybSigmF =',
+     &  ' /* Hybrid-sigma vert. Coord coeff. @ W-Interface (-) */')
+      ENDIF
       CALL WRITE_1D_RL( deepFacC, Nr,   INDEX_K, 'deepFacC = ',
      &  ' /* deep-model grid factor @ cell-Center (-) */')
       CALL WRITE_1D_RL( deepFacF, Nr+1, INDEX_K, 'deepFacF = ',

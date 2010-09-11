@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.15 2008/08/12 22:24:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.16 2010/09/11 21:23:09 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -7,12 +7,12 @@ C    !INTERFACE:
 C    include SURFACE.h
 C    !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SURFACE.h                                                 
-C     | o Header file defining surface-related model varaibles    
+C     | SURFACE.h
+C     | o Header file defining surface-related model variables
 C     *==========================================================*
-C     | Contains variables relative to the surface position       
-C     | that are held fixed in linear free-surface formulation    
-C     | but can vary with time with a non-linear free-surface.    
+C     | Contains variables relative to the surface position
+C     | that are held fixed in linear free-surface formulation
+C     | but can vary with time with a non-linear free-surface.
 C     *==========================================================*
 C     \ev
 CEOP
@@ -28,7 +28,7 @@ C     phi0surf :: starting point for integrating phi_Hyd
       _RS  topoZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  phi0surf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C--   COMMON /SURF_CORREC/ Common block for correction of source/sink of 
+C--   COMMON /SURF_CORREC/ Common block for correction of source/sink of
 C--                        Tracer due to W at the surface with Linear
 C--                        Free Surface
 C     TsurfCor :: Pot.Temp Linear-Free-Surface correction term [K.r_Unit/s]
@@ -60,7 +60,7 @@ C     hFac_surfS ::  idem, South interface (V point)
       _RS  hFac_surfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     Local variables in common block
-C     Rmin_surf :: minimum r_value of the free surface position 
+C     Rmin_surf :: minimum r_value of the free surface position
 C                  that satisfy  the hFacInf criteria
       COMMON /LOCAL_CALC_SURF_DR/ Rmin_surf
       _RL Rmin_surf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -72,7 +72,7 @@ C     rStarFacS :: same but for South face
 C     rStarExpC :: column expansion factor = h^n+1/h^n , Centered
 C     rStarExpW :: column expansion factor = h^n+1/h^n , Western  face
 C     rStarExpS :: column expansion factor = h^n+1/h^n , Southern face
-C     rStarDhCDt:: relative time derivative of h_Center = d.eta/dt / H 
+C     rStarDhCDt:: relative time derivative of h_Center = d.eta/dt / H
 C     rStarDhWDt:: relative time derivative of h_West_face  (u.point)
 C     rStarDhSDt:: relative time derivative of h_South_face (v.point)
       COMMON /RSTAR_CHANGE/
@@ -99,4 +99,16 @@ C     h0FacS :: initial (and fixed in time) hFacS factor
       _RS h0FacW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS h0FacS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
+C--   COMMON /SIGMA_CHANGE/ transient variables used with r* Coordinate
+C     etaHw    :: surface r-anomaly (etaH) at Western  edge (U location)
+C     etaHs    :: surface r-anomaly (etaH) at Southern edge (V location)
+C     dEtaWdt  :: time derivative of etaH at Western  edge (U location)
+C     dEtaSdt  :: time derivative of etaH at Southern edge (V location)
+      COMMON /SIGMA_CHANGE/
+     &  etaHw, etaHs,
+     &  dEtaWdt, dEtaSdt
+      _RL  etaHw  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  etaHs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dEtaWdt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dEtaSdt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* NONLIN_FRSURF */

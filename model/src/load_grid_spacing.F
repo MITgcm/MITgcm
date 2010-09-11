@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.2 2006/11/29 04:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.3 2010/09/11 21:24:51 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -18,7 +18,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "GRID.h"
+#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid    :: my Thread Id. number
@@ -34,7 +34,7 @@ C     tmp4delR  :: temporary arrays to read in delR
 C     tmp8delR  :: temporary arrays to read in delR
 C     tmp4delRc :: temporary arrays to read in delRc
 C     tmp8delRc :: temporary arrays to read in delRc
-C     msgBuf    :: Informational/error meesage buffer
+C     msgBuf    :: Informational/error message buffer
 C     iUnit     :: Work variable for IO unit number
 C     rcLen1    :: record length of 1 element to read
 C     i, j, k   :: Loop counters
@@ -51,7 +51,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       rcLen1 = WORDLENGTH
       IF (readBinaryPrec.EQ.precFloat64) rcLen1 = WORDLENGTH*2
 
-C     X coordinate
+C--   X coordinate
       IF ( delXFile .NE. ' ' ) THEN
         CALL MDSFINDUNIT( iUnit, myThid )
         iLen = ILNBLNK(delXFile)
@@ -84,7 +84,7 @@ C     X coordinate
      &                      SQUEEZE_RIGHT , myThid )
       ENDIF
 
-C     Y coordinate
+C--   Y coordinate
       IF ( delYFile .NE. ' ' ) THEN
         CALL MDSFINDUNIT( iUnit, myThid )
         iLen = ILNBLNK(delYFile)
@@ -117,7 +117,7 @@ C     Y coordinate
      &                      SQUEEZE_RIGHT , myThid )
       ENDIF
 
-C     vertical coordinate "R"
+C--   vertical coordinate "R"
       IF ( delRFile .NE. ' ' ) THEN
         CALL MDSFINDUNIT( iUnit, myThid )
         iLen = ILNBLNK(delRFile)
@@ -178,6 +178,57 @@ C     vertical coordinate "R"
         ENDIF
         WRITE(msgBuf,'(3A)') 'S/R LOAD_GRID_SPACING:',
      &    ' delRc loaded from file: ', delRcFile(1:iLen)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+      ENDIF
+
+C--   hybrid sigma vertical coordinate coefficient
+      IF ( hybSigmFile .NE. ' ' ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        iLen = ILNBLNK(hybSigmFile)
+        IF (readBinaryPrec.EQ.precFloat32) THEN
+         OPEN(iUnit, FILE=hybSigmFile(1:iLen), STATUS='OLD',
+     &        FORM='UNFORMATTED',ACCESS='DIRECT',RECL=rcLen1*(Nr+1))
+C-     loading aHybSigmF :
+         READ(iUnit,rec=1) tmp4delRc
+#ifdef _BYTESWAPIO
+         CALL MDS_BYTESWAPR4( Nr+1, tmp4delRc )
+#endif
+         DO k=1,Nr+1
+           aHybSigmF(k) = tmp4delRc(k)
+         ENDDO
+C-     loading bHybSigmF :
+         READ(iUnit,rec=2) tmp4delRc
+         CLOSE(iUnit)
+#ifdef _BYTESWAPIO
+         CALL MDS_BYTESWAPR4( Nr+1, tmp4delRc )
+#endif
+         DO k=1,Nr+1
+           bHybSigmF(k) = tmp4delRc(k)
+         ENDDO
+        ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
+         OPEN(iUnit, FILE=hybSigmFile(1:iLen), STATUS='OLD',
+     &        FORM='UNFORMATTED',ACCESS='DIRECT',RECL=rcLen1*(Nr+1))
+C-     loading aHybSigmF :
+         READ(iUnit,rec=1) tmp8delRc
+#ifdef _BYTESWAPIO
+         CALL MDS_BYTESWAPR8( Nr+1, tmp8delRc )
+#endif
+         DO k=1,Nr+1
+           aHybSigmF(k) = tmp8delRc(k)
+         ENDDO
+C-     loading bHybSigmF :
+         READ(iUnit,rec=2) tmp8delRc
+         CLOSE(iUnit)
+#ifdef _BYTESWAPIO
+         CALL MDS_BYTESWAPR8( Nr+1, tmp8delRc )
+#endif
+         DO k=1,Nr+1
+           bHybSigmF(k) = tmp8delRc(k)
+         ENDDO
+        ENDIF
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_GRID_SPACING:',
+     &    ' a&b_HybSigmF loaded from file: ', hybSigmFile(1:iLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
       ENDIF

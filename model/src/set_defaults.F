@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.148 2010/04/26 20:37:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.149 2010/09/11 21:24:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: SET_DEFAULTS
 C     !INTERFACE:
       SUBROUTINE SET_DEFAULTS(
      O   viscArDefault, diffKrTDefault, diffKrSDefault,
-     O   hFacMinDrDefault, delRdefault, rkFacDefault,
+     O   hFacMinDrDefault, delRdefault,
      I   myThid )
 
 C     !DESCRIPTION:
@@ -24,26 +24,27 @@ Cml#include "EOS.h"
 c#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid - Number of this instance of INI_PARMS
+C     myThid :: my Thread Id. Number
       INTEGER myThid
       _RL viscArDefault
       _RL diffKrTDefault
       _RL diffKrSDefault
       _RL hFacMinDrDefault
       _RL delRDefault(Nr)
-      _RS rkFacDefault
 
 C     !LOCAL VARIABLES:
-C     K, I, J - Loop counters
-      INTEGER K, I, J
+C     i, j, k :: Loop counters
+      INTEGER i, j, k
 CEOP
 
 C--   Grid parameters
 C-    Vertical gridding
       delRFile            = ' '
       delRcFile           = ' '
-      rkFacDefault        = 1. _d 0
+      hybSigmFile         = ' '
       Ro_SeaLevel         = 0.
+      rSigmaBnd           = UNSET_RL
+      selectSigmaCoord    = 0
       DO k=1,Nr
        delRdefault(k)     = 0.
       ENDDO
@@ -214,6 +215,7 @@ C--   Set (free)surface-related parameters
       hFacInf             = 0.2 _d 0
       hFacSup             = 2.0 _d 0
       select_rStar        = 0
+      selectNHfreeSurf    = 0
       selectAddFluid      = 0
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL

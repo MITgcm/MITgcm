@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.55 2010/08/10 17:58:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.56 2010/09/11 21:24:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,11 +163,35 @@ C       code is being compiled
      &   'CONFIG_CHECK: rStar is part of NonLin-FS '
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to use it'
+     &   'CONFIG_CHECK: ==> set #define NONLIN_FRSURF to use it'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif /* NONLIN_FRSURF */
+
+#ifdef DISABLE_RSTAR_CODE
+      IF ( select_rStar.NE.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: rStar code disable (DISABLE_RSTAR_CODE defined)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: ==> set #undef DISABLE_RSTAR_CODE to use it'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif /* DISABLE_RSTAR_CODE */
+
+#ifdef DISABLE_SIGMA_CODE
+      IF ( selectSigmaCoord.NE.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: Sigma code disable (DISABLE_SIGMA_CODE defined)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: ==> set #undef DISABLE_SIGMA_CODE to use it'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif /* DISABLE_SIGMA_CODE */
 
 #ifdef USE_NATURAL_BCS
         WRITE(msgBuf,'(A)')
@@ -355,6 +379,31 @@ C--   Free-surface related limitations:
      &   'CONFIG_CHECK: without exactConserv'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( selectSigmaCoord.NE.0 ) THEN
+       IF ( fluidIsWater ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: Sigma-Coords not yet coded for Oceanic set-up'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+       IF ( nonlinFreeSurf.LE.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: Sigma-Coords not coded for Lin-FreeSurf'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+       IF (select_rStar.NE.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: Sigma-Coords and rStar are not compatible'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: Sigma-Coords code neither complete nor tested'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C- note : not implemented in checkpoint48b but it is done now (since 01-28-03)
