@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.2 2008/08/21 16:03:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.3 2010/09/15 11:40:08 heimbach Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -25,10 +25,10 @@ C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
 
 C o Include/exclude Implicit vertical advection code
-#undef INCLUDE_IMPLVERTADV_CODE
+#define INCLUDE_IMPLVERTADV_CODE
 
 C o Include/exclude AdamsBashforth-3rd-Order code
-#undef ALLOW_ADAMSBASHFORTH_3
+#define ALLOW_ADAMSBASHFORTH_3
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
@@ -43,11 +43,13 @@ C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
-#undef EXACT_CONSERV
+#define EXACT_CONSERV
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
-#undef NONLIN_FRSURF
+#define NONLIN_FRSURF
+#define DISABLE_RSTAR_CODE
+#define DISABLE_SIGMA_CODE
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
 C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
