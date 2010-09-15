@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.91 2010/08/24 02:36:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.92 2010/09/15 03:41:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -272,6 +272,10 @@ C       and modify forcing terms including effects from ice
 #endif /* ALLOW_THSICE */
 
 #ifdef ALLOW_SHELFICE
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
       IF ( useShelfIce .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )

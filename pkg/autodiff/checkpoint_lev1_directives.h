@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.45 2010/08/06 18:40:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.46 2010/09/15 03:41:59 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -42,13 +42,24 @@ CADJ STORE recip_hfacs = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE recip_hfacw = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+CADJ STORE phi0surf    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 cph the following are frequently needed, e.g. with seaice
 CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE gs,gsnm1,gt,gtnm1  = comlev1, key = ikey_dynamics,
+CADJ STORE gs,gt              = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# ifndef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gsnm1,gtnm1        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE gunm1,gvnm1        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+# else
+CADJ STORE gsnm,gtnm          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE gunm,gvnm          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
 CADJ STORE salt,theta         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE uvel,vvel,wvel     = comlev1, key = ikey_dynamics,

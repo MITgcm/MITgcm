@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.128 2010/08/10 17:58:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.129 2010/09/15 03:41:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -350,8 +350,10 @@ CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 # if ((defined ALLOW_DEPTH_CONTROL) || (defined NONLIN_FRSURF))
+#  ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -588,12 +590,9 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 C
          IF ( tempStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gTnm(:,:,k,bi,bj,1) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gTnm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey, byte=isbyte
-#else
+# ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
+# endif
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE gt(:,:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -627,12 +626,9 @@ CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ( saltStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gSnm(:,:,k,bi,bj,1) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gSnm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey, byte=isbyte
-#else
+# ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
+# endif
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE gs(:,:,:,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte

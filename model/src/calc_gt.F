@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.55 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.56 2010/09/15 03:41:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -131,9 +131,21 @@ C--   the kDown is still required
 CADJ STORE fVerT(:,:,:) =
 CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
+#  ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtNm1(:,:,k,bi,bj) =
 CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
+#  else
+CADJ STORE gt(:,:,k,bi,bj) =
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+CADJ STORE gtNm(:,:,k,bi,bj,1) =
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+CADJ STORE gtNm(:,:,k,bi,bj,2) =
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+#  endif
 # endif
 #endif
 
@@ -204,6 +216,14 @@ C--   External thermal forcing term(s) outside Adams-Bashforth:
      I                          myThid )
         IF ( AdamsBashforthGt ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gtNm(:,:,k,bi,bj,1) =
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+CADJ STORE gtNm(:,:,k,bi,bj,2) =
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+# endif
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, k,
      U                          gtNm(1-Olx,1-Oly,1,1,1,1),
