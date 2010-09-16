@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1296 2010/09/16 20:43:00 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1297 2010/09/16 21:42:40 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjoint
+   * changed verification/global_ocean.cs32x15 ; adjoint now tests
+     Adams-Bashforth 3 + NLFS + RSTAR
+   * some more modifs required for ECCO-GODAE v4
 o pkg/seaice
    add SEAICE_AGE_VOL option to use volume instead of area for
    integrating SEAICE_AGE
