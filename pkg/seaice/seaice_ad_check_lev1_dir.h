@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.23 2010/03/02 23:07:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.24 2010/09/16 20:10:22 heimbach Exp $
 C $Name:  $
 
 CADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -30,14 +30,16 @@ cphCADJ STORE eta     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* AUTODIFF_SOMETIMES_NEEDED */
 
+#ifdef SEAICE_CGRID
+CADJ STORE stressdivergencex = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE stressdivergencey = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 # ifdef SEAICE_ALLOW_DYNAMICS
 #  ifdef SEAICE_CGRID
 CADJ STORE etan    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE dwatn      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaicemasku = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaicemaskv = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE stressdivergencex = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE stressdivergencey = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 #  ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1  = comlev1, key=ikey_dynamics, kind=isbyte

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.92 2010/09/15 03:41:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.93 2010/09/16 20:10:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -196,14 +196,16 @@ CADJ &     kind = isbyte
 cph# endif
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+#  ifdef ALLOW_CGRID
+CADJ STORE stressdivergencex   = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE stressdivergencey   = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif
 #  ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uice                = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE vice                = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE stressdivergencex   = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE stressdivergencey   = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #   ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1       = comlev1, key = ikey_dynamics,

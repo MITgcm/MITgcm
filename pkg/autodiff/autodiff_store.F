@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.12 2010/08/09 16:05:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.13 2010/09/16 20:10:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -538,6 +538,13 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,4) = TICE(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,5) = RUNOFF(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,6) = 0.0
+#  ifdef SEAICE_CGRID
+          StoreSEAICE(I,J,bi,bj,14) = stressDivergenceX(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,15) = stressDivergenceY(I,J,bi,bj)
+#  else
+          StoreSEAICE(I,J,bi,bj,14) = 0.0
+          StoreSEAICE(I,J,bi,bj,15) = 0.0
+# endif
 # ifdef SEAICE_ALLOW_DYNAMICS
           StoreSEAICE(I,J,bi,bj,7) = UICE(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,8) = VICE(I,J,bi,bj)
@@ -547,13 +554,9 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,11) = dwatn(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,12) = seaicemasku(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,13) = seaicemaskv(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,14) = stressDivergenceX(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,15) = stressDivergenceY(I,J,bi,bj)
 #  else
           StoreSEAICE(I,J,bi,bj,11) = 0.0      
           StoreSEAICE(I,J,bi,bj,12) = 0.0           
-          StoreSEAICE(I,J,bi,bj,13) = 0.0
-          StoreSEAICE(I,J,bi,bj,14) = 0.0           
           StoreSEAICE(I,J,bi,bj,15) = 0.0
 #  endif /* SEAICE_CGRID */
 #  ifdef SEAICE_ALLOW_EVP

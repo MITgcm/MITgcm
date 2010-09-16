@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.13 2010/08/09 16:05:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.14 2010/09/16 20:10:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -437,6 +437,10 @@ C-      2D arrays
           HSNOW(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,3)      
           TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
           RUNOFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,5)
+# ifdef SEAICE_CGRID
+          stressDivergenceX(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,14)
+          stressDivergenceY(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,15)
+# endif
 # ifdef SEAICE_MULTICATEGORY
 cph moved to seaice_ad_check_lev because of extra dim. MULTDIM
 cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
@@ -450,8 +454,6 @@ cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
           dwatn(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,11)
           seaicemasku(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,12)
           seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,13)
-          stressDivergenceX(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,14)
-          stressDivergenceY(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,15)
 #  endif /* SEAICE_CGRID */
 #  ifdef SEAICE_ALLOW_EVP
           seaice_sigma1(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,16)
