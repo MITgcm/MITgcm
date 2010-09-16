@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.129 2010/09/15 03:41:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.130 2010/09/16 16:02:41 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -585,14 +585,31 @@ CADJ STORE uTrans(:,:), vTrans(:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE xA(:,:), yA(:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
+#  ifdef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gSnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gSnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gTnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gTnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fvers(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#  endif /* ALLOW_ADAMSBASHFORTH_3 */
+# endif /* NONLIN_FRSURF */
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
          IF ( tempStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
+# else
+#  ifndef NONLIN_FRSURF
+CADJ STORE gTnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gTnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
+#  endif /* ndef NONLIN_FRSURF */
+# endif /* ndef ALLOW_ADAMSBASHFORTH_3 */
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE gt(:,:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -624,11 +641,24 @@ CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
          ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# if (defined NONLIN_FRSURF) && (defined ALLOW_ADAMSBASHFORTH_3)
+CADJ STORE gTnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gTnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fvert(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
+#endif
+
          IF ( saltStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
+# else
+#  ifndef NONLIN_FRSURF
+CADJ STORE gSnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gSnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
+#  endif /* ndef NONLIN_FRSURF */
+# endif /* ndef ALLOW_ADAMSBASHFORTH_3 */
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE gs(:,:,:,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
