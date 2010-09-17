@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.3 2010/09/15 11:40:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.4 2010/09/17 03:47:29 heimbach Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -16,7 +16,7 @@ C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
 C o Include/exclude call to S/R CONVECT
-#undef INCLUDE_CONVECT_CALL
+#define INCLUDE_CONVECT_CALL
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
@@ -34,7 +34,7 @@ C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
 
 C o Include pressure loading code
-#undef ATMOSPHERIC_LOADING
+#define ATMOSPHERIC_LOADING
 
 C o exclude/allow external forcing-fields load
 C   this allows to read & do simple linear time interpolation of oceanic
@@ -48,7 +48,7 @@ C   so that d/dt(eta) is exactly equal to - Div.Transport
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #define NONLIN_FRSURF
-#define DISABLE_RSTAR_CODE
+#undef DISABLE_RSTAR_CODE
 #define DISABLE_SIGMA_CODE
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
