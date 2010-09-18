@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.13 2010/05/18 19:50:29 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.14 2010/09/18 00:07:53 jmc Exp $
 
 #  Ed Hill
 
@@ -33,6 +33,7 @@ tst_list='adm g77 gfo+rs mth'
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
 
+TODAY=`date +%d`
 tdir=$TESTDIR
 if test $checkOut = '0' ; then
  if test -e $tdir/MITgcm/CVS ; then
@@ -76,6 +77,16 @@ do
 
  echo "================================================================"
  typ=`echo $tt | sed 's/+rs//'`
+ #- check day and time:
+ curDay=`date +%d` ; curHour=`date +%H`
+ if [ $curDay -ne $TODAY ] ; then
+   date ; echo "day is over => skip test $typ"
+   continue
+ fi
+ if [ $curHour -ge 18 ] ; then
+   date ; echo "too late to run test $typ"
+   continue
+ fi
  #- clean-up old output files
  rm -f $tdir/output_${typ}*
  if test $sepDir = 1 ; then

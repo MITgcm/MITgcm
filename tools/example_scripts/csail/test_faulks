@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.15 2010/05/18 19:49:25 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.16 2010/09/18 00:07:53 jmc Exp $
 
 #  Ed Hill
 
@@ -27,12 +27,14 @@ MC=10
 checkOut=1
 sepDir=1
 option=
-tst_list='g77 adm gfo ifc mth pgi+rs'
+#tst_list='g77 adm gfo ifc mth pgi+rs'
+tst_list='g77 adm gfo ifc mth pgi'
 #tst_list='adm g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
 
+TODAY=`date +%d`
 tdir=$TESTDIR
 if test $checkOut = '0' ; then
  if test -e $tdir/MITgcm/CVS ; then
@@ -76,6 +78,16 @@ do
 
  echo "================================================================"
  typ=`echo $tt | sed 's/+rs//'`
+ #- check day and time:
+ curDay=`date +%d` ; curHour=`date +%H`
+ if [ $curDay -ne $TODAY ] ; then
+   date ; echo "day is over => skip test $typ"
+   continue
+ fi
+ if [ $curHour -ge 18 ] ; then
+   date ; echo "too late to run test $typ"
+   continue
+ fi
  #- clean-up old output files
  rm -f $tdir/output_${typ}*
  if test $sepDir = 1 ; then
@@ -160,8 +172,7 @@ do
   echo "Running testreport using:"
   comm="./testreport -adm -a jmc@mitgcm.org"
 #---
-  day=`date +%d`
-  chk=`expr $day % 2`
+  chk=`expr $TODAY % 2`
  if test $chk != 0 ; then
   OPTFILE='../tools/build_options/linux_ia32_g77'
  else
@@ -221,6 +232,7 @@ do
  then
 
   export PGI=/usr/local/pkg/pgi/pgi-6.1-5
+  listT='fizhi-cs-32x32x40 fizhi-cs-aqualev20'
   echo "Running testreport using:"
   comm="./testreport -dd"
   comm="$comm -match $MC"
@@ -229,9 +241,12 @@ do
     comm="$comm -of=$OPTFILE"
   fi
   if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"$comm\""
+ #echo "  \"$comm\""
+ #echo "======================"
+ #$comm > $tdir/output_${typ}_1 2>&1
+  echo "  \"$comm\" -t \"$listT\""
   echo "======================"
-  $comm > $tdir/output_${typ}_1 2>&1
+  $comm -t "$listT" > $tdir/output_${typ}_1 2>&1
   tail -100 $tdir/output_${typ}_1
   echo
   echo "Running testreport using:"
@@ -241,9 +256,12 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
-  echo "  \"$comm\""
+ #echo "  \"$comm\""
+ #echo "======================"
+ #$comm > $tdir/output_${typ}_2 2>&1
+  echo "  \"$comm\" -t \"$listT\""
   echo "======================"
-  $comm > $tdir/output_${typ}_2 2>&1
+  $comm -t "$listT" > $tdir/output_${typ}_2 2>&1
   tail -100 $tdir/output_${typ}_2
   echo
 
