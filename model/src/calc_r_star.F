@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.17 2010/09/10 17:52:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.18 2010/09/20 15:54:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,9 +59,9 @@ CEOP
 
       rStarAreaWeight = .TRUE.
 C-    Area-weighted average consistent with KE (& vert. advection):
-c     IF ( vectorInvariantMomentum .AND.
-c    &     (selectKEscheme.EQ.1 .OR. selectKEscheme.EQ.3)
-c    &   ) rStarAreaWeight =.FALSE.
+      IF ( vectorInvariantMomentum .AND.
+     &     (selectKEscheme.EQ.1 .OR. selectKEscheme.EQ.3)
+     &   ) rStarAreaWeight =.FALSE.
 
 #ifdef W2_FILL_NULL_REGIONS
       INTEGER ii,jj
