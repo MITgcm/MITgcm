@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1298 2010/09/17 21:20:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1299 2010/09/21 00:55:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o model/src (rStar): 
+ use simple average (not area weighted) of rStarFac at U,V point when using 
+ vectorInvariant and selectKEscheme=1,3 (consistent with mom. vertical advection)
+ update output of exp. fizhi-cs-32x32x40 and fizhi-cs-aqualev20.
 
 checkpoint62k (2010/09/17)
 o adjoint
