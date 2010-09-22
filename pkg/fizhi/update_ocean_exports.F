@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.32 2010/03/16 00:19:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.33 2010/09/22 22:21:41 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -680,7 +680,7 @@ C
 C!INPUT PARAMETERS:
 C!      iunit    unit number assigned to the data file
 C!      ndmax    maximum number of date/times of the data
-C!      nrec     record number of the header info (or assume 1??)
+C!      nrec     record number of the header info (or assume 1 ?)
 C
 C!OUTPUT PARAMETERS:
 C!      cname         name of the data in the file header
