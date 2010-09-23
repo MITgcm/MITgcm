@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.69 2010/09/14 15:14:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.70 2010/09/23 22:46:24 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -320,7 +320,7 @@ CADJ &                           key = ilockey, byte = isbyte
            TICE(I,J,bi,bj)=TICES(I,J,IT,bi,bj)
           ENDDO
          ENDDO
-         CALL SEAICE_BUDGET_ICE(
+         CALL SEAICE_SOLVE4TEMP(
      I        UG, HICEP, hSnwLoc,
      U        TICE,
      O        FICEP, QSWIP,
@@ -336,7 +336,7 @@ C     average surface heat fluxes/growth rates
         ENDDO
 C--  End loop over multi-categories
 #else  /* SEAICE_MULTICATEGORY */
-        CALL SEAICE_BUDGET_ICE(
+        CALL SEAICE_SOLVE4TEMP(
      I       UG, HICE, hSnwLoc,
      U       TICE,
      O       FICE, QSWI,

@@ -4,7 +4,7 @@ dynsolver.f
 ostres.f
 seaice_advection.f
 seaice_advdiff.f
-seaice_budget_ice.f
+seaice_solve4temp.f
 seaice_budget_ice_if.f
 seaice_budget_ocean.f
 seaice_budget_ocean_if.f
