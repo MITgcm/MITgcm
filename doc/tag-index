@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1302 2010/09/24 18:40:15 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1303 2010/09/24 23:25:45 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff: ALLOW_AUTODIFF_WHTAPEIO
+  Option to use mdsio_read_whalos.F/mdsio_write_whalos.F, 
+  rather than mdsio_readvector.F/mdsio_writevector.F, within
+  adread_adwrite.F to read/write adjoint-related tapes to disk.
 o eesup and pkg/mdsio: ALLOW_WHIO 
 
   Option to write/read 2D fields to files including tiles halos. 
