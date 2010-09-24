@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.65 2010/09/11 21:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.66 2010/09/24 23:24:39 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -209,6 +209,7 @@ c      CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
 c     ENDIF
 c#endif
 
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. baseTime .AND. cAdjFreq .NE. 0. ) THEN
 #ifdef ALLOW_DEBUG
@@ -223,6 +224,7 @@ CADJ loop = parallel
          ENDDO
         ENDDO
       ENDIF
+#endif
 
 #ifdef NONLIN_FRSURF
 C--   Initialise Non-Lin FreeSurf variables:

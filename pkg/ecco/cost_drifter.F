@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.5 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.6 2010/09/24 23:24:09 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -55,6 +55,8 @@ c     == routine arguments ==
       integer myiter
       _RL     mytime
       integer mythid
+
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
 
 c     == local variables ==
 
@@ -358,6 +360,8 @@ c--     Print cost function for all tiles.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
 #endif
+
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
 #endif
 

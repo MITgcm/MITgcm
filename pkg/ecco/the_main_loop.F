@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.94 2010/08/24 14:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.95 2010/09/24 23:24:09 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -214,7 +214,9 @@ c--   == end of interface ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the initialisations.
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
 CADJ INIT tapelev_ini_bibj_k   = USER
+#endif
 CADJ INIT tapelev_init = USER
 c
 #if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
@@ -225,7 +227,11 @@ CADJ  INIT tapelev4 = USER
 CADJ  INIT tapelev3 = USER
 #endif
 c
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+CADJ INIT onetape = common, 1
+#else
 CADJ INIT onetape = user
+#endif
 cphCADJ INIT onetape = common, 1
 cph We want to avoid common blocks except in the inner loop.
 cph Reason: the active write and consecutive read may occur
@@ -1250,6 +1256,7 @@ c--   Compute cost function contribution of Temperature and Salinity.
 
 c--   Compute cost function contribution of drifter velocities.
 #ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
 #ifndef DISABLE_DEBUGMODE
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('cost_drifter',myThid)
@@ -1257,6 +1264,7 @@ c--   Compute cost function contribution of drifter velocities.
       call timer_start('cost_drifter         [ECCO SPIN-DOWN]', mythid)
       call cost_drifter( myiter, mytime, mythid )
       call timer_stop ('cost_drifter         [ECCO SPIN-DOWN]', mythid)
+#endif
 #endif
 
 c--   Compute cost function contribution of wind stress observations.
