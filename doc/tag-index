@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1300 2010/09/23 22:53:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1301 2010/09/24 13:55:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+   fix uninitialised arrays in USE_ORIGINAL_SBI version of seaice_solve4temp.F
 o pkg/seaice:
    new S/R seaice_solve4temp.F: this is the merged version of Ian Fenty
    code (seaice_budget_ice_if.F) which enable to recover old standard
