@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_whalos.F,v 1.1 2010/09/24 18:39:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_whalos.F,v 1.2 2010/09/24 23:21:02 gforget Exp $
 C $fName:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -92,13 +92,6 @@ c     == local variables ==
       LOGICAL iAmDoingIO
 
       _RL fld2d(1:sNxWh,1:sNyWh,nSx,nSy)
-c global buffers
-      Real*4 fld2d_globuff_r4(sNxWh,gloNyWh)
-      Real*8 fld2d_globuff_r8(sNxWh,gloNyWh)
-c The corresponding proc buffers are in common blocks
-c  (in MDSIO_BUFF_WH.h) which is needed for multi-threads.
-c Eventually we could want to also put global buffers in common
-c  blocks in .h (to save memory) but local is fine for now.
 
 c     == functions ==
       INTEGER  ILNBLNK
