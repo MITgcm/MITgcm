@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.10 2009/02/13 15:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.11 2010/09/24 23:22:20 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,6 +129,7 @@ c     == local variables ==
       character*(MAX_LEN_MBUF) msgBuf
       integer il
       integer bx,by
+      integer n2d,length2d
 
 c     == functions ==
       integer  ilnblnk
@@ -137,18 +138,49 @@ c     == functions ==
 c     == end of interface ==
 CEOP
 
-      sizetmp = 8
-
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('ADREAD',myThid)
 #endif
 
       IF ( doSinglePrecTapelev ) THEN
-       sizetmp = 4
+       sizetmp = 32
       ELSE
-       sizetmp = 8
+       sizetmp = 64
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+
+c    determine number of 2d fields
+      length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSy*nSy
+      n2d=int(length/length2d)
+c
+      if (n2d*length2d.EQ.length) then
+      call mds_read_whalos(name,len,sizetmp,
+     &               0,n2d,var,irec,mythid)
+      else
+c   The other case actually does not (and should not) occur within the main loop, 
+c   where we only store global arrays (i.e. with bi,bj indices) to disk. 
+c     At init and final time it is always be possible to recompute or store in
+c   memory without much trouble or computational cost.
+c
+c    Presently there are three instances where non-global arrays are stored to disk:
+c   (a) the one instance when onetape is used, to store mytime, which is of no effect. 
+c   In the_main_loop, we switch onetape to memory tape if ALLOW_AUTODIFF_WHTAPEIO
+c   (b) the two instances when tapelev_ini_bibj_k is used (in convective
+c   _adjustment_ini.F and cost_drifter.F) are disabled at compile time if
+c   ALLOW_AUTODIFF_WHTAPEIO. So is the definition of tapelev_ini_bibj_k,
+c   which is not supported with ALLOW_AUTODIFF_WHTAPEIO (side-note:
+c   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector) 
+c
+c   The issue could be revisited if needed.
+         WRITE(msgBuf,'(3A)')
+     &        'ADWRITE: ',name,'was not saved to tape.'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+      endif
+      
+#else
 
       write(fname(1:MAX_LEN_FNAM),'(a)') ' '
       write(itername,'(a,i4.4)') '.it',optimcycle
@@ -169,9 +201,11 @@ CEOP
      &                       SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif
-        call mdsreadvector( fname, sizetmp*8, 'RL',
+        call mdsreadvector( fname, sizetmp, 'RL',
      &                      length, var, bx, by, irec, mythid )
       _END_MASTER( mythid )
+
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
 c     Everyone must wait for the read operation to be completed.
       _BARRIER
@@ -256,6 +290,7 @@ c     == local variables ==
       integer il
       integer bx,by
       logical globalfile
+      integer n2d,length2d
 
 c     == functions ==
       integer ilnblnk
@@ -264,18 +299,33 @@ c     == functions ==
 c     == end of interface ==
 CEOP
 
-      sizetmp = 8
-
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_ENTER('ADWRITE',myThid)
 #endif
 
       IF ( doSinglePrecTapelev ) THEN
-       sizetmp = 4
+       sizetmp = 32
       ELSE
-       sizetmp = 8
+       sizetmp = 64
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+c    determine number of 2d fields
+      length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSy*nSy
+      n2d=int(length/length2d)
+c
+      if (n2d*length2d.EQ.length) then
+      call mds_write_whalos(name,len,sizetmp,
+     &               0,n2d,var,irec,mythid)
+      else
+         WRITE(msgBuf,'(3A)') 
+     &        'ADREAD: ',name,'was not read from tape.'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+      endif
+
+#else
 
       globalfile = .false.
       il         = ilnblnk( name )
@@ -301,9 +351,11 @@ CEOP
      &                       SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif
-        call mdswritevector( fname, sizetmp*8, globalfile, 'RL',
+        call mdswritevector( fname, sizetmp, globalfile, 'RL',
      &                       length, var, bx, by, irec, 0, mythid )
       _END_MASTER( mythid )
+
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
 c     Everyone must wait for the write operation to be completed.
       _BARRIER
