@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.9 2009/04/22 23:06:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.10 2010/09/25 23:09:54 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -78,6 +78,9 @@ C--   ======================================
 #endif
 #ifdef COMPONENT_MODULE
        IF ( useCoupler) CALL MPI_BARRIER( MPI_COMM_WORLD, mpiRC )
+#endif
+#ifdef ALLOW_OASIS
+       IF ( useOASIS ) CALL OASIS_FINALIZE
 #endif
        CALL MPI_FINALIZE  ( mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN

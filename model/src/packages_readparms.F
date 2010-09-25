@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.65 2010/06/29 18:06:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.66 2010/09/25 23:09:55 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -113,6 +113,8 @@ C       |
 C       |-- REGRID_READPARMS
 C       |
 C       |-- LAYERS_READPARMS
+C       |
+C       |-- OASIS_READPARMS
 C       |
 C       |-- MYPACKAGE_READPARMS
 
@@ -332,6 +334,10 @@ C--    Initialize matrix package parameters
 #ifdef ALLOW_LAYERS
       IF ( useLayers ) CALL LAYERS_READPARMS( myThid )
 #endif /* ALLOW_LAYERS */
+
+#ifdef ALLOW_OASIS
+       IF (useOASIS) CALL OASIS_READPARMS ( myThid )
+#endif
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) CALL MYPACKAGE_READPARMS( myThid )

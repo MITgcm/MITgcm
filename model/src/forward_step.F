@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.180 2010/09/11 21:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.181 2010/09/25 23:09:54 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -303,6 +303,17 @@ C      Read in coupling data that I import.
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* COMPONENT_MODULE */
+#ifdef ALLOW_OASIS
+      IF ( useOASIS ) THEN
+       CALL TIMER_START('OASIS_PUT-GET  [FORWARD_STEP]',myThid)
+C      Post coupling data that I export.
+       CALL OASIS_PUT( myTime, myIter, myThid )
+C      Read in coupling data that I import.
+       CALL OASIS_GET( myTime, myIter, myThid )
+       CALL TIMER_STOP ('OASIS_PUT-GET  [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_OASIS */
+
 
 #ifdef ALLOW_EBM
       IF ( useEBM ) THEN

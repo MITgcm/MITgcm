@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.18 2009/11/24 00:16:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.19 2010/09/25 23:09:54 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -102,15 +102,20 @@ C      forked within mpirun - now thats an open standard!
 C--    MPI has now been initialized but now we need to either
 C      ask for a communicator or pretend that we have:
 C      Pretend that we have asked for a communicator
+
 cgms(
 C      One caveat is that this model does not work in conjunction
 C      with new nest(ing) approach, so we exclude it in certain cases.
 cgms)
 #ifndef ALLOW_NEST_PARENT
-#ifndef ALLOW_NEST_CHILD
+# ifndef ALLOW_NEST_CHILD
        MPI_COMM_MODEL = MPI_COMM_WORLD
-#endif
-#endif
+# endif /* ALLOW_NEST_CHILD */
+#endif /* ALLOW_NEST_PARENT */
+
+#ifdef ALLOW_OASIS
+       CALL OASIS_BOOT_MINIMAL(MPI_COMM_MODEL)
+#endif /* ALLOW_OASIS */
 
 #ifdef COMPONENT_MODULE
 C--    Set the running directory

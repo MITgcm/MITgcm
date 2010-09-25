@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.49 2010/03/13 00:26:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.50 2010/09/25 23:09:55 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -345,6 +345,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )
 #else
       IF (useMYPACKAGE) CALL PACKAGES_ERROR_MSG('MYPACKAGE',' ',myThid)
+#endif
+
+#ifdef ALLOW_OASIS
+      IF (useOASIS) CALL OASIS_CHECK( myThid )
+#else
+      IF (useOASIS) CALL PACKAGES_ERROR_MSG('OASIS',' ',myThid)
 #endif
 
 #ifdef ALLOW_ECCO

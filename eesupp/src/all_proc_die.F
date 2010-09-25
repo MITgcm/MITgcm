@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.3 2009/12/29 19:43:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.4 2010/09/25 23:09:54 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -62,6 +62,9 @@ C     hang here since procs of other comp. are not calling MPI_finalize now.
      &        .OR. useNEST_PARENT
      &        .OR. useNEST_CHILD )
      &    ) THEN
+#ifdef ALLOW_OASIS
+         IF ( useOASIS ) CALL OASIS_ABORT
+#endif /* ALLOW_OASIS */        
          CALL MPI_FINALIZE  ( mpiRC )
          IF ( mpiRC .NE. MPI_SUCCESS ) THEN
           WRITE(msgBuf,'(A,I5)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.71 2010/01/20 23:33:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.72 2010/09/25 23:09:55 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -334,6 +334,11 @@ C--   Initialise fixed array for Float pkg
 
 #ifdef ALLOW_SALT_PLUME
       IF (useSALT_PLUME) CALL SALT_PLUME_INIT_FIXED(myThid)
+#endif
+
+#ifdef ALLOW_OASIS
+C--   needs to be called after the OASIS_INIT
+      IF (useOASIS) CALL OASIS_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_MYPACKAGE
