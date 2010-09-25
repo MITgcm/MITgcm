@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.20 2010/03/22 00:58:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.21 2010/09/25 23:04:07 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -244,7 +244,7 @@ cph)
      &                       / sqrt(weightfld(k,bi,bj))
 # endif
                      else
-                        globfld3d(i,bi,ip,j,bj,jp,k) = delZnorm
+                        globfld3d(i,bi,ip,j,bj,jp,k) = 1/delZnorm
      &                       * globfld3d(i,bi,ip,j,bj,jp,k)
 # ifdef CTRL_UNPACK_PRECISE
      &                       * sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
