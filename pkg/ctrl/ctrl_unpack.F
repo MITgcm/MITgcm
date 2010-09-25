@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.33 2010/07/13 00:02:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.34 2010/09/25 18:24:17 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -183,6 +183,9 @@ c     >>> Write gradient vector <<<
           print *, 'ph-pack: unpacking ', costname(1:9)
        endif
 
+c--   Only Proc 0 will do I/O.
+      IF ( myProcId .eq. 0 ) THEN
+
           call mdsfindunit( cunit, mythid )
 
 #ifndef ALLOW_ADMTLM
@@ -308,6 +311,12 @@ cgg(   Lets also check the OBCS mask info in the header.
 cgg)  End OBCS mask check.
 
 #endif /* ndef ALLOW_ADMTLM */
+
+#  ifndef ALLOW_PACKUNPACK_LEGACY
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+#  endif
 
 c----------------------------------------------------------------------
 
@@ -716,10 +725,16 @@ CML# endif
      &         weighttype, wkapredi, nwetcglobal, mythid)
 #endif
 
-         close ( cunit )
- 
-      _END_MASTER( mythid )
 
+#ifndef ALLOW_PACKUNPACK_LEGACY
+      _BEGIN_MASTER( mythid )
+      IF ( myProcId .eq. 0 ) THEN
+#endif
+
+      close ( cunit )
+      ENDIF !IF ( myProcId .eq. 0 ) 
+      _END_MASTER( mythid )
+      _BARRIER
 #endif /* EXCLUDE_CTRL_PACK */
 
       return

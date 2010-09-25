@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.107 2010/01/13 01:41:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.108 2010/09/25 18:21:03 gforget Exp $
 C $Name:  $
 
 CBOI
@@ -528,8 +528,6 @@ c
 #elif ( defined (ALLOW_AUTODIFF))
 
 # ifndef EXCLUDE_CTRL_PACK
-      _BEGIN_MASTER( mythid )
-      IF (myProcId .eq. 0) THEN
          inquire( file='costfinal', exist=exst )
          IF ( .NOT. exst ) THEN
             IF ( optimcycle.NE.0 .AND. doMainUnpack ) THEN
@@ -538,9 +536,6 @@ c
                CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',mythid)
             ENDIF
          ENDIF
-      ENDIF
-      _END_MASTER( mythid )
-      _BARRIER
 # endif /* EXCLUDE_CTRL_PACK */
 
 # ifdef ALLOW_COST
@@ -610,8 +605,7 @@ C--   Call time stepping loop of full model
 # endif
 
 # ifndef EXCLUDE_CTRL_PACK
-      _BEGIN_MASTER( mythid )
-      IF ( myProcId .eq. 0 .AND. lastdiva .AND. doMainPack ) THEN
+      IF ( lastdiva .AND. doMainPack ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
          CALL CTRL_PACK( .FALSE. , mythid )
          CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
@@ -622,8 +616,6 @@ C--   Call time stepping loop of full model
             CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
          ENDIF
       ENDIF
-      _END_MASTER( mythid )
-      _BARRIER
 # endif /* EXCLUDE_CTRL_PACK */
 
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.34 2010/07/13 00:02:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.35 2010/09/25 18:24:16 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -175,6 +175,9 @@ c     >>> Write gradient vector <<<
           print *, 'ph-pack: packing ', costname(1:9)
        endif
 
+c--   Only Proc 0 will do I/O.
+      IF ( myProcId .eq. 0 ) THEN
+
        call mdsfindunit( cunit, mythid )
        open( cunit, file   = cfile,
      &      status = 'unknown',
@@ -219,6 +222,12 @@ C     place holder of obsolete variable jG
           write(cunit) (ncvarnrmax(i), i=1,maxcvars)
           write(cunit) (ncvargrd(i),   i=1,maxcvars)
           write(cunit)
+
+#ifndef ALLOW_PACKUNPACK_LEGACY
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+#endif
 
 #ifdef ALLOW_THETA0_CONTROL
           ivartype = 1
@@ -622,10 +631,15 @@ C     place holder of obsolete variable jG
      &         weighttype, wkapredi, lxxadxx, mythid)
 #endif
 
-          close ( cunit )
+#ifndef ALLOW_PACKUNPACK_LEGACY
+      _BEGIN_MASTER( mythid )
+      IF ( myProcId .eq. 0 ) THEN
+#endif
 
-        _END_MASTER( mythid )
-
+       close ( cunit )
+       ENDIF !IF ( myProcId .eq. 0 ) 
+       _END_MASTER( mythid )
+      _BARRIER
 #endif /* EXCLUDE_CTRL_PACK */
 
       return
