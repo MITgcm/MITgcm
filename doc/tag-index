@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1303 2010/09/24 23:25:45 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1304 2010/09/25 23:10:51 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add hooks for new packages OASIS, the package will follow
+  (hooks exclude the seaice pkg for now)
 o pkg/autodiff: ALLOW_AUTODIFF_WHTAPEIO
   Option to use mdsio_read_whalos.F/mdsio_write_whalos.F, 
   rather than mdsio_readvector.F/mdsio_writevector.F, within
