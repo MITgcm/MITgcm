@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.19 2010/09/25 23:09:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.20 2010/09/25 23:18:41 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,7 +114,7 @@ cgms)
 #endif /* ALLOW_NEST_PARENT */
 
 #ifdef ALLOW_OASIS
-       CALL OASIS_BOOT_MINIMAL(MPI_COMM_MODEL)
+       CALL OASIS_INIT(MPI_COMM_MODEL)
 #endif /* ALLOW_OASIS */
 
 #ifdef COMPONENT_MODULE
