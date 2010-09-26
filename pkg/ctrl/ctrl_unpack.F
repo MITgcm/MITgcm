@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.34 2010/09/25 18:24:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.35 2010/09/26 02:51:38 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -312,11 +312,11 @@ cgg)  End OBCS mask check.
 
 #endif /* ndef ALLOW_ADMTLM */
 
-#  ifndef ALLOW_PACKUNPACK_LEGACY
+#ifdef ALLOW_PACKUNPACK_METHOD2
       ENDIF
       _END_MASTER( mythid )
       _BARRIER
-#  endif
+#endif
 
 c----------------------------------------------------------------------
 
@@ -726,7 +726,7 @@ CML# endif
 #endif
 
 
-#ifndef ALLOW_PACKUNPACK_LEGACY
+#ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )
       IF ( myProcId .eq. 0 ) THEN
 #endif

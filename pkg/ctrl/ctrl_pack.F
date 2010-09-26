@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.35 2010/09/25 18:24:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.36 2010/09/26 02:51:38 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -223,7 +223,7 @@ C     place holder of obsolete variable jG
           write(cunit) (ncvargrd(i),   i=1,maxcvars)
           write(cunit)
 
-#ifndef ALLOW_PACKUNPACK_LEGACY
+#ifdef ALLOW_PACKUNPACK_METHOD2
       ENDIF
       _END_MASTER( mythid )
       _BARRIER
@@ -631,7 +631,7 @@ C     place holder of obsolete variable jG
      &         weighttype, wkapredi, lxxadxx, mythid)
 #endif
 
-#ifndef ALLOW_PACKUNPACK_LEGACY
+#ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )
       IF ( myProcId .eq. 0 ) THEN
 #endif

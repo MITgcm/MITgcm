@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.19 2007/10/09 00:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.20 2010/09/26 02:51:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -45,6 +45,7 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
+# ifndef ALLOW_PACKUNPACK_METHOD2
 c     == local variables ==
 
       integer bi,bj
@@ -260,8 +261,198 @@ c     -- end of irec loop --
 
       _END_MASTER( mythid )
 
+# else
+c     == local variables ==
+
+      integer bi,bj
+      integer ip,jp
+      integer i,j,k
+      integer ii
+      integer il
+      integer irec
+      integer itlo,ithi
+      integer jtlo,jthi
+
+      integer cbuffindex
+
+      _RL msk3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      real*8 msk2d_buf(sNx,sNy,nSx,nSy)
+      real*8 msk2d_buf_glo(Nx,Ny)
+
+      _RL fld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      real*8 fld2d_buf(sNx,sNy,nSx,nSy)
+      real*8 fld2d_buf_glo(Nx,Ny)
+
+      _RL fld3dDim(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fld3dNodim(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+#ifdef CTRL_PACK_PRECISE
+      _RL wei3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif
+
+      real*4 cbuff      ( snx*nsx*npx*sny*nsy*npy )
+
+      character*(80) weightname
+      _RL delZnorm
+      character*(80) cfile2, cfile3
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
+
+c     == end of interface ==
+
+c-- part 1: preliminary reads and definitions
+
+#ifdef CTRL_PACK_PRECISE
+      call active_read_xyz(weighttype, wei3d, 1,
+     &    .FALSE., .FALSE., 0 , mythid, 1)
+#endif
+
+      call active_read_xyz(masktype, msk3d, 1, 
+     &    .FALSE., .FALSE., 0 , mythid, 1)
+
+      if ( doPackDiag ) then
+         write(cfile2(1:80),'(80a)') ' '
+         write(cfile3(1:80),'(80a)') ' '
+         il = ilnblnk( fname )
+         if ( lxxadxx ) then
+            write(cfile2(1:80),'(2a)') fname(1:il),'.pack_ctrl_adim'
+            write(cfile3(1:80),'(2a)') fname(1:il),'.pack_ctrl_dim'
+         else
+            write(cfile2(1:80),'(2a)') fname(1:il),'.pack_grad_adim'
+            write(cfile3(1:80),'(2a)') fname(1:il),'.pack_grad_dim'
+         endif
+      endif
+
+c-- part 2: loop over records
+
+      do irec = 1, ncvarrecs(ivartype)
+
+c-- 2.1: 
+      call READ_REC_3D_RL( fname, ctrlprec, 
+     &        Nr, fld3dDim, irec, 0, mythid)
+
+c-- 2.2: normalize field if needed
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,Nr
+         if ( doZscalePack ) then
+            delZnorm = (delR(1)/delR(k))**delZexp
+         else
+            delZnorm = 1. _d 0
+         endif
+         DO j=1,sNy
+          DO i=1,sNx
+           if (msk3d(i,j,k,bi,bj).EQ.0. _d 0) then
+            fld3dDim(i,j,k,bi,bj)=0. _d 0
+            fld3dNodim(i,j,k,bi,bj)=0. _d 0
+           else
+#ifdef ALLOW_SMOOTH_CORREL3D
+            fld3dNodim(i,j,k,bi,bj)=fld3dDim(i,j,k,bi,bj)
+#else
+# ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
+            fld3dNodim(i,j,k,bi,bj) = fld3dDim(i,j,k,bi,bj)
+# else
+            if (lxxadxx) then
+               fld3dNodim(i,j,k,bi,bj) = 
+     &              fld3dDim(i,j,k,bi,bj) / delZnorm 
+#  ifdef CTRL_PACK_PRECISE
+     &              * sqrt(wei3d(i,j,k,bi,bj))
+#  else
+     &              * sqrt(weightfld(k,bi,bj))
+#  endif
+            else
+               fld3dNodim(i,j,k,bi,bj) =
+     &              fld3dDim(i,j,k,bi,bj) * delZnorm
+#  ifdef CTRL_PACK_PRECISE
+     &              / sqrt(wei3d(i,j,k,bi,bj))
+#  else
+     &              / sqrt(weightfld(k,bi,bj))
+#  endif
+            endif
+# endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
+#endif /* ALLOW_SMOOTH_CORREL3D */
+           endif
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+c-- 2.3:
+      if ( doPackDiag ) then
+c error: twice the same one
+      call WRITE_REC_3D_RL( cfile2, ctrlprec,
+     &        Nr, fld3dNodim, irec, 0, mythid)
+      call WRITE_REC_3D_RL( cfile3, ctrlprec,
+     &        Nr, fld3dDim, irec, 0, mythid)
+      endif
+
+c-- 2.4: array -> buffer -> global buffer -> global file
+
+#ifndef ALLOW_ADMTLM
+      _BEGIN_MASTER( mythid )
+      IF ( myProcId .eq. 0 ) THEN
+         write(cunit) ncvarindex(ivartype)
+         write(cunit) 1
+         write(cunit) 1
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+#endif
+
+      do k = 1, nr
+
+        CALL MDS_PASS_R8toRL( fld2d_buf, fld3dNodim,
+     &                       1, k, Nr, 0, 0, .FALSE., myThid )
+        CALL BAR2( myThid )
+        CALL GATHER_2D_R8( fld2d_buf_glo, fld2d_buf,
+     &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
+        CALL BAR2( myThid )
+
+        CALL MDS_PASS_R8toRL( msk2d_buf, msk3d,
+     &                       1, k, Nr, 0, 0, .FALSE., myThid )
+        CALL BAR2( myThid )
+        CALL GATHER_2D_R8( msk2d_buf_glo, msk2d_buf,
+     &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
+        CALL BAR2( myThid )
+
+        _BEGIN_MASTER( mythid )
+        cbuffindex = 0
+        IF ( myProcId .eq. 0 ) THEN
+
+        DO j=1,Ny
+          DO i=1,Nx
+            if (msk2d_buf_glo(i,j) .ne. 0. ) then
+               cbuffindex = cbuffindex + 1
+               cbuff(cbuffindex) = fld2d_buf_glo(i,j)
+#ifdef ALLOW_ADMTLM
+               nveccount = nveccount + 1
+               phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+#endif
+            endif
+          ENDDO
+        ENDDO
+
+#ifndef ALLOW_ADMTLM
+        if ( cbuffindex .gt. 0) then
+          write(cunit) cbuffindex
+          write(cunit) k
+          write(cunit) (cbuff(ii), ii=1,cbuffindex)
+        endif
+#endif
+
+        ENDIF
+        _END_MASTER( mythid )
+        _BARRIER
+
+      enddo
+      enddo
+
+# endif /* ALLOW_PACKUNPACK_METHOD2 */ 
+# endif /* EXCLUDE_CTRL_PACK */
 
       return
       end
-
