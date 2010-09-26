@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.2 2010/09/24 13:52:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.3 2010/09/26 13:46:28 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,6 +31,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
@@ -71,11 +72,13 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+#ifndef USE_ORIGINAL_SBI
       _RL F_swi      (1:sNx,1:sNy)
       _RL F_lwd      (1:sNx,1:sNy)
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_lh       (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
+#endif /* USE_ORIGINAL_SBI */
       _RL F_c        (1:sNx,1:sNy)
       _RL qhice      (1:sNx,1:sNy)
 
@@ -90,23 +93,27 @@ C     local copies of global variables
       _RL ALB_ICE    (1:sNx,1:sNy)
       _RL ALB_SNOW   (1:sNx,1:sNy)
 
-      INTEGER KOPEN
-C     i,j - Loop counters
+C     i, j  :: Loop counters
+C     kSrf  :: vertical index of surface layer
       INTEGER i, j
+#ifdef SEAICE_VARIABLE_FREEZING_POINT
+      INTEGER kSrf
+#endif /* SEAICE_VARIABLE_FREEZING_POINT */
       INTEGER ITER
 
       _RL  TB, D1, D1I, D3
-      _RL  TMELT, XKI, XKS, HCUT, XIO, dFiDTs1
+      _RL  TMELT, XKI, XKS, HCUT, XIO
       _RL  SurfMeltTemp
 
-c     Constants to calculate Saturation Vapor Pressure
+C     Constants to calculate Saturation Vapor Pressure
 #ifdef USE_ORIGINAL_SBI
       _RL  TMELTP, C1, C2, C3, C4, C5, QS1
       _RL A2        (1:sNx,1:sNy)
       _RL A3        (1:sNx,1:sNy)
-      _RL B         (1:sNx,1:sNy)
+c     _RL B         (1:sNx,1:sNy)
       _RL A1        (1:sNx,1:sNy)
 #else  /* USE_ORIGINAL_SBI */
+      _RL dFiDTs1
       _RL aa1,aa2,bb1,bb2,Ppascals,cc0,cc1,cc2,cc3t
 C     specific humidity at ice surface variables
       _RL  mm_pi,mm_log10pi,dqhice_dTice
@@ -115,11 +122,9 @@ C     specific humidity at ice surface variables
 C     effective conductivity of combined ice and snow
       _RL  effConduct
 
-
 C     powers of temperature
       _RL  t1, t2, t3, t4
       _RL TEN
-
 
       TEN = 10.0 _d 0
 #ifdef USE_ORIGINAL_SBI
@@ -144,18 +149,12 @@ C MAYKUTS CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
 #endif /* USE_ORIGINAL_SBI */
 
 C     FREEZING TEMPERATURE OF SEAWATER
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
-c     Use a variable seawater freezing point
-         TB = -0.0575 _d 0*salt(I,J,kSrf,bi,bj) + 0.0901 _d 0
-     &        + 273.15 _d 0
-#else /* SEAICE_VARIABLE_FREEZING_POINT */
-c     Use a constant seaswater freezing point
+C     Use a constant freezing temperature (SEAICE_VARIABLE_FREEZING_POINT undef)
 #ifdef USE_ORIGINAL_SBI
       TB=271.2 _d 0
 #else /* USE_ORIGINAL_SBI */
-      TB=273.15 _d 0 + SEAICE_freeze
+      TB = celsius2K + SEAICE_freeze
 #endif /* USE_ORIGINAL_SBI */
-#endif /* SEAICE_VARIABLE_FREEZING_POINT */
 
 C     SENSIBLE HEAT CONSTANT
       D1=SEAICE_sensHeat
@@ -172,7 +171,7 @@ C     MELTING TEMPERATURE OF ICE
       TMELTP=273.159 _d +00
       SurfMeltTemp = TMELTP
 #else /* USE_ORIGINAL_SBI */
-      TMELT = 273.15 _d 0
+      TMELT = celsius2K
       SurfMeltTemp = TMELT
 #endif /* USE_ORIGINAL_SBI */
 
@@ -188,8 +187,7 @@ C     CUTOFF SNOW THICKNESS
 C     PENETRATION SHORTWAVE RADIATION FACTOR
       XIO=SEAICE_shortwave
 
-
-c     Initialize variables
+C     Initialize variables
       DO J=1,sNy
          DO I=1,sNx
             IcePenetSWFlux     (I,J) = 0. _d 0
@@ -202,7 +200,7 @@ c     Initialize variables
             F_io_net (I,J) = 0. _d 0
             F_ia_net (I,J) = 0. _d 0
 
-c           Reset the snow/ice surface to TMELT and bound the atmospheric temperature
+C           Reset the snow/ice surface to TMELT and bound the atmospheric temperature
 #ifdef USE_ORIGINAL_SBI
             tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
             atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
@@ -251,13 +249,13 @@ C     DECIDE ON ALBEDO
                ENDIF            !/ Albedo for snow and ice
 
 #ifdef USE_ORIGINAL_SBI
-c              If actual snow thickness exceeds the cutoff thickness, use the
-c              snow albedo
+C              If actual snow thickness exceeds the cutoff thickness, use the
+C              snow albedo
                IF (HSNOW_ACTUAL(I,J) .GT. HCUT) THEN
                   ALB(I,J) = ALB_SNOW(I,J)
 
-c              otherwise, use some combination of ice and snow albedo
-c              (What is the source of this formulation ?)
+C              otherwise, use some combination of ice and snow albedo
+C              (What is the source of this formulation ?)
                ELSE
                   ALB(I,J) = MIN(ALB_ICE(I,J) + HSNOW_ACTUAL(I,J)/HCUT*
      &                         (ALB_SNOW(I,J) -ALB_ICE(I,J)),
@@ -271,7 +269,6 @@ c              (What is the source of this formulation ?)
                   ALB(I,J) = ALB_ICE(I,J)
                ENDIF
 #endif /* USE_ORIGINAL_SBI */
-
 
 #ifdef USE_ORIGINAL_SBI
 C       NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
@@ -293,13 +290,13 @@ C        SW PENETRATION UNDER ICE
 
 #else /* USE_ORIGINAL_SBI */
 
-c     The longwave radiative flux convergence
+C     The longwave radiative flux convergence
                F_lwd(I,J) = - 0.97 _d 0 * lwdownLoc(I,J)
 
-c     Determine the fraction of shortwave radiative flux
-c     remaining after scattering through the snow and ice at
-c     the ocean interface.  If snow is present, no radiation
-c     penetrates to the ocean.
+C     Determine the fraction of shortwave radiative flux
+C     remaining after scattering through the snow and ice at
+C     the ocean interface.  If snow is present, no radiation
+C     penetrates to the ocean.
                IF (HSNOW_ACTUAL(I,J) .GT. ZERO) THEN
                   IcePenetSWFluxFrac(I,J) = ZERO
                ELSE
@@ -307,28 +304,34 @@ c     penetrates to the ocean.
      &               XIO*EXP(-1.5 _d 0 * HICE_ACTUAL(I,J))
                ENDIF
 
-c     The shortwave radiative flux convergence in the
-c     seaice.
+C     The shortwave radiative flux convergence in the
+C     seaice.
                AbsorbedSWFlux(I,J)       = -(ONE - ALB(I,J))*
      &            (ONE - IcePenetSWFluxFrac(I,J))
      &            *SWDOWN(I,J,bi,bj)
 
-c     The shortwave radiative flux convergence in the
-c     ocean beneath ice.
+C     The shortwave radiative flux convergence in the
+C     ocean beneath ice.
                IcePenetSWFlux(I,J) = -(ONE - ALB(I,J))*
      &            IcePenetSWFluxFrac(I,J)
      &            *SWDOWN(I,J,bi,bj)
 
                F_swi(I,J) = AbsorbedSWFlux(I,J)
 
-c     Set a mininum sea ice thickness of 5 cm to bound
-c     the magnitude of conductive heat fluxes.
+C     Set a mininum sea ice thickness of 5 cm to bound
+C     the magnitude of conductive heat fluxes.
                HICE_ACTUAL(I,J) = max(HICE_ACTUAL(I,J),5. _d -2)
 
 #endif /* USE_ORIGINAL_SBI */
 
-c     The effective conductivity of the two-layer
-c     snow/ice system.
+#ifdef SEAICE_VARIABLE_FREEZING_POINT
+C     Use a variable seawater freezing point
+               TB = -0.0575 _d 0*salt(I,J,kSrf,bi,bj) + 0.0901 _d 0
+     &            + celsius2K
+#endif /* SEAICE_VARIABLE_FREEZING_POINT */
+
+C     The effective conductivity of the two-layer
+C     snow/ice system.
 #ifdef USE_ORIGINAL_SBI
                effConduct=
      &             XKS/(HSNOW_ACTUAL(I,J)/HICE_ACTUAL(I,J) +
@@ -337,8 +340,6 @@ c     snow/ice system.
                effConduct = XKI * XKS /
      &            (XKS * HICE_ACTUAL(I,J) + XKI * HSNOW_ACTUAL(I,J))
 #endif /* USE_ORIGINAL_SBI */
-
-
 
 #ifdef SEAICE_DEBUG
                IF ( (I .EQ. SEAICE_debugPointX)   .and.
@@ -368,7 +369,7 @@ c     snow/ice system.
                ENDIF
 #endif /* SEAICE_DEBUG */
 
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+Ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                DO ITER=1,IMAX_TICE
 
                   t1 = tsurfLoc(I,J)
@@ -376,32 +377,32 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                   t3 = t2*t1
                   t4 = t2*t2
 
-c                 Calculate the specific humidity in the BL above the snow/ice
+C                 Calculate the specific humidity in the BL above the snow/ice
 #ifdef USE_ORIGINAL_SBI
-c                 Use the Maykut polynomial
+C                 Use the Maykut polynomial
                   qhice(I,J)=QS1*(C1*t4+C2*t3 +C3*t2+C4*t1+C5)
 
 #else /* USE_ORIGINAL_SBI */
-c                 Use an approximation which is more accurate at low temperatures
+C                 Use an approximation which is more accurate at low temperatures
 
-c                 log 10 of the sat vap pressure
+C                 log 10 of the sat vap pressure
                   mm_log10pi = -aa1 / t1 + aa2
 
-c                 The saturation vapor pressure (SVP) in the surface
-c                 boundary layer (BL) above the snow/ice.
+C                 The saturation vapor pressure (SVP) in the surface
+C                 boundary layer (BL) above the snow/ice.
                   mm_pi = TEN **(mm_log10pi)
 
                   qhice(I,J) = bb1*mm_pi / (Ppascals - (ONE - bb1) *
      &               mm_pi)
 #endif /* USE_ORIGINAL_SBI */
 
-c                 Caclulate the flux terms based on the updated tsurfLoc
+C                 Caclulate the flux terms based on the updated tsurfLoc
 #ifdef USE_ORIGINAL_SBI
                   A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3*t4
                   A3(I,J) = 4.0 _d 0 * D3 * t3 + effConduct + D1*UG(I,J)
                   F_c(I,J)=-effConduct*(TB-tsurfLoc(I,J))
 #else /* USE_ORIGINAL_SBI */
-c                 A constant for SVP derivative w.r.t TICE
+C                 A constant for SVP derivative w.r.t TICE
                   cc3t = TEN **(aa1 / t1)
 
 c                 d(qh)/d(TICE)
@@ -448,7 +449,7 @@ c                 d(F_ia)/d(TICE)
                   ENDIF
 #endif /* SEAICE_DEBUG */
 
-c                 Update tsurfLoc
+C                 Update tsurfLoc
 #ifdef USE_ORIGINAL_SBI
                   tsurfLoc(I,J)=tsurfLoc(I,J)
      &                    +(A1(I,J)+A2(I,J)-F_c(I,J))/A3(I,J)
@@ -459,11 +460,11 @@ c                 Update tsurfLoc
 #else /* USE_ORIGINAL_SBI */
                   tsurfLoc(I,J) = tsurfLoc(I,J) - F_ia(I,J) / dFiDTs1
 
-c                 If the search leads to tsurfLoc < 50 Kelvin,
-c                 restart the search at tsurfLoc = TMELT.  Note that one
-c                 solution to the energy balance problem is an
-c                 extremely low temperature - a temperature far below
-c                 realistic values.
+C                 If the search leads to tsurfLoc < 50 Kelvin,
+C                 restart the search at tsurfLoc = TMELT.  Note that one
+C                 solution to the energy balance problem is an
+C                 extremely low temperature - a temperature far below
+C                 realistic values.
 
                   IF (tsurfLoc(I,J) .LT. 50.0 _d 0 ) THEN
                      tsurfLoc(I,J) = TMELT
@@ -482,9 +483,9 @@ c                 realistic values.
 #endif /* SEAICE_DEBUG */
 
                ENDDO            !/* Iterations */
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+Ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-c              Finalize the flux terms
+C              Finalize the flux terms
 #ifdef USE_ORIGINAL_SBI
                F_ia(I,J)=-A1(I,J)-A2(I,J)
                TSURF(I,J,bi,bj)=MIN(tsurfLoc(I,J),TMELT)
@@ -505,19 +506,19 @@ C              SW PENETRATION UNDER ICE
                tsurfLoc(I,J) = MIN(tsurfLoc(I,J),TMELT)
                TSURF(I,J,bi,bj) = tsurfLoc(I,J)
 
-c              Recalculate the fluxes based on the (possibly) adjusted TSURF
+C              Recalculate the fluxes based on the (possibly) adjusted TSURF
                t1 = tsurfLoc(I,J)
                t2 = t1*t1
                t3 = t2*t1
                t4 = t2*t2
 
-c              log 10 of the sat vap pressure
+C              log 10 of the sat vap pressure
                mm_log10pi = -aa1 / t1 + aa2
 
-c              saturation vapor pressure
+C              saturation vapor pressure
                mm_pi = TEN **(mm_log10pi)
 
-c              over ice specific humidity
+C              over ice specific humidity
                qhice(I,J) = bb1*mm_pi/(Ppascals- (ONE - bb1) * mm_pi)
 
                F_lh(I,J) = D1I * UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
@@ -525,13 +526,13 @@ c              over ice specific humidity
                F_lwu(I,J)   = t4 * D3
                F_sens(I,J)  = D1 * UG(I,J) * (t1 - atempLoc(I,J))
 
-c              The flux between the ice/snow surface and the atmosphere.
-c              (excludes upward conductive fluxes)
+C              The flux between the ice/snow surface and the atmosphere.
+C              (excludes upward conductive fluxes)
                F_ia(I,J)    = F_lwd(I,J) + F_swi(I,J) + F_lwu(I,J) +
      &            F_sens(I,J) + F_lh(I,J)
 #endif /* USE_ORIGINAL_SBI */
 
-c              Caclulate the net ice-ocean and ice-atmosphere fluxes
+C              Caclulate the net ice-ocean and ice-atmosphere fluxes
                IF (F_c(I,J) .LT. ZERO) THEN
                   F_io_net(I,J) = -F_c(I,J)
                   F_ia_net(I,J) = ZERO
@@ -539,7 +540,6 @@ c              Caclulate the net ice-ocean and ice-atmosphere fluxes
                   F_io_net(I,J) = ZERO
                   F_ia_net(I,J) = F_ia(I,J)
                ENDIF  !/* conductive fluxes up or down */
-
 
 #ifdef SEAICE_DEBUG
                IF ( (I .EQ. SEAICE_debugPointX)   .and.
