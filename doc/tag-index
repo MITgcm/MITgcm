@@ -1,32 +1,34 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1304 2010/09/25 23:10:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1305 2010/09/26 13:48:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  -fix the USE_ORIGINAL_SBI version (for variable freezing point);
+  -use "celsius2K" in SEAICE_VARIABLE_FREEZING_POINT and in new
+   version (with USE_ORIGINAL_SBI undef);
 o add hooks for new packages OASIS, the package will follow
   (hooks exclude the seaice pkg for now)
 o pkg/autodiff: ALLOW_AUTODIFF_WHTAPEIO
-  Option to use mdsio_read_whalos.F/mdsio_write_whalos.F, 
+  Option to use mdsio_read_whalos.F/mdsio_write_whalos.F,
   rather than mdsio_readvector.F/mdsio_writevector.F, within
   adread_adwrite.F to read/write adjoint-related tapes to disk.
-o eesup and pkg/mdsio: ALLOW_WHIO 
-
-  Option to write/read 2D fields to files including tiles halos. 
-  The main purpose is for adjoint related "tape I/O". 
+o eesupp and pkg/mdsio: ALLOW_WHIO
+  Option to write/read 2D fields to files including tiles halos.
+  The main purpose is for adjoint related "tape I/O".
   The secondary purpose is for debugging phases.
-
   A word on those rather specifically intended purposes.
   The code was meant to be stripped down to the bare minimum.
-  Typically, there is a unique and basic mapping to the global 
+  Typically, there is a unique and basic mapping to the global
   buffer (tile by tile, then proc by proc, then level by level), and
   byteswaps and meta-files are omitted. Indeed the (*_WH*) code is not
-  meant to generate user friendly outputs of various shapes and forms. 
+  meant to generate user friendly outputs of various shapes and forms.
   Rather it is intended, for the knowledgeabale developers,
   to be largely independent of the many mdsio options, to allow
-  outputs of tiles+halos in debugging phases and in adjoint runs, 
+  outputs of tiles+halos in debugging phases and in adjoint runs,
   and to allow some flexibility in tuning (adoint) I/O depending on each
-  file system behavior. With regard to tuning, most of the potential knobs 
+  file system behavior. With regard to tuning, most of the potential knobs
   (to leave files open, to allocate the I/O indep. of usesinglecpuio,
   to specify directories, to specify the typical size of I/O calls, etc.)
   are not yet included, and will be added if they prove useful.
