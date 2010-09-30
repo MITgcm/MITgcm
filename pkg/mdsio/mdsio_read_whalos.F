@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.2 2010/09/24 23:21:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.3 2010/09/30 01:02:22 jmc Exp $
 C $fName:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -21,7 +21,7 @@ C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE mds_read_whalos
 c     ==================================================================
-c     o Read file that includes halos. The main purpose is for 
+c     o Read file that includes halos. The main purpose is for
 c       adjoint related "tape I/O". The secondary purpose is debugging.
 c     ==================================================================
 c     SUBROUTINE mds_read_whalos
@@ -56,7 +56,6 @@ c     mythid    -  number of the thread or instance of the program.
       integer fid
       integer filePrec
       integer n2d
-      integer length
       integer irec
       _RL     fldRL(1-Olx:sNx+Olx,1-Oly:sNy+Oly,n2d,nSx,nSy)
 CEOP
@@ -77,12 +76,12 @@ C     gloNyWh :: global sum of sNyWh
       PARAMETER ( sNyWh = sNy+2*Oly )
       PARAMETER ( procNyWh = sNyWh*nSy*nSx )
       PARAMETER ( gloNyWh = procNyWh*nPy*nPx )
-      
+
       character*(MAX_LEN_FNAM) pfName
       character*(MAX_LEN_MBUF) msgBuf
       integer IL,pIL
       integer bx,by
-      
+
       integer length2d, length3d, length_of_rec
       integer i2d, i3d
       integer i,j,k,bi,bj,ii
@@ -101,7 +100,7 @@ c     == functions ==
 
 c     == end of interface ==
 
-      length2d=sNxWh*procNyWh 
+      length2d=sNxWh*procNyWh
       length3d=length2d*nr
 
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
@@ -140,19 +139,19 @@ c get the unit and open file
             ELSE
               READ(dUnit,rec=irec2d) fld2d_procbuff_r8
             ENDIF
-          ELSE          
+          ELSE
             IF (filePrec .EQ. precFloat32) THEN
               READ(dUnit,rec=irec2d) fld2d_globuff_r4
             ELSE
               READ(dUnit,rec=irec2d) fld2d_globuff_r8
-            ENDIF          
-          ENDIF          
+            ENDIF
+          ENDIF
         ENDIF
         _BARRIER
 
         IF (filePrec .EQ. precFloat32) THEN
           IF ( useSingleCpuIO ) then
-            CALL SCATTER_2D_WH_R4 ( fld2d_globuff_r4, 
+            CALL SCATTER_2D_WH_R4 ( fld2d_globuff_r4,
      &                              fld2d_procbuff_r4,myThid)
             CALL BAR2( myThid )
           ENDIF
@@ -160,7 +159,7 @@ c get the unit and open file
      &                    1, i2d, n2d, 0, 0, .TRUE., myThid )
         ELSE
           IF ( useSingleCpuIO ) then
-            CALL SCATTER_2D_WH_R8 ( fld2d_globuff_r8, 
+            CALL SCATTER_2D_WH_R8 ( fld2d_globuff_r8,
      &                              fld2d_procbuff_r8,myThid)
             CALL BAR2( myThid )
           ENDIF
@@ -169,7 +168,7 @@ c get the unit and open file
         ENDIF
 
       enddo
-      
+
        IF ( iAmDoingIO ) THEN
          CLOSE( dUnit )
        ENDIF
