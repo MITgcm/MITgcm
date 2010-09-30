@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.11 2007/05/14 20:48:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.12 2010/09/30 16:05:19 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: THSICE_GET_EXF
 C     !INTERFACE:
       SUBROUTINE THSICE_GET_EXF(
-     I                         iceornot, tsfCel,
+     I                         hSnow, tsfCel,
      O                         flxExceptSw, df0dT, evapLoc, dEvdT,
      I                         i,j,bi,bj,myThid )
 C     !DESCRIPTION: \bv
@@ -40,7 +40,7 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     iceornot    :: 0=open water, 1=ice cover
+C     hSnow       :: snow height [m]
 C     tsfCel      :: surface (ice or snow) temperature (oC)
 C     flxExceptSw :: net (downward) surface heat flux, except short-wave [W/m2]
 C     df0dT       :: deriv of flx with respect to Tsf    [W/m/K]
@@ -48,14 +48,14 @@ C     evapLoc     :: surface evaporation (>0 if evaporate) [kg/m2/s]
 C     dEvdT       :: deriv of evap. with respect to Tsf  [kg/m2/s/K]
 C     i,j, bi,bj  :: current grid point indices
 C     myThid      :: My Thread Id number
-      INTEGER i,j, bi,bj
-      INTEGER myThid
-      INTEGER iceornot
+      _RL  hSnow
       _RL  tsfCel
       _RL  flxExceptSw
       _RL  df0dT
       _RL  evapLoc
       _RL  dEvdT
+      INTEGER i,j, bi,bj
+      INTEGER myThid
 CEOP
 
 #ifdef ALLOW_EXF
@@ -67,8 +67,9 @@ C     hsLocal, hlLocal :: sensible & latent heat flux over sea-ice
 C             t0       :: virtual temperature (K)
 C             ssq      :: saturation specific humidity (kg/kg)
 C             deltap   :: potential temperature diff (K)
-
+C     iceornot         :: 0=open water, 1=ice cover, 2=ice+snow
       _RL     hsLocal, hlLocal
+      INTEGER iceornot
       INTEGER iter
       _RL     delq
       _RL     deltap
@@ -147,6 +148,12 @@ C     == end of interface ==
      &         + sNx*sNy*max1*max2*act3
      &         + sNx*sNy*max1*max2*max3*act4
 #endif
+
+      IF (hSnow.GT.3. _d -1) THEN
+          iceornot=2
+      ELSE
+          iceornot=1
+      ENDIF
 
 C     copy a few variables to names used in bulkf_formula_lay
       Tsf    =  tsfCel+cen2kel

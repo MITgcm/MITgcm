@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.4 2006/05/25 17:36:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.5 2010/09/30 16:05:19 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: THSICE_GET_BULKF
 C     !INTERFACE:
       SUBROUTINE THSICE_GET_BULKF(
-     I                         iceornot, Tsf,
+     I                         hSnow, Tsf,
      O                         flxExceptSw, df0dT, evap, dEvdT,
      I                         i,j,bi,bj,myThid )
 C     !DESCRIPTION: \bv
@@ -34,7 +34,7 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     iceornot    :: 0=open water, 1=ice cover
+C     hSnow       :: snow height [m]
 C     Tsf         :: surface (ice or snow) temperature (oC)
 C     flxExceptSw :: net (downward) surface heat flux, except short-wave [W/m2]
 C     df0dT       :: deriv of flx with respect to Tsf    [W/m/K]
@@ -42,14 +42,15 @@ C     evap        :: surface evaporation (>0 if evaporate) [kg/m2/s]
 C     dEvdT       :: deriv of evap. with respect to Tsf  [kg/m2/s/K]
 C     i,j, bi,bj  :: current grid point indices
 C     myThid      :: Thread no. that called this routine.
-      INTEGER i,j, bi,bj
-      INTEGER myThid
-      INTEGER iceornot
+c     _RL hSnow  (siLo:siHi,sjLo:sjHi)
+      _RL hSnow
       _RL  Tsf
       _RL  flxExceptSw
       _RL  df0dT
       _RL  evap
       _RL  dEvdT
+      INTEGER i,j, bi,bj
+      INTEGER myThid
 CEOP
 
 #ifdef ALLOW_THSICE
@@ -57,7 +58,8 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     === Local variables ===
-
+C     iceornot    :: 0=open water, 1=ice cover, 2=ice+snow
+      INTEGER iceornot
       _RL  flwup         ! upward LW at surface (W m-2)
       _RL  flwNet_dwn    ! net (downward) LW at surface (W m-2)
       _RL  fsh           ! surface downward sensible heat (W m-2)
@@ -67,6 +69,12 @@ C     === Local variables ===
       _RL     Tsurf(1), SHF(1), EVPloc(1), SLRU(1)
       _RL     dEvp(1), sFlx(0:2)
 #endif
+
+        IF (hSnow.GT.3. _d -1) THEN
+          iceornot=2
+        ELSE
+          iceornot=1
+        ENDIF
 
 #ifdef ALLOW_FORMULA_AIM
       IF ( useFluxFormula_AIM ) THEN
