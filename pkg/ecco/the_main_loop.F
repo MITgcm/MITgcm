@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.95 2010/09/24 23:24:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.96 2010/10/01 00:06:01 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -214,7 +214,7 @@ c--   == end of interface ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the initialisations.
-#ifdef ALLOW_AUTODIFF_WHTAPEIO
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
 CADJ INIT tapelev_ini_bibj_k   = USER
 #endif
 CADJ INIT tapelev_init = USER
