@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.2 2007/10/09 02:36:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2010/10/01 01:38:02 heimbach Exp $
 C $Name:  $
 
 C
@@ -18,7 +18,7 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> Extract adjoint state
-#undef ALLOW_AUTODIFF_MONITOR
+#define ALLOW_AUTODIFF_MONITOR
 C
 C       >>> DO 2-level checkpointing instead of 3-level
 #define AUTODIFF_2_LEVEL_CHECKPOINT
