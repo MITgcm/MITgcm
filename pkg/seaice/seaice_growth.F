@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.74 2010/10/01 17:07:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.75 2010/10/01 21:36:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,58 +55,53 @@ C     number of surface interface layer
 C     constants
       _RL TBC, SDF, ICE2SNOW
       _RL QI, recip_QI, QS
-C     auxillary variables
-      _RL snowEnergy
-#ifdef ALLOW_SEAICE_FLOODING
-      _RL hDraft
-#endif /* ALLOW_SEAICE_FLOODING */
-      _RL tmparr1         (1:sNx,1:sNy)
-      
-#ifdef SEAICE_SALINITY
-      _RL saltFluxAdjust(1:sNx,1:sNy)
-#endif
 
-cgf new variables:
-      integer FRWfromSNW (1:sNx,1:sNy)
-c
-      _RL d_HSNWfromFRW    (1:sNx,1:sNy)
-      _RL d_HFRWfromSNW    (1:sNx,1:sNy)
-      _RL d_QbyATMonSNW    (1:sNx,1:sNy)
-c
-      _RL d_AREAbyATM    (1:sNx,1:sNy)
-c
-      _RL tmpscal1, tmpscal2, tmpscal3, tmpscal4
-c
-      _RL a_QbyICE    (1:sNx,1:sNy)
-      _RL r_QbyICE    (1:sNx,1:sNy)
-      _RL d_QbyICE    (1:sNx,1:sNy)
-      _RL d_QbySNW    (1:sNx,1:sNy)
-      _RL d_HEFFbyICEonOCN    (1:sNx,1:sNy)
-      _RL d_HEFFbySNWonOCN    (1:sNx,1:sNy)
-c
-      _RL d_HEFFfromSNWflood  (1:sNx,1:sNy)
-      _RL d_SNWintoICEflood  (1:sNx,1:sNy)
-c
-      _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
-      _RL d_HSWRbyATMonOCN    (1:sNx,1:sNy)
-      _RL d_QbyATMonOCN    (1:sNx,1:sNy)
-
-C     a_QbyATM_cover  - thermodynamic ice growth rate over sea ice in W/m^2
-C             >0 causes ice growth, <0 causes snow and sea ice melt
-C     a_QbyATM - effective thermodynamic ice growth rate over sea ice in W/m^2
-C             >0 causes ice growth, <0 causes snow and sea ice melt
-C     a_QbyATM_open  - thermodynamic ice growth rate over open water in W/m^2
-C             ( = surface heat flux )
-C             >0 causes ice growth, <0 causes snow and sea ice melt
-C     a_QSWbyATM_open   - short wave heat flux over ocean in W/m^2
-C     a_QSWbyATM_cover   - short wave heat flux under ice in W/m^2
-      _RL a_QbyATM         (1:sNx,1:sNy)
+C note: for all heat stocks, the sign convention is positive towards the atmosphere
+C
+C     a_QbyATM_cover :: available heat (in W/m^2) due to the interaction of  
+C             the atmosphere and the ocean surface - for ice covered water
+C     a_QbyATM_open :: same but for open water
+C     a_QbyATM :: weighted average (depending on the ice cover fraction)
+C             of this available heat over the grid cell.
+C     r_QbyATM_cover :: residual of a_QbyATM_cover after freezing/melting 
+C             processes have been accounted for
       _RL a_QbyATM_cover          (1:sNx,1:sNy)
       _RL a_QbyATM_open         (1:sNx,1:sNy)
+      _RL a_QbyATM         (1:sNx,1:sNy)
+      _RL r_QbyATM_cover          (1:sNx,1:sNy)
+C     a_QSWbyATM_open   - short wave heat flux over ocean in W/m^2
+C     a_QSWbyATM_cover  - short wave heat flux under ice in W/m^2
       _RL a_QSWbyATM_open          (1:sNx,1:sNy)
       _RL a_QSWbyATM_cover          (1:sNx,1:sNy)
-      _RL r_QbyATM_cover          (1:sNx,1:sNy)
-C
+C     a_QbyICE :: available heat (in equivalent m of ice) due to   
+C             the interaction of the ice pack and the ocean surface
+C     r_QbyICE :: residual of a_QbyICE after freezing/melting 
+C             processes have been accounted for
+      _RL a_QbyICE    (1:sNx,1:sNy)
+      _RL r_QbyICE    (1:sNx,1:sNy)
+
+c FRWfromSNW :: flag that states whether the atmostpheric conditions are 
+c     prone to generate SNOW (FRWfromSNW=1) or fresh water (FRWfromSNW=2)
+      integer FRWfromSNW (1:sNx,1:sNy)
+
+C Available Heat tendencies associated with melt/freeze processes
+      _RL d_QbyICE    (1:sNx,1:sNy)
+      _RL d_QbySNW    (1:sNx,1:sNy)
+      _RL d_QbyATMonOCN    (1:sNx,1:sNy)
+      _RL d_QbyATMonSNW    (1:sNx,1:sNy)
+
+c ICE/SNOW stocks tendencies associated with the various melt/freeze processes
+      _RL d_AREAbyATM    (1:sNx,1:sNy)
+c
+      _RL d_HEFFbyICEonOCN    (1:sNx,1:sNy)
+      _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
+      _RL d_HEFFfromSNWflood  (1:sNx,1:sNy)
+c
+      _RL d_HSNWfromFRW    (1:sNx,1:sNy)
+      _RL d_HSNWbyOCNonSNW    (1:sNx,1:sNy)
+      _RL d_SNWintoICEflood  (1:sNx,1:sNy)
+      _RL d_HFRWfromSNW    (1:sNx,1:sNy)
+
 C     actual ice thickness with upper and lower limit
       _RL HICE          (1:sNx,1:sNy)
 C     actual snow thickness
@@ -116,6 +111,21 @@ C     wind speed
       _RL SPEED_SQ
 C     local copy of AREA
       _RL areaLoc
+
+c temporary variables available for the various computations
+      _RL tmpscal1, tmpscal2, tmpscal3, tmpscal4
+      _RL tmparr1         (1:sNx,1:sNy)
+
+C auxillary variables used for specific processes
+      _RL snowEnergy
+
+#ifdef ALLOW_SEAICE_FLOODING
+      _RL hDraft
+#endif /* ALLOW_SEAICE_FLOODING */
+      
+#ifdef SEAICE_SALINITY
+      _RL saltFluxAdjust(1:sNx,1:sNy)
+#endif
 
 #ifdef SEAICE_MULTICATEGORY
       INTEGER it
@@ -130,7 +140,7 @@ C     local copy of AREA
 C     old_AREA :: hold sea-ice fraction field before any seaice-thermo update
       _RL old_AREA     (1:sNx,1:sNy)
 # ifdef SEAICE_AGE_VOL
-C     old_HEFF :: hold sea-ice effective thicness field before any seaice-thermo update
+C     old_HEFF :: hold sea-ice effective thickness field before any seaice-thermo update
       _RL old_HEFF     (1:sNx,1:sNy)
       _RL age_actual
 # endif /* SEAICE_AGE_VOL */
@@ -176,9 +186,7 @@ c
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
-C
-C     initialise a few fields
-C
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
@@ -187,14 +195,44 @@ CADJ &                       key = iicekey, byte = isbyte
 CADJ STORE qsw(:,:,bi,bj)  = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+
+C array initializations
+C =====================
+
         DO J=1,sNy
          DO I=1,sNx
-          a_QbyATM(I,J)      = 0.0 _d 0
           a_QbyATM_cover (I,J)      = 0.0 _d 0
           a_QbyATM_open(I,J)      = 0.0 _d 0
+          a_QbyATM(I,J)      = 0.0 _d 0
+          r_QbyATM_cover (I,J)      = 0.0 _d 0
+c
           a_QSWbyATM_open (I,J)      = 0.0 _d 0
           a_QSWbyATM_cover (I,J)      = 0.0 _d 0
-          r_QbyATM_cover (I,J)      = 0.0 _d 0
+c
+          a_QbyICE (I,J)      = 0.0 _d 0
+          r_QbyICE (I,J)      = 0.0 _d 0
+c
+          FRWfromSNW (I,J)    = 0
+c
+          d_QbyICE (I,J)      = 0.0 _d 0
+          d_QbySNW (I,J)      = 0.0 _d 0
+          d_QbyATMonOCN (I,J)      = 0.0 _d 0
+          d_QbyATMonSNW (I,J)      = 0.0 _d 0
+c
+          d_AREAbyATM(I,J)      = 0.0 _d 0
+c
+          d_HEFFbyICEonOCN(I,J)      = 0.0 _d 0
+          d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
+          d_HEFFfromSNWflood(I,J)      = 0.0 _d 0
+c
+          d_HSNWfromFRW(I,J)      = 0.0 _d 0
+          d_HSNWbyOCNonSNW(I,J)      = 0.0 _d 0
+          d_SNWintoICEflood(I,J)      = 0.0 _d 0
+          d_HFRWfromSNW(I,J)      = 0.0 _d 0
+c
+          tmparr1(I,J)      = 0.0 _d 0
+c
 #ifdef SEAICE_SALINITY
           saltFluxAdjust(I,J) = 0.0 _d 0
 #endif
@@ -202,19 +240,6 @@ CADJ &                       key = iicekey, byte = isbyte
           a_QbyATMmult_cover(I,J)      = 0.0 _d 0
           a_QSWbyATMmult_cover(I,J)      = 0.0 _d 0
 #endif
-cgf new variables:
-          d_HSNWfromFRW(I,J)      = 0.0 _d 0
-          d_HFRWfromSNW(I,J)      = 0.0 _d 0
-          d_QbyATMonSNW(I,J)      = 0.0 _d 0
-c
-          d_AREAbyATM(I,J)      = 0.0 _d 0
-c
-          d_HEFFbyICEonOCN(I,J)      = 0.0 _d 0
-          d_HEFFbySNWonOCN(I,J)      = 0.0 _d 0
-c
-          d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
-          d_HSWRbyATMonOCN(I,J)      = 0.0 _d 0
-          d_QbyATMonOCN(I,J)      = 0.0 _d 0
          ENDDO
         ENDDO
         DO J=1-oLy,sNy+oLy
@@ -267,7 +292,11 @@ cdm          HICE(I,J)    = MIN(HICE(I,J),9.0 _d +00)
          ENDDO
         ENDDO
 
-C NOW DETERMINE MIXED LAYER TEMPERATURE
+
+C determine available heat due to the atmosphere -- for open water
+C ================================================================
+
+C ocean surface/mixed layer temperature
         DO J=1,sNy
          DO I=1,sNx
           TMIX(I,J,bi,bj)=theta(I,J,kSurface,bi,bj)+273.16 _d +00
@@ -277,43 +306,30 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
          ENDDO
         ENDDO
 
-C THERMAL WIND OF ATMOSPHERE
+C wind speed from exf
         DO J=1,sNy
          DO I=1,sNx
-C     copy the wind speed computed in exf_wind.F to UG
           UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
-CML   this is the old code, which does the same
-CML          SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
-CML          IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
-CML             UG(I,J)=SEAICE_EPS
-CML          ELSE
-CML             UG(I,J)=SQRT(SPEED_SQ)
-CML          ENDIF
          ENDDO
         ENDDO
 
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE heff   = comlev1, key = ikey_dynamics, byte = isbyte
-cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics, byte = isbyte
-cphCADJ STORE uwind  = comlev1, key = ikey_dynamics, byte = isbyte
-cphCADJ STORE vwind  = comlev1, key = ikey_dynamics, byte = isbyte
-c
-CADJ STORE tice   = comlev1, key = ikey_dynamics, byte = isbyte
-# ifdef SEAICE_MULTICATEGORY
-CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C NOW DETERMINE GROWTH RATES
-C FIRST DO OPEN WATER
         CALL SEAICE_BUDGET_OCEAN(
      I       UG,
      U       TMIX,
      O       a_QbyATM_open, a_QSWbyATM_open,
      I       bi, bj, myTime, myIter, myThid )
 
-C NOW DO ICE
+
+C determine available heat due to the atmosphere -- for ice covered water
+C =======================================================================
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tice   = comlev1, key = ikey_dynamics, byte = isbyte
+# ifdef SEAICE_MULTICATEGORY
+CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
         IF (useRelativeWind) THEN
 C     Compute relative wind speed over sea ice.
          DO J=1,sNy
@@ -335,6 +351,7 @@ C     Compute relative wind speed over sea ice.
           ENDDO
          ENDDO
         ENDIF
+
 #ifdef SEAICE_MULTICATEGORY
 C--  Start loop over muli-categories
         DO IT=1,MULTDIM
@@ -357,7 +374,7 @@ CADJ &                           key = ilockey, byte = isbyte
      I        bi, bj, myTime, myIter, myThid )
          DO J=1,sNy
           DO I=1,sNx
-C     average surface heat fluxes/growth rates
+C     average over categories
            a_QbyATM_cover (I,J) = 
      &       a_QbyATM_cover(I,J) + a_QbyATMmult_cover(I,J)/MULTDIM
            a_QSWbyATM_cover (I,J) = 
@@ -390,16 +407,26 @@ C--  End loop over multi-categories
         ENDIF
 #endif
 
+
+C determine whether the atmostpheric conditions are prone 
+C to generate SNOW (FRWfromSNW=1) or fresh water (FRWfromSNW=2)
+C ==============================================================
+
         DO J=1,sNy
          DO I=1,sNx
           IF (a_QbyATM_cover(I,J).LT.ZERO.AND.
      &        AREANm1(I,J,bi,bj).GT.ZERO) THEN
-            FRWfromSNW(I,J)=1
+            FRWfromSNW(I,J)=2
           ELSE
-            FRWfromSNW(I,J)=0
+            FRWfromSNW(I,J)=1
           ENDIF
          ENDDO
         ENDDO         
+
+
+C determine available heat due to the ice pack tying the 
+C underlying surface water temperature to freezing point
+C ======================================================
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,
@@ -409,14 +436,15 @@ CADJ &                          key = iicekey, byte = isbyte
 CADJ STORE FRWfromSNW           = comlev1_bibj,
 CADJ &                          key = iicekey, byte = isbyte
 #endif
-C
-C--   compute and apply ice growth due to oceanic heat flux from below
-C
 
-c a_QbyICE: available heat that may be extracted by the ICE acting 
-c on the OCN surface/mixed layer to bring it back to freezig point 
-c (in m, negative out of the ocean -- different convention than a_QbyATM)
-cgf unit change that breaks lab_sea (in W/m2, positive out of the ocean -- same convention as a_QbyATM)
+cgf a_QbyICE: available heat that may be extracted by the ICE acting 
+cgf on the OCN surface/mixed layer to bring it back to freezig point 
+cgf (in m, negative out of the ocean -- different convention than a_QbyATM)
+cgf
+cgf Using the same convention (W/m2, positive out of the ocean) as 
+cgf for the other heat stocks breaks the lab_sea test at this point.
+cgf We should revise these conventions in a later revision though.
+c
         DO J=1,sNy
          DO I=1,sNx
           IF ( .NOT. inAdMode ) THEN
@@ -428,7 +456,7 @@ cgf unit change that breaks lab_sea (in W/m2, positive out of the ocean -- same 
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
      &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0 
 #ifdef SEAICE_QBYICE_IS_WPERM2
-cgf using W/m2 as the Q unit changes lab_sea results...
+c using W/m2 as the Q unit
      &             * ( - QI / SEAICE_deltaTtherm )
 #endif
            ELSE
@@ -445,6 +473,10 @@ cgf using W/m2 as the Q unit changes lab_sea results...
          ENDDO
         ENDDO
 
+
+C compute ice thickness tendency due to ice-ocean interaction
+C ===========================================================
+
         DO J=1,sNy
          DO I=1,sNx
          tmpscal1=a_QbyICE(i,j)
@@ -453,18 +485,15 @@ cgf using W/m2 as the Q unit changes lab_sea results...
 #endif
           d_HEFFbyICEonOCN(I,J) = 
      &     MAX(ZERO, HEFF(I,J,bi,bj)-tmpscal1)- HEFF(I,J,bi,bj)
-          d_QbyICE(I,J)=-d_HEFFbyICEonOCN(I,J)
+          d_QbyICE(I,J)=d_HEFFbyICEonOCN(I,J)
 #ifdef SEAICE_QBYICE_IS_WPERM2
      &             * ( - QI / SEAICE_deltaTtherm )
 #endif
-          r_QbyICE(I,J)=a_QbyICE(I,J)-d_QbyICE(I,J)
-c
+c apply tendency
+          r_QbyICE(I,J)=a_QbyICE(I,J)+d_QbyICE(I,J)
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj) + d_HEFFbyICEonOCN(I,J)
           saltWtrIce(I,J,bi,bj)   = saltWtrIce(I,J,bi,bj)
      &                              + d_HEFFbyICEonOCN(I,J)
-C     d_HEFFbyICEonOCN now contains m of ice melted (>0) or created (<0)
-C     saltWtrIce contains m of ice melted (<0) or created (>0)
-C     r_QbyICE is residual heat above freezing in equivalent m of ice
          ENDDO
         ENDDO
 
@@ -477,13 +506,10 @@ C     r_QbyICE is residual heat above freezing in equivalent m of ice
         ENDIF
 #endif
 
-cph(
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE heff   = comlev1, key = ikey_dynamics, byte = isbyte
-cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics, byte = isbyte
-#endif
-cph)
-c
+
+C compute snow thickness tendency due to snow-atmosphere interaction
+C ==================================================================
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj)   = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
@@ -492,50 +518,36 @@ CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE a_QbyATM_cover(:,:)         = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-cph)
-C
-C--   compute and apply ice growth due to atmospheric fluxes from above
-C
+
         DO J=1,sNy
          DO I=1,sNx
-C NOW CALCULATE CORRECTED effective growth in J/m^2 (>0=melt)
-          tmparr1(I,J)=-SEAICE_deltaTtherm*
+          tmpscal1=-SEAICE_deltaTtherm*
      &                a_QbyATM_cover(I,J)*AREANm1(I,J,bi,bj)
-         ENDDO
-        ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE a_QbyATM_cover(:,:)         = comlev1_bibj,
-CADJ &                         key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-        DO J=1,sNy
-         DO I=1,sNx
-          IF ( FRWfromSNW(I,J).EQ.1 ) THEN
-C     use a_QbyATM_cover to melt snow and CALCULATE CORRECTED GROWTH
-C     effective snow thickness in J/m^2
+          IF ( FRWfromSNW(I,J).EQ.2 ) THEN
            snowEnergy=HSNOW(I,J,bi,bj)*QS
-           IF(tmparr1(I,J).LE.snowEnergy) THEN
-C     not enough heat to melt all snow; use up all heat flux a_QbyATM_cover
-            d_HSNWfromFRW(I,J)=-tmparr1(I,J)/QS
-C     SNOW CONVERTED INTO WATER AND THEN INTO equivalent m of ICE melt
-C     The factor 1/ICE2SNOW converts m of snow to m of sea-ice
-            d_HFRWfromSNW(I,J)= - tmparr1(I,J)/(QS*ICE2SNOW)
+           IF(tmpscal1.LE.snowEnergy) THEN
+C not enough heat to melt all snow; use up all of a_QbyATM_cover
+            d_HSNWfromFRW(I,J)=-tmpscal1/QS
+C SNOW CONVERTED INTO WATER AND THEN INTO equivalent m of ICE melt
+C The factor 1/ICE2SNOW converts m of snow to m of sea-ice
+            d_HFRWfromSNW(I,J)= - tmpscal1/(QS*ICE2SNOW)
             d_QbyATMonSNW(I,J) = -a_QbyATM_cover(I,J)
            ELSE
-C     enought heat to melt snow completely;
-C     compute remaining heat flux that will melt ice
-            d_QbyATMonSNW(I,J)=-(tmparr1(I,J)-snowEnergy)/
+C enough heat to melt snow completely;
+C compute remaining heat that will melt ice
+            d_QbyATMonSNW(I,J)=-(tmpscal1-snowEnergy)/
      &        SEAICE_deltaTtherm/AREANm1(I,J,bi,bj)-a_QbyATM_cover(I,J)
-C     convert all snow to melt water (fresh water flux)
+C convert all snow to melt water (fresh water flux)
             d_HFRWfromSNW(I,J)=-HSNOW(I,J,bi,bj)/ICE2SNOW
             d_HSNWfromFRW(I,J)=-HSNOW(I,J,bi,bj)
            END IF
           ELSE 
+c this process is inactive under cold conditions
             d_QbyATMonSNW(I,J)=0. _d 0
             d_HFRWfromSNW(I,J)=0. _d 0
             d_HSNWfromFRW(I,J)=0. _d 0
           ENDIF
+c apply tendency
           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) + 
      &                         d_HFRWfromSNW(I,J) 
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWfromFRW(I,J) 
@@ -543,6 +555,11 @@ C     convert all snow to melt water (fresh water flux)
          ENDDO
         ENDDO
 
+
+C compute heat due to the atmosphere that 
+C remain available after melt/freeze processes
+C ============================================
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE a_QbyATM_cover(:,:)         = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
@@ -550,12 +567,15 @@ CADJ &                         key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-C     now get cell averaged growth rate in W/m^2, >0 causes ice growth
           a_QbyATM(I,J)= a_QbyATM_cover(I,J) * AREANm1(I,J,bi,bj)
      &              + a_QbyATM_open(I,J) * (ONE-AREANm1(I,J,bi,bj))
          ENDDO
         ENDDO
-cph(
+
+
+C compute ice cover fraction tendency from a_QbyATM
+C =================================================
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
@@ -570,35 +590,20 @@ CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE a_QSWbyATM_open(:,:)         = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-cph)
-C
-C     First update (freeze or melt) ice area
-C
+
         DO J=1,sNy
          DO I=1,sNx
-C     negative growth in meters of ice (>0 for melting)
           tmpscal1  = -SEAICE_deltaTtherm*a_QbyATM(I,J)*recip_QI
-C     negative growth must not exceed effective ice thickness (=volume)
-C     (that is, cannot melt more than all the ice)
+c (cannot melt more than all the ice)
           tmpscal2 = -ONE*MIN(HEFF(I,J,bi,bj),tmpscal1)
+          tmpscal3 = MIN(ZERO,tmpscal2)
 #ifdef ALLOW_DIAGNOSTICS
           DIAGarray(I,J) = tmpscal2
 #endif
-C     tmpscal2 < 0 means melting
-          tmpscal3 = MIN(ZERO,tmpscal2)
-C     gain of new effective ice thickness over open water (>0 by definition)
+C gain of new ice over open water (>0 by definition)
           tmpscal4 = MAX(ZERO,SEAICE_deltaTtherm*
      &               a_QbyATM_open(I,J)*recip_QI)
-CML   removed these loops and moved TAMC store directive up
-CML         ENDDO
-CML        ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE area(:,:,bi,bj) = comlev1_bibj,
-CMLCADJ &                       key = iicekey, byte = isbyte
-CML#endif
-CML        DO J=1,sNy
-CML         DO I=1,sNx
-C     Here we finally compute the new AREA
+c compute cover fraction tendency
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            d_AREAbyATM(I,J)=
      &          (ONE-AREANm1(I,J,bi,bj))*tmpscal4/HO_south
@@ -610,6 +615,7 @@ C     Here we finally compute the new AREA
      &          +HALF*tmpscal3*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
           ENDIF
+c apply tendency
            AREA(I,J,bi,bj)=AREA(I,J,bi,bj)+d_AREAbyATM(I,J)
          ENDDO
         ENDDO
@@ -622,41 +628,43 @@ C     Here we finally compute the new AREA
         ENDIF
 #endif
 
+
+C compute ice thickness tendency due to the atmosphere.
+C Freezing ocean water/melting ice also affects 
+C the salt water and heat stocks.
+C =================================================
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 #endif
-C
-C     now update (freeze or melt) HEFF
-C
+
         DO J=1,sNy
          DO I=1,sNx
-C     positive growth (<0 for melting) of existing ice in meters
           tmpscal1       = SEAICE_deltaTtherm*
      &      a_QbyATM_cover(I,J)*recip_QI*AREANm1(I,J,bi,bj)
-C     tmpscal1 cannot melt more than all the ice)
+C (cannot melt more than all the ice)
           tmpscal2      = MAX(-HEFF(I,J,bi,bj),tmpscal1)
-C     tmpscal2 < 0 means melting
           d_HEFFbyATMonOCN(I,J)=tmpscal2
-C     add effective growth to fresh water of ice
-          d_HSWRbyATMonOCN(I,J)=tmpscal2
-C     now compute the r_QbyATM_cover residual as the difference between
-C     the available "heat flux" tmpscal1 and the actual tmpscal2;
+C compute the r_QbyATM_cover residual as the difference between
+C the available heat tmpscal1 and the used tmpscal2;
           d_QbyATMonOCN(I,J)=(tmpscal2 - tmpscal1)
      &                *QI/SEAICE_deltaTtherm-a_QbyATM_cover(I,J)
-c
+c apply tendency
           r_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)+d_QbyATMonOCN(I,J)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + d_HEFFbyATMonOCN(I,J)
-          saltWtrIce(I,J,bi,bj) = saltWtrIce(I,J,bi,bj) 
-     &                          + d_HSWRbyATMonOCN(I,J)
+          saltWtrIce(I,J,bi,bj) = saltWtrIce(I,J,bi,bj) + tmpscal2
          ENDDO
         ENDDO
 
-C     now update other things
+
+C attribute precip to fresh water or snow stock, 
+C depending on atmospheric conditions.
+C =================================================
 #ifdef ALLOW_ATM_TEMP
         DO J=1,sNy
          DO I=1,sNx
-          IF ( FRWfromSNW(I,J).EQ.0 ) THEN
+          IF ( FRWfromSNW(I,J).EQ.1 ) THEN
 C           add precip as snow
             d_HFRWfromSNW(I,J)=0. _d 0
             d_HSNWfromFRW(I,J)=SEAICE_deltaTtherm*
@@ -667,6 +675,7 @@ c           add precip to the fresh water bucket
      &            SEAICE_deltaTtherm/ICE2WATR
             d_HSNWfromFRW(I,J)=0. _d 0
           ENDIF
+c apply tendency
           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) + 
      &                         d_HFRWfromSNW(I,J) 
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWfromFRW(I,J) 
@@ -674,42 +683,45 @@ c           add precip to the fresh water bucket
         ENDDO
 #endif /* ALLOW_ATM_TEMP */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
-cphCADJ &                        key = iicekey, byte = isbyte
-#endif
+
+C compute snow tendency due to heat available from atmosphere
+C can only reduce HSNOW. melted snow is added to fresh water stock.
+C =================================================================
 
 cph( very sensitive bit here by JZ
 #ifndef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
         DO J=1,sNy
          DO I=1,sNx
-C     Now melt snow if there is residual heat left in surface level
-C     Note that units of d_HEFFbyICEonOCN and frWtrIce are m of ice
-
          tmpscal1=r_QbyICE(i,j)
 #ifdef SEAICE_QBYICE_IS_WPERM2
      &             / ( - QI / SEAICE_deltaTtherm )
 #endif
           IF( tmpscal1 .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
-           d_HEFFbySNWonOCN(I,J) = 
+           d_HSNWbyOCNonSNW(I,J) = 
      &       - MIN( HSNOW(I,J,bi,bj)/SDF/ICE2WATR , tmpscal1 )
           ELSE
-           d_HEFFbySNWonOCN(I,J)       = 0. _d 0
+           d_HSNWbyOCNonSNW(I,J)       = 0. _d 0
           ENDIF
-          d_QbySNW(I,J)=-d_HEFFbySNWonOCN(I,J)
+          d_QbySNW(I,J)=d_HSNWbyOCNonSNW(I,J)
 #ifdef SEAICE_QBYICE_IS_WPERM2
      &             * ( - QI / SEAICE_deltaTtherm )
 #endif
-          r_QbyICE(I,J)=a_QbyICE(I,J)-d_QbySNW(I,J)
+c apply tendency
+          r_QbyICE(I,J)=a_QbyICE(I,J)+d_QbySNW(I,J)
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)
-     &        +d_HEFFbySNWonOCN(I,J)*SDF*ICE2WATR
+     &        +d_HSNWbyOCNonSNW(I,J)*SDF*ICE2WATR
           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) 
-     &        +d_HEFFbySNWonOCN(I,J)
+     &        +d_HSNWbyOCNonSNW(I,J)
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 cph)
+
+
+C compute net fresh water flux leaving/entering 
+C the ocean, accounting for fresh/salt water stocks.
+C ==================================================
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
@@ -766,7 +778,9 @@ C NOW GET FRESH WATER FLUX
         ENDDO
 #endif
 
+
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
+C ==================================================
 
 #ifdef SEAICE_SALINITY
 
@@ -838,9 +852,13 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
 #endif /* SEAICE_SALINITY */
 #endif /* ALLOW_ATM_TEMP */
 
+
+C compute net heat flux leaving/entering the ocean, 
+C accounting for the part used in melt/freeze processes
+C =====================================================
+
         DO J=1,sNy
          DO I=1,sNx
-C NOW GET TOTAL QNET AND QSW
           QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) * AREANm1(I,J,bi,bj)
      &        +a_QbyATM_open(I,J) * (ONE-AREANm1(I,J,bi,bj))
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) * AREANm1(I,J,bi,bj)
@@ -871,21 +889,22 @@ C NOW GET TOTAL QNET AND QSW
 #endif
 
 
+C account for contribution due to ocean-ice interaction.
+C ======================================================
+
         DO J=1,sNy
          DO I=1,sNx
-
-C Add d_HEFFbyICEonOCN contribution to QNET
 #ifdef SEAICE_QBYICE_IS_WPERM2
           tmpscal1=
      &         -maskC(I,J,kSurface,bi,bj)
      &         *(HeatCapacity_Cp*rUnit2mass/QI)
      &         *72.0764 _d 0
           QNET(I,J,bi,bj) = QNET(I,J,bi,bj)
-     &         + ( d_QbyICE(I,J) + d_QbySNW(I,J) )
+     &         - ( d_QbyICE(I,J) + d_QbySNW(I,J) )
      &         * tmpscal1
 #else
           tmpscal1 = 
-     &       - ( d_HEFFbyICEonOCN(I,J)+d_HEFFbySNWonOCN(I,J) )
+     &       - ( d_HEFFbyICEonOCN(I,J)+d_HSNWbyOCNonSNW(I,J) )
      &       *recip_dRf(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
      &       *72.0764 _d 0
           QNET(I,J,bi,bj) = QNET(I,J,bi,bj)
@@ -904,9 +923,11 @@ C Add d_HEFFbyICEonOCN contribution to QNET
        CALL PLOT_FIELD_XYRL( EmPmR,'Current EmPmR ', myIter, myThid )
 #endif /* SEAICE_DEBUG */
 
-crg Added by Ralf Giering: do we need DO_WE_NEED_THIS ?
-#define DO_WE_NEED_THIS
-C NOW ZERO OUTSIDE POINTS
+
+C treat values of ice cover fraction oustide 
+C the [0 1] range, and other such issues.
+C ===========================================
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
@@ -920,6 +941,7 @@ C NOW SET AREA(I,J,bi,bj)=0 WHERE NO ICE IS
      &                         ,HEFF(I,J,bi,bj)/.0001 _d 0)
          ENDDO
         ENDDO
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
@@ -927,10 +949,10 @@ CADJ &                       key = iicekey, byte = isbyte
         DO J=1,sNy
          DO I=1,sNx
 C NOW TRUNCATE AREA
-#ifdef DO_WE_NEED_THIS
           AREA(I,J,bi,bj)=MIN(ONE,AREA(I,J,bi,bj))
          ENDDO
         ENDDO
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj,
 CADJ &                        key = iicekey, byte = isbyte
@@ -941,7 +963,6 @@ CADJ &                         key = iicekey, byte = isbyte
          DO I=1,sNx
           AREA(I,J,bi,bj) = MAX(ZERO,AREA(I,J,bi,bj))
           HSNOW(I,J,bi,bj)  = MAX(ZERO,HSNOW(I,J,bi,bj))
-#endif /* DO_WE_NEED_THIS */
           AREA(I,J,bi,bj) = AREA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)*HEFFM(I,J,bi,bj)
 #ifdef SEAICE_CAP_HEFF
@@ -966,9 +987,12 @@ C     use (abuse) tmparr1 to diagnose the total thermodynamic growth rate
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+
+C convert snow to ice if submerged.
+C =================================
+
 #ifdef ALLOW_SEAICE_FLOODING
         IF ( SEAICEuseFlooding ) THEN
-C     convert snow to ice if submerged
          DO J=1,sNy
           DO I=1,sNx
            hDraft     = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
@@ -978,7 +1002,7 @@ C
            d_HEFFfromSNWflood(I,J)=tmparr1(I,J)
            d_SNWintoICEflood(I,J)=MAX(0. _d 0, HSNOW(I,J,bi,bj)
      &      -tmparr1(I,J)*ICE2SNOW )   - HSNOW(I,J,bi,bj)
-c
+c apply tendency
            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)+d_HEFFfromSNWflood(I,J)
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+d_SNWintoICEflood(I,J)
           ENDDO
@@ -999,6 +1023,10 @@ C     turn tmparr1 into a rate
         ENDIF
 #endif /* ALLOW_SEAICE_FLOODING */
 
+
+C Sea Ice Load on the sea surface.
+C =================================
+
         IF ( useRealFreshWaterFlux ) THEN
          DO J=1,sNy
           DO I=1,sNx
@@ -1007,6 +1035,10 @@ C     turn tmparr1 into a rate
           ENDDO
          ENDDO
         ENDIF
+
+
+C Sea Ice Age Tracer.
+C ===================
 
 #ifdef SEAICE_AGE
 # ifndef SEAICE_AGE_VOL
