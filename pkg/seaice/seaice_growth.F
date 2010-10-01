@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.72 2010/10/01 01:45:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.73 2010/10/01 05:53:12 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,15 +61,17 @@ C     auxillary variables
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft
 #endif /* ALLOW_SEAICE_FLOODING */
-      _RL GHEFF         (1:sNx,1:sNy)
+      _RL tmparr1         (1:sNx,1:sNy)
       
 #ifdef SEAICE_SALINITY
       _RL saltFluxAdjust(1:sNx,1:sNy)
 #endif
 
 cgf new variables:
-      _RL d_HSNWbyATMonSNW    (1:sNx,1:sNy)
-      _RL d_HFRWbyATMonSNW    (1:sNx,1:sNy)
+      integer FRWfromSNW (1:sNx,1:sNy)
+c
+      _RL d_HSNWfromFRW    (1:sNx,1:sNy)
+      _RL d_HFRWfromSNW    (1:sNx,1:sNy)
       _RL d_QbyATMonSNW    (1:sNx,1:sNy)
 c
       _RL d_AREAbyATM    (1:sNx,1:sNy)
@@ -82,7 +84,9 @@ c
       _RL d_QbySNW    (1:sNx,1:sNy)
       _RL d_HEFFbyICEonOCN    (1:sNx,1:sNy)
       _RL d_HEFFbySNWonOCN    (1:sNx,1:sNy)
-      
+c
+      _RL d_HEFFfromSNWflood  (1:sNx,1:sNy)
+      _RL d_SNWintoICEflood  (1:sNx,1:sNy)
 
 
 C     a_QbyATM_cover  - thermodynamic ice growth rate over sea ice in W/m^2
@@ -198,8 +202,8 @@ CADJ &                       key = iicekey, byte = isbyte
           a_QSWbyATMmult_cover(I,J)      = 0.0 _d 0
 #endif
 cgf new variables:
-          d_HSNWbyATMonSNW(I,J)      = 0.0 _d 0
-          d_HFRWbyATMonSNW(I,J)      = 0.0 _d 0
+          d_HSNWfromFRW(I,J)      = 0.0 _d 0
+          d_HFRWfromSNW(I,J)      = 0.0 _d 0
           d_QbyATMonSNW(I,J)      = 0.0 _d 0
 c
           d_AREAbyATM(I,J)      = 0.0 _d 0
@@ -381,10 +385,23 @@ C--  End loop over multi-categories
         ENDIF
 #endif
 
+        DO J=1,sNy
+         DO I=1,sNx
+          IF (a_QbyATM_cover(I,J).LT.ZERO.AND.
+     &        AREANm1(I,J,bi,bj).GT.ZERO) THEN
+            FRWfromSNW(I,J)=1
+          ELSE
+            FRWfromSNW(I,J)=0
+          ENDIF
+         ENDDO
+        ENDDO         
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,
 CADJ &                          key = iicekey, byte = isbyte
 CADJ STORE heff(:,:,bi,bj)    = comlev1_bibj,
+CADJ &                          key = iicekey, byte = isbyte
+CADJ STORE FRWfromSNW           = comlev1_bibj,
 CADJ &                          key = iicekey, byte = isbyte
 #endif
 C
@@ -477,7 +494,7 @@ C
         DO J=1,sNy
          DO I=1,sNx
 C NOW CALCULATE CORRECTED effective growth in J/m^2 (>0=melt)
-          GHEFF(I,J)=-SEAICE_deltaTtherm*
+          tmparr1(I,J)=-SEAICE_deltaTtherm*
      &                a_QbyATM_cover(I,J)*AREANm1(I,J,bi,bj)
          ENDDO
         ENDDO
@@ -489,31 +506,34 @@ CADJ &                         key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          IF(a_QbyATM_cover(I,J).LT.ZERO.AND.
-     &       AREANm1(I,J,bi,bj).GT.ZERO) THEN
+          IF ( FRWfromSNW(I,J).EQ.1 ) THEN
 C     use a_QbyATM_cover to melt snow and CALCULATE CORRECTED GROWTH
 C     effective snow thickness in J/m^2
            snowEnergy=HSNOW(I,J,bi,bj)*QS
-           IF(GHEFF(I,J).LE.snowEnergy) THEN
+           IF(tmparr1(I,J).LE.snowEnergy) THEN
 C     not enough heat to melt all snow; use up all heat flux a_QbyATM_cover
-            d_HSNWbyATMonSNW(I,J)=-GHEFF(I,J)/QS
+            d_HSNWfromFRW(I,J)=-tmparr1(I,J)/QS
 C     SNOW CONVERTED INTO WATER AND THEN INTO equivalent m of ICE melt
 C     The factor 1/ICE2SNOW converts m of snow to m of sea-ice
-            d_HFRWbyATMonSNW(I,J)= - GHEFF(I,J)/(QS*ICE2SNOW)
+            d_HFRWfromSNW(I,J)= - tmparr1(I,J)/(QS*ICE2SNOW)
             d_QbyATMonSNW(I,J) = -a_QbyATM_cover(I,J)
            ELSE
 C     enought heat to melt snow completely;
 C     compute remaining heat flux that will melt ice
-            d_QbyATMonSNW(I,J)=-(GHEFF(I,J)-snowEnergy)/
+            d_QbyATMonSNW(I,J)=-(tmparr1(I,J)-snowEnergy)/
      &        SEAICE_deltaTtherm/AREANm1(I,J,bi,bj)-a_QbyATM_cover(I,J)
 C     convert all snow to melt water (fresh water flux)
-            d_HFRWbyATMonSNW(I,J)=-HSNOW(I,J,bi,bj)/ICE2SNOW
-            d_HSNWbyATMonSNW(I,J)=-HSNOW(I,J,bi,bj)
+            d_HFRWfromSNW(I,J)=-HSNOW(I,J,bi,bj)/ICE2SNOW
+            d_HSNWfromFRW(I,J)=-HSNOW(I,J,bi,bj)
            END IF
-          END IF
+          ELSE 
+            d_QbyATMonSNW(I,J)=0. _d 0
+            d_HFRWfromSNW(I,J)=0. _d 0
+            d_HSNWfromFRW(I,J)=0. _d 0
+          ENDIF
           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) + 
-     &                         d_HFRWbyATMonSNW(I,J) 
-          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyATMonSNW(I,J) 
+     &                         d_HFRWfromSNW(I,J) 
+          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWfromFRW(I,J) 
           a_QbyATM_cover(I,J)= a_QbyATM_cover(I,J) + d_QbyATMonSNW(I,J)
          ENDDO
         ENDDO
@@ -626,23 +646,20 @@ C     by construction
 C     now update other things
 
 #ifdef ALLOW_ATM_TEMP
-          IF(a_QbyATM_cover(I,J).GT.ZERO) THEN
-C     freezing, add precip as snow
-           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
+          IF ( FRWfromSNW(I,J).EQ.0 ) THEN
+C           add precip as snow
+            d_HFRWfromSNW(I,J)=0. _d 0
+            d_HSNWfromFRW(I,J)=SEAICE_deltaTtherm*
      &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*SDF
-          ELSE
-C     add precip as rain, water converted into equivalent m of
-C     ice by 1/ICE2WATR.
-C     Do not get confused by the sign:
-C     precip   > 0 for downward flux of fresh water
-C     frWtrIce > 0 for more ice (corresponds to an upward "fresh water flux"),
-C     so that here the rain is added *as if* it is melted ice (which is not
-C     true, but just a trick; physically the rain just runs as water
-C     through the ice into the ocean)
-           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj)
-     &            -PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*
+          ELSE 
+c           add precip to the fresh water bucket
+            d_HFRWfromSNW(I,J)=-PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*
      &            SEAICE_deltaTtherm/ICE2WATR
+            d_HSNWfromFRW(I,J)=0. _d 0
           ENDIF
+          frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) + 
+     &                         d_HFRWfromSNW(I,J) 
+          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWfromFRW(I,J) 
 #endif /* ALLOW_ATM_TEMP */
 
          ENDDO
@@ -928,14 +945,14 @@ CADJ &                         key = iicekey, byte = isbyte
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
          IF ( DIAGNOSTICS_IS_ON('SIthdgrh',myThid) ) THEN
-C     use (abuse) GHEFF to diagnose the total thermodynamic growth rate
+C     use (abuse) tmparr1 to diagnose the total thermodynamic growth rate
           DO J=1,sNy
            DO I=1,sNx
-            GHEFF(I,J) = (HEFF(I,J,bi,bj)-HEFFNm1(I,J,bi,bj))
+            tmparr1(I,J) = (HEFF(I,J,bi,bj)-HEFFNm1(I,J,bi,bj))
      &           /SEAICE_deltaTtherm
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(GHEFF,'SIthdgrh',0,1,3,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(tmparr1,'SIthdgrh',0,1,3,bi,bj,myThid)
          ENDIF
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -947,23 +964,26 @@ C     convert snow to ice if submerged
           DO I=1,sNx
            hDraft     = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
      &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/1000. _d 0
-C     here GEFF is the gain of ice due to flooding
-           GHEFF(I,J) = hDraft - MIN(hDraft,HEFF(I,J,bi,bj))
-           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + GHEFF(I,J)
-           HSNOW(I,J,bi,bj)  = MAX(0. _d 0,
-     &          HSNOW(I,J,bi,bj)-GHEFF(I,J)*ICE2SNOW)
+           tmparr1(I,J) = hDraft - MIN(hDraft,HEFF(I,J,bi,bj))
+C
+           d_HEFFfromSNWflood(I,J)=tmparr1(I,J)
+           d_SNWintoICEflood(I,J)=MAX(0. _d 0, HSNOW(I,J,bi,bj)
+     &      -tmparr1(I,J)*ICE2SNOW )   - HSNOW(I,J,bi,bj)
+c
+           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)+d_HEFFfromSNWflood(I,J)
+           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+d_SNWintoICEflood(I,J)
           ENDDO
          ENDDO
 #ifdef ALLOW_DIAGNOSTICS
          IF ( useDiagnostics ) THEN
           IF ( DIAGNOSTICS_IS_ON('SIsnwice',myThid) ) THEN
-C     turn GHEFF into a rate
+C     turn tmparr1 into a rate
            DO J=1,sNy
             DO I=1,sNx
-             GHEFF(I,J) = GHEFF(I,J)/SEAICE_deltaTtherm
+             tmparr1(I,J) = tmparr1(I,J)/SEAICE_deltaTtherm
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(GHEFF,'SIsnwice',0,1,3,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(tmparr1,'SIsnwice',0,1,3,bi,bj,myThid)
           ENDIF
          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
