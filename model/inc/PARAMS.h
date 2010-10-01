@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.240 2010/09/25 23:09:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.241 2010/10/01 02:00:40 heimbach Exp $
 C $Name:  $
 C
 
@@ -706,7 +706,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
      & xgOrigin, ygOrigin, rSphere, recip_RSphere, f0, beta,
-     & viscAh, viscAhW, viscAhMax,
+     & viscFacAdj, viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
      & viscC2smag, viscC4smag,
@@ -775,6 +775,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL hFacSup
       _RL beta
       _RL viscArNr(Nr)
+      _RL viscFacAdj
       _RL viscAh
       _RL viscAhW
       _RL viscAhD
