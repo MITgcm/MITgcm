@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.73 2010/10/01 05:53:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.74 2010/10/01 17:07:16 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,7 +57,6 @@ C     constants
       _RL QI, recip_QI, QS
 C     auxillary variables
       _RL snowEnergy
-      _RL growthHEFF, growthNeg
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft
 #endif /* ALLOW_SEAICE_FLOODING */
@@ -87,7 +86,10 @@ c
 c
       _RL d_HEFFfromSNWflood  (1:sNx,1:sNy)
       _RL d_SNWintoICEflood  (1:sNx,1:sNy)
-
+c
+      _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
+      _RL d_HSWRbyATMonOCN    (1:sNx,1:sNy)
+      _RL d_QbyATMonOCN    (1:sNx,1:sNy)
 
 C     a_QbyATM_cover  - thermodynamic ice growth rate over sea ice in W/m^2
 C             >0 causes ice growth, <0 causes snow and sea ice melt
@@ -96,15 +98,14 @@ C             >0 causes ice growth, <0 causes snow and sea ice melt
 C     a_QbyATM_open  - thermodynamic ice growth rate over open water in W/m^2
 C             ( = surface heat flux )
 C             >0 causes ice growth, <0 causes snow and sea ice melt
-C     QNETI  - net surface heat flux under ice in W/m^2
 C     a_QSWbyATM_open   - short wave heat flux over ocean in W/m^2
 C     a_QSWbyATM_cover   - short wave heat flux under ice in W/m^2
       _RL a_QbyATM         (1:sNx,1:sNy)
       _RL a_QbyATM_cover          (1:sNx,1:sNy)
       _RL a_QbyATM_open         (1:sNx,1:sNy)
-      _RL QNETI         (1:sNx,1:sNy)
       _RL a_QSWbyATM_open          (1:sNx,1:sNy)
       _RL a_QSWbyATM_cover          (1:sNx,1:sNy)
+      _RL r_QbyATM_cover          (1:sNx,1:sNy)
 C
 C     actual ice thickness with upper and lower limit
       _RL HICE          (1:sNx,1:sNy)
@@ -191,9 +192,9 @@ CADJ &                       key = iicekey, byte = isbyte
           a_QbyATM(I,J)      = 0.0 _d 0
           a_QbyATM_cover (I,J)      = 0.0 _d 0
           a_QbyATM_open(I,J)      = 0.0 _d 0
-          QNETI(I,J)      = 0.0 _d 0
           a_QSWbyATM_open (I,J)      = 0.0 _d 0
           a_QSWbyATM_cover (I,J)      = 0.0 _d 0
+          r_QbyATM_cover (I,J)      = 0.0 _d 0
 #ifdef SEAICE_SALINITY
           saltFluxAdjust(I,J) = 0.0 _d 0
 #endif
@@ -210,6 +211,10 @@ c
 c
           d_HEFFbyICEonOCN(I,J)      = 0.0 _d 0
           d_HEFFbySNWonOCN(I,J)      = 0.0 _d 0
+c
+          d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
+          d_HSWRbyATMonOCN(I,J)      = 0.0 _d 0
+          d_QbyATMonOCN(I,J)      = 0.0 _d 0
          ENDDO
         ENDDO
         DO J=1-oLy,sNy+oLy
@@ -626,26 +631,31 @@ C     now update (freeze or melt) HEFF
 C
         DO J=1,sNy
          DO I=1,sNx
-C     negative growth (>0 for melting) of existing ice in meters
-          growthNeg       = -SEAICE_deltaTtherm*
+C     positive growth (<0 for melting) of existing ice in meters
+          tmpscal1       = SEAICE_deltaTtherm*
      &      a_QbyATM_cover(I,J)*recip_QI*AREANm1(I,J,bi,bj)
-C     negative growth must not exceed effective ice thickness (=volume)
-C     (that is, cannot melt more than all the ice)
-          growthHEFF      = -ONE*MIN(HEFF(I,J,bi,bj),growthNeg)
-C     growthHEFF < 0 means melting
-          HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + growthHEFF
+C     tmpscal1 cannot melt more than all the ice)
+          tmpscal2      = MAX(-HEFF(I,J,bi,bj),tmpscal1)
+C     tmpscal2 < 0 means melting
+          d_HEFFbyATMonOCN(I,J)=tmpscal2
 C     add effective growth to fresh water of ice
-          saltWtrIce(I,J,bi,bj) = saltWtrIce(I,J,bi,bj) + growthHEFF
-
-C     now calculate QNETI under ice (if any) as the difference between
-C     the available "heat flux" growthNeg and the actual growthHEFF;
-C     keep in mind that growthNeg and growthHEFF have different signs
-C     by construction
-          QNETI(I,J) =  (growthHEFF + growthNeg)*QI/SEAICE_deltaTtherm
+          d_HSWRbyATMonOCN(I,J)=tmpscal2
+C     now compute the r_QbyATM_cover residual as the difference between
+C     the available "heat flux" tmpscal1 and the actual tmpscal2;
+          d_QbyATMonOCN(I,J)=(tmpscal2 - tmpscal1)
+     &                *QI/SEAICE_deltaTtherm-a_QbyATM_cover(I,J)
+c
+          r_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)+d_QbyATMonOCN(I,J)
+          HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + d_HEFFbyATMonOCN(I,J)
+          saltWtrIce(I,J,bi,bj) = saltWtrIce(I,J,bi,bj) 
+     &                          + d_HSWRbyATMonOCN(I,J)
+         ENDDO
+        ENDDO
 
 C     now update other things
-
 #ifdef ALLOW_ATM_TEMP
+        DO J=1,sNy
+         DO I=1,sNx
           IF ( FRWfromSNW(I,J).EQ.0 ) THEN
 C           add precip as snow
             d_HFRWfromSNW(I,J)=0. _d 0
@@ -660,10 +670,9 @@ c           add precip to the fresh water bucket
           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) + 
      &                         d_HFRWfromSNW(I,J) 
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWfromFRW(I,J) 
-#endif /* ALLOW_ATM_TEMP */
-
          ENDDO
         ENDDO
+#endif /* ALLOW_ATM_TEMP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphCADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
@@ -832,7 +841,7 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
         DO J=1,sNy
          DO I=1,sNx
 C NOW GET TOTAL QNET AND QSW
-          QNET(I,J,bi,bj) = QNETI(I,J) * AREANm1(I,J,bi,bj)
+          QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) * AREANm1(I,J,bi,bj)
      &        +a_QbyATM_open(I,J) * (ONE-AREANm1(I,J,bi,bj))
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) * AREANm1(I,J,bi,bj)
      &        +a_QSWbyATM_open(I,J)  * (ONE-AREANm1(I,J,bi,bj))
@@ -853,7 +862,7 @@ C NOW GET TOTAL QNET AND QSW
          IF ( DIAGNOSTICS_IS_ON('SIqneti ',myThid) ) THEN
           DO J=1,sNy
            DO I=1,sNx
-            DIAGarray(I,J) = QNETI(I,J) * areaNm1(I,J,bi,bj)
+            DIAGarray(I,J) = r_QbyATM_cover(I,J) * areaNm1(I,J,bi,bj)
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneti ',0,1,3,bi,bj,myThid)
