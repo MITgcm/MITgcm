@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.149 2010/09/29 19:01:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.150 2010/10/04 02:58:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -334,7 +334,7 @@ cph)
           gvDissip(i,j)  = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
           phiHydLow(i,j,bi,bj) = 0. _d 0
-# if (defined NONLIN_FRSURF) && (defined MOM_FLUXFORM)
+# if (defined NONLIN_FRSURF) && (defined ALLOW_MOM_FLUXFORM)
 #  ifndef DISABLE_RSTAR_CODE
           dWtransC(i,j,bi,bj) = 0. _d 0
           dWtransU(i,j,bi,bj) = 0. _d 0
@@ -352,7 +352,7 @@ C--     Start computation of dynamics
         jMax = sNy+1
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wvel (:,:,:,bi,bj) = 
+CADJ STORE wvel (:,:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -370,7 +370,7 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
 #ifdef ALLOW_KPP
-CADJ STORE KPPviscAz (:,:,:,bi,bj) 
+CADJ STORE KPPviscAz (:,:,:,bi,bj)
 CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -393,9 +393,9 @@ C--     Calculate the total vertical viscosity
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRU(:,:,:) 
+CADJ STORE KappaRU(:,:,:)
 CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
-CADJ STORE KappaRV(:,:,:) 
+CADJ STORE KappaRV(:,:,:)
 CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -414,66 +414,66 @@ C--       kDown  Cycles through 2,1 to point to current layer
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (idynkey-1)*Nr + k
 c
-CADJ STORE totphihyd (:,:,k,bi,bj) 
+CADJ STORE totphihyd (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE phihydlow (:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE theta (:,:,k,bi,bj) 
+CADJ STORE theta (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE salt  (:,:,k,bi,bj) 
+CADJ STORE salt  (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gt(:,:,k,bi,bj) 
+CADJ STORE gt(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gs(:,:,k,bi,bj) 
+CADJ STORE gs(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # ifdef NONLIN_FRSURF
 cph-test
-CADJ STORE  phiHydC (:,:) 
+CADJ STORE  phiHydC (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  phiHydF (:,:) 
+CADJ STORE  phiHydF (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  gudissip (:,:) 
+CADJ STORE  gudissip (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  gvdissip (:,:) 
+CADJ STORE  gvdissip (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  fVerU (:,:,:) 
+CADJ STORE  fVerU (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  fVerV (:,:,:) 
+CADJ STORE  fVerV (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gu(:,:,k,bi,bj) 
+CADJ STORE gu(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gv(:,:,k,bi,bj) 
+CADJ STORE gv(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gunm1(:,:,k,bi,bj) 
+CADJ STORE gunm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gvnm1(:,:,k,bi,bj) 
+CADJ STORE gvnm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  else
-CADJ STORE gunm(:,:,k,bi,bj,1) 
+CADJ STORE gunm(:,:,k,bi,bj,1)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gunm(:,:,k,bi,bj,2) 
+CADJ STORE gunm(:,:,k,bi,bj,2)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gvnm(:,:,k,bi,bj,1) 
+CADJ STORE gvnm(:,:,k,bi,bj,1)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gvnm(:,:,k,bi,bj,2) 
+CADJ STORE gvnm(:,:,k,bi,bj,2)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 #  ifdef ALLOW_CD_CODE
-CADJ STORE unm1(:,:,k,bi,bj) 
+CADJ STORE unm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE vnm1(:,:,k,bi,bj) 
+CADJ STORE vnm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE uVelD(:,:,k,bi,bj) 
+CADJ STORE uVelD(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE vVelD(:,:,k,bi,bj) 
+CADJ STORE vVelD(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 # endif
 # ifdef ALLOW_DEPTH_CONTROL
-CADJ STORE  fVerU (:,:,:) 
+CADJ STORE  fVerU (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  fVerV (:,:,:) 
+CADJ STORE  fVerV (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -509,13 +509,13 @@ C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined NONLIN_FRSURF) && (defined MOM_FLUXFORM)
+# if (defined NONLIN_FRSURF) && (defined ALLOW_MOM_FLUXFORM)
 #  ifndef DISABLE_RSTAR_CODE
-CADJ STORE dWtransC(:,:,bi,bj) 
+CADJ STORE dWtransC(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dWtransU(:,:,bi,bj) 
+CADJ STORE dWtransU(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dWtransV(:,:,bi,bj) 
+CADJ STORE dWtransV(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 # endif
@@ -535,9 +535,9 @@ C
 C
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef NONLIN_FRSURF
-CADJ STORE fVerU(:,:,:) 
+CADJ STORE fVerU(:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fVerV(:,:,:) 
+CADJ STORE fVerV(:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
