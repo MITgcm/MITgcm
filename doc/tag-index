@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1305 2010/09/26 13:48:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1306 2010/10/04 12:52:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62l (2010/10/04)
 o pkg/seaice:
   -fix the USE_ORIGINAL_SBI version (for variable freezing point);
   -use "celsius2K" in SEAICE_VARIABLE_FREEZING_POINT and in new
