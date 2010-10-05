@@ -3,6 +3,8 @@
 /^c\ /d
 /^C-/d
 /^c-/d
+/^C=/d
+/^c=/d
 /^C\*/d
 /^c\*/d
 /^\*/d
@@ -19,6 +21,10 @@
 /^CML/d
 /^cml/d
 /^Cml/d
+/^cdm/d
+/^Cdm/d
+/^crg/d
+/^Crg/d
 /^cgg/d
 
 # This is a growing list of which comments lines to remove from a file 
