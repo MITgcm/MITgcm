@@ -23,3 +23,5 @@ exch_r[ls48]_recv_get_[xy].F
 exch_r[ls48]_recv_put_[xy].F
 gather_2d_r[48].F
 scatter_2d_r[48].F
+gather_2d_wh_r[48].F
+scatter_2d_wh_r[48].F
