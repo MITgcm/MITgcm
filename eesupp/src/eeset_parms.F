@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.28 2010/05/23 01:35:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.29 2010/10/05 17:43:40 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -53,7 +53,7 @@ CEOP
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI,
      & useCubedSphereExchange,
-     & useCoupler, useNEST_PARENT, useNEST_CHILD,
+     & useCoupler, useNEST_PARENT, useNEST_CHILD, useOASIS,
      & useSETRLSTK, useSIGREG,
      & printMapIncludesZeros, maxLengthPrt1D
 
@@ -101,6 +101,7 @@ C     which sets the stack size to "unlimited" using setrlimit()
       useCoupler                 = .FALSE.
       useNEST_PARENT             = .FALSE.
       useNEST_CHILD              = .FALSE.
+      useOASIS                   = .FALSE.
       nTx                        = 1
       nTy                        = 1
       useSETRLSTK                = .FALSE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.20 2010/09/25 23:18:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.21 2010/10/05 17:43:40 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,7 +114,11 @@ cgms)
 #endif /* ALLOW_NEST_PARENT */
 
 #ifdef ALLOW_OASIS
-       CALL OASIS_INIT(MPI_COMM_MODEL)
+C      add a 1rst preliminary call EESET_PARAMS to set useOASIS
+C      (needed to decide either to call OASIS_INIT or not)
+       CALL EESET_PARMS
+       IF ( eeBootError ) GOTO 999
+       IF ( useOASIS ) CALL OASIS_INIT(MPI_COMM_MODEL)
 #endif /* ALLOW_OASIS */
 
 #ifdef COMPONENT_MODULE

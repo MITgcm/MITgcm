@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1306 2010/10/04 12:52:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1307 2010/10/05 17:43:40 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o move "useOASIS" from PARAMS.h to EEPARAMS.h and read it from "eedata"
 
 checkpoint62l (2010/10/04)
 o pkg/seaice:

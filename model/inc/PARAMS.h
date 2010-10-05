@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.241 2010/10/01 02:00:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.242 2010/10/05 17:43:40 mlosch Exp $
 C $Name:  $
 C
 
@@ -942,7 +942,6 @@ C Logical flags for selecting packages
       LOGICAL useMNC
       LOGICAL useRunClock
       LOGICAL useEMBED_FILES
-      LOGICAL useOASIS
       LOGICAL useMYPACKAGE
       COMMON /PARM_PACKAGES/
      &        useGAD, useOBCS, useSHAP_FILT, useZONAL_FILT,
@@ -956,7 +955,6 @@ C Logical flags for selecting packages
      &        useATM2D, useAIM, useLand, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,
-     &        useOASIS,
      &        useMYPACKAGE
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
