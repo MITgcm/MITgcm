@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.36 2010/05/30 17:43:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.37 2010/10/06 21:53:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -374,6 +374,16 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_TEST_ICE_STRESS_1 */
 #endif /* SEAICE_CGRID not defined */
+
+C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
+#ifndef SEAICE_ALLOW_FREEDRIFT
+      IF (SEAICEuseFREEDRIFT) THEN
+         WRITE(msgBuf,'(A)')
+     &        'SEAICE_ALLOW_FREEDRIFT needed for SEAICEuseFREEDRIFT'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
 
       _END_MASTER(myThid)
 
