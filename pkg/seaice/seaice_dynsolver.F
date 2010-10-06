@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.41 2010/03/22 19:30:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.42 2010/10/06 20:06:23 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -221,6 +221,10 @@ C--   now set up ice pressure and viscosities
        ENDDO
       ENDDO
 
+#ifdef SEAICE_ALLOW_FREEDRIFT
+        CALL SEAICE_FREEDRIFT( myTime, myIter, myThid )
+#endif
+
 #ifdef SEAICE_ALLOW_DYNAMICS
 
       IF ( SEAICEuseDYNAMICS ) THEN
@@ -234,11 +238,32 @@ CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
         CALL SEAICE_EVP( myTime, myIter, myThid )
-       ELSE
-C     do the original VP solver of Zhang and Hibler (1997), ported to
-C     a C-grid
+# ifdef SEAICE_ALLOW_FREEDRIFT
+       ELSEIF ( SEAICEuseFREEDRIFT ) THEN
+# endif
+#else
+# ifdef SEAICE_ALLOW_FREEDRIFT
+       IF ( SEAICEuseFREEDRIFT ) THEN
+# endif
 #endif /* SEAICE_ALLOW_EVP */
-C     LSR SCHEME (ZHANG-J/HIBLER 1997)
+#ifdef SEAICE_ALLOW_FREEDRIFT
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy+2,sNy+OLy-2
+           DO i=1-OLx+2,sNx+OLx-2
+            uice(i,j,bi,bj)=uice_fd(i,j,bi,bj)
+            vice(i,j,bi,bj)=vice_fd(i,j,bi,bj)
+            stressDivergenceX(I,J,bi,bj) = 0. _d 0
+            stressDivergenceY(I,J,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO        
+#endif
+#if defined(SEAICE_ALLOW_EVP)||defined(SEAICE_ALLOW_FREEDRIFT)
+       ELSE
+#endif /* SEAICE_ALLOW_EVP */
+C     LSR SCHEME (ZHANG-J/HIBLER 1997), PORTED ON A C-GRID
 #ifdef ALLOW_AUTODIFF_TAMC
         DO ipseudo=1,MPSEUDOTIMESTEPS
 #else
@@ -258,7 +283,7 @@ CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
           CALL SEAICE_LSR( ipseudo, myTime, myIter, myThid )
          ENDIF
         ENDDO
-#ifdef SEAICE_ALLOW_EVP
+#if defined(SEAICE_ALLOW_EVP)||defined(SEAICE_ALLOW_FREEDRIFT)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.27 2009/05/26 16:39:57 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.28 2010/10/06 20:06:23 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,6 +79,10 @@ C     == end of interface ==
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
      & 'SEAICEuseEVP      =', ' /* use EVP solver */')
 #endif /* SEAICE_ALLOW_EVP */
+#ifdef SEAICE_ALLOW_FREEDRIFT
+      CALL WRITE_0D_L ( SEAICEuseFREEDRIFT, INDEX_NONE,
+     & 'SEAICEuseFREEDRIFT       =', ' /* use free drift solution */')
+#endif /* SEAICE_ALLOW_FREEDRIFT */
       CALL WRITE_0D_L ( SEAICE_no_slip, INDEX_NONE,
      & 'SEAICE_no_slip    =', ' /* no slip boundary conditions */')
       CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,

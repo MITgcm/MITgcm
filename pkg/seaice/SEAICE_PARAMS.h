@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.63 2010/03/16 00:23:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.64 2010/10/06 20:06:23 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,6 +16,7 @@ C     SEAICEuseTEM      - to use truncated ellipse method (see Geiger et al.
 C                         1998) set this parameter to true, default is false
 C     SEAICEuseEVP      - If false, use Zhangs LSR solver for VP equations
 C                         if true use elastic viscous plastic solver  
+C     SEAICEuseFREEDRIFT - If True use free drift velocity instead of EVP or LSR
 C     SEAICEuseEVPpickup - Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
@@ -52,7 +53,7 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseTEM,
+     &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
@@ -64,7 +65,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseTEM,
+     &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,

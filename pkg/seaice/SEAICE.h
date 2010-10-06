@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.52 2009/10/22 12:15:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.53 2010/10/06 20:06:23 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -146,6 +146,13 @@ C     frWtrAtm contains freshwater flux from the atmosphere
 #ifdef SEAICE_MULTICATEGORY
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,MULTDIM,nSx,nSy)
+#endif
+
+#if (defined (SEAICE_CGRID) && defined (SEAICE_ALLOW_FREEDRIFT))
+      COMMON /SEAICE_FD_FIELDS/
+     &     uice_fd, vice_fd
+      _RL uice_fd   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vice_fd   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #if (defined (SEAICE_CGRID) && defined (SEAICE_ALLOW_EVP))

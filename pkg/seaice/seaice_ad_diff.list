@@ -38,4 +38,5 @@ seaice_calc_viscosities.f
 seaice_dynsolver.f
 seaice_evp.f
 seaice_lsr.f
+seaice_freedrift.f
 seaice_ocean_stress.f
