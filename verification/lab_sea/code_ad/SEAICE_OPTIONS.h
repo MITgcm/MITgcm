@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.7 2009/11/27 15:03:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.8 2010/10/06 20:13:34 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -80,6 +80,9 @@ C--   By default sea ice is fresh.  Set following flag for salty ice.
 c--   Enable modified sea-ice thermodynamic by Ian Fenty
 c--   Should improve adjoint, but doesnt work so far.
 #undef SEAICE_ALLOW_TD_IF
+
+C     enable free drift code
+#define SEAICE_ALLOW_FREEDRIFT
 
 #endif /* SEAICE_OPTIONS_H */
 

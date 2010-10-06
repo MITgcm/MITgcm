@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.14 2010/09/03 23:33:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.15 2010/10/06 20:13:31 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -97,6 +97,9 @@ C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
 C--   not recommended, here enabled for backward compatibility
 #define SEAICE_ALLOW_CLIPVELS
+
+C     enable free drift code
+#define SEAICE_ALLOW_FREEDRIFT
 
 #endif /* SEAICE_OPTIONS_H */
 
