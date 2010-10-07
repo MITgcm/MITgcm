@@ -1,0 +1,11 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+      SEAICEwriteState   = .TRUE.,
+      SEAICE_initialHEFF = 1.0,
+      SEAICE_deltaTtherm = 3600.,
+      SEAICE_deltaTdyn   = 3600.,
+      LSR_ERROR          = 1.E-12,
+#     SEAICE_deltaTevp   = 30.,
+      SEAICEuseFREEDRIFT = .TRUE.,
+      ICE2WATR           = 0.92D0,
+ &
