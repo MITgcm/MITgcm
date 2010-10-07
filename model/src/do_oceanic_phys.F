@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.93 2010/09/16 20:10:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.94 2010/10/07 00:22:50 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -779,6 +779,13 @@ C--     Calculate Downsloping Flow for Down_Slope parameterization
          ENDIF
         ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
+
+#ifdef ALLOW_MYPACKAGE
+        IF ( useMYPACKAGE ) THEN
+         CALL MYPACKAGE_CALC_RHS(
+     I        bi, bj, myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_MYPACKAGE */
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C---  if fluid Is Water: end
