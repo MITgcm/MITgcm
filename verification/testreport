@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.141 2010/06/23 18:46:43 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.142 2010/10/07 20:59:39 jmc Exp $
 #  $Name:  $
 #
 
@@ -1015,8 +1015,12 @@ else
     EXECUTABLE="mitgcmuv"
 fi
 
+xx=`echo $TESTDIRS | awk '{print $1}'`
 if test "x$TESTDIRS" = x ; then
     LIST=`scandirs results/$ref_outp`
+elif test $xx = 'start_from' ; then
+    xx=`echo $TESTDIRS | awk '{print $2}'`
+    LIST=`scandirs results/$ref_outp | sed -n "/$xx/,$ p"`
 else
     #- expand group of experiments:
     LIST=" "
