@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.8 2009/08/10 09:20:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.9 2010/10/07 15:17:51 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -12,7 +12,7 @@ C     !ROUTINE: INI_MNC_VARS
 C     !INTERFACE:
       SUBROUTINE INI_MNC_VARS( myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     Set up (once only) information such as shape/size of variables,
 C     units, etc. primarily for state and snapshot variables.
 
@@ -27,14 +27,17 @@ C     !USES:
 #endif /* ALLOW_CAL */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid -  Number of this instances
+C     myThid :: my Thread Id number
       INTEGER myThid
-#ifdef ALLOW_CAL
-      CHARACTER*(34) timeUnits
-#endif /* ALLOW_CAL */
 CEOP
 
 #ifdef ALLOW_MNC
+
+C     !LOCAL VARIABLES:
+#ifdef ALLOW_CAL
+      CHARACTER*(34) timeUnits
+#endif /* ALLOW_CAL */
+
       IF (useMNC) THEN
 
 C     Define coordinates for all MNC files ---------------------------------
@@ -149,7 +152,7 @@ C     Grid variables  ------------------------------------------------
       CALL MNC_CW_ADD_VNAME('HFacC', 'Cen_xy_Hn__C__-', 4,5,myThid)
       CALL MNC_CW_ADD_VNAME('HFacW', 'U_xy_Hn__C__-', 4,5,myThid)
       CALL MNC_CW_ADD_VNAME('HFacS', 'V_xy_Hn__C__-', 4,5,myThid)
-      
+
       CALL MNC_CW_ADD_VATTR_TEXT('drC','description',
      &     'r cell center separation',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('drF','description',
@@ -198,8 +201,8 @@ C     Grid variables  ------------------------------------------------
      &       'vertical fraction of open cell at West face', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('HFacS','description',
      &     'vertical fraction of open cell at South face',myThid)
-      
-      
+
+
 C     Create MNC definitions for DYNVARS.h variables  ----------------
       CALL MNC_CW_ADD_VNAME('T', '-_-_--__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('T',
@@ -219,7 +222,7 @@ C     format: seconds since 1992-01-01, 00:00:00
      &      'units',timeUnits, myThid)
       ELSE
 #else
-      IF (.TRUE. ) THEN 
+      IF (.TRUE. ) THEN
 #endif /* ALLOW_CAL */
        CALL MNC_CW_ADD_VATTR_TEXT('T',
      &     'units','s', myThid)
@@ -306,7 +309,7 @@ C     CALL MNC_CW_ADD_VNAME('fV', 'Cen_xy_Hn__-__t', 0,0, myThid)
 C     CALL MNC_CW_ADD_VATTR_TEXT('','units','', myThid)
 C     CALL MNC_CW_ADD_VATTR_TEXT('','long_name',
 C     &     'potential_temperature', myThid)
-      
+
       CALL MNC_CW_ADD_VNAME('fV', 'V_xy_Hn__C__t', 0,0, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('fV','units','m/s^2', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('fV','description',
@@ -391,7 +394,7 @@ C     Define variables from FFIELDS.h
       CALL MNC_CW_ADD_VNAME('Qnet', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Qnet','units','W/m^2', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Qnet','description',
-     &     'Net upward surface heat flux (including shortwave)', 
+     &     'Net upward surface heat flux (including shortwave)',
      &     myThid)
 
       CALL MNC_CW_ADD_VNAME('Qsw', 'Cen_xy_Hn__-__t', 3,4, myThid)
@@ -426,9 +429,9 @@ C     Define variables from FFIELDS.h
 
 
       ENDIF
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_MNC */
 
       RETURN
       END

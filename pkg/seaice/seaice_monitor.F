@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.20 2010/03/16 00:23:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.21 2010/10/07 15:16:45 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,7 +41,9 @@ C     === Functions ====
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER i,j,bi,bj
+#ifdef ALLOW_MNC
+      INTEGER i
+#endif /* ALLOW_MNC */
       _RL dummyRL(6)
 
       IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
