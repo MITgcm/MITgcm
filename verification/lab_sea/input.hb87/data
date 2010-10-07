@@ -48,8 +48,6 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
-#globalFiles=.TRUE.,
-#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
  useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0,
@@ -132,7 +130,8 @@
 #
  &PARM05
  bathyFile       = 'bathy_closeN.bin',
- hydrogThetaFile = 'LevCli_temp.labsea1979',
- hydrogSaltFile  = 'LevCli_salt.labsea1979',
+ hydrogThetaFile = 'T.0000008760',
+ hydrogSaltFile  = 'S.0000008760',
+ uVelInitFile    = 'U.0000008760',
+ vVelInitFile    = 'V.0000008760',
  &
-
