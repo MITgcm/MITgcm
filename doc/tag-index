@@ -1,9 +1,34 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1307 2010/10/05 17:43:40 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1308 2010/10/07 22:47:57 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/lab_sea:
+  - overhaul of the forward model experiments. The main motivation
+    for this revision is that lab_sea has proven quite fragile (when 
+    changing the sea-ice code, and switching platforms) to a point
+    when failures were very hard to attribute to specific code problems.
+  - the suspected reason for this fragility is noise amplification by evp so, 
+    to start with, we decided to replace evp with lsr in the main experiment.
+  - the input.lsr experiment thus became obsolete and was removed.
+  - it was replaced with the input.fd experiment that uses an 
+    analytical "free drift" solution as the ice velocity field.
+  - Taken together, input (lsr), input.fd (free drift) and input.hb87 (evp)
+    will hopefully allow us to discriminate problems due to dynamic solvers
+    from problems due to the thermodynamic code. input.salt_plume (lsr) allows
+    us to test additional options, along with the salt plume package.
+  - Finally a pickup was generated (at the end of a one year run) to 
+    make the tests more representative of an actual model run. Previously
+    the tests starting point was a 1m thickness of ice everywhere.
+o pkg/seaice: 
+  - introducing S\R seaice_freedrift.F that compute the
+    analytical solution to an approximate ice momentum 
+    equation (i.e. the simple stress/coriolis balance).
+  - define SEAICE_ALLOW_FREEDRIFT to trigger the computation
+    of the free drift velocity field, and enable its use. 
+    To actually use the free drift solution as the model ice 
+    velocity field set SEAICEuseFREEDRIFT to .TRUE. in data.seaice. 
 o move "useOASIS" from PARAMS.h to EEPARAMS.h and read it from "eedata"
 
 checkpoint62l (2010/10/04)
