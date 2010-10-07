@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/GMREDI_OPTIONS.h,v 1.4 2004/11/21 21:54:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/GMREDI_OPTIONS.h,v 1.5 2010/10/07 21:17:48 gforget Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -13,13 +13,18 @@ C Use this file for selecting options within the GM/Redi package
 #include "CPP_OPTIONS.h"
 
 C Designed to simplify the Ajoint code:
-C  exclude the clipping/tapering part of the code that is not used
+C #define GMREDI_WITH_STABLE_ADJOINT
+C -- exclude the clipping/tapering part of the code that is not used
 C #define GM_EXCLUDE_CLIPPING
+C #define GM_EXCLUDE_FM07_TAP
 C #define GM_EXCLUDE_AC02_TAP
 C #define GM_EXCLUDE_TAPERING
- 
+
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K
+C Use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
+C (which depends on tapering scheme)
+#undef OLD_VISBECK_CALC
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
@@ -36,3 +41,7 @@ C  instead of the Skew-Flux form (=default)
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

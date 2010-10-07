@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.15 2010/10/06 20:13:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.16 2010/10/07 21:17:48 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -46,7 +46,7 @@ C     simple linear dependence of the freezing point on salinity,
 C     set the following flag (pressure is assumed to have no effect,
 C     which is a good assumption for the top 20 meters). With this
 C     option defined the parameter SEAICE_freeze has no effect.
-#undef SEAICE_VARIABLE_FREEZING_POINT
+#define SEAICE_VARIABLE_FREEZING_POINT
 
 C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
 #define ALLOW_SEAICE_FLOODING
@@ -74,8 +74,7 @@ C     enable EVP code by defining the following flag
 # ifdef SEAICE_ALLOW_EVP
 C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit
 C--   viscosities from below and above in seaice_evp
-C--   not necessary, and not recommended, but used here for backward
-C--   compatibility
+C--   not necessary, and not recommended
 #  define SEAICE_ALLOW_CLIPZETA
 # endif /* SEAICE_ALLOW_EVP */
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
@@ -95,7 +94,7 @@ C     in order to use ETAN instead.
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 #undef SEAICE_CAP_HEFF
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
-C--   not recommended, here enabled for backward compatibility
+C--   not recommended
 #define SEAICE_ALLOW_CLIPVELS
 
 C     enable free drift code
