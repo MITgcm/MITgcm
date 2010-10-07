@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ocean_if.F,v 1.2 2010/02/17 08:16:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ocean_if.F,v 1.3 2010/10/07 15:16:08 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,6 +49,8 @@ C     SWHeatFlux  :: short wave heat flux over open water or under ice
       INTEGER bi, bj, myThid
 CEndOfInterface
 
+#ifdef SEAICE_ALLOW_TD_IF
+
 C     === Local variables ===
 C     i,j - Loop counters
       INTEGER i, j
@@ -92,7 +94,7 @@ C MELTING TEMPERATURE OF ICE
        DO I=1,sNx
         netHeatFlux(I,J) = 0. _d 0
         SWHeatFlux (I,J) = 0. _d 0
-C     
+C
         tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
 C     Is this necessary?
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
@@ -114,18 +116,18 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
         SWHeatFlux(I,J) = 0. _d 0
 #endif
 
-    
+
 #ifdef SEAICE_DEBUG
-        if (I .EQ. SEAICE_debugPointX .AND. 
+        if (I .EQ. SEAICE_debugPointX .AND.
      &      J .EQ. SEAICE_debugPointY) THEN
         print '(A,2i4,2(1x,1P2E15.3))',
      &       'ifice sibo, dbgx,dby, (netHF, SWHeatFlux)',
-     &        i,j, netHeatFlux(I,J),     SWHeatFlux(I,J) 
+     &        i,j, netHeatFlux(I,J),     SWHeatFlux(I,J)
         endif
 #endif
 
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
-        ALB(I,J)=SEAICE_waterAlbedo                                
+        ALB(I,J)=SEAICE_waterAlbedo
         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &       +lwdownLoc(I,J)*0.97 _d 0
      &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*AQH(I,J,bi,bj)
@@ -134,11 +136,13 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
      &       /(tsurfLoc(I,J)-TMELT+237.3 _d +00))
         A2(I,J)=-D1*UG(I,J)*tsurfLoc(I,J)-D1W*UG(I,J)*B(I,J)
      &       -D3*(tsurfLoc(I,J)**4)
-        netHeatFlux(I,J)=-A1(I,J)-A2(I,J)    
+        netHeatFlux(I,J)=-A1(I,J)-A2(I,J)
         SWHeatFlux (I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
 #endif /* SEAICE_EXTERNAL_FLUXES */
        ENDDO
       ENDDO
+
+#endif /* SEAICE_ALLOW_TD_IF */
 
       RETURN
       END
