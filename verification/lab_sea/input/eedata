@@ -6,6 +6,5 @@
  nTx=1,
  nTy=1,
  &
-# Note: Some systems use & as the
-# namelist terminator. Other systems
-# use a / character (as shown here).
+# Note: Some systems use & as the namelist terminator (as shown here).
+#       Other systems use a / character.

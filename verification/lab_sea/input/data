@@ -48,8 +48,6 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
-#globalFiles=.TRUE.,
-#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
  useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0,
@@ -85,7 +83,7 @@
 #
  &PARM03
  tauCD=172800.,
- startTime=0.0,
+ startTime=3600.0,
  endTime=36000.,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
