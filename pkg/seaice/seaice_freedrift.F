@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.1 2010/10/06 20:06:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.2 2010/10/07 19:54:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -137,7 +137,12 @@ c
            tmpscal2= tmpscal1*sol_n*sol_n
            tmpscal3= mIceCor*sol_n
 c
-           sol_a=rhs_a-atan2(tmpscal3,tmpscal2)
+           tmpscal4=tmpscal2*tmpscal2 + tmpscal3*tmpscal3
+           if (tmpscal4.GT.0) then
+             sol_a=rhs_a-atan2(tmpscal3,tmpscal2)
+           else
+             sol_a=0. _d 0
+           endif
 
 c compute uice, vice at cell center:
 c ==================================
