@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.76 2010/10/08 21:17:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.77 2010/10/08 22:08:14 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -460,21 +460,18 @@ CADJ &                          key = iicekey, byte = isbyte
            IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
               a_QbyICE(i,j) = SEAICE_availHeatFrac
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0 
-     &             * ( - QI / SEAICE_deltaTtherm )
+     &             * hFacC(i,j,kSurface,bi,bj) *
+     &             (- HeatCapacity_Cp*rhoConst/SEAICE_deltaTtherm)
            ELSE
               a_QbyICE(i,j) = SEAICE_availHeatFracFrz
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
-     &             * ( - QI / SEAICE_deltaTtherm )
+     &             * hFacC(i,j,kSurface,bi,bj) *
+     &             (- HeatCapacity_Cp*rhoConst/SEAICE_deltaTtherm)
            ENDIF
           ELSE
            a_QbyICE(i,j) = 0.
           ENDIF
-cgf heat and water conservation: NOT OK -- the "QI" is not 
-cgf consistent with the value involved in the 72.0764 factor
-cgf (see comment in seaice_growth.F v1.70) -- but the error
-cgf is at least made consistently when 72.0764 is used
+cgf heat and water conservation: ok -- since rid of 72.0764 factor
          ENDDO
         ENDDO
 
@@ -904,17 +901,10 @@ C ======================================================
 
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1=
-     &         -maskC(I,J,kSurface,bi,bj)
-     &         *(HeatCapacity_Cp*rUnit2mass/QI)
-     &         *72.0764 _d 0
           QNET(I,J,bi,bj) = QNET(I,J,bi,bj)
-     &         - ( d_QbyICE(I,J) + d_QbySNW(I,J) )
-     &         * tmpscal1
-cgf heat and water conservation: NOT OK -- the "QI" is not 
-cgf consistent with the value involved in the 72.0764 factor
-cgf (see comment in seaice_growth.F v1.70) -- but the error
-cgf is at least made consistently when 72.0764 is used
+     &         + ( d_QbyICE(I,J) + d_QbySNW(I,J) )
+     &         * maskC(I,J,kSurface,bi,bj)
+cgf heat and water conservation: ok -- since rid of 72.0764 factor
          ENDDO
         ENDDO
 
