@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.78 2010/10/09 21:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.79 2010/10/09 23:53:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -518,22 +518,20 @@ CADJ &                         key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1=-SEAICE_deltaTtherm*
-     &                a_QbyATM_cover(I,J)*AREANm1(I,J,bi,bj)
+c convert a_QbyATM_cover to m of snow         
+          tmpscal1=a_QbyATM_cover(I,J)*
+     &                convertQ2HI*(QI/QS)*AREANm1(I,J,bi,bj)
           IF ( FRWfromSNW(I,J).EQ.2 ) THEN
-           snowEnergy=HSNOW(I,J,bi,bj)*QS
-           IF(tmpscal1.LE.snowEnergy) THEN
+           IF(tmpscal1.LE.HSNOW(I,J,bi,bj)) THEN
 C not enough heat to melt all snow; use up all of a_QbyATM_cover
-            d_HSNWfromFRW(I,J)=-tmpscal1/QS
-C SNOW CONVERTED INTO WATER AND THEN INTO equivalent m of ICE melt
-C The factor 1/ICE2SNOW converts m of snow to m of sea-ice
-            d_HFRWfromSNW(I,J)= - tmpscal1/(QS*ICE2SNOW)
-            d_QbyATMonSNW(I,J) = -a_QbyATM_cover(I,J)
+            d_HSNWfromFRW(I,J)= -tmpscal1
+C convert m of snow to m of ice
+            d_HFRWfromSNW(I,J)= -tmpscal1/ICE2SNOW
+            d_QbyATMonSNW(I,J)= -a_QbyATM_cover(I,J)
            ELSE
-C enough heat to melt snow completely;
-C compute remaining heat that will melt ice
-            d_QbyATMonSNW(I,J)=-(tmpscal1-snowEnergy)/
-     &        SEAICE_deltaTtherm/AREANm1(I,J,bi,bj)-a_QbyATM_cover(I,J)
+C enough heat to melt snow completely; use part of a_QbyATM_cover
+            d_QbyATMonSNW(I,J)= (tmpscal1-HSNOW(I,J,bi,bj))*
+     &        (QS/QI)*convertHI2Q/AREANm1(I,J,bi,bj)-a_QbyATM_cover(I,J)
 C convert all snow to melt water (fresh water flux)
             d_HFRWfromSNW(I,J)=-HSNOW(I,J,bi,bj)/ICE2SNOW
             d_HSNWfromFRW(I,J)=-HSNOW(I,J,bi,bj)
