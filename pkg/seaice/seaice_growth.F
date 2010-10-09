@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.77 2010/10/08 22:08:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.78 2010/10/09 21:57:36 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -481,12 +481,10 @@ C ===========================================================
 
         DO J=1,sNy
          DO I=1,sNx
-         tmpscal1=a_QbyICE(i,j)
-     &             / ( - QI / SEAICE_deltaTtherm )
+         tmpscal1=a_QbyICE(i,j)*convertQ2HI
           d_HEFFbyICEonOCN(I,J) = 
      &     MAX(ZERO, HEFF(I,J,bi,bj)-tmpscal1)- HEFF(I,J,bi,bj)
-          d_QbyICE(I,J)=d_HEFFbyICEonOCN(I,J)
-     &             * ( - QI / SEAICE_deltaTtherm )
+          d_QbyICE(I,J)=d_HEFFbyICEonOCN(I,J)*convertHI2Q
 c apply tendency
           r_QbyICE(I,J)=a_QbyICE(I,J)+d_QbyICE(I,J)
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj) + d_HEFFbyICEonOCN(I,J)
@@ -593,7 +591,7 @@ CADJ &                         key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1  = -SEAICE_deltaTtherm*a_QbyATM(I,J)*recip_QI
+          tmpscal1  = a_QbyATM(I,J)*convertQ2HI
 c (cannot melt more than all the ice)
           tmpscal2 = -ONE*MIN(HEFF(I,J,bi,bj),tmpscal1)
           tmpscal3 = MIN(ZERO,tmpscal2)
@@ -601,8 +599,7 @@ c (cannot melt more than all the ice)
           DIAGarray(I,J) = tmpscal2
 #endif
 C gain of new ice over open water (>0 by definition)
-          tmpscal4 = MAX(ZERO,SEAICE_deltaTtherm*
-     &               a_QbyATM_open(I,J)*recip_QI)
+          tmpscal4 = MAX(ZERO,-a_QbyATM_open(I,J)*convertQ2HI)
 c compute cover fraction tendency
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            d_AREAbyATM(I,J)=
@@ -641,15 +638,14 @@ CADJ &                       key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1       = SEAICE_deltaTtherm*
-     &      a_QbyATM_cover(I,J)*recip_QI*AREANm1(I,J,bi,bj)
+          tmpscal1 = -a_QbyATM_cover(I,J)*convertQ2HI*AREANm1(I,J,bi,bj)
 C (cannot melt more than all the ice)
-          tmpscal2      = MAX(-HEFF(I,J,bi,bj),tmpscal1)
+          tmpscal2 = MAX(-HEFF(I,J,bi,bj),tmpscal1)
           d_HEFFbyATMonOCN(I,J)=tmpscal2
 C compute the r_QbyATM_cover residual as the difference between
 C the available heat tmpscal1 and the used tmpscal2;
-          d_QbyATMonOCN(I,J)=(tmpscal2 - tmpscal1)
-     &                *QI/SEAICE_deltaTtherm-a_QbyATM_cover(I,J)
+          d_QbyATMonOCN(I,J)=
+     &      (tmpscal1 - tmpscal2)*convertHI2Q - a_QbyATM_cover(I,J)
 c apply tendency
           r_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)+d_QbyATMonOCN(I,J)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + d_HEFFbyATMonOCN(I,J)
@@ -695,8 +691,7 @@ cph( very sensitive bit here by JZ
 #ifndef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
         DO J=1,sNy
          DO I=1,sNx
-         tmpscal1=r_QbyICE(i,j)
-     &             / ( - QI / SEAICE_deltaTtherm )
+         tmpscal1=r_QbyICE(i,j)*convertQ2HI
           IF( tmpscal1 .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            d_HSNWbyOCNonSNW(I,J) = 
@@ -704,8 +699,7 @@ cph( very sensitive bit here by JZ
           ELSE
            d_HSNWbyOCNonSNW(I,J)       = 0. _d 0
           ENDIF
-          d_QbySNW(I,J)=d_HSNWbyOCNonSNW(I,J)
-     &             * ( - QI / SEAICE_deltaTtherm )
+          d_QbySNW(I,J)=d_HSNWbyOCNonSNW(I,J)*convertHI2Q
 c apply tendency
           r_QbyICE(I,J)=a_QbyICE(I,J)+d_QbySNW(I,J)
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)
