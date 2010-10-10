@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.80 2010/10/10 01:10:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.81 2010/10/10 02:01:26 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -686,26 +686,23 @@ cph( very sensitive bit here by JZ
 #ifndef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
         DO J=1,sNy
          DO I=1,sNx
-         tmpscal1=r_QbyICE(i,j)*convertQ2HI
+c convert r_QbyICE to ice meters
+          tmpscal1=r_QbyICE(i,j)*convertQ2HI
           IF( tmpscal1 .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
-           d_HSNWbyOCNonSNW(I,J) = 
-     &       - MIN( HSNOW(I,J,bi,bj)/ICE2SNOW , tmpscal1 )
+           tmpscal2=- MIN( HSNOW(I,J,bi,bj)/ICE2SNOW , tmpscal1 )
           ELSE
-           d_HSNWbyOCNonSNW(I,J)       = 0. _d 0
+           tmpscal2= 0. _d 0
           ENDIF
-          d_QbySNW(I,J)=d_HSNWbyOCNonSNW(I,J)*convertHI2Q
+          d_HSNWbyOCNonSNW(I,J) = tmpscal2*ICE2SNOW
+          d_QbySNW(I,J)= tmpscal2*convertHI2Q
 c apply tendency
           r_QbyICE(I,J)=a_QbyICE(I,J)+d_QbySNW(I,J)
-          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)
-     &        +d_HSNWbyOCNonSNW(I,J)*ICE2SNOW
-          frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) 
-     &        +d_HSNWbyOCNonSNW(I,J)
+          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+d_HSNWbyOCNonSNW(I,J)
+          frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj)+tmpscal2
          ENDDO
         ENDDO
-cgf heat and water conservation: ok -- but d_HSNWbyOCNonSNW
-cgf is in ice meter units, whereas HSNOW is in snow meter units,
-cgf which is potentially risky
+cgf heat and water conservation: ok
 #endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 cph)
 
