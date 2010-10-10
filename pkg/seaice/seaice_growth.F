@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.79 2010/10/09 23:53:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.80 2010/10/10 01:10:54 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,7 +53,7 @@ C     i,j,bi,bj :: Loop counters
 C     number of surface interface layer
       INTEGER kSurface
 C     constants
-      _RL TBC, WATR2SNOW, ICE2SNOW
+      _RL TBC, ICE2SNOW
       _RL QI, recip_QI, QS
 
 C note: for all heat stocks, the sign convention is positive towards the atmosphere
@@ -165,11 +165,9 @@ C     old_HEFF :: hold sea-ice effective thickness field before any seaice-therm
 
 C     FREEZING TEMP. OF SEA WATER (deg C)
       TBC          = SEAICE_freeze
-C     RATIO OF WATER DENSITY TO SNOW DENSITY
-      WATR2SNOW    = 1000.0 _d 0/SEAICE_rhoSnow
-cgf - use of 1000 instead of rhoConstFresh...
+
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
-      ICE2SNOW     = ICE2WATR * WATR2SNOW
+      ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
 C     HEAT OF FUSION OF ICE (J/m^3)
       QI           = 302.0 _d +06
       recip_QI     = 1.0 _d 0 / QI
@@ -662,17 +660,16 @@ C =================================================
           IF ( FRWfromSNW(I,J).EQ.1 ) THEN
 C           add precip as snow
             d_HFRWfromSNW(I,J)=0. _d 0
-            d_HSNWfromFRW(I,J)=SEAICE_deltaTtherm*
-     &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*WATR2SNOW
+            d_HSNWfromFRW(I,J)=convertPRECIP2HI*ICE2SNOW*
+     &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)
           ELSE 
 c           add precip to the fresh water bucket
-            d_HFRWfromSNW(I,J)=-PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*
-     &            SEAICE_deltaTtherm/ICE2WATR
+            d_HFRWfromSNW(I,J)=-convertPRECIP2HI*
+     &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)
             d_HSNWfromFRW(I,J)=0. _d 0
           ENDIF
 c apply tendency
-          frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) + 
-     &                         d_HFRWfromSNW(I,J) 
+          frWtrIce(I,J,bi,bj)=frWtrIce(I,J,bi,bj)+d_HFRWfromSNW(I,J) 
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWfromFRW(I,J) 
          ENDDO
         ENDDO
@@ -693,7 +690,7 @@ cph( very sensitive bit here by JZ
           IF( tmpscal1 .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            d_HSNWbyOCNonSNW(I,J) = 
-     &       - MIN( HSNOW(I,J,bi,bj)/WATR2SNOW/ICE2WATR , tmpscal1 )
+     &       - MIN( HSNOW(I,J,bi,bj)/ICE2SNOW , tmpscal1 )
           ELSE
            d_HSNWbyOCNonSNW(I,J)       = 0. _d 0
           ENDIF
@@ -701,7 +698,7 @@ cph( very sensitive bit here by JZ
 c apply tendency
           r_QbyICE(I,J)=a_QbyICE(I,J)+d_QbySNW(I,J)
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)
-     &        +d_HSNWbyOCNonSNW(I,J)*WATR2SNOW*ICE2WATR
+     &        +d_HSNWbyOCNonSNW(I,J)*ICE2SNOW
           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj) 
      &        +d_HSNWbyOCNonSNW(I,J)
          ENDDO
@@ -736,14 +733,10 @@ C NOW GET FRESH WATER FLUX
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
 #endif
-     &         + frWtrIce(I,J,bi,bj)*ICE2WATR/SEAICE_deltaTtherm
-     &         + saltWtrIce(I,J,bi,bj)*ICE2WATR/SEAICE_deltaTtherm
+     &         + frWtrIce(I,J,bi,bj)*convertHI2PRECIP
+     &         + saltWtrIce(I,J,bi,bj)*convertHI2PRECIP
      &         )*rhoConstFresh
-cgf heat and water conservation: NOT OK -- the ICE2WATR is by default 
-cgf computed using SEAICE_rhoIce and recip_rhoConst (see seaice_readparms.F)
-cgf that may be prescribed to differ from rhoConstFresh (see ini_parms.F).
-cgf In passing, I am not sure it is physically sound that one can specify 
-cgf ICE2WATR indepentendly of recip_rhoConst&SEAICE_rhoIce in data.seaice.
+cgf heat and water conservation: ok -- since rid of ICE2WATR
          ENDDO
         ENDDO
 
@@ -984,7 +977,7 @@ C =================================
      &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/1000. _d 0
 cgf - the following comparison is odd: hdraft is in 
 cgf water meters, whereas heff is in ice meters
-cgf - use of 1000 instead of rhoConstFresh...
+cgf - use of 1000 instead of rhoConst (or rhoConstFresh?)
            tmparr1(I,J) = hDraft - MIN(hDraft,HEFF(I,J,bi,bj))
 C
            d_HEFFfromSNWflood(I,J)=tmparr1(I,J)
@@ -997,7 +990,7 @@ cgf heat and water conservation: NOT OK
 cgf - since QI.NE.QS the flooding process implies a loss of heat for 
 cgf the SNOW/ICE system, which should be compensated by a heat gain in 
 cgf the ocean (or at least accounted for as a release to the atmosphere).
-cgf - use of 1000 instead of rhoConstFresh...
+cgf - use of 1000 instead of rhoConst (or rhoConstFresh?)
           ENDDO
          ENDDO
 #ifdef ALLOW_DIAGNOSTICS
