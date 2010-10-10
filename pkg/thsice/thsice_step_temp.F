@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.7 2009/07/08 23:35:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.8 2010/10/10 20:10:38 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -67,10 +67,12 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     tFrzOce   :: sea-water freezing temperature [oC] (function of S)
 C     dTsrf     :: surf. temp adjusment: Ts^n+1 - Ts^n
+C     tmpFlx    :: dummy array for surface fluxes and derivative vs Tsurf
+C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       INTEGER i,j
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpflx(1:2), tmpdTs(1:2)
+      _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpFlx(1:2)
 #ifdef SHORTWAVE_HEATING
       _RL opFrac, icFrac
 #endif
@@ -154,13 +156,13 @@ CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj, siLo, siHi, sjLo, sjHi,
-     I          iMin,iMax, jMin,jMax, dBugFlag, 
+     I          iMin,iMax, jMin,jMax, dBugFlag,
      I          useBulkForce, useEXF,
      I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
-     I          snowHeight(siLo,sjLo,bi,bj), tFrzOce, tmpflx,
+     I          snowHeight(siLo,sjLo,bi,bj), tFrzOce, tmpFlx,
      U          icFlxSW(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),
      U          Qice1(siLo,sjLo,bi,bj), Qice2(siLo,sjLo,bi,bj),
-     O          Tice1(siLo,sjLo,bi,bj), Tice2(siLo,sjLo,bi,bj), tmpdTs,
+     O          Tice1(siLo,sjLo,bi,bj), Tice2(siLo,sjLo,bi,bj), dTsrf,
      O          sHeating(siLo,sjLo,bi,bj), flxCndBt(siLo,sjLo,bi,bj),
      O          icFlxAtm(siLo,sjLo,bi,bj), icFrwAtm(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
