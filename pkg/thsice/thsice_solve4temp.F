@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.20 2010/09/30 16:05:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.21 2010/10/10 20:15:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -44,10 +44,10 @@ C     !USES:
 
 C     == Global variables ===
 #include "EEPARAMS.h"
+#include "SIZE.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "SIZE.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -63,27 +63,27 @@ C     dBugFlag    :: allow to print debugging stuff (e.g. on 1 grid point).
 C     useBulkForce:: use surf. fluxes from bulk-forcing external S/R
 C     useEXF      :: use surf. fluxes from exf          external S/R
 C---  Input:
-C         iceMask :: sea-ice fractional mask [0-1]
-C  hIce    (hi)   :: ice height [m]
-C  hSnow   (hs)   :: snow height [m]
-C  tFrz    (Tf)   :: sea-water freezing temperature [oC] (function of S)
-C  flxExSW  (=)   :: surf. heat flux (+=down) except SW, function of surf. temp Ts:
+C     iceMask     :: sea-ice fractional mask [0-1]
+C     hIce        :: ice height [m]
+C     hSnow       :: snow height [m]
+C     tFrz        :: sea-water freezing temperature [oC] (function of S)
+C     flxExSW     :: surf. heat flux (+=down) except SW, function of surf. temp Ts:
 C                    0: Flx(Ts=0) ; 1: Flx(Ts=Ts^n) ; 2: d.Flx/dTs(Ts=Ts^n)
 C---  Modified (input&output):
-C  flxSW  (netSW) :: net Short-Wave flux (+=down) [W/m2]: input= at surface
-C           (=)   ::                 output= below sea-ice, into the ocean
-C  tSrf    (Tsf)  :: surface (ice or snow) temperature
-C  qIc1   (qicen) :: ice enthalpy (J/kg), 1rst level
-C  qIc2   (qicen) :: ice enthalpy (J/kg), 2nd level
+C     flxSW       :: net Short-Wave flux (+=down) [W/m2]: input= at surface
+C                 ::                 output= below sea-ice, into the ocean
+C     tSrf        :: surface (ice or snow) temperature
+C     qIc1        :: ice enthalpy (J/kg), 1rst level
+C     qIc2        :: ice enthalpy (J/kg), 2nd level
 C---  Output
-C  tIc1    (Tice) :: temperature of ice layer 1 [oC]
-C  tIc2    (Tice) :: temperature of ice layer 2 [oC]
-C  dTsrf   (dTsf) :: surf. temp adjusment: Ts^n+1 - Ts^n
-C  sHeat(sHeating):: surf heating flux left to melt snow or ice (= Atmos-conduction)
-C  flxCnB   (=)   :: heat flux conducted through the ice to bottom surface
-C  flxAtm   (=)   :: net flux of energy from the atmosphere [W/m2] (+=down)
+C     tIc1        :: temperature of ice layer 1 [oC]
+C     tIc2        :: temperature of ice layer 2 [oC]
+C     dTsrf       :: surf. temp adjusment: Ts^n+1 - Ts^n
+C     sHeat       :: surf heating flux left to melt snow or ice (= Atmos-conduction)
+C     flxCnB      :: heat flux conducted through the ice to bottom surface
+C     flxAtm      :: net flux of energy from the atmosphere [W/m2] (+=down)
 C                    without snow precip. (energy=0 for liquid water at 0.oC)
-C  evpAtm   (=)   :: evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
+C     evpAtm      :: evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
 C---  Input:
 C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
@@ -106,7 +106,6 @@ C     myThid      :: my Thread Id number
       _RL qIc2   (siLo:siHi,sjLo:sjHi)
       _RL tIc1   (siLo:siHi,sjLo:sjHi)
       _RL tIc2   (siLo:siHi,sjLo:sjHi)
-c     _RL dTsrf  (siLo:siHi,sjLo:sjHi)
       _RL dTsrf  (iMin:iMax,jMin:jMax)
       _RL sHeat  (siLo:siHi,sjLo:sjHi)
       _RL flxCnB (siLo:siHi,sjLo:sjHi)
@@ -119,40 +118,33 @@ CEOP
 
 #ifdef ALLOW_THSICE
 C     !LOCAL VARIABLES:
-C---  local copy of input/output argument list variables (see description above)
-c     _RL flxExcSw(0:2)
-      _RL Tf
-      _RL hi
-      _RL hs
-      _RL netSW
-      _RL Tsf
-      _RL qicen(nlyr)
-      _RL Tice (nlyr)
-c     _RL sHeating
-c     _RL flxCnB
-      _RL dTsf
-c     _RL flxAtm
-c     _RL evpAtm
-
 C     == Local Variables ==
+C     useBlkFlx    :: use some bulk-formulae to compute fluxes over sea-ice
+C                  :: (otherwise, fluxes are passed as argument from AIM)
+C     iterate4Tsf  :: to stop to iterate when all icy grid pts Tsf did converged
+C     iceFlag      :: True= do iterate for Surf.Temp ; False= do nothing
 C     frsnow       :: fractional snow cover
 C     fswpen       :: SW penetrating beneath surface (W m-2)
 C     fswdn        :: SW absorbed at surface (W m-2)
 C     fswint       :: SW absorbed in ice (W m-2)
 C     fswocn       :: SW passed through ice to ocean (W m-2)
+C     Tsf          :: surface (ice or snow) temperature   (local copy of tSrf)
 C     flx0exSW     :: net surface heat flux over melting snow/ice, except short-wave.
 C     flxTexSW     :: net surface heat flux, except short-wave (W/m2)
+C     dFlxdT       :: deriv of flxNet wrt Tsf (W m-2 deg-1)
 C     evap0        :: evaporation over melting snow/ice [kg/m2/s] (>0 if evaporate)
 C     evapT        :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
 C     dEvdT        :: derivative of evap. with respect to Tsf [kg/m2/s/K]
 C     flxNet       :: net surf heat flux (+=down), from Atmos. to sea-ice (W m-2)
+C     netSW        :: net Short-Wave flux at surface (+=down) [W/m2]
 C     fct          :: heat conducted to top surface
-C     dFlxdT       :: deriv of flxNet wrt Tsf (W m-2 deg-1)
 C     k12, k32     :: thermal conductivity terms
-C     a10, b10     :: coefficients in quadratic eqn for T1
+C     a10,b10,c10  :: coefficients in quadratic eqn for T1
 C     a1, b1, c1   :: coefficients in quadratic eqn for T1
-C     Tsf_start    :: old value of Tsf
 C     dt           :: timestep
+      LOGICAL useBlkFlx
+      LOGICAL iterate4Tsf
+      LOGICAL iceFlag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j
       INTEGER k, iterMax
       _RL  frsnow
@@ -160,21 +152,28 @@ C     dt           :: timestep
       _RL  fswdn
       _RL  fswint
       _RL  fswocn
-      _RL  flx0exSW
-      _RL  flxTexSW
-      _RL  evap0, evapT, dEvdT
+      _RL  Tsf     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  flx0exSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  flxTexSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  evap0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  evapT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  dEvdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flxNet
       _RL  fct
-      _RL  dFlxdT
-      _RL  k12, k32
-      _RL  a10, b10
+      _RL  k12     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  k32
+      _RL  a10     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  b10     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  c10     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  a1, b1, c1
-c     _RL  Tsf_start
       _RL  dt
       _RL  recip_dhSnowLin
-      LOGICAL useBlkFlx
+#ifdef ALLOW_DBUG_THSICE
+      _RL  netSW
+#endif
 
-C-    define grid-point location where to print debugging values
+C-    Define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 
  1010 FORMAT(A,I3,3F11.6)
@@ -183,347 +182,367 @@ C-    define grid-point location where to print debugging values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
+c     act1 = bi - myBxLo(myThid)
+c     max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+c     act2 = bj - myByLo(myThid)
+c     max2 = myByHi(myThid) - myByLo(myThid) + 1
+c     act3 = myThid - 1
+c     max3 = nTx*nTy
+c     act4 = ikey_dynamics - 1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       useBlkFlx = useEXF .OR. useBulkForce
+      dt  = thSIce_dtTemp
       IF ( dhSnowLin.GT.0. _d 0 ) THEN
         recip_dhSnowLin = 1. _d 0 / dhSnowLin
       ELSE
         recip_dhSnowLin = 0. _d 0
       ENDIF
 
-      dt  = thSIce_dtTemp
+      iterate4Tsf = .FALSE.
       DO j = jMin, jMax
        DO i = iMin, iMax
 #ifdef ALLOW_AUTODIFF_TAMC
-          ikey_1 = i
-     &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
+c         ikey_1 = i
+c    &         + sNx*(j-1)
+c    &         + sNx*sNy*act1
+c    &         + sNx*sNy*max1*act2
+c    &         + sNx*sNy*max1*max2*act3
+c    &         + sNx*sNy*max1*max2*max3*act4
 #endif /* ALLOW_AUTODIFF_TAMC */
-C--
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE  devdt        = comlev1_thsice_1, key=ikey_1
-CADJ STORE  dFlxdT        = comlev1_thsice_1, key=ikey_1
-CADJ STORE  flxexceptsw  = comlev1_thsice_1, key=ikey_1
-CADJ STORE  flxsw(i,j)   = comlev1_thsice_1, key=ikey_1
-CADJ STORE  qic1(i,j)    = comlev1_thsice_1, key=ikey_1
-CADJ STORE  qic2(i,j)    = comlev1_thsice_1, key=ikey_1
-CADJ STORE  tsrf(i,j)    = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  devdt        = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  dFlxdT        = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  flxexceptsw  = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  flxsw(i,j)   = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  qic1(i,j)    = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  qic2(i,j)    = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  tsrf(i,j)    = comlev1_thsice_1, key=ikey_1
 #endif
         IF ( iceMask(i,j).GT.0. _d 0) THEN
-          hi      = hIce(i,j)
-          hs      = hSnow(i,j)
-          Tf      = tFrz(i,j)
-          netSW   = flxSW(i,j)
-          qicen(1)= qIc1(i,j)
-          qicen(2)= qIc2(i,j)
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+          iterate4Tsf  = .TRUE.
+          iceFlag(i,j) = .TRUE.
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) WRITE(6,'(A,2I4,2I2)')
      &         'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 #endif
-          IF ( hi.LT.hIceMin ) THEN
-C If hi < hIceMin, melt the ice.
+          IF ( hIce(i,j).LT.hIceMin ) THEN
+C         if hi < hIceMin, melt the ice.
              STOP 'THSICE_SOLVE4TEMP: should not enter if hi<hIceMin'
           ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C fractional snow cover
-C  assume a linear distribution of snow thickness, with dhSnowLin slope,
-C   from hs-dhSnowLin to hs+dhSnowLin if full ice & snow cover.
-C frsnow = fraction of snow over the ice-covered part of the grid cell
-      IF ( hs .GT. iceMask(i,j)*dhSnowLin ) THEN
-        frsnow = 1. _d 0
-      ELSE
-        frsnow = hs*recip_dhSnowLin/iceMask(i,j)
-        IF ( frsnow.GT.0. _d 0 ) frsnow = SQRT(frsnow)
-      ENDIF
-
-C Compute SW flux absorbed at surface and penetrating to layer 1.
-      fswpen  = netSW * (1. _d 0 - frsnow) * i0swFrac
-      fswocn = fswpen * exp(-ksolar*hi)
-      fswint = fswpen - fswocn
-
-      fswdn = netSW - fswpen
-
-C Compute conductivity terms at layer interfaces.
-
-      k12 = 4. _d 0*kIce*kSnow / (kSnow*hi + 4. _d 0*kIce*hs)
-      k32 = 2. _d 0*kIce  / hi
-
-C compute ice temperatures
-      a1 = cpIce
-      b1 = qicen(1) + (cpWater-cpIce )*Tmlt1 - Lfresh
-      c1 = Lfresh * Tmlt1
-      Tice(1) = 0.5 _d 0 *(-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/a1
-      Tice(2) = (Lfresh-qicen(2)) / cpIce
-
-      IF (Tice(1).GT.0. _d 0 ) THEN
-       WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
-     &       ' BBerr: Tice(1) > 0 ; it=', myIter, qicen(1)
-       WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
-     &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
-      ENDIF
-      IF ( Tice(2).GT.0. _d 0) THEN
-       WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
-     &       ' BBerr: Tice(2) > 0 ; it=', myIter, qicen(2)
-       WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
-     &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
-      ENDIF
-#ifdef ALLOW_DBUG_THSICE
-      IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
-     &  'ThSI_SOLVE4T: k, Ts, Tice=',0,tSrf(i,j),Tice
-#endif
-
-C Compute coefficients used in quadratic formula.
-
-      a10 = rhoi*cpIce *hi/(2. _d 0*dt) +
-     &      k32 * (4. _d 0*dt*k32 + rhoi*cpIce *hi)
-     &       / (6. _d 0*dt*k32 + rhoi*cpIce *hi)
-      b10 = -hi*
-     &      (rhoi*cpIce*Tice(1)+rhoi*Lfresh*Tmlt1/Tice(1))
-     &       /(2. _d 0*dt)
-     &      - k32 * (4. _d 0*dt*k32*Tf+rhoi*cpIce *hi*Tice(2))
-     &       / (6. _d 0*dt*k32 + rhoi*cpIce *hi) - fswint
-      c1 = rhoi*Lfresh*hi*Tmlt1 / (2. _d 0*dt)
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C get surface fluxes over melting surface
-          IF ( useBlkFlx ) THEN
-           Tsf = 0.
-           IF ( useEXF ) THEN
-            CALL THSICE_GET_EXF(
-     I                            hSnow(i,j), Tsf,
-     O                            flx0exSW, dFlxdT, evap0, dEvdT,
-     I                            i,j,bi,bj,myThid )
-C could add this "ifdef" to hide THSICE_GET_BULKF from TAF
-c#ifdef ALLOW_BULK_FORCE
-           ELSEIF ( useBulkForce ) THEN
-            CALL THSICE_GET_BULKF(
-     I                            hSnow(i,j), Tsf,
-     O                            flx0exSW, dFlxdT, evap0, dEvdT,
-     I                            i,j,bi,bj,myThid )
-c#endif /* ALLOW_BULK_FORCE */
-           ENDIF
+C--   Fractional snow cover:
+C     assume a linear distribution of snow thickness, with dhSnowLin slope,
+C      from hs-dhSnowLin to hs+dhSnowLin if full ice & snow cover.
+C     frsnow = fraction of snow over the ice-covered part of the grid cell
+          IF ( hSnow(i,j) .GT. iceMask(i,j)*dhSnowLin ) THEN
+           frsnow = 1. _d 0
           ELSE
-           flx0exSW = flxExSW(i,j,0)
+           frsnow = hSnow(i,j)*recip_dhSnowLin/iceMask(i,j)
+           IF ( frsnow.GT.0. _d 0 ) frsnow = SQRT(frsnow)
           ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C Compute new surface and internal temperatures; iterate until
-C Tsfc converges.
+C--   Compute SW flux absorbed at surface and penetrating to layer 1.
+          fswpen = flxSW(i,j) * (1. _d 0 - frsnow) * i0swFrac
+          fswocn = fswpen * exp(-ksolar*hIce(i,j))
+          fswint = fswpen - fswocn
+          fswdn  = flxSW(i,j) - fswpen
 
+C     Initialise Atmospheric surf. heat flux with net SW flux at the surface
+          flxAtm(i,j) = flxSW(i,j)
+C     SW flux at sea-ice base left to the ocean
+          flxSW(i,j) = fswocn
+C     Initialise surface Heating with SW contribution
+          sHeat(i,j) = fswdn
+
+C--   Compute conductivity terms at layer interfaces.
+          k12(i,j) = 4. _d 0*kIce*kSnow
+     &             / (kSnow*hIce(i,j) + 4. _d 0*kIce*hSnow(i,j))
+          k32      = 2. _d 0*kIce  / hIce(i,j)
+
+C--   Compute ice temperatures
+          a1 = cpIce
+          b1 = qIc1(i,j) + (cpWater-cpIce )*Tmlt1 - Lfresh
+          c1 = Lfresh * Tmlt1
+          tIc1(i,j) = 0.5 _d 0 *(-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/a1
+          tIc2(i,j) = (Lfresh-qIc2(i,j)) / cpIce
+
+          IF (tIc1(i,j).GT.0. _d 0 ) THEN
+           WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
+     &       ' BBerr: Tice(1) > 0 ; it=', myIter, qIc1(i,j)
+           WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
+     &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,tIc1(i,j),tIc2(i,j)
+          ENDIF
+          IF ( tIc2(i,j).GT.0. _d 0) THEN
+           WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
+     &       ' BBerr: Tice(2) > 0 ; it=', myIter, qIc2(i,j)
+           WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
+     &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,tIc1(i,j),tIc2(i,j)
+          ENDIF
+#ifdef ALLOW_DBUG_THSICE
+          IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+     &      'ThSI_SOLVE4T: k, Ts, Tice=',0,tSrf(i,j),tIc1(i,j),tIc2(i,j)
+#endif
+
+C--   Compute coefficients used in quadratic formula.
+
+          a10(i,j) = rhoi*cpIce *hIce(i,j)/(2. _d 0*dt) +
+     &          k32*( 4. _d 0*dt*k32 + rhoi*cpIce *hIce(i,j) )
+     &           / ( 6. _d 0*dt*k32 + rhoi*cpIce *hIce(i,j) )
+          b10(i,j) = -hIce(i,j)*
+     &          ( rhoi*cpIce*tIc1(i,j) + rhoi*Lfresh*Tmlt1/tIc1(i,j) )
+     &           /(2. _d 0*dt)
+     &        - k32*( 4. _d 0*dt*k32*tFrz(i,j)
+     &               +rhoi*cpIce*hIce(i,j)*tIc2(i,j) )
+     &           / ( 6. _d 0*dt*k32 + rhoi*cpIce *hIce(i,j) )
+     &        - fswint
+          c10(i,j) = rhoi*Lfresh*hIce(i,j)*Tmlt1 / (2. _d 0*dt)
+
+        ELSE
+          iceFlag(i,j) = .FALSE.
+        ENDIF
+       ENDDO
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Get surface fluxes over melting surface
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF ( useBlkFlx ) THEN
+#else
+      IF ( useBlkFlx .AND. iterate4Tsf  ) THEN
+#endif
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+           Tsf(i,j) = 0.
+         ENDDO
+        ENDDO
+        IF ( useEXF ) THEN
+           CALL THSICE_GET_EXF(   bi, bj, siLo, siHi, sjLo, sjHi,
+     I                            iMin, iMax, jMin, jMax,
+     I                            iceFlag, hSnow, Tsf,
+     O                            flx0exSW, dFlxdT, evap0, dEvdT,
+     I                            myTime, myIter, myThid )
+C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
+c#ifdef ALLOW_BULK_FORCE
+        ELSEIF ( useBulkForce ) THEN
+           CALL THSICE_GET_BULKF( bi, bj, siLo, siHi, sjLo, sjHi,
+     I                            iMin, iMax, jMin, jMax,
+     I                            iceFlag, hSnow, Tsf,
+     O                            flx0exSW, dFlxdT, evap0, dEvdT,
+     I                            myTime, myIter, myThid )
+c#endif /* ALLOW_BULK_FORCE */
+        ENDIF
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---  Compute new surface and internal temperatures; iterate until
+C     Tsfc converges.
+      DO j = jMin, jMax
+        DO i = iMin, iMax
+          Tsf(i,j)  = tSrf(i,j)
+          dTsrf(i,j) = Terrmax
+        ENDDO
+      ENDDO
       IF ( useBlkFlx ) THEN
         iterMax = nitMaxTsf
       ELSE
         iterMax = 1
       ENDIF
-      Tsf  = tSrf(i,j)
-      dTsf = Terrmax
 
 C ----- begin iteration  -----
       DO k = 1,iterMax
-
-#ifdef ALLOW_AUTODIFF_TAMC
-       ikey_3 = (ikey_1-1)*MaxTsf + k
+#ifndef ALLOW_AUTODIFF_TAMC
+       IF ( iterate4Tsf ) THEN
+       iterate4Tsf = .FALSE.
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsf          = comlev1_thsice_3, key=ikey_3
-CADJ STORE dtsf         = comlev1_thsice_3, key=ikey_3
-CADJ STORE dFlxdT        = comlev1_thsice_3, key=ikey_3
-CADJ STORE flxexceptsw  = comlev1_thsice_3, key=ikey_3
-#endif
-       IF ( ABS(dTsf).GE.Terrmax ) THEN
-
-C Save temperatures at start of iteration.
-c        Tsf_start = Tsf
-
-        IF ( useBlkFlx ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsf          = comlev1_thsice_3, key=ikey_3
-#endif
-C Compute top surface flux.
+       IF ( useBlkFlx ) THEN
+C--   Compute top surface flux.
          IF ( useEXF ) THEN
-          CALL THSICE_GET_EXF  (
-     I                         hs, Tsf,
-     O                         flxTexSW, dFlxdT, evapT, dEvdT,
-     I                         i,j,bi,bj,myThid )
-C could add this "ifdef" to hide THSICE_GET_BULKF from TAF
+           CALL THSICE_GET_EXF(   bi, bj, siLo, siHi, sjLo, sjHi,
+     I                            iMin, iMax, jMin, jMax,
+     I                            iceFlag, hSnow, Tsf,
+     O                            flxTexSW, dFlxdT, evapT, dEvdT,
+     I                            myTime, myIter, myThid )
+C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
 c#ifdef ALLOW_BULK_FORCE
          ELSEIF ( useBulkForce ) THEN
-          CALL THSICE_GET_BULKF(
-     I                         hs, Tsf,
-     O                         flxTexSW, dFlxdT, evapT, dEvdT,
-     I                         i,j,bi,bj,myThid )
+           CALL THSICE_GET_BULKF( bi, bj, siLo, siHi, sjLo, sjHi,
+     I                            iMin, iMax, jMin, jMax,
+     I                            iceFlag, hSnow, Tsf,
+     O                            flxTexSW, dFlxdT, evapT, dEvdT,
+     I                            myTime, myIter, myThid )
 c#endif /* ALLOW_BULK_FORCE */
          ENDIF
-        ELSE
-         flxTexSW = flxExSW(i,j,1)
-         dFlxdT = flxExSW(i,j,2)
-        ENDIF
-        flxNet = fswdn + flxTexSW
-#ifdef ALLOW_DBUG_THSICE
-      IF ( dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &  'ThSI_SOLVE4T: flxNet,dFlxdT,k12,D=',
-     &                 flxNet, dFlxdT, k12, k12-dFlxdT
-#endif
+       ELSE
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+           IF ( iceFlag(i,j) ) THEN
+             flxTexSW(i,j) = flxExSW(i,j,1)
+             dFlxdT(i,j) = flxExSW(i,j,2)
+           ENDIF
+          ENDDO
+         ENDDO
+       ENDIF
 
-C Compute new top layer and surface temperatures.
-C If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
-C with different coefficients.
+C--   Compute new top layer and surface temperatures.
+C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
+C     with different coefficients.
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+         IF ( iceFlag(i,j) ) THEN
+          flxNet = sHeat(i,j) + flxTexSW(i,j)
+#ifdef ALLOW_DBUG_THSICE
+          IF ( dBug(i,j,bi,bj) ) WRITE(6,1020)
+     &     'ThSI_SOLVE4T: flxNet,dFlxdT,k12,D=',
+     &      flxNet, dFlxdT(i,j), k12(i,j), k12(i,j)-dFlxdT(i,j)
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsf  = comlev1_thsice_3, key=ikey_3
+cCADJ STORE tsf  = comlev1_thsice_3, key=ikey_3
 #endif
-         a1 = a10 - k12*dFlxdT / (k12-dFlxdT)
-         b1 = b10 - k12*(flxNet-dFlxdT*Tsf) / (k12-dFlxdT)
-         Tice(1) = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
-         dTsf = (flxNet + k12*(Tice(1)-Tsf)) / (k12-dFlxdT)
-         Tsf = Tsf + dTsf
-         IF (Tsf .GT. 0. _d 0) THEN
+          a1 = a10(i,j) - k12(i,j)*dFlxdT(i,j) / (k12(i,j)-dFlxdT(i,j))
+          b1 = b10(i,j) - k12(i,j)*(flxNet-dFlxdT(i,j)*Tsf(i,j))
+     &                  /(k12(i,j)-dFlxdT(i,j))
+          c1 = c10(i,j)
+          tIc1(i,j)  = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
+          dTsrf(i,j) = (flxNet + k12(i,j)*(tIc1(i,j)-Tsf(i,j)))
+     &                  /(k12(i,j)-dFlxdT(i,j))
+          Tsf(i,j) = Tsf(i,j) + dTsrf(i,j)
+          IF ( Tsf(i,j) .GT. 0. _d 0 ) THEN
 #ifdef ALLOW_DBUG_THSICE
-            IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
-     &        'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf,Tice(1),dTsf
+           IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+     &     'ThSI_SOLVE4T: k,ts,t1,dTs=',k,Tsf(i,j),tIc1(i,j),dTsrf(i,j)
 #endif
-            a1 = a10 + k12
+           a1 = a10(i,j) + k12(i,j)
 C      note: b1 = b10 - k12*Tf0
-            b1 = b10
-            Tice(1) = (-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
-            Tsf = 0. _d 0
+           b1 = b10(i,j)
+           tIc1(i,j) = (-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
+           Tsf(i,j) = 0. _d 0
            IF ( useBlkFlx ) THEN
-            flxTexSW = flx0exSW
-            evapT = evap0
-            dTsf = 0. _d 0
+            flxTexSW(i,j) = flx0exSW(i,j)
+            evapT(i,j) = evap0(i,j)
+            dTsrf(i,j) = 0. _d 0
            ELSE
-            flxTexSW = flxExSW(i,j,0)
-            dTsf = 1000.
-            dFlxdT = 0.
+            flxTexSW(i,j) = flxExSW(i,j,0)
+            dTsrf(i,j) = 1000.
+            dFlxdT(i,j) = 0.
            ENDIF
-           flxNet = fswdn + flxTexSW
-         ENDIF
+          ENDIF
 
-C Check for convergence.  If no convergence, then repeat.
-C
-C Convergence test: Make sure Tsfc has converged, within prescribed error.
-C (Energy conservation is guaranteed within machine roundoff, even
-C if Tsfc has not converged.)
-C If no convergence, then repeat.
+C--   Check for convergence.  If no convergence, then repeat.
+          iceFlag(i,j) = ABS(dTsrf(i,j)).GE.Terrmax
+          iterate4Tsf = iterate4Tsf .OR. iceFlag(i,j)
+
+C     Convergence test: Make sure Tsfc has converged, within prescribed error.
+C     (Energy conservation is guaranteed within machine roundoff, even
+C      if Tsfc has not converged.)
+C     If no convergence, then repeat.
 
 #ifdef ALLOW_DBUG_THSICE
-         IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
-     &     'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf,Tice(1),dTsf
+          IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+     &    'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf(i,j),tIc1(i,j),dTsrf(i,j)
 #endif
-         IF ( useBlkFlx .AND. k.EQ.nitMaxTsf
-     &                  .AND. ABS(dTsf).GE.Terrmax ) THEN
+          IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND. iceFlag(i,j) ) THEN
             WRITE (6,'(A,4I4,I12,F15.9)')
-     &                 ' BB: not converge: i,j,it,hi=',i,j,bi,bj,
-     &                                                    myIter,hi
-            WRITE (6,*) 'BB: not converge: Tsf, dTsf=', Tsf,dTsf
-            WRITE (6,*) 'BB: not converge: flxNet,dFlxT=',flxNet,dFlxdT
-            IF (Tsf.LT.-70. _d 0) STOP
-         ENDIF
+     &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
+            WRITE (6,*) 'BB: not converge: Tsf, dTsf=',
+     &                  Tsf(i,j), dTsrf(i,j)
+            WRITE (6,*) 'BB: not converge: flxNet,dFlxT=',
+     &                  flxNet, dFlxdT(i,j)
+            IF (Tsf(i,j).LT.-70. _d 0) STOP
+          ENDIF
 
+         ENDIF
+        ENDDO
+       ENDDO
+
+#ifndef ALLOW_AUTODIFF_TAMC
        ENDIF
+#endif
       ENDDO
 C ------ end iteration ------------
 
-C Compute new bottom layer temperature.
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE  Tice(:)      = comlev1_thsice_1, key=ikey_1
-CADJ STORE  dFlxdT        = comlev1_thsice_1, key=ikey_1
-#endif
-      Tice(2) = (2. _d 0*dt*k32*(Tice(1)+2. _d 0*Tf)
-     &        + rhoi*cpIce *hi*Tice(2))
-     &         /(6. _d 0*dt*k32 + rhoi*cpIce *hi)
-#ifdef ALLOW_DBUG_THSICE
-      IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
-     &  'ThSI_SOLVE4T: k, Ts, Tice=',k,Tsf,Tice
-#endif
-
-C Compute final flux values at surfaces.
-
-      fct    = k12*(Tsf-Tice(1))
-      flxCnB(i,j) = 4. _d 0*kIce *(Tice(2)-Tf)/hi
-      flxNet   = flxNet + dFlxdT*dTsf
-      IF ( useBlkFlx ) THEN
-C--   needs to update also Evap (Tsf changes) since Latent heat has been updated
-        evpAtm(i,j) = evapT + dEvdT*dTsf
-      ELSE
-C- WARNING: Evap & +Evap*Lfresh are missing ! (but only affects Diagnostics)
-        evpAtm(i,j) = 0.
-      ENDIF
-C-    energy flux to Atmos: use net short-wave flux at surf. and
-C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
-      flxAtm(i,j) = netSW + flxTexSW
-     &                    + dFlxdT*dTsf + evpAtm(i,j)*Lfresh
-C-    excess of energy @ surface (used for surface melting):
-      sHeat(i,j) = flxNet - fct
-
-C-    SW flux at sea-ice base left to the ocean
-      flxSW(i,j) = fswocn
-
-#ifdef ALLOW_DBUG_THSICE
-      IF ( dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &  'ThSI_SOLVE4T: flxNet,fct,Dif,flxCnB=',
-     &                 flxNet,fct,flxNet-fct,flxCnB(i,j)
-#endif
-
-C Compute new enthalpy for each layer.
-
-      qicen(1) = -cpWater*Tmlt1 + cpIce *(Tmlt1-Tice(1))
-     &            + Lfresh*(1. _d 0-Tmlt1/Tice(1))
-      qicen(2) = -cpIce *Tice(2) + Lfresh
-
-C Make sure internal ice temperatures do not exceed Tmlt.
-C (This should not happen for reasonable values of i0swFrac)
-
-      IF (Tice(1) .GE. Tmlt1) THEN
-        WRITE (6,'(A,2I4,2I3,1P2E14.6)')
-     &   ' BBerr - Bug: IceT(1) > Tmlt',i,j,bi,bj,Tice(1),Tmlt1
-      ENDIF
-      IF (Tice(2) .GE. 0. _d 0) THEN
-       WRITE (6,'(A,2I4,2I3,1P2E14.6)')
-     &   ' BBerr - Bug: IceT(2) > 0',i,j,bi,bj,Tice(2)
-      ENDIF
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--    Update Sea-Ice state :
-          tSrf(i,j)  = Tsf
-          tIc1(i,j)  = Tice(1)
-          tic2(i,j)  = Tice(2)
-          qIc1(i,j)  = qicen(1)
-          qIc2(i,j)  = qicen(2)
-c         dTsrf(i,j) = dTsf
-          IF ( .NOT.useBlkFlx ) dTsrf(i,j) = dTsf
-c         sHeat(i,j) = sHeating
-c         flxCnB(i,j)= flxCnB
-c         flxAtm(i,j)= flxAtm
-c         evpAtm(i,j)= evpAtm
+
+      DO j = jMin, jMax
+       DO i = iMin, iMax
+        IF ( iceMask(i,j).GT.0. _d 0 ) THEN
+
+C--   Compute new bottom layer temperature.
+          k32       = 2. _d 0*kIce  / hIce(i,j)
+          tIc2(i,j) = ( 2. _d 0*dt*k32*(tIc1(i,j)+2. _d 0*tFrz(i,j))
+     &                 + rhoi*cpIce*hIce(i,j)*tIc2(i,j))
+     &               /(6. _d 0*dt*k32 + rhoi*cpIce*hIce(i,j))
+#ifdef ALLOW_DBUG_THSICE
+          IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+     &  'ThSI_SOLVE4T: k, Ts, Tice=',k,Tsf(i,j),tIc1(i,j),tIc2(i,j)
+          netSW   = flxAtm(i,j)
+#endif
+
+C--   Compute final flux values at surfaces.
+          tSrf(i,j)  = Tsf(i,j)
+          fct    = k12(i,j)*(Tsf(i,j)-tIc1(i,j))
+          flxCnB(i,j) = 4. _d 0*kIce *(tIc2(i,j)-tFrz(i,j))/hIce(i,j)
+          flxNet = sHeat(i,j) + flxTexSW(i,j)
+          flxNet = flxNet + dFlxdT(i,j)*dTsrf(i,j)
+          IF ( useBlkFlx ) THEN
+C-    needs to update also Evap (Tsf changes) since Latent heat has been updated
+            evpAtm(i,j) = evapT(i,j) + dEvdT(i,j)*dTsrf(i,j)
+          ELSE
+C- WARNING: Evap & +Evap*Lfresh are missing ! (but only affects Diagnostics)
+            evpAtm(i,j) = 0.
+          ENDIF
+C-    Update energy flux to Atmos with other than SW contributions;
+C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
+          flxAtm(i,j) = flxAtm(i,j) + flxTexSW(i,j)
+     &                + dFlxdT(i,j)*dTsrf(i,j) + evpAtm(i,j)*Lfresh
+C-    excess of energy @ surface (used for surface melting):
+          sHeat(i,j) = flxNet - fct
+
+#ifdef ALLOW_DBUG_THSICE
+          IF ( dBug(i,j,bi,bj) ) WRITE(6,1020)
+     &     'ThSI_SOLVE4T: flxNet,fct,Dif,flxCnB=',
+     &                    flxNet,fct,flxNet-fct,flxCnB(i,j)
+#endif
+
+C--   Compute new enthalpy for each layer.
+          qIc1(i,j) = -cpWater*Tmlt1 + cpIce *(Tmlt1-tIc1(i,j))
+     &                + Lfresh*(1. _d 0-Tmlt1/tIc1(i,j))
+          qIc2(i,j) = -cpIce *tIc2(i,j) + Lfresh
+
+C--   Make sure internal ice temperatures do not exceed Tmlt.
+C     (This should not happen for reasonable values of i0swFrac)
+          IF (tIc1(i,j) .GE. Tmlt1) THEN
+           WRITE (6,'(A,2I4,2I3,1P2E14.6)')
+     &     ' BBerr - Bug: IceT(1) > Tmlt',i,j,bi,bj,tIc1(i,j),Tmlt1
+          ENDIF
+          IF (tIc2(i,j) .GE. 0. _d 0) THEN
+           WRITE (6,'(A,2I4,2I3,1P2E14.6)')
+     &     ' BBerr - Bug: IceT(2) > 0',i,j,bi,bj,tIc2(i,j)
+          ENDIF
+
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) THEN
            WRITE(6,1020) 'ThSI_SOLV_4T: Tsf, Tice(1,2), dTsurf=',
-     &                              Tsf, Tice, dTsf
+     &           Tsf(i,j), tIc1(i,j), tIc2(i,j), dTsrf(i,j)
            WRITE(6,1020) 'ThSI_SOLV_4T: sHeat, flxCndBt, Qice =',
-     &           sHeat(i,j), flxCnB(i,j), qicen
+     &           sHeat(i,j), flxCnB(i,j), qIc1(i,j), qIc2(i,j)
            WRITE(6,1020) 'ThSI_SOLV_4T: flxA, evpA, fxSW_bf,af=',
      &           flxAtm(i,j), evpAtm(i,j), netSW, flxSW(i,j)
           ENDIF
 #endif
+
         ELSE
-          IF ( .NOT.useBlkFlx ) dTsrf(i,j) = 0. _d 0
+C--     ice-free grid point:
+c         tIc1  (i,j) = 0. _d 0
+c         tIc2  (i,j) = 0. _d 0
+          dTsrf (i,j) = 0. _d 0
+c         sHeat (i,j) = 0. _d 0
+c         flxCnB(i,j) = 0. _d 0
+c         flxAtm(i,j) = 0. _d 0
+c         evpAtm(i,j) = 0. _d 0
+
         ENDIF
        ENDDO
       ENDDO
