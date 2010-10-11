@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62l
 (PID.TID 0000.0001) // Build user:        gforget
 (PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Sat Oct  9 20:48:45 EDT 2010
+(PID.TID 0000.0001) // Build date:        Mon Oct 11 01:18:24 EDT 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -752,7 +752,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.exf"
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results/output_adm.txt,v 1.8 2010/10/10 01:12:15 gforget Exp $
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results/output_adm.txt,v 1.9 2010/10/11 05:39:08 gforget Exp $
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># External Forcing Data
@@ -3239,19 +3239,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   2.4522038936824E+04
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   1.8770943643833E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   8.5957695989172E+02
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   8.5957695989173E+02
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   3.4065390991736E+03
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   2.4348718539004E+02
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.6896544903614E+01
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7381218658644E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9723004181732E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.5161259338313E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.5161259338336E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   1.0502552108314E-03
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -7.3781439227428E-02
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.1388368090652E-03
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.0343957803008E-02
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   7.4054923369348E-04
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   7.4054923369349E-04
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3594791349569E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9829367810466E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3850113475665E-02
@@ -3329,20 +3329,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   3.8823393457243E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   3.6208293115107E+01
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   3.6208293115108E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.5859836830750E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.2999693993064E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   7.2828281955362E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.2999693993065E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   7.2828281955376E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.6907609084395E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7492722055436E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9660122920578E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3217307206364E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =   1.1205434342410E-03
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7492722029921E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9660122943273E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3217306187561E-01
+(PID.TID 0000.0001) %MON forcing_empmr_max            =   1.1205319642967E-03
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777047376849E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =   2.1176908070989E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.9118163297469E-04
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.6682006027674E-05
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =   2.1176916435963E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.9118157332278E-04
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.6682011556961E-05
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3607305806745E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9831835066840E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3853800564563E-02
@@ -3419,21 +3419,21 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_mean             =   3.3155723399320E+01
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
-(PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1022004886555E+02
+(PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1021624542697E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5481515957216E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7445503743598E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6358181131640E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5604820038272E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7445504021206E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6358164686554E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5604950730229E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7066990440527E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7478041751469E+01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7478041751470E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9675084716084E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3054877871732E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3054877871754E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6824933643404E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777042460372E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6647757145166E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6706145267708E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9537557403006E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6647765510164E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6706226277416E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9538985212033E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3619822340416E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9834302249722E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3857488615105E-02
@@ -3513,18 +3513,18 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1027172341150E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5496060689858E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7443777339577E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6388472486728E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5575248938310E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6388472486726E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5575248938313E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7157379122355E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7443523018788E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9675319559931E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2828605491943E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7443523018789E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9675319559932E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2828605491964E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6809459574866E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777040220742E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6690582572923E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6731737506438E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9515512741588E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6690582572922E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6731737506437E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9515512741596E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3632340950971E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9836769359135E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3861177628452E-02
@@ -3566,7 +3566,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
  Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.2626795E+10
+ ph-ice C  6  1.2626792E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3615,18 +3615,18 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1032339904297E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5510434834998E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7440804682943E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6438797986871E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5545984555180E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6438797986869E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5545984555182E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7210543603936E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7365389680085E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9697421995954E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2302917262725E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7361294543508E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9698238500906E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2086783758267E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6794810038246E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777040243604E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6802985937204E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6832384852715E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9763233043811E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6812898415337E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6845510886160E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9678033993420E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3644861638800E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9839236395102E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3864867605760E-02
@@ -3657,7 +3657,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.2721185E+10
+ ph-ice C  7  1.27211821E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3704,20 +3704,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1037507541878E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5525221034246E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7434481746110E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6500625532645E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5517332656537E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5525278879410E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7434152780356E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6503399086830E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5511511254090E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7244339876338E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7416650595005E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9652992129287E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2725874615665E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7416650595006E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9652992129288E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2725874615684E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6779335205008E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777042500865E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6526785742156E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6691978467146E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0216658617182E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6516873197905E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6679361553030E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0229787330831E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3657384404293E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9841703357648E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3868558548179E-02
@@ -3748,7 +3748,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28156114E+10
+ ph-ice C  8  1.28156082E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3797,18 +3797,18 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1042675215365E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5539706246183E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7437496001525E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6517107558450E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5514737764420E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6517107558449E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5514737764422E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7267962847983E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7379395944034E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9650604767521E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3341830065022E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7378891733402E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9650291514313E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3342691417276E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6764272831064E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777043156000E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6724446481073E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6775485628129E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0048500432685E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6725438118642E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6775397124184E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0047024872769E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3669909247838E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9844170246797E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3872250456856E-02
@@ -3839,7 +3839,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100716E+10
+ ph-ice C  9  1.29100752E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3886,20 +3886,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1047843040123E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5554322263194E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7434353647846E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6583535488307E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5491791357463E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5554322671641E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7434320738554E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6583646709083E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5491601218116E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7286191950634E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7341398294815E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9650358398775E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2459286036554E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7352135745407E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9648292973327E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2486744765165E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8611109697363E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777049765453E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6744897462356E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6740561626445E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0077261050106E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6720637212840E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6726868476624E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0077183393185E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3682436169825E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9846637062574E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3875943332930E-02
@@ -3930,7 +3930,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045795E+10
+ ph-ice C  10  1.30045866E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3977,20 +3977,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1053010900788E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5568933409856E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7430849090313E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6636621346036E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5469865571983E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5568874273607E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7431621303659E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6630619702611E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5473021318786E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7301534607174E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7323542652934E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9640188099905E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3016893614542E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7328508611263E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9639559244471E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3311161222686E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4874003904060E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777057734057E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6708273441622E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6723520022591E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0214888777311E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6719768458032E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6722616275546E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0216815470472E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3694965170643E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9849103805001E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3879637177537E-02
@@ -4021,7 +4021,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30991679E+10
+ ph-ice C  11  1.3099175E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4068,20 +4068,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1058178937005E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5583426018762E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7428947760840E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6665507213427E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5443419532236E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5583361863809E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7429338493486E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6662435734783E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5451475836790E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7315318392690E+01
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7364301216705E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9603389208939E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2872318766345E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2872318766362E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6719085333723E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777073332781E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6607828813022E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6715753242021E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0049025430591E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6619602545071E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6728389095837E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0026262585702E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3707496250680E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9851570474104E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3883331991808E-02
@@ -4112,7 +4112,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937765E+10
+ ph-ice C  12  1.31937844E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4160,19 +4160,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1063346853484E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5597236328879E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7430771776758E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6704122249334E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5465873084399E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7430771776759E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6704122249332E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5465873084404E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7328252605897E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7299256484235E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9612606062532E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2192867894784E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7301632497204E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9612246811328E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1792253319390E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6704022660438E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777087163349E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6824569149247E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6713686653931E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7407283299024E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6821588558113E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6727410488965E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7214938967135E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3720029410325E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9854037069905E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3887027776866E-02
@@ -4203,7 +4203,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32884382E+10
+ ph-ice C  13  1.32884427E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4250,20 +4250,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1068514929008E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5612294017148E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7425796799054E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6740272279180E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5398235046974E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5612354433258E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7425895713110E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6739973996606E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5389819303512E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7340719628252E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7293712468285E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9568752288699E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2081628085530E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7288564723949E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9569153360284E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1873461959478E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6688959885135E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777101459199E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6723030618114E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6718340726506E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0143673972086E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6738094965482E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6717241110226E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0134939281182E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3732564649967E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9856503592430E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3890724533834E-02
@@ -4294,7 +4294,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33831188E+10
+ ph-ice C  14  1.33831238E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4341,20 +4341,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1073683087133E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5626846675013E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7424586276449E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6799611477956E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5397833291949E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5626908198289E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7424185250513E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6802766119611E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5391784788993E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7352927439800E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7229916484745E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9626033152586E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3251528362181E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7230883877484E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9626333692210E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3359226992931E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6673835308518E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777118609013E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6851359012770E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6865277845876E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0247839012763E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6837255803580E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6852763727396E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0274131457375E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3745101969994E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9858970041703E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3894422263825E-02
@@ -4385,7 +4385,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34778735E+10
+ ph-ice C  15  1.34778811E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4432,20 +4432,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1078851319544E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5641643955562E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7419511574338E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6877507957836E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5403984311688E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5641638038130E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7419578588975E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6877246812057E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5406821432946E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7364990161099E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7256410485604E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9553144116017E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1676568623241E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7259797084226E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9551626179813E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1899339881259E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8527152233726E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777137783079E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6673801543563E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6639430740926E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9527491935860E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6667171779072E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6624441788016E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9468477229661E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3757641370794E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9861436417746E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3898120967950E-02
@@ -4487,7 +4487,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
  Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35726639E+10
+ ph-ice C  16  1.35726675E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4534,20 +4534,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1084019587760E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5656186263435E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7420723516247E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6896772948193E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5369366743259E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5656125369677E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7421010553976E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6894004197352E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5374952047847E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7376970958275E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7216967108317E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9583274713341E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2522480402599E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7210185129293E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9584585391810E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2722459443212E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4776858049826E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777158956244E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6815633922062E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6824746647284E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0173338962177E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6837879686735E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6838552046184E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0174680999625E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3770182852756E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9863902720585E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3901820647315E-02
@@ -4578,7 +4578,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674818E+10
+ ph-ice C  17  1.3667482E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4625,20 +4625,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1089187968917E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5670740738265E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7417621560306E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6953861945086E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5358624220319E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5670740738264E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7417170331972E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.6957191125208E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5361199203455E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7388905096338E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7173635950335E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9596683830670E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2116727397449E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7167931463102E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9598655740316E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2289742976448E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8499229544872E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777182103643E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6854887978420E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6786431598806E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8937280630852E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6852770419757E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6786546779758E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8963731226347E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3782726416266E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9866368950243E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3905521303022E-02
@@ -4669,7 +4669,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37623723E+10
+ ph-ice C  18  1.37623725E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4716,20 +4716,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1094356463114E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5685226098925E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7413608751681E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7009881425010E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5334614182117E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5685225199788E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7413227798347E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7012958521925E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5337337292711E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7400812431896E+01
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7194489887769E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9580805984387E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2105410086221E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2105410086236E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4744474930025E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777207200908E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6711322245526E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6711208435484E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0165539399335E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6699843188115E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6712014505754E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0170081388170E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3795272061714E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9868835106744E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3909222936165E-02
@@ -4760,7 +4760,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38573077E+10
+ ph-ice C  19  1.38573033E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4808,19 +4808,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1099524993092E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5699773626393E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7414750972921E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7028813669451E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5326872686559E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7414750972920E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7028813669459E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5326872686571E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7412704240289E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7172388350301E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9582844278103E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2260791112125E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7165692555628E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9583341563553E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1990673112085E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6598638044754E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777234224415E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6817106985938E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6805979883190E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0155607606336E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6832698002032E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6823825060139E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0142425512987E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3807819789486E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9871301190113E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3912925547836E-02
@@ -4851,7 +4851,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39523061E+10
+ ph-ice C  20  1.39522976E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4898,20 +4898,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1104693566906E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5714385943019E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7412771556454E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7063903783137E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5304524424432E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5714463174545E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7412254137902E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7068196719198E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5297542768658E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7424586977768E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7184276978537E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9524721006919E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1574780015385E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7177365146640E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9526109089014E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1778921655607E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6583517963546E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777263149612E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6766390285357E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6732431685644E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9602540045394E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6764656508189E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6715157292699E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9870534420614E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3820369599970E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9873767200373E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3916629139122E-02
@@ -4942,7 +4942,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40473707E+10
+ ph-ice C  21  1.40473655E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4990,19 +4990,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1109862275932E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5728929368160E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7412862729596E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7112365394369E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5304395665846E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7412402849555E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7115800117166E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5306896626610E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7436464371864E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7201933359661E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9508586647035E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0945339595375E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7206472009163E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9507570118017E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1161372282155E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6568456258292E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777293952983E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6765464570089E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6667799797998E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9474890413494E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6740607234128E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6654569172623E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9725287287053E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3832921493554E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9876233137548E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3920333711106E-02
@@ -5033,7 +5033,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424937E+10
+ ph-ice C  22  1.41424885E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5080,20 +5080,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1115031028810E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5743472882445E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7413370453923E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7137021937411E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5279488988217E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5743408690811E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7413735512082E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7133860459962E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5285302746166E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7448338592350E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7203079004879E+01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7203079004880E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9494325310713E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0868066185630E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0868066185644E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6553390840262E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777326611547E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6803019659209E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6737104803876E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7990493411304E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6814019756040E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6751133290134E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7847550450758E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3845475470624E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9878699001661E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3924039264864E-02
@@ -5124,7 +5124,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42376308E+10
+ ph-ice C  23  1.42376256E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5171,19 +5171,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1120199817324E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5757774665677E+01
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5757774665676E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7413016055415E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7187973280331E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5258099116620E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7187973280329E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5258099116622E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7460210912514E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7130089189248E+01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7130089189249E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9523784041874E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2075426270297E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2075426270310E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8415679084038E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777361102094E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6965029549470E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6779319045479E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6779319045480E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0031182273247E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3858031531567E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9881164792738E-02
@@ -5215,7 +5215,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43328321E+10
+ ph-ice C  24  1.43328342E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5264,18 +5264,18 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1125368757808E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5772488048142E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7407667607820E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7245951104985E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5257873094968E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7245951104984E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5257873094970E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7472082085571E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7144687216577E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9492396963167E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1615486889660E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7155153409936E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9488008160808E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1106166204972E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4647378242728E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777398269264E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6804114504177E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6755222626193E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0148077443868E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6779406560018E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6722725770528E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0080280774353E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3870589676772E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9883630510802E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3931453321992E-02
@@ -5306,7 +5306,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44280722E+10
+ ph-ice C  25  1.44280711E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5353,20 +5353,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1130537694801E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5786412885721E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7408040241815E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7293558591301E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5258265862440E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5787089578567E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7408860219800E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7283681615632E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5244171622682E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7483952393161E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7112350014995E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9460788887481E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0825145341655E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7107116622027E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9463206064667E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1052465101611E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8387753032572E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777435488038E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6902014336350E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6709177116393E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7867266471896E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6937318463189E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6740083937571E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8297303748845E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3883149906623E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9886096155877E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3935161827495E-02
@@ -5408,7 +5408,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
  Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45233582E+10
+ ph-ice C  26  1.45233613E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5455,20 +5455,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1135706783995E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5801567692136E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7405543056514E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7320945447799E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5226435503950E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5801531071405E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7405191403015E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7324149912906E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5231032065843E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7495823291373E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7093597821759E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9490910207842E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1848560877602E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7101090635308E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9492274580440E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1231253959995E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4614937017747E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777470032656E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6887530246366E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6794944159609E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0079969206154E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6862547636121E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6795628588043E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0045353109205E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3895712221509E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9888561727987E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3938871319038E-02
@@ -5499,7 +5499,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46186066E+10
+ ph-ice C  27  1.46186097E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5546,20 +5546,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1140875908687E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5815912798152E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7403903983373E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7377819610080E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5233406144293E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5815884727548E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7404381423115E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7374747432385E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5222633427673E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7507692831645E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6942171555297E+01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6942171555298E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9506308499306E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2057252420125E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2057252420137E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6478071647074E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777516931503E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7182599944077E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6795416548313E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9380271725325E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7196986373213E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6792546244820E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9553623960528E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3908276621815E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9891027227155E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3942581797677E-02
@@ -5590,7 +5590,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47139526E+10
+ ph-ice C  28  1.47139577E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5638,19 +5638,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1146045116064E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5830438012048E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7392848350355E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7479478740248E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5230284902301E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7392848350361E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7479478740213E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5230284902223E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7519562295084E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7010407672335E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9520990036984E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1229246200174E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7013596603479E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9521886204620E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1532308343862E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6463007522530E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777560245036E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6732658311090E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6825631762946E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0073370690010E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6725937078811E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6825248238678E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0101690569141E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3920843107928E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9893492653406E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3946293264462E-02
@@ -5681,7 +5681,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093896E+10
+ ph-ice C  29  1.48093947E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5728,20 +5728,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1151214381033E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5845118807088E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7397098734592E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7477674682352E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5202812761406E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5845136826136E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7397321790891E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7476518569623E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5209876187208E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7531431710290E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7065021336256E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9449823941994E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0921214287518E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7065152247826E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9450391047932E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0688272650569E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6447945081649E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777605257379E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6765259708881E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6685399776279E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8972794849281E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6771937247718E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6685111825457E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8526949054794E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3933411680234E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9895958006764E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3950005720441E-02
@@ -5772,7 +5772,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49048678E+10
+ ph-ice C  30  1.4904873E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5819,20 +5819,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1156383728644E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5859657992075E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7400639509041E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7491108340759E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5184369464186E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5859667218803E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7400640959105E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7491123677333E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5179518070453E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7543301094986E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7039166361697E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9415701789245E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1323347918514E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7041056589188E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9421917140952E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1442413961932E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6432878949172E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777646487874E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6945286777601E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6717033852425E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0010608310570E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6945039247561E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6743094477921E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0079425505770E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3945982339118E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9898423287252E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3953719166656E-02
@@ -5863,7 +5863,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50003373E+10
+ ph-ice C  31  1.50003437E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5910,20 +5910,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1161553150602E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5874188795619E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7398576413148E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7541642669298E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5196933449045E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5873474347773E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7398586077932E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7545479285036E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5204064356907E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7555170460237E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6934906054062E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9500764620444E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0500825747646E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6936767072193E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9501252935706E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0704001957031E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6417871361646E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777700294208E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7125193961110E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6996512777510E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0013665956270E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7121599690012E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6973348120306E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9927312221706E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3958555084968E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9900888494894E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3957433604145E-02
@@ -5954,7 +5954,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50959337E+10
+ ph-ice C  32  1.50959411E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6001,20 +6001,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1166722646900E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5888695440700E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7390911688797E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7619244026203E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5154276683346E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5888684054586E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7391040635992E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7618647717321E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5159308768948E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7567039813003E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7049220479779E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9415182241788E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0528773151289E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7050885387346E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9415649904522E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0661380271255E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8290209105574E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777750276600E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6674079645849E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6639396235748E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9659241737883E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6674417628819E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6637818034234E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9568878251254E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3971129918168E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9903353629714E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3961149033943E-02
@@ -6045,7 +6045,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51915655E+10
+ ph-ice C  33  1.51915675E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6092,20 +6092,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1171892217548E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5903159667155E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7398585265180E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7630466259837E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5172586732126E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5903191632857E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7398702995804E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7629749128423E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5175264554364E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7578909157691E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7013878567672E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9421904389922E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0951455854583E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7004842257254E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9423043077027E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1005932395612E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4501470508897E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777801874620E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6995148602545E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6776098809498E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9348393221878E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7017029332397E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6778888322352E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9202224406269E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3983706839105E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9905818691737E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3964865457079E-02
@@ -6136,7 +6136,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52872128E+10
+ ph-ice C  34  1.52872215E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6183,20 +6183,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1177061862499E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5917694818127E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7395969145550E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7682136302393E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5173762606024E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5917661980315E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7395360724443E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7686650516977E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5173218765178E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7590778497117E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6949115031649E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9415148622578E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0270689769622E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6960641936341E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9417551012717E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   3.9899090820995E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6372620906733E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777849456212E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7073470833068E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6827424506449E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7968328732165E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7032309878823E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6826374862897E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8254045742519E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3996285848163E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9908283680985E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3968582874581E-02
@@ -6227,7 +6227,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53829258E+10
+ ph-ice C  35  1.53829319E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6274,20 +6274,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1182231590163E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5932227695517E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7391117633298E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7741726248110E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5141772506510E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5932259618584E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7391875213128E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7736848480430E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5135939834549E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7602647833088E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6959994011906E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9424270887400E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0863335877768E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6955432593601E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9426436158565E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1097492785318E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6357556153688E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777909835021E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6912672227499E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6753418468198E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0008827234671E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6944271971840E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6749547805236E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0020594142010E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4008866945729E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9910748597483E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3972301287469E-02
@@ -6329,7 +6329,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
  Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54787009E+10
+ ph-ice C  36  1.5478707E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6376,20 +6376,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1187401375369E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5946704989603E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7391964734373E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7803608887918E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5148049907058E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5946687281856E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7391673619373E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7805840948766E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5150937666430E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7614517166775E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6971984746731E+01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6971984746732E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9377882577175E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0744222743672E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0744222743681E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6342374680658E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777966157673E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6934415997077E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6755520447485E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8836453824636E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6925643988864E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6760107668023E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8849186509820E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4021450132186E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9913213441255E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3976020696762E-02
@@ -6420,7 +6420,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55745105E+10
+ ph-ice C  37  1.55745107E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6467,20 +6467,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1192571243311E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5961176202489E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7392450758699E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7825619201244E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5144126825599E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5961176202488E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7392450758698E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7825619201256E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5144126825608E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7626386498314E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6934471691889E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9414989044810E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1031290900035E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6926265109786E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9419937812200E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1580163729931E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6327483123116E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778024015725E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7038841567579E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6786095671165E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8633480382614E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7058775865323E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6815512195124E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9380598823157E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4034035407922E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9915678212324E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3979741103474E-02
@@ -6511,7 +6511,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56703189E+10
+ ph-ice C  38  1.56703192E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6558,20 +6558,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1197741185498E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5975483220880E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7389830078943E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7870812762274E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5131126846138E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5974778166628E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7389168523078E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7879492250093E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5145584822713E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7638255832660E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6854191002786E+01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6854191002787E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9432785460739E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0606121063547E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0606121063555E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8206594714356E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778083389641E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7169783118545E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6791857762171E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8594924458960E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7149848819288E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6765826341698E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8265801327786E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4046622773319E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9918142910714E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3983462508615E-02
@@ -6602,7 +6602,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57662043E+10
+ ph-ice C  39  1.5766206E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6651,18 +6651,18 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1202911202052E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.5990138545957E+01
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7383221070201E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7943373844781E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5132836159229E+00
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7943373844780E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5132836159230E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7650125162209E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6882873830974E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9394037903534E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1858716851065E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6883301626049E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9388406668937E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1810091133697E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4404430186616E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778144260315E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6913626786956E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6848888263138E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0160123045488E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6908844609471E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6819470856322E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0109716383287E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4059212228763E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9920607536449E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3987184913192E-02
@@ -6693,7 +6693,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58621381E+10
+ ph-ice C  40  1.58621353E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6740,20 +6740,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1208081292928E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6003904539262E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7385468590061E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7990236079546E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5161328642258E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6004611625920E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7385627295316E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.7985168741754E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5155477554042E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7661994492494E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6867368503266E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9392083177162E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0736002974166E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6859520165794E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9391421666743E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1237356702883E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8178720556264E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778200772793E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7020936520617E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6805301798675E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8825017963254E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7041018991883E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6831531333555E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9149456701523E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4071803774640E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9923072089553E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3990902507421E-02
@@ -6784,7 +6784,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59581261E+10
+ ph-ice C  41  1.59581233E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6832,19 +6832,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1213251458119E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6018901917306E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7384508724113E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8026456378165E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5109890745020E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7384000956121E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8030117180214E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5118376943357E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7673863821615E+01
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6863227544637E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9364286406822E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0276422765651E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0276422765655E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4371924909393E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778270416212E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7010772788228E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6745916223085E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0051696644252E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6995472494571E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6747418806266E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0048836202734E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4084397411332E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9925536570050E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3994621069088E-02
@@ -6875,7 +6875,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60541649E+10
+ ph-ice C  42  1.60541646E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6923,19 +6923,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1218421697572E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6033559865928E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7384238406125E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8053605652738E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5098618302779E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7384238406120E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8053605652770E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5098618302854E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7685733150676E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6854642358622E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9335258973204E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1503059952364E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6859161718950E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9332955847720E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1284186329992E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6252100412304E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778335663997E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7032178563002E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6758569862661E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8754511673745E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7023525127972E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6761646512018E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8558378066257E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4096993139225E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9928000977963E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3998340623468E-02
@@ -6966,7 +6966,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.6150253E+10
+ ph-ice C  43  1.61502573E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7013,20 +7013,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1223592081711E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6047996492083E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7383608307379E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8122444601695E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5127927637457E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6048015825012E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7383895487323E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8120212066780E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5125462272724E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7697602479697E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6845190777605E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9372726362816E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1231880379848E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6852827311659E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9370942061067E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1047500179840E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6237034946149E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778402333940E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7046476550246E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6692829985098E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8383883128859E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7039817483249E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6688406887917E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8484714094455E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4109590958702E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9930465313316E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.4002061171489E-02
@@ -7057,7 +7057,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62463719E+10
+ ph-ice C  44  1.62463806E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7104,20 +7104,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1228762461383E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6062446112652E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7382852702274E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8132734043670E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5125982057500E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6062446112651E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7383360875462E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8128700590977E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5123968624942E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7709471808689E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6808414311099E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9384140150866E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1946491651374E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6816081515701E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9382348711329E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1765458857787E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6221850975206E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778470408113E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7119777957330E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6933137610258E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0051570205274E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7119716362799E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6933135199641E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0051517177938E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4122190870149E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9932929576133E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.4005782714072E-02
@@ -7148,7 +7148,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63425569E+10
+ ph-ice C  45  1.63425782E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7196,19 +7196,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1233932861877E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6076177310149E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7380011784916E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8227813392289E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5125888826740E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7380522002260E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8223757738089E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5123893487465E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7721341137650E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6823033849972E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9351642955784E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1570187503264E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6842607794247E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9347734744368E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0543153587725E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6206903816360E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778539868041E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7008541772888E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6780565736686E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9918331886767E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6981169673672E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6748043155458E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9304235171236E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4134792873948E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9935393766438E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.4009505252135E-02
@@ -7250,7 +7250,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
  Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64387899E+10
+ ph-ice C  46  1.64388112E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7297,20 +7297,20 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1239103398590E+02
-(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6090455453470E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7381208159352E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8243225219896E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5123071990124E+00
+(PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6091148602070E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7382626769528E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8228784194199E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5100874805192E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7733210466670E+01
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6807016689987E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9358121809463E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1545255833631E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1545255833636E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6191837982984E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778610696729E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7080132013157E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6740857191682E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8006508681017E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7122878213668E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6770587841319E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.8212565283242E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4147396970483E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9937857884255E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.4013228786593E-02
@@ -7341,7 +7341,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65350031E+10
+ ph-ice C  47  1.65350289E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7389,19 +7389,19 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   2.4068022089263E-02
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   4.1244273970120E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =   6.6105756751954E+01
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7380372797134E+02
-(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8282390502879E+01
-(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5106696779038E+00
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   1.7380372797139E+02
+(PID.TID 0000.0001) %MON forcing_qnet_sd              =   7.8282390502841E+01
+(PID.TID 0000.0001) %MON forcing_qnet_del2            =   5.5106696778963E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -5.7745079795606E+01
-(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6685736730480E+01
-(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9405273376591E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2870313992182E-01
+(PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6693495532787E+01
+(PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9403464606891E+01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2674063313644E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6176772229173E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778682876128E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7320607379611E-05
-(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6831316521010E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0005745570306E-06
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7305049322355E-05
+(PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6830035414397E-05
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9935091626355E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.4160003160139E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9940321929606E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.4016953318355E-02
@@ -7431,7 +7431,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- --> f_ice     = 0.165350030531954E+11
+ --> f_ice     = 0.165350289174247E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -7513,55 +7513,55 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165350030531954E+11
+ --> fc               = 0.165350289174247E+11
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43328321E+10
+ ph-ice C  24  1.43328342E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44280722E+10
+ ph-ice C  25  1.44280711E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45233582E+10
+ ph-ice C  26  1.45233613E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46186066E+10
+ ph-ice C  27  1.46186097E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47139526E+10
+ ph-ice C  28  1.47139577E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093896E+10
+ ph-ice C  29  1.48093947E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49048678E+10
+ ph-ice C  30  1.4904873E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50003373E+10
+ ph-ice C  31  1.50003437E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50959347E+10
+ ph-ice C  32  1.50959411E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51915666E+10
+ ph-ice C  33  1.51915675E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.5287215E+10
+ ph-ice C  34  1.52872215E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53829279E+10
+ ph-ice C  35  1.53829319E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.5478703E+10
+ ph-ice C  36  1.5478707E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55745126E+10
+ ph-ice C  37  1.55745107E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.5670321E+10
+ ph-ice C  38  1.56703192E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57662122E+10
+ ph-ice C  39  1.57662118E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58621624E+10
+ ph-ice C  40  1.58621575E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59581504E+10
+ ph-ice C  41  1.59581455E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60542057E+10
+ ph-ice C  42  1.60542033E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61502939E+10
+ ph-ice C  43  1.6150296E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62464127E+10
+ ph-ice C  44  1.62464194E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63425978E+10
+ ph-ice C  45  1.6342617E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64388246E+10
+ ph-ice C  46  1.64388438E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65350377E+10
+ ph-ice C  47  1.65350614E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -7587,41 +7587,41 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324962E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26268013E+10
+ ph-ice C  6  1.26267984E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211917E+10
+ ph-ice C  7  1.27211888E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28156181E+10
+ ph-ice C  8  1.28156149E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100783E+10
+ ph-ice C  9  1.29100819E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045862E+10
+ ph-ice C  10  1.30045933E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30991746E+10
+ ph-ice C  11  1.30991817E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937832E+10
+ ph-ice C  12  1.31937911E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.3288445E+10
+ ph-ice C  13  1.32884494E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33831255E+10
+ ph-ice C  14  1.33831305E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34778802E+10
+ ph-ice C  15  1.34778878E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35726707E+10
+ ph-ice C  16  1.35726742E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674885E+10
+ ph-ice C  17  1.36674887E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.3762379E+10
+ ph-ice C  18  1.37623792E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38573145E+10
+ ph-ice C  19  1.38573114E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39523128E+10
+ ph-ice C  20  1.39523057E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40473687E+10
+ ph-ice C  21  1.40473634E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424829E+10
+ ph-ice C  22  1.41424777E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.423762E+10
+ ph-ice C  23  1.42376139E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -7659,7 +7659,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
  ph-check entering grdchk_main 
- ph-check fcref =   1.65350031E+10
+ ph-check fcref =   1.65350289E+10
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
@@ -7775,90 +7775,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324575E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26267627E+10
+ ph-ice C  6  1.26267598E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211291E+10
+ ph-ice C  7  1.27211262E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155434E+10
+ ph-ice C  8  1.28155402E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100035E+10
+ ph-ice C  9  1.29100072E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045172E+10
+ ph-ice C  10  1.30045243E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30990987E+10
+ ph-ice C  11  1.30991058E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937132E+10
+ ph-ice C  12  1.31937211E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32883885E+10
+ ph-ice C  13  1.32883929E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830929E+10
+ ph-ice C  14  1.33830979E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34778466E+10
+ ph-ice C  15  1.34778542E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35726444E+10
+ ph-ice C  16  1.35726479E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674999E+10
+ ph-ice C  17  1.36675001E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.3762375E+10
+ ph-ice C  18  1.37623752E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572779E+10
+ ph-ice C  19  1.38572735E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522591E+10
+ ph-ice C  20  1.39522506E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40473172E+10
+ ph-ice C  21  1.40473119E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424246E+10
+ ph-ice C  22  1.41424194E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42375393E+10
+ ph-ice C  23  1.4237534E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43327182E+10
+ ph-ice C  24  1.43327202E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44279639E+10
+ ph-ice C  25  1.44279628E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45232451E+10
+ ph-ice C  26  1.45232482E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46185452E+10
+ ph-ice C  27  1.46185483E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47138835E+10
+ ph-ice C  28  1.47138886E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093205E+10
+ ph-ice C  29  1.48093257E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49048066E+10
+ ph-ice C  30  1.49048118E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50002922E+10
+ ph-ice C  31  1.50002986E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958571E+10
+ ph-ice C  32  1.50958645E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914591E+10
+ ph-ice C  33  1.51914611E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52871226E+10
+ ph-ice C  34  1.52871313E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.5382813E+10
+ ph-ice C  35  1.53828192E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54785732E+10
+ ph-ice C  36  1.54785793E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55743827E+10
+ ph-ice C  37  1.5574383E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.5670205E+10
+ ph-ice C  38  1.56702053E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57660998E+10
+ ph-ice C  39  1.57661015E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58620442E+10
+ ph-ice C  40  1.58620414E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59580008E+10
+ ph-ice C  41  1.5957998E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60540492E+10
+ ph-ice C  42  1.60540489E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61501277E+10
+ ph-ice C  43  1.61501319E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62462691E+10
+ ph-ice C  44  1.62462779E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63424542E+10
+ ph-ice C  45  1.63424755E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64386646E+10
+ ph-ice C  46  1.64386859E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65349102E+10
- --> f_ice     = 0.165349101557088E+11
+ ph-ice C  47  1.6534936E+10
+ --> f_ice     = 0.165349360199381E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -7940,10 +7940,10 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165349101557088E+11
- ph-check fcpertplus =   1.65349102E+10
+ --> fc               = 0.165349360199381E+11
+ ph-check fcpertplus =   1.6534936E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.65350031E+10
+ ph-check fcpertminus =   1.65350289E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -8054,90 +8054,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324789E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26267787E+10
+ ph-ice C  6  1.26267758E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211622E+10
+ ph-ice C  7  1.27211593E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155887E+10
+ ph-ice C  8  1.28155855E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100265E+10
+ ph-ice C  9  1.29100302E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045402E+10
+ ph-ice C  10  1.30045473E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30990927E+10
+ ph-ice C  11  1.30990998E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937007E+10
+ ph-ice C  12  1.31937087E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32883523E+10
+ ph-ice C  13  1.32883567E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830506E+10
+ ph-ice C  14  1.33830556E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34778114E+10
+ ph-ice C  15  1.3477819E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.3572603E+10
+ ph-ice C  16  1.35726066E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674432E+10
+ ph-ice C  17  1.36674433E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37623183E+10
+ ph-ice C  18  1.37623185E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572538E+10
+ ph-ice C  19  1.38572494E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522366E+10
+ ph-ice C  20  1.39522281E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40473012E+10
+ ph-ice C  21  1.4047296E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41423947E+10
+ ph-ice C  22  1.41423895E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42375161E+10
+ ph-ice C  23  1.42375109E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43327175E+10
+ ph-ice C  24  1.43327195E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44279575E+10
+ ph-ice C  25  1.44279564E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45232435E+10
+ ph-ice C  26  1.45232466E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46185436E+10
+ ph-ice C  27  1.46185468E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47138896E+10
+ ph-ice C  28  1.47138947E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093266E+10
+ ph-ice C  29  1.48093318E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49047661E+10
+ ph-ice C  30  1.49047713E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50002465E+10
+ ph-ice C  31  1.50002528E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958356E+10
+ ph-ice C  32  1.5095843E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914357E+10
+ ph-ice C  33  1.51914377E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52870737E+10
+ ph-ice C  34  1.52870824E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.5382748E+10
+ ph-ice C  35  1.53827541E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54785081E+10
+ ph-ice C  36  1.54785143E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55743083E+10
+ ph-ice C  37  1.55743085E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56701392E+10
+ ph-ice C  38  1.56701395E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57660504E+10
+ ph-ice C  39  1.57660521E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58620006E+10
+ ph-ice C  40  1.58619978E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59579687E+10
+ ph-ice C  41  1.59579659E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60539932E+10
+ ph-ice C  42  1.60539929E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61500785E+10
+ ph-ice C  43  1.61500828E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62462103E+10
+ ph-ice C  44  1.6246219E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63423787E+10
+ ph-ice C  45  1.63424E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64385871E+10
+ ph-ice C  46  1.64386084E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65348019E+10
- --> f_ice     = 0.165348018802438E+11
+ ph-ice C  47  1.65348277E+10
+ --> f_ice     = 0.165348277444731E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -8219,12 +8219,12 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165348018802438E+11
+ --> fc               = 0.165348277444731E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    1    9    1    1    1    1    1   0.165350030532E+11 0.165349101557E+11 0.165348018802E+11
+ grad-res     0    1    9    1    1    1    1    1   0.165350289174E+11 0.165349360199E+11 0.165348277445E+11
  grad-res     0    1    1    1  150    1    1    1   -.232896089547E+07 0.541377324886E+09 0.233454450369E+03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350030531954E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350289174247E+10
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.32896089546567E+06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
@@ -8340,90 +8340,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.2532502E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26268072E+10
+ ph-ice C  6  1.26268043E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211688E+10
+ ph-ice C  7  1.27211659E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155835E+10
+ ph-ice C  8  1.28155803E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100437E+10
+ ph-ice C  9  1.29100473E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.3004535E+10
+ ph-ice C  10  1.30045421E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30991171E+10
+ ph-ice C  11  1.30991242E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937078E+10
+ ph-ice C  12  1.31937157E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32883523E+10
+ ph-ice C  13  1.32883567E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830567E+10
+ ph-ice C  14  1.33830617E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34778242E+10
+ ph-ice C  15  1.34778317E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35726157E+10
+ ph-ice C  16  1.35726193E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.3667442E+10
+ ph-ice C  17  1.36674422E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37623326E+10
+ ph-ice C  18  1.37623327E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572525E+10
+ ph-ice C  19  1.38572481E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522579E+10
+ ph-ice C  20  1.39522494E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.4047308E+10
+ ph-ice C  21  1.40473028E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424151E+10
+ ph-ice C  22  1.41424098E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42375312E+10
+ ph-ice C  23  1.42375259E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43327325E+10
+ ph-ice C  24  1.43327345E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44279871E+10
+ ph-ice C  25  1.44279861E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45232731E+10
+ ph-ice C  26  1.45232763E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46185535E+10
+ ph-ice C  27  1.46185567E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47138836E+10
+ ph-ice C  28  1.47138888E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093206E+10
+ ph-ice C  29  1.48093258E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49047914E+10
+ ph-ice C  30  1.49047966E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50002453E+10
+ ph-ice C  31  1.50002517E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958396E+10
+ ph-ice C  32  1.5095847E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914561E+10
+ ph-ice C  33  1.51914581E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52871122E+10
+ ph-ice C  34  1.52871209E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.5382781E+10
+ ph-ice C  35  1.53827871E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54785636E+10
+ ph-ice C  36  1.54785698E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55743732E+10
+ ph-ice C  37  1.55743734E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56702118E+10
+ ph-ice C  38  1.56702121E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57661255E+10
+ ph-ice C  39  1.57661272E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58620757E+10
+ ph-ice C  40  1.58620729E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59580584E+10
+ ph-ice C  41  1.59580556E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60541046E+10
+ ph-ice C  42  1.60541043E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61501605E+10
+ ph-ice C  43  1.61501647E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62463019E+10
+ ph-ice C  44  1.62463107E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.6342487E+10
+ ph-ice C  45  1.63425083E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.643872E+10
+ ph-ice C  46  1.64387413E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65349425E+10
- --> f_ice     = 0.165349425251960E+11
+ ph-ice C  47  1.65349684E+10
+ --> f_ice     = 0.165349683894253E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -8505,10 +8505,10 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165349425251960E+11
- ph-check fcpertplus =   1.65349425E+10
+ --> fc               = 0.165349683894253E+11
+ ph-check fcpertplus =   1.65349684E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.65350031E+10
+ ph-check fcpertminus =   1.65350289E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -8619,90 +8619,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324966E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.2626756E+10
+ ph-ice C  6  1.26267531E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211405E+10
+ ph-ice C  7  1.27211375E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155669E+10
+ ph-ice C  8  1.28155637E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100214E+10
+ ph-ice C  9  1.2910025E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045351E+10
+ ph-ice C  10  1.30045421E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30991101E+10
+ ph-ice C  11  1.30991172E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937246E+10
+ ph-ice C  12  1.31937325E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32883762E+10
+ ph-ice C  13  1.32883806E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830734E+10
+ ph-ice C  14  1.33830784E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34778113E+10
+ ph-ice C  15  1.34778188E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.3572609E+10
+ ph-ice C  16  1.35726126E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674646E+10
+ ph-ice C  17  1.36674647E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37623188E+10
+ ph-ice C  18  1.3762319E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572542E+10
+ ph-ice C  19  1.38572499E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522596E+10
+ ph-ice C  20  1.39522512E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40472929E+10
+ ph-ice C  21  1.40472877E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424094E+10
+ ph-ice C  22  1.41424041E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42375318E+10
+ ph-ice C  23  1.42375265E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43327331E+10
+ ph-ice C  24  1.43327351E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44279878E+10
+ ph-ice C  25  1.44279867E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45232738E+10
+ ph-ice C  26  1.45232769E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46185739E+10
+ ph-ice C  27  1.46185771E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47139199E+10
+ ph-ice C  28  1.4713925E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093569E+10
+ ph-ice C  29  1.4809362E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49047873E+10
+ ph-ice C  30  1.49047925E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50002708E+10
+ ph-ice C  31  1.50002772E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958598E+10
+ ph-ice C  32  1.50958672E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914421E+10
+ ph-ice C  33  1.51914441E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52870894E+10
+ ph-ice C  34  1.52870981E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53828024E+10
+ ph-ice C  35  1.53828085E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54785688E+10
+ ph-ice C  36  1.54785749E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55743783E+10
+ ph-ice C  37  1.55743786E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56702145E+10
+ ph-ice C  38  1.56702148E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57661118E+10
+ ph-ice C  39  1.57661135E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58620461E+10
+ ph-ice C  40  1.58620433E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59580506E+10
+ ph-ice C  41  1.59580478E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60541096E+10
+ ph-ice C  42  1.60541093E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61501752E+10
+ ph-ice C  43  1.61501794E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62463167E+10
+ ph-ice C  44  1.62463254E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63425017E+10
+ ph-ice C  45  1.6342523E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64387347E+10
+ ph-ice C  46  1.6438756E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65349557E+10
- --> f_ice     = 0.165349557112294E+11
+ ph-ice C  47  1.65349816E+10
+ --> f_ice     = 0.165349815754586E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -8784,12 +8784,12 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165349557112294E+11
+ --> fc               = 0.165349815754586E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    2   10    1    1    1    1    1   0.165350030532E+11 0.165349425252E+11 0.165349557112E+11
+ grad-res     0    2   10    1    1    1    1    1   0.165350289174E+11 0.165349683894E+11 0.165349815755E+11
  grad-res     0    2    2    2  150    1    1    1   -.130663812707E+07 -.659301667023E+08 -.494578623081E+02
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350030531954E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350289174247E+10
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.30663812706991E+06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
@@ -8905,90 +8905,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.2532473E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26267727E+10
+ ph-ice C  6  1.26267698E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.272115E+10
+ ph-ice C  7  1.27211471E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155706E+10
+ ph-ice C  8  1.28155674E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100345E+10
+ ph-ice C  9  1.29100381E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045481E+10
+ ph-ice C  10  1.30045552E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30991142E+10
+ ph-ice C  11  1.30991213E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937005E+10
+ ph-ice C  12  1.31937084E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32883457E+10
+ ph-ice C  13  1.32883501E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830679E+10
+ ph-ice C  14  1.33830729E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.3477846E+10
+ ph-ice C  15  1.34778535E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35726364E+10
+ ph-ice C  16  1.357264E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674771E+10
+ ph-ice C  17  1.36674773E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37623569E+10
+ ph-ice C  18  1.37623571E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572712E+10
+ ph-ice C  19  1.38572669E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522462E+10
+ ph-ice C  20  1.39522378E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40472895E+10
+ ph-ice C  21  1.40472842E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424125E+10
+ ph-ice C  22  1.41424073E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.4237551E+10
+ ph-ice C  23  1.42375458E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43327524E+10
+ ph-ice C  24  1.43327544E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.4428007E+10
+ ph-ice C  25  1.44280059E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.4523275E+10
+ ph-ice C  26  1.45232782E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46185856E+10
+ ph-ice C  27  1.46185887E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47139316E+10
+ ph-ice C  28  1.47139367E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093115E+10
+ ph-ice C  29  1.48093167E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49047956E+10
+ ph-ice C  30  1.49048009E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50002652E+10
+ ph-ice C  31  1.50002715E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958615E+10
+ ph-ice C  32  1.50958689E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914548E+10
+ ph-ice C  33  1.51914568E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52870758E+10
+ ph-ice C  34  1.52870845E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53827644E+10
+ ph-ice C  35  1.53827706E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54785204E+10
+ ph-ice C  36  1.54785266E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55743075E+10
+ ph-ice C  37  1.55743078E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56701199E+10
+ ph-ice C  38  1.56701202E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57660288E+10
+ ph-ice C  39  1.57660304E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58619583E+10
+ ph-ice C  40  1.58619554E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59579428E+10
+ ph-ice C  41  1.595794E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60539731E+10
+ ph-ice C  42  1.60539728E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61500193E+10
+ ph-ice C  43  1.61500235E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62461278E+10
+ ph-ice C  44  1.62461416E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63422736E+10
+ ph-ice C  45  1.63423E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64384724E+10
+ ph-ice C  46  1.64384988E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.653473E+10
- --> f_ice     = 0.165347299525332E+11
+ ph-ice C  47  1.65347608E+10
+ --> f_ice     = 0.165347608343982E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -9070,10 +9070,10 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165347299525332E+11
- ph-check fcpertplus =   1.653473E+10
+ --> fc               = 0.165347608343982E+11
+ ph-check fcpertplus =   1.65347608E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.65350031E+10
+ ph-check fcpertminus =   1.65350289E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -9184,90 +9184,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324705E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26267521E+10
+ ph-ice C  6  1.26267492E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211363E+10
+ ph-ice C  7  1.27211334E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155664E+10
+ ph-ice C  8  1.28155632E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100207E+10
+ ph-ice C  9  1.29100244E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045103E+10
+ ph-ice C  10  1.30045174E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30990949E+10
+ ph-ice C  11  1.3099102E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31936806E+10
+ ph-ice C  12  1.31936886E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32883381E+10
+ ph-ice C  13  1.32883426E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830187E+10
+ ph-ice C  14  1.33830237E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.3477804E+10
+ ph-ice C  15  1.34778116E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35725945E+10
+ ph-ice C  16  1.3572598E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674414E+10
+ ph-ice C  17  1.36674416E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37623275E+10
+ ph-ice C  18  1.37623277E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572559E+10
+ ph-ice C  19  1.38572516E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522549E+10
+ ph-ice C  20  1.39522464E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40472982E+10
+ ph-ice C  21  1.40472929E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41424056E+10
+ ph-ice C  22  1.41424004E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42375297E+10
+ ph-ice C  23  1.42375245E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43327311E+10
+ ph-ice C  24  1.43327331E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44279783E+10
+ ph-ice C  25  1.44279772E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45232643E+10
+ ph-ice C  26  1.45232674E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46185824E+10
+ ph-ice C  27  1.46185855E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47139135E+10
+ ph-ice C  28  1.47139186E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093505E+10
+ ph-ice C  29  1.48093601E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49048438E+10
+ ph-ice C  30  1.49048489E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50003093E+10
+ ph-ice C  31  1.50003156E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958671E+10
+ ph-ice C  32  1.50958745E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914936E+10
+ ph-ice C  33  1.51914956E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52871456E+10
+ ph-ice C  34  1.52871589E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53828691E+10
+ ph-ice C  35  1.53828799E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54786518E+10
+ ph-ice C  36  1.54786626E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55744026E+10
+ ph-ice C  37  1.55744028E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56702413E+10
+ ph-ice C  38  1.56702414E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.5766155E+10
+ ph-ice C  39  1.57661565E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58621052E+10
+ ph-ice C  40  1.58621023E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59581065E+10
+ ph-ice C  41  1.59581035E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60541714E+10
+ ph-ice C  42  1.6054171E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61502596E+10
+ ph-ice C  43  1.61502587E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.6246401E+10
+ ph-ice C  44  1.62464046E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63425628E+10
+ ph-ice C  45  1.63425841E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64387584E+10
+ ph-ice C  46  1.64387796E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65350372E+10
- --> f_ice     = 0.165350371713356E+11
+ ph-ice C  47  1.6535063E+10
+ --> f_ice     = 0.165350629641362E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -9349,13 +9349,13 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165350371713356E+11
+ --> fc               = 0.165350629641362E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    3   11    1    1    1    1    1   0.165350030532E+11 0.165347299525E+11 0.165350371713E+11
- grad-res     0    3    3    3  150    1    1    1   -.940755223995E+06 -.153609401190E+10 -.163183070104E+04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350030531954E+10
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -9.40755223994937E+05
+ grad-res     0    3   11    1    1    1    1    1   0.165350289174E+11 0.165347608344E+11 0.165350629641E+11
+ grad-res     0    3    3    3  150    1    1    1   -.940755223997E+06 -.151064869005E+10 -.160478294068E+04
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350289174247E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -9.40755223996750E+05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
  ph-grd -->hit<--  12 1 1 1
@@ -9470,90 +9470,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324985E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26268002E+10
+ ph-ice C  6  1.26267973E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27211905E+10
+ ph-ice C  7  1.27211876E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28155983E+10
+ ph-ice C  8  1.28155951E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29100696E+10
+ ph-ice C  9  1.29100732E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30045832E+10
+ ph-ice C  10  1.30045903E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30991716E+10
+ ph-ice C  11  1.30991787E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31937637E+10
+ ph-ice C  12  1.31937717E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32884153E+10
+ ph-ice C  13  1.32884197E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33831375E+10
+ ph-ice C  14  1.33831425E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34779156E+10
+ ph-ice C  15  1.34779231E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.35726753E+10
+ ph-ice C  16  1.35726788E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36675326E+10
+ ph-ice C  17  1.36675328E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37624399E+10
+ ph-ice C  18  1.37624401E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38573753E+10
+ ph-ice C  19  1.38573709E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39523807E+10
+ ph-ice C  20  1.39523722E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40474379E+10
+ ph-ice C  21  1.40474327E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41425389E+10
+ ph-ice C  22  1.41425336E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42376617E+10
+ ph-ice C  23  1.42376565E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43328631E+10
+ ph-ice C  24  1.43328651E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.4428102E+10
+ ph-ice C  25  1.44281009E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.4523388E+10
+ ph-ice C  26  1.45233911E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46186895E+10
+ ph-ice C  27  1.46186927E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47139968E+10
+ ph-ice C  28  1.47140019E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48093961E+10
+ ph-ice C  29  1.48094013E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49048473E+10
+ ph-ice C  30  1.49048571E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50003087E+10
+ ph-ice C  31  1.50003196E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50958998E+10
+ ph-ice C  32  1.50959117E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51914818E+10
+ ph-ice C  33  1.51914884E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.528715E+10
+ ph-ice C  34  1.52871632E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53828844E+10
+ ph-ice C  35  1.5382895E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54786521E+10
+ ph-ice C  36  1.54786628E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55744474E+10
+ ph-ice C  37  1.5574457E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56702861E+10
+ ph-ice C  38  1.56702957E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57661972E+10
+ ph-ice C  39  1.57662082E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58621399E+10
+ ph-ice C  40  1.58621464E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59581444E+10
+ ph-ice C  41  1.59581509E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60541815E+10
+ ph-ice C  42  1.60541906E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.615026E+10
+ ph-ice C  43  1.61502736E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62464165E+10
+ ph-ice C  44  1.62464295E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63425865E+10
+ ph-ice C  45  1.63426121E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64388049E+10
+ ph-ice C  46  1.64388356E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65350593E+10
- --> f_ice     = 0.165350592695866E+11
+ ph-ice C  47  1.65350894E+10
+ --> f_ice     = 0.165350894032621E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -9635,10 +9635,10 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165350592695866E+11
- ph-check fcpertplus =   1.65350593E+10
+ --> fc               = 0.165350894032621E+11
+ ph-check fcpertplus =   1.65350894E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.65350031E+10
+ ph-check fcpertminus =   1.65350289E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -9749,90 +9749,90 @@ grad-res -------------------------------
  ph-ice B  5  9.99999975E-06  0.  0.
  ph-ice C  5  1.25324257E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.26267273E+10
+ ph-ice C  6  1.26267244E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.27210694E+10
+ ph-ice C  7  1.27210665E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.28154995E+10
+ ph-ice C  8  1.28154963E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.29099571E+10
+ ph-ice C  9  1.29099607E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.30044707E+10
+ ph-ice C  10  1.30044778E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.30990592E+10
+ ph-ice C  11  1.30990663E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.31936454E+10
+ ph-ice C  12  1.31936534E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.32882985E+10
+ ph-ice C  13  1.32883029E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.33830206E+10
+ ph-ice C  14  1.33830257E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.34777999E+10
+ ph-ice C  15  1.34778074E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.3572575E+10
+ ph-ice C  16  1.35725786E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.36674142E+10
+ ph-ice C  17  1.36674144E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.37622922E+10
+ ph-ice C  18  1.37622924E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.38572122E+10
+ ph-ice C  19  1.38572078E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.39522176E+10
+ ph-ice C  20  1.39522091E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.40472764E+10
+ ph-ice C  21  1.40472712E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.41423751E+10
+ ph-ice C  22  1.41423699E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.42374912E+10
+ ph-ice C  23  1.4237486E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.43326852E+10
+ ph-ice C  24  1.43326872E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.44279158E+10
+ ph-ice C  25  1.44279147E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.45232018E+10
+ ph-ice C  26  1.45232049E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.46184647E+10
+ ph-ice C  27  1.46184679E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.47137857E+10
+ ph-ice C  28  1.47137908E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.48092123E+10
+ ph-ice C  29  1.48092174E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.49047055E+10
+ ph-ice C  30  1.49047107E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.50001669E+10
+ ph-ice C  31  1.50001732E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.50957219E+10
+ ph-ice C  32  1.50957293E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.51913537E+10
+ ph-ice C  33  1.51913557E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.52869994E+10
+ ph-ice C  34  1.52870081E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.53827039E+10
+ ph-ice C  35  1.538271E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.54784742E+10
+ ph-ice C  36  1.54784804E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.55742613E+10
+ ph-ice C  37  1.55742616E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.56700818E+10
+ ph-ice C  38  1.56700821E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.57659955E+10
+ ph-ice C  39  1.57659972E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.58618983E+10
+ ph-ice C  40  1.58618955E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.59578803E+10
+ ph-ice C  41  1.59578775E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.60539452E+10
+ ph-ice C  42  1.60539449E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.61500274E+10
+ ph-ice C  43  1.61500316E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.62461364E+10
+ ph-ice C  44  1.62461451E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.63423214E+10
+ ph-ice C  45  1.63423427E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.64385135E+10
+ ph-ice C  46  1.64385348E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.65347609E+10
- --> f_ice     = 0.165347608712952E+11
+ ph-ice C  47  1.65347867E+10
+ --> f_ice     = 0.165347867355245E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
  --> f_smrarea = 0.000000000000000E+00
@@ -9914,13 +9914,13 @@ grad-res -------------------------------
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> f_transp             = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.165347608712952E+11
+ --> fc               = 0.165347867355245E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    4   12    1    1    1    1    1   0.165350030532E+11 0.165350592696E+11 0.165347608713E+11
- grad-res     0    4    4    4  150    1    1    1   -.865739811520E+06 0.149199145684E+10 0.172437166085E+04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350030531954E+10
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -8.65739811520286E+05
+ grad-res     0    4   12    1    1    1    1    1   0.165350289174E+11 0.165350894033E+11 0.165347867355E+11
+ grad-res     0    4    4    4  150    1    1    1   -.865739811520E+06 0.151333868824E+10 0.174902945192E+04
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =    1.65350289174247E+10
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -8.65739811520104E+05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  4, ichknum =  4
 (PID.TID 0000.0001) 
@@ -9935,119 +9935,119 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output h.g:  Id     FC1-FC2/(2*EPS)      ADJ GRAD(FC)         1-FDGRD/ADGRD
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1     9     1     1    0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   1  1.6535003053195E+10  1.6534910155709E+10  1.6534801880244E+10
+(PID.TID 0000.0001) grdchk output (c):   1  1.6535028917425E+10  1.6534936019938E+10  1.6534827744473E+10
 (PID.TID 0000.0001) grdchk output (g):   1     5.4137732488632E+08 -2.3289608954657E+06  2.3345445036898E+02
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2    10     1     1    0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   2  1.6535003053195E+10  1.6534942525196E+10  1.6534955711229E+10
+(PID.TID 0000.0001) grdchk output (c):   2  1.6535028917425E+10  1.6534968389425E+10  1.6534981575459E+10
 (PID.TID 0000.0001) grdchk output (g):   2    -6.5930166702271E+07 -1.3066381270699E+06 -4.9457862308148E+01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3    11     1     1    0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   3  1.6535003053195E+10  1.6534729952533E+10  1.6535037171336E+10
-(PID.TID 0000.0001) grdchk output (g):   3    -1.5360940118980E+09 -9.4075522399494E+05 -1.6318307010351E+03
+(PID.TID 0000.0001) grdchk output (c):   3  1.6535028917425E+10  1.6534760834398E+10  1.6535062964136E+10
+(PID.TID 0000.0001) grdchk output (g):   3    -1.5106486900520E+09 -9.4075522399675E+05 -1.6047829406826E+03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4    12     1     1    0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   4  1.6535003053195E+10  1.6535059269587E+10  1.6534760871295E+10
-(PID.TID 0000.0001) grdchk output (g):   4     1.4919914568424E+09 -8.6573981152029E+05  1.7243716608485E+03
+(PID.TID 0000.0001) grdchk output (c):   4  1.6535028917425E+10  1.6535089403262E+10  1.6534786735524E+10
+(PID.TID 0000.0001) grdchk output (g):   4     1.5133386882401E+09 -8.6573981152010E+05  1.7490294519237E+03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  13.2059921
-(PID.TID 0000.0001)         System time:  0.486926009
-(PID.TID 0000.0001)     Wall clock time:  15.4043829
+(PID.TID 0000.0001)           User time:  13.1859956
+(PID.TID 0000.0001)         System time:  0.561915017
+(PID.TID 0000.0001)     Wall clock time:  25.991194
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.87571497
-(PID.TID 0000.0001)         System time:  0.116983001
-(PID.TID 0000.0001)     Wall clock time:  2.43366504
+(PID.TID 0000.0001)           User time:  1.91171
+(PID.TID 0000.0001)         System time:  0.112983002
+(PID.TID 0000.0001)     Wall clock time:  4.63141012
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  7.71682703
-(PID.TID 0000.0001)         System time:  0.218965992
-(PID.TID 0000.0001)     Wall clock time:  8.98956108
+(PID.TID 0000.0001)           User time:  7.66083455
+(PID.TID 0000.0001)         System time:  0.267958991
+(PID.TID 0000.0001)     Wall clock time:  14.5080988
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  1.18980312
-(PID.TID 0000.0001)         System time:  0.116984859
-(PID.TID 0000.0001)     Wall clock time:  1.35950589
+(PID.TID 0000.0001)           User time:  1.19681954
+(PID.TID 0000.0001)         System time:  0.137981176
+(PID.TID 0000.0001)     Wall clock time:  2.05691957
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:  0.119990587
-(PID.TID 0000.0001)         System time:  0.010999918
-(PID.TID 0000.0001)     Wall clock time:  0.128050566
+(PID.TID 0000.0001)           User time:  0.115978956
+(PID.TID 0000.0001)         System time:  0.011997968
+(PID.TID 0000.0001)     Wall clock time:  0.207201242
 (PID.TID 0000.0001)          No. starts: 2904
 (PID.TID 0000.0001)           No. stops: 2904
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  1.91871738
-(PID.TID 0000.0001)         System time:  0.0039999634
-(PID.TID 0000.0001)     Wall clock time:  1.92661548
+(PID.TID 0000.0001)           User time:  1.92069983
+(PID.TID 0000.0001)         System time:  0.0109979659
+(PID.TID 0000.0001)     Wall clock time:  2.58160377
 (PID.TID 0000.0001)          No. starts: 432
 (PID.TID 0000.0001)           No. stops: 432
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.250975847
-(PID.TID 0000.0001)         System time:  0.000999003649
-(PID.TID 0000.0001)     Wall clock time:  0.247340202
+(PID.TID 0000.0001)           User time:  0.236958981
+(PID.TID 0000.0001)         System time:  0.00299999118
+(PID.TID 0000.0001)     Wall clock time:  0.45009923
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  3.60645103
-(PID.TID 0000.0001)         System time:  0.144978017
-(PID.TID 0000.0001)     Wall clock time:  3.90811706
+(PID.TID 0000.0001)           User time:  3.60945129
+(PID.TID 0000.0001)         System time:  0.171974033
+(PID.TID 0000.0001)     Wall clock time:  6.78466415
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0979862213
-(PID.TID 0000.0001)         System time:  0.0109980702
-(PID.TID 0000.0001)     Wall clock time:  0.108579874
+(PID.TID 0000.0001)           User time:  0.0859880447
+(PID.TID 0000.0001)         System time:  0.0149979293
+(PID.TID 0000.0001)     Wall clock time:  0.215776443
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  3.49446678
-(PID.TID 0000.0001)         System time:  0.116982996
-(PID.TID 0000.0001)     Wall clock time:  3.68638515
+(PID.TID 0000.0001)           User time:  3.50446796
+(PID.TID 0000.0001)         System time:  0.131978989
+(PID.TID 0000.0001)     Wall clock time:  6.31951809
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.974840164
-(PID.TID 0000.0001)         System time:  0.0939868689
-(PID.TID 0000.0001)     Wall clock time:  1.10943007
+(PID.TID 0000.0001)           User time:  0.981852531
+(PID.TID 0000.0001)         System time:  0.0979861021
+(PID.TID 0000.0001)     Wall clock time:  1.54725528
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.24667263
-(PID.TID 0000.0001)         System time:  0.00399896502
-(PID.TID 0000.0001)     Wall clock time:  2.24820971
+(PID.TID 0000.0001)           User time:  2.24464512
+(PID.TID 0000.0001)         System time:  0.0119979978
+(PID.TID 0000.0001)     Wall clock time:  3.31251454
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00899791718
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0168023109
+(PID.TID 0000.0001)           User time:  0.0160017014
+(PID.TID 0000.0001)         System time:  0.00199997425
+(PID.TID 0000.0001)     Wall clock time:  0.017054081
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0149946213
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0168230534
+(PID.TID 0000.0001)           User time:  0.0180006027
+(PID.TID 0000.0001)         System time:  0.00199899077
+(PID.TID 0000.0001)     Wall clock time:  0.0170178413
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0139961243
-(PID.TID 0000.0001)         System time:  0.00100001693
-(PID.TID 0000.0001)     Wall clock time:  0.0175173283
+(PID.TID 0000.0001)           User time:  0.0109968185
+(PID.TID 0000.0001)         System time:  0.000999987125
+(PID.TID 0000.0001)     Wall clock time:  0.017573595
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.0119962692
-(PID.TID 0000.0001)         System time:  0.00699904561
-(PID.TID 0000.0001)     Wall clock time:  0.0525689125
+(PID.TID 0000.0001)           User time:  0.0119991302
+(PID.TID 0000.0001)         System time:  0.00599694252
+(PID.TID 0000.0001)     Wall clock time:  1.17386341
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001) // ======================================================
