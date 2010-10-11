@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.81 2010/10/10 02:01:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.82 2010/10/11 04:06:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -595,16 +595,17 @@ c (cannot melt more than all the ice)
           DIAGarray(I,J) = tmpscal2
 #endif
 C gain of new ice over open water (>0 by definition)
-          tmpscal4 = MAX(ZERO,-a_QbyATM_open(I,J)*convertQ2HI)
+          tmpscal4 = MAX(ZERO,-a_QbyATM_open(I,J)
+     &          *convertQ2HI*(ONE-AREANm1(I,J,bi,bj)))
 c compute cover fraction tendency
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            d_AREAbyATM(I,J)=
-     &          (ONE-AREANm1(I,J,bi,bj))*tmpscal4/HO_south
+     &          tmpscal4/HO_south
      &          +HALF*tmpscal3*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
           ELSE
            d_AREAbyATM(I,J)=
-     &          (ONE-AREANm1(I,J,bi,bj))*tmpscal4/HO
+     &          tmpscal4/HO
      &          +HALF*tmpscal3*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
           ENDIF
@@ -632,16 +633,27 @@ CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 #endif
 
+cgf note: this block is not actually tested by lab_sea
+cgf where all experiments start in January. So even though
+cgf the v1.81=>v1.82 revision would change results in
+cgf warming conditions, the lab_sea results were not changed.
+
         DO J=1,sNy
          DO I=1,sNx
           tmpscal1 = -a_QbyATM_cover(I,J)*convertQ2HI*AREANm1(I,J,bi,bj)
+          if (AREANm1(I,J,bi,bj).GT.0.) then
 C (cannot melt more than all the ice)
-          tmpscal2 = MAX(-HEFF(I,J,bi,bj),tmpscal1)
-          d_HEFFbyATMonOCN(I,J)=tmpscal2
+            tmpscal2 = MAX(-HEFF(I,J,bi,bj),tmpscal1)
+            d_HEFFbyATMonOCN(I,J)=tmpscal2
 C compute the r_QbyATM_cover residual as the difference between
 C the available heat tmpscal1 and the used tmpscal2;
-          d_QbyATMonOCN(I,J)=
-     &      (tmpscal1 - tmpscal2)*convertHI2Q - a_QbyATM_cover(I,J)
+            d_QbyATMonOCN(I,J)=1. _d 0 /AREANm1(I,J,bi,bj)*
+     &        (tmpscal1 - tmpscal2)*convertHI2Q - a_QbyATM_cover(I,J)
+          else
+            tmpscal2=0. _d 0
+            d_HEFFbyATMonOCN(I,J)=0. _d 0
+            d_QbyATMonOCN(I,J)=0. _d 0
+          endif
 c apply tendency
           r_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)+d_QbyATMonOCN(I,J)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + d_HEFFbyATMonOCN(I,J)
