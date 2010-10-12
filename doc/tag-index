@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1308 2010/10/07 22:47:57 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1309 2010/10/12 13:50:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+   re-arrange calculation in THSICE_SOLVE4TEMP: move outside of i,j loops
+   iteration loop and call to S/R THSICE_GET_BULKF & THSICE_GET_EXF.
 o verification/lab_sea:
   - overhaul of the forward model experiments. The main motivation
     for this revision is that lab_sea has proven quite fragile (when 
