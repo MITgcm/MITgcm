@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.6 2009/07/08 23:35:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.7 2010/10/12 15:55:34 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -79,11 +79,13 @@ C     albNewSnow :: albedo of new (fresh) snow
 C     albNewSnow :: albedo of new (fresh) snow
 C     msgBuf     :: Informational/error meesage buffer
 c     _RL  frsnow
-      _RL albsno, albice
+      _RL albsno
+      _RL albice
       _RL albNewSnow
       _RL albNIR_ocean, albNIR_thick, albNIR_dsnow
       _RL albNIR_ice, albNIR_fHice, recFac_albNIR
       INTEGER i,j
+      INTEGER ii,jj,icount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -97,17 +99,18 @@ C     Near-InfraRed albedo
         recFac_albNIR = 1. _d 0 / ATAN(albNIR_fHice*0.5 _d 0)
       ENDIF
 
+      icount = 0
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF ( iceMask(i,j).GT.0. _d 0 ) THEN
-          hi  = hIce(i,j)
-          hs  = hSnow(i,j)
-          Tsf = tSrf(i,j)
-          age = ageSnw(i,j)
-
+         hi  = hIce(i,j)
+         hs  = hSnow(i,j)
+         Tsf = tSrf(i,j)
+         age = ageSnw(i,j)
+         
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Albedo of Bare Sea-Ice
-      albice = albIceMax + (albIceMin-albIceMax)*EXP(-hi/hAlbIce)
+         albice = albIceMax + (albIceMin-albIceMax)*EXP(-hi/hAlbIce)
 
 C--   LANL albedo calculation
 c     frsnow = 0.
@@ -124,49 +127,59 @@ c     albice = 0.7 _d 0
 
 C-    New snow: (linear) transition between tempSnowAlb (oC) and 0.oC
 C      from cold/dry snow albedo to warm/wet snow albedo
-      IF ( tempSnowAlb.LT.0. _d 0 ) THEN
-        albNewSnow = albColdSnow
-     &      + (albWarmSnow - albColdSnow)
-     &       *MAX( 0. _d 0, MIN(1. _d 0 - Tsf/tempSnowAlb, 1. _d 0) )
-      ELSE
-        albNewSnow = albColdSnow
-      ENDIF
+         IF ( tempSnowAlb.LT.0. _d 0 ) THEN
+          albNewSnow = albColdSnow
+     &         + (albWarmSnow - albColdSnow)
+     &         *MAX( 0. _d 0, MIN(1. _d 0 - Tsf/tempSnowAlb, 1. _d 0) )
+         ELSE
+          albNewSnow = albColdSnow
+         ENDIF
 C-    albedo of snow is function of snow-age (make age units into days):
-      albsno = albOldSnow
-     &       +(albNewSnow-albOldSnow)*EXP(-0.2 _d 0*age/86400. _d 0)
+         albsno = albOldSnow
+     &        +(albNewSnow-albOldSnow)*EXP(-0.2 _d 0*age/86400. _d 0)
 C-    layer of snow over the ice:
-      albedo = albsno + (albice-albsno)*EXP(-hs/hAlbSnow)
+         albedo = albsno + (albice-albsno)*EXP(-hs/hAlbSnow)
 
-      IF ( thSIce_calc_albNIR ) THEN
+         IF ( thSIce_calc_albNIR ) THEN
 C--   Compute near-infrared albedo
-        albNIR_ice = albNIR_ocean + (albNIR_thick -  albNIR_ocean)*
-     &        MIN( recFac_albNIR*ATAN(albNIR_fHice*hi), 1. _d 0 )
-     &        + 0.075 _d 0 * MIN( -Tsf - 1. _d 0, 0. _d 0 )
+          albNIR_ice = albNIR_ocean + (albNIR_thick -  albNIR_ocean)*
+     &         MIN( recFac_albNIR*ATAN(albNIR_fHice*hi), 1. _d 0 )
+     &         + 0.075 _d 0 * MIN( -Tsf - 1. _d 0, 0. _d 0 )
 
-        sAlbNIR(i,j) = albNIR_ice * ( 1. _d 0 - hs/(hs + 0.02 _d 0) )
-     &   + ( albNIR_dsnow + 0.15 _d 0 *MIN( -Tsf - 1. _d 0, 0. _d 0) )
-     &           * hs/(hs + 0.02 _d 0)
-      ELSE
-        sAlbNIR(i,j) = albedo
-      ENDIF
+          sAlbNIR(i,j) = albNIR_ice * ( 1. _d 0 - hs/(hs + 0.02 _d 0) )
+     &         + ( albNIR_dsnow 
+     &             + 0.15 _d 0 *MIN( -Tsf - 1. _d 0, 0. _d 0) )
+     &         * hs/(hs + 0.02 _d 0)
+         ELSE
+          sAlbNIR(i,j) = albedo
+         ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-          IF (albedo.GT.1. _d 0 .OR. albedo.LT. .2 _d 0) THEN
-c       print*,'QQ - albedo problem', albedo, age, hs, albsno
-            WRITE(msgBuf,'(A,I10,4I6)')
-     &       'THSICE_ALBEDO: Problem at:', myIter,i,j,bi,bj
-            CALL PRINT_ERROR( msgBuf , myThid)
-            WRITE(msgBuf,'(A,1P4E17.9)')
-     &       'THSICE_ALBEDO: albedo=', albedo, age, hs, albsno
-            CALL PRINT_ERROR( msgBuf , myThid)
-            STOP 'THSICE_ALBEDO: albedo out of range'
-          ENDIF
-          sAlb(i,j) = albedo
+         IF (albedo.GT.1. _d 0 .OR. albedo.LT. .2 _d 0) THEN
+C     test for potential errors (move print statements out of i,j-loops
+C     for vectorization
+          ii=i
+          jj=j
+          icount=icount+1
+         ENDIF
+         sAlb(i,j) = albedo
         ELSE
-          sAlb(i,j) = 0. _d 0
-          sAlbNIR(i,j) = 0. _d 0
+         sAlb(i,j) = 0. _d 0
+         sAlbNIR(i,j) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO
+C     catch potential errors
+      IF (icount .gt. 0) THEN
+c       print*,'QQ - albedo problem', albedo, age, hs, albsno
+       WRITE(msgBuf,'(A,I10,4I6)')
+     &      'THSICE_ALBEDO: Problem, e.g., at:', myIter,ii,jj,bi,bj
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,1P3E17.9)')
+     &      'THSICE_ALBEDO: albedo=', sAlb(ii,jj),ageSnw(ii,jj), 
+     &      hsnow(ii,jj)
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'THSICE_ALBEDO: albedo out of range'
+      ENDIF
 
 #endif  /* ALLOW_THSICE */
 
