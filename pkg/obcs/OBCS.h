@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.22 2009/12/08 00:21:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.23 2010/10/13 20:57:02 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -7,31 +7,6 @@ C--   Private logical flag to record active status of package
 c     LOGICAL OBCSisON
 c     COMMON /OBCS_PACKAGE/ OBCSisON
 
-C These are input arrays (of integers) that contain the *absolute*
-C computational index of an open-boundary (OB) point.
-C A zero (0) element means there is no corresponding OB in that column/row.
-C The computational coordinate refers to "tracer" cells.
-C For a northern/southern OB, the OB V point is to the south/north.
-C For an eastern/western OB, the OB U point is to the west/east.
-C eg.
-C     OB_Jnorth(3)=34  means that:
-C          T( 3 ,34) is a an OB point
-C          U(3:4,34) is a an OB point
-C          V( 4 ,34) is a an OB point
-C while
-C     OB_Jsouth(3)=1  means that:
-C          T( 3 ,1) is a an OB point
-C          U(3:4,1) is a an OB point
-C          V( 4 ,2) is a an OB point
-C
-C For convenience, negative values for Jnorth/Ieast refer to
-C points relative to the Northern/Eastern edges of the model
-C eg. OB_Jnorth(3)=-1  means that the point (3,Ny) is a northern O-B.
-C
-C OB_Jnorth(Nx)    :: global index array of northern open-boundary point
-C OB_Jsouth(Nx)    :: global index array of southern open-boundary point
-C OB_Ieast(Ny)     :: global index array of eastern  open-boundary point
-C OB_Iwest(Ny)     :: global index array of western  open-boundary point
 C useOrlanskiNorth/South/East/West
 C                  :: specify Orlanski boundary conditions for northern/
 C                     southern/eastern/Western
@@ -60,17 +35,12 @@ C                     uice/vice :: sea ice u/v drift velocities
 C
 
       COMMON /PARM_IL_OB/
-     & OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
      & spongeThickness,
      & useOrlanskiNorth,useOrlanskiSouth,
      & useOrlanskiEast,useOrlanskiWest,
      & useOBCSsponge, useOBCSbalance, useOBCSprescribe,
      & OBCSprintDiags, useOBCSYearlyFields,
      & OBCSfixTopo
-      INTEGER OB_Jnorth(Nx)
-      INTEGER OB_Jsouth(Nx)
-      INTEGER OB_Ieast(Ny)
-      INTEGER OB_Iwest(Ny)
       INTEGER spongeThickness
       LOGICAL useOrlanskiNorth
       LOGICAL useOrlanskiSouth

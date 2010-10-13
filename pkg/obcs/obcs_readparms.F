@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.26 2010/01/31 20:25:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.27 2010/10/13 20:57:02 jahn Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -23,6 +23,11 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C     === Routine arguments ===
       INTEGER myThid
@@ -38,6 +43,70 @@ C     iUnit       - Work variable for IO unit number
       INTEGER bi, bj, iG, jG, iGm, jGm
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
+#endif
+#ifdef ALLOW_EXCH2
+      INTEGER tN
+#endif /* ALLOW_EXCH2 */
+
+C These are input arrays (of integers) that contain the *absolute*
+C computational index of an open-boundary (OB) point.
+C A zero (0) element means there is no corresponding OB in that column/row.
+C The computational coordinate refers to "tracer" cells.
+C For a northern/southern OB, the OB V point is to the south/north.
+C For an eastern/western OB, the OB U point is to the west/east.
+C eg.
+C     OB_Jnorth(3)=34  means that:
+C          T( 3 ,34) is a an OB point
+C          U(3:4,34) is a an OB point
+C          V( 4 ,34) is a an OB point
+C while
+C     OB_Jsouth(3)=1  means that:
+C          T( 3 ,1) is a an OB point
+C          U(3:4,1) is a an OB point
+C          V( 4 ,2) is a an OB point
+C
+C For convenience, negative values for Jnorth/Ieast refer to
+C points relative to the Northern/Eastern edges of the model
+C eg. OB_Jnorth(3)=-1  means that the point (3,Ny) is a northern O-B.
+C
+C With exch2, the global domain used for specifying the boundary (and
+C boundary value files) is different for N,S and E,W boundaries:
+C - for N,S, the facets are stacked in x (like W2_mapIO=-1)
+C - for E,W, the facets are stacked in y, so that E,W boundaries in
+C   different facets cannot have the same I
+C
+C OB_Jnorth(W2_maxXStackNx) :: global index array of northern open-boundary point
+C OB_Jsouth(W2_maxXStackNx) :: global index array of southern open-boundary point
+C OB_Ieast(W2_maxYStackNy)  :: global index array of eastern  open-boundary point
+C OB_Iwest(W2_maxYStackNy)  :: global index array of western  open-boundary point
+
+      COMMON/OBCS_GLOBAL/ OB_Jnorth, OB_Jsouth, OB_Ieast, OB_Iwest
+#ifdef ALLOW_EXCH2
+      INTEGER OB_Jnorth(W2_maxXStackNx)
+      INTEGER OB_Jsouth(W2_maxXStackNx)
+      INTEGER OB_Ieast(W2_maxYStackNy)
+      INTEGER OB_Iwest(W2_maxYStackNy)
+#else
+      INTEGER OB_Jnorth(Nx)
+      INTEGER OB_Jsouth(Nx)
+      INTEGER OB_Ieast(Ny)
+      INTEGER OB_Iwest(Ny)
+#endif
+
+C With exch2, we use different global domains for specifying
+C N,S resp. E,W boundaries (and for reading in the corresponding data):
+C
+C     OBNS_Nx ::  width of global domain for OB_Jnorth, OB_Jsouth
+C     OBNS_Ny :: height of global domain for OB_Jnorth, OB_Jsouth
+C     OBEW_Nx ::  width of global domain for OB_Ieast, OB_Iwest
+C     OBEW_Ny :: height of global domain for OB_Ieast, OB_Iwest
+
+      INTEGER OBNS_Nx, OBNS_Ny
+      INTEGER OBEW_Nx, OBEW_Ny
+
+#ifdef ALLOW_EXCH2
+C     buf :: used to exchange OB_Jnorth, ...
+      _RS buf(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
 
       NAMELIST /OBCS_PARM01/
@@ -74,6 +143,18 @@ C     iUnit       - Work variable for IO unit number
 
       _BEGIN_MASTER(myThid)
 
+#ifdef ALLOW_EXCH2
+      OBNS_Nx = exch2_xStack_Nx
+      OBNS_Ny = exch2_xStack_Ny
+      OBEW_Nx = exch2_yStack_Nx
+      OBEW_Ny = exch2_yStack_Ny
+#else
+      OBNS_Nx = Nx
+      OBNS_Ny = Ny
+      OBEW_Nx = Nx
+      OBEW_Ny = Ny
+#endif
+
 C--   OBCS_READPARMS has been called so we know that
 C     the package is active.
 c     OBCSIsOn=.TRUE.
@@ -90,11 +171,11 @@ c     OBCSIsOn=.TRUE.
      I                          myThid )
 
 C--   Default flags and values for OBCS
-      DO I=1,Nx
+      DO I=1,OBNS_Nx
        OB_Jnorth(I)=0
        OB_Jsouth(I)=0
       ENDDO
-      DO J=1,Ny
+      DO J=1,OBEW_Ny
        OB_Ieast(J)=0
        OB_Iwest(J)=0
       ENDDO
@@ -170,11 +251,11 @@ C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OBCS_PARM01)
 
 C     Account for periodicity if negative indices were supplied
-      DO J=1,Ny
-       IF (OB_Ieast(J).lt.0) OB_Ieast(J)=OB_Ieast(J)+Nx+1
+      DO J=1,OBEW_Ny
+       IF (OB_Ieast(J).lt.0) OB_Ieast(J)=OB_Ieast(J)+OBEW_Nx+1
       ENDDO
-      DO I=1,Nx
-       IF (OB_Jnorth(I).lt.0) OB_Jnorth(I)=OB_Jnorth(I)+Ny+1
+      DO I=1,OBNS_Nx
+       IF (OB_Jnorth(I).lt.0) OB_Jnorth(I)=OB_Jnorth(I)+OBNS_Ny+1
       ENDDO
       IF ( debugLevel .GE. debLevB ) THEN
        write(*,*) 'OB Jn =',OB_Jnorth
@@ -246,6 +327,36 @@ C     required by ini_depth which is called befoer obcs_init_fixed
          OB_Iw(J,bi,bj)=0
         ENDDO
 
+#ifdef ALLOW_EXCH2
+C       We apply OBCS only inside tile and exchange overlaps later
+        tN = W2_myTileList(bi,bj)
+C 1. N/S boundaries
+        DO J=1,sNy
+C   convert from local y index J to global y index jG
+c   for N/S boundaries, we use faces stacked in x direction
+         jG = exch2_tyXStackLo(tN)+J-1
+C   loop over local x index I
+         DO I=1,sNx
+          iG = exch2_txXStackLo(tN)+I-1
+          IF (jG.EQ.OB_Jnorth(iG)) OB_Jn(I,bi,bj)=J
+          IF (jG.EQ.OB_Jsouth(iG)) OB_Js(I,bi,bj)=J
+         ENDDO
+        ENDDO
+C 2. E/W boundaries
+        DO J=1,sNy
+C   convert from local y index J to global y index jG
+c   for E/W boundaries, we use faces stacked in y direction
+         jG = exch2_tyYStackLo(tN)+J-1
+C   loop over local x index I
+         DO I=1,sNx
+          iG = exch2_txYStackLo(tN)+I-1
+          IF (iG.EQ.OB_Ieast(jG))  OB_Ie(J,bi,bj)=I
+          IF (iG.EQ.OB_Iwest(jG))  OB_Iw(J,bi,bj)=I
+         ENDDO
+        ENDDO
+
+#else /* ALLOW_EXCH2 */
+
         DO J=1-Oly,sNy+Oly
 C convert from local y index J to global y index jG
          jG = myYGlobalLo-1+(bj-1)*sNy+J
@@ -273,9 +384,50 @@ C OB_Jnorth(iGm) allows for the northern boundary to be at variable y locations
           IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(I,bi,bj)=J
          ENDDO
         ENDDO
+#endif /* ALLOW_EXCH2 */
+
 C     bi,bj-loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_EXCH2
+C     exchange with neighbors
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1,sNy
+         buf(sNx,J,bi,bj) = OB_Ie(J,bi,bj)
+         buf(  1,J,bi,bj) = OB_Iw(J,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL EXCH_3D_RS( buf, 1, myThid )
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1-Oly,sNy+Oly
+         OB_Ie(J,bi,bj) = buf(sNx,J,bi,bj)
+         OB_Iw(J,bi,bj) = buf(  1,J,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO I=1,sNx
+         buf(I,sNy,bi,bj) = OB_Jn(I,bi,bj)
+         buf(I,  1,bi,bj) = OB_Js(I,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL EXCH_3D_RS( buf, 1, myThid )
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO I=1-Olx,sNx+Olx
+         OB_Jn(I,bi,bj) = buf(I,sNy,bi,bj)
+         OB_Js(I,bi,bj) = buf(I,  1,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_EXCH2 */
 
 #endif /* ALLOW_OBCS */
       RETURN
