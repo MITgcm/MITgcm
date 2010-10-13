@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.4 2010/10/13 20:56:01 jahn Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -42,7 +42,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER tNx, tNy, fNx, fNy, nbPts, fBaseX
+      INTEGER tNx, tNy, fNx, fNy, nbPts, fBaseX, fBaseY
       INTEGER nbTx, nbTy
       INTEGER j, ii, k, tId, tx, ty
       INTEGER divide, nnx(W2_maxNbFacets)
@@ -116,13 +116,23 @@ C     of all x-size (faster to apply GCD to Nb of Tiles in X):
       ENDIF
 
 C--   Global Map size:
+C     facets stacked in x direction
+      exch2_xStack_Nx = 0
+      exch2_xStack_Ny = 0
+      DO j=1,nFacets
+        exch2_xStack_Nx =   exch2_xStack_Nx + facet_dims(2*j-1)
+        exch2_xStack_Ny = MAX( exch2_xStack_Ny, facet_dims(2*j) )
+      ENDDO
+C     facets stacked in y direction
+      exch2_yStack_Nx = 0
+      exch2_yStack_Ny = 0
+      DO j=1,nFacets
+        exch2_yStack_Nx = MAX( exch2_yStack_Nx, facet_dims(2*j-1) )
+        exch2_yStack_Ny =   exch2_yStack_Ny + facet_dims(2*j)
+      ENDDO
       IF ( W2_mapIO.EQ.-1 ) THEN
-        exch2_global_Nx = 0
-        exch2_global_Ny = 0
-        DO j=1,nFacets
-          exch2_global_Nx =   exch2_global_Nx + facet_dims(2*j-1)
-          exch2_global_Ny = MAX( exch2_global_Ny, facet_dims(2*j) )
-        ENDDO
+        exch2_global_Nx = exch2_xStack_Nx
+        exch2_global_Ny = exch2_xStack_Ny
       ELSEIF ( W2_mapIO.EQ.0 ) THEN
         exch2_global_Nx = nbPts
         exch2_global_Ny = 1
@@ -141,6 +151,7 @@ C--   Set tiles mapping within facet (sub-domain) and within Global Map
       tId = 0
       nbPts = 0
       fBaseX = 0
+      fBaseY = 0
       DO j=1,nFacets
         fNx = facet_dims(2*j-1)
         fNy = facet_dims( 2*j )
@@ -165,7 +176,13 @@ C--   Tags blank tile by removing facet # (exch2_myFace) but keeps its location
           exch2_tNy   ( tId ) = tNy
           exch2_tBasex( tId ) = (tx-1)*tNx
           exch2_tBasey( tId ) = (ty-1)*tNy
-C--   Global IO Mapping
+C--   Global IO Mappings
+C       these are for OBCS (vertical slices)
+          exch2_txXStackLo( tId ) = 1 + exch2_tBasex(tId) + fBaseX
+          exch2_tyXStackLo( tId ) = 1 + exch2_tBasey(tId)
+          exch2_txYStackLo( tId ) = 1 + exch2_tBasex(tId)
+          exch2_tyYStackLo( tId ) = 1 + exch2_tBasey(tId) + fBaseY
+C       and these for global files (3d files/horizontal 2d files)
           IF ( W2_mapIO.EQ.-1 ) THEN
 C-        Old format
             exch2_txGlobalo( tId ) = 1 + exch2_tBasex(tId) + fBaseX
@@ -189,6 +206,7 @@ C         Compact format: piled in the Y direction
          ENDDO
         ENDDO
         fBaseX = fBaseX + fNx
+        fBaseY = fBaseY + fNy
         nbPts = nbPts + fNx*fNy
       ENDDO
 

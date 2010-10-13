@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_SIZE.h,v 1.1 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_SIZE.h,v 1.2 2010/10/13 20:56:00 jahn Exp $
 C $Name:  $
 
 CBOP
@@ -25,6 +25,10 @@ C  W2_ioBufferSize  :: Maximum size of Single-CPU IO buffer.
        INTEGER W2_maxNeighbours
        INTEGER W2_maxNbTiles
        INTEGER W2_ioBufferSize
+       INTEGER W2_maxXStackNx
+       INTEGER W2_maxXStackNy
+       INTEGER W2_maxYStackNx
+       INTEGER W2_maxYStackNy
 
 C---   Default values :
 C      (suitable for 6-face Cube-Sphere topology, compact global I/O format)
@@ -35,6 +39,10 @@ C      resulting in doubling the tile number.
        PARAMETER ( W2_maxNeighbours = 8 )
        PARAMETER ( W2_maxNbTiles = nSx*nSy*nPx*nPy * 2 )
        PARAMETER ( W2_ioBufferSize = W2_maxNbTiles*sNx*sNy )
+       PARAMETER ( W2_maxXStackNx = W2_maxNbTiles*sNx )
+       PARAMETER ( W2_maxXStackNy = W2_maxNbTiles*sNy )
+       PARAMETER ( W2_maxYStackNx = W2_maxNbTiles*sNx )
+       PARAMETER ( W2_maxYStackNy = W2_maxNbTiles*sNy )
 
 C- Note: Overestimating W2_maxNbFacets and, to less extent, W2_maxNeighbours
 C        have no or very little effects on memory footprint.
