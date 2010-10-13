@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1310 2010/10/12 16:03:58 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1311 2010/10/13 20:57:22 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs: add support for exch2
+  - the position of the boundary and prescribed values are specified using
+    a global domain with exch2 facets stacked
+    - in x for N,S boundaries (like W2_mapIO=-1)
+    - in y for E,W boundaries (so E,W boundaries do not overlap)
+o pkg/mdsio: add support for writing global sections with exch2
+    file layout is as for obcs described above:
+    - for x-z sections, facets are stacked in x (like W2_mapIO=-1)
+    - for y-z sections, facets are stacked in y
 o pkg/thsice:
    - change a few routines for better vectorization: thsice_albedo.F,
      thsice_step_temp.F, and in thsice_calc_thickn.F. Results are
