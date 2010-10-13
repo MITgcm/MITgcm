@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.18 2010/10/12 16:00:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.19 2010/10/13 14:26:27 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -68,7 +68,6 @@ C     == Global variables ===
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "SIZE.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -306,7 +305,6 @@ CML     &       + sNx*sNy*max1*act2
 CML     &       + sNx*sNy*max1*max2*act3
 CML     &       + sNx*sNy*max1*max2*max3*act4
 CML#endif /* ALLOW_AUTODIFF_TAMC */
-C--
 CML#ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE frwatm(i,j) = comlev1_thsice_1, key=ikey_1
 CMLCADJ STORE fzmloc(i,j) = comlev1_thsice_1, key=ikey_1
@@ -397,10 +395,10 @@ C  mass of fresh water and salt initially present in ice
 
 #ifdef ALLOW_DBUG_THSICE
          IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &        'ThSI_CALC_TH: evpAtm, fzMlOc, Fbot =', 
+     &        'ThSI_CALC_TH: evpAtm, fzMlOc, Fbot =',
      &        frwAtm(i,j),fzMlOc(i,j),Fbot(i,j)
 #endif
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -472,7 +470,7 @@ C- original formulation(above): Loose energy when flxCnB < Fbot < 0
      &        'ThSI_CALC_TH: etop,etope,ebot,ebote=',
      &        etop(i,j),etope(i,j),ebot(i,j),ebote(i,j)
 #endif
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -529,7 +527,6 @@ CML     &         + nlyr*sNx*sNy*max1*act2
 CML     &         + nlyr*sNx*sNy*max1*max2*act3
 CML     &         + nlyr*sNx*sNy*max1*max2*max3*act4
 CML#endif
-C--
 CML#ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE etop(i,j) = comlev1_thsice_2, key=ikey_2
 CMLCADJ STORE hnew(i,j,k) = comlev1_thsice_2, key=ikey_2
@@ -554,7 +551,7 @@ c        hIce(i,j)=0. _d 0
 c        go to 200
 c     ENDIF
 
-C     endif iceMask > 0 
+C     endif iceMask > 0
          ENDIF
 C     end i/j-loops
         ENDDO
@@ -575,7 +572,7 @@ CML#ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
 CMLCADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
 CML#endif
-         qicen(i,j,nlyr) = 
+         qicen(i,j,nlyr) =
      &        (hnew(i,j,nlyr)*qicen(i,j,nlyr)+dhi*qbot) /
      &        (hnew(i,j,nlyr)+dhi)
          hnew(i,j,nlyr) = hnew(i,j,nlyr) + dhi
@@ -596,7 +593,6 @@ CML     &         + nlyr*sNx*sNy*max1*act2
 CML     &         + nlyr*sNx*sNy*max1*max2*act3
 CML     &         + nlyr*sNx*sNy*max1*max2*max3*act4
 CML#endif
-CMLC--
 CML#ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE ebot(i,j) = comlev1_thsice_2, key=ikey_2
 CMLCADJ STORE hnew(i,j,k) = comlev1_thsice_2, key=ikey_2
@@ -605,7 +601,7 @@ CML#endif
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j) .GT. 0. _d 0 .AND.
-     &        ebot(i,j)   .GT. 0. _d 0 .AND. 
+     &        ebot(i,j)   .GT. 0. _d 0 .AND.
      &        hnew(i,j,k) .GT. 0. _d 0) THEN
           rq =  rhoi * qicen(i,j,k)
           rqh = rq * hnew(i,j,k)
@@ -627,8 +623,8 @@ C     If ice melts completely and snow is left, remove the snow with
 C     energy from the mixed layer
       DO j = jMin, jMax
        DO i = iMin, iMax
-        IF (iceMask(i,j) .GT. 0. _d 0 .AND. 
-     &       ebot(i,j)   .GT. 0. _d 0 .AND. 
+        IF (iceMask(i,j) .GT. 0. _d 0 .AND.
+     &       ebot(i,j)   .GT. 0. _d 0 .AND.
      &       hSnow(i,j)  .GT. 0. _d 0) THEN
          rq =  rhos * qsnow
          rqh = rq * hSnow(i,j)
@@ -657,12 +653,12 @@ C Compute new total ice thickness.
          hIce(i,j) = hnew(i,j,1) + hnew(i,j,2)
 #ifdef ALLOW_DBUG_THSICE
          IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &        'ThSI_CALC_TH:   etop, ebot, hIce, hSnow =', 
+     &        'ThSI_CALC_TH:   etop, ebot, hIce, hSnow =',
      &        etop(i,j), ebot(i,j), hIce(i,j), hSnow(i,j)
 #endif
 
 C If hIce < hIceMin, melt the ice.
-         IF ( hIce(i,j).LT.hIceMin 
+         IF ( hIce(i,j).LT.hIceMin
      &        .AND. (hIce(i,j)+hSnow(i,j)).GT.0. _d 0 ) THEN
           esurp(i,j) = esurp(i,j) - rhos*qsnow*hSnow(i,j)
      &         - rhoi*qicen(i,j,1)*hnew(i,j,1)
@@ -679,7 +675,7 @@ C If hIce < hIceMin, melt the ice.
 #endif
          ENDIF
 
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -690,7 +686,7 @@ C     end i/j-loops
 
 C--   do a mass-budget of sea-ice to compute "fresh" = the fresh-water flux
 C     that is returned to the ocean ; needs to be done before snow/evap
-         frw2oc(i,j) = (mwater0(i,j) 
+         frw2oc(i,j) = (mwater0(i,j)
      &        - (rhos*hSnow(i,j)+rhoi*hIce(i,j)))/dt
 
          IF ( hIce(i,j) .LE. 0. _d 0 ) THEN
@@ -698,8 +694,8 @@ C-    return  snow to the ocean (account for Latent heat of freezing)
           frw2oc(i,j) = frw2oc(i,j) + snowP(i,j)
           flx2oc(i,j) = flx2oc(i,j) - snowP(i,j)*Lfresh
          ENDIF
-          
-C     endif iceMask > 0 
+
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -729,7 +725,7 @@ CML#endif
           ENDIF
 C     endif hice > 0
          ENDIF
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -776,7 +772,7 @@ C-- modified scheme. taking into account Ice enthalpy
              dhi = evapLoc(i,j)/rhoi*dt
              IF (dhi.GE.hnew(i,j,k)) THEN
               evapLoc(i,j)=evapLoc(i,j)-hnew(i,j,k)*rhoi/dt
-              esurp(i,j) = esurp(i,j) 
+              esurp(i,j) = esurp(i,j)
      &             - hnew(i,j,k)*rhoi*(qicen(i,j,k)-Lfresh)
               hnew(i,j,k)=0. _d 0
              ELSE
@@ -796,23 +792,23 @@ c           go to 200
 c     ENDIF
 C     endif hice > 0 and evaploc > 0
           ENDIF
-C     endif iceMask > 0 
+C     endif iceMask > 0
          ENDIF
 C     end i/j-loops
         ENDDO
        ENDDO
 C     end k-loop
       ENDDO
-C     still else: hice > 0 
+C     still else: hice > 0
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
          IF (hIce(i,j) .GT. 0. _d 0) THEN
 C Compute new total ice thickness.
-          hIce(i,j) = hnew(i,j,1) + hnew(i,j,2)          
+          hIce(i,j) = hnew(i,j,1) + hnew(i,j,2)
 C If hIce < hIceMin, melt the ice.
           IF ( hIce(i,j).GT.0. _d 0 .AND. hIce(i,j).LT.hIceMin ) THEN
-           frw2oc(i,j) = frw2oc(i,j) 
+           frw2oc(i,j) = frw2oc(i,j)
      &          + (rhos*hSnow(i,j) + rhoi*hIce(i,j))/dt
            esurp(i,j) = esurp(i,j) - rhos*qsnow*hSnow(i,j)
      &          - rhoi*qicen(i,j,1)*hnew(i,j,1)
@@ -825,7 +821,7 @@ C If hIce < hIceMin, melt the ice.
            qicen(i,j,2) = 0. _d 0
 #ifdef ALLOW_DBUG_THSICE
            IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &          'ThSI_CALC_TH: -2 : esurp,frw2oc=', 
+     &          'ThSI_CALC_TH: -2 : esurp,frw2oc=',
      &          esurp(i,j), frw2oc(i,j)
 #endif
           ENDIF
@@ -833,7 +829,7 @@ C If hIce < hIceMin, melt the ice.
 C--   else hIce > 0: end
          ENDIF
 
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -856,7 +852,7 @@ CMLCADJ STORE hSnow(i,j) = comlev1_thsice_1, key=ikey_1
 CMLCADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
 CMLCADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
 CML#endif
-          IF ( hSnow(i,j) .GT. hIce(i,j)*floodFac 
+          IF ( hSnow(i,j) .GT. hIce(i,j)*floodFac
      &         .OR. hSnow(i,j) .GT. hsMax ) THEN
 cBB               WRITE (6,*)  'Freeboard adjusts'
 c          dhi = (hSnow(i,j) * rhos - hIce(i,j) * rhoiw) / rhosw
@@ -897,8 +893,9 @@ C Compute new total ice thickness.
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &         'ThSI_CALC_TH: b-Winton: hnew, qice =', 
-     &         hnew(i,j,:), qicen(i,j,:)
+     &         'ThSI_CALC_TH: b-Winton: hnew, qice =',
+     &         hnew(i,j,1), hnew(i,j,2),
+     &         qicen(i,j,1), qicen(i,j,2)
 #endif
 
           hlyr = hIce(i,j) * rec_nlyr
@@ -908,7 +905,7 @@ CML     I         hlyr, hnew(i,j,:), myThid )
 C     inlined version of S/R THSICE_RESHAPE_LAYERS
 C     | Repartition into equal-thickness layers, conserving energy.
 C     *==========================================================*
-C     | This is the 2-layer version (formerly "NEW_LAYERS_WINTON") 
+C     | This is the 2-layer version (formerly "NEW_LAYERS_WINTON")
 C     |  from M. Winton 1999, JAOT, sea-ice model.
           if (hnew(i,j,1).gt.hnew(i,j,2)) then
 C--   Layer 1 gives ice to layer 2
@@ -932,8 +929,8 @@ C     end of inlined S/R THSICE_RESHAPE_LAYERS
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
-     &         'ThSI_CALC_TH: icFrac,hIce, qtot, hSnow =', 
-     &         icFrac(i,j),hIce(i,j), (qicen(i,j,1)+qicen(i,j,2))*0.5, 
+     &         'ThSI_CALC_TH: icFrac,hIce, qtot, hSnow =',
+     &         icFrac(i,j),hIce(i,j), (qicen(i,j,1)+qicen(i,j,2))*0.5,
      &         hSnow(i,j)
 #endif
 
@@ -941,7 +938,7 @@ C-    if hIce > 0 : end
          ENDIF
  200     CONTINUE
 
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -954,7 +951,7 @@ C-  Compute surplus energy left over from melting.
          IF (hIce(i,j).LE.0. _d 0) icFrac(i,j)=0. _d 0
 
 C.. heat fluxes left over for ocean
-         flx2oc(i,j) = flx2oc(i,j) 
+         flx2oc(i,j) = flx2oc(i,j)
      &        + (Fbot(i,j)+(esurp(i,j)+etop(i,j)+ebot(i,j))/dt)
 #ifdef ALLOW_DBUG_THSICE
          IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
@@ -970,7 +967,7 @@ C     but should be Lvap only for the fraction "evap" that is left to the ocean.
          flx2oc(i,j) = flx2oc(i,j) + evapLoc(i,j)*Lfresh
 
 C fresh and salt fluxes
-c     frw2oc(i,j) = (mwater0(i,j) - (rhos*(hSnow(i,j)) 
+c     frw2oc(i,j) = (mwater0(i,j) - (rhos*(hSnow(i,j))
 c    &              + rhoi*(hIce(i,j))))/dt-evapLoc(i,j)
 c     fsalt = (msalt0(i,j) - rhoi*hIce(i,j)*saltIce)/35. _d 0/dt  ! for same units as frw2oc
 C     note (jmc): frw2oc is computed from a sea-ice mass budget that already
@@ -994,7 +991,7 @@ c    &      + snow(i,j,bi,bj)*rhos - frwAtm
 C--   add remaining liquid Precip (rain+RunOff) directly to ocean:
          frw2oc(i,j) = frw2oc(i,j) + (prcAtm(i,j)-snowP(i,j))
 
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -1030,7 +1027,7 @@ C     calculate extent changes
          ELSEIF (extend.GT.0. _d 0) THEN
           flx2oc(i,j)=flx2oc(i,j)+extend/dt
          ENDIF
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
@@ -1061,19 +1058,20 @@ C     endif iceMask > 0
         ENDIF
        ENDDO
       ENDDO
-#ifdef CHECK_ENERGY_CONSERV
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef CHECK_ENERGY_CONSERV
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
          qaux(1)=qIc1(i,j)
          qaux(2)=qIc2(i,j)
          CALL THSICE_CHECK_CONSERV( dBugFlag, i, j, bi, bj, 0,
-     I        iceMask(i,j), icFrac(i,j), hIce(i,j), hSnow(i,j), 
+     I        iceMask(i,j), icFrac(i,j), hIce(i,j), hSnow(i,j),
      I        qaux,
      I        flx2oc(i,j), frw2oc(i,j), fsalt,
      I        myTime, myIter, myThid )
-C     endif iceMask > 0 
+C     endif iceMask > 0
         ENDIF
 C     end i/j-loops
        ENDDO
