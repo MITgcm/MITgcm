@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62l
 (PID.TID 0000.0001) // Build user:        gforget
 (PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Mon Oct 11 01:18:24 EDT 2010
+(PID.TID 0000.0001) // Build date:        Wed Oct 13 07:53:54 EDT 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -752,7 +752,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.exf"
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results/output_adm.txt,v 1.9 2010/10/11 05:39:08 gforget Exp $
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results/output_adm.txt,v 1.10 2010/10/13 15:19:44 gforget Exp $
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># External Forcing Data
@@ -3429,11 +3429,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7478041751470E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9675084716084E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3054877871754E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6824933643404E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6824933643395E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777042460372E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6647765510164E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6706226277416E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9538985212033E-07
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.9538985212032E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3619822340416E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9834302249722E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3857488615105E-02
@@ -3520,7 +3520,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7443523018789E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9675319559932E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2828605491964E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6809459574866E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6809459574861E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777040220742E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6690582572922E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6731737506437E-05
@@ -3622,7 +3622,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7361294543508E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9698238500906E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2086783758267E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6794810038246E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6794810038245E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777040243604E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6812898415337E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6845510886160E-05
@@ -3713,7 +3713,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7416650595006E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9652992129288E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2725874615684E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6779335205008E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6779335205011E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777042500865E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6516873197905E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6679361553030E-05
@@ -3804,7 +3804,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7378891733402E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9650291514313E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3342691417276E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6764272831064E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6764272831071E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777043156000E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6725438118642E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6775397124184E-05
@@ -3895,7 +3895,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7352135745407E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9648292973327E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2486744765165E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8611109697363E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8611109697353E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777049765453E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6720637212840E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6726868476624E-05
@@ -3986,7 +3986,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7328508611263E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9639559244471E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3311161222686E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4874003904060E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4874003904053E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777057734057E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6719768458032E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6722616275546E-05
@@ -4077,7 +4077,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7364301216705E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9603389208939E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2872318766362E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6719085333723E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6719085333721E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777073332781E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6619602545071E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6728389095837E-05
@@ -4168,11 +4168,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7301632497204E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9612246811328E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1792253319390E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6704022660438E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6704022660439E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777087163349E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6821588558113E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6727410488965E-05
-(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7214938967135E-07
+(PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.7214938967136E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3720029410325E-02
 (PID.TID 0000.0001) %MON forcing_fu_min               =  -8.9854037069905E-02
 (PID.TID 0000.0001) %MON forcing_fu_mean              =   2.3887027776866E-02
@@ -4259,7 +4259,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7288564723949E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9569153360284E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1873461959478E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6688959885135E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6688959885140E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777101459199E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6738094965482E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6717241110226E-05
@@ -4350,7 +4350,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7230883877484E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9626333692210E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.3359226992931E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6673835308518E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6673835308527E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777118609013E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6837255803580E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6852763727396E-05
@@ -4441,7 +4441,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7259797084226E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9551626179813E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1899339881259E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8527152233726E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8527152233718E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777137783079E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6667171779072E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6624441788016E-05
@@ -4543,7 +4543,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7210185129293E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9584585391810E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2722459443212E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4776858049826E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4776858049821E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777158956244E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6837879686735E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6838552046184E-05
@@ -4634,7 +4634,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7167931463102E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9598655740316E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2289742976448E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8499229544872E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8499229544871E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777182103643E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6852770419757E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6786546779758E-05
@@ -4725,7 +4725,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7194489887769E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9580805984387E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2105410086236E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4744474930025E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4744474930028E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777207200908E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6699843188115E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6712014505754E-05
@@ -4816,8 +4816,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7165692555628E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9583341563553E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1990673112085E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6598638044754E-07
-(PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777234224415E-04
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6598638044761E-07
+(PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777234224416E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6832698002032E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6823825060139E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0142425512987E-06
@@ -4907,7 +4907,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7177365146640E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9526109089014E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1778921655607E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6583517963546E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6583517963536E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777263149612E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6764656508189E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6715157292699E-05
@@ -4998,7 +4998,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7206472009163E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9507570118017E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1161372282155E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6568456258292E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6568456258286E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777293952983E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6740607234128E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6654569172623E-05
@@ -5089,7 +5089,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7203079004880E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9494325310713E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0868066185644E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6553390840262E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6553390840260E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777326611547E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6814019756040E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6751133290134E-05
@@ -5180,7 +5180,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7130089189249E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9523784041874E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2075426270310E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8415679084038E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8415679084039E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777361102094E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6965029549470E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6779319045480E-05
@@ -5271,7 +5271,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7155153409936E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9488008160808E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1106166204972E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4647378242728E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4647378242733E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777398269264E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6779406560018E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6722725770528E-05
@@ -5362,7 +5362,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7107116622027E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9463206064667E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1052465101611E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8387753032572E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8387753032581E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777435488038E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6937318463189E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6740083937571E-05
@@ -5464,7 +5464,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7101090635308E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9492274580440E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1231253959995E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4614937017747E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4614937017738E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777470032656E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6862547636121E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6795628588043E-05
@@ -5555,7 +5555,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6942171555298E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9506308499306E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2057252420137E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6478071647074E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6478071647069E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777516931503E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7196986373213E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6792546244820E-05
@@ -5737,7 +5737,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7065152247826E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9450391047932E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0688272650569E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6447945081649E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6447945081653E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777605257379E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6771937247718E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6685111825457E-05
@@ -5828,7 +5828,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7041056589188E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9421917140952E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1442413961932E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6432878949172E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6432878949180E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777646487874E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6945039247561E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6743094477921E-05
@@ -5919,7 +5919,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6936767072193E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9501252935706E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0704001957031E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6417871361646E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6417871361636E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777700294208E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7121599690012E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6973348120306E-05
@@ -6010,7 +6010,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7050885387346E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9415649904522E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0661380271255E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8290209105574E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8290209105568E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777750276600E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6674417628819E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6637818034234E-05
@@ -6101,7 +6101,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7004842257254E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9423043077027E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1005932395612E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4501470508897E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4501470508894E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777801874620E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7017029332397E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6778888322352E-05
@@ -6192,7 +6192,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6960641936341E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9417551012717E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   3.9899090820995E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6372620906733E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6372620906735E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777849456212E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7032309878823E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6826374862897E-05
@@ -6283,7 +6283,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6955432593601E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9426436158565E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1097492785318E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6357556153688E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6357556153693E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777909835021E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6944271971840E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6749547805236E-05
@@ -6385,7 +6385,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6971984746732E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9377882577175E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0744222743681E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6342374680658E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6342374680668E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0777966157673E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6925643988864E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6760107668023E-05
@@ -6476,7 +6476,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6926265109786E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9419937812200E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1580163729931E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6327483123116E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6327483123108E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778024015725E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7058775865323E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6815512195124E-05
@@ -6567,7 +6567,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6854191002787E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9432785460739E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0606121063555E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8206594714356E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8206594714352E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778083389641E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7149848819288E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6765826341698E-05
@@ -6749,7 +6749,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6859520165794E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9391421666743E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1237356702883E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8178720556264E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.8178720556268E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778200772793E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7041018991883E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6831531333555E-05
@@ -6840,7 +6840,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6863227544637E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9364286406822E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0276422765655E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4371924909393E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.4371924909400E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778270416212E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6995472494571E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6747418806266E-05
@@ -6931,7 +6931,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6859161718950E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9332955847720E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1284186329992E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6252100412304E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6252100412293E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778335663997E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7023525127972E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6761646512018E-05
@@ -7022,7 +7022,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6852827311659E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9370942061067E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1047500179840E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6237034946149E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6237034946142E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778402333940E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7039817483249E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6688406887917E-05
@@ -7113,7 +7113,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6816081515701E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9382348711329E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1765458857787E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6221850975206E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6221850975204E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778470408113E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7119716362799E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6933135199641E-05
@@ -7204,7 +7204,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6842607794247E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9347734744368E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.0543153587725E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6206903816360E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6206903816362E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778539868041E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6981169673672E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6748043155458E-05
@@ -7306,7 +7306,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6807016689987E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9358121809463E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.1545255833636E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6191837982984E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6191837982989E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778610696729E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7122878213668E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6770587841319E-05
@@ -7397,7 +7397,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.6693495532787E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9403464606891E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   4.2674063313644E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6176772229173E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6176772229183E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0778682876128E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.7305049322355E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.6830035414397E-05
@@ -9955,99 +9955,99 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  13.1859956
-(PID.TID 0000.0001)         System time:  0.561915017
-(PID.TID 0000.0001)     Wall clock time:  25.991194
+(PID.TID 0000.0001)           User time:  13.4699522
+(PID.TID 0000.0001)         System time:  0.551915972
+(PID.TID 0000.0001)     Wall clock time:  34.0556471
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.91171
-(PID.TID 0000.0001)         System time:  0.112983002
-(PID.TID 0000.0001)     Wall clock time:  4.63141012
+(PID.TID 0000.0001)           User time:  1.96769997
+(PID.TID 0000.0001)         System time:  0.120981007
+(PID.TID 0000.0001)     Wall clock time:  4.73854494
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  7.66083455
-(PID.TID 0000.0001)         System time:  0.267958991
-(PID.TID 0000.0001)     Wall clock time:  14.5080988
+(PID.TID 0000.0001)           User time:  7.94579279
+(PID.TID 0000.0001)         System time:  0.271959007
+(PID.TID 0000.0001)     Wall clock time:  20.2998691
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  1.19681954
-(PID.TID 0000.0001)         System time:  0.137981176
-(PID.TID 0000.0001)     Wall clock time:  2.05691957
+(PID.TID 0000.0001)           User time:  1.21280932
+(PID.TID 0000.0001)         System time:  0.116983011
+(PID.TID 0000.0001)     Wall clock time:  3.08203268
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:  0.115978956
-(PID.TID 0000.0001)         System time:  0.011997968
-(PID.TID 0000.0001)     Wall clock time:  0.207201242
+(PID.TID 0000.0001)           User time:  0.121973753
+(PID.TID 0000.0001)         System time:  0.00799906254
+(PID.TID 0000.0001)     Wall clock time:  0.309492826
 (PID.TID 0000.0001)          No. starts: 2904
 (PID.TID 0000.0001)           No. stops: 2904
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  1.92069983
-(PID.TID 0000.0001)         System time:  0.0109979659
-(PID.TID 0000.0001)     Wall clock time:  2.58160377
+(PID.TID 0000.0001)           User time:  1.8317275
+(PID.TID 0000.0001)         System time:  0.00999897718
+(PID.TID 0000.0001)     Wall clock time:  3.59175992
 (PID.TID 0000.0001)          No. starts: 432
 (PID.TID 0000.0001)           No. stops: 432
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.236958981
-(PID.TID 0000.0001)         System time:  0.00299999118
-(PID.TID 0000.0001)     Wall clock time:  0.45009923
+(PID.TID 0000.0001)           User time:  0.241959333
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.247939587
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  3.60945129
-(PID.TID 0000.0001)         System time:  0.171974033
-(PID.TID 0000.0001)     Wall clock time:  6.78466415
+(PID.TID 0000.0001)           User time:  3.54746056
+(PID.TID 0000.0001)         System time:  0.151977003
+(PID.TID 0000.0001)     Wall clock time:  8.88613701
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0859880447
-(PID.TID 0000.0001)         System time:  0.0149979293
-(PID.TID 0000.0001)     Wall clock time:  0.215776443
+(PID.TID 0000.0001)           User time:  0.0959844589
+(PID.TID 0000.0001)         System time:  0.0119989514
+(PID.TID 0000.0001)     Wall clock time:  0.556106806
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  3.50446796
-(PID.TID 0000.0001)         System time:  0.131978989
-(PID.TID 0000.0001)     Wall clock time:  6.31951809
+(PID.TID 0000.0001)           User time:  3.43747616
+(PID.TID 0000.0001)         System time:  0.117983043
+(PID.TID 0000.0001)     Wall clock time:  8.16269708
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.981852531
-(PID.TID 0000.0001)         System time:  0.0979861021
-(PID.TID 0000.0001)     Wall clock time:  1.54725528
+(PID.TID 0000.0001)           User time:  1.00184536
+(PID.TID 0000.0001)         System time:  0.0889870524
+(PID.TID 0000.0001)     Wall clock time:  2.37981915
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.24464512
-(PID.TID 0000.0001)         System time:  0.0119979978
-(PID.TID 0000.0001)     Wall clock time:  3.31251454
+(PID.TID 0000.0001)           User time:  2.14869404
+(PID.TID 0000.0001)         System time:  0.00799897313
+(PID.TID 0000.0001)     Wall clock time:  4.13834596
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0160017014
-(PID.TID 0000.0001)         System time:  0.00199997425
-(PID.TID 0000.0001)     Wall clock time:  0.017054081
+(PID.TID 0000.0001)           User time:  0.01699543
+(PID.TID 0000.0001)         System time:  0.000999987125
+(PID.TID 0000.0001)     Wall clock time:  0.0167922974
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0180006027
-(PID.TID 0000.0001)         System time:  0.00199899077
-(PID.TID 0000.0001)     Wall clock time:  0.0170178413
+(PID.TID 0000.0001)           User time:  0.0259933472
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.118089437
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0109968185
+(PID.TID 0000.0001)           User time:  0.0139942169
 (PID.TID 0000.0001)         System time:  0.000999987125
-(PID.TID 0000.0001)     Wall clock time:  0.017573595
+(PID.TID 0000.0001)     Wall clock time:  0.0177338123
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.0119991302
-(PID.TID 0000.0001)         System time:  0.00599694252
-(PID.TID 0000.0001)     Wall clock time:  1.17386341
+(PID.TID 0000.0001)           User time:  0.0129957199
+(PID.TID 0000.0001)         System time:  0.0129980147
+(PID.TID 0000.0001)     Wall clock time:  1.0657177
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001) // ======================================================

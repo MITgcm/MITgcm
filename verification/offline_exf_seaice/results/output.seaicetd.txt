@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62l
 (PID.TID 0000.0001) // Build user:        gforget
 (PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Mon Oct 11 00:20:35 EDT 2010
+(PID.TID 0000.0001) // Build date:        Wed Oct 13 04:54:14 EDT 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -622,7 +622,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.exf"
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results/Attic/output.seaicetd.txt,v 1.12 2010/10/11 05:39:07 gforget Exp $
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results/Attic/output.seaicetd.txt,v 1.13 2010/10/13 15:19:42 gforget Exp $
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># External Forcing Data
@@ -2474,7 +2474,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.5130164632928E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   1.9358984477821E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   6.5438444686732E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.1164173341569E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.1164173341559E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0804710294062E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.8158161290911E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.7374141923227E-05
@@ -2708,7 +2708,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.5201903483206E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   2.1436062473066E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   9.1500469204715E-01
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -2.1684315558029E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -2.1684315558038E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0652925090580E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.8563566425225E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.7906111070046E-05
@@ -2923,7 +2923,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.7514070684796E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   2.5305311732349E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   1.2623425205561E+00
-(PID.TID 0000.0001) %MON forcing_empmr_max            =   6.9234688787198E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =   6.9234688787206E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -1.0272638448682E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.8293211726348E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.7989887729937E-05
@@ -3141,7 +3141,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -2.0305078341938E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   2.9130642412864E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   1.5138413719844E+00
-(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6092995751747E-07
+(PID.TID 0000.0001) %MON forcing_empmr_max            =  -1.6092995751740E-07
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -9.8913775088155E-05
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.6956646793457E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.7542708206781E-05
@@ -3375,7 +3375,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -2.4271632194191E+01
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   3.3861738219192E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   1.8514142216405E+00
-(PID.TID 0000.0001) %MON forcing_empmr_max            =   4.9382149256180E-06
+(PID.TID 0000.0001) %MON forcing_empmr_max            =   4.9382149256181E-06
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -9.2646925527872E-05
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -2.5850147873960E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.7002398232165E-05
@@ -3662,123 +3662,123 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    134  SIhsnow      Counter:     720   Parms: SM      M1      
 (PID.TID 0000.0001) %CHECKPOINT      1440 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  25.1821721
-(PID.TID 0000.0001)         System time:  0.285955994
-(PID.TID 0000.0001)     Wall clock time:  32.634587
+(PID.TID 0000.0001)           User time:  25.0361932
+(PID.TID 0000.0001)         System time:  0.851870024
+(PID.TID 0000.0001)     Wall clock time:  131.268986
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.97069997
-(PID.TID 0000.0001)         System time:  0.0469919993
-(PID.TID 0000.0001)     Wall clock time:  2.21732092
+(PID.TID 0000.0001)           User time:  1.95970196
+(PID.TID 0000.0001)         System time:  0.238964
+(PID.TID 0000.0001)     Wall clock time:  56.371222
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  23.1854769
-(PID.TID 0000.0001)         System time:  0.228966001
-(PID.TID 0000.0001)     Wall clock time:  30.247273
+(PID.TID 0000.0001)           User time:  23.0674924
+(PID.TID 0000.0001)         System time:  0.57391201
+(PID.TID 0000.0001)     Wall clock time:  68.6954701
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.38894093
-(PID.TID 0000.0001)         System time:  0.0179979987
-(PID.TID 0000.0001)     Wall clock time:  0.529227018
+(PID.TID 0000.0001)           User time:  0.383942008
+(PID.TID 0000.0001)         System time:  0.0619900078
+(PID.TID 0000.0001)     Wall clock time:  8.30895185
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  22.796536
-(PID.TID 0000.0001)         System time:  0.210968003
-(PID.TID 0000.0001)     Wall clock time:  29.7179101
+(PID.TID 0000.0001)           User time:  22.6835504
+(PID.TID 0000.0001)         System time:  0.511922002
+(PID.TID 0000.0001)     Wall clock time:  60.3863399
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  22.7175469
-(PID.TID 0000.0001)         System time:  0.207967997
-(PID.TID 0000.0001)     Wall clock time:  29.6449738
+(PID.TID 0000.0001)           User time:  22.6245601
+(PID.TID 0000.0001)         System time:  0.50792399
+(PID.TID 0000.0001)     Wall clock time:  60.317929
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.276968956
-(PID.TID 0000.0001)         System time:  0.00699901581
-(PID.TID 0000.0001)     Wall clock time:  0.294968605
+(PID.TID 0000.0001)           User time:  0.261965513
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.267807484
 (PID.TID 0000.0001)          No. starts: 2880
 (PID.TID 0000.0001)           No. stops: 2880
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.38934159
-(PID.TID 0000.0001)         System time:  0.0299949944
-(PID.TID 0000.0001)     Wall clock time:  5.83016968
+(PID.TID 0000.0001)           User time:  4.40433359
+(PID.TID 0000.0001)         System time:  0.0639939606
+(PID.TID 0000.0001)     Wall clock time:  4.64923096
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  4.30435681
-(PID.TID 0000.0001)         System time:  0.0199969858
-(PID.TID 0000.0001)     Wall clock time:  5.69302201
+(PID.TID 0000.0001)           User time:  4.27336097
+(PID.TID 0000.0001)         System time:  0.0559939742
+(PID.TID 0000.0001)     Wall clock time:  4.510607
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0719900131
-(PID.TID 0000.0001)         System time:  0.00299999118
-(PID.TID 0000.0001)     Wall clock time:  0.0634598732
+(PID.TID 0000.0001)           User time:  0.0669853687
+(PID.TID 0000.0001)         System time:  0.00199899077
+(PID.TID 0000.0001)     Wall clock time:  0.0642871857
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.42458081
-(PID.TID 0000.0001)         System time:  0.0199960247
-(PID.TID 0000.0001)     Wall clock time:  11.203763
+(PID.TID 0000.0001)           User time:  9.15957689
+(PID.TID 0000.0001)         System time:  0.0899907649
+(PID.TID 0000.0001)     Wall clock time:  9.46780133
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  6.66201329
-(PID.TID 0000.0001)         System time:  0.0139970332
-(PID.TID 0000.0001)     Wall clock time:  7.77815604
+(PID.TID 0000.0001)           User time:  6.40202546
+(PID.TID 0000.0001)         System time:  0.0609938502
+(PID.TID 0000.0001)     Wall clock time:  6.64191818
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.796851158
-(PID.TID 0000.0001)         System time:  0.0059980154
-(PID.TID 0000.0001)     Wall clock time:  0.839353323
+(PID.TID 0000.0001)           User time:  0.829861641
+(PID.TID 0000.0001)         System time:  0.0109988749
+(PID.TID 0000.0001)     Wall clock time:  0.840225458
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.47471404
-(PID.TID 0000.0001)         System time:  0.00599900633
-(PID.TID 0000.0001)     Wall clock time:  1.75098205
+(PID.TID 0000.0001)           User time:  1.46882415
+(PID.TID 0000.0001)         System time:  0.0129979849
+(PID.TID 0000.0001)     Wall clock time:  1.50614262
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0599796772
-(PID.TID 0000.0001)         System time:  0.00200000405
-(PID.TID 0000.0001)     Wall clock time:  0.0689704418
+(PID.TID 0000.0001)           User time:  0.0409872532
+(PID.TID 0000.0001)         System time:  0.00399902463
+(PID.TID 0000.0001)     Wall clock time:  0.0649449825
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.972919703
-(PID.TID 0000.0001)         System time:  0.00499999523
-(PID.TID 0000.0001)     Wall clock time:  1.28631091
+(PID.TID 0000.0001)           User time:  1.0058465
+(PID.TID 0000.0001)         System time:  0.00999698043
+(PID.TID 0000.0001)     Wall clock time:  1.04738593
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.07565141
-(PID.TID 0000.0001)         System time:  0.00699801743
-(PID.TID 0000.0001)     Wall clock time:  2.40827298
+(PID.TID 0000.0001)           User time:  2.10764575
+(PID.TID 0000.0001)         System time:  0.0189958811
+(PID.TID 0000.0001)     Wall clock time:  2.19081211
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.103984594
-(PID.TID 0000.0001)         System time:  0.00399999321
-(PID.TID 0000.0001)     Wall clock time:  0.105561972
+(PID.TID 0000.0001)           User time:  0.0789921284
+(PID.TID 0000.0001)         System time:  0.00200003386
+(PID.TID 0000.0001)     Wall clock time:  0.0949118137
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00153208
-(PID.TID 0000.0001)         System time:  0.0559920073
-(PID.TID 0000.0001)     Wall clock time:  5.17774487
+(PID.TID 0000.0001)           User time:  3.1175518
+(PID.TID 0000.0001)         System time:  0.227966011
+(PID.TID 0000.0001)     Wall clock time:  39.4596336
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0839867592
-(PID.TID 0000.0001)         System time:  0.0189979747
-(PID.TID 0000.0001)     Wall clock time:  0.516119003
+(PID.TID 0000.0001)           User time:  0.058989048
+(PID.TID 0000.0001)         System time:  0.0239960551
+(PID.TID 0000.0001)     Wall clock time:  0.637616873
 (PID.TID 0000.0001)          No. starts: 1440
 (PID.TID 0000.0001)           No. stops: 1440
 (PID.TID 0000.0001) // ======================================================
