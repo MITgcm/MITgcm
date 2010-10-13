@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.84 2010/10/13 15:12:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.85 2010/10/13 19:10:42 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,7 +54,7 @@ C     number of surface interface layer
       INTEGER kSurface
 C     constants
       _RL TBC, ICE2SNOW
-      _RL QI, QS
+      _RL QI, QS, Lfusion
 
 C note: for all heat stocks, the sign convention is positive towards the atmosphere
 C
@@ -167,10 +167,17 @@ C     FREEZING TEMP. OF SEA WATER (deg C)
 
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
+
+C     FRESH WATER LATENT HEAT OF FUSION
+      Lfusion       = 3.34 _d +05
 C     HEAT OF FUSION OF ICE (J/m^3)
-      QI           = 302.0 _d +06
+      QI           = SEAICE_rhoIce*Lfusion
 C     HEAT OF FUSION OF SNOW (J/m^3)
-      QS           = 1.1 _d +08
+      QS           = SEAICE_rhoSnow*Lfusion
+C
+C     note that QI/QS=ICE2SNOW -- except it wasnt in old code
+
+
 
 c conversion factors to go from Q (W/m2) to HEFF (ice meters)
       convertQ2HI=SEAICE_deltaTtherm/QI
@@ -477,8 +484,7 @@ C ===========================================================
 
         DO J=1,sNy
          DO I=1,sNx
-          d_HEFFbyOCNonICE(I,J) = 
-     &     MAX(ZERO, HEFF(I,J,bi,bj)+a_QbyOCN(i,j))- HEFF(I,J,bi,bj)
+          d_HEFFbyOCNonICE(I,J)=MAX(a_QbyOCN(i,j), -HEFF(I,J,bi,bj))
 c apply tendency
           r_QbyOCN(I,J)=a_QbyOCN(I,J)-d_HEFFbyOCNonICE(I,J)
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj) + d_HEFFbyOCNonICE(I,J)
@@ -512,7 +518,8 @@ CADJ &                         key = iicekey, byte = isbyte
          DO I=1,sNx
 c convert a_QbyATM_cover to m of snow         
           IF ( FRWfromSNW(I,J).EQ.2 ) THEN
-            tmpscal1=MAX(r_QbyATM_cover(I,J)*(QI/QS),-HSNOW(I,J,bi,bj))
+            tmpscal1=
+     &        MAX(r_QbyATM_cover(I,J)*ICE2SNOW, -HSNOW(I,J,bi,bj))
             d_HSNWbyATMonSNW(I,J)= tmpscal1
           ELSE 
 c this process is inactive under cold conditions
@@ -521,7 +528,7 @@ c this process is inactive under cold conditions
 c apply tendency
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyATMonSNW(I,J) 
           r_QbyATM_cover(I,J)= r_QbyATM_cover(I,J) -
-     &                         d_HSNWbyATMonSNW(I,J)*(QS/QI)
+     &                         d_HSNWbyATMonSNW(I,J)/ICE2SNOW
 cgf heat and water conservation: ok
          ENDDO
         ENDDO
@@ -646,11 +653,11 @@ cph( very sensitive bit here by JZ
 c convert r_QbyOCN to ice meters
           IF( r_QbyOCN(i,j) .LT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
-           tmpscal2= MAX( -HSNOW(I,J,bi,bj)/ICE2SNOW , r_QbyOCN(i,j) )
+           tmpscal2= MAX(r_QbyOCN(i,j)*ICE2SNOW, -HSNOW(I,J,bi,bj))
           ELSE
            tmpscal2= 0. _d 0
           ENDIF
-          d_HSNWbyOCNonSNW(I,J) = tmpscal2*ICE2SNOW
+          d_HSNWbyOCNonSNW(I,J) = tmpscal2
 c apply tendency
           r_QbyOCN(I,J)=r_QbyOCN(I,J)
      &                               -d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
@@ -809,6 +816,10 @@ C =====================================================
         DO J=1,sNy
          DO I=1,sNx
           QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) + a_QbyATM_open(I,J)
+C account for contribution due to ocean-ice interaction.
+     &         - ( d_HEFFbyOCNonICE(I,J) + 
+     &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW )
+     &         * maskC(I,J,kSurface,bi,bj)
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) + a_QSWbyATM_open(I,J)
          ENDDO
         ENDDO
@@ -834,20 +845,6 @@ C =====================================================
          ENDIF
         ENDIF
 #endif
-
-
-C account for contribution due to ocean-ice interaction.
-C ======================================================
-
-        DO J=1,sNy
-         DO I=1,sNx
-          QNET(I,J,bi,bj) = QNET(I,J,bi,bj)
-     &         - ( d_HEFFbyOCNonICE(I,J) + 
-     &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW )
-     &         * maskC(I,J,kSurface,bi,bj)
-cgf heat and water conservation: ok -- since rid of 72.0764 factor
-         ENDDO
-        ENDDO
 
 
 C treat values of ice cover fraction oustide 
@@ -924,19 +921,16 @@ C =================================
          DO J=1,sNy
           DO I=1,sNx
            hDraft     = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/1000. _d 0
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/rhoConst
 cgf - use of 1000 instead of rhoConst (or rhoConstFresh?)
-           tmpscal1 = hDraft - MIN(hDraft,HEFF(I,J,bi,bj))
+           tmpscal1 = MAX( 0._d 0, hDraft - HEFF(I,J,bi,bj))
            d_HEFFbyFLOODING(I,J)=tmpscal1
 c apply tendency
            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)+d_HEFFbyFLOODING(I,J)
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-
      &                           d_HEFFbyFLOODING(I,J)*ICE2SNOW  
-cgf heat and water conservation: NOT OK
-cgf - since QI.NE.QS the flooding process implies a loss of heat for 
-cgf the SNOW/ICE system, which should be compensated by a heat gain in 
-cgf the ocean (or at least accounted for as a release to the atmosphere).
-cgf - use of 1000 instead of rhoConst (or rhoConstFresh?)
+cgf heat and water conservation: ok -- since ice and snow
+cgf are treated as having a consistent latent heat of fusion
           ENDDO
          ENDDO
 #ifdef ALLOW_DIAGNOSTICS
