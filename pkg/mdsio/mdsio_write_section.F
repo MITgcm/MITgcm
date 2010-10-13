@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_section.F,v 1.2 2010/03/16 00:16:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_section.F,v 1.3 2010/10/13 20:56:40 jahn Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -61,6 +61,11 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS:
       CHARACTER*(*) fName
@@ -89,6 +94,10 @@ C !LOCAL VARIABLES:
       INTEGER length_of_rec
       LOGICAL fileIsOpen
       CHARACTER*(max_len_mbuf) msgBuf
+#ifdef ALLOW_EXCH2
+      INTEGER tGx,tNx,tN
+#endif /* ALLOW_EXCH2 */
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -160,12 +169,25 @@ C If we are writing to a tiled MDS file then we open each one here
          ENDIF
         ENDIF
         IF (fileIsOpen) THEN
+#ifdef ALLOW_EXCH2
+C layout of global x-z section files is "xStack"
+         tN = W2_myTileList(bi,bj)
+         tGx = exch2_txXStackLo(tN)
+         tNx = exch2_tNx(tN)
+#endif /* ALLOW_EXCH2 */
          DO k=1,kSize
            IF (globalFile) THEN
+#ifdef ALLOW_EXCH2
+C record length is sNx==tNx
+            irec = 1 + ( tGx-1
+     &                   + ( k-1 + (irecord-1)*kSize )*exch2_xStack_Nx
+     &                 )/tNx
+#else /* ALLOW_EXCH2 */
             iG = myXGlobalLo-1 + (bi-1)*sNx
             jG = (myYGlobalLo-1)/sNy + (bj-1)
             irec=1 + INT(iG/sNx) + nSx*nPx*(k-1)
      &           + nSx*nPx*kSize*(irecord-1)
+#endif /* ALLOW_EXCH2 */
            ELSE
             iG = 0
             jG = 0
@@ -293,6 +315,11 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS:
       CHARACTER*(*) fName
@@ -321,6 +348,9 @@ C !LOCAL VARIABLES:
       INTEGER length_of_rec
       LOGICAL fileIsOpen
       CHARACTER*(max_len_mbuf) msgBuf
+#ifdef ALLOW_EXCH2
+      INTEGER tGy,tNy,tN
+#endif /* ALLOW_EXCH2 */
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -392,12 +422,25 @@ C If we are writing to a tiled MDS file then we open each one here
          ENDIF
         ENDIF
         IF (fileIsOpen) THEN
+#ifdef ALLOW_EXCH2
+C layout of global y-z section files is "yStack"
+         tN = W2_myTileList(bi,bj)
+         tGy = exch2_tyYStackLo(tN)
+         tNy = exch2_tNy(tN)
+#endif /* ALLOW_EXCH2 */
          DO k=1,kSize
            IF (globalFile) THEN
+#ifdef ALLOW_EXCH2
+C record length is sNy==tNy
+            irec = 1 + ( tGy-1
+     &                   + ( k-1 + (irecord-1)*kSize )*exch2_yStack_Ny
+     &                 )/tNy
+#else /* ALLOW_EXCH2 */
             iG = (myXGlobalLo-1)/sNx + (bi-1)
             jG = myYGlobalLo-1 + (bj-1)*sNy
             irec=1 + INT(jG/sNy) + nSy*nPy*(k-1)
      &           + nSy*nPy*kSize*(irecord-1)
+#endif /* ALLOW_EXCH2 */
            ELSE
             iG = 0
             jG = 0
