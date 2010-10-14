@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.9 2010/04/05 20:55:28 yunx Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.10 2010/10/14 23:54:58 jmc Exp $
 #  $Name:  $
 
 
@@ -13,7 +13,7 @@
 
 # OpenMP : Tested on dickens with gcc-gfortran v4.3.2 as shipped with FC 10
 #-------
-# run with OpenMP: needs to set environment var. OMP_NUM_THREADS 
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
 #    and generally, needs to increase the thread stack-size:
 #   -  sh,bash:
 #     > export OMP_NUM_THREADS=2
@@ -40,6 +40,8 @@ fi
 
 # Requires gfortran from 2006 onwards for -fconvert=big-endian
 FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+# for big objects:
+FFLAGS="$FFLAGS -fPIC"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
@@ -49,7 +51,7 @@ else
     # these may also be useful, but require specific gfortran versions:
     # -Wnonstd-intrinsics  for gfortran <= 4.3
     # -Wintrinsics-std     for gfortran >= 4.4
-    # -Wno-tabs            for gfortran >= 4.3 
+    # -Wno-tabs            for gfortran >= 4.3
     FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
 #   to get plenty of warnings :
 #   FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
@@ -59,7 +61,7 @@ else
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS=$FOPTIM
+CFLAGS='-O0 -fPIC'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
