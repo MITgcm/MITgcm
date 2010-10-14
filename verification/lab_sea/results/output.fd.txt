@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62l
 (PID.TID 0000.0001) // Build user:        gforget
 (PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Wed Oct 13 13:40:41 EDT 2010
+(PID.TID 0000.0001) // Build date:        Thu Oct 14 05:03:06 EDT 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -655,7 +655,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.exf"
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/lab_sea/results/output.fd.txt,v 1.8 2010/10/13 19:11:25 gforget Exp $
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/lab_sea/results/output.fd.txt,v 1.9 2010/10/14 16:32:07 gforget Exp $
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># External Forcing Data
@@ -2915,11 +2915,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2053856132764E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2054334559089E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7156889810291E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5587335704772E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9455730780560E+04
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7152187063964E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5577164165234E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9458788194257E+04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3149,11 +3149,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2055526456888E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2056498145195E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7157408094965E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5574301388987E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9676863664504E+04
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7148301390718E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5554079788157E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9696122759231E+04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3383,11 +3383,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2057206007308E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2058685986818E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7157312179707E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5560708897897E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9868195168990E+04
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7143440852371E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5530463055571E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9917643562437E+04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3617,11 +3617,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2058894693255E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2060898251062E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7157153576056E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5546028086258E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   9.9994568126105E+04
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7138856286121E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5506042877633E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0005512940556E+05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3851,11 +3851,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2060592276010E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2063134980802E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7156450768942E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5530980315147E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0008226890903E+05
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7133335775457E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5481177242775E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0019064923359E+05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4096,11 +4096,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2062298476164E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2065396167511E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7155352782639E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5515945242894E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0019678488269E+05
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7127530661186E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5456502552851E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0036704198838E+05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4330,11 +4330,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2064013053787E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2067681804109E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7154859753709E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5501246869302E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0029999976112E+05
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7122083512407E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5432157975945E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0053334025094E+05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4564,11 +4564,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2065735838980E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2069991867332E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7154482117078E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5486810983288E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0042038074138E+05
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7117090025012E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5408435455898E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0073074961083E+05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4800,11 +4800,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2067466711710E+07
+(PID.TID 0000.0001) %MON seaice_iceage_max            =   2.2072326319260E+07
 (PID.TID 0000.0001) %MON seaice_iceage_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7153636999319E+06
-(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5471953924650E+06
-(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0053408304020E+05
+(PID.TID 0000.0001) %MON seaice_iceage_mean           =   1.7111483649791E+06
+(PID.TID 0000.0001) %MON seaice_iceage_sd             =   4.5384244067954E+06
+(PID.TID 0000.0001) %MON seaice_iceage_del2           =   1.0092296714135E+05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4821,146 +4821,146 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %CHECKPOINT        10 0000000010
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  5.28819577
-(PID.TID 0000.0001)         System time:  0.460929992
-(PID.TID 0000.0001)     Wall clock time:  12.780822
+(PID.TID 0000.0001)         System time:  0.396938991
+(PID.TID 0000.0001)     Wall clock time:  11.105216
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.471928012
-(PID.TID 0000.0001)         System time:  0.0689900019
-(PID.TID 0000.0001)     Wall clock time:  1.34557414
+(PID.TID 0000.0001)           User time:  0.468928008
+(PID.TID 0000.0001)         System time:  0.0719889966
+(PID.TID 0000.0001)     Wall clock time:  1.26736593
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  4.81626776
-(PID.TID 0000.0001)         System time:  0.39193999
-(PID.TID 0000.0001)     Wall clock time:  11.435061
+(PID.TID 0000.0001)           User time:  4.81826776
+(PID.TID 0000.0001)         System time:  0.324949995
+(PID.TID 0000.0001)     Wall clock time:  9.837672
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.176973015
-(PID.TID 0000.0001)         System time:  0.0659899935
-(PID.TID 0000.0001)     Wall clock time:  0.569175959
+(PID.TID 0000.0001)           User time:  0.180972993
+(PID.TID 0000.0001)         System time:  0.0539920032
+(PID.TID 0000.0001)     Wall clock time:  0.688003063
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  4.63929474
-(PID.TID 0000.0001)         System time:  0.325949997
-(PID.TID 0000.0001)     Wall clock time:  10.8657329
+(PID.TID 0000.0001)           User time:  4.63729477
+(PID.TID 0000.0001)         System time:  0.270957991
+(PID.TID 0000.0001)     Wall clock time:  9.14953399
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  4.63929474
-(PID.TID 0000.0001)         System time:  0.325949997
-(PID.TID 0000.0001)     Wall clock time:  10.8652725
+(PID.TID 0000.0001)           User time:  4.63729477
+(PID.TID 0000.0001)         System time:  0.270957991
+(PID.TID 0000.0001)     Wall clock time:  9.14907408
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0029990077
+(PID.TID 0000.0001)           User time:  0.00199902058
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00214457512
+(PID.TID 0000.0001)     Wall clock time:  0.00213527679
 (PID.TID 0000.0001)          No. starts: 18
 (PID.TID 0000.0001)           No. stops: 18
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0739856958
-(PID.TID 0000.0001)         System time:  0.00899900496
-(PID.TID 0000.0001)     Wall clock time:  0.179219007
+(PID.TID 0000.0001)           User time:  0.0739857554
+(PID.TID 0000.0001)         System time:  0.0119989961
+(PID.TID 0000.0001)     Wall clock time:  0.118381262
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.0739856958
-(PID.TID 0000.0001)         System time:  0.00899900496
-(PID.TID 0000.0001)     Wall clock time:  0.178368807
+(PID.TID 0000.0001)           User time:  0.0729857087
+(PID.TID 0000.0001)         System time:  0.0119989961
+(PID.TID 0000.0001)     Wall clock time:  0.117558956
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000415802002
+(PID.TID 0000.0001)     Wall clock time:  0.000397920609
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.05469191
-(PID.TID 0000.0001)         System time:  0.0529919863
-(PID.TID 0000.0001)     Wall clock time:  3.57768726
+(PID.TID 0000.0001)           User time:  2.05269003
+(PID.TID 0000.0001)         System time:  0.00399900973
+(PID.TID 0000.0001)     Wall clock time:  2.60941815
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.0879890919
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0867218971
+(PID.TID 0000.0001)           User time:  0.0879903436
+(PID.TID 0000.0001)         System time:  0.000999003649
+(PID.TID 0000.0001)     Wall clock time:  0.172266722
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.0199987888
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0216872692
+(PID.TID 0000.0001)           User time:  0.0209999681
+(PID.TID 0000.0001)         System time:  0.000999003649
+(PID.TID 0000.0001)     Wall clock time:  0.0216789246
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  1.39479154
-(PID.TID 0000.0001)         System time:  0.0389939845
-(PID.TID 0000.0001)     Wall clock time:  2.24515176
+(PID.TID 0000.0001)           User time:  1.38479012
+(PID.TID 0000.0001)         System time:  0.00300000608
+(PID.TID 0000.0001)     Wall clock time:  1.71023536
 (PID.TID 0000.0001)          No. starts: 36
 (PID.TID 0000.0001)           No. stops: 36
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.745883405
-(PID.TID 0000.0001)         System time:  0.00200000405
-(PID.TID 0000.0001)     Wall clock time:  1.22523236
+(PID.TID 0000.0001)           User time:  0.742885649
+(PID.TID 0000.0001)         System time:  0.000999987125
+(PID.TID 0000.0001)     Wall clock time:  0.80047965
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.0848366
-(PID.TID 0000.0001)         System time:  0.00599899888
-(PID.TID 0000.0001)     Wall clock time:  1.74245191
+(PID.TID 0000.0001)           User time:  1.08583736
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  1.50555086
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0709891319
+(PID.TID 0000.0001)           User time:  0.0709879398
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0712938309
+(PID.TID 0000.0001)     Wall clock time:  0.0711934566
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0399928093
+(PID.TID 0000.0001)           User time:  0.0429944992
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0527279377
+(PID.TID 0000.0001)     Wall clock time:  0.040459156
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0179971457
+(PID.TID 0000.0001)           User time:  0.0169967413
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0169906616
+(PID.TID 0000.0001)     Wall clock time:  0.0169608593
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0929862261
+(PID.TID 0000.0001)           User time:  0.0899847746
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0928771496
+(PID.TID 0000.0001)     Wall clock time:  0.0920679569
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0839878321
+(PID.TID 0000.0001)           User time:  0.0849882364
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0841817856
+(PID.TID 0000.0001)     Wall clock time:  0.0842533112
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.143976808
-(PID.TID 0000.0001)         System time:  0.00100000203
-(PID.TID 0000.0001)     Wall clock time:  0.702070951
+(PID.TID 0000.0001)           User time:  0.143975735
+(PID.TID 0000.0001)         System time:  0.00199998915
+(PID.TID 0000.0001)     Wall clock time:  0.146342039
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.178976297
-(PID.TID 0000.0001)         System time:  0.136979014
-(PID.TID 0000.0001)     Wall clock time:  2.4722712
+(PID.TID 0000.0001)           User time:  0.177976131
+(PID.TID 0000.0001)         System time:  0.132979006
+(PID.TID 0000.0001)     Wall clock time:  2.99090505
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.039993763
-(PID.TID 0000.0001)         System time:  0.116981983
-(PID.TID 0000.0001)     Wall clock time:  0.615117788
+(PID.TID 0000.0001)           User time:  0.0489926338
+(PID.TID 0000.0001)         System time:  0.115981996
+(PID.TID 0000.0001)     Wall clock time:  0.663845062
 (PID.TID 0000.0001)          No. starts: 9
 (PID.TID 0000.0001)           No. stops: 9
 (PID.TID 0000.0001) // ======================================================
