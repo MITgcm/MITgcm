@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.86 2010/10/14 16:05:59 jmc Exp $
+#define SEAICE_GROWTH_LEGACY
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.87 2010/10/14 16:29:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -88,10 +89,12 @@ c     prone to generate SNOW (FRWfromSNW=1) or fresh water (FRWfromSNW=2)
 c ICE/SNOW stocks tendencies associated with the various melt/freeze processes
       _RL d_AREAbyATM         (1:sNx,1:sNy)
 c
+      _RL d_HEFFbyNEG         (1:sNx,1:sNy)
       _RL d_HEFFbyOCNonICE    (1:sNx,1:sNy)
       _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
       _RL d_HEFFbyFLOODING    (1:sNx,1:sNy)
 c
+      _RL d_HSNWbyNEG         (1:sNx,1:sNy)
       _RL d_HSNWbyATMonSNW    (1:sNx,1:sNy)
       _RL d_HSNWbyOCNonSNW    (1:sNx,1:sNy)
       _RL d_HSNWbyRAIN        (1:sNx,1:sNy)
@@ -102,18 +105,22 @@ C     actual ice thickness with upper and lower limit
       _RL heffActual          (1:sNx,1:sNy)
 C     actual snow thickness
       _RL hsnowActual         (1:sNx,1:sNy)
+
+C     AREA_PRE :: hold sea-ice fraction field before any seaice-thermo update
+      _RL AREApreTH           (1:sNx,1:sNy)
+      _RL HEFFpreTH           (1:sNx,1:sNy)
+      _RL HSNWpreTH           (1:sNx,1:sNy)
+
 C     wind speed
       _RL UG                  (1:sNx,1:sNy)
       _RL SPEED_SQ
 C temporary variables used to compute/regularize "actual" thicknesses
-      _RL areaSup,areaMin,hiceMin
+      _RL areaMin,hiceMin
 
 c temporary variables available for the various computations
       _RL tmpscal1, tmpscal2, tmpscal3, tmpscal4
       _RL tmparr1             (1:sNx,1:sNy)
 
-C auxillary variables used for specific processes
-      _RL snowEnergy
 
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft
@@ -131,16 +138,6 @@ C auxillary variables used for specific processes
       _RL a_QbyATMmult_cover  (1:sNx,1:sNy)
       _RL a_QSWbyATMmult_cover(1:sNx,1:sNy)
 #endif
-
-#ifdef SEAICE_AGE
-C     old_AREA :: hold sea-ice fraction field before any seaice-thermo update
-      _RL old_AREA            (1:sNx,1:sNy)
-# ifdef SEAICE_AGE_VOL
-C     old_HEFF :: hold sea-ice effective thickness field before any seaice-thermo update
-      _RL old_HEFF            (1:sNx,1:sNy)
-      _RL age_actual
-# endif /* SEAICE_AGE_VOL */
-#endif /* SEAICE_AGE */
 
 #ifdef ALLOW_DIAGNOSTICS
       _RL DIAGarray     (1:sNx,1:sNy)
@@ -260,20 +257,101 @@ c
         ENDDO
 #endif
 
-#ifdef SEAICE_AGE
-C     store the initial ice fraction over the domain
+
+c ===================================================================
+c =============PART 1: regularization, after advdiff, etc.===========
+c ===================================================================
+
+#ifndef SEAICE_GROWTH_LEGACY
+
+c 1) treat the case of negative values:
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-           old_AREA(i,j) = AREA(I,J,bi,bj)
-# ifdef SEAICE_AGE_VOL
-           old_HEFF(i,j) = HEFF(I,J,bi,bj)
-# endif
+          d_HEFFbyNEG(I,J)=MAX(-HEFF(I,J,bi,bj),0._d 0)
+          HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+d_HEFFbyNEG(I,J)
+          d_HSNWbyNEG(I,J)=MAX(-HSNOW(I,J,bi,bj),0._d 0)
+          HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+d_HSNWbyNEG(I,J)
+          AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),0. _d 0)
          ENDDO
         ENDDO
-#endif /* SEAICE_AGE */
 
-
+c 2) treat the case of very small area:
+c
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
+          IF ((HEFF(i,j,bi,bj).GT.0).OR.(HSNOW(i,j,bi,bj).GT.0)) 
+     &     AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),areaMin)
+         ENDDO
+        ENDDO
+
+c 3) store regularized values of heff, hsnow, area at the onset of thermo.
+        DO J=1,sNy
+         DO I=1,sNx
+          HEFFpreTH(I,J)=HEFF(I,J,bi,bj)
+          HSNWpreTH(I,J)=HSNOW(I,J,bi,bj)
+          AREApreTH(I,J)=AREA(I,J,bi,bj)
+         ENDDO
+        ENDDO
+
+c 4) treat sea ice salinity pathological cases
+#ifdef SEAICE_SALINITY
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsalt(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
+          IF ( (HSALT(I,J,bi,bj) .LT. 0.0).OR.
+     &         (HEFF(I,J,bi,bj) .EQ. 0.0)  ) THEN
+             saltFluxAdjust(I,J) = - HEFFM(I,J,bi,bj) *
+     &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
+             HSALT(I,J,bi,bj) = 0.0 _d 0
+          ENDIF
+         ENDDO
+        ENDDO
+#endif /* SEAICE_SALINITY */
+
+c 5) treat sea ice age pathological cases
+c ...
+        
+#else
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
+          HEFFpreTH(I,J)=HEFFNM1(I,J,bi,bj)
+          HSNWpreTH(I,J)=HSNOW(I,J,bi,bj)
+          AREApreTH(I,J)=AREANM1(I,J,bi,bj)
+          d_HEFFbyNEG(I,J)=0. _d 0
+          d_HSNWbyNEG(I,J)=0. _d 0
+         ENDDO
+        ENDDO
+#endif /* SEAICE_GROWTH_LEGACY */
+
+
+c 4) COMPUTE ACTUAL ICE/SNOW THICKNESS; PUT MINIMUM ON HEFFACTUAL
+c    TO REGULARIZE SEAICE_SOLVE4TEMP AND d_AREA COMPUTATIONS
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
 CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
 CADJ &                        key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
@@ -281,12 +359,10 @@ CADJ &                        key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-C     COMPUTE ACTUAL ICE/SNOW THICKNESS AND PUT MINIMA
-C     TO REGULARIZE SEAICE_SOLVE4TEMP COMPUTATION
-          areaSup          = MAX(areaMin,AREANm1(I,J,bi,bj))
-          hsnowActual(I,J) = HSNOW(I,J,bi,bj)/areaSup
-          heffActual(I,J)  = HEFFNm1(I,J,bi,bj)/areaSup
-          heffActual(I,J)  = MAX(heffActual(I,J),hiceMin)
+          tmpscal1         = MAX(areaMin,AREApreTH(I,J))
+          hsnowActual(I,J) = HSNWpreTH(I,J)/tmpscal1
+          tmpscal2         = HEFFpreTH(I,J)/tmpscal1
+          heffActual(I,J)  = MAX(tmpscal2,hiceMin)
 C     Capping the actual ice thickness effectively enforces a
 C     minimum of heat flux through the ice and helps getting rid of
 C     very thick ice.
@@ -295,6 +371,7 @@ cdm when heffActual is capped, so I am commenting out
 cdm          heffActual(I,J)    = MIN(heffActual(I,J),9.0 _d +00)
          ENDDO
         ENDDO
+
 
 
 C determine available heat due to the atmosphere -- for open water
@@ -400,8 +477,8 @@ C--  End loop over multi-categories
           DO J=1,sNy
            DO I=1,sNx
             DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj) * (
-     &           a_QbyATM_cover(I,J) * areaNm1(I,J,bi,bj) +
-     &           a_QbyATM_open(I,J) * ( ONE - areaNm1(I,J,bi,bj) ) )
+     &           a_QbyATM_cover(I,J) * AREApreTH(I,J) +
+     &           a_QbyATM_open(I,J) * ( ONE - AREApreTH(I,J) ) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmQnt',0,1,3,bi,bj,myThid)
@@ -413,13 +490,13 @@ c switch heat fluxes from W/m2 to 'effective' ice meters
         DO J=1,sNy
          DO I=1,sNx
            a_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)  
-     &         * convertQ2HI * areaNm1(I,J,bi,bj)
+     &         * convertQ2HI * AREApreTH(I,J)
            a_QSWbyATM_cover(I,J) = a_QSWbyATM_cover(I,J) 
-     &         * convertQ2HI * areaNm1(I,J,bi,bj)
+     &         * convertQ2HI * AREApreTH(I,J)
            a_QbyATM_open(I,J) = a_QbyATM_open(I,J) 
-     &         * convertQ2HI * ( ONE - areaNm1(I,J,bi,bj) )
+     &         * convertQ2HI * ( ONE - AREApreTH(I,J) )
            a_QSWbyATM_open(I,J) = a_QSWbyATM_open(I,J) 
-     &         * convertQ2HI * ( ONE - areaNm1(I,J,bi,bj) )
+     &         * convertQ2HI * ( ONE - AREApreTH(I,J) )
 c and initialize r_QbyATM_cover
            r_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
          ENDDO
@@ -432,7 +509,7 @@ C ==============================================================
         DO J=1,sNy
          DO I=1,sNx
           IF (a_QbyATM_cover(I,J).LT.ZERO.AND.
-     &        AREANm1(I,J,bi,bj).GT.ZERO) THEN
+     &        AREApreTH(I,J).GT.ZERO) THEN
             FRWfromSNW(I,J)=2
           ELSE
             FRWfromSNW(I,J)=1
@@ -540,6 +617,8 @@ C =================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)   = comlev1_bibj,
+CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE r_QbyATM_cover(:,:)         = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE a_QbyATM_cover(:,:)        = comlev1_bibj,
@@ -567,15 +646,24 @@ C gain of new ice over open water (>0 by definition)
 c compute cover fraction tendency
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            d_AREAbyATM(I,J)=tmpscal4/HO_south
-     &          +HALF*tmpscal3*AREANm1(I,J,bi,bj)
+#ifndef SEAICE_GROWTH_LEGACY
+     &          +HALF*tmpscal3/heffActual(I,J)
+#else
+     &          +HALF*tmpscal3*AREApreTH(I,J)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
+#endif
           ELSE
            d_AREAbyATM(I,J)=tmpscal4/HO
-     &          +HALF*tmpscal3*AREANm1(I,J,bi,bj)
+#ifndef SEAICE_GROWTH_LEGACY
+     &          +HALF*tmpscal3/heffActual(I,J)
+#else
+     &          +HALF*tmpscal3*AREApreTH(I,J)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
+#endif
           ENDIF
 c apply tendency
-           AREA(I,J,bi,bj)=AREA(I,J,bi,bj)+d_AREAbyATM(I,J)
+           AREA(I,J,bi,bj)=max(0. _d 0 , min( 1. _d 0, 
+     &                     AREA(I,J,bi,bj)+d_AREAbyATM(I,J) ) )
          ENDDO
         ENDDO
 
@@ -626,11 +714,11 @@ C =================================================
 C           add precip as snow
             d_HFRWbyRAIN(I,J)=0. _d 0
             d_HSNWbyRAIN(I,J)=convertPRECIP2HI*ICE2SNOW*
-     &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)
+     &            PRECIP(I,J,bi,bj)*AREApreTH(I,J)
           ELSE 
 c           add precip to the fresh water bucket
             d_HFRWbyRAIN(I,J)=-convertPRECIP2HI*
-     &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)
+     &            PRECIP(I,J,bi,bj)*AREApreTH(I,J)
             d_HSNWbyRAIN(I,J)=0. _d 0
           ENDIF
 c apply tendency
@@ -668,6 +756,45 @@ cgf heat and water conservation: ok
 #endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 cph)
 
+#ifndef SEAICE_GROWTH_LEGACY
+C convert snow to ice if submerged.
+C =================================
+
+#ifdef ALLOW_SEAICE_FLOODING
+        IF ( SEAICEuseFlooding ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           hDraft     = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/rhoConst
+cgf - use of 1000 instead of rhoConst (or rhoConstFresh?)
+           tmpscal1 = MAX( 0. _d 0, hDraft - HEFF(I,J,bi,bj))
+           d_HEFFbyFLOODING(I,J)=tmpscal1
+c apply tendency
+           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)+d_HEFFbyFLOODING(I,J)
+           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-
+     &                           d_HEFFbyFLOODING(I,J)*ICE2SNOW  
+cgf heat and water conservation: ok -- since ice and snow
+cgf are treated as having a consistent latent heat of fusion
+          ENDDO
+         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+         IF ( useDiagnostics ) THEN
+          IF ( DIAGNOSTICS_IS_ON('SIsnwice',myThid) ) THEN
+C     turn tmparr1 into a rate
+           DO J=1,sNy
+            DO I=1,sNx
+             tmparr1(I,J) = d_HEFFbyFLOODING(I,J)/SEAICE_deltaTtherm
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(tmparr1,'SIsnwice',0,1,3,bi,bj,myThid)
+          ENDIF
+         ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+        ENDIF
+#endif /* ALLOW_SEAICE_FLOODING */
+#endif /* SEAICE_GROWTH_LEGACY */
+
+
 
 C compute net fresh water flux leaving/entering 
 C the ocean, accounting for fresh/salt water stocks.
@@ -690,10 +817,12 @@ CADJ &                        key = iicekey, byte = isbyte
      &            +d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
      &            +d_HEFFbyOCNonICE(I,J)
      &            +d_HEFFbyATMonOCN(I,J)
+     &            +d_HEFFbyNEG(I,J) 
+     &            +d_HSNWbyNEG(I,J)/ICE2SNOW
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
-     &         * ( ONE - AREANm1(I,J,bi,bj) )
+     &         * ( ONE - AREApreTH(I,J) )
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
 #endif
@@ -711,7 +840,7 @@ cgf heat and water conservation: ok -- since rid of ICE2WATR
             DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj)*(
      &           PRECIP(I,J,bi,bj)
      &           - EVAP(I,J,bi,bj)
-     &           *( ONE - AREANm1(I,J,bi,bj) )
+     &           *( ONE - AREApreTH(I,J) )
      &           + RUNOFF(I,J,bi,bj)
      &           )*rhoConstFresh
            ENDDO
@@ -726,7 +855,7 @@ cgf heat and water conservation: ok -- since rid of ICE2WATR
           frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
      &         PRECIP(I,J,bi,bj)
      &         - EVAP(I,J,bi,bj)
-     &         *( ONE - AREANm1(I,J,bi,bj) )
+     &         *( ONE - AREApreTH(I,J) )
      &         + RUNOFF(I,J,bi,bj)
      &         )*rhoConstFresh
          ENDDO
@@ -739,6 +868,7 @@ C ==================================================
 
 #ifdef SEAICE_SALINITY
 
+#ifdef SEAICE_GROWTH_LEGACY
         DO J=1,sNy
          DO I=1,sNx
 C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
@@ -749,6 +879,7 @@ C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
           ENDIF
          ENDDO
         ENDDO
+#endif /* SEAICE_GROWTH_LEGACY */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj,
@@ -757,19 +888,22 @@ CADJ &                        key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
+c sum up the terms that affect the salt content of the ice pack
          tmpscal1=d_HEFFbyOCNonICE(I,J)+d_HEFFbyATMonOCN(I,J)
+c recompute HEFF before thermodyncamic updates (which is not AREApreTH in legacy code)
+         tmpscal2=HEFF(I,J,bi,bj)-tmpscal1-d_HEFFbyFLOODING(I,J)
 C tmpscal1 > 0 : m of sea ice that is created
           IF ( tmpscal1 .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) =
-     &            HEFFM(I,J,bi,bj)*tmpscal1*
-     &            ICE2WATR*rhoConstFresh*SEAICE_salinity*
-     &            salt(I,j,kSurface,bi,bj)/SEAICE_deltaTtherm
+     &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
+     &            *SEAICE_salinity*salt(I,j,kSurface,bi,bj)
+     &            *tmpscal1*ICE2WATR*rhoConstFresh
 #ifdef ALLOW_SALT_PLUME
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
-     &            HEFFM(I,J,bi,bj)*tmpscal1*
-     &            ICE2WATR*rhoConstFresh*(1-SEAICE_salinity)*
-     &            salt(I,j,kSurface,bi,bj)/SEAICE_deltaTtherm
+     &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
+     &            *(1-SEAICE_salinity)*salt(I,j,kSurface,bi,bj)
+     &            *tmpscal1*ICE2WATR*rhoConstFresh
 C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
              IF ( .NOT. SaltPlumeSouthernOcean ) THEN
               IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
@@ -780,10 +914,9 @@ C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
 C tmpscal1 < 0 : m of sea ice that is melted
           ELSE
              saltFlux(I,J,bi,bj) =
-     &            HEFFM(I,J,bi,bj)*tmpscal1*
-     &            HSALT(I,J,bi,bj)/
-     &            (HEFF(I,J,bi,bj)-tmpscal1)/
-     &            SEAICE_deltaTtherm
+     &         HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
+     &         *HSALT(I,J,bi,bj)
+     &         *tmpscal1/tmpscal2
 #ifdef ALLOW_SALT_PLUME
              saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
 #endif /* ALLOW_SALT_PLUME */
@@ -793,6 +926,7 @@ C update HSALT based on surface saltFlux
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
           saltFlux(I,J,bi,bj) =
      &         saltFlux(I,J,bi,bj) + saltFluxAdjust(I,J)
+#ifdef SEAICE_GROWTH_LEGACY
 C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
           IF ( HEFF(I,J,bi,bj) .EQ. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
@@ -803,6 +937,7 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
              saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
 #endif /* ALLOW_SALT_PLUME */
           ENDIF
+#endif /* SEAICE_GROWTH_LEGACY */
          ENDDO
         ENDDO
 #endif /* SEAICE_SALINITY */
@@ -818,7 +953,9 @@ C =====================================================
           QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) + a_QbyATM_open(I,J)
 C account for contribution due to ocean-ice interaction.
      &         - ( d_HEFFbyOCNonICE(I,J) + 
-     &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW )
+     &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW +
+     &             d_HEFFbyNEG(I,J) + 
+     &             d_HSNWbyNEG(I,J)/ICE2SNOW )
      &         * maskC(I,J,kSurface,bi,bj)
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) + a_QSWbyATM_open(I,J)
          ENDDO
@@ -829,8 +966,7 @@ C account for contribution due to ocean-ice interaction.
          IF ( DIAGNOSTICS_IS_ON('SIqneto ',myThid) ) THEN
           DO J=1,sNy
            DO I=1,sNx
-            DIAGarray(I,J) = a_QbyATM_open(I,J) * 
-     &         (ONE-areaNm1(I,J,bi,bj))
+            DIAGarray(I,J) = a_QbyATM_open(I,J) * (ONE-AREApreTH(I,J))
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneto ',0,1,3,bi,bj,myThid)
@@ -838,7 +974,7 @@ C account for contribution due to ocean-ice interaction.
          IF ( DIAGNOSTICS_IS_ON('SIqneti ',myThid) ) THEN
           DO J=1,sNy
            DO I=1,sNx
-            DIAGarray(I,J) = r_QbyATM_cover(I,J) * areaNm1(I,J,bi,bj)
+            DIAGarray(I,J) = r_QbyATM_cover(I,J) * AREApreTH(I,J)
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneti ',0,1,3,bi,bj,myThid)
@@ -846,6 +982,8 @@ C account for contribution due to ocean-ice interaction.
         ENDIF
 #endif
 
+
+#ifdef SEAICE_GROWTH_LEGACY
 
 C treat values of ice cover fraction oustide 
 C the [0 1] range, and other such issues.
@@ -903,7 +1041,7 @@ CADJ &                         key = iicekey, byte = isbyte
 C     use (abuse) tmparr1 to diagnose the total thermodynamic growth rate
           DO J=1,sNy
            DO I=1,sNx
-            tmparr1(I,J) = (HEFF(I,J,bi,bj)-HEFFNm1(I,J,bi,bj))
+            tmparr1(I,J) = (HEFF(I,J,bi,bj)-HEFFpreTH(I,J))
      &           /SEAICE_deltaTtherm
            ENDDO
           ENDDO
@@ -949,6 +1087,7 @@ C     turn tmparr1 into a rate
         ENDIF
 #endif /* ALLOW_SEAICE_FLOODING */
 
+#endif /* SEAICE_GROWTH_LEGACY */
 
 C Sea Ice Load on the sea surface.
 C =================================
@@ -974,10 +1113,10 @@ C                 b) melting: ice fraction vanishes with current age
         DO J=1,sNy
          DO I=1,sNx
           IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
-           IF ( AREA(i,j,bi,bj) .LT. old_AREA(i,j) ) THEN
+           IF ( AREA(i,j,bi,bj) .LT. AREApreTH(i,j) ) THEN
 C--   scale effective ice-age to account for ice-age sink associated with melting
             IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
-     &         *AREA(i,j,bi,bj)/old_AREA(i,j)
+     &         *AREA(i,j,bi,bj)/AREApreTH(i,j)
            ENDIF
 C--   account for aging:
            IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
@@ -994,22 +1133,22 @@ C                 b) melting: ice volume vanishes with current age
         DO J=1,sNy
          DO I=1,sNx
 C--   compute actual age from effective age:
-          IF (OLD_AREA(i,j).GT.0. _d 0) THEN
-           age_actual=IceAge(i,j,bi,bj)/OLD_AREA(i,j)
+          IF (AREApreTH(i,j).GT.0. _d 0) THEN
+           tmpscal1=IceAge(i,j,bi,bj)/AREApreTH(i,j)
           ELSE
-           age_actual=0. _d 0
+           tmpscal1=0. _d 0
           ENDIF         
-          IF ( (OLD_HEFF(i,j).LT.HEFF(i,j,bi,bj)).AND.
+          IF ( (HEFFpreTH(i,j).LT.HEFF(i,j,bi,bj)).AND.
      &         (AREA(i,j,bi,bj).GT.0.15) ) THEN
-           age_actual=age_actual*OLD_HEFF(i,j)/
+           tmpscal2=tmpscal1*HEFFpreTH(i,j)/
      &          HEFF(i,j,bi,bj)+SEAICE_deltaTtherm
           ELSEIF (AREA(i,j,bi,bj).LE.0.15) THEN
-           age_actual=0. _d 0
+           tmpscal2=0. _d 0
           ELSE
-           age_actual=age_actual+SEAICE_deltaTtherm
+           tmpscal2=tmpscal1+SEAICE_deltaTtherm
           ENDIF
 C--   re-scale to effective age:
-          IceAge(i,j,bi,bj) = age_actual*AREA(i,j,bi,bj)
+          IceAge(i,j,bi,bj) = tmpscal2*AREA(i,j,bi,bj)
          ENDDO
         ENDDO
 # endif /* SEAICE_AGE_VOL */
