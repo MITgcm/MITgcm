@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_gen_facets.F,v 1.2 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_gen_facets.F,v 1.3 2010/10/14 17:34:35 jahn Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -48,26 +48,27 @@ C     count Nb of Facets (from facet_dims) ; set nFacets
 C     Assume: consecutive pair (x-dim,y-dim) of non-zero dimension
       errCnt = 0
       nFacets = 0
+C     find last pair of non-zero dims
       DO j=1,W2_maxNbFacets
         fNx = facet_dims(2*j-1)
         fNy = facet_dims( 2*j )
-        IF ( nFacets.EQ.0 .AND. fNx*fNy.EQ.0 ) THEN
-          nFacets = j - 1
-          IF ( fNx.NE.0 .OR. fNy.NE.0 ) THEN
-            errCnt = errCnt + 1
-            WRITE(msgBuf,'(A,I3,A,2I6)')
-     &        'dimsFacets: Expect pair of >0 dims : facet',j,
-     &        ' :',fNx,fNy
-            CALL PRINT_ERROR( msgBuf, myThid )
-          ELSEIF ( j.EQ.1 ) THEN
-            errCnt = errCnt + 1
-            WRITE(msgBuf,'(A)')
-     &        'dimsFacets: 1rst pair of dimension is 0,0 (invalid)'
-            CALL PRINT_ERROR( msgBuf, myThid )
-          ENDIF
+C       IF ( nFacets.EQ.0 .AND. fNx*fNy.EQ.0 ) THEN
+        IF ( fNx.NE.0 .AND. fNy.NE.0 ) THEN
+          nFacets = j
+        ELSEIF ( fNx.NE.0 .OR. fNy.NE.0 ) THEN
+          errCnt = errCnt + 1
+          WRITE(msgBuf,'(A,I3,A,2I6)')
+     &      'dimsFacets: Expect pair of >0 dims : facet',j,
+     &      ' :',fNx,fNy
+          CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
       ENDDO
-      IF ( nFacets.EQ.0 ) nFacets = W2_maxNbFacets
+      IF ( nFacets.EQ.0 ) THEN
+        errCnt = errCnt + 1
+        WRITE(msgBuf,'(A)')
+     &    'dimsFacets: All dimensions are zero!'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
       IF ( errCnt.GT.0 ) THEN
         WRITE(msgBuf,'(A,I3,A)') 'W2_SET_GEN_FACETS: found', errCnt,
      &                           ' errors in dimsFacets list'
@@ -93,7 +94,7 @@ C-    Check remaining part of the list:
       ENDDO
 C-    check sign
       DO jj=1,2*nFacets
-       IF ( facet_dims(jj).LE.0 ) THEN
+       IF ( facet_dims(jj).LT.0 ) THEN
          errCnt = errCnt + 1
          i=1+MOD(jj-1,2)
          j = (jj+1)/2
