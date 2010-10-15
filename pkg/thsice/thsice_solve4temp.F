@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.21 2010/10/10 20:15:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.22 2010/10/15 15:15:31 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -146,7 +146,7 @@ C     dt           :: timestep
       LOGICAL iterate4Tsf
       LOGICAL iceFlag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j
-      INTEGER k, iterMax
+      INTEGER k, iterMax, ii, jj, icount
       _RL  frsnow
       _RL  fswpen
       _RL  fswdn
@@ -200,6 +200,8 @@ c     act4 = ikey_dynamics - 1
       ENDIF
 
       iterate4Tsf = .FALSE.
+      icount = 0
+C     
       DO j = jMin, jMax
        DO i = iMin, iMax
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -227,8 +229,11 @@ cCADJ STORE  tsrf(i,j)    = comlev1_thsice_1, key=ikey_1
      &         'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 #endif
           IF ( hIce(i,j).LT.hIceMin ) THEN
-C         if hi < hIceMin, melt the ice.
-             STOP 'THSICE_SOLVE4TEMP: should not enter if hi<hIceMin'
+C     if hi < hIceMin, melt the ice.
+C     keep the position of this problem but do the stop later
+           ii = i
+           jj = j
+           icount = icount + 1
           ENDIF
 
 C--   Fractional snow cover:
@@ -267,6 +272,7 @@ C--   Compute ice temperatures
           tIc1(i,j) = 0.5 _d 0 *(-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/a1
           tIc2(i,j) = (Lfresh-qIc2(i,j)) / cpIce
 
+#ifdef ALLOW_DBUG_THSICE
           IF (tIc1(i,j).GT.0. _d 0 ) THEN
            WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
      &       ' BBerr: Tice(1) > 0 ; it=', myIter, qIc1(i,j)
@@ -279,7 +285,6 @@ C--   Compute ice temperatures
            WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
      &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,tIc1(i,j),tIc2(i,j)
           ENDIF
-#ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
      &      'ThSI_SOLVE4T: k, Ts, Tice=',0,tSrf(i,j),tIc1(i,j),tIc2(i,j)
 #endif
@@ -303,6 +308,15 @@ C--   Compute coefficients used in quadratic formula.
         ENDIF
        ENDDO
       ENDDO
+      IF ( icount .gt. 0 ) THEN
+       WRITE (standardMessageUnit,'(A,I5,A)')
+     &      'THSICE_SOLVE4TEMP: there are ',icount,
+     &      ' case(s) where hIce<hIceMin;'
+       WRITE (standardMessageUnit,'(A,I3,A1,I3,A)')
+     &      'THSICE_SOLVE4TEMP: the last one was at (',ii,',',jj,
+     &      ') with hIce = ', hIce(ii,jj) 
+       STOP 'THSICE_SOLVE4TEMP: should not enter if hIce<hIceMin'
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Get surface fluxes over melting surface
@@ -442,21 +456,20 @@ C     If no convergence, then repeat.
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
      &    'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf(i,j),tIc1(i,j),dTsrf(i,j)
-#endif
           IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND. iceFlag(i,j) ) THEN
-            WRITE (6,'(A,4I4,I12,F15.9)')
+           WRITE (6,'(A,4I4,I12,F15.9)')
      &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
-            WRITE (6,*) 'BB: not converge: Tsf, dTsf=',
-     &                  Tsf(i,j), dTsrf(i,j)
-            WRITE (6,*) 'BB: not converge: flxNet,dFlxT=',
-     &                  flxNet, dFlxdT(i,j)
-            IF (Tsf(i,j).LT.-70. _d 0) STOP
+           WRITE (6,*) 'BB: not converge: Tsf, dTsf=',
+     &          Tsf(i,j), dTsrf(i,j)
+           WRITE (6,*) 'BB: not converge: flxNet,dFlxT=',
+     &          flxNet, dFlxdT(i,j)
+           IF (Tsf(i,j).LT.-70. _d 0) STOP
           ENDIF
+#endif
 
          ENDIF
         ENDDO
        ENDDO
-
 #ifndef ALLOW_AUTODIFF_TAMC
        ENDIF
 #endif
@@ -511,6 +524,7 @@ C--   Compute new enthalpy for each layer.
      &                + Lfresh*(1. _d 0-Tmlt1/tIc1(i,j))
           qIc2(i,j) = -cpIce *tIc2(i,j) + Lfresh
 
+#ifdef ALLOW_DBUG_THSICE
 C--   Make sure internal ice temperatures do not exceed Tmlt.
 C     (This should not happen for reasonable values of i0swFrac)
           IF (tIc1(i,j) .GE. Tmlt1) THEN
@@ -522,7 +536,6 @@ C     (This should not happen for reasonable values of i0swFrac)
      &     ' BBerr - Bug: IceT(2) > 0',i,j,bi,bj,tIc2(i,j)
           ENDIF
 
-#ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) THEN
            WRITE(6,1020) 'ThSI_SOLV_4T: Tsf, Tice(1,2), dTsurf=',
      &           Tsf(i,j), tIc1(i,j), tIc2(i,j), dTsrf(i,j)
