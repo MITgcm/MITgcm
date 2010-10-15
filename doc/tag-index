@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1311 2010/10/13 20:57:22 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1312 2010/10/15 15:18:20 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice: 
+  - vectorize thsice_solve4temp and thsice_get_exf. 
+    Problem: thsice_solve4temp has an unvectorizable statement that
+    might also be problematic for TAF
+  - thsice_get_exf: add the ALLOW_BULK_LARGEYEAGER04 CPP-flag. This 
+    does not change the verifcation experiment, but will change all 
+    experiments that have this flag undefined (not tested in verification);
+    a little reorganization to save a few 2D fields and recomputations
 o pkg/obcs: add support for exch2
   - the position of the boundary and prescribed values are specified using
     a global domain with exch2 facets stacked
