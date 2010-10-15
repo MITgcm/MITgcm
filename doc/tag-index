@@ -1,9 +1,33 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1312 2010/10/15 15:18:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1313 2010/10/15 23:24:39 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F
+  Revision 1.89 of seaice_growth.F completes the overall october 2010 revision and 
+  merging process. The merged routine has two branches, and one activates the 'evolution' 
+  branch by setting SEAICE_GROWTH_LEGACY to undef (at the top of the routine for now).
+  In summary, here is what the '10/10 revision' did consist of
+    part 1: seaice_growth.F revisions 1.71 to 1.75 
+      - Preliminary seaice_growth.F clean-up, keeping test results strictly unchanged.
+        The emphasis here was on improving readability (e.g. by trying to use meaningful 
+        variable names) and modularity (e.g. by adding arrays to store heff etc. updates).
+    part 1.5: 
+      - revising the lab_sea experiment to make it a more useful (i.e. stable 
+        and representative of an actual model run). This was done by generating a 
+        (winter) pickup to start from, switching back the main experiment dynamic 
+        solver from evp to lsr, having one of the experiments use the free drift solution.
+    part 2: seaice_growth.F revisions 1.76 to 1.85  
+      - Sorting out hard-coded constants that prevented heat and fresh water conservation.
+      - Sorting out the various fields units and sign (set early on and reset at the end) 
+        to avoid numerous scalings/re-scalings. By v1.85 the basic unit for ice, heat and 
+        fresh water stock is 'effective ice meters', and >0 implies more ice/snow. 
+      - Using tendency terms arrays (d_HEFF* etc.) to alleviate remaining code locks, 
+        and simplifying logical expressions to further improve readibility.
+    part 3: seaice_growth.F revisions 1.86 to 1.89
+      - Re-organize the blocks of code more logically.
+      - Merging the '_if.F' pieces that add something new.
 o pkg/thsice: 
   - vectorize thsice_solve4temp and thsice_get_exf. 
     Problem: thsice_solve4temp has an unvectorizable statement that
