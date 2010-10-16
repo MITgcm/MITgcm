@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.9 2010/10/16 19:22:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.10 2010/10/16 19:26:38 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,10 +29,10 @@ C     !USES:
 
 C     == Global variables ==
 #include "EEPARAMS.h"
+#include "SIZE.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "SIZE.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
