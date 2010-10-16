@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_ad.flow,v 1.1 2010/05/20 02:50:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_ad.flow,v 1.2 2010/10/16 17:01:04 jmc Exp $
 C $Name:  $
 
 C------------------------------------------
@@ -42,15 +42,15 @@ c$taf SUBROUTINE exch1_z_rl_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11
 c$taf SUBROUTINE exch1_z_rl_cube  OUTPUT = 1
 c$taf SUBROUTINE exch1_z_rl_cube  ACTIVE = 1
 c$taf SUBROUTINE exch1_z_rl_cube  DEPEND =   2,3,4,5,6,7,8,9,10,11
-c$taf SUBROUTINE exch1_z_rl_cube  ADNAME = exch1_rl_cube_ad
-c$taf SUBROUTINE exch1_z_rl_cube FTLNAME = exch1_rl_cube
+c$taf SUBROUTINE exch1_z_rl_cube  ADNAME = exch1_z_rl_cube_ad
+c$taf SUBROUTINE exch1_z_rl_cube FTLNAME = exch1_z_rl_cube
 
 c$taf SUBROUTINE exch1_z_rs_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11
 c$taf SUBROUTINE exch1_z_rs_cube  OUTPUT = 1
 c$taf SUBROUTINE exch1_z_rs_cube  ACTIVE = 1
 c$taf SUBROUTINE exch1_z_rs_cube  DEPEND =   2,3,4,5,6,7,8,9,10,11
-c$taf SUBROUTINE exch1_z_rs_cube  ADNAME = exch1_rs_cube_ad
-c$taf SUBROUTINE exch1_z_rs_cube FTLNAME = exch1_rs_cube
+c$taf SUBROUTINE exch1_z_rs_cube  ADNAME = exch1_z_rs_cube_ad
+c$taf SUBROUTINE exch1_z_rs_cube FTLNAME = exch1_z_rs_cube
 
 C------------------------------------------
 C TAF flow directives for exch1_uv_RX_cube
@@ -59,32 +59,32 @@ c$taf SUBROUTINE exch1_uv_rl_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
 c$taf SUBROUTINE exch1_uv_rl_cube  OUTPUT = 1,2
 c$taf SUBROUTINE exch1_uv_rl_cube  ACTIVE = 1,2
 c$taf SUBROUTINE exch1_uv_rl_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch1_uv_rl_cube  ADNAME = exch1_rl_cube_ad
-c$taf SUBROUTINE exch1_uv_rl_cube FTLNAME = exch1_rl_cube
+c$taf SUBROUTINE exch1_uv_rl_cube  ADNAME = exch1_uv_rl_cube_ad
+c$taf SUBROUTINE exch1_uv_rl_cube FTLNAME = exch1_uv_rl_cube
 
 c$taf SUBROUTINE exch1_uv_rs_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
 c$taf SUBROUTINE exch1_uv_rs_cube  OUTPUT = 1,2
 c$taf SUBROUTINE exch1_uv_rs_cube  ACTIVE = 1,2
 c$taf SUBROUTINE exch1_uv_rs_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch1_uv_rs_cube  ADNAME = exch1_rs_cube_ad
-c$taf SUBROUTINE exch1_uv_rs_cube FTLNAME = exch1_rs_cube
+c$taf SUBROUTINE exch1_uv_rs_cube  ADNAME = exch1_uv_rs_cube_ad
+c$taf SUBROUTINE exch1_uv_rs_cube FTLNAME = exch1_uv_rs_cube
 
 C------------------------------------------
 C TAF flow directives for exch1_bg_RX_cube
 C------------------------------------------
-c$taf SUBROUTINE exch1_uv_rl_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch1_uv_rl_cube  OUTPUT = 1,2
-c$taf SUBROUTINE exch1_uv_rl_cube  ACTIVE = 1,2
-c$taf SUBROUTINE exch1_uv_rl_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch1_uv_rl_cube  ADNAME = exch1_rl_cube_ad
-c$taf SUBROUTINE exch1_uv_rl_cube FTLNAME = exch1_rl_cube
+c$taf SUBROUTINE exch1_bg_rl_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
+c$taf SUBROUTINE exch1_bg_rl_cube  OUTPUT = 1,2
+c$taf SUBROUTINE exch1_bg_rl_cube  ACTIVE = 1,2
+c$taf SUBROUTINE exch1_bg_rl_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12
+c$taf SUBROUTINE exch1_bg_rl_cube  ADNAME = exch1_bg_rl_cube_ad
+c$taf SUBROUTINE exch1_bg_rl_cube FTLNAME = exch1_bg_rl_cube
 
-c$taf SUBROUTINE exch1_uv_rs_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch1_uv_rs_cube  OUTPUT = 1,2
-c$taf SUBROUTINE exch1_uv_rs_cube  ACTIVE = 1,2
-c$taf SUBROUTINE exch1_uv_rs_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12
-c$taf SUBROUTINE exch1_uv_rs_cube  ADNAME = exch1_rs_cube_ad
-c$taf SUBROUTINE exch1_uv_rs_cube FTLNAME = exch1_rs_cube
+c$taf SUBROUTINE exch1_bg_rs_cube   INPUT = 1,2,3,4,5,6,7,8,9,10,11,12
+c$taf SUBROUTINE exch1_bg_rs_cube  OUTPUT = 1,2
+c$taf SUBROUTINE exch1_bg_rs_cube  ACTIVE = 1,2
+c$taf SUBROUTINE exch1_bg_rs_cube  DEPEND =     3,4,5,6,7,8,9,10,11,12
+c$taf SUBROUTINE exch1_bg_rs_cube  ADNAME = exch1_bg_rs_cube_ad
+c$taf SUBROUTINE exch1_bg_rs_cube FTLNAME = exch1_bg_rs_cube
 
 C----------------------------------------------------------------
 
