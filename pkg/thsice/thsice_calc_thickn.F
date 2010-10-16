@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.20 2010/10/16 12:29:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.21 2010/10/16 19:22:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: THSICE_CALC_THICKN
 C     !INTERFACE:
       SUBROUTINE THSICE_CALC_THICKN(
-     I                  bi, bj, siLo, siHi, sjLo, sjHi,
+     I                  bi, bj,
      I                  iMin,iMax, jMin,jMax, dBugFlag,
      I                  iceMask, tFrz, tOce, v2oc,
      I                  snowP, prcAtm, sHeat, flxCnB,
@@ -74,8 +74,6 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     siLo,siHi   :: size of input/output array: 1rst dim. lower,higher bounds
-C     sjLo,sjHi   :: size of input/output array: 2nd  dim. lower,higher bounds
 C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
@@ -106,30 +104,29 @@ C---  Input:
 C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
 C     myThid      :: my Thread Id number
-      INTEGER siLo, siHi, sjLo, sjHi
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       LOGICAL dBugFlag
-      _RL iceMask(siLo:siHi,sjLo:sjHi)
-      _RL tFrz   (siLo:siHi,sjLo:sjHi)
-      _RL tOce   (siLo:siHi,sjLo:sjHi)
-      _RL v2oc   (siLo:siHi,sjLo:sjHi)
-      _RL snowP  (siLo:siHi,sjLo:sjHi)
-      _RL prcAtm (siLo:siHi,sjLo:sjHi)
-      _RL sHeat  (siLo:siHi,sjLo:sjHi)
-      _RL flxCnB (siLo:siHi,sjLo:sjHi)
-      _RL icFrac (siLo:siHi,sjLo:sjHi)
-      _RL hIce   (siLo:siHi,sjLo:sjHi)
-      _RL hSnow  (siLo:siHi,sjLo:sjHi)
-      _RL tSrf   (siLo:siHi,sjLo:sjHi)
-      _RL qIc1   (siLo:siHi,sjLo:sjHi)
-      _RL qIc2   (siLo:siHi,sjLo:sjHi)
-      _RL frwAtm (siLo:siHi,sjLo:sjHi)
-      _RL fzMlOc (siLo:siHi,sjLo:sjHi)
-      _RL flx2oc (siLo:siHi,sjLo:sjHi)
-      _RL frw2oc (siLo:siHi,sjLo:sjHi)
-      _RL fsalt  (siLo:siHi,sjLo:sjHi)
+      _RL iceMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tFrz   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tOce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL v2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL snowP  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL prcAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sHeat  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxCnB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL icFrac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hSnow  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tSrf   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL qIc1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL qIc2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL frwAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fzMlOc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flx2oc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL frw2oc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fsalt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  myTime
       INTEGER myIter
       INTEGER myThid

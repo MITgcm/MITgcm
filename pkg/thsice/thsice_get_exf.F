@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.15 2010/10/16 12:46:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.16 2010/10/16 19:22:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: THSICE_GET_EXF
 C     !INTERFACE:
       SUBROUTINE THSICE_GET_EXF(
-     I                  bi, bj, siLo, siHi, sjLo, sjHi,
+     I                  bi, bj,
      I                  iMin,iMax, jMin,jMax,
      I                  iceFlag, hSnow, tsfCel,
      O                  flxExcSw, dFlxdT, evapLoc, dEvdT,
@@ -43,8 +43,6 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     siLo,siHi   :: size of input/output array: 1rst dim. lower,higher bounds
-C     sjLo,sjHi   :: size of input/output array: 2nd  dim. lower,higher bounds
 C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
@@ -58,12 +56,11 @@ C     dEvdT       :: deriv of evap. with respect to Tsf  [kg/m2/s/K]
 C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
 C     myThid      :: my Thread Id number
-      INTEGER siLo, siHi, sjLo, sjHi
       INTEGER bi, bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       LOGICAL iceFlag (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     hSnow   (siLo:siHi,sjLo:sjHi)
+      _RL     hSnow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tsfCel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     flxExcSw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)

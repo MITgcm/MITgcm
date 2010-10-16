@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.23 2010/10/16 12:29:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.24 2010/10/16 19:22:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: THSICE_SOLVE4TEMP
 C     !INTERFACE:
       SUBROUTINE THSICE_SOLVE4TEMP(
-     I                  bi, bj, siLo, siHi, sjLo, sjHi,
+     I                  bi, bj,
      I                  iMin,iMax, jMin,jMax, dBugFlag,
      I                  useBulkForce, useEXF,
      I                  iceMask, hIce, hSnow, tFrz, flxExSW,
@@ -54,8 +54,6 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     siLo,siHi   :: size of input/output array: 1rst dim. lower,higher bounds
-C     sjLo,sjHi   :: size of input/output array: 2nd  dim. lower,higher bounds
 C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
@@ -88,29 +86,28 @@ C---  Input:
 C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
 C     myThid      :: my Thread Id number
-      INTEGER siLo, siHi, sjLo, sjHi
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       LOGICAL dBugFlag
       LOGICAL useBulkForce
       LOGICAL useEXF
-      _RL iceMask(siLo:siHi,sjLo:sjHi)
-      _RL hIce   (siLo:siHi,sjLo:sjHi)
-      _RL hSnow  (siLo:siHi,sjLo:sjHi)
-      _RL tFrz   (siLo:siHi,sjLo:sjHi)
+      _RL iceMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hSnow  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tFrz   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxExSW(iMin:iMax,jMin:jMax,0:2)
-      _RL flxSW  (siLo:siHi,sjLo:sjHi)
-      _RL tSrf   (siLo:siHi,sjLo:sjHi)
-      _RL qIc1   (siLo:siHi,sjLo:sjHi)
-      _RL qIc2   (siLo:siHi,sjLo:sjHi)
-      _RL tIc1   (siLo:siHi,sjLo:sjHi)
-      _RL tIc2   (siLo:siHi,sjLo:sjHi)
+      _RL flxSW  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tSrf   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL qIc1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL qIc2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tIc1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tIc2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTsrf  (iMin:iMax,jMin:jMax)
-      _RL sHeat  (siLo:siHi,sjLo:sjHi)
-      _RL flxCnB (siLo:siHi,sjLo:sjHi)
-      _RL flxAtm (siLo:siHi,sjLo:sjHi)
-      _RL evpAtm (siLo:siHi,sjLo:sjHi)
+      _RL sHeat  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxCnB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL evpAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
@@ -179,7 +176,7 @@ C-    Define grid-point location where to print debugging values
  1010 FORMAT(A,I3,3F11.6)
  1020 FORMAT(A,1P4E14.6)
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c     act1 = bi - myBxLo(myThid)
@@ -193,6 +190,16 @@ c     act4 = ikey_dynamics - 1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE flxsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
+      DO j = jMin, jMax
+       DO i = iMin, iMax
+        tic1(i,j) = 0. _d 0
+        tic2(i,j) = 0. _d 0
+       END DO
+      END DO
+#endif
 
       useBlkFlx = useEXF .OR. useBulkForce
       dt  = thSIce_dtTemp
@@ -321,7 +328,13 @@ C--   Compute coefficients used in quadratic formula.
        STOP 'THSICE_SOLVE4TEMP: should not enter if hIce<hIceMin'
       ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE devdt    = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE tsf      = comlev1_bibj,key=iicekey,byte=isbyte
+#endif
+
 C--   Get surface fluxes over melting surface
 #ifdef ALLOW_AUTODIFF_TAMC
       IF ( useBlkFlx ) THEN
@@ -334,7 +347,7 @@ C--   Get surface fluxes over melting surface
          ENDDO
         ENDDO
         IF ( useEXF ) THEN
-           CALL THSICE_GET_EXF(   bi, bj, siLo, siHi, sjLo, sjHi,
+           CALL THSICE_GET_EXF(   bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
      O                            flx0exSW, dFlxdT, evap0, dEvdT,
@@ -342,7 +355,7 @@ C--   Get surface fluxes over melting surface
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
 #ifdef ALLOW_BULK_FORCE
         ELSEIF ( useBulkForce ) THEN
-           CALL THSICE_GET_BULKF( bi, bj, siLo, siHi, sjLo, sjHi,
+           CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
      O                            flx0exSW, dFlxdT, evap0, dEvdT,
@@ -351,7 +364,7 @@ C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
         ENDIF
       ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 C---  Compute new surface and internal temperatures; iterate until
 C     Tsfc converges.
       DO j = jMin, jMax
@@ -366,6 +379,13 @@ C     Tsfc converges.
         iterMax = 1
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE devdt    = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE dflxdt   = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE flx0exsw = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE flxtexsw = comlev1_bibj,key=iicekey,byte=isbyte
+#endif
+
 C ----- begin iteration  -----
       DO k = 1,iterMax
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -376,7 +396,7 @@ C ----- begin iteration  -----
        IF ( useBlkFlx ) THEN
 C--   Compute top surface flux.
          IF ( useEXF ) THEN
-           CALL THSICE_GET_EXF(   bi, bj, siLo, siHi, sjLo, sjHi,
+           CALL THSICE_GET_EXF(   bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
@@ -384,7 +404,7 @@ C--   Compute top surface flux.
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
 #ifdef ALLOW_BULK_FORCE
          ELSEIF ( useBulkForce ) THEN
-           CALL THSICE_GET_BULKF( bi, bj, siLo, siHi, sjLo, sjHi,
+           CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
@@ -484,7 +504,7 @@ C     If no convergence, then repeat.
       ENDDO
 C ------ end iteration ------------
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -569,7 +589,7 @@ c         evpAtm(i,j) = 0. _d 0
       ENDDO
 #endif  /* ALLOW_THSICE */
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
       RETURN
       END

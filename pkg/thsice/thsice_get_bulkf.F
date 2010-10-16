@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.6 2010/10/10 20:15:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.7 2010/10/16 19:22:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: THSICE_GET_BULKF
 C     !INTERFACE:
       SUBROUTINE THSICE_GET_BULKF(
-     I                  bi, bj, siLo, siHi, sjLo, sjHi,
+     I                  bi, bj,
      I                  iMin,iMax, jMin,jMax,
      I                  iceFlag, hSnow, Tsf,
      O                  flxExcSw, dFlxdT, evap, dEvdT,
@@ -36,8 +36,6 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     siLo,siHi   :: size of input/output array: 1rst dim. lower,higher bounds
-C     sjLo,sjHi   :: size of input/output array: 2nd  dim. lower,higher bounds
 C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
@@ -50,12 +48,11 @@ C     dFlxdT      :: deriv of flx with respect to Tsf    [W/m/K]
 C     evap        :: surface evaporation (>0 if evaporate) [kg/m2/s]
 C     dEvdT       :: deriv of evap. with respect to Tsf  [kg/m2/s/K]
 C     myThid      :: Thread no. that called this routine.
-      INTEGER siLo, siHi, sjLo, sjHi
       INTEGER bi, bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       LOGICAL iceFlag (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     hSnow   (siLo:siHi,sjLo:sjHi)
+      _RL     hSnow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     Tsf     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     flxExcSw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)

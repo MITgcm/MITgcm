@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.27 2010/10/16 12:29:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.28 2010/10/16 19:22:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -227,7 +227,7 @@ CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #endif
 
       CALL THSICE_CALC_THICKN(
-     I          bi, bj, siLo, siHi, sjLo, sjHi,
+     I          bi, bj,
      I          iMin,iMax, jMin,jMax, dBugFlag,
      I          iceMask(siLo,sjLo,bi,bj), tFrzOce,
      I          tOceMxL(siLo,sjLo,bi,bj), v2ocMxL(siLo,sjLo,bi,bj),
@@ -302,7 +302,7 @@ C    part.3 : freezing of sea-water
 C     over ice-free fraction and what is left from ice-covered fraction
 C-------
       CALL THSICE_EXTEND(
-     I          bi, bj, siLo, siHi, sjLo, sjHi,
+     I          bi, bj,
      I          iMin,iMax, jMin,jMax, dBugFlag,
      I          frzmltMxL, tFrzOce,
      I          tOceMxL(siLo,sjLo,bi,bj),
