@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1314 2010/10/16 17:23:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1315 2010/10/16 19:33:41 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -38,6 +38,7 @@ o pkg/thsice:
     does not change the verifcation experiment, but will change all
     experiments that have this flag undefined (not tested in verification);
     a little reorganization to save a few 2D fields and recomputations
+  - 1st step of revisiting thsice adjoint (major recomp. sorted out)
 o pkg/obcs: add support for exch2
   - the position of the boundary and prescribed values are specified using
     a global domain with exch2 facets stacked
