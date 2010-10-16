@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.8 2010/08/24 13:54:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.9 2010/10/16 12:28:38 heimbach Exp $
 C $Name:  $
 
       integer ilev_1
@@ -16,7 +16,7 @@ C $Name:  $
 #endif
       PARAMETER (NDV2D  = 23)
       PARAMETER (NEXF1  = 21)
-      PARAMETER (NEXF2  = 18)
+      PARAMETER (NEXF2  = 20)
       PARAMETER (NCTRL1 = 18)
       PARAMETER (NOB = 18)
       PARAMETER (NSI = 19)
