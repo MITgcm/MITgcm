@@ -1,39 +1,41 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1313 2010/10/15 23:24:39 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1314 2010/10/16 17:23:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+   fix flow dir for exch1_z_RX_cube, exch1_uv_RX_cube & exch1_bg_RX_cube
 o pkg/seaice/seaice_growth.F
-  Revision 1.89 of seaice_growth.F completes the overall october 2010 revision and 
-  merging process. The merged routine has two branches, and one activates the 'evolution' 
+  Revision 1.89 of seaice_growth.F completes the overall october 2010 revision and
+  merging process. The merged routine has two branches, and one activates the 'evolution'
   branch by setting SEAICE_GROWTH_LEGACY to undef (at the top of the routine for now).
   In summary, here is what the '10/10 revision' did consist of
-    part 1: seaice_growth.F revisions 1.71 to 1.75 
+    part 1: seaice_growth.F revisions 1.71 to 1.75
       - Preliminary seaice_growth.F clean-up, keeping test results strictly unchanged.
-        The emphasis here was on improving readability (e.g. by trying to use meaningful 
+        The emphasis here was on improving readability (e.g. by trying to use meaningful
         variable names) and modularity (e.g. by adding arrays to store heff etc. updates).
-    part 1.5: 
-      - revising the lab_sea experiment to make it a more useful (i.e. stable 
-        and representative of an actual model run). This was done by generating a 
-        (winter) pickup to start from, switching back the main experiment dynamic 
+    part 1.5:
+      - revising the lab_sea experiment to make it a more useful (i.e. stable
+        and representative of an actual model run). This was done by generating a
+        (winter) pickup to start from, switching back the main experiment dynamic
         solver from evp to lsr, having one of the experiments use the free drift solution.
-    part 2: seaice_growth.F revisions 1.76 to 1.85  
+    part 2: seaice_growth.F revisions 1.76 to 1.85
       - Sorting out hard-coded constants that prevented heat and fresh water conservation.
-      - Sorting out the various fields units and sign (set early on and reset at the end) 
-        to avoid numerous scalings/re-scalings. By v1.85 the basic unit for ice, heat and 
-        fresh water stock is 'effective ice meters', and >0 implies more ice/snow. 
-      - Using tendency terms arrays (d_HEFF* etc.) to alleviate remaining code locks, 
+      - Sorting out the various fields units and sign (set early on and reset at the end)
+        to avoid numerous scalings/re-scalings. By v1.85 the basic unit for ice, heat and
+        fresh water stock is 'effective ice meters', and >0 implies more ice/snow.
+      - Using tendency terms arrays (d_HEFF* etc.) to alleviate remaining code locks,
         and simplifying logical expressions to further improve readibility.
     part 3: seaice_growth.F revisions 1.86 to 1.89
       - Re-organize the blocks of code more logically.
       - Merging the '_if.F' pieces that add something new.
-o pkg/thsice: 
-  - vectorize thsice_solve4temp and thsice_get_exf. 
+o pkg/thsice:
+  - vectorize thsice_solve4temp and thsice_get_exf.
     Problem: thsice_solve4temp has an unvectorizable statement that
     might also be problematic for TAF
-  - thsice_get_exf: add the ALLOW_BULK_LARGEYEAGER04 CPP-flag. This 
-    does not change the verifcation experiment, but will change all 
+  - thsice_get_exf: add the ALLOW_BULK_LARGEYEAGER04 CPP-flag. This
+    does not change the verifcation experiment, but will change all
     experiments that have this flag undefined (not tested in verification);
     a little reorganization to save a few 2D fields and recomputations
 o pkg/obcs: add support for exch2
@@ -54,29 +56,29 @@ o pkg/thsice:
    iteration loop and call to S/R THSICE_GET_BULKF & THSICE_GET_EXF.
 o verification/lab_sea:
   - overhaul of the forward model experiments. The main motivation
-    for this revision is that lab_sea has proven quite fragile (when 
+    for this revision is that lab_sea has proven quite fragile (when
     changing the sea-ice code, and switching platforms) to a point
     when failures were very hard to attribute to specific code problems.
-  - the suspected reason for this fragility is noise amplification by evp so, 
+  - the suspected reason for this fragility is noise amplification by evp so,
     to start with, we decided to replace evp with lsr in the main experiment.
   - the input.lsr experiment thus became obsolete and was removed.
-  - it was replaced with the input.fd experiment that uses an 
+  - it was replaced with the input.fd experiment that uses an
     analytical "free drift" solution as the ice velocity field.
   - Taken together, input (lsr), input.fd (free drift) and input.hb87 (evp)
     will hopefully allow us to discriminate problems due to dynamic solvers
     from problems due to the thermodynamic code. input.salt_plume (lsr) allows
     us to test additional options, along with the salt plume package.
-  - Finally a pickup was generated (at the end of a one year run) to 
+  - Finally a pickup was generated (at the end of a one year run) to
     make the tests more representative of an actual model run. Previously
     the tests starting point was a 1m thickness of ice everywhere.
-o pkg/seaice: 
+o pkg/seaice:
   - introducing S\R seaice_freedrift.F that compute the
-    analytical solution to an approximate ice momentum 
+    analytical solution to an approximate ice momentum
     equation (i.e. the simple stress/coriolis balance).
   - define SEAICE_ALLOW_FREEDRIFT to trigger the computation
-    of the free drift velocity field, and enable its use. 
-    To actually use the free drift solution as the model ice 
-    velocity field set SEAICEuseFREEDRIFT to .TRUE. in data.seaice. 
+    of the free drift velocity field, and enable its use.
+    To actually use the free drift solution as the model ice
+    velocity field set SEAICEuseFREEDRIFT to .TRUE. in data.seaice.
 o move "useOASIS" from PARAMS.h to EEPARAMS.h and read it from "eedata"
 
 checkpoint62l (2010/10/04)
