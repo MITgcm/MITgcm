@@ -1,6 +1,7 @@
 #define SEAICE_GROWTH_LEGACY
 #define SEAICE_DO_OPEN_WATER_GROWTH
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.89 2010/10/15 19:10:57 gforget Exp $
+#define SEAICE_OCN_MELT_ACT_ON_AREA
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.90 2010/10/16 23:28:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -119,6 +120,8 @@ c
       _RL d_HEFFbyOCNonICE    (1:sNx,1:sNy)
       _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
       _RL d_HEFFbyFLOODING    (1:sNx,1:sNy)
+c
+      _RL d_HEFFbyATMonOCN_open(1:sNx,1:sNy)
 c
       _RL d_HSNWbyNEG         (1:sNx,1:sNy)
       _RL d_HSNWbyATMonSNW    (1:sNx,1:sNy)
@@ -250,44 +253,46 @@ C =====================
 
         DO J=1,sNy
          DO I=1,sNx
-          a_QbyATM_cover (I,J)      = 0.0 _d 0
-          a_QbyATM_open(I,J)      = 0.0 _d 0
-          r_QbyATM_cover (I,J)      = 0.0 _d 0
-          r_QbyATM_open (I,J)      = 0.0 _d 0
+          a_QbyATM_cover (I,J)       = 0.0 _d 0
+          a_QbyATM_open(I,J)         = 0.0 _d 0
+          r_QbyATM_cover (I,J)       = 0.0 _d 0
+          r_QbyATM_open (I,J)        = 0.0 _d 0
 c
           a_QSWbyATM_open (I,J)      = 0.0 _d 0
-          a_QSWbyATM_cover (I,J)      = 0.0 _d 0
+          a_QSWbyATM_cover (I,J)     = 0.0 _d 0
 c
-          a_QbyOCN (I,J)      = 0.0 _d 0
-          r_QbyOCN (I,J)      = 0.0 _d 0
+          a_QbyOCN (I,J)             = 0.0 _d 0
+          r_QbyOCN (I,J)             = 0.0 _d 0
 c
-          d_AREAbyATM(I,J)      = 0.0 _d 0
+          d_AREAbyATM(I,J)           = 0.0 _d 0
 c
           d_HEFFbyOCNonICE(I,J)      = 0.0 _d 0
           d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
           d_HEFFbyFLOODING(I,J)      = 0.0 _d 0
 c
+          d_HEFFbyATMonOCN_open(I,J) = 0.0 _d 0
+c
           d_HSNWbyATMonSNW(I,J)      = 0.0 _d 0
           d_HSNWbyOCNonSNW(I,J)      = 0.0 _d 0
-          d_HSNWbyRAIN(I,J)      = 0.0 _d 0
+          d_HSNWbyRAIN(I,J)          = 0.0 _d 0
 c
-          d_HFRWbyRAIN(I,J)      = 0.0 _d 0
+          d_HFRWbyRAIN(I,J)          = 0.0 _d 0
 c
-          tmparr1(I,J)      = 0.0 _d 0
+          tmparr1(I,J)               = 0.0 _d 0
 c
 #ifdef SEAICE_SALINITY
-          saltFluxAdjust(I,J) = 0.0 _d 0
+          saltFluxAdjust(I,J)        = 0.0 _d 0
 #endif
 #ifdef SEAICE_MULTICATEGORY
-          a_QbyATMmult_cover(I,J)      = 0.0 _d 0
-          a_QSWbyATMmult_cover(I,J)      = 0.0 _d 0
+          a_QbyATMmult_cover(I,J)    = 0.0 _d 0
+          a_QSWbyATMmult_cover(I,J)  = 0.0 _d 0
 #endif
          ENDDO
         ENDDO
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
         DO J=1-oLy,sNy+oLy
          DO I=1-oLx,sNx+oLx
-          frWtrAtm(I,J,bi,bj)   = 0.0 _d 0
+          frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
          ENDDO
         ENDDO
 #endif
@@ -319,6 +324,23 @@ CADJ &                        key = iicekey, byte = isbyte
           d_HSNWbyNEG(I,J)=MAX(-HSNOW(I,J,bi,bj),0. _d 0)
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+d_HSNWbyNEG(I,J)
           AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),0. _d 0)
+         ENDDO
+        ENDDO
+
+c 1.5) treat the case of area but no ice/snow:
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
+          IF ((HEFF(i,j,bi,bj).EQ.0. _d 0).AND.
+     &        (HSNOW(i,j,bi,bj).EQ.0. _d 0)) AREA(I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 
@@ -675,33 +697,11 @@ cgf warming conditions, the lab_sea results were not changed.
 c The following line is what I referred to as the 'vintage bug'
 c If I mistook a desirable feature for a bug, then we will un-comment 
 c this line. Otherwise we may want to delete the comment at some point.
-c     &                                            /AREApreTH(I,J)
+c     &                                            *AREApreTH(I,J)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
          ENDDO
         ENDDO
 
-C gain of new ice over open water
-C ===============================
-#ifndef SEAICE_GROWTH_LEGACY
-#ifdef SEAICE_DO_OPEN_WATER_GROWTH
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH(:,:) = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-#endif
-        DO J=1,sNy
-         DO I=1,sNx
-          if (AREApreTH(I,J).GT.0. _d 0) then
-            tmpscal2 = MAX(ZERO,a_QbyATM_open(I,J))
-          else
-            tmpscal2=0. _d 0
-          endif
-          d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal2
-          r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal2
-          HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
-         ENDDO
-        ENDDO
-#endif /* SEAICE_DO_OPEN_WATER_GROWTH */
-#endif /* SEAICE_GROWTH_LEGACY */
 
 C attribute precip to fresh water or snow stock, 
 C depending on atmospheric conditions.
@@ -756,6 +756,42 @@ cph( very sensitive bit here by JZ
 #endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 cph)
 
+
+C gain of new ice over open water
+C ===============================
+#ifndef SEAICE_GROWTH_LEGACY
+#ifdef SEAICE_DO_OPEN_WATER_GROWTH
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE AREApreTH(:,:) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
+          if ( (r_QbyATM_open(I,J).GT.0. _d 0).AND.
+     &         (AREApreTH(I,J).GT.0. _d 0) ) then
+            tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j)
+c at this point r_QbyOCN(i,j)<=0 and represents the heat 
+c that is still needed to get to the first layer to freezing point
+            tmpscal2=SWFRACB*(a_QSWbyATM_cover(I,J)
+     &                       +a_QSWbyATM_open(I,J))
+c SWFRACB*tmpscal2<=0 is the heat (out of qnet) that is not 
+c going to the first layer, which favors its freezing
+            tmpscal3=MAX(0. _d 0, tmpscal1-tmpscal2)
+          else
+            tmpscal3=0. _d 0
+          endif
+          d_HEFFbyATMonOCN_open(I,J)=tmpscal3
+c The distinct d_HEFFbyATMonOCN_open array is only needed for d_AREA computation.
+c For the rest it is treated as another contribution to d_HEFFbyATMonOCN. 
+          d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal3
+          r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal3
+          HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3
+         ENDDO
+        ENDDO
+#endif /* SEAICE_DO_OPEN_WATER_GROWTH */
+#endif /* SEAICE_GROWTH_LEGACY */
+
+
 C convert snow to ice if submerged.
 C =================================
 
@@ -801,6 +837,8 @@ c ===================================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj)   = comlev1_bibj,
+CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE area(:,:,bi,bj)   = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE r_QbyATM_cover(:,:)         = comlev1_bibj,
@@ -820,22 +858,25 @@ CADJ &                         key = iicekey, byte = isbyte
         DO J=1,sNy
          DO I=1,sNx
 #ifndef SEAICE_GROWTH_LEGACY
-c compute ice melt due to ATM and OCN heat stocks
+c compute ice melt due to ATM (and OCN) heat stocks
 c
-c note: both types equally lead to a reduction in ice 
-c cover -- in legacy code only one of them does so.
+# ifdef SEAICE_OCN_MELT_ACT_ON_AREA 
+c ice cover reduction by joint OCN+ATM melt
           tmpscal3 = MIN( 0. _d 0 , 
      &              d_HEFFbyATMonOCN(I,J)+d_HEFFbyOCNonICE(I,J) ) 
+# else
+c ice cover reduction by ATM melt only -- as in legacy code
+          tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN(I,J) ) 
+# endif     
 C gain of new ice over open water
 c
-c note: in legacy code this is only a virtual growth term 
-c       -- in merged code it can affect heff directly 
-#  ifdef SEAICE_DO_OPEN_WATER_GROWTH
-          tmpscal4 = MAX(0. _d 0,
-     &              a_QbyATM_open(I,J)-r_QbyATM_open(I,J) )
-#  else
-          tmpscal4 = MAX( 0. _d 0, a_QbyATM_open(I,J))
-#  endif
+# ifdef SEAICE_DO_OPEN_WATER_GROWTH
+c the one effectively used to increment HEFF
+          tmpscal4 = d_HEFFbyATMonOCN_open(I,J)
+# else
+c the virtual one -- as in legcy code
+          tmpscal4 = MAX(ZERO,a_QbyATM_open(I,J))
+# endif
 #else
 c compute heff after ice melt by ocn:
           tmpscal0=HEFF(I,J,bi,bj)
@@ -871,8 +912,13 @@ c compute cover fraction tendency
 #endif
           ENDIF
 c apply tendency
+          IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
+     &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
            AREA(I,J,bi,bj)=max(0. _d 0 , min( 1. _d 0, 
      &                     AREA(I,J,bi,bj)+d_AREAbyATM(I,J) ) )
+          ELSE
+           AREA(I,J,bi,bj)=0. _d 0
+          ENDIF
          ENDDO
         ENDDO
 
