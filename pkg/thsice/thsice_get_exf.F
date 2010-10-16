@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.14 2010/10/15 15:09:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.15 2010/10/16 12:46:57 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -83,8 +83,8 @@ C     hsLocal, hlLocal :: sensible & latent heat flux over sea-ice
 C             t0       :: virtual temperature (K)
 C             ssq      :: saturation specific humidity (kg/kg)
 C             deltap   :: potential temperature diff (K)
-      _RL hsLocal(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hlLocal(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hsLocal
+      _RL hlLocal
       INTEGER iter
       INTEGER i, j
       _RL czol
@@ -131,8 +131,8 @@ C     net (downward) LW at surface (W m-2)
       _RL  flwNet_dwn
 C     gradients of latent/sensible net upward heat flux
 C     w/ respect to temperature
-      _RL dflhdT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dfshdT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dflhdT
+      _RL dfshdT
       _RL dflwupdT
 C     emissivities, called emittance in exf
       _RL     emiss
@@ -199,8 +199,6 @@ C     initialisation of local arrays
         delq(i,j)   = 0. _d 0
         deltap(i,j) = 0. _d 0
         ssq(i,j)    = 0. _d 0
-        dflhdT(i,j) = 0. _d 0
-        dfshdT(i,j) = 0. _d 0
        ENDDO
       ENDDO
 C
@@ -386,17 +384,21 @@ C     end iteration loop
           
           tau     = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
           
-          evapLoc(i,j) = -tau*qstar(i,j)
-          hlLocal(i,j) = -lath*evapLoc(i,j)
-          hsLocal(i,j) = atmcp*tau*tstar(i,j)
+          evapLoc(i,j)  = -tau*qstar(i,j)
+          hlLocal       = -lath*evapLoc(i,j)
+          hsLocal       = atmcp*tau*tstar(i,j)
 c         ustress = tau*rd(i,j)*UwindSpeed
 c         vstress = tau*rd(i,j)*VwindSpeed
 
 C---  surf.Temp derivative of turbulent Fluxes
 C     complete computation of dEvdT
-          dEvdT(i,j)  = (tau*re(i,j))*dEvdT(i,j)
-          dflhdT(i,j) = -lath*dEvdT(i,j)
-          dfshdT(i,j) = -atmcp*tau*rh(i,j)
+          dEvdT(i,j)    = (tau*re(i,j))*dEvdT(i,j)
+          dflhdT        = -lath*dEvdT(i,j)
+          dfshdT        = -atmcp*tau*rh(i,j)
+C--   Update total derivative with respect to surface temperature
+          dFlxdT(i,j)   = dFlxdT(i,j)   + dfshdT  + dflhdT
+C--   Update net downward radiation excluding shortwave
+          flxExcSw(i,j) = flxExcSw(i,j) + hsLocal + hlLocal
 
          ENDIF
         ENDDO
@@ -408,16 +410,20 @@ C     with no stability dependence ( useStabilityFct_overIce = false )
         DO i=iMin,iMax
          IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
           
-          wsm          = sh(i,j,bi,bj)
-          tau          = atmrho*exf_iceCe*wsm
-          evapLoc(i,j) = -tau*delq(i,j)
-          hlLocal(i,j) = -lath*evapLoc(i,j)
-          hsLocal(i,j) = atmcp*atmrho*exf_iceCh*wsm*deltap(i,j)
+          wsm           = sh(i,j,bi,bj)
+          tau           = atmrho*exf_iceCe*wsm
+          evapLoc(i,j)  = -tau*delq(i,j)
+          hlLocal       = -lath*evapLoc(i,j)
+          hsLocal       = atmcp*atmrho*exf_iceCh*wsm*deltap(i,j)
 C---  surf.Temp derivative of turbulent Fluxes
 C     complete computation of dEvdT
-          dEvdT(i,j)   = tau*dEvdT(i,j)
-          dflhdT(i,j)  = -lath*dEvdT(i,j)
-          dfshdT(i,j)  = -atmcp*atmrho*exf_iceCh*wsm
+          dEvdT(i,j)    = tau*dEvdT(i,j)
+          dflhdT        = -lath*dEvdT(i,j)
+          dfshdT        = -atmcp*atmrho*exf_iceCh*wsm
+C--   Update total derivative with respect to surface temperature
+          dFlxdT(i,j)   = dFlxdT(i,j)   + dfshdT  + dflhdT
+C--   Update net downward radiation excluding shortwave
+          flxExcSw(i,j) = flxExcSw(i,j) + hsLocal + hlLocal
           
          ENDIF
         ENDDO
@@ -426,12 +432,7 @@ C     endif useStabilityFct_overIce
       ENDIF
       DO j=jMin,jMax
        DO i=iMin,iMax
-        IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
-C--   Update total derivative with respect to surface temperature
-         dFlxdT(i,j)   = dFlxdT(i,j)+dfshdT(i,j)+dflhdT(i,j)
-C--   Update net downward radiation excluding shortwave
-         flxExcSw(i,j) = flxExcSw(i,j) + hsLocal(i,j) + hlLocal(i,j)
-        ELSEIF ( iceFlag(i,j) ) THEN
+        IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).LE.0. _d 0 ) THEN
 C--   in case atemp is zero:
          flxExcSw(i,j) = 0. _d 0
          dFlxdT  (i,j) = 0. _d 0
