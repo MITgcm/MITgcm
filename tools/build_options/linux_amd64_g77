@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.4 2009/07/21 19:55:13 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.5 2010/10/16 17:06:04 jmc Exp $
 #  $Name:  $
 #
 # Build options for Suse 9 Opteron
@@ -24,6 +24,9 @@ else
 #   FFLAGS="$FFLAGS -g -mfpmath=sse -msse -msse2 -fbounds-check"
     FOPTIM='-O0'
 fi
+# for big objects:
+FFLAGS="$FFLAGS -fPIC"
+CFLAGS="-O0 -fPIC"
 
 if test -d /usr/include/netcdf-3 ; then
 #-- some FedoraCore standard location used to be "netcdf-3"
