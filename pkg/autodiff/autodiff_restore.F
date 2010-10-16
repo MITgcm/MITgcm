@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.15 2010/10/16 12:28:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.16 2010/10/16 14:40:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -271,21 +271,25 @@ C-      2D arrays
           xx_precip0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,9)
           xx_precip1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,10)
 #  endif
+# ifdef ALLOW_SNOWPRECIP_CONTROL
+          xx_snowprecip0(I,J,bi,bj)= StoreCTRLS1(I,J,bi,bj,11)
+          xx_snowprecip1(I,J,bi,bj)= StoreCTRLS1(I,J,bi,bj,12)
+#  endif
 # ifdef ALLOW_SWFLUX_CONTROL
-          xx_swflux0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,11)
-          xx_swflux1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,12)
+          xx_swflux0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,13)
+          xx_swflux1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,14)
 #  endif
 # ifdef ALLOW_SWDOWN_CONTROL
-          xx_swdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,13)
-          xx_swdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,14)
+          xx_swdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,15)
+          xx_swdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,16)
 #  endif
 #  ifdef ALLOW_LWDOWN_CONTROL
-          xx_lwdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,15)
-          xx_lwdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,16)
+          xx_lwdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,17)
+          xx_lwdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,18)
 #  endif
 #  ifdef ALLOW_APRESSURE_CONTROL
-          xx_apressure0(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,17)
-          xx_apressure1(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,18)
+          xx_apressure0(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,19)
+          xx_apressure1(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,20)
 #  endif
          enddo
         enddo
