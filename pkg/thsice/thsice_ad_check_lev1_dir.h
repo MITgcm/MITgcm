@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev1_dir.h,v 1.4 2007/10/09 00:12:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev1_dir.h,v 1.5 2010/10/16 12:29:39 heimbach Exp $
 C $Name:  $
 
 CADJ STORE iceMask = comlev1, key = ikey_dynamics
@@ -13,8 +13,10 @@ CADJ STORE oceqnet = comlev1, key = ikey_dynamics
 CADJ STORE ocesflx = comlev1, key = ikey_dynamics
 CADJ STORE hOceMxL = comlev1, key = ikey_dynamics
 
-cphCADJ STORE Tice1   = comlev1, key = ikey_dynamics
-cphCADJ STORE Tice2   = comlev1, key = ikey_dynamics
+CADJ STORE Tice1   = comlev1, key = ikey_dynamics
+CADJ STORE Tice2   = comlev1, key = ikey_dynamics
+CADJ STORE sheating = comlev1, key = ikey_dynamics
+
 cphCADJ STORE snowPrc  = comlev1, key = ikey_dynamics
 cphCADJ STORE siceAlb  = comlev1, key = ikey_dynamics
 cphCADJ STORE tOceMxL = comlev1, key = ikey_dynamics

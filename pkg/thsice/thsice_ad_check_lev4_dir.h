@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev4_dir.h,v 1.4 2007/10/09 00:12:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev4_dir.h,v 1.5 2010/10/16 12:29:39 heimbach Exp $
 C $Name:  $
 
 CADJ STORE iceMask    = tapelev4, key = ilev_4
@@ -18,3 +18,6 @@ CADJ STORE saltflux = tapelev4, key = ilev_4
 #ifdef ATMOSPHERIC_LOADING
 CADJ STORE siceload = tapelev4, key = ilev_4
 #endif
+
+CADJ STORE sheating = tapelev4, key = ilev_4
+CADJ STORE tice1,tice2 = tapelev4, key = ilev_4

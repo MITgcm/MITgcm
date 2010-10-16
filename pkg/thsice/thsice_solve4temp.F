@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.22 2010/10/15 15:15:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.23 2010/10/16 12:29:39 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -189,6 +189,9 @@ c     max2 = myByHi(myThid) - myByLo(myThid) + 1
 c     act3 = myThid - 1
 c     max3 = nTx*nTy
 c     act4 = ikey_dynamics - 1
+      iicekey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       useBlkFlx = useEXF .OR. useBulkForce
@@ -337,14 +340,14 @@ C--   Get surface fluxes over melting surface
      O                            flx0exSW, dFlxdT, evap0, dEvdT,
      I                            myTime, myIter, myThid )
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
-c#ifdef ALLOW_BULK_FORCE
+#ifdef ALLOW_BULK_FORCE
         ELSEIF ( useBulkForce ) THEN
            CALL THSICE_GET_BULKF( bi, bj, siLo, siHi, sjLo, sjHi,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
      O                            flx0exSW, dFlxdT, evap0, dEvdT,
      I                            myTime, myIter, myThid )
-c#endif /* ALLOW_BULK_FORCE */
+#endif /* ALLOW_BULK_FORCE */
         ENDIF
       ENDIF
 
@@ -379,14 +382,14 @@ C--   Compute top surface flux.
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
      I                            myTime, myIter, myThid )
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
-c#ifdef ALLOW_BULK_FORCE
+#ifdef ALLOW_BULK_FORCE
          ELSEIF ( useBulkForce ) THEN
            CALL THSICE_GET_BULKF( bi, bj, siLo, siHi, sjLo, sjHi,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
      I                            myTime, myIter, myThid )
-c#endif /* ALLOW_BULK_FORCE */
+#endif /* ALLOW_BULK_FORCE */
          ENDIF
        ELSE
          DO j = jMin, jMax
@@ -398,6 +401,14 @@ c#endif /* ALLOW_BULK_FORCE */
           ENDDO
          ENDDO
        ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE devdt(i,j) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE dflxdt(i,j) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE flxtexsw(i,j) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE iceflag(i,j) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE tsf(i,j) = comlev1_bibj,key=iicekey,byte=isbyte
+#endif
 
 C--   Compute new top layer and surface temperatures.
 C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
@@ -412,9 +423,6 @@ C     with different coefficients.
      &      flxNet, dFlxdT(i,j), k12(i,j), k12(i,j)-dFlxdT(i,j)
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE tsf  = comlev1_thsice_3, key=ikey_3
-#endif
           a1 = a10(i,j) - k12(i,j)*dFlxdT(i,j) / (k12(i,j)-dFlxdT(i,j))
           b1 = b10(i,j) - k12(i,j)*(flxNet-dFlxdT(i,j)*Tsf(i,j))
      &                  /(k12(i,j)-dFlxdT(i,j))

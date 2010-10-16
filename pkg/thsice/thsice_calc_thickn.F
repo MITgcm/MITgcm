@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.19 2010/10/13 14:26:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.20 2010/10/16 12:29:39 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -224,15 +224,18 @@ C-    define grid-point location where to print debugging values
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CML      act1 = bi - myBxLo(myThid)
-CML      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-CML      act2 = bj - myByLo(myThid)
-CML      max2 = myByHi(myThid) - myByLo(myThid) + 1
-CML      act3 = myThid - 1
-CML      max3 = nTx*nTy
-CML      act4 = ikey_dynamics - 1
-CML#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_AUTODIFF_TAMC
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      iicekey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       rec_nlyr = nlyr
       rec_nlyr = 1. _d 0 / rec_nlyr
@@ -582,7 +585,14 @@ C     endif iceMask > 0 and ebot < 0
 C     end i/j-loops
        ENDDO
       ENDDO
-C
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE etop(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE ebot(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
       DO k = nlyr, 1, -1
 CML#ifdef ALLOW_AUTODIFF_TAMC
 CML           ikey_2 = (nlyr-k+1)
@@ -680,6 +690,7 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
@@ -730,6 +741,12 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE evaploc(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
 C-    else: hIce > 0
       DO k = 1, nlyr
        DO j = jMin, jMax
@@ -799,6 +816,15 @@ C     end i/j-loops
        ENDDO
 C     end k-loop
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE etop(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE icemask(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hice(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
 C     still else: hice > 0
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -834,6 +860,15 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icemask(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hice(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hsnow(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
@@ -943,6 +978,7 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
@@ -996,6 +1032,15 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icemask(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE icfrac(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE hsnow(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
