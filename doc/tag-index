@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1315 2010/10/16 19:33:41 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1316 2010/10/17 09:52:15 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: vectorize seaice_solve4temp.F
+  - move iterations loops outside of i/j-loops
+  - requires 2D arrays for TB and effConduct
+  - add 2D iceOrNot to replace HICE_ACTUAL.GT.0, as HICE_ACTUAL is 
+    modified in this routine
+  - a little bit of clean up, adjusting indentation, etc.
+  - replaced a few TEN**a by exp(a*log(10.)) in new code for better 
+    performance and '**TWO' by '**2' (because TWO is a float), 
+    replaced ONE, ZERO
 o eesupp/src:
    fix flow dir for exch1_z_RX_cube, exch1_uv_RX_cube & exch1_bg_RX_cube
 o pkg/seaice/seaice_growth.F
