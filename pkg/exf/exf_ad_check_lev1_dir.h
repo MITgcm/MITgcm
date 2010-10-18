@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.16 2009/02/13 21:58:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.17 2010/10/18 19:58:15 heimbach Exp $
 C $Name:  $
 
 c
@@ -31,6 +31,8 @@ CADJ STORE lwflux0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE lwflux1   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swflux0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swflux1   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE snowprecip0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE snowprecip1   = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef EXF_READ_EVAP
 CADJ STORE evap0     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE evap1     = comlev1, key=ikey_dynamics, kind=isbyte
@@ -92,10 +94,6 @@ CADJ STORE siceload      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE runoff0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE runoff1   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
-# ifdef ALLOW_THSICE
-CADJ STORE snowprecip0   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE snowprecip1   = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
 
 # ifdef ALLOW_HFLUX_CONTROL
 CADJ STORE xx_hflux0     = comlev1, key=ikey_dynamics, kind=isbyte
