@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.11 2010/09/24 23:22:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.12 2010/10/19 22:00:57 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -152,7 +152,7 @@ CEOP
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
 
 c    determine number of 2d fields
-      length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSy*nSy
+      length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy
       n2d=int(length/length2d)
 c
       if (n2d*length2d.EQ.length) then
@@ -312,7 +312,7 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
 c    determine number of 2d fields
-      length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSy*nSy
+      length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy
       n2d=int(length/length2d)
 c
       if (n2d*length2d.EQ.length) then
