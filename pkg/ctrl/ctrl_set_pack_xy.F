@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.18 2010/09/26 02:51:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.19 2010/10/20 17:51:12 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -419,6 +419,7 @@ c-- 2.2: normalize field if needed
             else
                fld2dNodim(i,j,bi,bj) =
      &              fld2dDim(i,j,bi,bj) * forcingPrecond
+            endif
 #else
 # ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
             fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
