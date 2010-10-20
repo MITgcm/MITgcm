@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.47 2010/09/16 16:02:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.48 2010/10/20 22:06:55 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -103,6 +103,10 @@ CADJ &     kind = isbyte
 
 #ifdef ALLOW_GGL90
 # include "ggl90_ad_check_lev1_dir.h"
+#endif
+
+#ifdef ALLOW_ECCO
+# include "ecco_ad_check_lev1_dir.h"
 #endif
 
 #ifdef ALLOW_EXF

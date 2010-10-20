@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.47 2010/10/16 12:28:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.48 2010/10/20 22:06:56 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -115,6 +115,10 @@ CADJ &     = tapelev3, key = ilev_3
 
 #ifdef ALLOW_GGL90
 # include "ggl90_ad_check_lev3_dir.h"
+#endif
+
+#ifdef ALLOW_ECCO
+# include "ecco_ad_check_lev3_dir.h"
 #endif
 
 #ifdef ALLOW_EXF

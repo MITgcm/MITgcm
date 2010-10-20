@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.15 2010/10/16 14:40:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.16 2010/10/20 22:06:56 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,11 @@ C $Name:  $
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 #endif
 
       subroutine autodiff_store( mythid )
