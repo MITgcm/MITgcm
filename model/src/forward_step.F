@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.181 2010/09/25 23:09:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.182 2010/10/20 22:08:55 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,6 +75,9 @@ C     == Global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
+# ifdef ALLOW_ECCO
+#  include "ecco_cost.h"
+# endif
 # include "EOS.h"
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 #  include "GRID.h"
@@ -228,14 +231,25 @@ C--   State-variables diagnostics
       ENDIF
 #endif /* ALLOW_NEST_PARENT */
 
+#ifdef ALLOW_ECCO
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesfields',myThid)
+#endif
+c--     Accumulate time averages of temperature, salinity
+      CALL TIMER_START('COST_AVERAGESFIELDS [FORWARD_STEP]',mythid)
+      CALL COST_AVERAGESFIELDS( mytime, mythid )
+      CALL TIMER_STOP ('COST_AVERAGESFIELDS [FORWARD_STEP]',mythid)
+#endif /* ALLOW_ECCO */
+
 #ifdef ALLOW_PROFILES
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
-        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+        CALL TIMER_START('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
         CALL PROFILES_INLOOP( mytime, mythid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+        CALL TIMER_STOP ('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
 #endif
 
 C--   Call driver to load external forcing fields from file

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.52 2010/10/05 17:43:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.53 2010/10/20 22:08:55 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,6 +163,10 @@ C--   packages with hard-coded switch
 #endif
 
 #ifdef ALLOW_PROFILES
+      useCAL = .TRUE.
+#endif
+
+#ifdef ALLOW_ECCO
       useCAL = .TRUE.
 #endif
 
