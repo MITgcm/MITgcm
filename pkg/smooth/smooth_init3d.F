@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.2 2010/10/20 19:22:11 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -46,9 +46,9 @@ c#include "tamc.h"
 
       smooth3DtotTime=smooth3Dnbt(smoothOpNb)*smooth3DdelTime
 
-            WRITE(standardMessageUnit,'(A,2I4,/,3f5.2)')
+            WRITE(standardMessageUnit,'(A,I4,3f12.0)')
      & 'smooth 3D default parameters: ',
-     & smooth3Dnbt(smoothOpNb),smooth3DtotTime,
+     & smooth3Dnbt(smoothOpNb),
      & smooth3D_Lx0(smoothOpNb),smooth3D_Ly0(smoothOpNb),
      & smooth3D_Lz0(smoothOpNb)
 

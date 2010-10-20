@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.2 2010/10/20 19:22:11 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -59,16 +59,16 @@ c--     Set default values.
       DO smoothOpNb=1,smoothOpNbMax
 
       smooth2Dnbt(smoothOpNb)=0
-      smooth2D_Lx0(smoothOpNb)=0.
-      smooth2D_Ly0(smoothOpNb)=0.
+      smooth2D_Lx0(smoothOpNb)=0. _d 0
+      smooth2D_Ly0(smoothOpNb)=0. _d 0
       smooth2Dtype(smoothOpNb)=0
       smooth2Dsize(smoothOpNb)=0
       smooth2Dfilter(smoothOpNb)=0
 
       smooth3Dnbt(smoothOpNb)=0
-      smooth3D_Lx0(smoothOpNb)=0.
-      smooth3D_Ly0(smoothOpNb)=0.
-      smooth3D_Lz0(smoothOpNb)=0.
+      smooth3D_Lx0(smoothOpNb)=0. _d 0
+      smooth3D_Ly0(smoothOpNb)=0. _d 0
+      smooth3D_Lz0(smoothOpNb)=0. _d 0
       smooth3DtypeH(smoothOpNb)=0
       smooth3DsizeH(smoothOpNb)=0
       smooth3DtypeZ(smoothOpNb)=0
