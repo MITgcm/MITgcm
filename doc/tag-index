@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1316 2010/10/17 09:52:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1317 2010/10/21 04:30:27 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -48,6 +48,10 @@ o pkg/thsice:
     experiments that have this flag undefined (not tested in verification);
     a little reorganization to save a few 2D fields and recomputations
   - 1st step of revisiting thsice adjoint (major recomp. sorted out)
+  - 2nd step:  fix some store dirs
+    o seems to work somewhat, i.e. using ifort but not g77
+    o likely cause are incomplete init. or recomputation
+    o start verification/global_ocean.cs32x15/input_ad.thsice
 o pkg/obcs: add support for exch2
   - the position of the boundary and prescribed values are specified using
     a global domain with exch2 facets stacked
