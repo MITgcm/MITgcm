@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.142 2010/10/07 20:59:39 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.143 2010/10/21 21:29:42 jmc Exp $
 #  $Name:  $
 #
 
@@ -1213,6 +1213,7 @@ for dir in $TESTDIRS ; do
     builddir="build"
     if test ! -d $dir/$builddir ; then mkdir $dir/$builddir ; fi
     rundir="run"
+    pfxdir="tr_$rundir"
     if test ! -d $dir/$rundir ; then
 	rundir=$builddir
     fi
@@ -1228,7 +1229,7 @@ for dir in $TESTDIRS ; do
             echo -n '  --- dir:' $dir/$rundir ': '
 	    run_clean $dir/$rundir
 	fi
-	trdir=`( cd $dir ; find . -type d -name "tr_run.*" -print | sed 's/^.\///')`
+	trdir=`( cd $dir ; find . -type d -name "$pfxdir.*" -print | sed 's/^.\///')`
 	ttd=`echo $trdir | wc -w`
 	if test $ttd != 0 ; then
 	    echo '  --- rm dir:' $trdir
@@ -1353,11 +1354,11 @@ for dir in $TESTDIRS ; do
 	    locDIR=$DRESULTS"/"$dir"."$ex
 	    mkdir $locDIR
 	    CDIR=`pwd`"/$locDIR"
-	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
-	    run_clean $dir/tr_run.$ex
-	    linkdata $dir/tr_run.$ex $inputdir.$ex $inputdir
-	    runmodel $dir/tr_run.$ex && run=Y \
-	    && results=`testoutput_run $dir tr_run.$ex $refExOut`
+	    test ! -e "$dir/$pfxdir.$ex" && mkdir "$dir/$pfxdir.$ex"
+	    run_clean $dir/$pfxdir.$ex
+	    linkdata $dir/$pfxdir.$ex $inputdir.$ex $inputdir
+	    runmodel $dir/$pfxdir.$ex && run=Y \
+	    && results=`testoutput_run $dir $pfxdir.$ex $refExOut`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
 	    echo 1>&2
@@ -1370,11 +1371,11 @@ for dir in $TESTDIRS ; do
 	    echo "tdir='$dir.$ex'" >> $locDIR"/summary.txt"
             if test "x$ADM" = xt ; then
 	        head -1 $dir/$builddir/taf_ad.log >> $locDIR"/summary.txt"
-	        grep -A3 'Seconds in section "ALL' $dir/tr_run.$ex/$OUTPUTFILE \
+	        grep -A3 'Seconds in section "ALL' $dir/$pfxdir.$ex/$OUTPUTFILE \
 			           >> $locDIR"/summary.txt"
             fi
 	    if test "x$POSTCLEAN" = xt ; then
-		run_clean $dir/tr_run.$ex
+		run_clean $dir/$pfxdir.$ex
 	    fi
 	done
 
