@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.9 2007/08/30 15:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.10 2010/10/21 02:10:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -167,9 +167,9 @@ C--   Initialisation (+ build oceanic mask)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(i,j,bi,bj)
+CADJ STORE iceHeight(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE snowHeight(i,j,bi,bj)
+CADJ STORE snowHeight(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
       IF ( thSIce_diffK .GT. 0. ) THEN
@@ -202,9 +202,9 @@ C--   Fractional area
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icevol(i,j) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE utrice(i,j) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE vtrice(i,j) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE icevol(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE utrice(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE vtrice(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
         CALL THSICE_ADVECTION(
      I       GAD_SI_FRAC,  thSIceAdvScheme, .TRUE.,
@@ -227,8 +227,8 @@ C--   Snow thickness
      I       bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(i,j,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE iceMask(i,j,bi,bj)   = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE iceHeight(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj)   = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
 C--   sea-ice Thickness
         DO j=1-Oly,sNy+Oly
@@ -245,9 +245,9 @@ C--   sea-ice Thickness
      I       bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE qice2(i,j,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE utrice(i,j)      = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE vtrice(i,j)      = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE utrice(:,:)      = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE vtrice(:,:)      = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
 
 #ifdef ALLOW_DBUG_THSICE

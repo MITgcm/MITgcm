@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.16 2010/10/16 19:22:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.17 2010/10/21 02:10:34 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -265,7 +265,11 @@ C             Iterations:    converge on z/l and hence the fluxes.
 c         tmpbulk    = exf_BulkCdn(sh(i,j,bi,bj))
           wsm        = sh(i,j,bi,bj)
           tmpbulk    = cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
-          rdn(i,j)   = SQRT(tmpbulk)
+          IF (tmpbulk.NE.0.) THEN
+           rdn(i,j)   = SQRT(tmpbulk)
+          ELSE
+           rdn(i,j)   = 0. _d 0
+          ENDIF
 C--  initial guess for exchange other coefficients:
 c         rhn        = exf_BulkRhn(stable)
           rhn        = (exf_one-stable)*cstanton_1 + stable*cstanton_2
