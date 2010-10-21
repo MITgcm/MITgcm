@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.28 2010/10/16 19:22:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.29 2010/10/21 19:03:31 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -240,29 +240,34 @@ CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
      O          frw2oc, fsalt,
      I          myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE fsalt(:,:)  = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE flx2oc(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE frw2oc(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
+#endif
 C--    Net fluxes :
       DO j = jMin, jMax
        DO i = iMin, iMax
-#ifdef ALLOW_AUTODIFF_TAMC
-          ikey_1 = i
-     &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
-#endif /* ALLOW_AUTODIFF_TAMC */
-C--
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+c         ikey_1 = i
+c    &         + sNx*(j-1)
+c    &         + sNx*sNy*act1
+c    &         + sNx*sNy*max1*act2
+c    &         + sNx*sNy*max1*max2*act3
+c    &         + sNx*sNy*max1*max2*max3*act4
+c#endif /* ALLOW_AUTODIFF_TAMC */
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
+c#endif
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
 C-     weighted average net fluxes:
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE  fsalt(i,j) = comlev1_thsice_1, key=ikey_1
-CADJ STORE  flx2oc(i,j) = comlev1_thsice_1, key=ikey_1
-CADJ STORE  frw2oc(i,j) = comlev1_thsice_1, key=ikey_1
-CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE  fsalt(i,j) = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  flx2oc(i,j) = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  frw2oc(i,j) = comlev1_thsice_1, key=ikey_1
+cCADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
+c#endif
           icFrac = iceMask(i,j,bi,bj)
           opFrac= 1. _d 0-icFrac
 #ifdef ALLOW_ATM2D
@@ -314,7 +319,7 @@ C-------
      I          myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ STORE snowHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj,key=iicekey,byte=isbyte
 #endif
       DO j = jMin, jMax
@@ -361,7 +366,7 @@ C--    Net fluxes :
       ENDDO
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ STORE snowHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj,key=iicekey,byte=isbyte
 # endif
       DO j = jMin, jMax

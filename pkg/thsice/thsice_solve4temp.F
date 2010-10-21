@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.25 2010/10/21 02:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.26 2010/10/21 19:03:31 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -179,13 +179,13 @@ C-    Define grid-point location where to print debugging values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c     act1 = bi - myBxLo(myThid)
-c     max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-c     act2 = bj - myByLo(myThid)
-c     max2 = myByHi(myThid) - myByLo(myThid) + 1
-c     act3 = myThid - 1
-c     max3 = nTx*nTy
-c     act4 = ikey_dynamics - 1
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
       iicekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
@@ -211,7 +211,7 @@ CADJ STORE flxsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
 
       iterate4Tsf = .FALSE.
       icount = 0
-C     
+C
       DO j = jMin, jMax
        DO i = iMin, iMax
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -323,7 +323,7 @@ C--   Compute coefficients used in quadratic formula.
      &      ' case(s) where hIce<hIceMin;'
        WRITE (standardMessageUnit,'(A,I3,A1,I3,A)')
      &      'THSICE_SOLVE4TEMP: the last one was at (',ii,',',jj,
-     &      ') with hIce = ', hIce(ii,jj) 
+     &      ') with hIce = ', hIce(ii,jj)
        STOP 'THSICE_SOLVE4TEMP: should not enter if hIce<hIceMin'
       ENDIF
 
