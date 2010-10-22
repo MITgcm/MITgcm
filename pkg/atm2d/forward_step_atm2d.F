@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.15 2010/07/14 22:19:22 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.16 2010/10/22 15:04:20 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -51,15 +51,23 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
 #ifdef CPL_TEM
       INTEGER ndmonth(12)
       DATA ndmonth/31,28,31,30,31,30,31,31,30,31,30,31/
-      CHARACTER *8 f14tem,f14clm
-      DATA f14tem/'data4tem'/
-      DATA f14clm/'data4clm'/
-      CHARACTER *40 f4tem,f4clm
-      CHARACTER *4 cfile
       REAL*4 totup, aduptt
+      REAL*8 nepan
 #endif
 #ifdef OCEAN_3D
       INTEGER iloop_ocn
+#endif
+#ifdef DATA4TEM 
+      CHARACTER *40 f4tem,f4clm
+      CHARACTER *4  cfile
+      CHARACTER *8  f14tem,f14clm
+      INTEGER nfile
+#endif
+
+#ifdef DATA4TEM 
+      f14tem='data4tem'
+      f14clm='data4clm'
+      nfile=1
 #endif
 
 C     print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
