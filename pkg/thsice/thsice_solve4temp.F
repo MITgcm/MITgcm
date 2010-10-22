@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.26 2010/10/21 19:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.27 2010/10/22 13:43:35 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -142,8 +142,9 @@ C     dt           :: timestep
       LOGICAL useBlkFlx
       LOGICAL iterate4Tsf
       LOGICAL iceFlag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER i,j
-      INTEGER k, iterMax, ii, jj, icount
+      INTEGER i, j, k, iterMax
+      INTEGER ii, jj, icount, stdUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL  frsnow
       _RL  fswpen
       _RL  fswdn
@@ -195,12 +196,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 CADJ STORE flxsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
-        tic1(i,j) = 0. _d 0
-        tic2(i,j) = 0. _d 0
-       END DO
-      END DO
+        tIc1(i,j) = 0. _d 0
+        tIc2(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 #endif
 
+      stdUnit = standardMessageUnit
       useBlkFlx = useEXF .OR. useBulkForce
       dt  = thSIce_dtTemp
       IF ( dhSnowLin.GT.0. _d 0 ) THEN
@@ -211,7 +213,7 @@ CADJ STORE flxsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
 
       iterate4Tsf = .FALSE.
       icount = 0
-C
+
       DO j = jMin, jMax
        DO i = iMin, iMax
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -234,7 +236,7 @@ cCADJ STORE  tsrf(i,j)    = comlev1_thsice_1, key=ikey_1
           iterate4Tsf  = .TRUE.
           iceFlag(i,j) = .TRUE.
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(6,'(A,2I4,2I2)')
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,'(A,2I4,2I2)')
      &         'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 #endif
           IF ( hIce(i,j).LT.hIceMin ) THEN
@@ -283,18 +285,18 @@ C--   Compute ice temperatures
 
 #ifdef ALLOW_DBUG_THSICE
           IF (tIc1(i,j).GT.0. _d 0 ) THEN
-           WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
+           WRITE(stdUnit,'(A,I12,1PE14.6)')
      &       ' BBerr: Tice(1) > 0 ; it=', myIter, qIc1(i,j)
-           WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
+           WRITE(stdUnit,'(A,4I5,2F11.4)')
      &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,tIc1(i,j),tIc2(i,j)
           ENDIF
           IF ( tIc2(i,j).GT.0. _d 0) THEN
-           WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
+           WRITE(stdUnit,'(A,I12,1PE14.6)')
      &       ' BBerr: Tice(2) > 0 ; it=', myIter, qIc2(i,j)
-           WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
+           WRITE(stdUnit,'(A,4I5,2F11.4)')
      &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,tIc1(i,j),tIc2(i,j)
           ENDIF
-          IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &      'ThSI_SOLVE4T: k, Ts, Tice=',0,tSrf(i,j),tIc1(i,j),tIc2(i,j)
 #endif
 
@@ -318,13 +320,16 @@ C--   Compute coefficients used in quadratic formula.
        ENDDO
       ENDDO
       IF ( icount .gt. 0 ) THEN
-       WRITE (standardMessageUnit,'(A,I5,A)')
+       WRITE(stdUnit,'(A,I5,A)')
      &      'THSICE_SOLVE4TEMP: there are ',icount,
      &      ' case(s) where hIce<hIceMin;'
-       WRITE (standardMessageUnit,'(A,I3,A1,I3,A)')
+       WRITE(stdUnit,'(A,I3,A1,I3,A)')
      &      'THSICE_SOLVE4TEMP: the last one was at (',ii,',',jj,
      &      ') with hIce = ', hIce(ii,jj)
-       STOP 'THSICE_SOLVE4TEMP: should not enter if hIce<hIceMin'
+       WRITE( msgBuf, '(A)')
+     &      'THSICE_SOLVE4TEMP: should not enter if hIce<hIceMin'
+       CALL PRINT_ERROR( msgBuf , myThid )
+       STOP 'ABNORMAL END: S/R THSICE_SOLVE4TEMP'
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
@@ -437,7 +442,7 @@ C     with different coefficients.
          IF ( iceFlag(i,j) ) THEN
           flxNet = sHeat(i,j) + flxTexSW(i,j)
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(6,1020)
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1020)
      &     'ThSI_SOLVE4T: flxNet,dFlxdT,k12,D=',
      &      flxNet, dFlxdT(i,j), k12(i,j), k12(i,j)-dFlxdT(i,j)
 #endif
@@ -452,7 +457,7 @@ C     with different coefficients.
           Tsf(i,j) = Tsf(i,j) + dTsrf(i,j)
           IF ( Tsf(i,j) .GT. 0. _d 0 ) THEN
 #ifdef ALLOW_DBUG_THSICE
-           IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &     'ThSI_SOLVE4T: k,ts,t1,dTs=',k,Tsf(i,j),tIc1(i,j),dTsrf(i,j)
 #endif
            a1 = a10(i,j) + k12(i,j)
@@ -481,16 +486,22 @@ C      if Tsfc has not converged.)
 C     If no convergence, then repeat.
 
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &    'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf(i,j),tIc1(i,j),dTsrf(i,j)
           IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND. iceFlag(i,j) ) THEN
-           WRITE (6,'(A,4I4,I12,F15.9)')
+           WRITE(stdUnit,'(A,4I4,I12,F15.9)')
      &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
-           WRITE (6,*) 'BB: not converge: Tsf, dTsf=',
-     &          Tsf(i,j), dTsrf(i,j)
-           WRITE (6,*) 'BB: not converge: flxNet,dFlxT=',
-     &          flxNet, dFlxdT(i,j)
-           IF (Tsf(i,j).LT.-70. _d 0) STOP
+           WRITE(stdUnit,*)
+     &        'BB: not converge: Tsf, dTsf=', Tsf(i,j), dTsrf(i,j)
+           WRITE(stdUnit,*)
+     &        'BB: not converge: flxNet,dFlxT=', flxNet, dFlxdT(i,j)
+           IF ( Tsf(i,j).LT.-70. _d 0 ) THEN
+             WRITE( msgBuf, '(A,2I4,2I3,I10,F12.3)')
+     &        'THSICE_SOLVE4TEMP: Too low Tsf in', i, j, bi, bj,
+     &                            myIter, Tsf(i,j)
+             CALL PRINT_ERROR( msgBuf , myThid )
+             STOP 'ABNORMAL END: S/R THSICE_SOLVE4TEMP'
+           ENDIF
           ENDIF
 #endif
 
@@ -515,7 +526,7 @@ C--   Compute new bottom layer temperature.
      &                 + rhoi*cpIce*hIce(i,j)*tIc2(i,j))
      &               /(6. _d 0*dt*k32 + rhoi*cpIce*hIce(i,j))
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &  'ThSI_SOLVE4T: k, Ts, Tice=',k,Tsf(i,j),tIc1(i,j),tIc2(i,j)
           netSW   = flxAtm(i,j)
 #endif
@@ -541,7 +552,7 @@ C-    excess of energy @ surface (used for surface melting):
           sHeat(i,j) = flxNet - fct
 
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(6,1020)
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1020)
      &     'ThSI_SOLVE4T: flxNet,fct,Dif,flxCnB=',
      &                    flxNet,fct,flxNet-fct,flxCnB(i,j)
 #endif
@@ -555,20 +566,20 @@ C--   Compute new enthalpy for each layer.
 C--   Make sure internal ice temperatures do not exceed Tmlt.
 C     (This should not happen for reasonable values of i0swFrac)
           IF (tIc1(i,j) .GE. Tmlt1) THEN
-           WRITE (6,'(A,2I4,2I3,1P2E14.6)')
+           WRITE(stdUnit,'(A,2I4,2I3,1P2E14.6)')
      &     ' BBerr - Bug: IceT(1) > Tmlt',i,j,bi,bj,tIc1(i,j),Tmlt1
           ENDIF
           IF (tIc2(i,j) .GE. 0. _d 0) THEN
-           WRITE (6,'(A,2I4,2I3,1P2E14.6)')
+           WRITE(stdUnit,'(A,2I4,2I3,1P2E14.6)')
      &     ' BBerr - Bug: IceT(2) > 0',i,j,bi,bj,tIc2(i,j)
           ENDIF
 
           IF ( dBug(i,j,bi,bj) ) THEN
-           WRITE(6,1020) 'ThSI_SOLV_4T: Tsf, Tice(1,2), dTsurf=',
+           WRITE(stdUnit,1020) 'ThSI_SOLV_4T: Tsf, Tice(1,2), dTsurf=',
      &           Tsf(i,j), tIc1(i,j), tIc2(i,j), dTsrf(i,j)
-           WRITE(6,1020) 'ThSI_SOLV_4T: sHeat, flxCndBt, Qice =',
+           WRITE(stdUnit,1020) 'ThSI_SOLV_4T: sHeat, flxCndBt, Qice =',
      &           sHeat(i,j), flxCnB(i,j), qIc1(i,j), qIc2(i,j)
-           WRITE(6,1020) 'ThSI_SOLV_4T: flxA, evpA, fxSW_bf,af=',
+           WRITE(stdUnit,1020) 'ThSI_SOLV_4T: flxA, evpA, fxSW_bf,af=',
      &           flxAtm(i,j), evpAtm(i,j), netSW, flxSW(i,j)
           ENDIF
 #endif
