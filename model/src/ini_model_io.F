@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.35 2009/12/11 13:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.36 2010/10/24 21:32:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,7 +40,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     msgBuf :: Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) namBuf
       INTEGER i, iL, pIL
@@ -86,6 +86,13 @@ C-----
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
         _END_MASTER( myThid )
+      ENDIF
+      IF ( useOBCS .AND. globalFiles ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'INI_MODEL_IO: cannot use globalFiles=T',
+     &   ' to write Sections (for OBCS)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_MODEL_IO'
       ENDIF
 
 C-    Check size of IO buffers:
