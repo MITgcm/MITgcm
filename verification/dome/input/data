@@ -4,27 +4,26 @@
 #
 # Continuous equation parameters
  &PARM01
- Tref = -0.194175, -0.582524, -0.970874, -1.35922, -1.74757, 
-        -2.13592, -2.52427, -2.91262, -3.30097, -3.68932, 
-	-4.07767, -4.46602, -4.85437, -5.24272, -5.63107, 
-	-6.01942, -6.40777, -6.79612, -7.18447, -7.57282, 
-	-7.96117, -8.34951, -8.73786, -9.12621, -9.51456,
+ Tref = -0.194175, -0.582524, -0.970874, -1.35922, -1.74757,
+        -2.13592,  -2.52427,  -2.91262,  -3.30097, -3.68932,
+        -4.07767,  -4.46602,  -4.85437,  -5.24272, -5.63107,
+        -6.01942,  -6.40777,  -6.79612,  -7.18447, -7.57282,
+        -7.96117,  -8.34951,  -8.73786,  -9.12621, -9.51456,
  sRef= 25*1.,
- viscAz=5.E-1,
+ viscAr=5.E-1,
  viscAh=0.0E0,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
 #- a trick to recover old version of side-drag:
 #sideDragFactor=0.,
-#-
  bottomDragQuadratic=2.E-3,
  viscA4=0.E12,
  viscC4Leith=1.458198138065,
  useAreaViscLength=.TRUE.,
- diffKhT=0.0E0
- diffKzT=0.E-2,
+ diffKhT=0.E0,
+ diffKrT=0.E-2,
  diffKhS=0.E0,
- diffKzS=0.E-2,
+ diffKrS=0.E-2,
  f0=1.0e-4,
  beta=0.E-11,
  tAlpha=2.E-4,
@@ -35,16 +34,15 @@
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  hFacMin=0.2,
- nonHydrostatic=.FALSE.,
- multiDimAdvection=.TRUE.,
+#nonHydrostatic=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ staggerTimeStep=.TRUE.,
  tempAdvScheme=77,
  saltAdvScheme=77,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  writeStatePrec=64,
- globalFiles=.TRUE.,
- staggerTimeStep=.TRUE.,
- vectorInvariantMomentum=.TRUE.,
+#globalFiles=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -57,7 +55,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
 #nTimeSteps=12000,
  nTimeSteps=20,
  deltaT=300.,
@@ -67,18 +65,17 @@
  dumpFreq=30000.,
 #cAdjFreq=30.,
 #monitorFreq=6000.,
- monitorSelect=2,
  monitorFreq=300.,
+ monitorSelect=2,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
-# delXfile='delXvar'
+# delXfile='delXvar',
  delX=200*10000.0,
  delYfile='delYvar',
- delZ = 25*144.0, 
+ delR = 25*144.0,
  &
 
 # Input datasets
