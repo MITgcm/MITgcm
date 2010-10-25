@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.92 2010/10/25 16:28:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.93 2010/10/25 23:32:36 gforget Exp $
 C $Name:  $
 
 #define SEAICE_GROWTH_LEGACY
@@ -768,6 +768,12 @@ cgf rain to snow is not a surface process.
 C compute snow melt due to heat available from ocean.
 C =================================================================
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE r_QbyOCN(:,:) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
+CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
+#endif
 cgf do we need to keep this comment and cpp bracket?
 c
 cph( very sensitive bit here by JZ
