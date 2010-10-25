@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.10 2010/04/12 09:00:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.11 2010/10/25 16:21:58 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -29,6 +29,7 @@ C     == global variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
+#include "tamc_keys.h"
 #endif
 
 C     == routine arguments ==
@@ -60,6 +61,19 @@ C--   Use atmospheric state to compute surface fluxes.
 C     Loop over tiles.
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise
         DO j = 1,sNy
@@ -175,6 +189,10 @@ C--   infer wind field from wind-speed & wind-stress direction
          ENDDO
         ENDDO
 #endif /* ifndef ALLOW_ATM_WIND */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
 
 C--   set wind-speed lower limit
         DO j = 1,sNy

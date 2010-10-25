@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.23 2010/05/21 10:08:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.24 2010/10/25 16:21:58 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -312,6 +312,7 @@ C--   Wind speed
             ustar(i,j) = rdn(i,j)*wsm
 #ifndef ALLOW_ATM_WIND
            ELSE
+            rdn(i,j)   = 0. _d 0
             windStress = wStress(i,j,bi,bj)
             ustar(i,j) = sqrt(windStress/atmrho)
 c           tau(i,j)   = windStress/ustar(i,j)
@@ -392,6 +393,8 @@ C--   Large&Pond1981:
      &                       (exf_one+xsq)*.125 _d 0 )
      &                  -exf_two*ATAN(x) + exf_half*pi )
 #ifndef ALLOW_ATM_WIND
+            ELSE
+             psimh  = 0. _d 0
             ENDIF
 #endif
 #ifdef ALLOW_BULK_LARGEYEAGER04
