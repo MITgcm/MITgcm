@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.5 2010/08/25 22:25:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.6 2010/10/25 20:42:31 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -611,7 +611,7 @@ cgf =======================================================
       ndaysave=35
       ndaysaveRL=ndaysave
 
-      do irec = 1, ndaysrec-ndaysave+1
+      do irec = 1, ndaysrec-ndaysave+1, 7
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
