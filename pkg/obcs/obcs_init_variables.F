@@ -1,16 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.34 2009/12/15 17:03:28 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.35 2010/10/25 23:31:02 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_INIT_VARIABLES
+C     !INTERFACE:
       SUBROUTINE OBCS_INIT_VARIABLES( myThid )
+
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE OBCS_INIT_VARIABLES
 C     | o Initialise OBCs variable data
 C     *==========================================================*
 C     *==========================================================*
-      IMPLICIT NONE
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -24,12 +30,15 @@ C     === Global variables ===
 #include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_DEPTHS
+C     myThid :: my Thread Id Number
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_OBCS
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi, bj
       INTEGER I, J, K
@@ -337,12 +346,12 @@ C--   Apply OBCS values to initial conditions for consistency
 C      (but initial conditions only)
 #ifdef ALLOW_DEBUG
        IF (debugMode)
-     &      CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
+     &    CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
 #endif
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL OBCS_APPLY_UV( bi, bj, 0, uVel, vVel, myThid )
          DO K=1,Nr
-          CALL OBCS_APPLY_UV( bi, bj, k, uVel, vVel, myThid )
           CALL OBCS_APPLY_TS( bi, bj, k, theta, salt, myThid )
          ENDDO
         ENDDO
@@ -353,7 +362,7 @@ C     This is only necessary of the boundary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
         IF (debugMode)
-     &       CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
+     &    CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
         CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
         _EXCH_XYZ_RL( theta, myThid )
