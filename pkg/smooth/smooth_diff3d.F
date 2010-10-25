@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.2 2010/10/25 21:45:55 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -147,9 +147,11 @@ c time stepping:
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
+      if (maskc(i,j,k,bi,bj).NE.0.) then
            fld_in(i,j,k,bi,bj)=fld_in(i,j,k,bi,bj)
      &            +smooth3DdelTime*gT_in(i,j,k,bi,bj)
            gT_in(i,j,k,bi,bj)=0
+      endif
           ENDDO
          ENDDO
         ENDDO
