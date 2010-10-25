@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.91 2010/10/21 20:02:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.92 2010/10/25 16:28:59 gforget Exp $
 C $Name:  $
 
 #define SEAICE_GROWTH_LEGACY
 #define SEAICE_DO_OPEN_WATER_GROWTH
 #define SEAICE_OCN_MELT_ACT_ON_AREA
+#undef SEAICE_CAP_ICELOAD
 #include "SEAICE_OPTIONS.h"
 
 CBOP
@@ -145,6 +146,7 @@ C     wind speed
       _RL SPEED_SQ
 C temporary variables used to compute/regularize "actual" thicknesses
       _RL areaMin,hiceMin,areaMax
+      _RL heffTooThin, heffTooHeavy
 
 c temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
@@ -197,6 +199,11 @@ C     MINIMUM THICKNESS USED TO REGULARIZE SEAICE_SOLVE4TEMP/d_AREA COMPUTATION
       hiceMin=0.05 _d +00
 c note: areaMax slightly less than 1 can be set to specify that there allways are some leads
       areaMax=1. _d 0
+
+c     Cutoff for very thin ice
+      heffTooThin=1. _d -5
+c     Cutoff for iceload
+      heffTooHeavy=dRf(kSurface) / 5. _d 0
 
 C     FREEZING TEMP. OF SEA WATER (deg C)
       TBC          = SEAICE_freeze
@@ -324,6 +331,32 @@ CADJ &                        key = iicekey, byte = isbyte
           d_HSNWbyNEG(I,J)=MAX(-HSNOW(I,J,bi,bj),0. _d 0)
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+d_HSNWbyNEG(I,J)
           AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),0. _d 0)
+         ENDDO
+        ENDDO
+
+c 1.25) treat the case of very thin ice:
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj,
+CADJ &                        key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
+          if (HEFF(I,J,bi,bj).LE.heffTooThin) then
+            tmpscal2=-HEFF(I,J,bi,bj)
+            tmpscal3=-HSNOW(I,J,bi,bj)
+          else
+            tmpscal2=0. _d 0
+            tmpscal3=0. _d 0
+          endif
+          HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+tmpscal2
+          d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
+          HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+tmpscal3
+          d_HSNWbyNEG(I,J)=d_HSNWbyNEG(I,J)+tmpscal3
          ENDDO
         ENDDO
 
@@ -1309,8 +1342,15 @@ C =================================
         IF ( useRealFreshWaterFlux ) THEN
          DO J=1,sNy
           DO I=1,sNx
-           sIceLoad(i,j,bi,bj) = HEFF(I,J,bi,bj)*SEAICE_rhoIce
-     &                         + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+#ifdef SEAICE_CAP_ICELOAD
+           tmpscal1 = HEFF(I,J,bi,bj)*SEAICE_rhoIce
+     &              + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+           tmpscal2 = min(tmpscal1,heffTooHeavy*rhoConst) 
+#else           
+           tmpscal2 = HEFF(I,J,bi,bj)*SEAICE_rhoIce
+     &              + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+#endif
+           sIceLoad(i,j,bi,bj) = tmpscal2
           ENDDO
          ENDDO
         ENDIF
