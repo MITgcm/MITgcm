@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.7 2010/10/20 22:06:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.8 2010/10/25 21:44:13 gforget Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -24,6 +24,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 
 #include "ctrl.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance
@@ -32,6 +35,7 @@ C     myThid -  Number of this instance
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL solve4Stress
 
       WRITE(msgBuf,'(A)') 'CTRL_CHECK: ctrl package'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -119,29 +123,41 @@ C     Can not have both atmos. state and flux field as control
 #ifdef ALLOW_SEAICE
 C     pkg/seaice requires a particular set of control parameters
 C     which in turn require a particular set of input fields
-#ifndef ALLOW_ATM_WIND
-      WRITE(msgBuf,'(A)') 
-     &     'The SEAICE adjoint requires ALLOW_ATM_WIND'
-      CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R CTRL_CHECK'
-#endif
-#if (defined ALLOW_HFLUX_CONTROL || defined ALLOW_SFLUX_CONTROL || \
-     defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
+# if ( defined ALLOW_HFLUX_CONTROL || defined ALLOW_SFLUX_CONTROL )
       WRITE(msgBuf,'(A)') 
      &     'The SEAICE adjoint does not allow the surface fluxes'
       CALL PRINT_ERROR( msgBuf , 1)
-      WRITE(msgBuf,'(A)') 'ALLOW_HFLUX_CONTROL'
+      WRITE(msgBuf,'(A)') '  ALLOW_HFLUX_CONTROL'
       CALL PRINT_ERROR( msgBuf , 1)
-      WRITE(msgBuf,'(A)') 'ALLOW_SFLUX_CONTROL'
+      WRITE(msgBuf,'(A)') '  ALLOW_SFLUX_CONTROL'
       CALL PRINT_ERROR( msgBuf , 1)
-      WRITE(msgBuf,'(A)') 'ALLOW_USTRESS_CONTROL'
-      CALL PRINT_ERROR( msgBuf , 1)
-      WRITE(msgBuf,'(A)') 'ALLOW_VSTRESS_CONTROL'
-      CALL PRINT_ERROR( msgBuf , 1)
-      WRITE(msgBuf,'(A)') 'to be control vaiables'
+      WRITE(msgBuf,'(A)') 'to be control variables'
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
-#endif
+# endif
+# if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
+#  ifdef ALLOW_BULK_LARGEYEAGER04
+      solve4Stress = wspeedfile .NE. ' '
+#  else
+      solve4Stress = .FALSE.
+#  endif
+      if (.NOT.solve4Stress) then
+        WRITE(msgBuf,'(A)')
+     &     'The SEAICE adjoint does not allow the surface fluxes'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)') '  ALLOW_USTRESS_CONTROL'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)') '  ALLOW_VSTRESS_CONTROL'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)') 'to be control variables'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)') 'except if wspeedfile is specified'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)') 'and ifdef ALLOW_BULK_LARGEYEAGER04'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R CTRL_CHECK'
+      endif
+# endif
 #endif /* ALLOW_SEAICE */
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.8 2010/08/24 14:13:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.9 2010/10/25 21:44:13 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,12 +21,15 @@ C     *==========================================================*
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-      integer myThid,bi,bj,i,j,k
-      integer itlo,ithi,jtlo,jthi
       _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL boundsVec(5)
+      integer myThid
+
+#ifdef ALLOW_ADCTRLBOUND
+      integer bi,bj,i,j,k
+      integer itlo,ithi,jtlo,jthi
       _RL x0,x0p5,l0p5,x1,x2,x2p5,l2p5,x3
       _RL tmpCur,xCur,adxCur
 
@@ -35,8 +38,6 @@ C     *==========================================================*
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
 
-
-#ifdef ALLOW_ADCTRLBOUND
 
       x0=boundsVec(1)
       x1=boundsVec(2)
