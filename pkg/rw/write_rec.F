@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.4 2009/09/01 19:25:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.5 2010/10/25 18:39:50 jmc Exp $
 C $Name:  $
 #include "RW_OPTIONS.h"
 
 C--  File read_write_rec.F: Routines to handle mid-level I/O interface.
 C--   Contents
 C--   o SET_WRITE_GLOBAL_REC
+C--   o SET_WRITE_GLOBAL_SEC
 C--   o WRITE_REC_XY_RS
 C--   o WRITE_REC_XY_RL
 C--   o WRITE_REC_XYZ_RS
@@ -26,9 +27,9 @@ C     !INTERFACE:
       IMPLICIT NONE
 
 C     !DESCRIPTION: \bv
-C SET_WRITE_GLOBAL_FLD( flag ) sets an internal logical state to
-C indicate whether files written by subsequent call to the
-C READ_WRITE_FLD package should create "global" or "tiled" files.
+C SET_WRITE_GLOBAL_REC( flag ) sets an internal logical state to
+C indicate whether Record files written by subsequent call to the
+C READ-WRITE package should create "global" or "tiled" files.
 C   flag = .TRUE.  indicates "global" files
 C   flag = .FALSE. indicates "tiled" files
 C     \ev
@@ -39,6 +40,35 @@ C Arguments
 C     !USES:
 C Common
       COMMON /RD_WR_REC/ globalFile
+      LOGICAL globalFile
+CEOP
+
+      globalFile=flag
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: SET_WRITE_GLOBAL_SEC
+C     !INTERFACE:
+      SUBROUTINE SET_WRITE_GLOBAL_SEC ( flag )
+      IMPLICIT NONE
+
+C     !DESCRIPTION: \bv
+C SET_WRITE_GLOBAL_SEC( flag ) sets an internal logical state to
+C indicate whether files containing vertical Sections written by subsequent
+C call to the READ-WRITE package should create "global" or "tiled" files.
+C   flag = .TRUE.  indicates "global" files
+C   flag = .FALSE. indicates "tiled" files
+C     \ev
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      LOGICAL flag
+C     !USES:
+C Common
+      COMMON /RD_WR_SEC/ globalFile
       LOGICAL globalFile
 CEOP
 
@@ -603,7 +633,7 @@ C Functions
 c     INTEGER ILNBLNK
 
 C Common
-      COMMON /RD_WR_REC/ globalFile
+      COMMON /RD_WR_SEC/ globalFile
       LOGICAL globalFile
 
 C     !LOCAL VARIABLES:
@@ -669,7 +699,7 @@ C Functions
 c     INTEGER ILNBLNK
 
 C Common
-      COMMON /RD_WR_REC/ globalFile
+      COMMON /RD_WR_SEC/ globalFile
       LOGICAL globalFile
 
 C     !LOCAL VARIABLES:
@@ -735,7 +765,7 @@ C Functions
 c     INTEGER ILNBLNK
 
 C Common
-      COMMON /RD_WR_REC/ globalFile
+      COMMON /RD_WR_SEC/ globalFile
       LOGICAL globalFile
 
 C     !LOCAL VARIABLES:
@@ -802,7 +832,7 @@ C Functions
 c     INTEGER ILNBLNK
 
 C Common
-      COMMON /RD_WR_REC/ globalFile
+      COMMON /RD_WR_SEC/ globalFile
       LOGICAL globalFile
 
 C     !LOCAL VARIABLES:

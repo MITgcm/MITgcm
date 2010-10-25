@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.11 2009/09/01 19:25:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.12 2010/10/25 18:39:50 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -90,6 +90,12 @@ C subroutine  write_rec_lev_rl
 C----------------------------------------
 CADJ SUBROUTINE write_rec_lev_rl  INPUT  = 1,2,3,4,5,6,7,8,9
 CADJ SUBROUTINE write_rec_lev_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  set_write_global_sec
+C----------------------------------------
+CADJ SUBROUTINE set_write_global_sec  INPUT  = 1
+CADJ SUBROUTINE set_write_global_sec  OUTPUT =
 
 C----------------------------------------
 C subroutine  write_rec_xz_rs
