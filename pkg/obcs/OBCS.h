@@ -1,11 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.23 2010/10/13 20:57:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.24 2010/10/25 22:44:09 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
-
-C--   Private logical flag to record active status of package
-c     LOGICAL OBCSisON
-c     COMMON /OBCS_PACKAGE/ OBCSisON
 
 C useOrlanskiNorth/South/East/West
 C                  :: specify Orlanski boundary conditions for northern/
@@ -25,6 +21,7 @@ C useOBCSYearlyFields :: when reading boundary values by exf, assume yearly
 C                     climatology (def=false)
 C OBCSfixTopo      :: check and adjust topography for problematic gradients
 C                     across boundaries (def=true)
+C tileHasOB[N,S,E,W] :: this tile has OB at Northern/Southern/Eastern/Western edge
 C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary
 C                     conditons, the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
@@ -32,7 +29,6 @@ C                     u/v/t/s   :: ocean u/v velocities, temperature/salinity
 C                     a/h       :: sea ice concentration/effective thickness
 C                     sn/sl     :: effective snow thickness/sea ice salinity
 C                     uice/vice :: sea ice u/v drift velocities
-C
 
       COMMON /PARM_IL_OB/
      & spongeThickness,
@@ -61,6 +57,43 @@ C
       _RS Vrelaxobcsinner
       _RS Vrelaxobcsbound
 
+      COMMON /OBCS_ACTIVE_TILES/
+     &  tileHasOBN, tileHasOBS, tileHasOBE, tileHasOBW
+      LOGICAL tileHasOBN(nSx,nSy)
+      LOGICAL tileHasOBS(nSx,nSy)
+      LOGICAL tileHasOBE(nSx,nSy)
+      LOGICAL tileHasOBW(nSx,nSy)
+
+      COMMON /GRID_IND_OB/
+     & OB_Jn,OB_Js,OB_Ie,OB_Iw
+      INTEGER OB_Jn(1-Olx:sNx+Olx,nSx,nSy)
+      INTEGER OB_Js(1-Olx:sNx+Olx,nSx,nSy)
+      INTEGER OB_Ie(1-Oly:sNy+Oly,nSx,nSy)
+      INTEGER OB_Iw(1-Oly:sNy+Oly,nSx,nSy)
+
+      COMMON /OB_FILES/
+     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
+     &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
+     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
+     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
+     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
+     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
+     &      OBNslFile,OBSslFile,OBEslFile,OBWslFile,
+     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
+     &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
+     &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
+      CHARACTER*(MAX_LEN_FNAM)
+     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
+     &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
+     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
+     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
+     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
+     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
+     &      OBNslFile,OBSslFile,OBEslFile,OBWslFile,
+     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
+     &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
+     &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
+
 C--   COMMON /GRID_OB/ Open boudary related stuff
 C     OBNu is the U value imposed at the Northern OB
 C     OBNv is the V value imposed at the Northern OB
@@ -73,13 +106,6 @@ C     OBNsn is the ice HSNOW value imposed at the Northern OB
 C     OBNuice is the uice value imposed at the Northern OB
 C     OBNvice is the vice value imposed at the Northern OB
 C     etc
-C
-      COMMON /GRID_IND_OB/
-     & OB_Jn,OB_Js,OB_Ie,OB_Iw
-      INTEGER OB_Jn(1-Olx:sNx+Olx,nSx,nSy)
-      INTEGER OB_Js(1-Olx:sNx+Olx,nSx,nSy)
-      INTEGER OB_Ie(1-Oly:sNy+Oly,nSx,nSy)
-      INTEGER OB_Iw(1-Oly:sNy+Oly,nSx,nSy)
 
 #ifdef ALLOW_OBCS_NORTH
       COMMON /GRID_N_OB/
@@ -260,29 +286,6 @@ C
       _RL OBWvice1 (1-Oly:sNy+Oly,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_WEST */
-
-      COMMON /OB_FILES/
-     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
-     &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
-     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
-     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
-     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
-     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
-     &      OBNslFile,OBSslFile,OBEslFile,OBWslFile,
-     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
-     &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
-     &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
-      CHARACTER*(MAX_LEN_FNAM)
-     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
-     &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
-     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
-     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
-     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
-     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
-     &      OBNslFile,OBSslFile,OBEslFile,OBWslFile,
-     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
-     &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
-     &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /GRID_OBNH/

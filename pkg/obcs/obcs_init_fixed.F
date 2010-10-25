@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.8 2009/12/17 23:51:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.9 2010/10/25 22:44:09 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -35,11 +35,16 @@ C     == Local variables ==
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+        tileHasOBN(bi,bj) = .FALSE.
+        tileHasOBS(bi,bj) = .FALSE.
+        tileHasOBE(bi,bj) = .FALSE.
+        tileHasOBW(bi,bj) = .FALSE.
 
 C--   Set Interior mask to zero beyond OB
         DO j=1-OLy,sNy+OLy
 C-    Eastern boundary
          IF ( OB_Ie(j,bi,bj).NE.0 ) THEN
+          tileHasOBE(bi,bj) = .TRUE.
           DO i=OB_Ie(j,bi,bj),sNx+OLx
             maskInC(i,j,bi,bj) = 0.
             maskInW(i,j,bi,bj) = 0.
@@ -49,6 +54,7 @@ C-    Eastern boundary
          ENDIF
 C-    Western boundary
          IF ( OB_Iw(j,bi,bj).NE.0 ) THEN
+          tileHasOBW(bi,bj) = .TRUE.
           DO i=1-OLx,OB_Iw(j,bi,bj)
             maskInC(i,j,bi,bj) = 0.
             maskInS(i,j,bi,bj) = 0.
@@ -62,6 +68,7 @@ C-    Western boundary
         DO i=1-OLx,sNx+OLx
 C-    Northern boundary
          IF ( OB_Jn(i,bi,bj).NE.0 ) THEN
+          tileHasOBN(bi,bj) = .TRUE.
           DO j=OB_Jn(i,bi,bj),sNy+OLy
             maskInC(i,j,bi,bj) = 0.
             maskInW(i,j,bi,bj) = 0.
@@ -71,6 +78,7 @@ C-    Northern boundary
          ENDIF
 C-    Southern boundary
          IF ( OB_Js(i,bi,bj).NE.0 ) THEN
+          tileHasOBS(bi,bj) = .TRUE.
           DO j=1-OLy,OB_Js(i,bi,bj)
             maskInC(i,j,bi,bj) = 0.
             maskInW(i,j,bi,bj) = 0.
