@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.7 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.8 2010/10/25 23:02:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,13 +19,13 @@ C     | Momentum:
 C     |           V(n) = Gv(n) - dt * grad Eta
 C     |
 C     |part1: update U,V
-C     |  U*,V* (contained in gU,gV) have the surface        
-C     |     pressure gradient term added and the result stored    
-C     |     in U,V (contained in uVel, vVel)                      
-C     |                                                           
+C     |  U*,V* (contained in gU,gV) have the surface
+C     |     pressure gradient term added and the result stored
+C     |     in U,V (contained in uVel, vVel)
+C     |
 C     |part2: Adjustments
-C     |   o Filter  U,V (Shapiro Filter, Zonal_Filter)        
-C     |   o Compute again Eta (exact volume conservation)     
+C     |   o Filter  U,V (Shapiro Filter, Zonal_Filter)
+C     |   o Compute again Eta (exact volume conservation)
 C     |   o Compute vertical velocity
 C     *==========================================================*
 C     \ev
@@ -54,9 +54,9 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -69,7 +69,6 @@ C     == Local variables
       INTEGER jMin,jMax
       INTEGER bi,bj
       INTEGER k,i,j
-
 CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -97,23 +96,28 @@ C-      Calculate gradient of surface Potentiel
      O       phiSurfX,phiSurfY,
      I       myThid )
 
-C--     Loop over all layers, top to bottom
-        DO K=1,Nr
-
+        IF (momStepping) THEN
+C--       Loop over all layers, top to bottom
+          DO k=1,Nr
 C-        Update velocity fields:  V(n) = V** - dt * grad Eta
-          IF (momStepping)
-     &      CALL CORRECTION_STEP(
-     I         bi,bj,iMin,iMax,jMin,jMax,K,
+            CALL CORRECTION_STEP(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         phiSurfX,phiSurfY,myTime,myThid )
 
 #ifdef    ALLOW_OBCS
-          IF (useOBCS) THEN
-            CALL OBCS_APPLY_UV(bi,bj,K,uVel,vVel,myThid)
-          ENDIF
+c         IF (useOBCS) THEN
+c           CALL OBCS_APPLY_UV(bi,bj,k,uVel,vVel,myThid)
+c         ENDIF
 #endif    /* ALLOW_OBCS */
+C--       End DO k=1,Nr
+          ENDDO
+        ENDIF
 
-C--     End DO K=1,Nr
-        ENDDO
+#ifdef ALLOW_OBCS
+        IF (useOBCS) THEN
+          CALL OBCS_APPLY_UV( bi, bj, 0, uVel, vVel, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
 
 C--    End of 1rst bi,bj loop
        ENDDO
@@ -181,7 +185,7 @@ C--    End of 2nd bi,bj loop
 
       IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
      & _EXCH_XY_RL( etaN , myThid )
-      IF ( implicitIntGravWave ) 
+      IF ( implicitIntGravWave )
      & _EXCH_XYZ_RL( wVel , myThid )
 
       RETURN

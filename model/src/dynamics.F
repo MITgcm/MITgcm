@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.150 2010/10/04 02:58:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.151 2010/10/25 23:02:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -559,13 +559,12 @@ C
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
-           IF (useOBCS) THEN
-             CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
-           ENDIF
+c          IF (useOBCS) THEN
+c            CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
+c          ENDIF
 #endif   /* ALLOW_OBCS */
 
          ENDIF
-
 
 C--     end of dynamics k loop (1:Nr)
         ENDDO
@@ -604,10 +603,12 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
-        IF ( useOBCS .AND.(implicitViscosity.OR.momImplVertAdv) ) THEN
-           DO K=1,Nr
-             CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
-           ENDDO
+c       IF ( useOBCS .AND.(implicitViscosity.OR.momImplVertAdv) ) THEN
+c          DO K=1,Nr
+c            CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
+c          ENDDO
+        IF ( useOBCS ) THEN
+          CALL OBCS_APPLY_UV( bi, bj, 0, gU, gV, myThid )
         ENDIF
 #endif   /* ALLOW_OBCS */
 
@@ -660,9 +661,9 @@ C-    end of bi,bj loops
       ENDDO
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_PRESCRIBE_EXCHANGES(myThid)
-      ENDIF
+c     IF (useOBCS) THEN
+c      CALL OBCS_PRESCRIBE_EXCHANGES(myThid)
+c     ENDIF
 #endif
 
 Cml(
