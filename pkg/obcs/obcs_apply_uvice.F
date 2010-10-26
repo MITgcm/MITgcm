@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.10 2009/06/24 08:04:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.11 2010/10/26 23:22:21 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -49,10 +49,10 @@ C     Northern boundary
      &       * _maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
 #else
         vFld(I,OB_Jn(I,bi,bj),bi,bj)=OBNvice(I,bi,bj)
-     &                              *_maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
+     &       * _maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         uFld(I,OB_Jn(I,bi,bj),bi,bj)=OBNuice(I,bi,bj)
-     &                              *_maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
+     &       * _maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
 #ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskS(I,OB_Jn(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
      &       _maskS(I,OB_Jn(I,bi,bj)-2,K,bi,bj) .NE. 0. )
@@ -90,10 +90,10 @@ C     Southern boundary
      &       * _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
 #else
         vFld(I,OB_Js(I,bi,bj)+1,bi,bj)=OBSvice(I,bi,bj)
-     &                              *_maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
+     &       * _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         uFld(I,OB_Js(I,bi,bj),bi,bj)=OBSuice(I,bi,bj)
-     &                              *_maskW(I,OB_Js(I,bi,bj),K,bi,bj)
+     &       * _maskW(I,OB_Js(I,bi,bj),K,bi,bj)
 #ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj) .NE. 0. .AND.
      &       _maskS(I,OB_Js(I,bi,bj)+3,K,bi,bj) .NE. 0. )
@@ -133,10 +133,10 @@ C     Eastern boundary
      &       * _maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
 #else
         uFld(OB_Ie(J,bi,bj),J,bi,bj)=OBEuice(J,bi,bj)
-     &                              *_maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
+     &       * _maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         vFld(OB_Ie(J,bi,bj),J,bi,bj)=OBEvice(J,bi,bj)
-     &                              *_maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
+     &       * _maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
 #ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskW(OB_Ie(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
      &       _maskW(OB_Ie(J,bi,bj)-2,J,K,bi,bj) .NE. 0. )
@@ -166,7 +166,7 @@ C     Western boundary
 #ifdef OBCS_SEAICE_COMPUTE_UVICE
         uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=
      &         _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj) *
-     &         uFld(OB_Ie(J,bi,bj)+2,J,bi,bj)
+     &         uFld(OB_Iw(J,bi,bj)+2,J,bi,bj)
 #else
 #ifdef OBCS_SEAICE_AVOID_CONVERGENCE
         uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=
@@ -174,25 +174,25 @@ C     Western boundary
      &       * _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
 #else
         uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=OBWuice(J,bi,bj)
-     &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
+     &       * _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         vFld(OB_Iw(J,bi,bj),J,bi,bj)=OBWvice(J,bi,bj)
-     &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
+     &       * _maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
 #ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj) .NE. 0. .AND.
      &       _maskW(OB_Iw(J,bi,bj)+3,J,K,bi,bj) .NE. 0. )
-     &       uFld(OB_Ie(J,bi,bj)+2,J,bi,bj) = 0.5 _d 0 *
-     &       ( uFld(OB_Ie(J,bi,bj)+1,J,bi,bj) +
-     &       uFld(OB_Ie(J,bi,bj)+3,J,bi,bj) ) *
-     &       _maskW(OB_Ie(J,bi,bj)+2,J,K,bi,bj)
+     &       uFld(OB_Iw(J,bi,bj)+2,J,bi,bj) = 0.5 _d 0 *
+     &       ( uFld(OB_Iw(J,bi,bj)+1,J,bi,bj) +
+     &       uFld(OB_Iw(J,bi,bj)+3,J,bi,bj) ) *
+     &       _maskW(OB_Iw(J,bi,bj)+2,J,K,bi,bj)
 #endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
 #ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
         if ( _maskS(OB_Iw(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
      &       _maskS(OB_Iw(J,bi,bj)+2,J,K,bi,bj) .NE. 0. )
-     &       vFld(OB_Ie(J,bi,bj)+1,J,bi,bj) = 0.5 _d 0 *
-     &       ( vFld(OB_Ie(J,bi,bj)  ,J,bi,bj) +
-     &       vFld(OB_Ie(J,bi,bj)+2,J,bi,bj) ) *
-     &       _maskS(OB_Ie(J,bi,bj)+1,J,K,bi,bj)
+     &       vFld(OB_Iw(J,bi,bj)+1,J,bi,bj) = 0.5 _d 0 *
+     &       ( vFld(OB_Iw(J,bi,bj)  ,J,bi,bj) +
+     &       vFld(OB_Iw(J,bi,bj)+2,J,bi,bj) ) *
+     &       _maskS(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
 #endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
 #endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
