@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.11 2009/09/24 20:08:06 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.12 2010/10/26 20:59:53 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -90,6 +90,11 @@ C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       _RL aim_taveFreq
       _RL aim_diagFreq
       _RL aim_tendFreq
+
+C--   COMMON /INSOLATION/
+C      OBLIQ  :: Obliquity (in degree) used with ALLOW_INSOLATION
+      COMMON /INSOLATION/ OBLIQ
+      _RL OBLIQ
 
 #endif /* ALLOW_AIM */ 
 

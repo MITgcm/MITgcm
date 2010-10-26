@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.5 2009/01/07 14:57:04 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.6 2010/10/26 20:59:54 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -32,6 +32,7 @@ C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
+#include "AIM_PARAMS.h"
 
 C     Constants + functions of sigma and latitude
 #include "com_physcon.h"
@@ -53,6 +54,12 @@ C-- Local variables:
 C- jmc: declare all local variables:
       _RL ALPHA, CSR1, CSR2, COZ1, COZ2
       _RL AZEN, RZEN, CZEN, SZEN, AST, FS0, FLAT2
+#ifdef ALLOW_INSOLATION
+      _RL TanDelcl, cosH, HourAng, TanLat 
+      _RL PI, LargeTan
+      PI = 3.14159265358979323844 _d 0
+      LargeTan = 1. _d 16
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     ALPHA = year phase ( 0 - 2pi, 0 = winter solstice = 22dec.h00 )
@@ -66,9 +73,22 @@ C
       AZEN=1.0
       NZEN=2
 
+#ifdef ALLOW_INSOLATION
+      SZEN = - SIN(  OBLIQ * PI/180. _d 0) * COS(ALPHA)
+      RZEN = ASIN( SZEN )
+      CZEN =  COS( RZEN )
+      IF ( SZEN .EQ. 1. _d 0 ) THEN
+         TanDelcl = LargeTan
+      ELSEIF ( SZEN .EQ. -1. _d 0 ) THEN
+         TanDelcl =-LargeTan
+      ELSE
+         TanDelcl = SZEN / CZEN
+      ENDIF
+#else
       RZEN=-COS(ALPHA)*23.45 _d 0*ASIN(1. _d 0)/90. _d 0
       CZEN=COS(RZEN)
       SZEN=SIN(RZEN)
+#endif
 
       AST=0.025 _d 0
       FS0=10. _d 0
@@ -78,9 +98,22 @@ C     FS0=16.-8.*COS(ALPHA)
 
         FLAT2 = 1.5 _d 0*SLAT(J)**2 - 0.5 _d 0
 
+#ifndef ALLOW_INSOLATION
 C       solar radiation at the top
         FSOL(J) = SOLC*
      &     MAX( 0. _d 0, 1. _d 0+CSR1*SLAT(J)+CSR2*FLAT2 )
+#else
+        IF ( CLAT(J) .EQ. 0. _d 0 ) THEN
+           TanLat = sign(1. _d 0, SLAT(J) ) * LargeTan
+        ELSE
+           TanLat = SLAT(J)/CLAT(J) 
+        ENDIF
+        cosH     = - TanLat * TanDelcl
+        cosH     = MAX(MIN(cosH,1. _d 0), -1. _d 0)
+        HourAng  =  ACOS( cosH )
+        FSOL(J)  = 4. _d 0 / PI * SOLC *
+     &   (SLAT(J)*SZEN*HourAng+CLAT(J)*CZEN*SIN(HourAng))
+#endif
 
 C       ozone depth in upper and lower stratosphere
         OZUPP(J) = EPSSW*(1.-FLAT2)
@@ -98,6 +131,11 @@ C       ozone absorption in upper and lower stratosphere
 
       ENDDO
 
+#ifdef ALLOW_DIAGNOSTICS
+        CALL DIAGNOSTICS_FILL( FSOL,
+     &                        'FSOL    ', 1, 1, 3,bi,bj, myThid )
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_AIM */
@@ -108,7 +146,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE RADSW (PSA,dpFac,QA,RH,ALB,
      I                  FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      O                  TAU2, STRATC,
-     O                  ICLTOP,CLOUDC,FTOP,FSFC,DFABS,
+     O                  ICLTOP,CLOUDC,FTOP,FSFC,UPSWG,DFABS,
      I                  kGrd,bi,bj,myThid)
 C--
 C--   SUBROUTINE RADSW (PSA,QA,RH,ALB,
@@ -125,6 +163,7 @@ C--   Output:  ICLTOP = cloud top level                             (2-dim)
 C--            CLOUDC = total cloud cover                           (2-dim)
 C--            FTOP   = net downw. flux of sw rad. at the atm. top  (2-dim)
 C--            FSFC   = net downw. flux of sw rad. at the surface   (2-dim)
+C--            UPSWG  = upward flux of sw rad. at the surface       (2-dim)
 C--            DFABS  = flux of sw rad. absorbed by each atm. layer (3-dim)
 C    Input:    kGrd   = Ground level index                      (2-dim)
 C              bi,bj  = tile index
@@ -153,6 +192,7 @@ C-- Routine arguments:
       _RL ALB(NGP,0:3)
       INTEGER  ICLTOP(NGP)
       _RL CLOUDC(NGP), FTOP(NGP), FSFC(NGP,0:3), DFABS(NGP,NLEV)
+      _RL UPSWG(NGP)
 
       _RL FSOL(NGP), OZONE(NGP), OZUPP(NGP), ZENIT(NGP), STRATZ(NGP)
       _RL TAU2(NGP,NLEV,NBAND),STRATC(NGP)
@@ -367,6 +407,11 @@ C      weighted average according to land/sea/sea-ice fraction:
         FSFC(J,0)=FLUX(J,1)+FLUX(J,2)
         FLUX(J,1)=FLUX(J,1)*ALB(J,0)
         FSFC(J,0)=FSFC(J,0)-FLUX(J,1)
+      ENDDO
+
+C--   Store upward shortwave flux at the surface for diagnostics purpose
+      DO J=1,NGP
+        UPSWG(J)=FLUX(J,1)
       ENDDO
 C
 C     4.2  Absorption of upward flux

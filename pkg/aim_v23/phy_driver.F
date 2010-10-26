@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.8 2010/01/21 00:10:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.9 2010/10/26 20:59:53 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -122,6 +122,7 @@ c_FM  REAL    RPS(NGP), ST4S(NGP)
       _RL dTskin(NGP), T1s(NGP), DENVV(NGP)
       _RL Shf0(NGP), dShf(NGP), Evp0(NGP), dEvp(NGP)
       _RL Slr0(NGP), dSlr(NGP), sFlx(NGP,0:2)
+      _RL UPSWG(NGP)
 
       INTEGER J, K
 
@@ -238,7 +239,8 @@ c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
      I             FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      O             TAU2, STRATC,
      O             ICLTOP,CLOUDC(1,myThid),
-     O             TSR(1,myThid),SSR(1,0,myThid),TT_RSW(1,1,myThid),
+     O             TSR(1,myThid),SSR(1,0,myThid),
+     O             UPSWG,TT_RSW(1,1,myThid),
      I             kGround,bi,bj,myThid)
 
         DO J=1,NGP
@@ -250,6 +252,13 @@ c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
           TT_RSW(J,K,myThid)=TT_RSW(J,K,myThid)*RPS_1*GRDSCP(K)
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( usePkgDiag ) THEN
+        CALL DIAGNOSTICS_FILL( UPSWG,
+     &                        'UPSWG   ', 1, 1 , 3,bi,bj, myThid )
+      ENDIF
+#endif
 
       ENDIF
 
@@ -377,8 +386,15 @@ C      3.5.1 Compute shortwave tendencies
      I             FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      O             TAU2, STRATC,
      O             dummyI, dummyR,
-     O      TSWclr(1,myThid), SSWclr(1,myThid), TT_SWclr(1,1,myThid),
+     O  TSWclr(1,myThid), SSWclr(1,myThid), UPSWG, TT_SWclr(1,1,myThid),
      I             kGround,bi,bj,myThid)
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( usePkgDiag ) THEN
+        CALL DIAGNOSTICS_FILL( UPSWG,
+     &                        'UPSWGclr', 1, 1 , 3,bi,bj, myThid )
+      ENDIF
+#endif
 
 C      3.5.2 Compute downward longwave fluxes
 

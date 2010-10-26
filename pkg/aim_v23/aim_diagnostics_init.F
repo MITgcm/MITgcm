@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.10 2010/01/11 19:46:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.11 2010/10/26 20:59:53 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -268,6 +268,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'UPSWG   '
+      diagTitle =
+     &   'Upward Shortwave Flux at the Ground (+=up)'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'SWCLR   '
       diagTitle = 'Clear Sky Temp. Tendency due to Shortwave Radiation'
       diagUnits = 'K/s             '
@@ -309,6 +317,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &    'Clear Sky Net Longwave  Radiation at the Ground (+=up)'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'UPSWGclr'
+      diagTitle =
+     &   'Upward Shortwave Flux at the Ground (+=up)'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -363,12 +379,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 cdfer
-cdfer      diagName  = 'FSOL    '
-cdfer      diagTitle = 'Incoming Solar radiation'
-cdfer      diagUnits = 'W/m^2           '
-cdfer      diagCode  = 'SM P    L1      '
-cdfer      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-cdfer     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      diagName  = 'FSOL    '
+      diagTitle = 'Incoming Solar radiation'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 cdfer
 
 #endif /* ALLOW_DIAGNOSTICS */

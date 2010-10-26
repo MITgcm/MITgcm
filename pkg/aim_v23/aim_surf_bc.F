@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.17 2010/01/21 00:10:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.18 2010/10/26 20:59:53 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -207,9 +207,15 @@ C-    Surface Albedo : (from F.M. FORDATE S/R)
 c_FM    DALB=ALBICE-ALBSEA
         RSD=1. _d 0/SDALB
         ALPHA= 2. _d 0*PI*(TYEAR+10. _d 0/365. _d 0)
+#ifndef ALLOW_INSOLATION
         RZEN = COS(ALPHA) * ( -23.45 _d 0 * deg2rad)
         ZC = COS(RZEN)
         ZS = SIN(RZEN)
+#else
+        ZS = - SIN(OBLIQ * deg2rad) * COS(ALPHA)
+        ZC =   ASIN( ZS )
+        ZC =   COS(ZC)
+#endif
         DO j=1,sNy
          DO i=1,sNx
 c_FM      SNOWC=MIN(1.,RSD*SNOW1(I,J))

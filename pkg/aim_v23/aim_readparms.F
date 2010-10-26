@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.18 2009/09/24 20:08:06 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.19 2010/10/26 20:59:53 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -116,6 +116,7 @@ C     tFreeze = freezing temperature of pure water [K]
 
 C--   Constants for forcing fields (common FORCON) :
 C      SOLC   = Solar constant (area averaged) in W/m^2
+C      OBLIQ  = Obliquity (in degree) only used if #define ALLOW_INSOLATION
 C      ALBSEA = Albedo over sea
 C      ALBICE = Albedo over sea ice (for ice fraction = 1)
 C      ALBSN  = Albedo over snow (for snow depth > SDALB)
@@ -125,7 +126,7 @@ C      SWWIL  = Soil wetness at wilting point  (volume fraction)
 C      hSnowWetness :: snow depth (m) corresponding to maximum wetness
       NAMELIST /AIM_PAR_FOR/
      &    SOLC, ALBSEA, ALBICE, ALBSN,
-     &    SDALB, SWCAP, SWWIL, hSnowWetness
+     &    SDALB, SWCAP, SWWIL, hSnowWetness, OBLIQ
 
 C--   Constants for surface fluxes (common SFLCON) :
 C      FWIND0 = ratio of near-sfc wind to lowest-level wind
@@ -259,6 +260,7 @@ C      > TimePeriod/deltaT -> jump from one month to the next one
       aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
+      OBLIQ = 23.45 _d 0
 #ifdef ALLOW_AIM_CO2
       atmpCO2init  = 326. _d -6
       Aim_CO2_Flag = 1
@@ -416,6 +418,8 @@ C- namelist AIM_PARAMS:
 C- namelist AIM_PAR_FOR:
        CALL WRITE_0D_RL( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
      &  '   /* Solar constant (area averaged) in W/m2 */')
+       CALL WRITE_0D_RL( OBLIQ, INDEX_NONE,'AIM_FOR:  OBLIQ =',
+     &  '   /* Obliquity (degree) used with ALLOW_INSOLATION */')
        CALL WRITE_0D_RL( ALBSEA,INDEX_NONE,'AIM_FOR: ALBSEA =',
      &  '   /* Albedo over sea [0-1]      */')
        CALL WRITE_0D_RL( ALBICE,INDEX_NONE,'AIM_FOR: ALBICE =',
