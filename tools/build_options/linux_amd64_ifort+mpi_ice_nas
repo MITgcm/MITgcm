@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.5 2010/10/26 18:25:15 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.6 2010/10/26 19:32:04 heimbach Exp $
 # $Name:  $
 
 # tested on pleiades using:
@@ -29,14 +29,14 @@ NOOPTFLAGS='-O0 -fPIC'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS="$FFLAGS -fPIC -fp-model precise -ftz -w95 -W0 -WB -convert big_endian -assume byterecl"
-    FOPTIM='-O2 -align -ip -xSSE4.1'
-#   FOPTIM='-O2 -align -ip -xSSE4.2'
-    NOOPTFILES='calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
+    FFLAGS="$FFLAGS -fPIC -w95 -W0 -WB -convert big_endian -assume byterecl -align"
+    FOPTIM='-O2 -ip -xSSE4.1 -fp-model precise -ftz'
+#    FOPTIM='-O2 -ip -xSSE4.2 -fp-model precise -ftz'
+    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
 else
     #  Try to follow IEEE-754
-    FFLAGS="$FFLAGS -fPIC -w95 -W0 -WB -convert big_endian -assume byterecl"
-    FOPTIM='-O0 -noalign'
+    FFLAGS="$FFLAGS -fPIC -w95 -W0 -WB -convert big_endian -assume byterecl -noalign"
+    FOPTIM='-O0'
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
