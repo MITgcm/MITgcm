@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.22 2010/10/21 02:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.23 2010/10/26 22:26:59 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -879,23 +879,32 @@ C to sea-level OR if snow height is larger than hsMax, snow is
 C converted to ice to bring hSnow down to hsMax. Largest change is
 C applied and enthalpy of top ice layer adjusted accordingly.
 
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hIce(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hSnow(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+        ikey_1 = i
+     &       + sNx*(j-1)
+     &       + sNx*sNy*act1
+     &       + sNx*sNy*max1*act2
+     &       + sNx*sNy*max1*max2*act3
+     &       + sNx*sNy*max1*max2*max3*act4
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hIce(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE hSnow(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
+#endif
           IF ( hSnow(i,j) .GT. hIce(i,j)*floodFac
      &         .OR. hSnow(i,j) .GT. hsMax ) THEN
 cBB               WRITE (6,*)  'Freeboard adjusts'
 c          dhi = (hSnow(i,j) * rhos - hIce(i,j) * rhoiw) / rhosw
 c          dhs = dhi * rhoi / rhos
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
+#endif
            dhs = (hSnow(i,j) - hIce(i,j)*floodFac) * rhoi / rhosw
            dhs = MAX( hSnow(i,j) - hsMax, dhs )
            dhi = dhs * rhos / rhoi
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
-CML#endif
            rqh = rhoi*qicen(i,j,1)*hnew(i,j,1) + rhos*qsnow*dhs
            hnew(i,j,1)    = hnew(i,j,1) + dhi
            qicen(i,j,1)   = rqh / (rhoi*hnew(i,j,1))

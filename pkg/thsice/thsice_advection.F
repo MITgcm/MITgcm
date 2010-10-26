@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.11 2009/06/28 01:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.12 2010/10/26 22:26:59 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -286,6 +286,7 @@ C   and b) the overlap of myTile are not cube-face Edges
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
 CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
 #endif
         IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
@@ -500,6 +501,7 @@ C   and b) the overlap of myTile are not cube-face edges
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
 CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
 #endif
         IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
