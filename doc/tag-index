@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1320 2010/10/25 18:52:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1321 2010/10/27 05:48:33 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/obcs:
-   writing sections with globalFiles=T does not work: switch to tiled-files
-   when writing sections for OBCS (change pkg/rw/write_rec.F accordingly).
+  - writing sections with globalFiles=T does not work: switch to tiled-files
+    when writing sections for OBCS (change pkg/rw/write_rec.F accordingly).
+  - fix index bug (OB_Ie -> OB_Iw_) in obcs_apply_uvice.F
+  - apply OBCS_SEAICE_COMPUTE_UVICE to both uice and vice at all obcs
 
 checkpoint62m (2010/10/21)
 o pkg/seaice: vectorize seaice_solve4temp.F
