@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1321 2010/10/27 05:48:33 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1322 2010/10/27 13:48:34 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg aim (2010/10/26):
+  - Introduce ALLOW_INSOLATION, moving toward a more general incoming solar radiation
+    formulation with obliquity, eccentricity, ... as run-time parameters,
+  - Introduce diagnostics for top-of-the-atmaophere incoming solar radiation and
+    upward shortwave radition at the surface (all-sky and clear-sky).
 
 o pkg/obcs:
   - writing sections with globalFiles=T does not work: switch to tiled-files
@@ -420,8 +426,8 @@ o tools/build_options:
     but keep the former optfile for few weeks for smooth transition
 o pkg/ecco
   - allow user defined cost function contributions
-	CPP: ALLOW_USERCOST_CONTRIBUTION
-	USAGE: compute contributions in cost_usercost_all.F
+     CPP: ALLOW_USERCOST_CONTRIBUTION
+     USAGE: compute contributions in cost_usercost_all.F
   - note: this is identical to what ALLOW_GENCOST_CONTRIBUTION once was.
       the two options are complementary.
 o pkg/smooth
