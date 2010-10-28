@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.48 2010/10/20 22:06:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.49 2010/10/28 14:37:44 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -97,6 +97,11 @@ CADJ STORE recip_hfacc   = tapelev3, key = ilev_3
 CADJ STORE recip_hfacs   = tapelev3, key = ilev_3
 CADJ STORE recip_hfacw   = tapelev3, key = ilev_3
 CADJ STORE phi0surf      = tapelev3, key = ilev_3
+cph-test(
+CADJ STORE etahs,etahw     = tapelev3, key = ilev_3
+CADJ STORE detasdt,detawdt = tapelev3, key = ilev_3
+cph-test)
+
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarexpc,rstarexps,rstarexpw 
 CADJ &     = tapelev3, key = ilev_3
