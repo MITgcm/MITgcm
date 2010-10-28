@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.1 2010/09/07 21:20:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.2 2010/10/28 18:20:24 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -299,9 +299,9 @@ cgf =======================================================
       do irec = 1, ndaysrec
 
 c get modeled sst:
-        call active_read_xy( fname, psbar, irec, doglobalread,
+        call active_read_xy( fname, sstbar, irec, doglobalread,
      &                       ladinit, optimcycle, mythid,
-     &                       xx_psbar_mean_dummy )
+     &                       xx_sstbar_mean_dummy )
 
 c get observed sst:
              daytime = FLOAT(secondsperday*(irec-1))
