@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.183 2010/10/28 14:36:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.184 2010/10/28 18:28:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -621,10 +621,6 @@ CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE etaN           = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-cph-test(
-CADJ STORE detasdt,detawdt = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-cph-test)
 c
 #  ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics,
