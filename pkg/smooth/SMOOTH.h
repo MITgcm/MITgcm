@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/SMOOTH.h,v 1.2 2010/10/25 21:45:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/SMOOTH.h,v 1.3 2010/10/28 20:32:31 gforget Exp $
 C $Name:  $
 
 c pkg/smooth constants
 
       integer     smoothprec
-      parameter ( smoothprec = 64 )
+      parameter ( smoothprec = 32 )
 
       logical smooth3DdoImpldiff
       parameter ( smooth3DdoImpldiff = .TRUE. )
