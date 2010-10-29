@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.8 2010/10/06 20:13:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.9 2010/10/29 00:16:11 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
+C     *==========================================================*
 C     | SEAICE_OPTIONS.h                                         |
 C     | o CPP options file for sea ice package.                  |
-C     |==========================================================|
+C     *==========================================================*
 C     | Use this file for selecting options within the sea ice   |
 C     | package.                                                 |
-C     \==========================================================/
+C     *==========================================================*
 
 #ifndef SEAICE_OPTIONS_H
 #define SEAICE_OPTIONS_H
@@ -40,17 +40,21 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #define SEAICE_MULTICATEGORY
 
-C--   By default cdm wind stress under sea-ice is set to the
-C     same value as it would be if there was no sea-ice.
-C     This is a placeholder until a more physically-sensible
-C     stable solution is developed.  Apparently ocean stress
-C     that is based on sea-ice velocity can cause trouble in
-C     Arctic Ocean configurations.  This temporary solution
-C     also corresponds to that adopted by CCSM-2.  For the
-C     adventurous user who requires ice-modified stress,
-C     following options are available.
-#undef SEAICE_ORIGINAL_BAD_ICE_STRESS
-#undef SEAICE_TEST_ICE_STRESS_1
+C--   Use the Old version of seaice_growth (close to cvs version 1.70)
+C     otherwise, use the merged version (with some of Ian Fenty s code)
+#define SEAICE_GROWTH_LEGACY
+
+C--   options only available in the merged version (from Ian Fenty s code)
+#ifndef SEAICE_GROWTH_LEGACY
+C-    to switch on/off open-water freezing contribution to thickness tendency:
+#define SEAICE_DO_OPEN_WATER_GROWTH
+C-    to switch on/off ocean heat contribution to seaice cover reduction:
+#define SEAICE_OCN_MELT_ACT_ON_AREA
+#endif
+
+C--   Use the Old version of seaice_solve4temp (formerly seaice_budget_ice)
+C     otherwise, use Ian Fenty s version
+#define SEAICE_SOLVE4TEMP_LEGACY
 
 C--   By default the freezing point of water is set to the value of
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
@@ -60,26 +64,56 @@ C     which is a good assumption for the top 20 meters). With this
 C     option defined the parameter SEAICE_freeze has no effect.
 #undef SEAICE_VARIABLE_FREEZING_POINT
 
-C--   By default the seaice model is discretized on a B-Grid (for
-C     historical reasons). Define the following flag to use a new
-C     (not thoroughly) test version on a C-grid
-#define SEAICE_CGRID
-
-C--   Only for the C-grid version it is possible to enable EVP code by
-C     defining the following flag
-#ifdef SEAICE_CGRID
-#define SEAICE_ALLOW_EVP
-#endif /* SEAICE_CGRID */
-
-C--   Seaice flooding
+C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
 #define ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #define SEAICE_SALINITY
 
-c--   Enable modified sea-ice thermodynamic by Ian Fenty
-c--   Should improve adjoint, but doesnt work so far.
-#undef SEAICE_ALLOW_TD_IF
+C--   Track sea ice age.
+C     By default sea ice age is associated with ice area.
+C     Define SEAICE_AGE_VOL to associate age with volume.
+#undef SEAICE_AGE
+#ifdef SEAICE_AGE
+# undef SEAICE_AGE_VOL
+#endif
+
+C--   By default the seaice model is discretized on a B-Grid (for
+C     historical reasons). Define the following flag to use a new
+C     (not thoroughly) test version on a C-grid
+#define SEAICE_CGRID
+
+C--   Only for the C-grid version it is possible to
+#ifdef SEAICE_CGRID
+C     enable EVP code by defining the following flag
+# define SEAICE_ALLOW_EVP
+# ifdef SEAICE_ALLOW_EVP
+C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit
+C--   viscosities from below and above in seaice_evp
+C--   not necessary, and not recommended
+#  undef SEAICE_ALLOW_CLIPZETA
+# endif /* SEAICE_ALLOW_EVP */
+C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
+# undef SEAICE_ALLOW_TEM
+#else /* not SEAICE_CGRID, but old B-grid */
+C--   By default for B-grid dynamics solver wind stress under sea-ice is
+C     set to the same value as it would be if there was no sea-ice.
+C     Define following CPP flag for B-grid ice-ocean stress coupling.
+# define SEAICE_BICE_STRESS
+
+C--   By default for B-grid dynamics solver surface tilt is obtained
+C     indirectly via geostrophic velocities. Define following CPP
+C     in order to use ETAN instead.
+# define EXPLICIT_SSH_SLOPE
+#endif /* SEAICE_CGRID */
+
+C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
+#undef SEAICE_CAP_HEFF
+C--   When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
+#undef SEAICE_CAP_ICELOAD
+C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
+C--   not recommended
+#undef SEAICE_ALLOW_CLIPVELS
 
 C     enable free drift code
 #define SEAICE_ALLOW_FREEDRIFT

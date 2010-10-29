@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.16 2010/10/07 21:17:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.17 2010/10/29 00:16:11 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
+C     *==========================================================*
 C     | SEAICE_OPTIONS.h                                         |
 C     | o CPP options file for sea ice package.                  |
-C     |==========================================================|
+C     *==========================================================*
 C     | Use this file for selecting options within the sea ice   |
 C     | package.                                                 |
-C     \==========================================================/
+C     *==========================================================*
 
 #ifndef SEAICE_OPTIONS_H
 #define SEAICE_OPTIONS_H
@@ -40,9 +40,25 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 
-C--   By default the freezing point of water is set to the value of 
+C--   Use the Old version of seaice_growth (close to cvs version 1.70)
+C     otherwise, use the merged version (with some of Ian Fenty s code)
+#define SEAICE_GROWTH_LEGACY
+
+C--   options only available in the merged version (from Ian Fenty s code)
+#ifndef SEAICE_GROWTH_LEGACY
+C-    to switch on/off open-water freezing contribution to thickness tendency:
+#define SEAICE_DO_OPEN_WATER_GROWTH
+C-    to switch on/off ocean heat contribution to seaice cover reduction:
+#define SEAICE_OCN_MELT_ACT_ON_AREA
+#endif
+
+C--   Use the Old version of seaice_solve4temp (formerly seaice_budget_ice)
+C     otherwise, use Ian Fenty s version
+#define SEAICE_SOLVE4TEMP_LEGACY
+
+C--   By default the freezing point of water is set to the value of
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
-C     simple linear dependence of the freezing point on salinity, 
+C     simple linear dependence of the freezing point on salinity,
 C     set the following flag (pressure is assumed to have no effect,
 C     which is a good assumption for the top 20 meters). With this
 C     option defined the parameter SEAICE_freeze has no effect.
@@ -62,12 +78,12 @@ C     Define SEAICE_AGE_VOL to associate age with volume.
 # define SEAICE_AGE_VOL
 #endif
 
-C--   By default the seaice model is discretized on a B-Grid (for 
+C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
 C     (not thoroughly) test version on a C-grid
 #define SEAICE_CGRID
 
-C--   Only for the C-grid version it is possible to 
+C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable EVP code by defining the following flag
 # define SEAICE_ALLOW_EVP
@@ -93,6 +109,8 @@ C     in order to use ETAN instead.
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 #undef SEAICE_CAP_HEFF
+C--   When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
+#undef SEAICE_CAP_ICELOAD
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
 C--   not recommended
 #define SEAICE_ALLOW_CLIPVELS
