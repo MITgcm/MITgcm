@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.94 2010/10/29 00:11:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.95 2010/10/29 20:36:42 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -475,7 +475,11 @@ cdm          heffActual(I,J)    = MIN(heffActual(I,J),9.0 _d +00)
          ENDDO
         ENDDO
 
-
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_ZERO_ADHEFFACTUAL
+      CALL ZERO_ADJ_1D( sNx*sNy, heffActual, myThid)
+#endif
+#endif
 
 c ===================================================================
 c ================PART 2: determine heat fluxes/stocks===============
