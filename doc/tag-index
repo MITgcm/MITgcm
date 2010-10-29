@@ -1,15 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1322 2010/10/27 13:48:34 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1323 2010/10/29 00:39:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  move OPTIONS (formerly locally defined) to SEAICE_OPTIONS.h:
+   this includes SEAICE_GROWTH_LEGACY (+ SEAICE_DO_OPEN_WATER_GROWTH &
+     SEAICE_OCN_MELT_ACT_ON_AREA ) and SEAICE_SOLVE4TEMP_LEGACY.
+  Default (pkg/seaice/SEAICE_OPTIONS.h) is to define SEAICE_SOLVE4TEMP_LEGACY
+   but leave SEAICE_GROWTH_LEGACY undef ; For now, keep verification exp
+   unchanged (SEAICE_GROWTH_LEGACY defined in */code*/SEAICE_OPTIONS.h)
 o pkg aim (2010/10/26):
   - Introduce ALLOW_INSOLATION, moving toward a more general incoming solar radiation
     formulation with obliquity, eccentricity, ... as run-time parameters,
   - Introduce diagnostics for top-of-the-atmaophere incoming solar radiation and
     upward shortwave radition at the surface (all-sky and clear-sky).
-
 o pkg/obcs:
   - writing sections with globalFiles=T does not work: switch to tiled-files
     when writing sections for OBCS (change pkg/rw/write_rec.F accordingly).
