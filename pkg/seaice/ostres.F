@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.21 2009/06/24 08:23:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.22 2010/10/29 15:26:29 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE ostres( COR_ICE, myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE ostres                                        |
 C     | o Calculate ocean surface stress                         |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -43,7 +43,7 @@ c     introduce turning angle (default is zero)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
 #ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
-      These lines are put here on purpose to cause the compilation 
+      These lines are put here on purpose to cause the compilation
       to fail because the following code is retired and can no longer
       be used. It was probably never used anyway.
 CMLC--   Following formulation is problematic and is no longer used.
@@ -116,7 +116,7 @@ C--   Compute ice-affected wind stress
         DO j=1,sNy
          DO i=1,sNx
           fuIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*(
-     &         COSWAT * 
+     &         COSWAT *
      &         ( UICE(I,J,  bi,bj)-GWATX(I,J,  bi,bj)
      &         + UICE(I,J+1,bi,bj)-GWATX(I,J+1,bi,bj) )
      &         -SIGN(SINWAT,COR_ICE(I,J,bi,bj)) *
@@ -124,11 +124,11 @@ C--   Compute ice-affected wind stress
      &         + VICE(I+1,J,bi,bj)-GWATY(I+1,J,bi,bj) )
      &         )
           fvIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*(
-     &         SIGN(SINWAT,COR_ICE(I,J,bi,bj)) * 
+     &         SIGN(SINWAT,COR_ICE(I,J,bi,bj)) *
      &         ( UICE(I,J,  bi,bj)-GWATX(I,J,  bi,bj)
      &         + UICE(I,J+1,bi,bj)-GWATX(I,J+1,bi,bj) )
-     &         + COSWAT * 
-     &         ( VICE(I,  J,i,bj)-GWATY(I,  J,bi,bj)
+     &         + COSWAT *
+     &         ( VICE(I,  J,bi,bj)-GWATY(I,  J,bi,bj)
      &         + VICE(I+1,J,bi,bj)-GWATY(I+1,J,bi,bj) )
      &         )
           fu(I,J,bi,bj)=(ONE-AREA(I,J,bi,bj))*fu(I,J,bi,bj)+
