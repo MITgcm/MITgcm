@@ -1,10 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.93 2010/10/25 23:32:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.94 2010/10/29 00:11:20 jmc Exp $
 C $Name:  $
 
-#define SEAICE_GROWTH_LEGACY
-#define SEAICE_DO_OPEN_WATER_GROWTH
-#define SEAICE_OCN_MELT_ACT_ON_AREA
-#undef SEAICE_CAP_ICELOAD
 #include "SEAICE_OPTIONS.h"
 
 CBOP
@@ -1351,8 +1347,8 @@ C =================================
 #ifdef SEAICE_CAP_ICELOAD
            tmpscal1 = HEFF(I,J,bi,bj)*SEAICE_rhoIce
      &              + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-           tmpscal2 = min(tmpscal1,heffTooHeavy*rhoConst) 
-#else           
+           tmpscal2 = min(tmpscal1,heffTooHeavy*rhoConst)
+#else
            tmpscal2 = HEFF(I,J,bi,bj)*SEAICE_rhoIce
      &              + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
 #endif
