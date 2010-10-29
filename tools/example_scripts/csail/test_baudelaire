@@ -1,0 +1,294 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.1 2010/10/29 21:13:57 jmc Exp $
+
+#  Ed Hill
+
+#  Test script for MITgcm that should work on most of the csail.mit.edu
+#  Linux machines.
+
+# defaults
+#export PATH="$PATH:/usr/local/bin"
+if [ -d ~/bin ]; then export PATH=$PATH:~/bin ; fi
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+#  Turn off stack limit for FIZHI & AD-tests
+ulimit -s unlimited
+
+#- method to acces CVS:
+ # export CVSROOT='/u/gcmpack'
+ # export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
+ # export CVS_RSH='ssh' ; cvs co -P MITgcm > /dev/null
+ # cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
+cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack'
+cmdCVS='cvs -d /u/gcmpack'
+
+TESTDIR="/scratch/jmc/test_"`hostname -s`
+MC=10
+checkOut=1
+sepDir=1
+option=
+tst_list='g77 adm gfo+rs mth ifc'
+#tst_list='g77 adm gfo ifc mth pgi+rs'
+#tst_list='adm g77 gfo+rs mth'
+
+#option="-nc" ; checkOut=0
+#option="-q"  ; checkOut=0
+
+TODAY=`date +%d`
+tdir=$TESTDIR
+if test $checkOut = '0' ; then
+ if test -e $tdir/MITgcm/CVS ; then
+  echo $tdir/MITgcm/CVS 'exist'
+  echo -n "Update the MITgcm code using: $cmdCVS ..."
+  cd $tdir/MITgcm
+  if test $sepDir = 1 ; then
+    $cmdCVS update -P -d > /dev/null
+  else
+    $cmdCVS update -P -d
+  fi
+  echo "  done"
+ else
+  echo -n $tdir/MITgcm 'missing ; '
+  checkOut=1
+ fi
+fi
+if test $checkOut = '1' ; then
+  if test -e $tdir ; then
+    echo -n "Removing working copy: $tdir/MITgcm ..."
+    test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+  else
+    echo -n "Creating a working dir: $tdir ..."
+    mkdir $tdir
+  fi
+  echo "  done"
+  echo -n "Downloading the MITgcm code using: $cmdCVS ..."
+  cd $tdir
+  $cmdCVS co -P MITgcm > /dev/null
+  echo "  done"
+else
+  cd $tdir
+fi
+
+#------------------------------------------------------------------------
+
+firstTst=`echo $tst_list | awk '{print $1}'`
+last_Tst=`echo $tst_list | awk '{print $NF}'`
+for tt in $tst_list
+do
+
+ echo "================================================================"
+ typ=`echo $tt | sed 's/+rs//'`
+ #- check day and time:
+ curDay=`date +%d` ; curHour=`date +%H`
+ if [ $curDay -ne $TODAY ] ; then
+   date ; echo "day is over => skip test $typ"
+   continue
+ fi
+ if [ $curHour -ge 18 ] ; then
+   date ; echo "too late to run test $typ"
+   continue
+ fi
+ #- clean-up old output files
+ rm -f $tdir/output_${typ}*
+ if test $sepDir = 1 ; then
+  new_dir="MITgcm_$typ"
+  if test -d $new_dir/CVS -a $checkOut = '0' ; then
+    pushd $new_dir
+    echo -n "Update the MITgcm code using: $cmdCVS ..."
+    $cmdCVS update -P -d
+    echo "  done"
+  else
+    test -e $new_dir  &&  rm -rf $new_dir
+    mkdir $new_dir
+    pushd $new_dir
+    cp -ra ../MITgcm/* .
+  fi
+ else
+  pushd MITgcm
+ fi
+ cd verification
+
+ case $typ in
+  'g77') OPTFILE='../tools/build_options/linux_amd64_g77' ;;
+  'g7a') OPTFILE='../tools/build_options/linux_amd64_g77' ;;
+  'gfo') OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
+  'adm') OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
+  'ifc') OPTFILE='../tools/build_options/linux_amd64_ifort' ;;
+  'pgi') OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
+  'mth') OPTFILE='../tools/build_options/linux_amd64_gfortran'
+         export GOMP_STACKSIZE=400m ;;
+   *) OPTFILE= ;;
+ esac
+
+ if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
+#-- cleaning:
+  echo "======================"
+  echo "Cleaning test directories:"
+    cmdCLN="./testreport -clean"
+    echo " clean dir running: $cmdCLN"
+    $cmdCLN > /dev/null 2>&1
+  echo "======================"
+  echo
+ fi
+
+ if test $typ = 'g77'
+ then
+
+  echo "Running testreport using:"
+  comm="./testreport -a jmc@mitgcm.org"
+# comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -100 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'gfo'
+ then
+
+  echo "Running testreport using:"
+  comm="./testreport -a jmc@mitgcm.org"
+  comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -100 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'adm'
+ then
+
+  echo "Running testreport using:"
+  comm="./testreport -adm -a jmc@mitgcm.org"
+  comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -60 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'ifc'
+ then
+
+  source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
+  echo "Running testreport using:"
+  comm="./testreport -a jmc@mitgcm.org"
+  comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -100 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'mth'
+ then
+
+  export OMP_NUM_THREADS=2
+  echo "Running testreport using:"
+  comm="./testreport -mth -a jmc@mitgcm.org"
+  comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -100 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'pgi'
+ then
+
+  export PGI=/srv/software/pgi/pgi-10.9
+  export PATH=$PGI/linux86-64/10.9/bin:$PATH
+  export LM_LICENSE_FILE=$PGI/license.dat
+  echo "Running testreport using:"
+  comm="./testreport -dd"
+  comm="$comm -match $MC"
+  #comm="$comm -skd tutorial_advection_in_gyre"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_${typ}_1 2>&1
+  tail -100 $tdir/output_${typ}_1
+  echo
+  echo "Running testreport using:"
+  comm="./testreport -q -a jmc@mitgcm.org"
+  comm="$comm -match $MC"
+  #comm="$comm -skd tutorial_advection_in_gyre"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_${typ}_2 2>&1
+  tail -100 $tdir/output_${typ}_2
+  echo
+
+ fi
+
+#-- also test restart (test 2+2=4)
+ if test $tt != $typ
+ then
+   echo "testing restart using:"
+   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+   echo "  \"$comm\""
+   echo "======================"
+   $comm > $tdir/output_2+2 2>&1
+  #tail -100 $tdir/output_2+2
+   echo ; cat tst_2+2_out.txt
+   echo
+ fi
+ export OMP_NUM_THREADS=1
+
+ if test $sepDir = 0 ; then
+#-- cleaning:
+  echo "======================"
+  echo "Cleaning test directories:"
+  if test $tt != $typ ; then
+    cmdCLN="../tools/do_tst_2+2 -clean"
+    echo " clean tst_2+2 running: $cmdCLN"
+    $cmdCLN >> $tdir/output_2+2 2>&1
+  fi
+  if test $tt != $last_Tst ; then
+    cmdCLN="./testreport -clean"
+    echo " clean dir running: $cmdCLN"
+    $cmdCLN > /dev/null 2>&1
+  fi
+  echo "======================"
+  echo
+ fi
+ popd
+
+done
