@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.80 2010/03/12 23:10:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.81 2010/10/31 20:07:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,6 +82,7 @@ CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE tice  = comlev1, key=ikey_dynamics, kind=isbyte
 #ifdef SEAICE_SALINITY
 CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
@@ -96,6 +97,7 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
            HEFF(i,j,bi,bj) = 0. _d 0
            AREA(i,j,bi,bj) = 0. _d 0
            HSNOW(i,j,bi,bj) = 0. _d 0
+           TICE(i,j,bi,bj) = celsius2K
 #ifdef SEAICE_SALINITY
            HSALT(i,j,bi,bj) = 0. _d 0
 #endif

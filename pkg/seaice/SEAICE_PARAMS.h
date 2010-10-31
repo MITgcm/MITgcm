@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.64 2010/10/06 20:06:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.65 2010/10/31 20:07:01 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -206,6 +206,11 @@ C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
 C     A22                - parameter used in growth.F
+C     areaMin            - if ice is present the ice cover is enforced to be > areaMin
+C     hiceMin            - minimum value of hice used to regularize
+C                          SEAICE_SOLVE4TEMP and d_AREAbyATM computations
+C     areaMax            - usually set to 1. Seeting areaMax below 1. specifies 
+C                          the minimun amount of leads (1-areaMax) in the ice pack.
 C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
 C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
@@ -226,6 +231,7 @@ C
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22
+      _RL areaMin, hiceMin, areaMax
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
@@ -250,6 +256,7 @@ C
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22,
+     &    areaMin, hiceMin, areaMax,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values

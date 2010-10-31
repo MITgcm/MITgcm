@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.83 2010/10/06 20:06:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.84 2010/10/31 20:07:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,6 +71,7 @@ C--   SEAICE parameters
      & AreaFile, HeffFile, HsnowFile, HsaltFile, IceAgeFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, DIFF1, A22, SEAICEuseFREEDRIFT,
+     & areaMin, hiceMin, areaMax,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
@@ -225,6 +226,9 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       DIFF1      = .002      _d 0
       DIFF1      = 2.0*DIFF1
       A22        = 0.15      _d 0
+      areaMin    = 0.15 _d 0
+      areaMax    = 1.00 _d 0
+      hiceMin    = 0.05 _d 0
       SEAICE_airTurnAngle   = 0.0 _d 0
       SEAICE_waterTurnAngle = 0.0 _d 0
       MAX_HEFF          = 10.     _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.95 2010/10/29 20:36:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.96 2010/10/31 20:07:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,8 +140,8 @@ C     AREA_PRE :: hold sea-ice fraction field before any seaice-thermo update
 C     wind speed
       _RL UG                  (1:sNx,1:sNy)
       _RL SPEED_SQ
-C temporary variables used to compute/regularize "actual" thicknesses
-      _RL areaMin,hiceMin,areaMax
+
+C     pathological cases thresholds
       _RL heffTooThin, heffTooHeavy
 
 c temporary variables available for the various computations
@@ -185,16 +185,6 @@ c ===================================================================
       ELSE
        kSurface        = 1
       ENDIF
-
-C     MINIMUM AREA USED TO REGULARIZE SEAICE_SOLVE4TEMP/d_AREA COMPUTATION
-      areaMin=A22
-C     The default of A22 = 0.15 is a common threshold for defining
-C     the ice edge. This ice concentration usually does not occur
-C     due to thermodynamics but due to advection.
-C     MINIMUM THICKNESS USED TO REGULARIZE SEAICE_SOLVE4TEMP/d_AREA COMPUTATION
-      hiceMin=0.05 _d +00
-c note: areaMax slightly less than 1 can be set to specify that there allways are some leads
-      areaMax=1. _d 0
 
 c     Cutoff for very thin ice
       heffTooThin=1. _d -5
@@ -345,6 +335,7 @@ CADJ &                        key = iicekey, byte = isbyte
           if (HEFF(I,J,bi,bj).LE.heffTooThin) then
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
+            TICE(I,J,bi,bj)=celsius2K
           else
             tmpscal2=0. _d 0
             tmpscal3=0. _d 0
@@ -476,8 +467,9 @@ cdm          heffActual(I,J)    = MIN(heffActual(I,J),9.0 _d +00)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef SEAICE_ZERO_ADHEFFACTUAL
+#ifdef SEAICE_SIMPLIFY_GROWTH_ADJ
       CALL ZERO_ADJ_1D( sNx*sNy, heffActual, myThid)
+      CALL ZERO_ADJ_1D( sNx*sNy, hsnowActual, myThid)
 #endif
 #endif
 
@@ -654,7 +646,11 @@ cgf heat and water conservation: ok -- since rid of 72.0764 factor
          ENDDO
         ENDDO
 
-
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_SIMPLIFY_GROWTH_ADJ
+      CALL ZERO_ADJ_1D( sNx*sNy, a_QbyOCN, myThid)
+#endif
+#endif
 
 c ===================================================================
 c =========PART 3: determine effective thicknesses increments========
@@ -673,6 +669,7 @@ C ===========================================================
          ENDDO
         ENDDO
 
+#ifdef SEAICE_GROWTH_LEGACY
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
          IF ( DIAGNOSTICS_IS_ON('SIyneg  ',myThid) ) THEN
@@ -681,7 +678,7 @@ C ===========================================================
          ENDIF
         ENDIF
 #endif
-
+#endif
 
 C compute snow melt tendency due to snow-atmosphere interaction
 C ==================================================================
@@ -849,18 +846,6 @@ c note: in legacy, this process is done at the end
      &                           d_HEFFbyFLOODING(I,J)*ICE2SNOW
           ENDDO
          ENDDO
-#ifdef ALLOW_DIAGNOSTICS
-         IF ( useDiagnostics ) THEN
-          IF ( DIAGNOSTICS_IS_ON('SIsnwice',myThid) ) THEN
-           DO J=1,sNy
-            DO I=1,sNx
-             tmparr1(I,J) = d_HEFFbyFLOODING(I,J)/SEAICE_deltaTtherm
-            ENDDO
-           ENDDO
-           CALL DIAGNOSTICS_FILL(tmparr1,'SIsnwice',0,1,3,bi,bj,myThid)
-          ENDIF
-         ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
         ENDIF
 #endif /* ALLOW_SEAICE_FLOODING */
 #endif /* SEAICE_GROWTH_LEGACY */
@@ -961,6 +946,7 @@ c apply tendency
          ENDDO
         ENDDO
 
+#ifdef SEAICE_GROWTH_LEGACY
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
          IF ( DIAGNOSTICS_IS_ON('SIfice  ',myThid) ) THEN
@@ -968,7 +954,7 @@ c apply tendency
          ENDIF
         ENDIF
 #endif
-
+#endif
 
 
 c ===================================================================
@@ -1252,7 +1238,7 @@ C =====================================================
          IF ( DIAGNOSTICS_IS_ON('SIqneto ',myThid) ) THEN
           DO J=1,sNy
            DO I=1,sNx
-            DIAGarray(I,J) = r_QbyATM_open(I,J) * (ONE-AREApreTH(I,J))
+            DIAGarray(I,J) = r_QbyATM_open(I,J) * convertHI2Q
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneto ',0,1,3,bi,bj,myThid)
@@ -1260,7 +1246,7 @@ C =====================================================
          IF ( DIAGNOSTICS_IS_ON('SIqneti ',myThid) ) THEN
           DO J=1,sNy
            DO I=1,sNx
-            DIAGarray(I,J) = r_QbyATM_cover(I,J) * AREApreTH(I,J)
+            DIAGarray(I,J) = r_QbyATM_cover(I,J) * convertHI2Q
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneti ',0,1,3,bi,bj,myThid)
@@ -1277,13 +1263,6 @@ C ======================================================
           QSW(I,J,bi,bj)  = QSW(I,J,bi,bj)*convertHI2Q
          ENDDO
         ENDDO
-
-#ifdef SEAICE_DEBUG
-       CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( QNET,'Current QNET ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( EmPmR,'Current EmPmR ', myIter, myThid )
-#endif /* SEAICE_DEBUG */
-
 
 C compute net fresh water flux leaving/entering
 C the ocean, accounting for fresh/salt water stocks.
@@ -1341,6 +1320,11 @@ C ==================================================
 #endif
 #endif /* ALLOW_ATM_TEMP */
 
+#ifdef SEAICE_DEBUG
+       CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( QNET,'Current QNET ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( EmPmR,'Current EmPmR ', myIter, myThid )
+#endif /* SEAICE_DEBUG */
 
 C Sea Ice Load on the sea surface.
 C =================================
