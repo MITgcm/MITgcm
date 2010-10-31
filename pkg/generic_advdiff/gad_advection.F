@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.62 2009/06/28 01:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.63 2010/10/31 15:20:48 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
-#undef MULTIDIM_OLD_VERSION
+#undef OBCS_MULTIDIM_OLD_VERSION
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -300,15 +300,6 @@ C--   For cube need one pass for each of red, green and blue axes.
       interiorOnly = .FALSE.
       overlapOnly  = .FALSE.
       IF (useCubedSphereExchange) THEN
-#ifdef MULTIDIM_OLD_VERSION
-C-    CubedSphere : pass 3 times, with full update of local tracer field
-       IF (ipass.EQ.1) THEN
-        calc_fluxes_X = nCFace.EQ.1 .OR. nCFace.EQ.2
-        calc_fluxes_Y = nCFace.EQ.4 .OR. nCFace.EQ.5
-       ELSEIF (ipass.EQ.2) THEN
-        calc_fluxes_X = nCFace.EQ.3 .OR. nCFace.EQ.4
-        calc_fluxes_Y = nCFace.EQ.6 .OR. nCFace.EQ.1
-#else /* MULTIDIM_OLD_VERSION */
 C-    CubedSphere : pass 3 times, with partial update of local tracer field
        IF (ipass.EQ.1) THEN
         overlapOnly  = MOD(nCFace,3).EQ.0
@@ -320,7 +311,6 @@ C-    CubedSphere : pass 3 times, with partial update of local tracer field
         interiorOnly = MOD(nCFace,3).EQ.1
         calc_fluxes_X = nCFace.EQ.2 .OR. nCFace.EQ.3 .OR. nCFace.EQ.4
         calc_fluxes_Y = nCFace.EQ.5 .OR. nCFace.EQ.6 .OR. nCFace.EQ.1
-#endif /* MULTIDIM_OLD_VERSION */
        ELSE
         interiorOnly = .TRUE.
         calc_fluxes_X = nCFace.EQ.5 .OR. nCFace.EQ.6
@@ -358,11 +348,7 @@ C   and b) the overlap of myTile are not cube-face Edges
        IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
 C-     Internal exchange for calculations in X
-#ifdef MULTIDIM_OLD_VERSION
-        IF ( useCubedSphereExchange ) THEN
-#else
         IF ( overlapOnly ) THEN
-#endif
          CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
@@ -411,6 +397,7 @@ C-     Advective flux in X : done
        ENDIF
 
 C-     Update the local tracer field where needed:
+C      use "maksInC" to prevent updating tracer field in OB regions
 
 C      update in overlap-Only
        IF ( overlapOnly ) THEN
@@ -430,7 +417,7 @@ C         in corner region) but safer to keep them.
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
-     &        )
+     &        )*maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -443,7 +430,7 @@ C         in corner region) but safer to keep them.
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
-     &        )
+     &        )*maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -462,7 +449,7 @@ C      do not only update the overlap
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
-     &        )
+     &        )*maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
 C-      keep advective flux (for diagnostics)
@@ -473,6 +460,7 @@ C-      keep advective flux (for diagnostics)
         ENDDO
 
 #ifdef ALLOW_OBCS
+#ifdef OBCS_MULTIDIM_OLD_VERSION
 C-     Apply open boundary conditions
         IF ( useOBCS ) THEN
          IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
@@ -486,6 +474,7 @@ C-     Apply open boundary conditions
 #endif /* ALLOW_PTRACERS */
          ENDIF
         ENDIF
+#endif /* OBCS_MULTIDIM_OLD_VERSION */
 #endif /* ALLOW_OBCS */
 
 C-     end if/else update overlap-Only
@@ -521,11 +510,7 @@ C   and b) the overlap of myTile are not cube-face edges
        IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
 C-     Internal exchange for calculations in Y
-#ifdef MULTIDIM_OLD_VERSION
-        IF ( useCubedSphereExchange ) THEN
-#else
         IF ( overlapOnly ) THEN
-#endif
          CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
@@ -581,6 +566,7 @@ C-     Advective flux in Y : done
        ENDIF
 
 C-     Update the local tracer field where needed:
+C      use "maksInC" to prevent updating tracer field in OB regions
 
 C      update in overlap-Only
        IF ( overlapOnly ) THEN
@@ -600,7 +586,7 @@ C         in corner region) but safer to keep them.
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
-     &        )
+     &        )*maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -613,7 +599,7 @@ C         in corner region) but safer to keep them.
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
-     &        )
+     &        )*maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -632,7 +618,7 @@ C      do not only update the overlap
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
-     &        )
+     &        )*maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
 C-      keep advective flux (for diagnostics)
@@ -643,6 +629,7 @@ C-      keep advective flux (for diagnostics)
         ENDDO
 
 #ifdef ALLOW_OBCS
+#ifdef OBCS_MULTIDIM_OLD_VERSION
 C-     Apply open boundary conditions
         IF (useOBCS) THEN
          IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
@@ -656,6 +643,7 @@ C-     Apply open boundary conditions
 #endif /* ALLOW_PTRACERS */
          ENDIF
         ENDIF
+#endif /* OBCS_MULTIDIM_OLD_VERSION */
 #endif /* ALLOW_OBCS */
 
 C      end if/else update overlap-Only
