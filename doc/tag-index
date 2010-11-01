@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1323 2010/10/29 00:39:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1324 2010/11/01 00:27:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  Change OBCS in multiDim advection (gad_advection.F):
+   Use maskInC to prevent intermediate update of tracer-field in OB regions,
+   thus keeping current-time-step OB values; and remove the call to OBCS_APPLY
+   which were applying future time-step OB values.
+  This way, all explicit calculations use current-time-step OB values
+   (simpler and more consistent).
+  Affects results when set-up uses time-varying OBC and multi-dim advection;
+   update output of experiment seaice_obcs.
 o pkg/seaice:
   move OPTIONS (formerly locally defined) to SEAICE_OPTIONS.h:
    this includes SEAICE_GROWTH_LEGACY (+ SEAICE_DO_OPEN_WATER_GROWTH &
