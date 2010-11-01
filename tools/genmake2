@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.208 2010/05/27 02:09:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.209 2010/11/01 00:20:28 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1166,6 +1166,9 @@ quick list of options, use "genmake -h" or for more detail see:
   http://mitgcm.org/devel_HOWTO/
 
 EOF
+
+#- clean-up previous genmake logfiles: 
+rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
 
 echo "===  Processing options files and arguments  ==="
 gm_local="genmake_local"
@@ -2695,11 +2698,11 @@ Clean:
 	@make clean
 	@make cleanlinks
 	-rm -f \$(SPECIAL_FILES)
-	-rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
 	-rm -f make.log run.log f90mkdepend.log *.bak "$MAKEFILE.old"
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log
 CLEAN:
 	@make Clean
+	-rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
