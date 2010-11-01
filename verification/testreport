@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.143 2010/10/21 21:29:42 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.144 2010/11/01 00:25:16 jmc Exp $
 #  $Name:  $
 #
 
@@ -1225,6 +1225,8 @@ for dir in $TESTDIRS ; do
 	echo -n '  --- dir:' $BUILD_DIR ': '
 	makeclean $BUILD_DIR
         rm -f $BUILD_DIR/$EXECUTABLE
+        rm -f $BUILD_DIR/genmake_state $BUILD_DIR/genmake_*optfile
+        rm -f $BUILD_DIR/genmake_warnings $BUILD_DIR/genmake_errors
 	if test -d $dir/$rundir/CVS ; then
             echo -n '  --- dir:' $dir/$rundir ': '
 	    run_clean $dir/$rundir
