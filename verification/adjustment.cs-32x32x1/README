@@ -69,8 +69,11 @@ input_min
 
 to build:
  in order not to compile model/src, need to:
- either put (in build dir) a "genmake_local" file with STANDARDDIRS="eesupp"
+ either put (in build dir) a "genmake_local" file:
+ % cat > genmake_local <<EOF
+  STANDARDDIRS="eesupp"
+EOF
  - or -
- use genmake2 command line: "genmake2 -standarddirs eesupp" -mods ../code_min"
+ use genmake2 command line: "genmake2 -standarddirs eesupp -mods ../code_min"
 
 =================================================================
