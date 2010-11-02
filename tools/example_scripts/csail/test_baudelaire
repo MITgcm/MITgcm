@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.1 2010/10/29 21:13:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.2 2010/11/02 13:44:39 jmc Exp $
 
 #  Ed Hill
 
@@ -28,9 +28,9 @@ MC=10
 checkOut=1
 sepDir=1
 option=
-tst_list='g77 adm gfo+rs mth ifc'
+tst_list='g7a adm g77 gfo+rs mth ifc'
 #tst_list='g77 adm gfo ifc mth pgi+rs'
-#tst_list='adm g77 gfo+rs mth'
+#tst_list='g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
@@ -110,15 +110,13 @@ do
  cd verification
 
  case $typ in
-  'g77') OPTFILE='../tools/build_options/linux_amd64_g77' ;;
-  'g7a') OPTFILE='../tools/build_options/linux_amd64_g77' ;;
-  'gfo') OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
-  'adm') OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
-  'ifc') OPTFILE='../tools/build_options/linux_amd64_ifort' ;;
-  'pgi') OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
-  'mth') OPTFILE='../tools/build_options/linux_amd64_gfortran'
-         export GOMP_STACKSIZE=400m ;;
-   *) OPTFILE= ;;
+  'g77'|'g7a') OPTFILE='../tools/build_options/linux_amd64_g77' ;;
+  'gfo'|'adm') OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
+  'ifc')       OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
+  'pgi')       OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
+  'mth')       OPTFILE='../tools/build_options/linux_amd64_gfortran'
+               export GOMP_STACKSIZE=400m ;;
+   *)          OPTFILE= ;;
  esac
 
  if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
@@ -137,7 +135,7 @@ do
 
   echo "Running testreport using:"
   comm="./testreport -a jmc@mitgcm.org"
-# comm="$comm -match $MC"
+  comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -155,7 +153,7 @@ do
 
   echo "Running testreport using:"
   comm="./testreport -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -168,12 +166,30 @@ do
 
  fi
 
- if test $typ = 'adm'
+ if test $typ = 'g7a'
  then
 
   echo "Running testreport using:"
   comm="./testreport -adm -a jmc@mitgcm.org"
   comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -60 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'adm'
+ then
+
+  echo "Running testreport using:"
+  comm="./testreport -adm -a jmc@mitgcm.org"
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -211,7 +227,7 @@ do
   export OMP_NUM_THREADS=2
   echo "Running testreport using:"
   comm="./testreport -mth -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
