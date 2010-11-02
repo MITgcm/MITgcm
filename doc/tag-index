@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1324 2010/11/01 00:27:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1325 2010/11/02 21:23:50 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -20,6 +20,8 @@ o pkg/seaice:
   Default (pkg/seaice/SEAICE_OPTIONS.h) is to define SEAICE_SOLVE4TEMP_LEGACY
    but leave SEAICE_GROWTH_LEGACY undef ; For now, keep verification exp
    unchanged (SEAICE_GROWTH_LEGACY defined in */code*/SEAICE_OPTIONS.h)
+  For OBCS, close southern and western boundaries for sea ice solver
+   based on myYGlobalLo and myXGlobalLo instead of OB_Js and OB_Iw.
 o pkg aim (2010/10/26):
   - Introduce ALLOW_INSOLATION, moving toward a more general incoming solar radiation
     formulation with obliquity, eccentricity, ... as run-time parameters,
