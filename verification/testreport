@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.144 2010/11/01 00:25:16 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.145 2010/11/02 00:55:40 jmc Exp $
 #  $Name:  $
 #
 
@@ -358,14 +358,14 @@ genmakemodel()
 	    fi
 	    fi
 	    printf 'genmake ... '
-	    eval $command > make.log 2>&1
+	    eval $command > genmake.log 2>&1
 	    RETVAL=$?
 	    #  Reduce the size of the testing emails!
 	    head -100 Makefile > $CDIR/Makefile_head
 	    if test "x$RETVAL" != x0 ; then
-		tail make.log
+		tail genmake.log
 		echo "genmakemodel: genmake failed"
-		cp genmake_* make.log $CDIR
+		cp genmake_* genmake.log $CDIR
 		return 1
 	    else
 		echo "successful"
@@ -377,6 +377,7 @@ genmakemodel()
 makeclean()
 {
     # makeclean directory
+    if test "x$NODEPEND" = xf ; then rm -f $1/make.log ; fi
     if test "x$NOCLEAN" = xt ; then
 	echo "make Clean skipped!"
     else
@@ -385,6 +386,7 @@ makeclean()
 	    #if test -e $OUTPUTFILE ; then rm -f $OUTPUTFILE ; fi
 	    if test -r Makefile ; then
 		printf 'clean build-dir: make Clean ... '
+		rm -f Makefile.old
 		$MAKE Clean >> make.log 2>&1
 		RETVAL=$?
 		if test "x$RETVAL" != x0 ; then
@@ -416,7 +418,7 @@ run_clean()
 	    find . -name "*.data" -exec rm {} \;
 	    find . -name "fort.*" -exec rm {} \;
 	    find . -type l -exec rm {} \;
-	    rm -f $EXECUTABLE *.txt STD* *diagnostics.log datetime
+	    rm -f $EXECUTABLE $RUNLOG *.txt STD* *diagnostics.log datetime
 	    rm -rf mnc_test_*
  	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
 	    echo successful
@@ -1224,9 +1226,11 @@ for dir in $TESTDIRS ; do
     if test "x$CLEANUP" = xt ; then
 	echo -n '  --- dir:' $BUILD_DIR ': '
 	makeclean $BUILD_DIR
-        rm -f $BUILD_DIR/$EXECUTABLE
-        rm -f $BUILD_DIR/genmake_state $BUILD_DIR/genmake_*optfile
-        rm -f $BUILD_DIR/genmake_warnings $BUILD_DIR/genmake_errors
+	(   cd $BUILD_DIR
+	    rm -f $EXECUTABLE *.bak
+	    rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
+	    rm -f genmake.log make.log
+	)
 	if test -d $dir/$rundir/CVS ; then
             echo -n '  --- dir:' $dir/$rundir ': '
 	    run_clean $dir/$rundir
