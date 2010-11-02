@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.210 2010/11/02 00:51:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.211 2010/11/02 22:45:07 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -656,18 +656,18 @@ get_fortran_c_namemangling()  {
     if test ! "x$FC_NAMEMANGLE" = x ; then
         return 0
     fi
-    echo "running: get_fortran_c_namemangling()" >> genmake_warnings
+    echo "running: get_fortran_c_namemangling()" >> $LOGFILE
 
     default_nm="#define FC_NAMEMANGLE(X) X ## _"
 
     cat > genmake_test.c <<EOF
 void tcall( char * string ) { tsub( string ); }
 EOF
-    $MAKE genmake_test.o >> genmake_warnings 2>&1
+    $MAKE genmake_test.o >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> genmake_errors
+	cat <<EOF>> $LOGFILE
 
 WARNING: C test compile fails
 WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -679,7 +679,7 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> genmake_warnings
+	cat <<EOF>> $LOGFILE
 
 WARNING: The "nm" command failed.
 WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -693,13 +693,13 @@ EOF
       call tsub( string )
       end
 EOF
-    $FC $FFLAGS -c genmake_tcomp.$FS >> genmake_warnings 2>&1
+    $FC $FFLAGS -c genmake_tcomp.$FS >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> genmake_warnings
+	cat <<EOF>> $LOGFILE
 
-WARNING: FORTRAN test compile fails -- please see "genmake_errors"
+WARNING: FORTRAN test compile fails -- please see '$LOGFILE'
 WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
 WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
 EOF
@@ -709,7 +709,7 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> genmake_warnings
+	cat <<EOF>> $LOGFILE
 
 WARNING: The "nm" command failed.
 WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -743,8 +743,8 @@ EOF
 
 
 check_HAVE_CLOC()  {
-    echo >> genmake_warnings
-    echo "running: check_HAVE_CLOC()" >> genmake_warnings
+    echo >> $LOGFILE
+    echo "running: check_HAVE_CLOC()" >> $LOGFILE
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -762,8 +762,8 @@ void FC_NAMEMANGLE(cloc) ( double *curtim )
 }
 EOF
     COMM="$CC $CFLAGS -c genmake_tc_1.c"
-    echo $COMM >> genmake_warnings
-    $COMM >> genmake_warnings 2>&1
+    echo $COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello
@@ -774,10 +774,10 @@ EOF
       end
 EOF
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
-    echo $COMM >> genmake_warnings
-    $COMM >> genmake_warnings 2>&1
+    echo $COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RET_F=$?
-    test -x ./genmake_tc  &&  ./genmake_tc >> genmake_warnings 2>&1
+    test -x ./genmake_tc  &&  ./genmake_tc >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_CLOC=t
@@ -791,8 +791,8 @@ check_HAVE_SIGREG()  {
     if test ! "x$HAVE_SIGREG" = x ; then
 	return
     fi
-    echo >> genmake_warnings
-    echo "running: check_HAVE_SIGREG()" >> genmake_warnings
+    echo >> $LOGFILE
+    echo "running: check_HAVE_SIGREG()" >> $LOGFILE
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -825,8 +825,8 @@ void FC_NAMEMANGLE(sigreg) (int * aip)
 }
 EOF
     COMM="$CC $CFLAGS -c genmake_tc_1.c"
-    echo $COMM >> genmake_warnings
-    $COMM >> genmake_warnings 2>&1
+    echo $COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello
@@ -836,10 +836,10 @@ EOF
       call sigreg(anint)
       end
 EOF
-    cat genmake_tc_2.$FS >> genmake_warnings
+    cat genmake_tc_2.$FS >> $LOGFILE
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
-    echo $COMM >> genmake_warnings
-    $COMM >> genmake_warnings 2>&1
+    echo $COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_SIGREG=t
@@ -857,8 +857,8 @@ check_HAVE_SETRLSTK()  {
     if test ! "x$HAVE_SETRLSTK" = x ; then
 	return
     fi
-    echo >> genmake_warnings
-    echo "running: check_HAVE_SETRLSTK()" >> genmake_warnings
+    echo >> $LOGFILE
+    echo "running: check_HAVE_SETRLSTK()" >> $LOGFILE
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -875,8 +875,8 @@ void FC_NAMEMANGLE(setrlstk) ()
 }
 EOF
     COMM="$CC $CFLAGS -c genmake_tc_1.c"
-    echo $COMM >> genmake_warnings
-    $COMM >> genmake_warnings 2>&1
+    echo $COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello
@@ -884,10 +884,10 @@ EOF
       call setrlstk()
       end
 EOF
-    cat genmake_tc_2.$FS >> genmake_warnings
+    cat genmake_tc_2.$FS >> $LOGFILE
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
-    echo $COMM >> genmake_warnings
-    $COMM >> genmake_warnings 2>&1
+    echo $COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_SETRLSTK=t
@@ -898,8 +898,8 @@ EOF
 
 
 check_HAVE_STAT()  {
-    echo >> genmake_warnings
-    echo "running: check_HAVE_STAT()" >> genmake_warnings
+    echo >> $LOGFILE
+    echo "running: check_HAVE_STAT()" >> $LOGFILE
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -921,7 +921,7 @@ void FC_NAMEMANGLE(tfsize) ( int *nbyte )
 }
 EOF
     COMM="$CC $CFLAGS -c genmake_tc_1.c"
-    echo $COMM >> genmake_warnings
+    echo $COMM >> $LOGFILE
     $COMM >> genmake_tc.log 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
@@ -931,9 +931,9 @@ EOF
       print *," HELLO WORLD", nbyte
       end
 EOF
-    cat genmake_tc_2.$FS >> genmake_warnings
+    cat genmake_tc_2.$FS >> $LOGFILE
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
-    echo $COMM >> genmake_warnings
+    echo $COMM >> $LOGFILE
     $COMM >> genmake_tc.log 2>&1
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
@@ -948,8 +948,8 @@ check_netcdf_libs()  {
     if test ! "x$SKIP_NETCDF_CHECK" = x ; then
 	return
     fi
-    echo >> genmake_warnings
-    echo "running: check_netcdf_libs()" >> genmake_warnings
+    echo >> $LOGFILE
+    echo "running: check_netcdf_libs()" >> $LOGFILE
     cat <<EOF > genmake_tnc.F
       program fgennc
 #include "netcdf.inc"
@@ -985,7 +985,7 @@ EOF
     $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
-    cat genmake_tnc.log >> genmake_warnings
+    cat genmake_tnc.log >> $LOGFILE
 
     #EH3  Remove test program execution for machines that either disallow
     #EH3  execution or cannot support it (eg. cross-compilers)
@@ -996,7 +996,7 @@ EOF
 
     if test "x$RET_COMPILE" = x0 ; then
 	HAVE_NETCDF=t
-	echo "check_netcdf: successful" >> genmake_warnings
+	echo "check_netcdf: successful" >> $LOGFILE
     else
 	# try again with "-lnetcdf" added to the libs
 	echo "==> try again with added '-lnetcdf'" > genmake_tnc.log
@@ -1007,12 +1007,12 @@ EOF
 	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	    &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf >> genmake_tnc.log 2>&1
 	RET_COMPILE=$?
-	echo >> genmake_warnings
-	cat genmake_tnc.log >> genmake_warnings
+	echo >> $LOGFILE
+	cat genmake_tnc.log >> $LOGFILE
 	if test "x$RET_COMPILE" = x0 ; then
 	    LIBS="$LIBS -lnetcdf"
 	    HAVE_NETCDF=t
-	    echo "check_netcdf: successful" >> genmake_warnings
+	    echo "check_netcdf: successful" >> $LOGFILE
 	else
 	# try again with "-lnetcdff" added to the libs
 	    echo "==> try again with added '-lnetcdff -lnetcdf'" > genmake_tnc.log
@@ -1023,12 +1023,12 @@ EOF
 		&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 		&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf >> genmake_tnc.log 2>&1
 	    RET_COMPILE=$?
-	    echo >> genmake_warnings
-	    cat genmake_tnc.log >> genmake_warnings
+	    echo >> $LOGFILE
+	    cat genmake_tnc.log >> $LOGFILE
 	    if test "x$RET_COMPILE" = x0 ; then
 		LIBS="$LIBS -lnetcdff -lnetcdf"
 		HAVE_NETCDF=t
-		echo "check_netcdf: successful" >> genmake_warnings
+		echo "check_netcdf: successful" >> $LOGFILE
 	    fi
 	fi
     fi
@@ -1060,7 +1060,7 @@ DISABLE=
 # MAKEDEPEND=
 PKG_DEPEND=
 PKG_GROUPS=
-DUMPSTATE=t
+DUMPSTATE=f
 OPTFILE=
 INCLUDES="-I. $INCLUDES"
 FFLAGS=
@@ -1168,15 +1168,16 @@ cat <<EOF
 
 GENMAKE :
 
-A program for GENerating MAKEfiles for the MITgcm project.  For a
-quick list of options, use "genmake -h" or for more detail see:
-
-  http://mitgcm.org/devel_HOWTO/
+A program for GENerating MAKEfiles for the MITgcm project.
+   For a quick list of options, use "genmake2 -h"
+or for more detail see the Developer's HOWTO manual at:
+   http://mitgcm.org/public/docs.html
 
 EOF
 
+LOGFILE="genmake.log"
 #- clean-up previous genmake logfiles:
-rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
+rm -f genmake_state genmake_*optfile $LOGFILE
 
 echo "===  Processing options files and arguments  ==="
 gm_local="genmake_local"
@@ -1458,7 +1459,7 @@ if test "x$OPTFILE" != xNONE ; then
 	    echo "--please check that variable syntax is bash-compatible"
 	    exit 1
 	fi
-	if test "x$DUMPSTATE" != xf ; then
+	if test "x$DUMPSTATE" = xt ; then
 	    cp -f $OPTFILE "genmake_optfile"
 	fi
     else
@@ -1485,7 +1486,7 @@ if test "x${AD_OPTFILE}" != xNONE ; then
 	    echo "--please check that variable syntax is bash-compatible"
 	    exit 1
 	fi
-	if test "x$DUMPSTATE" != xf ; then
+	if test "x$DUMPSTATE" = xt ; then
 	    cp -f $AD_OPTFILE "genmake_ad_optfile"
 	fi
     else
@@ -2710,14 +2711,14 @@ Clean:
 	@make cleanlinks
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log
+	-rm -f genmake_warnings genmake_errors make.log
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
-#         and output from a run (plus output and log files from testreport)
+#         and output from a run (plus log files from testreport)
 CLEAN:
 	@make Clean
-	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.bak "$MAKEFILE.old"
-	-rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
-	-rm -f genmake.log make.log run.log
+	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.bak $MAKEFILE.old
+	-rm -f $LOGFILE genmake_state genmake_*optfile genmake.tr_log make.tr_log
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
@@ -2725,7 +2726,6 @@ CLEAN:
 	-rm -f *_MIT_CE_000.opt0000 costfunction*0000
 	-rm -rf mnc_test_*
 
-#eh3 Makefile: makefile
 makefile:
 	$THIS_SCRIPT $G2ARGS
 cleanlinks:
@@ -3241,7 +3241,7 @@ fi
 
 
 #  Write the "state" for future records
-if test "x$DUMPSTATE" != xf ; then
+if test "x$DUMPSTATE" = xt ; then
     printf "" > genmake_state
     for i in $gm_state ; do
 	t1="t2=\$$i"
