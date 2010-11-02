@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.28 2010/10/06 20:06:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.29 2010/11/02 08:58:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -254,6 +254,12 @@ C     == end of interface ==
      & 'DIFF1             =', ' /* parameter used in advect.F */')
       CALL WRITE_0D_RL( A22               ,INDEX_NONE,
      & 'A22               =', ' /* parameter used in growth.F */')
+#ifndef SEAICE_CAP_HEFF
+      WRITE(msgBuf,'(A,A)')
+     &     'MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif /* SEAICE_CAP_HEFF */
       CALL WRITE_0D_RL( MAX_HEFF          ,INDEX_NONE,
      & 'MAX_HEFF          =', ' /* maximum ice thickness */')
       CALL WRITE_0D_RL( MIN_ATEMP         ,INDEX_NONE,
