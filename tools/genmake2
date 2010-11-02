@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.209 2010/11/01 00:20:28 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.210 2010/11/02 00:51:11 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -656,6 +656,7 @@ get_fortran_c_namemangling()  {
     if test ! "x$FC_NAMEMANGLE" = x ; then
         return 0
     fi
+    echo "running: get_fortran_c_namemangling()" >> genmake_warnings
 
     default_nm="#define FC_NAMEMANGLE(X) X ## _"
 
@@ -742,6 +743,8 @@ EOF
 
 
 check_HAVE_CLOC()  {
+    echo >> genmake_warnings
+    echo "running: check_HAVE_CLOC()" >> genmake_warnings
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -788,6 +791,8 @@ check_HAVE_SIGREG()  {
     if test ! "x$HAVE_SIGREG" = x ; then
 	return
     fi
+    echo >> genmake_warnings
+    echo "running: check_HAVE_SIGREG()" >> genmake_warnings
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -831,8 +836,6 @@ EOF
       call sigreg(anint)
       end
 EOF
-    echo >> genmake_warnings
-    echo "running: check_HAVE_SIGREG()" >> genmake_warnings
     cat genmake_tc_2.$FS >> genmake_warnings
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
     echo $COMM >> genmake_warnings
@@ -854,6 +857,8 @@ check_HAVE_SETRLSTK()  {
     if test ! "x$HAVE_SETRLSTK" = x ; then
 	return
     fi
+    echo >> genmake_warnings
+    echo "running: check_HAVE_SETRLSTK()" >> genmake_warnings
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -879,8 +884,6 @@ EOF
       call setrlstk()
       end
 EOF
-    echo >> genmake_warnings
-    echo "running: check_HAVE_SETRLSTK()" >> genmake_warnings
     cat genmake_tc_2.$FS >> genmake_warnings
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
     echo $COMM >> genmake_warnings
@@ -895,6 +898,8 @@ EOF
 
 
 check_HAVE_STAT()  {
+    echo >> genmake_warnings
+    echo "running: check_HAVE_STAT()" >> genmake_warnings
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -926,8 +931,6 @@ EOF
       print *," HELLO WORLD", nbyte
       end
 EOF
-    echo >> genmake_warnings
-    echo "running: check_HAVE_STAT()" >> genmake_warnings
     cat genmake_tc_2.$FS >> genmake_warnings
     COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
     echo $COMM >> genmake_warnings
@@ -964,9 +967,9 @@ EOF
       IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
       end
 EOF
-    echo "===  genmake_tnc.F  ===" > genmake_tnc.log
+    echo "===  genmake_tnc.F  >>>" > genmake_tnc.log
     cat genmake_tnc.F >> genmake_tnc.log
-    echo "===  genmake_tnc.F  ===" >> genmake_tnc.log
+    echo "<<<  genmake_tnc.F  ===" >> genmake_tnc.log
     RET_CPP=f
     COMM="cat genmake_tnc.F | $CPP $DEFINES $INCLUDES"
     echo "$COMM" >> genmake_tnc.log
@@ -993,9 +996,10 @@ EOF
 
     if test "x$RET_COMPILE" = x0 ; then
 	HAVE_NETCDF=t
+	echo "check_netcdf: successful" >> genmake_warnings
     else
 	# try again with "-lnetcdf" added to the libs
-	echo "try again with added '-lnetcdf'" > genmake_tnc.log
+	echo "==> try again with added '-lnetcdf'" > genmake_tnc.log
 	echo "cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS \ " >> genmake_tnc.log
 	echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
 	echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
@@ -1003,13 +1007,15 @@ EOF
 	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	    &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf >> genmake_tnc.log 2>&1
 	RET_COMPILE=$?
+	echo >> genmake_warnings
 	cat genmake_tnc.log >> genmake_warnings
 	if test "x$RET_COMPILE" = x0 ; then
 	    LIBS="$LIBS -lnetcdf"
 	    HAVE_NETCDF=t
+	    echo "check_netcdf: successful" >> genmake_warnings
 	else
 	# try again with "-lnetcdff" added to the libs
-	    echo "try again with added '-lnetcdff -lnetcdf'" > genmake_tnc.log
+	    echo "==> try again with added '-lnetcdff -lnetcdf'" > genmake_tnc.log
 	    echo "cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS \ " >> genmake_tnc.log
 	    echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
 	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
@@ -1017,10 +1023,12 @@ EOF
 		&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 		&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf >> genmake_tnc.log 2>&1
 	    RET_COMPILE=$?
+	    echo >> genmake_warnings
 	    cat genmake_tnc.log >> genmake_warnings
 	    if test "x$RET_COMPILE" = x0 ; then
 		LIBS="$LIBS -lnetcdff -lnetcdf"
 		HAVE_NETCDF=t
+		echo "check_netcdf: successful" >> genmake_warnings
 	    fi
 	fi
     fi
@@ -1167,7 +1175,7 @@ quick list of options, use "genmake -h" or for more detail see:
 
 EOF
 
-#- clean-up previous genmake logfiles: 
+#- clean-up previous genmake logfiles:
 rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
 
 echo "===  Processing options files and arguments  ==="
@@ -2689,24 +2697,31 @@ output.txt: \$(EXECUTABLE)
 	@printf 'running ... '
 	@\$(EXECUTABLE) > \$@
 
+# remove most of the files that "make" generates
 clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 	-rm -rf *.o
 	-rm -rf *.$FS *.flowdir
 	-rm -rf *.f$FS90 \$(AD_CLEAN) ad_input*
+
+# remove most of the files that "make" and "make depend" generate
 Clean:
 	@make clean
 	@make cleanlinks
-	-rm -f \$(SPECIAL_FILES)
-	-rm -f make.log run.log f90mkdepend.log *.bak "$MAKEFILE.old"
+	-rm -f \$(SPECIAL_FILES) f90mkdepend.log
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log
+
+# remove also the executable, files that "genmake2" generates (except Makefile)
+#         and output from a run (plus output and log files from testreport)
 CLEAN:
 	@make Clean
+	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.bak "$MAKEFILE.old"
 	-rm -f genmake_state genmake_*optfile genmake_warnings genmake_errors
+	-rm -f genmake.log make.log run.log
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
-	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.txt STD* *diagnostics.log datetime
+	-rm -f *.txt STD* *diagnostics.log datetime
 	-rm -f *_MIT_CE_000.opt0000 costfunction*0000
 	-rm -rf mnc_test_*
 
