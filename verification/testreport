@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.146 2010/11/02 22:53:11 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.147 2010/11/03 19:28:18 jmc Exp $
 #  $Name:  $
 #
 
@@ -855,7 +855,7 @@ OADM=
 # list of pTracers to check for monitor output
 PTRACERS_NUM="1 2 3 4 5"
 
-MATCH_CRIT=13
+MATCH_CRIT=10
 
 printf "parsing options...  "
 
