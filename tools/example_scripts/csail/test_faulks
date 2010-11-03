@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.16 2010/09/18 00:07:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.17 2010/11/03 19:44:48 jmc Exp $
 
 #  Ed Hill
 
@@ -23,13 +23,14 @@ cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack'
 cmdCVS='cvs -d /u/gcmpack'
 
 TESTDIR="/scratch/jmc/test_"`hostname -s`
-MC=10
+MC=13
 checkOut=1
 sepDir=1
 option=
+#tst_list='g7a adm g77 gfo+rs mth ifc'
 #tst_list='g77 adm gfo ifc mth pgi+rs'
 tst_list='g77 adm gfo ifc mth pgi'
-#tst_list='adm g77 gfo+rs mth'
+#tst_list='g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
@@ -109,14 +110,13 @@ do
  cd verification
 
  case $typ in
-  'g77') OPTFILE='../tools/build_options/linux_ia32_g77' ;;
-  'adm') OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
-  'gfo') OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
-  'ifc') OPTFILE='../tools/build_options/linux_ia32_ifort+authors' ;;
-  'mth') OPTFILE='../tools/build_options/linux_ia32_ifort+authors'
-         export KMP_STACKSIZE=400m ;;
-  'pgi') OPTFILE='../tools/build_options/linux_ia32_pgf77+authors_fc5' ;;
-   *) OPTFILE= ;;
+  'g77'|'g7a') OPTFILE='../tools/build_options/linux_ia32_g77' ;;
+  'gfo'|'adm') OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
+  'ifc')       OPTFILE='../tools/build_options/linux_ia32_ifort+authors' ;;
+  'mth')       OPTFILE='../tools/build_options/linux_ia32_ifort+authors'
+               export KMP_STACKSIZE=400m ;;
+  'pgi')       OPTFILE='../tools/build_options/linux_ia32_pgf77+authors_fc5' ;;
+   *)          OPTFILE= ;;
  esac
 
  if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
@@ -153,7 +153,7 @@ do
 
   echo "Running testreport using:"
   comm="./testreport -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -162,6 +162,24 @@ do
   echo "======================"
   $comm > $tdir/output_$typ 2>&1
   tail -100 $tdir/output_$typ
+  echo
+
+ fi
+
+ if test $typ = 'g7a'
+ then
+
+  echo "Running testreport using:"
+  comm="./testreport -adm -a jmc@mitgcm.org"
+# comm="$comm -match $MC"
+  if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+  fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_$typ 2>&1
+  tail -60 $tdir/output_$typ
   echo
 
  fi
@@ -175,10 +193,9 @@ do
   chk=`expr $TODAY % 2`
  if test $chk != 0 ; then
   OPTFILE='../tools/build_options/linux_ia32_g77'
- else
-  comm="$comm -match $MC"
  fi
 #---
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -196,7 +213,7 @@ do
 
   echo "Running testreport using:"
   comm="./testreport -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -215,7 +232,7 @@ do
   export OMP_NUM_THREADS=2
   echo "Running testreport using:"
   comm="./testreport -mth -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -235,7 +252,7 @@ do
   listT='fizhi-cs-32x32x40 fizhi-cs-aqualev20'
   echo "Running testreport using:"
   comm="./testreport -dd"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   #comm="$comm -skd tutorial_advection_in_gyre"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
@@ -251,7 +268,7 @@ do
   echo
   echo "Running testreport using:"
   comm="./testreport -q -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
+# comm="$comm -match $MC"
   #comm="$comm -skd tutorial_advection_in_gyre"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
