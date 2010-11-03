@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62g
-(PID.TID 0000.0001) // Build user:        mlosch
-(PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Thu May 20 03:10:37 EDT 2010
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62m
+(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // Build host:        baudelaire
+(PID.TID 0000.0001) // Build date:        Wed Nov  3 03:25:03 EDT 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -21,7 +21,7 @@
 (PID.TID 0000.0001) > useCubedSphereExchange=.TRUE.,
 (PID.TID 0000.0001) > nTx=1,
 (PID.TID 0000.0001) > nTy=1,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) ># Note: Some systems use & as the
 (PID.TID 0000.0001) ># namelist terminator. Other systems
 (PID.TID 0000.0001) ># use a / character (as shown here).
@@ -113,14 +113,14 @@
 (PID.TID 0000.0001) > writeBinaryPrec=64,
 (PID.TID 0000.0001) > useSingleCpuIO=.TRUE.,
 (PID.TID 0000.0001) >#debugLevel = 2,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Elliptic solver parameters
 (PID.TID 0000.0001) > &PARM02
 (PID.TID 0000.0001) > cg2dMaxIters=200,
 (PID.TID 0000.0001) >#cg2dTargetResidual=1.E-9,
 (PID.TID 0000.0001) > cg2dTargetResWunit=1.E-14,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Time stepping parameters
 (PID.TID 0000.0001) > &PARM03
@@ -148,7 +148,7 @@
 (PID.TID 0000.0001) >#tauSaltClimRelax = 5184000.,
 (PID.TID 0000.0001) >#latBandClimRelax=60.,
 (PID.TID 0000.0001) > monitorFreq =1.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Gridding parameters
 (PID.TID 0000.0001) > &PARM04
@@ -157,14 +157,14 @@
 (PID.TID 0000.0001) > delR= 50., 70., 100., 140., 190.,
 (PID.TID 0000.0001) >       240., 290., 340., 390., 440.,
 (PID.TID 0000.0001) >       490., 540., 590., 640., 690.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Input datasets
 (PID.TID 0000.0001) > &PARM05
 (PID.TID 0000.0001) > bathyFile      ='bathy_Hmin50.bin',
 (PID.TID 0000.0001) > hydrogThetaFile='lev_T_cs_15k.bin',
 (PID.TID 0000.0001) > hydrogSaltFile ='lev_S_cs_15k.bin',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM01
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM01 : OK
@@ -190,7 +190,7 @@
 (PID.TID 0000.0001) >#useBulkforce=.TRUE.,
 (PID.TID 0000.0001) > useDiagnostics=.TRUE.,
 (PID.TID 0000.0001) >#useMNC = .TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
 (PID.TID 0000.0001) CAL_READPARMS: opening data.cal
@@ -206,7 +206,7 @@
 (PID.TID 0000.0001) > TheCalendar='model',
 (PID.TID 0000.0001) > startDate_1=00010101,
 (PID.TID 0000.0001) > startDate_2=000000,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) CAL_READPARMS: finished reading data.cal
 (PID.TID 0000.0001) 
@@ -306,7 +306,7 @@
 (PID.TID 0000.0001) >  GM_Kmin_horiz      = 50.,
 (PID.TID 0000.0001) >  GM_Scrit           = 4.e-3,
 (PID.TID 0000.0001) >  GM_Sd              = 1.e-3,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
@@ -328,7 +328,7 @@
 (PID.TID 0000.0001) ># for backward compatibility only
 (PID.TID 0000.0001) > SEAICE_clipVelocities = .TRUE.,
 (PID.TID 0000.0001) > SEAICEuseFlooding  = .FALSE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  SEAICE_READPARMS: finished reading data.seaice
 (PID.TID 0000.0001) 
@@ -557,6 +557,7 @@
 (PID.TID 0000.0001) A22               = /* parameter used in growth.F */
 (PID.TID 0000.0001)                 1.500000000000000E-01
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined
 (PID.TID 0000.0001) MAX_HEFF          = /* maximum ice thickness */
 (PID.TID 0000.0001)                 1.000000000000000E+01
 (PID.TID 0000.0001)     ;
@@ -611,7 +612,7 @@
 (PID.TID 0000.0001) >#albIceMin  = 0.20,
 (PID.TID 0000.0001) > hAlbIce    = 0.44,
 (PID.TID 0000.0001) > hAlbSnow   = 0.15,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) > &THSICE_PARM01
 (PID.TID 0000.0001) >#StartIceModel=1,
@@ -621,74 +622,74 @@
 (PID.TID 0000.0001) >#thSIce_taveFreq=2592000.,
 (PID.TID 0000.0001) >#thSIce_diagFreq=2592000.,
 (PID.TID 0000.0001) >#thSIce_monFreq =2592000.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  THSICE_READPARMS: read THSICE_CONST
 (PID.TID 0000.0001)  THSICE_READPARMS: read THSICE_PARM01
- ThSI: rhos      =  330.
- ThSI: rhoi      =  900.
- ThSI: rhosw     =  1035.
- ThSI: rhofw     =  1000.
- ThSI: floodFac  =  0.409090909
- ThSI: cpIce     =  2106.
- ThSI: cpWater   =  3994.
- ThSI: kIce      =  2.03
- ThSI: kSnow     =  0.3
- ThSI: bMeltCoef =  0.006
- ThSI: Lfresh    =  334000.
- ThSI: qsnow     =  334000.
- ThSI: albColdSnow=  0.85
- ThSI: albWarmSnow=  0.6
- ThSI: tempSnowAlb= -5.
- ThSI: albOldSnow =  0.6
- ThSI: hNewSnowAge=  0.002
- ThSI: snowAgTime =  4320000.
- ThSI: albIceMax =  0.6
- ThSI: albIceMin =  0.2
- ThSI: hAlbIce   =  0.44
- ThSI: hAlbSnow  =  0.15
- ThSI: i0swFrac  =  0.3
- ThSI: ksolar    =  1.5
- ThSI: dhSnowLin =  0.1
- ThSI: saltIce   =  4.
- ThSI: S_winton  =  1.
- ThSI: mu_Tf     =  0.054
- ThSI: Tf0kel    =  273.15
- ThSI: Tmlt1     = -0.054
- ThSI: Terrmax   =  0.5
- ThSI: nitMaxTsf = 20
- ThSI: hIceMin   =  0.01
- ThSI: hiMax     =  10.
- ThSI: hsMax     =  10.
- ThSI: iceMaskMax =  1.
- ThSI: iceMaskMin =  0.05
- ThSI: fracEnMelt =  0.4
- ThSI: fracEnFreez=  0.4
- ThSI: hThinIce   =  0.2
- ThSI: hThickIce  =  2.5
- ThSI: hNewIceMax =  1.
- ThSI: stressReduction =  0.
- ThSI: thSIceAdvScheme = 77
- ThSI: thSIce_diffK  =  0.
- ThSI: thSIce_deltaT =  86400.
- ThSI: ocean_deltaT  =  86400.
+ ThSI: rhos      =   330.00000000000000     
+ ThSI: rhoi      =   900.00000000000000     
+ ThSI: rhosw     =   1035.0000000000000     
+ ThSI: rhofw     =   1000.0000000000000     
+ ThSI: floodFac  =  0.40909090909090912     
+ ThSI: cpIce     =   2106.0000000000000     
+ ThSI: cpWater   =   3994.0000000000000     
+ ThSI: kIce      =   2.0299999999999998     
+ ThSI: kSnow     =  0.29999999999999999     
+ ThSI: bMeltCoef =  6.00000000000000012E-003
+ ThSI: Lfresh    =   334000.00000000000     
+ ThSI: qsnow     =   334000.00000000000     
+ ThSI: albColdSnow=  0.84999999999999998     
+ ThSI: albWarmSnow=  0.59999999999999998     
+ ThSI: tempSnowAlb=  -5.0000000000000000     
+ ThSI: albOldSnow =  0.59999999999999998     
+ ThSI: hNewSnowAge=  2.00000000000000004E-003
+ ThSI: snowAgTime =   4320000.0000000000     
+ ThSI: albIceMax =  0.59999999999999998     
+ ThSI: albIceMin =  0.20000000000000001     
+ ThSI: hAlbIce   =  0.44000000000000000     
+ ThSI: hAlbSnow  =  0.14999999999999999     
+ ThSI: i0swFrac  =  0.29999999999999999     
+ ThSI: ksolar    =   1.5000000000000000     
+ ThSI: dhSnowLin =  0.10000000000000001     
+ ThSI: saltIce   =   4.0000000000000000     
+ ThSI: S_winton  =   1.0000000000000000     
+ ThSI: mu_Tf     =  5.39999999999999994E-002
+ ThSI: Tf0kel    =   273.14999999999998     
+ ThSI: Tmlt1     = -5.39999999999999994E-002
+ ThSI: Terrmax   =  0.50000000000000000     
+ ThSI: nitMaxTsf =          20
+ ThSI: hIceMin   =  1.00000000000000002E-002
+ ThSI: hiMax     =   10.000000000000000     
+ ThSI: hsMax     =   10.000000000000000     
+ ThSI: iceMaskMax =   1.0000000000000000     
+ ThSI: iceMaskMin =  5.00000000000000028E-002
+ ThSI: fracEnMelt =  0.40000000000000002     
+ ThSI: fracEnFreez=  0.40000000000000002     
+ ThSI: hThinIce   =  0.20000000000000001     
+ ThSI: hThickIce  =   2.5000000000000000     
+ ThSI: hNewIceMax =   1.0000000000000000     
+ ThSI: stressReduction =   0.0000000000000000     
+ ThSI: thSIceAdvScheme =          77
+ ThSI: thSIce_diffK  =   0.0000000000000000     
+ ThSI: thSIce_deltaT =   86400.000000000000     
+ ThSI: ocean_deltaT  =   86400.000000000000     
  ThSI: stepFwd_oceMxL= F
- ThSI: tauRelax_MxL  =  0.
- ThSI: tauRelax_MxL_salt  =  0.
- ThSI: hMxL_default  =  50.
- ThSI: sMxL_default  =  35.
- ThSI: vMxL_default  =  0.05
- ThSI: thSIce_taveFreq=  0.
- ThSI: thSIce_diagFreq=  0.
- ThSI: thSIce_monFreq =  1.
- ThSI: startIceModel = 0
+ ThSI: tauRelax_MxL  =   0.0000000000000000     
+ ThSI: tauRelax_MxL_salt  =   0.0000000000000000     
+ ThSI: hMxL_default  =   50.000000000000000     
+ ThSI: sMxL_default  =   35.000000000000000     
+ ThSI: vMxL_default  =  5.00000000000000028E-002
+ ThSI: thSIce_taveFreq=   0.0000000000000000     
+ ThSI: thSIce_diagFreq=   0.0000000000000000     
+ ThSI: thSIce_monFreq =   1.0000000000000000     
+ ThSI: startIceModel =           0
 (PID.TID 0000.0001) EXF_READPARMS: opening data.exf
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.exf
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.exf"
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/results/output.icedyn.txt,v 1.16 2010/05/21 10:10:04 mlosch Exp $
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/results/output.icedyn.txt,v 1.17 2010/11/03 18:23:31 jmc Exp $
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># External Forcing Data
@@ -710,7 +711,7 @@
 (PID.TID 0000.0001) > repeatPeriod      = 31104000.,
 (PID.TID 0000.0001) > exf_iprec         = 64,
 (PID.TID 0000.0001) > exf_yftype        = 'RL',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &EXF_NML_02
@@ -786,15 +787,15 @@
 (PID.TID 0000.0001) > climsstfile       = 'lev_surfT_cs_12m.bin',
 (PID.TID 0000.0001) > climsssfile       = 'lev_surfS_cs_12m.bin',
 (PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &EXF_NML_03
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &EXF_NML_04
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
 (PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
@@ -866,7 +867,7 @@
 (PID.TID 0000.0001) >  frequency(5) = 1555200000.,
 (PID.TID 0000.0001) > averagingFreq(5) = 2592000.,
 (PID.TID 0000.0001) >   repeatCycle(5) = 12,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Parameter for Diagnostics of per level statistics:
 (PID.TID 0000.0001) >#-----------------
@@ -900,7 +901,7 @@
 (PID.TID 0000.0001) > stat_region(1,5)= 1, 3, 0,
 (PID.TID 0000.0001) >    stat_fname(5)= 'thSIceStDiag',
 (PID.TID 0000.0001) >     stat_freq(5)= 864000.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": start
@@ -1036,8 +1037,8 @@
 (PID.TID 0000.0001) // CINT =          1.907407407407407E+02
 (PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
 (PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -3: 388:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  20:  -3:  -1)
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   388:     1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    20:    -3:    -1)
 (PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) K =   1
@@ -1078,8 +1079,8 @@
 (PID.TID 0000.0001) // CINT =          0.000000000000000E+00
 (PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
 (PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -3: 388:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  20:  -3:  -1)
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   388:     1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    20:    -3:    -1)
 (PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // =======================================================
@@ -1093,8 +1094,8 @@
 (PID.TID 0000.0001) // CINT =          0.000000000000000E+00
 (PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
 (PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -3: 388:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  20:  -3:  -1)
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   388:     1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    20:    -3:    -1)
 (PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // =======================================================
@@ -1108,8 +1109,8 @@
 (PID.TID 0000.0001) // CINT =          0.000000000000000E+00
 (PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
 (PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -3: 388:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  20:  -3:  -1)
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   388:     1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    20:    -3:    -1)
 (PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // =======================================================
@@ -1123,8 +1124,8 @@
 (PID.TID 0000.0001) // CINT =          0.000000000000000E+00
 (PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
 (PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -3: 388:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  20:  -3:  -1)
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   388:     1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    20:    -3:    -1)
 (PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // =======================================================
@@ -1512,10 +1513,10 @@
 (PID.TID 0000.0001) buoyancyRelation = /* Type of relation to get Buoyancy */
 (PID.TID 0000.0001)               'OCEANIC'
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) fluidIsAir  =  /* fluid major constituent is Air */
+(PID.TID 0000.0001) fluidIsAir   =  /* fluid major constituent is Air */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) fluidIsWater=  /* fluid major constituent is Water */
+(PID.TID 0000.0001) fluidIsWater =  /* fluid major constituent is Water */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) usingPCoords =  /* use p (or p*) vertical coordinate */
@@ -1530,43 +1531,43 @@
 (PID.TID 0000.0001) sRef =   /* Reference salinity profile ( psu ) */
 (PID.TID 0000.0001)    15 @  3.500000000000000E+01              /* K =  1: 15 */
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAh =   /* Lateral eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001) viscAh  =   /* Lateral eddy viscosity ( m^2/s ) */
 (PID.TID 0000.0001)                 3.000000000000000E+05
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAhMax =   /* Maximum lateral eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001) viscAhMax = /* Maximum lateral eddy viscosity ( m^2/s ) */
 (PID.TID 0000.0001)                 1.000000000000000E+21
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAhGrid =   /* Grid dependent lateral eddy viscosity ( non-dim. ) */
+(PID.TID 0000.0001) viscAhGrid = /* Grid dependent lateral eddy viscosity ( non-dim. ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useFullLeith =   /* Use Full Form of Leith Viscosity on/off flag*/
+(PID.TID 0000.0001) useFullLeith = /* Use Full Form of Leith Viscosity on/off flag*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useStrainTensionVisc =   /* Use StrainTension Form of Viscous Operator on/off flag*/
+(PID.TID 0000.0001) useStrainTensionVisc= /* Use StrainTension Form of Viscous Operator flag*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useAreaViscLength =   /* Use area for visc length instead of geom. mean*/
+(PID.TID 0000.0001) useAreaViscLength = /* Use area for visc length instead of geom. mean*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) viscC2leith = /* Leith harmonic visc. factor (on grad(vort),non-dim.) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2leithD = /* Leith harmonic viscosity factor (on grad(div),non-dim.) */
+(PID.TID 0000.0001) viscC2leithD = /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2smag =   /* Smagorinsky harmonic viscosity factor (non-dim.) */
+(PID.TID 0000.0001) viscC2smag = /* Smagorinsky harmonic viscosity factor (non-dim.) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4 =   /* Lateral biharmonic viscosity ( m^4/s ) */
+(PID.TID 0000.0001) viscA4  =   /* Lateral biharmonic viscosity ( m^4/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4Max =   /* Maximum biharmonic viscosity ( m^2/s ) */
+(PID.TID 0000.0001) viscA4Max = /* Maximum biharmonic viscosity ( m^2/s ) */
 (PID.TID 0000.0001)                 1.000000000000000E+21
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4Grid =   /* Grid dependent biharmonic viscosity ( non-dim. ) */
+(PID.TID 0000.0001) viscA4Grid = /* Grid dependent biharmonic viscosity ( non-dim. ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4leith = /* Leith biharm viscosity factor (on grad(vort), non-dim.) */
+(PID.TID 0000.0001) viscC4leith = /* Leith biharm viscosity factor (on grad(vort), non-dim.)*/
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) viscC4leithD = /* Leith biharm viscosity factor (on grad(div), non-dim.) */
@@ -1623,13 +1624,13 @@
 (PID.TID 0000.0001) diffKrBL79Ho = /* Turning depth for Bryan and Lewis 1979 ( m ) */
 (PID.TID 0000.0001)                -2.000000000000000E+03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) ivdc_kappa = /* Implicit Vertical Diffusivity for Convection ( m^2/s ) */
+(PID.TID 0000.0001) ivdc_kappa = /* Implicit Vertical Diffusivity for Convection ( m^2/s) */
 (PID.TID 0000.0001)                 1.000000000000000E+01
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hMixCriteria=  /* Criteria for mixed-layer diagnostic */
 (PID.TID 0000.0001)                -8.000000000000000E-01
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) dRhoSmall=  /* Parameter for mixed-layer diagnostic */
+(PID.TID 0000.0001) dRhoSmall =  /* Parameter for mixed-layer diagnostic */
 (PID.TID 0000.0001)                 1.000000000000000E-06
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hMixSmooth=  /* Smoothing parameter for mixed-layer diagnostic */
@@ -1677,31 +1678,37 @@
 (PID.TID 0000.0001) beta =   /* Beta ( 1/(m.s) ) */
 (PID.TID 0000.0001)                 9.999999999999999E-12
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) freeSurfFac =   /* Implicit free surface factor */
-(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001) rigidLid =   /* Rigid lid on/off flag */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) implicitFreeSurface =   /* Implicit free surface on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rigidLid =   /* Rigid lid on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) implicSurfPress =   /* Surface Pressure implicit factor (0-1)*/
+(PID.TID 0000.0001) freeSurfFac =   /* Implicit free surface factor */
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) implicDiv2Dflow =   /* Barot. Flow Div. implicit factor (0-1)*/
+(PID.TID 0000.0001) implicSurfPress =  /* Surface Pressure implicit factor (0-1)*/
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exactConserv =   /* Exact Volume Conservation on/off flag*/
+(PID.TID 0000.0001) implicDiv2Dflow =  /* Barot. Flow Div. implicit factor (0-1)*/
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exactConserv =  /* Exact Volume Conservation on/off flag*/
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) linFSConserveTr =   /* Tracer correction for Lin Free Surface on/off flag*/
+(PID.TID 0000.0001) linFSConserveTr = /* Tracer correction for Lin Free Surface on/off flag*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) uniformLin_PhiSurf =   /* use uniform Bo_surf on/off flag*/
+(PID.TID 0000.0001) uniformLin_PhiSurf = /* use uniform Bo_surf on/off flag*/
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nonlinFreeSurf =   /* Non-linear Free Surf. options (-1,0,1,2,3)*/
+(PID.TID 0000.0001) hFacMin =   /* minimum partial cell factor (hFac) */
+(PID.TID 0000.0001)                 1.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) hFacMinDr = /* minimum partial cell thickness ( m) */
+(PID.TID 0000.0001)                 1.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nonlinFreeSurf =  /* Non-linear Free Surf. options (-1,0,1,2,3)*/
 (PID.TID 0000.0001)                       4
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)      -1,0= Off ; 1,2,3= On, 2=+rescale gU,gV, 3=+update cg2d solv.
@@ -1711,7 +1718,7 @@
 (PID.TID 0000.0001) hFacSup =   /* upper threshold for hFac (nonlinFreeSurf only)*/
 (PID.TID 0000.0001)                 2.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) select_rStar = /* r* Vertical coord. options (=0 r coord.; > 0 uses r*) */
+(PID.TID 0000.0001) select_rStar = /* r* Vertical coord. options (=0 r coord.; >0 uses r*)*/
 (PID.TID 0000.0001)                       2
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) selectAddFluid = /* option for mass source/sink of fluid (=0: off) */
@@ -1723,13 +1730,13 @@
 (PID.TID 0000.0001) temp_EvPrRn = /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/
 (PID.TID 0000.0001)                 1.234567000000000E+05
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) salt_EvPrRn = /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/
+(PID.TID 0000.0001) salt_EvPrRn = /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) temp_addMass = /* Temp. of addMass array (UNSET=use local T)(oC)*/
 (PID.TID 0000.0001)                 1.234567000000000E+05
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) salt_addMass = /* Salin. of addMass array (UNSET=use local S)(ppt)*/
+(PID.TID 0000.0001) salt_addMass = /* Salin. of addMass array (UNSET=use local S)(psu)*/
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) use3Dsolver = /* use 3-D pressure solver on/off flag */
@@ -1762,7 +1769,7 @@
 (PID.TID 0000.0001) momViscosity =  /* Momentum viscosity on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) momImplVertAdv =/* Momentum implicit vert. advection on/off*/
+(PID.TID 0000.0001) momImplVertAdv= /* Momentum implicit vert. advection on/off*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
@@ -1839,7 +1846,7 @@
 (PID.TID 0000.0001) useMultiDimAdvec =   /* Multi-Dim Advection is/is-not used */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) implicitDiffusion =/* Implicit Diffusion on/off flag */
+(PID.TID 0000.0001) implicitDiffusion = /* Implicit Diffusion on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempStepping =  /* Temperature equation on/off flag */
@@ -1848,7 +1855,7 @@
 (PID.TID 0000.0001) tempAdvection=  /* Temperature advection on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) tempImplVertAdv =/* Temp. implicit vert. advection on/off */
+(PID.TID 0000.0001) tempImplVertAdv = /* Temp. implicit vert. advection on/off */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempForcing  =  /* Temperature forcing on/off flag */
@@ -1863,7 +1870,7 @@
 (PID.TID 0000.0001) saltAdvection=  /* Salinity advection on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) saltImplVertAdv =/* Sali. implicit vert. advection on/off */
+(PID.TID 0000.0001) saltImplVertAdv = /* Sali. implicit vert. advection on/off */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) saltForcing  =  /* Salinity forcing on/off flag */
@@ -2046,8 +2053,14 @@
 (PID.TID 0000.0001) usingCurvilinearGrid = /* Curvilinear coordinates flag ( True/False ) */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectSigmaCoord = /* Hybrid-Sigma Vert. Coordinate option */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) Ro_SeaLevel = /* r(1) ( units of r ==  m ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rSigmaBnd = /* r/sigma transition ( units of r ==  m ) */
+(PID.TID 0000.0001)                 1.234567000000000E+05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rkSign =   /* index orientation relative to vertical coordinate */
 (PID.TID 0000.0001)                -1.000000000000000E+00
@@ -3084,73 +3097,73 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_surfT_cs_12m.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_surfT_cs_12m.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_surfS_cs_12m.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_surfS_cs_12m.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: trenberth_taux.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: trenberth_taux.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: trenberth_tauy.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: trenberth_tauy.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_wndSpd_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_wndSpd_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_t_Air_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_t_Air_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_q_air_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_q_air_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_prec_1_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_prec_1_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_snwP_1_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_snwP_1_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_dwnSw_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_dwnSw_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_dwnLw_cs32.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_dwnLw_cs32.bin
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72000     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: core_rnof_1_cs32.bin
@@ -3202,7 +3215,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.4208617057061E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2435532459870E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.7406516224767E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0190327619373E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8248229554367E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9777311203209E+01
@@ -3317,51 +3330,51 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72001     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
  cg2d: Sum(rhs),rhsMax =   2.21856964833680E+03  2.12541264089667E+01
@@ -3408,7 +3421,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.4114443583934E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2447376094565E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.9120960858934E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0189127925792E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8261459971658E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9701425680902E+01
@@ -3523,51 +3536,51 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72002     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
  cg2d: Sum(rhs),rhsMax =   2.21854242126907E+03  2.13203992303488E+01
@@ -3614,7 +3627,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.4182202947062E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2421679841343E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.7251829080328E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0187928232211E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8274159493617E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9631088598049E+01
@@ -3729,51 +3742,51 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72003     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
  cg2d: Sum(rhs),rhsMax =   2.21852037438376E+03  2.13604247846952E+01
@@ -3820,7 +3833,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.4132426980450E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2440433753916E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.8574103947918E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0186728538630E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8287278055596E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9571845623234E+01
@@ -3935,51 +3948,51 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72004     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
  cg2d: Sum(rhs),rhsMax =   2.21851124208841E+03  2.13767663128421E+01
@@ -4026,7 +4039,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.4119701368698E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2410726371389E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.7179464219542E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0185528845048E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8297917622808E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9499845745754E+01
@@ -4141,57 +4154,57 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72005     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
  cg2d: Sum(rhs),rhsMax =   2.21849277324640E+03  2.13686729380082E+01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.85462661010538E+00
 (PID.TID 0000.0001)                       cg2d_iters =    69
-(PID.TID 0000.0001)                         cg2d_res =    5.58792373759753E-07
+(PID.TID 0000.0001)                         cg2d_res =    5.58792373768461E-07
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4214,7 +4227,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   6.2979360337013E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0419257321899E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.1431824786162E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.5656536704867E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.5656536704866E-09
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3565219716164E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   4.9254601757922E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   3.1254164393348E+01
@@ -4232,7 +4245,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.3966962726227E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2426251000395E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.8904554549431E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0184329151467E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8309127829021E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9432641974200E+01
@@ -4266,8 +4279,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.5259722938351E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.4806336226535E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.2827604126337E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.3025564905447E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.2642304313502E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.3025564905462E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.2642304313773E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4347,67 +4360,67 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72006     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
  cg2d: Sum(rhs),rhsMax =   2.21849248567826E+03  2.13341666303125E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    2.86914997641155E+00
+(PID.TID 0000.0001)                    cg2d_init_res =    2.86914997641203E+00
 (PID.TID 0000.0001)                       cg2d_iters =    70
-(PID.TID 0000.0001)                         cg2d_res =    4.78254677970449E-07
+(PID.TID 0000.0001)                         cg2d_res =    4.78254678020880E-07
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                 72007
 (PID.TID 0000.0001) %MON time_secondsf                =   6.2214048000000E+09
-(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2132452333423E+00
+(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2132452333428E+00
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -8.3594639929050E+00
 (PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.2996593377957E+00
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   8.7848593927973E-01
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2968439968237E-03
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2968439968238E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.1394052866924E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.8867995834185E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -5.2470334552999E-04
@@ -4415,12 +4428,12 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   6.7987410238519E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.1742642313365E-01
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -2.0102825738749E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.9660904642025E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.9660904642024E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.5251517869222E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   6.2935437625918E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0478072124516E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.1416156507035E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4309454069691E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4309454069699E-09
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3545300705027E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   4.9198705552133E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   3.1262768559136E+01
@@ -4438,14 +4451,14 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.3946646464474E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2404296634593E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.7662091384578E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0183129457886E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8319099224341E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9361502139284E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   2.7786192588869E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   7.1196216960634E-04
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -4.3990679234345E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -5.1236390152926E-09
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =  -5.1236390152917E-09
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   5.7864289000399E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   9.5594433017249E-07
 (PID.TID 0000.0001) %MON forcing_fu_max               =   2.4726979082249E-01
@@ -4472,8 +4485,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.5259722815504E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.4806335687828E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.2827604051891E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.4175508327147E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.2993586817148E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.4175508326841E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.2993586813624E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4553,67 +4566,67 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72007     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
- cg2d: Sum(rhs),rhsMax =   2.21847562670656E+03  2.12738095812695E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    2.93448784853164E+00
+ cg2d: Sum(rhs),rhsMax =   2.21847562670656E+03  2.12738095812703E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    2.93448784850795E+00
 (PID.TID 0000.0001)                       cg2d_iters =    69
-(PID.TID 0000.0001)                         cg2d_res =    5.67633899557484E-07
+(PID.TID 0000.0001)                         cg2d_res =    5.67633899533260E-07
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                 72008
 (PID.TID 0000.0001) %MON time_secondsf                =   6.2214912000000E+09
-(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2128932807130E+00
+(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2128932807126E+00
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -8.3630106712854E+00
 (PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.2996342627216E+00
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   8.7793972970351E-01
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2857098953889E-03
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2857098953892E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.1411222964907E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.8824017346694E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -5.2399196366642E-04
@@ -4626,7 +4639,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   6.2894524100636E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0537106717179E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.1395358844155E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4790003087114E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4790003087105E-09
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3528751441205E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   4.9140636833055E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   3.1270805014240E+01
@@ -4644,18 +4657,18 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.3718893003958E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2424404983564E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.9862357784281E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0181929764305E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8328694727964E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9291059819121E+01
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   2.7311205252453E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   6.9781974866196E-04
-(PID.TID 0000.0001) %MON forcing_empmr_min            =  -4.8387840013470E-04
+(PID.TID 0000.0001) %MON forcing_empmr_min            =  -4.8387840013472E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =  -3.0037849139482E-07
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   5.8635219857613E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0387380700900E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   2.4722174155228E-01
-(PID.TID 0000.0001) %MON forcing_fu_min               =  -2.9211859111012E-01
+(PID.TID 0000.0001) %MON forcing_fu_min               =  -2.9211859111013E-01
 (PID.TID 0000.0001) %MON forcing_fu_mean              =  -4.4191977171812E-03
 (PID.TID 0000.0001) %MON forcing_fu_sd                =   6.6008517300712E-02
 (PID.TID 0000.0001) %MON forcing_fu_del2              =   2.6067627578966E-04
@@ -4678,8 +4691,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.5259722694459E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.4806335334848E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.2827604438993E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.4412167654953E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.3465480362497E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.4412167655043E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.3465480363423E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4697,7 +4710,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON seaice_vice_min              =  -4.0000000000000E-01
 (PID.TID 0000.0001) %MON seaice_vice_mean             =  -3.7499335438336E-02
 (PID.TID 0000.0001) %MON seaice_vice_sd               =   1.5775495471081E-01
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   7.1665956313675E-04
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   7.1665956313676E-04
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_mean             =   4.5740468432145E-02
@@ -4759,67 +4772,67 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72008     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
- cg2d: Sum(rhs),rhsMax =   2.21849433572130E+03  2.11889759368426E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    2.79717402383940E+00
+ cg2d: Sum(rhs),rhsMax =   2.21849433572130E+03  2.11889759368430E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    2.79717402382158E+00
 (PID.TID 0000.0001)                       cg2d_iters =    70
-(PID.TID 0000.0001)                         cg2d_res =    5.02168506541097E-07
+(PID.TID 0000.0001)                         cg2d_res =    5.02168506446524E-07
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                 72009
 (PID.TID 0000.0001) %MON time_secondsf                =   6.2215776000000E+09
-(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2124773206848E+00
+(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2124773206843E+00
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -8.3666098507848E+00
 (PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.2996620894443E+00
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   8.7745177065389E-01
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2693546875999E-03
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   8.7745177065390E-01
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2693546876004E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.1439859441612E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.8778374585497E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -5.2325738930235E-04
@@ -4832,8 +4845,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   6.2856272799327E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0595182180079E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.1368089038523E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.2962037714822E-09
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3512560362221E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.2962037714852E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3512560362222E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   4.9076498321659E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   3.1278282217854E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -6.6568497731206E+00
@@ -4845,19 +4858,19 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4752518070631E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   4.8907276080832E-01
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.3673706562151E-03
-(PID.TID 0000.0001) %MON forcing_qnet_max             =   6.6295052422562E+02
+(PID.TID 0000.0001) %MON forcing_qnet_max             =   6.6295052422564E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =  -2.5363199704288E+02
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.3768358542673E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2389543341812E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   9.7430767817650E-01
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0180730070724E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8338720693242E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9224375042371E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   2.6755041132718E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   2.6755041132719E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   8.4097519504968E-04
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -4.4426517590074E-04
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.3334094892146E-07
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.3334094892148E-07
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   5.8840589286851E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.0807323671313E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   2.4734156444157E-01
@@ -4870,8 +4883,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON forcing_fv_mean              =  -1.3324563836254E-02
 (PID.TID 0000.0001) %MON forcing_fv_sd                =   7.6709991557661E-02
 (PID.TID 0000.0001) %MON forcing_fv_del2              =   2.6856064941984E-04
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   8.5079533637810E-02
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.4109246544204E-02
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   8.5079533637809E-02
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.4109246544205E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.9668033695411E-02
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   7.7083796932530E-02
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.4342974163381E-02
@@ -4884,8 +4897,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.5259722575076E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.4806334824020E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.2827604207727E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.5750700679585E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.3687400619058E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.5750700679919E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.3687400623053E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4957,75 +4970,75 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.5230800756449E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -5.3638637113744E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.0288813688257E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -7.8847382999600E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -9.2899353717854E-01
+(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -7.8847382999601E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -9.2899353717852E-01
 (PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.7116519984419E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -9.9029588874228E+21
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:  72009     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
- cg2d: Sum(rhs),rhsMax =   2.21852124180192E+03  2.10813120698969E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    2.85176716873548E+00
+ cg2d: Sum(rhs),rhsMax =   2.21852124180192E+03  2.10813120699013E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    2.85176716874540E+00
 (PID.TID 0000.0001)                       cg2d_iters =    69
-(PID.TID 0000.0001)                         cg2d_res =    5.73132482702028E-07
+(PID.TID 0000.0001)                         cg2d_res =    5.73132482688486E-07
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                 72010
 (PID.TID 0000.0001) %MON time_secondsf                =   6.2216640000000E+09
-(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2119955975706E+00
+(PID.TID 0000.0001) %MON dynstat_eta_max              =  -2.2119955975710E+00
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -8.3702384496239E+00
 (PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.2997021080158E+00
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   8.7700571846063E-01
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2578284987352E-03
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.2578284987350E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.1466600465284E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.8731079713045E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -5.2249248044465E-04
@@ -5038,9 +5051,9 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   6.2820446579178E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0651326262751E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.1336606085626E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.2454192326077E-09
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3503199382568E-06
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   4.9020437409117E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.2454192326052E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.3503199382569E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   4.9020437409118E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   3.1285208688568E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -6.6576638733638E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.0535240782026E+00
@@ -5051,33 +5064,33 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4752518464715E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   4.8906597401876E-01
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.3679018139164E-03
-(PID.TID 0000.0001) %MON forcing_qnet_max             =   6.6455453269953E+02
+(PID.TID 0000.0001) %MON forcing_qnet_max             =   6.6455453269954E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =  -2.5361151361987E+02
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.3685166974238E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.2406116126169E+02
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   1.0102418811461E+00
-(PID.TID 0000.0001) %MON forcing_qsw_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON forcing_qsw_max              =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON forcing_qsw_min              =  -3.0179530377143E+02
 (PID.TID 0000.0001) %MON forcing_qsw_mean             =  -1.8348999405500E+02
 (PID.TID 0000.0001) %MON forcing_qsw_sd               =   7.9164560024280E+01
-(PID.TID 0000.0001) %MON forcing_qsw_del2             =   2.6385366078476E-01
+(PID.TID 0000.0001) %MON forcing_qsw_del2             =   2.6385366078477E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   1.0833675039782E-03
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -4.4644909620108E-04
 (PID.TID 0000.0001) %MON forcing_empmr_mean           =   4.7938913771862E-07
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   5.9877009346303E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   1.2014554063539E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   2.4760593894036E-01
-(PID.TID 0000.0001) %MON forcing_fu_min               =  -2.9055999936244E-01
+(PID.TID 0000.0001) %MON forcing_fu_min               =  -2.9055999936243E-01
 (PID.TID 0000.0001) %MON forcing_fu_mean              =  -4.3011937630025E-03
 (PID.TID 0000.0001) %MON forcing_fu_sd                =   6.6289247829548E-02
-(PID.TID 0000.0001) %MON forcing_fu_del2              =   2.6552858159047E-04
+(PID.TID 0000.0001) %MON forcing_fu_del2              =   2.6552858159048E-04
 (PID.TID 0000.0001) %MON forcing_fv_max               =   2.7964339616220E-01
 (PID.TID 0000.0001) %MON forcing_fv_min               =  -3.3479896335931E-01
 (PID.TID 0000.0001) %MON forcing_fv_mean              =  -1.3336815427606E-02
 (PID.TID 0000.0001) %MON forcing_fv_sd                =   7.6846306700164E-02
 (PID.TID 0000.0001) %MON forcing_fv_del2              =   2.7005362465697E-04
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   8.5185649717034E-02
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.4096198592426E-02
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.4096198592427E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.9565387388606E-02
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   7.6971413188460E-02
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.4342624926800E-02
@@ -5090,8 +5103,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.5259722457389E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.4806334683809E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.2827604614102E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.6778203412444E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.4011647269289E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.6778203412501E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   2.4011647269523E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5114,7 +5127,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_mean             =   4.5351112366224E-02
 (PID.TID 0000.0001) %MON seaice_area_sd               =   1.9013594597162E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   1.5186623039997E-03
+(PID.TID 0000.0001) %MON seaice_area_del2             =   1.5186623039998E-03
 (PID.TID 0000.0001) %MON seaice_heff_max              =   5.2125182228354E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   8.3552345858455E-02
@@ -5146,7 +5159,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   5.3653998378619E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   4.5741612125621E-01
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.0210427805623E+01
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -4.7182584054477E-02
+(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -4.7182584054478E-02
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.6055493421422E+01
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -5.6323067892472E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -3.2744127279223E+01
@@ -5164,7 +5177,7 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -5.3695934230307E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.0296987123625E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -7.8989544070653E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -7.6807930822218E-01
+(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -7.6807930822216E-01
 (PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9502131145146E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -9.8990845146566E+21
 (PID.TID 0000.0001) // =======================================================
@@ -5257,173 +5270,173 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: thSIceStDiag.0000072000.txt , unit=    10
 (PID.TID 0000.0001) %CHECKPOINT     72010 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  55.9544937
-(PID.TID 0000.0001)         System time:  0.475928012
-(PID.TID 0000.0001)     Wall clock time:  74.7441831
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   36.609999999999999
+(PID.TID 0000.0001)         System time:  0.12000000000000000
+(PID.TID 0000.0001)     Wall clock time:   36.803783893585205
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.66689801
-(PID.TID 0000.0001)         System time:  0.0999849996
-(PID.TID 0000.0001)     Wall clock time:  0.885286093
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  0.27000000000000002
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:  0.29899787902832031
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  55.2875957
-(PID.TID 0000.0001)         System time:  0.375943013
-(PID.TID 0000.0001)     Wall clock time:  73.8587382
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   36.339999999999996
+(PID.TID 0000.0001)         System time:  8.99999999999999967E-002
+(PID.TID 0000.0001)     Wall clock time:   36.504719018936157
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.53576702
-(PID.TID 0000.0001)         System time:  0.238963999
-(PID.TID 0000.0001)     Wall clock time:  2.64365101
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  0.68000000000000005
+(PID.TID 0000.0001)         System time:  5.99999999999999978E-002
+(PID.TID 0000.0001)     Wall clock time:  0.74377489089965820
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  53.7518287
-(PID.TID 0000.0001)         System time:  0.136979014
-(PID.TID 0000.0001)     Wall clock time:  71.214956
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   35.659999999999997
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   35.760913133621216
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  53.7518287
-(PID.TID 0000.0001)         System time:  0.136979014
-(PID.TID 0000.0001)     Wall clock time:  71.2145081
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   35.659999999999997
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   35.760804653167725
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.259963512
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.290328741
-(PID.TID 0000.0001)          No. starts: 30
-(PID.TID 0000.0001)           No. stops: 30
+(PID.TID 0000.0001)           User time:  0.16000000000000369
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.18744349479675293
+(PID.TID 0000.0001)          No. starts:          30
+(PID.TID 0000.0001)           No. stops:          30
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.669896841
-(PID.TID 0000.0001)         System time:  0.00899901986
-(PID.TID 0000.0001)     Wall clock time:  1.68428397
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.29000000000000625
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.30145716667175293
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.667897224
-(PID.TID 0000.0001)         System time:  0.00799900293
-(PID.TID 0000.0001)     Wall clock time:  1.68343234
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.29000000000000625
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.30125093460083008
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00200080872
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000414609909
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.00612640380859375E-004
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  32.5520494
-(PID.TID 0000.0001)         System time:  0.0599899888
-(PID.TID 0000.0001)     Wall clock time:  42.5274892
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   19.049999999999990
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   19.093398809432983
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  27.9897416
-(PID.TID 0000.0001)         System time:  0.0529899597
-(PID.TID 0000.0001)     Wall clock time:  36.6743958
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   16.379999999999988
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   16.388894319534302
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  27.9537511
-(PID.TID 0000.0001)         System time:  0.0519899428
-(PID.TID 0000.0001)     Wall clock time:  36.6277757
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   16.329999999999991
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   16.367218732833862
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "THSICE_MAIN     [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.771883965
-(PID.TID 0000.0001)         System time:  0.00200000405
-(PID.TID 0000.0001)     Wall clock time:  1.06653476
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.45000000000000284
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.46314311027526855
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  6.67398977
-(PID.TID 0000.0001)         System time:  0.0039999783
-(PID.TID 0000.0001)     Wall clock time:  8.60031843
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   5.6499999999999986
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   5.6510574817657471
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "UPDATE_R_STAR       [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.533920288
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.684597492
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.29999999999999716
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.30475878715515137
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "UPDATE_CG2D         [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.149971008
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.162336588
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.13000000000000966
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.12183928489685059
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.21266317
-(PID.TID 0000.0001)         System time:  0.00199997425
-(PID.TID 0000.0001)     Wall clock time:  2.7356689
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   1.9600000000000009
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.9622755050659180
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.667900562
-(PID.TID 0000.0001)         System time:  0.000999003649
-(PID.TID 0000.0001)     Wall clock time:  1.08202815
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.64000000000000057
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.65519428253173828
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH         [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00399780273
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00545024872
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  1.00000000000051159E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.41956520080566406E-003
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "CALC_R_STAR         [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.102983475
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.113469601
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  6.99999999999931788E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  6.02304935455322266E-002
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.957859516
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  1.29069233
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.42000000000000171
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.43494033813476563
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.89910364
-(PID.TID 0000.0001)         System time:  0.00799900293
-(PID.TID 0000.0001)     Wall clock time:  7.68709707
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   5.0799999999999983
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   5.0771770477294922
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.101982117
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.112279892
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  8.00000000000054001E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  7.89070129394531250E-002
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000429391861
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.05142593383789063E-004
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.26464796
-(PID.TID 0000.0001)         System time:  0.00300002098
-(PID.TID 0000.0001)     Wall clock time:  3.15621376
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   1.6000000000000014
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.5875864028930664
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.399945736
-(PID.TID 0000.0001)         System time:  0.0259950161
-(PID.TID 0000.0001)     Wall clock time:  0.660856247
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.14999999999999858
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  0.16334891319274902
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.293956757
-(PID.TID 0000.0001)         System time:  0.0219970047
-(PID.TID 0000.0001)     Wall clock time:  0.411088705
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  7.00000000000002842E-002
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  7.41977691650390625E-002
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
@@ -5560,8 +5573,8 @@ listId=   2 ; file name: thSIceStDiag
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          41942
+(PID.TID 0000.0001) //            No. barriers =          41946
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          41942
+(PID.TID 0000.0001) //     Total barrier spins =          41946
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
