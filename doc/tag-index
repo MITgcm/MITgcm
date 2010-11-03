@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1325 2010/11/02 21:23:50 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1326 2010/11/03 18:42:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change reference platform+compiler from faulks+g77 to baudelaire+gfortran
+  (except the 2 fizhi test exp.); update output of exp.: bottom_ctrl_5x5,
+     global_ocean.cs32x15 (icedyn, thsice, AD thsice), global_ocean_ebm (AD),
+     lab_sea (fd, hb87, salt_plume), MLAdjust (3/5) and vermix (dd)
+o tools/genmake2:
+  - merge genmake_warnings & genmake_errors into 1 log file: "genmake.log")
+  - change DUMPSTATE default to false (can use "-ds" option to switch it to T)
+  - clean previous genmake log files before anything else.
+  - change Makefile to remove testreport log files (*.tr_log) and genmake log
+    files only with "CLEAN" target (instead of "Clean");
 o pkg/generic_advdiff:
   Change OBCS in multiDim advection (gad_advection.F):
    Use maskInC to prevent intermediate update of tracer-field in OB regions,
