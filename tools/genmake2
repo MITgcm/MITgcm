@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.211 2010/11/02 22:45:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.212 2010/11/04 18:01:22 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -290,40 +290,8 @@ build_embed_encode()
 }
 
 
-# Guess possible config options for this host
-find_possible_configs()  {
-
-    tmp1=`uname`"_"`uname -m`
-    tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-    tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
-    tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
-    tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
-    PLATFORM=$tmp3
-    echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
-    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
-    echo "  The platform appears to be:  $PLATFORM"
-
-    echo "test" > test
-    ln -s ./test link
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	LN="ln -s"
-    else
-	echo "Error: \"ln -s\" does not appear to work on this system!"
-	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
-	exit 1
-    fi
-    rm -f test link
-
-    if test "x$CPP" = x ; then
-	CPP="cpp -traditional -P"
-    fi
-
-    look_for_makedepend
-
-    #================================================================
-    #  look for possible C compilers
+#  look for possible C compilers
+look_for_C_compilers() {
     tmp="$MITGCM_CC $CC gcc c89 cc c99 mpicc icc"
     p_CC=
     for c in $tmp ; do
@@ -360,6 +328,41 @@ EOF
 	    echo "  Setting C compiler to: "$CC
 	fi
     fi
+}
+
+# Guess possible config options for this host
+find_possible_optfile()  {
+
+    tmp1=`uname`"_"`uname -m`
+    tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
+    tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
+    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
+    tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
+    tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
+    PLATFORM=$tmp3
+    echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
+    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
+    echo "  The platform appears to be:  $PLATFORM"
+
+#    echo "test" > test
+#    ln -s ./test link
+#    RETVAL=$?
+#    if test "x${RETVAL}" = x0 ; then
+#	LN="ln -s"
+#    else
+#	echo "Error: \"ln -s\" does not appear to work on this system!"
+#	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
+#	exit 1
+#    fi
+#    rm -f test link
+#
+#    if test "x$CPP" = x ; then
+#	CPP="cpp -traditional -P"
+#    fi
+#
+#    look_for_makedepend
+#
+#    look_for_C_compilers
 
     #================================================================
     #  look for possible FORTRAN compilers
@@ -415,17 +418,7 @@ EOF
              echo "  I looked for the file "$OPTFILE" but did not find it"
         fi
     fi
-#    echo "  The options file:  $p_OF"
-#    echo "    appears to match so we'll use it."
-#   for i in $p_FC ; do
-#p_OF=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
-#if test -r $p_OF ; then
-#    OPTFILE=$p_OF
-#    echo "  The options file:  $p_OF"
-#    echo "    appears to match so we'll use it."
-#    break
-#fi
-#   done
+
     if test "x$OPTFILE" = x ; then
 	cat 1>&2 <<EOF
 
@@ -656,22 +649,25 @@ get_fortran_c_namemangling()  {
     if test ! "x$FC_NAMEMANGLE" = x ; then
         return 0
     fi
-    echo "running: get_fortran_c_namemangling()" >> $LOGFILE
+    echo " running: get_fortran_c_namemangling()" >> $LOGFILE
 
     default_nm="#define FC_NAMEMANGLE(X) X ## _"
 
     cat > genmake_test.c <<EOF
 void tcall( char * string ) { tsub( string ); }
 EOF
-    $MAKE genmake_test.o >> $LOGFILE 2>&1
+#   $MAKE genmake_test.o >> $LOGFILE 2>&1
+    COMM="$CC $CFLAGS -c genmake_test.c"
+    echo ' '$COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
 	cat <<EOF>> $LOGFILE
 
-WARNING: C test compile fails
-WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
-WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
+ WARNING: C test compile fails
+ WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
 EOF
 	return 1
     fi
@@ -681,9 +677,9 @@ EOF
 	FC_NAMEMANGLE=$default_nm
 	cat <<EOF>> $LOGFILE
 
-WARNING: The "nm" command failed.
-WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
-WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
+ WARNING: The "nm" command failed.
+ WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
 EOF
 	return 1
     fi
@@ -693,15 +689,17 @@ EOF
       call tsub( string )
       end
 EOF
-    $FC $FFLAGS -c genmake_tcomp.$FS >> $LOGFILE 2>&1
+    COMM="$FC $FFLAGS -c genmake_tcomp.$FS"
+    echo ' '$COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
 	cat <<EOF>> $LOGFILE
 
-WARNING: FORTRAN test compile fails -- please see '$LOGFILE'
-WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
-WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
+ WARNING: FORTRAN test compile fails -- please see '$LOGFILE'
+ WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
 EOF
 	return 1
     fi
@@ -711,9 +709,9 @@ EOF
 	FC_NAMEMANGLE=$default_nm
 	cat <<EOF>> $LOGFILE
 
-WARNING: The "nm" command failed.
-WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
-WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
+ WARNING: The "nm" command failed.
+ WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
 EOF
 	return 1
     fi
@@ -739,6 +737,8 @@ EOF
 
     #  cleanup the testing files
     rm -f genmake_tcomp.* genmake_test.*
+
+    echo " --> set FC_NAMEMANGLE='$FC_NAMEMANGLE'" >> $LOGFILE
 }
 
 
@@ -784,6 +784,7 @@ EOF
 	DEFINES="$DEFINES -DHAVE_CLOC"
     fi
     rm -f genmake_tc*
+    echo " --> set HAVE_CLOC='$HAVE_CLOC'" >> $LOGFILE
 }
 
 
@@ -846,6 +847,7 @@ EOF
 	DEFINES="$DEFINES -DHAVE_SIGREG"
     fi
     rm -f genmake_tc*
+    echo " --> set HAVE_SIGREG='$HAVE_SIGREG'" >> $LOGFILE
 }
 
 
@@ -894,6 +896,7 @@ EOF
 	DEFINES="$DEFINES -DHAVE_SETRLSTK"
     fi
     rm -f genmake_tc*
+    echo " --> set HAVE_SETRLSTK='$HAVE_SETRLSTK'" >> $LOGFILE
 }
 
 
@@ -941,6 +944,7 @@ EOF
 	DEFINES="$DEFINES -DHAVE_STAT"
     fi
     rm -f genmake_tc*
+    echo " --> set HAVE_STAT='$HAVE_STAT'" >> $LOGFILE
 }
 
 
@@ -1033,6 +1037,7 @@ EOF
 	fi
     fi
     rm -f genmake_tnc*
+    echo " --> set HAVE_NETCDF='$HAVE_NETCDF'" >> $LOGFILE
 }
 
 
@@ -1444,7 +1449,7 @@ if test "x${OPTFILE}" = x ; then
     if test "x$MITGCM_OF" = x ; then
 	echo "Warning: no OPTFILE specified so we'll look for possible settings"
 	printf "\n===  Searching for possible settings for OPTFILE  ===\n"
-	find_possible_configs
+	find_possible_optfile
     else
 	OPTFILE=$MITGCM_OF
     fi
@@ -1514,8 +1519,10 @@ Error: no Fortran compiler: please specify using one of the following:
 EOF
     exit 1
 fi
+
 if test "x$CC" = x ; then
-    CC=cc
+    look_for_C_compilers
+#   CC=cc
 #     cat <<EOF 1>&2
 # Error: no C compiler: please specify using one of the following:
 #   1) within the options file ("CC=...") as specified by "-of=OPTFILE"
@@ -1524,6 +1531,7 @@ if test "x$CC" = x ; then
 # EOF
 #     exit 1
 fi
+
 if test "x$LINK" = x ; then
     LINK=$FC
 fi
@@ -1531,7 +1539,7 @@ if test "x$MAKE" = x ; then
     MAKE="make"
 fi
 if test "x$CPP" = x ; then
-    CPP=cpp
+    CPP="cpp -traditional -P"
 fi
 #EH3 === UGLY ===
 #  The following is an ugly little hack to check for $CPP in /lib/ and
@@ -1558,7 +1566,10 @@ EOF
 else
     rm -f test_cpp
 fi
+
 look_for_makedepend
+
+#  Check that soft-link command is set and usable
 if test "x$LN" = x ; then
     LN="ln -s"
 fi
@@ -1568,7 +1579,7 @@ RETVAL=$?
 if test "x$RETVAL" != x0 ; then
     cat <<EOF 1>&2
 
-Error: The command "ln -s" failed -- please specify a working soft-link
+Error: The command "$LN" failed -- please specify a working soft-link
   command in the optfile.
 
 EOF
@@ -1821,9 +1832,9 @@ for d in $MODS ; do
 done
 echo
 
-if test "x${PLATFORM}" = x ; then
-    PLATFORM=$p_PLATFORM
-fi
+#if test "x${PLATFORM}" = x ; then
+#    PLATFORM=$p_PLATFORM
+#fi
 
 if test "x${EXEDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
