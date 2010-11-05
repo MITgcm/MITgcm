@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1326 2010/11/03 18:42:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1327 2010/11/05 08:13:29 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  o remove SEAICE_OLD_AND_BAD_DISCRETIZATION-code, add a test to 
+    seaice_check that stops the model, when the CPP flag is used.
+  o seaice_growth.F: make capping of ice volume conserving by returning the
+    capped ice as freshwater to EmPmR. This does not change the verification
+    experiments but will change runs where the capping is acutally active
 o change reference platform+compiler from faulks+g77 to baudelaire+gfortran
   (except the 2 fizhi test exp.); update output of exp.: bottom_ctrl_5x5,
      global_ocean.cs32x15 (icedyn, thsice, AD thsice), global_ocean_ebm (AD),
