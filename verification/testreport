@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.147 2010/11/03 19:28:18 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.148 2010/11/05 16:45:02 jmc Exp $
 #  $Name:  $
 #
 
@@ -365,7 +365,7 @@ genmakemodel()
 	    if test "x$RETVAL" != x0 ; then
 		tail genmake.tr_log
 		echo "genmakemodel: genmake failed"
-		cp genmake_* genmake.tr_log $CDIR
+		cp genmake.log genmake_* genmake.tr_log $CDIR
 		return 1
 	    else
 		echo "successful"
@@ -392,7 +392,7 @@ makeclean()
 		if test "x$RETVAL" != x0 ; then
 		    tail make.tr_log
 		    echo "makeclean: \"make Clean\" failed"
-		    cp make.tr_log $CDIR"/make.tr_log"
+		    cp make.tr_log genmake.log genmake.tr_log $CDIR
 		    return 1
 		fi
 		echo successful
@@ -441,7 +441,7 @@ makedependmodel()
 	    if test "x$RETVAL" != x0 ; then
 		tail make.tr_log
 		echo "makedependmodel: make depend failed"
-		cp make.tr_log $CDIR"/make.tr_log"
+		cp make.tr_log genmake.log genmake.tr_log $CDIR
 		return 1
 	    else
 		echo successful
@@ -481,7 +481,7 @@ makemodel()
 	    if test "x$RETVAL" != x0 ; then
 		tail make.tr_log
 		echo failed
-		cp make.tr_log $CDIR"/make.tr_log"
+		cp make.tr_log genmake.log genmake.tr_log $CDIR
 		rm -f $EXECUTABLE
 		return 1
 	    else
