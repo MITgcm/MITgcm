@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.96 2010/10/31 20:07:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.97 2010/11/05 08:10:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,7 +70,7 @@ c or a_QbyATM_cover, the naming convention is as follows:
 c    The prefix 'a_' means available, the prefix 'd_' means delta
 c       (i.e. increment), and the prefix 'r_' means residual.
 c    The suffix '_cover' denotes a value for the ice covered fraction
-c       of the grid cell, whereas '_cover' is for the open water fraction.
+c       of the grid cell, whereas '_open' is for the open water fraction.
 c    The main part of the name states what ice/snow stock is concerned
 c       (e.g. QbyATM or HEFF), and how it is affected (e.g. d_HEFFbyATMonOCN
 c       is the increment of HEFF due to the ATMosphere extracting heat from the
@@ -724,10 +724,6 @@ cgf warming conditions, the lab_sea results were not changed.
           tmpscal2 = MAX(-HEFF(I,J,bi,bj),r_QbyATM_cover(I,J))
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal2
           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)-tmpscal2
-c The following line is what I referred to as the 'vintage bug'
-c If I mistook a desirable feature for a bug, then we will un-comment
-c this line. Otherwise we may want to delete the comment at some point.
-c     &                                            *AREApreTH(I,J)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
          ENDDO
         ENDDO
@@ -1098,7 +1094,11 @@ CADJ &                         key = iicekey, byte = isbyte
           AREA(I,J,bi,bj) = AREA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)*HEFFM(I,J,bi,bj)
 #ifdef SEAICE_CAP_HEFF
-          HEFF(I,J,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,bi,bj))
+C     This is not energy conserving, but at least it conserves fresh water
+          tmpscal0         = MAX(HEFF(I,J,bi,bj)-MAX_HEFF,0. _d 0)
+          HEFF(I,J,bi,bj)  = HEFF(I,J,bi,bj) - tmpscal0
+          EmPmR(I,J,bi,bj) = EmPmR(I,J,bi,bj) 
+     &         - tmpscal0*SEAICE_rhoIce/SEAICE_deltaTtherm
 #endif /* SEAICE_CAP_HEFF */
           HSNOW(I,J,bi,bj)  = HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
