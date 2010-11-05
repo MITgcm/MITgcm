@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.37 2010/10/06 21:53:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.38 2010/11/05 08:13:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -219,9 +219,20 @@ C--   SEAICE_EXTERNAL_FORCING is obsolete: issue warning but continue.
      &        'SEAICE_EXTERNAL_FORCING option is obsolete:'
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A)')
-     &        'seaice now always exf to read input files.'
+     &        'seaice now always uses exf to read input files.'
          CALL PRINT_ERROR( msgBuf, myThid )
 #endif
+
+C--   SEAICE_OLD_AND_BAD_DISCRETIZATION is obsolete: issue warning and stop.
+#ifdef SEAICE_OLD_AND_BAD_DISCRETIZATION
+         WRITE(msgBuf,'(A)')
+     &     'SEAICE_OLD_AND_BAD_DISCRETIZATION option is obsolete'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &     'and has no effect.'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
 
 C--   pkg/seaice requires pkg/exf with following CPP options/
 #ifndef ALLOW_EXF

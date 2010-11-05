@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.16 2010/03/16 19:21:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.17 2010/11/05 08:13:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -67,7 +67,6 @@ C     vectorizes even after TAFization
       noSlipFac = 0. _d 0
       IF ( SEAICE_no_slip ) noSlipFac = 1. _d 0
 C
-#ifndef SEAICE_OLD_AND_BAD_DISCRETIZATION
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     abbreviations on C-points, need to do them in separate loops
@@ -135,67 +134,6 @@ c$$$     &         - hFacU * k2AtZ(I,J,bi,bj) * uave(I,J)
 
        ENDDO
       ENDDO
-#else 
-C     this the old and incomplete discretization, here I also erroneously
-C     used finite-volumes to discretize the strain rates
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
-C     evaluate strain rates
-          e11Loc(I,J,bi,bj) = _recip_dxF(I,J,bi,bj) *
-     &         (uFld(I+1,J,bi,bj)-uFld(I,J,bi,bj))
-     &         -HALF*
-     &         (vFld(I,J,bi,bj)+vFld(I,J+1,bi,bj))
-     &         * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-          e22Loc(I,J,bi,bj) = _recip_dyF(I,J,bi,bj) *
-     &         (vFld(I,J+1,bi,bj)-vFld(I,J,bi,bj))
-C     one metric term is missing
-         ENDDO
-        ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-          e12Loc(I,J,bi,bj) = HALF*(
-     &         (uFld(I  ,J  ,bi,bj) * _dxC(I  ,J  ,bi,bj)
-     &         -uFld(I  ,J-1,bi,bj) * _dxC(I  ,J-1,bi,bj)
-     &         +vFld(I  ,J  ,bi,bj) * _dyC(I  ,J  ,bi,bj)
-     &         -vFld(I-1,J  ,bi,bj) * _dyC(I-1,J  ,bi,bj))
-     &         * recip_rAz(I,J,bi,bj)
-     &         +
-     &         0.25 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
-     &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
-     &         *recip_rSphere
-     &         )
-     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
-C     one metric term is missing
-         ENDDO
-        ENDDO
-        IF ( SEAICE_no_slip ) THEN
-C     no slip boundary conditions apply only to e12Loc
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx+1,sNx+Olx
-           hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
-           hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
-
-           e12Loc(I,J,bi,bj) = e12Loc(I,J,bi,bj)
-     &          + recip_rAz(i,j,bi,bj) * 2. _d 0 *
-     &          ( hFacU * ( _dxC(i,j-1,bi,bj)*uFld(i,j  ,bi,bj)
-     &                    + _dxC(i,j,  bi,bj)*uFld(i,j-1,bi,bj) )
-     &          + hFacV * ( _dyC(i-1,j,bi,bj)*vFld(i  ,j,bi,bj)
-     &                    + _dyC(i,  j,bi,bj)*vFld(i-1,j,bi,bj) ) )
-     &         - hFacU
-     &         * 0.25 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
-     &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
-     &         *recip_rSphere
-C     one metric term is missing
-          ENDDO
-         ENDDO
-
-        ENDIF
-       ENDDO
-      ENDDO
-#endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef SEAICE_DYN_STABLE_ADJOINT
