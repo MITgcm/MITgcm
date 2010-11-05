@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.212 2010/11/04 18:01:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.213 2010/11/05 16:28:59 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -292,20 +292,25 @@ build_embed_encode()
 
 #  look for possible C compilers
 look_for_C_compilers() {
-    tmp="$MITGCM_CC $CC gcc c89 cc c99 mpicc icc"
-    p_CC=
-    for c in $tmp ; do
-	rm -f ./genmake_hello.c  ./genmake_hello
-	cat >> genmake_hello.c << EOF
+    echo >> $LOGFILE
+    echo "running: look_for_C_compilers()" >> $LOGFILE
+    rm -f ./genmake_hello.c  ./genmake_hello
+    cat >> genmake_hello.c << EOF
 #include <stdio.h>
 int main(int argc, char **argv) {
   printf("Hello!\n");
   return 0;
 }
 EOF
-	$c -o genmake_hello genmake_hello.c > /dev/null 2>&1
+    tmp="$MITGCM_CC $CC gcc c89 cc c99 mpicc icc"
+    p_CC=
+    for c in $tmp ; do
+	COMM="$c $CFLAGS -o genmake_hello genmake_hello.c"
+	echo $COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
 	RETVAL=$?
 	if test "x${RETVAL}" = x0 ; then
+	    echo " $c test successful" >> $LOGFILE
 	    p_CC="$p_CC $c"
 	fi
     done
@@ -321,13 +326,13 @@ Error: No C compilers were found in your path.  Please specify one using:
 EOF
 	exit 1
     else
-	echo "  The possible C compilers found in your path are:"
-	echo "   "$p_CC
+	echo "  The possible C compilers found in your path are: $p_CC" | tee -a $LOGFILE
 	if test "x$CC" = x ; then
 	    CC=`echo $p_CC | $AWK '{print $1}'`
 	    echo "  Setting C compiler to: "$CC
 	fi
     fi
+    echo " --> set CC='$CC'" >> $LOGFILE
 }
 
 # Guess possible config options for this host
