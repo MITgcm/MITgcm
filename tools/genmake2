@@ -1,12 +1,174 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.213 2010/11/05 16:28:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.214 2010/11/06 19:03:41 jmc Exp $
+# $Name:  $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
 #   adapted  by aja 06/98
 #   modified by aja 01/00
 #   rewritten in bash by eh3 08/03
+
+#  Explain usage
+usage()  {
+cat <<EOF
+
+Usage: "$0" [OPTIONS]
+  where [OPTIONS] can be:
+
+    -help | --help | -h | --h
+          Print this help message and exit.
+
+    -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
+      -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
+          Use "NAME" as the adoptfile.  By default, the file at
+          "tools/adjoint_options/adjoint_default" will be used.
+
+    -nooptfile | --nooptfile
+      -optfile NAME | --optfile NAME | -of NAME | --of NAME
+      -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
+          Use "NAME" as the optfile.  By default, an attempt will be
+          made to find an appropriate "standard" optfile in the
+          tools/build_options/ directory.
+
+    -pdepend NAME | --pdepend NAME
+      -pdepend=NAME | --pdepend=NAME
+          Get package dependency information from "NAME".
+
+    -pgroups NAME | --pgroups NAME
+      -pgroups=NAME | --pgroups=NAME
+          Get the package groups information from "NAME".
+
+    -bash NAME
+          Explicitly specify the Bourne or BASH shell to use
+
+    -make NAME | -m NAME
+      --make=NAME | -m=NAME
+          Use "NAME" for the MAKE program. The default is "make" but
+          many platforms, "gmake" is the preferred choice.
+
+    -makefile NAME | -mf NAME
+      --makefile=NAME | -mf=NAME
+          Call the makefile "NAME".  The default is "Makefile".
+
+    -makedepend NAME | -md NAME
+      --makedepend=NAME | -md=NAME
+          Use "NAME" for the MAKEDEPEND program.
+
+    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
+      -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
+          Specify the location of the MITgcm ROOTDIR as "NAME".
+          By default, genamke will try to find the location by
+          looking in parent directories (up to the 5th parent).
+
+    -mods NAME | --mods NAME | -mo NAME | --mo NAME
+      -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME
+          Here, "NAME" specifies a list of directories that are
+          used for additional source code.  Files found in the
+          "mods list" are given preference over files of the same
+          name found elsewhere.
+
+    -disable NAME | --disable NAME
+      -disable=NAME | --disable=NAME
+          Here "NAME" specifies a list of packages that we don't
+          want to use.  If this violates package dependencies,
+          genamke will exit with an error message.
+
+    -enable NAME | --enable NAME
+      -enable=NAME | --enable=NAME
+          Here "NAME" specifies a list of packages that we wish
+          to specifically enable.  If this violates package
+          dependencies, genamke will exit with an error message.
+
+    -standarddirs NAME | --standarddirs NAME
+      -standarddirs=NAME | --standarddirs=NAME
+          Here, "NAME" specifies a list of directories to be
+          used as the "standard" code.
+
+    -fortran NAME | --fortran NAME | -fc NAME | --fc NAME
+      -fc=NAME | --fc=NAME
+          Use "NAME" as the fortran compiler.  By default, genmake
+          will search for a working compiler by trying a list of
+          "usual suspects" such as g77, f77, etc.
+
+    -cc NAME | --cc NAME | -cc=NAME | --cc=NAME
+          Use "NAME" as the C compiler.  By default, genmake
+          will search for a working compiler by trying a list of
+          "usual suspects" such as gcc, c89, cc, etc.
+
+    -[no]ieee | --[no]ieee
+          Do or don't use IEEE numerics.  Note that this option
+          *only* works if it is supported by the OPTFILE that
+          is being used.
+
+    -use_real4 | -use_r4 | -ur4 | --use_real4 | --use_r4 | --ur4
+          Use "real*4" type for _RS variable (#undef REAL4_IS_SLOW)
+          *only* works if CPP_EEOPTIONS.h allows this.
+
+    -ignoretime | -ignore_time | --ignoretime | --ignore_time
+          Ignore all the "wall clock" routines entirely.  This will
+          not in any way hurt the model results -- it simply means
+          that the code that checks how long the model spends in
+          various routines will give junk values.
+
+    -ts | --ts
+          Produce timing information per timestep
+    -papis | --papis
+          Produce summary MFlop/s (and IPC) with PAPI per timestep
+    -pcls | --pcls
+          Produce summary MFlop/s etc. with PCL per timestep
+    -foolad | --foolad
+          Fool the AD code generator
+    -papi | --papi
+          Performance analysis with PAPI
+    -pcl | --pcl
+          Performance analysis with PCL
+    -hpmt | --hpmt
+          Performance analysis with the HPM Toolkit
+
+    -gsl | --gsl
+          Use GSL to control floating point rounding and precision
+    -devel | --devel
+          Add additional warning and debugging flags for development
+
+    -mpi | --mpi
+          Include MPI header files and link to MPI libraries
+    -mpi=PATH | --mpi=PATH
+          Include MPI header files and link to MPI libraries using MPI_ROOT
+          set to PATH. i.e. Include files from \$PATH/include, link to libraries
+          from \$PATH/lib and use binaries from \$PATH/bin.
+
+    -omp | --omp
+          Activate OpenMP code + use Compiler option OMPFLAG
+    -omp=OMPFLAG | --omp=OMPFLAG
+          Activate OpenMP code + use Compiler option OMPFLAG
+
+    -es | --es | -embed-source | --embed-source
+          Embed a tarball containing the full source code
+          (including the Makefile, etc.) used to build the
+          executable [off by default]
+
+    -ds | --ds
+          Report genmake internal variables status (DUMPSTATE)
+          to file "genmake_state" (for debug purpose)
+
+  While it is most often a single word, the "NAME" variables specified
+  above can in many cases be a space-delimited string such as:
+
+    --enable pkg1   --enable 'pkg1 pkg2'   --enable 'pkg1 pkg2 pkg3'
+    -mods=dir1   -mods='dir1'   -mods='dir1 dir2 dir3'
+    -foptim='-Mvect=cachesize:512000,transform -xtypemap=real:64,double:64,integer:32'
+
+  which, depending upon your shell, may need to be single-quoted.
+
+  For more detailed genmake documentation, please see:
+
+    http://mitgcm.org/public/devel_HOWTO/
+
+EOF
+
+    exit 1
+}
 
 # Search for particular CPP #cmds associated with packages
 # usage: test_for_package_in_cpp_options CPP_file package_name
@@ -164,7 +326,6 @@ EOF
     return
 }
 
-
 look_for_makedepend()  {
 
     #  The "original" makedepend is part of the Imake system that is
@@ -211,7 +372,6 @@ EOF
 	    MAKEDEPEND=makedepend
 	else
 	    echo "    a system-default makedepend was not found."
-
 	    #  Try to build the cyrus implementation
 	    build_cyrus_makedepend
 	    RETVAL=$?
@@ -229,7 +389,6 @@ EOF
 	fi
     fi
 }
-
 
 build_cyrus_makedepend()  {
     rm -f ./genmake_cy_md
@@ -254,7 +413,6 @@ build_cyrus_makedepend()  {
 	return 1
     fi
 }
-
 
 build_embed_encode()
 {
@@ -288,7 +446,6 @@ build_embed_encode()
     echo "OK"
     DEFINES="$DEFINES -DHAVE_EMBED_SRC"
 }
-
 
 #  look for possible C compilers
 look_for_C_compilers() {
@@ -338,6 +495,8 @@ EOF
 # Guess possible config options for this host
 find_possible_optfile()  {
 
+    echo >> $LOGFILE
+    echo "running: find_possible_optfile()" >> $LOGFILE
     tmp1=`uname`"_"`uname -m`
     tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
     tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
@@ -347,48 +506,32 @@ find_possible_optfile()  {
     PLATFORM=$tmp3
     echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
     OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
-    echo "  The platform appears to be:  $PLATFORM"
-
-#    echo "test" > test
-#    ln -s ./test link
-#    RETVAL=$?
-#    if test "x${RETVAL}" = x0 ; then
-#	LN="ln -s"
-#    else
-#	echo "Error: \"ln -s\" does not appear to work on this system!"
-#	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
-#	exit 1
-#    fi
-#    rm -f test link
-#
-#    if test "x$CPP" = x ; then
-#	CPP="cpp -traditional -P"
-#    fi
-#
-#    look_for_makedepend
-#
-#    look_for_C_compilers
+    echo "  The platform appears to be:  $PLATFORM" | tee -a $LOGFILE
 
     #================================================================
     #  look for possible FORTRAN compilers
-    tmp="$MITGCM_FC $FC efc g77 f77 pgf77 pgf95 ifc ifort f90 f95 mpif77 mpf77 mpxlf95 gfortran g95"
+    echo "  look for possible FORTRAN compilers" >> $LOGFILE
+    tmp="$MITGCM_FC $FC efc gfortran g77 f77 pgf77 pgf95 ifc ifort f90 f95 mpif77 mpf77 mpxlf95 g95"
     p_FC=
-    for c in $tmp ; do
-	rm -f ./hello.f ./hello
-	cat >> hello.f <<EOF
+    rm -f ./genmake_hello.f
+    cat >> genmake_hello.f <<EOF
       program hello
       do i=1,3
         print *, 'hello world : ', i
       enddo
       end
 EOF
-	$c -o hello hello.f > /dev/null 2>&1
+    for f in $tmp ; do
+	COMM="$f -o genmake_hello genmake_hello.f"
+	echo $COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
 	RETVAL=$?
 	if test "x${RETVAL}" = x0 ; then
-	    p_FC="$p_FC $c"
+	    echo " $f test successful" >> $LOGFILE
+	    p_FC="$p_FC $f"
 	fi
     done
-    rm -f ./hello.f ./hello
+    rm -f ./genmake_hello.f ./genmake_hello
     if test "x${p_FC}" = x ; then
 	cat 1>&2 <<EOF
 
@@ -401,8 +544,7 @@ Error: No Fortran compilers were found in your path.  Please specify one using:
 EOF
 	exit 1
     else
-	echo "  The possible FORTRAN compilers found in your path are:"
-	echo "   "$p_FC
+	echo "  The possible FORTRAN compilers found in your path are: $p_FC" | tee -a $LOGFILE
     fi
 
     #  Use the first of the compilers found in the current PATH
@@ -411,7 +553,7 @@ EOF
 	for i in $p_FC ; do
 	    OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
 	    if test -r $OPTFILE ; then
-		echo "  Setting OPTFILE to: "$OPTFILE
+		echo "  Setting OPTFILE to: "$OPTFILE | tee -a $LOGFILE
 		break
 	    fi
 	done
@@ -468,7 +610,6 @@ EOF
 # 	fi
 # 	rm -f test.f out
 #     fi
-
 }
 
 #  Parse the package dependency information
@@ -486,165 +627,6 @@ get_pdepend_list()  {
     fi
     . ./.pd_tmp
     rm -f ./.pd_tmp
-
-}
-
-
-#  Explain usage
-usage()  {
-cat <<EOF
-
-Usage: "$0" [OPTIONS]
-  where [OPTIONS] can be:
-
-    -help | --help | -h | --h
-          Print this help message and exit.
-
-    -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
-      -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
-          Use "NAME" as the adoptfile.  By default, the file at
-          "tools/adjoint_options/adjoint_default" will be used.
-
-    -nooptfile | --nooptfile
-      -optfile NAME | --optfile NAME | -of NAME | --of NAME
-      -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
-          Use "NAME" as the optfile.  By default, an attempt will be
-          made to find an appropriate "standard" optfile in the
-          tools/build_options/ directory.
-
-    -pdepend NAME | --pdepend NAME
-      -pdepend=NAME | --pdepend=NAME
-          Get package dependency information from "NAME".
-
-    -pgroups NAME | --pgroups NAME
-      -pgroups=NAME | --pgroups=NAME
-          Get the package groups information from "NAME".
-
-    -bash NAME
-          Explicitly specify the Bourne or BASH shell to use
-
-    -make NAME | -m NAME
-      --make=NAME | -m=NAME
-          Use "NAME" for the MAKE program. The default is "make" but
-          many platforms, "gmake" is the preferred choice.
-
-    -makefile NAME | -mf NAME
-      --makefile=NAME | -mf=NAME
-          Call the makefile "NAME".  The default is "Makefile".
-
-    -makedepend NAME | -md NAME
-      --makedepend=NAME | -md=NAME
-          Use "NAME" for the MAKEDEPEND program.
-
-    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
-      -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
-          Specify the location of the MITgcm ROOTDIR as "NAME".
-          By default, genamke will try to find the location by
-          looking in parent directories (up to the 5th parent).
-
-    -mods NAME | --mods NAME | -mo NAME | --mo NAME
-      -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME
-          Here, "NAME" specifies a list of directories that are
-          used for additional source code.  Files found in the
-          "mods list" are given preference over files of the same
-          name found elsewhere.
-
-    -disable NAME | --disable NAME
-      -disable=NAME | --disable=NAME
-          Here "NAME" specifies a list of packages that we don't
-          want to use.  If this violates package dependencies,
-          genamke will exit with an error message.
-
-    -enable NAME | --enable NAME
-      -enable=NAME | --enable=NAME
-          Here "NAME" specifies a list of packages that we wish
-          to specifically enable.  If this violates package
-          dependencies, genamke will exit with an error message.
-
-    -standarddirs NAME | --standarddirs NAME
-      -standarddirs=NAME | --standarddirs=NAME
-          Here, "NAME" specifies a list of directories to be
-          used as the "standard" code.
-
-    -fortran NAME | --fortran NAME | -fc NAME | --fc NAME
-      -fc=NAME | --fc=NAME
-          Use "NAME" as the fortran compiler.  By default, genmake
-          will search for a working compiler by trying a list of
-          "usual suspects" such as g77, f77, etc.
-
-    -cc NAME | --cc NAME | -cc=NAME | --cc=NAME
-          Use "NAME" as the C compiler.  By default, genmake
-          will search for a working compiler by trying a list of
-          "usual suspects" such as gcc, c89, cc, etc.
-
-    -[no]ieee | --[no]ieee
-          Do or don't use IEEE numerics.  Note that this option
-          *only* works if it is supported by the OPTFILE that
-          is being used.
-
-    -use_real4 | -use_r4 | -ur4 | --use_real4 | --use_r4 | --ur4
-          Use "real*4" type for _RS variable (#undef REAL4_IS_SLOW)
-          *only* works if CPP_EEOPTIONS.h allows this.
-
-    -ignoretime | -ignore_time | --ignoretime | --ignore_time
-          Ignore all the "wall clock" routines entirely.  This will
-          not in any way hurt the model results -- it simply means
-          that the code that checks how long the model spends in
-          various routines will give junk values.
-
-    -ts | --ts
-          Produce timing information per timestep
-    -papis | --papis
-          Produce summary MFlop/s (and IPC) with PAPI per timestep
-    -pcls | --pcls
-          Produce summary MFlop/s etc. with PCL per timestep
-    -foolad | --foolad
-          Fool the AD code generator
-    -papi | --papi
-          Performance analysis with PAPI
-    -pcl | --pcl
-          Performance analysis with PCL
-    -hpmt | --hpmt
-          Performance analysis with the HPM Toolkit
-
-    -gsl | --gsl
-          Use GSL to control floating point rounding and precision
-    -devel | --devel
-          Add additional warning and debugging flags for development
-
-    -mpi | --mpi
-          Include MPI header files and link to MPI libraries
-    -mpi=PATH | --mpi=PATH
-          Include MPI header files and link to MPI libraries using MPI_ROOT
-          set to PATH. i.e. Include files from \$PATH/include, link to libraries
-          from \$PATH/lib and use binaries from \$PATH/bin.
-
-    -omp | --omp
-          Activate OpenMP code + use Compiler option OMPFLAG
-    -omp=OMPFLAG | --omp=OMPFLAG
-          Activate OpenMP code + use Compiler option OMPFLAG
-
-    -es | --es | -embed-source | --embed-source
-          Embed a tarball containing the full source code
-          (including the Makefile, etc.) used to build the
-          executable [off by default]
-
-  While it is most often a single word, the "NAME" variables specified
-  above can in many cases be a space-delimited string such as:
-
-    --enable pkg1   --enable 'pkg1 pkg2'   --enable 'pkg1 pkg2 pkg3'
-    -mods=dir1   -mods='dir1'   -mods='dir1 dir2 dir3'
-    -foptim='-Mvect=cachesize:512000,transform -xtypemap=real:64,double:64,integer:32'
-
-  which, depending upon your shell, may need to be single-quoted.
-
-  For more detailed genmake documentation, please see:
-
-    http://mitgcm.org/public/devel_HOWTO/
-
-EOF
-
-    exit 1
 }
 
 #  Build a CPP macro to automate calling C routines from FORTRAN
@@ -661,7 +643,6 @@ get_fortran_c_namemangling()  {
     cat > genmake_test.c <<EOF
 void tcall( char * string ) { tsub( string ); }
 EOF
-#   $MAKE genmake_test.o >> $LOGFILE 2>&1
     COMM="$CC $CFLAGS -c genmake_test.c"
     echo ' '$COMM >> $LOGFILE
     $COMM >> $LOGFILE 2>&1
@@ -746,7 +727,6 @@ EOF
     echo " --> set FC_NAMEMANGLE='$FC_NAMEMANGLE'" >> $LOGFILE
 }
 
-
 check_HAVE_CLOC()  {
     echo >> $LOGFILE
     echo "running: check_HAVE_CLOC()" >> $LOGFILE
@@ -791,7 +771,6 @@ EOF
     rm -f genmake_tc*
     echo " --> set HAVE_CLOC='$HAVE_CLOC'" >> $LOGFILE
 }
-
 
 check_HAVE_SIGREG()  {
     if test ! "x$HAVE_SIGREG" = x ; then
@@ -855,7 +834,6 @@ EOF
     echo " --> set HAVE_SIGREG='$HAVE_SIGREG'" >> $LOGFILE
 }
 
-
 check_HAVE_SETRLSTK()  {
     if test "x$HAVE_SETRLSTK" = xt ; then
 	DEFINES="$DEFINES -DHAVE_SETRLSTK"
@@ -904,7 +882,6 @@ EOF
     echo " --> set HAVE_SETRLSTK='$HAVE_SETRLSTK'" >> $LOGFILE
 }
 
-
 check_HAVE_STAT()  {
     echo >> $LOGFILE
     echo "running: check_HAVE_STAT()" >> $LOGFILE
@@ -951,7 +928,6 @@ EOF
     rm -f genmake_tc*
     echo " --> set HAVE_STAT='$HAVE_STAT'" >> $LOGFILE
 }
-
 
 check_netcdf_libs()  {
     if test ! "x$SKIP_NETCDF_CHECK" = x ; then
@@ -1044,7 +1020,6 @@ EOF
     rm -f genmake_tnc*
     echo " --> set HAVE_NETCDF='$HAVE_NETCDF'" >> $LOGFILE
 }
-
 
 
 ###############################################################################
@@ -1157,7 +1132,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PKG_DEPEND PKG_GROUPS MAKEFILE MAKEDEPEND PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC IEEE USE_R4 TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI OMP DUMPSTATE STANDARDDIRS"
+gm_s2="FC CC IEEE USE_R4 TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI OMP DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 LINK MAKE PACKAGES INCLUDES FFLAGS FOPTIM FEXTRAFLAGS"
@@ -1395,7 +1370,6 @@ for ac_option in "$@" ; do
 
 done
 
-
 if test -f ./.genmakerc ; then
     echo
     echo "WARNING: genmake2 has detected a copy of the old-style \"./.genmakerc\""
@@ -1527,14 +1501,6 @@ fi
 
 if test "x$CC" = x ; then
     look_for_C_compilers
-#   CC=cc
-#     cat <<EOF 1>&2
-# Error: no C compiler: please specify using one of the following:
-#   1) within the options file ("CC=...") as specified by "-of=OPTFILE"
-#   2) the "-cc=XXX" command-line option
-#   3) the "./genmake_local" file
-# EOF
-#     exit 1
 fi
 
 if test "x$LINK" = x ; then
@@ -1820,7 +1786,6 @@ fi
 if test "x$EMBED_SRC" = xt ; then
     ENABLE="$ENABLE embed_files"
 fi
-
 
 printf "\n===  Setting defaults  ===\n"
 printf "  Adding MODS directories: "
@@ -2797,6 +2762,8 @@ cat >>$MAKEFILE <<EOF
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .$FS.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+.F.o:
+	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 .F90.$FS90:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .FF90.f$FS90:
@@ -2930,7 +2897,6 @@ ftl_tamc_output.$FS: ftl_input_code.$FS
 
 ftl_tamc: ftl_tamc_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS)
-
 
 # ... SVD ...
 svdtaf: ad_taf_output.$FS ftl_taf_output.$FS
@@ -3254,7 +3220,6 @@ fi
 if test ! -f AD_CONFIG.h ; then
     $BASH $TOOLSDIR/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -UALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > AD_CONFIG.h
 fi
-
 
 #  Write the "state" for future records
 if test "x$DUMPSTATE" = xt ; then
