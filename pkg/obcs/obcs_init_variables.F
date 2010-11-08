@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.35 2010/10/25 23:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.36 2010/11/08 17:35:08 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -351,9 +351,7 @@ C      (but initial conditions only)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL OBCS_APPLY_UV( bi, bj, 0, uVel, vVel, myThid )
-         DO K=1,Nr
-          CALL OBCS_APPLY_TS( bi, bj, k, theta, salt, myThid )
-         ENDDO
+          CALL OBCS_APPLY_TS( bi, bj, 0, theta, salt, myThid )
         ENDDO
        ENDDO
        IF (useOBCSprescribe) THEN
@@ -379,13 +377,21 @@ C    cannot be changed because of OBCS_CALC(startTime,nIter0) call above.
         CALL OBCS_PRESCRIBE_READ( startTime, nIter0, myThid )
 #endif
       ENDIF
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         CALL OBCS_COPY_TRACER( theta(1-Olx,1-Oly,1,bi,bj),
+     I                          Nr, bi, bj, myThid )
+         CALL OBCS_COPY_TRACER( salt (1-Olx,1-Oly,1,bi,bj),
+     I                          Nr, bi, bj, myThid )
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_PTRACERS
 C     repeat everything for passive tracers
       IF ( usePTRACERS ) THEN
 C     catch the case when we do start from a pickup for dynamics variables
 C     but initialise ptracers differently
-       IF ( nIter0 .EQ. PTRACERS_Iter0 ) THEN
+       IF ( nIter0.EQ.PTRACERS_Iter0 ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode)
      &       CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
@@ -402,7 +408,9 @@ C     but initialise ptracers differently
           ENDDO
          ENDDO
         ENDDO
-        IF (useOBCSprescribe) THEN
+C     endif start from rest
+       ENDIF
+       IF ( nIter0.EQ.PTRACERS_Iter0 .AND. useOBCSprescribe ) THEN
 C     After applying the boundary conditions exchange the 3D-fields.
 C     This is only necessary of the boundary values have been read
 C     from a file.
@@ -411,8 +419,16 @@ C     from a file.
      &        'PTRACERS EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
          CALL PTRACERS_FIELDS_BLOCKING_EXCH( myThid )
-        ENDIF
-C     endif start from rest
+       ELSE
+C-     This call is part of ptracers exchange S/R but is needed in all cases
+        DO iTracer=1,PTRACERS_numInUse
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           CALL OBCS_COPY_TRACER( pTracer(1-Olx,1-Oly,1,bi,bj,iTracer),
+     I                            Nr, bi, bj, myThid )
+          ENDDO
+         ENDDO
+        ENDDO
        ENDIF
 C     endif usePTRACERS
       ENDIF
