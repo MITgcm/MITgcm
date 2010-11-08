@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.52 2010/11/08 17:38:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.53 2010/11/08 21:50:56 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,6 +46,9 @@ C     i,j,k,bi,bj - Loop counters
 #ifdef SEAICE_MULTICATEGORY
       INTEGER k
 #endif
+#ifdef ALLOW_OBCS
+      INTEGER I_obc, J_obc
+#endif /* ALLOW_OBCS */
 #ifdef ALLOW_EXCH2
 # ifndef SEAICE_CGRID
       INTEGER myTile
@@ -193,12 +196,13 @@ C--   If OBCS is turned on, close southern and western boundaries
 #ifdef ALLOW_OBCS_SOUTH
          DO i=1-Olx,sNx+Olx
 C Southern boundary
-          IF (myYGlobalLo.EQ.1) THEN
+          J_obc = OB_Js(i,bi,bj)
+          IF (J_obc.NE.0) THEN
 #ifdef SEAICE_CGRID
-           seaiceMaskU(i,1,bi,bj)=   0.0 _d 0
-           seaiceMaskV(i,1,bi,bj)=   0.0 _d 0
+           seaiceMaskU(i,J_obc,bi,bj)=   0.0 _d 0
+           seaiceMaskV(i,J_obc,bi,bj)=   0.0 _d 0
 #else
-           UVM(i,1,bi,bj)=0. _d 0
+           UVM(i,J_obc,bi,bj)=0. _d 0
 #endif /* SEAICE_CGRID */
           ENDIF
          ENDDO
@@ -206,12 +210,13 @@ C Southern boundary
 #ifdef ALLOW_OBCS_WEST
          DO j=1-Oly,sNy+Oly
 C Western boundary
-          IF (myXGlobalLo.EQ.1) THEN
+          I_obc=OB_Iw(j,bi,bj)
+          IF (I_obc.NE.0) THEN
 #ifdef SEAICE_CGRID
-           seaiceMaskU(1,j,bi,bj)=   0.0 _d 0
-           seaiceMaskV(1,j,bi,bj)=   0.0 _d 0
+           seaiceMaskU(I_obc,j,bi,bj)=   0.0 _d 0
+           seaiceMaskV(I_obc,j,bi,bj)=   0.0 _d 0
 #else
-           UVM(1,j,bi,bj)=0. _d 0
+           UVM(I_obc,j,bi,bj)=0. _d 0
 #endif /* SEAICE_CGRID */
           ENDIF
          ENDDO
