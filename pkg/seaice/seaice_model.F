@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.81 2010/10/31 20:07:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.82 2010/11/08 17:38:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -233,7 +233,6 @@ C--   Apply ice tracer open boundary conditions
 #endif /* ALLOW_OBCS */
 
 C--   Update overlap regions for a bunch of stuff
-       _BARRIER
        _EXCH_XY_RL( HEFF,  myThid )
        _EXCH_XY_RL( AREA,  myThid )
        _EXCH_XY_RL( HSNOW, myThid )
@@ -257,6 +256,30 @@ C--   Update overlap regions for a bunch of stuff
        IF ( useRealFreshWaterFlux )
      &      _EXCH_XY_RS( sIceLoad, myThid )
 #endif
+
+C--   In case we use scheme with a large stencil that extends into overlap:
+#ifdef ALLOW_OBCS
+       IF ( useOBCS ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
+     I                            1, bi, bj, myThid )
+           CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
+     I                            1, bi, bj, myThid )
+           CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
+     I                            1, bi, bj, myThid )
+#ifdef SEAICE_SALINITY
+           CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
+     I                            1, bi, bj, myThid )
+#endif
+#ifdef SEAICE_AGE
+           CALL OBCS_COPY_TRACER( IceAge(1-Olx,1-Oly,bi,bj),
+     I                            1, bi, bj, myThid )
+#endif
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN
