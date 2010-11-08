@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.27 2010/07/12 22:49:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.28 2010/11/08 17:32:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,16 +8,18 @@ CBOP
 C     !ROUTINE: DO_FIELDS_BLOCKING_EXCHANGES
 C     !INTERFACE:
       SUBROUTINE DO_FIELDS_BLOCKING_EXCHANGES(myThid)
+
 C     !DESCRIPTION: \bv
-C     /==========================================================\
-C     | SUBROUTINE DO_FIELDS_BLOCKING_EXCHANGES                  |
-C     | o Controlling routine for exchanging edge info.          |
-C     |==========================================================|
-C     | One key trick used in UV us that we over-compute and     |
-C     | arrange our time-stepping loop so that we only need one  |
-C     | edge exchange for the explicit code per timestep.        |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE DO_FIELDS_BLOCKING_EXCHANGES
+C     | o Controlling routine for exchanging edge info.
+C     *==========================================================*
+C     | One key trick used in UV us that we over-compute and
+C     | arrange our time-stepping loop so that we only need one
+C     | edge exchange for the explicit code per timestep.
+C     *==========================================================*
 C     \ev
+
 C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
@@ -37,9 +39,15 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
+
+C     !LOCAL VARIABLES:
+C     bi, bj :: tile indices
+#ifdef ALLOW_OBCS
+      INTEGER bi, bj
+#endif /* ALLOW_OBCS */
 
       IF ( .NOT.useOffLine ) THEN
 C-    Apply Exchanges on dynamics state variable, except in Off-Line mode
@@ -55,6 +63,18 @@ c    & _EXCH_XY_RL( etaN , myThid )
        _EXCH_XYZ_RL( theta, myThid )
        _EXCH_XYZ_RL( salt , myThid )
       ENDIF
+#ifdef ALLOW_OBCS
+      IF ( useOBCS ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         CALL OBCS_COPY_TRACER( theta(1-Olx,1-Oly,1,bi,bj),
+     I                          Nr, bi, bj, myThid )
+         CALL OBCS_COPY_TRACER( salt (1-Olx,1-Oly,1,bi,bj),
+     I                          Nr, bi, bj, myThid )
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_GENERIC_ADVDIFF
       IF ( tempSOM_Advection .OR. saltSOM_Advection )
