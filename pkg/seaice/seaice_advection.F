@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.19 2009/06/28 01:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.20 2010/11/08 03:27:30 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,12 +69,12 @@ C  uFld            :: velocity, zonal component
 C  vFld            :: velocity, meridional component
 C  uTrans,vTrans   :: volume transports at U,V points
 C  iceFld          :: sea-ice field
-C  r_hFld          :: reciprol of ice-thickness (only used for "intensive"
+C  r_hFld          :: reciprocal of ice-thickness (only used for "intensive"
 C                     type of sea-ice field)
 C  bi,bj           :: tile indices
 C  myTime          :: current time
 C  myIter          :: iteration number
-C  myThid          :: thread number
+C  myThid          :: my Thread Id number
       INTEGER tracerIdentity
       INTEGER advectionScheme
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -397,7 +397,7 @@ C            in corner region) but safer to keep them.
           DO j=1-OLy,0
            DO i=iMinUpd,iMaxUpd
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)
      &           *(  af(i+1,j)-af(i,j)
      &            )
@@ -407,7 +407,7 @@ C            in corner region) but safer to keep them.
           DO j=1-OLy,0
            DO i=iMinUpd,iMaxUpd
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
      &           *( (af(i+1,j)-af(i,j))
      &             -(uTrans(i+1,j)-uTrans(i,j))*iceFld(i,j)
@@ -419,7 +419,7 @@ C            in corner region) but safer to keep them.
           DO j=sNy+1,sNy+OLy
            DO i=iMinUpd,iMaxUpd
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)
      &           *(  af(i+1,j)-af(i,j)
      &            )
@@ -429,7 +429,7 @@ C            in corner region) but safer to keep them.
           DO j=sNy+1,sNy+OLy
            DO i=iMinUpd,iMaxUpd
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
      &           *( (af(i+1,j)-af(i,j))
      &             -(uTrans(i+1,j)-uTrans(i,j))*iceFld(i,j)
@@ -463,7 +463,7 @@ C     do not only update the overlap
           DO j=jMinUpd,jMaxUpd
            DO i=1-OLx+1,sNx+OLx-1
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)
      &           *(  af(i+1,j)-af(i,j)
      &            )
@@ -473,7 +473,7 @@ C     do not only update the overlap
           DO j=jMinUpd,jMaxUpd
            DO i=1-OLx+1,sNx+OLx-1
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
      &           *( (af(i+1,j)-af(i,j))
      &             -(uTrans(i+1,j)-uTrans(i,j))*iceFld(i,j)
@@ -596,7 +596,7 @@ C         in corner region) but safer to keep them.
           DO j=jMinUpd,jMaxUpd
            DO i=1-OLx,0
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)
      &           *(  af(i,j+1)-af(i,j)
      &            )
@@ -606,7 +606,7 @@ C         in corner region) but safer to keep them.
           DO j=jMinUpd,jMaxUpd
            DO i=1-OLx,0
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
      &           *( (af(i,j+1)-af(i,j))
      &             -(vTrans(i,j+1)-vTrans(i,j))*iceFld(i,j)
@@ -618,7 +618,7 @@ C         in corner region) but safer to keep them.
           DO j=jMinUpd,jMaxUpd
            DO i=sNx+1,sNx+OLx
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)
      &           *(  af(i,j+1)-af(i,j)
      &            )
@@ -628,7 +628,7 @@ C         in corner region) but safer to keep them.
           DO j=jMinUpd,jMaxUpd
            DO i=sNx+1,sNx+OLx
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
      &           *( (af(i,j+1)-af(i,j))
      &             -(vTrans(i,j+1)-vTrans(i,j))*iceFld(i,j)
@@ -662,7 +662,7 @@ C     do not only update the overlap
           DO j=1-OLy+1,sNy+OLy-1
            DO i=iMinUpd,iMaxUpd
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)
      &           *(  af(i,j+1)-af(i,j)
      &            )
@@ -672,7 +672,7 @@ C     do not only update the overlap
           DO j=1-OLy+1,sNy+OLy-1
            DO i=iMinUpd,iMaxUpd
             localTij(i,j)=localTij(i,j)
-     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &         -SEAICE_deltaTtherm*maskInC(i,j,bi,bj)
      &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
      &           *( (af(i,j+1)-af(i,j))
      &             -(vTrans(i,j+1)-vTrans(i,j))*iceFld(i,j)
