@@ -25,6 +25,7 @@
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  hFacMin=0.2,
+ saltAdvScheme=4,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
 #- not safe to use globalFiles in multi-processors runs

@@ -7,4 +7,5 @@
  PTRACERS_numInUse=1,
  PTRACERS_ref(1,1) = 8*35.,
  PTRACERS_names(1)='salt_mimic',
+ PTRACERS_advScheme(1)=4,
  &
