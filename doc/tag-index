@@ -1,11 +1,37 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1328 2010/11/08 21:50:55 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1329 2010/11/09 00:55:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
-  o remove SEAICE_OLD_AND_BAD_DISCRETIZATION-code, add a test to 
+    fix masking in free-drift S/R ; update results of exp. lab_sea.fd
+o pkg/obcs:
+   New S/R to copy tracer value from the OB location to narrow band region
+    (width = same as overlap) beyond the OB: preserve OB value (needed for
+    high-order scheme) which were overwritten by EXCH call if in overlap
+    region. Applied to theta, salt, ptracer and advected seaice variables.
+   With seaice: use maskInC in similar way as in gad_advection.F,
+    in seaice_advection.F and advect.F.
+   Update output of experiment seaice_obcs and change exp4 to test OBCS with
+    4th order Adv.Scheme. for pasive salt and ptracer.
+o tools/genmake2:
+  - when looking for an optfile (not specified), only search for Fortran compiler
+    (remove sym-link test + setting of CPP + makedepend check + C-compiler check)
+  - in get_fortran_c_namemangling: use "$CC $CFLAG" to compile C test programm
+    (instead of "$MAKE genmake_test.o" since an existing Makefile can be wrong)
+  - set default for CPP to "cpp -traditional -P" (was the case without specifying
+    an optfile, but otherwise default was just "cpp".
+  - comment out PLATFORM=$p_PLATFORM (no idea where p_PLATFORM comes from)
+  - when "CC" is not set in the optfile, look for possible C compiler
+    (instead of just setting CC=cc)
+  - put back version v.169 modif (from 2008/02/15), was dropped in v.173 changes:
+    => add a ".F" to ".o" rule for source files with no "#include" (such as
+       port_rand.F); otherwise, default ignores FOPTIM and just uses FFLAGS.
+  - move gfortran before g77 in list of possible Fortran compiler (consistent
+    with reference compiler switch from g77 to gfortran)
+o pkg/seaice:
+  o remove SEAICE_OLD_AND_BAD_DISCRETIZATION-code, add a test to
     seaice_check that stops the model, when the CPP flag is used.
   o seaice_growth.F: make capping of ice volume conserving by returning the
     capped ice as freshwater to EmPmR. This does not change the verification
