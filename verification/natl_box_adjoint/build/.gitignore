@@ -4,6 +4,7 @@
 *.for
 *.o
 *.flowdir
+*.tr_log
 mfile*
 mitgcmuv*
 work.pc*
@@ -14,7 +15,6 @@ FC_NAMEMANGLE.h
 genmake_state
 genmake_ad_optfile
 genmake_optfile
-genmake_warnings
 taf_command
 taf_output
 
