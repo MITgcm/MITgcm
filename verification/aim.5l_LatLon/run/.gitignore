@@ -4,6 +4,7 @@
 *.nc
 STD*
 *.txt
+*.tr_log
 mnc_test_*
 ecco_cost_MIT_CE_000.opt0000
 ecco_ctrl_MIT_CE_000.opt0000
