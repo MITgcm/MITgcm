@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1329 2010/11/09 00:55:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1330 2010/11/09 14:08:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62n (2010/11/09)
 o pkg/seaice:
     fix masking in free-drift S/R ; update results of exp. lab_sea.fd
 o pkg/obcs:
