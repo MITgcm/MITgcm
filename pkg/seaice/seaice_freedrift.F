@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.2 2010/10/07 19:54:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.3 2010/11/09 00:36:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -28,7 +28,6 @@ C     === Routine arguments ===
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
 C     myThid :: my Thread Id. number
-      INTEGER ilcall
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -38,7 +37,7 @@ CEOP
 #ifdef SEAICE_CGRID
 
 C     === Local variables ===
-      INTEGER i, j, k, ksrf, bi, bj
+      INTEGER i, j, kSrf, bi, bj
 
       _RL tmpscal1,tmpscal2,tmpscal3,tmpscal4
 
@@ -49,8 +48,7 @@ C     === Local variables ===
       _RL vice_cntr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
 
-       k=1
-       ksrf=1
+       kSrf=1
 
 c initialize fields:
 c ==================
@@ -75,10 +73,10 @@ c ==================
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-          
+
 c preliminary computations:
 c =========================
-c factor to convert air-sea stress to air-ice stresss 
+c factor to convert air-sea stress to air-ice stresss
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
             tmpscal1 = SEAICE_drag_south/OCEAN_drag
            ELSE
@@ -86,19 +84,19 @@ c factor to convert air-sea stress to air-ice stresss
            ENDIF
 c air-ice stress at cell center
            taux_onIce_cntr=
-     &       tmpscal1*HALF*(TAUX(i,j,bi,bj)+TAUX(i+1,j,bi,bj)) 
+     &       tmpscal1*HALF*(TAUX(i,j,bi,bj)+TAUX(i+1,j,bi,bj))
            tauy_onIce_cntr=
-     &       tmpscal1*HALF*(TAUY(i,j,bi,bj)+TAUY(i,j+1,bi,bj)) 
+     &       tmpscal1*HALF*(TAUY(i,j,bi,bj)+TAUY(i,j+1,bi,bj))
 c mass of ice per unit area (kg/m2) times coriolis f
-           mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(I,J,bi,bj)      
+           mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(I,J,bi,bj)
 c ocean velocity at cell center
-           uvel_cntr=HALF*(uvel(i,j,ksrf,bi,bj)+uvel(i+1,j,ksrf,bi,bj)) 
-           vvel_cntr=HALF*(vvel(i,j,ksrf,bi,bj)+vvel(i,j+1,ksrf,bi,bj)) 
+           uvel_cntr=HALF*(uvel(i,j,kSrf,bi,bj)+uvel(i+1,j,kSrf,bi,bj))
+           vvel_cntr=HALF*(vvel(i,j,kSrf,bi,bj)+vvel(i,j+1,kSrf,bi,bj))
 c right hand side of free drift equation:
            rhs_x= -taux_onIce_cntr -mIceCor*vvel_cntr
            rhs_y= -tauy_onIce_cntr +mIceCor*uvel_cntr
 
-c norm of angle of rhs     
+c norm of angle of rhs
            tmpscal1=rhs_x*rhs_x + rhs_y*rhs_y
            if (tmpscal1.GT.0.) then
              rhs_n=sqrt( rhs_x*rhs_x + rhs_y*rhs_y )
@@ -106,7 +104,7 @@ c norm of angle of rhs
            else
              rhs_n=0. _d 0
              rhs_a=0. _d 0
-           endif  
+           endif
 
 c solve for norm:
 c ===============
@@ -118,7 +116,7 @@ c ===============
 c polynomial coefficients
            tmpscal2= +tmpscal1*tmpscal1*mIceCor*mIceCor
            tmpscal3= -tmpscal1*tmpscal1*rhs_n*rhs_n
-c discriminant      
+c discriminant
            tmpscal4=tmpscal2*tmpscal2-4*tmpscal3
            if (tmpscal4.GT.0) then
              sol_n=sqrt(HALF*(sqrt(tmpscal4)-tmpscal2))
@@ -133,7 +131,7 @@ c ================
            ELSE
             tmpscal1 = SEAICE_waterDrag
            ENDIF
-c 
+c
            tmpscal2= tmpscal1*sol_n*sol_n
            tmpscal3= mIceCor*sol_n
 c
@@ -164,16 +162,28 @@ c ================================
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           uice_fd(i,j,bi,bj)=HALF* 
-     &       (uice_cntr(i-1,j,bi,bj)+uice_cntr(i,j,bi,bj)) 
-           vice_fd(i,j,bi,bj)=HALF* 
-     &       (vice_cntr(i,j-1,bi,bj)+vice_cntr(i,j,bi,bj)) 
+           uice_fd(i,j,bi,bj)=HALF*
+     &       (uice_cntr(i-1,j,bi,bj)+uice_cntr(i,j,bi,bj))
+           vice_fd(i,j,bi,bj)=HALF*
+     &       (vice_cntr(i,j-1,bi,bj)+vice_cntr(i,j,bi,bj))
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
        CALL EXCH_UV_XY_RL( uice_fd, vice_fd, .TRUE., myThid )
+
+C     Apply masks (same/similar to seaice_evp.F/seaice_lsr.F)
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          uIce_fd(i,j,bi,bj)=uIce_fd(i,j,bi,bj)* _maskW(i,j,kSrf,bi,bj)
+          vIce_fd(i,j,bi,bj)=vIce_fd(i,j,bi,bj)* _maskS(i,j,kSrf,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* SEAICE_CGRID */
 #endif /* SEAICE_ALLOW_FREEDRIFT */
