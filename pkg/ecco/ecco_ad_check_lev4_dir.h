@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev4_dir.h,v 1.1 2010/10/20 22:06:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev4_dir.h,v 1.2 2010/11/10 22:10:24 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
 c
 
-#ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_ECCO_BARSTORES
 
 #ifdef ALLOW_ECCO
 
