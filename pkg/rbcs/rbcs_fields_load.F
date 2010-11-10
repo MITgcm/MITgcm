@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.10 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.11 2010/11/10 00:34:21 jahn Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -53,11 +53,19 @@ C     Above use static heap storage to allow exchange.
 C     aWght, bWght :: Interpolation weights
 
       INTEGER bi,bj,i,j,k,intime0,intime1
-      _RL aWght,bWght,rdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      _RL aWght,bWght,rhalfdt
+      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm,Ifmod
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif
+      INTEGER IL, initer0, initer1
+      CHARACTER*(MAX_LEN_FNAM) fullName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      INTEGER F90MODULO,arg1,arg2
+C statement function to emulate Fortran 90 MODULO
+C this modulo has the same sign as arg2 (and absolute value < |arg2|)
+      F90MODULO(arg1,arg2) = MOD(MOD(arg1,arg2)+arg2,arg2)
 
 #ifdef ALLOW_RBCS
       CALL TIMER_START('RBCS_FIELDS_LOAD      [I/O]', myThid)
@@ -97,18 +105,27 @@ C First call requires that we initialize everything to zero for safety
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
-      IF ( rbcsForcingCycle.GT.0. _d 0 ) THEN
-       rdt = 1. _d 0 / deltaTclock
+      IF (rbcsForcingPeriod.GT.0. _d 0) THEN
+C      this converts times to even integers
+       rhalfdt = 2. _d 0 / deltaTclock
        nForcingPeriods = NINT(rbcsForcingCycle/rbcsForcingPeriod)
-       Imytm = NINT( (myTime-rbcsIniter*deltaTclock)*rdt )
-       Ifprd = NINT(rbcsForcingPeriod*rdt)
-       Ifcyc = NINT(rbcsForcingCycle*rdt)
-       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
+       Imytm = NINT( (myTime-rbcsForcingOffset)*rhalfdt )
+       Ifprd = NINT(rbcsForcingPeriod*rhalfdt)
+       Ifcyc = NINT(rbcsForcingCycle*rhalfdt)
+       Iftm  = Imytm-Ifprd/2
+       Ifmod = F90MODULO(Iftm,Ifprd)
 
-       intime0 = 1 + INT( Iftm/Ifprd )
-       intime1 = 1 + MOD( intime0,nForcingPeriods )
+       intime0 = (Iftm-Ifmod)/Ifprd
+       intime1 = intime0 + 1
+       IF (rbcsForcingCycle.GT.0. _d 0) THEN
+         intime0 = F90MODULO(intime0,nForcingPeriods)
+         intime1 = F90MODULO(intime1,nForcingPeriods)
+       ENDIF
+       intime0 = 1 + intime0
+       intime1 = 1 + intime1
+
 c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-       aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+       aWght = FLOAT( Ifmod )
        bWght = FLOAT( Ifprd )
        aWght =  aWght / bWght
        bWght = 1. _d 0 - aWght
@@ -116,14 +133,18 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
       ELSE
        intime1 = 1
        intime0 = 1
-       Iftm  = 1
-       Ifprd = 0
+       Ifmod = 1
        aWght = .5 _d 0
        bWght = .5 _d 0
       ENDIF
 
+C     for rbcsSingleTimeFiles=.TRUE.
+      Ifprd = NINT(rbcsForcingPeriod/deltaTrbcs)
+      initer0 = rbcsIter0 + intime0*Ifprd
+      initer1 = rbcsIter0 + intime1*Ifprd
+
       IF (
-     &  Iftm-Ifprd*(intime0-1) .EQ. 0
+     &  Ifmod .EQ. 0
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
@@ -136,12 +157,28 @@ C      data for the period ahead and the period behind myTime.
        _END_MASTER(myThid)
 
        IF ( useRBCtemp .AND. relaxTFile .NE. ' '  ) THEN
-        CALL READ_REC_XYZ_RS(relaxTFile, rbct0, intime0, myIter,myThid)
-        CALL READ_REC_XYZ_RS(relaxTFile, rbct1, intime1, myIter,myThid)
+        IF ( rbcsSingleTimeFiles ) THEN
+         IL=ILNBLNK( relaxTFile )
+         WRITE(fullName,'(2a,i10.10)') relaxTFile(1:IL),'.',initer0
+         CALL READ_REC_XYZ_RS(fullName, rbct0, 1, myIter, myThid)
+         WRITE(fullName,'(2a,i10.10)') relaxTFile(1:IL),'.',initer1
+         CALL READ_REC_XYZ_RS(fullName, rbct1, 1, myIter, myThid)
+        ELSE
+         CALL READ_REC_XYZ_RS(relaxTFile,rbct0,intime0,myIter,myThid)
+         CALL READ_REC_XYZ_RS(relaxTFile,rbct1,intime1,myIter,myThid)
+        ENDIF
        ENDIF
        IF ( useRBCsalt .AND. relaxSFile .NE. ' '  ) THEN
-        CALL READ_REC_XYZ_RS(relaxSFile, rbcs0, intime0, myIter,myThid)
-        CALL READ_REC_XYZ_RS(relaxSFile, rbcs1, intime1, myIter,myThid)
+        IF ( rbcsSingleTimeFiles ) THEN
+         IL=ILNBLNK( relaxSFile )
+         WRITE(fullName,'(2a,i10.10)') relaxSFile(1:IL),'.',initer0
+         CALL READ_REC_XYZ_RS(fullName, rbcs0, 1, myIter, myThid)
+         WRITE(fullName,'(2a,i10.10)') relaxSFile(1:IL),'.',initer1
+         CALL READ_REC_XYZ_RS(fullName, rbcs1, 1, myIter, myThid)
+        ELSE
+         CALL READ_REC_XYZ_RS(relaxSFile,rbcs0,intime0,myIter,myThid)
+         CALL READ_REC_XYZ_RS(relaxSFile,rbcs1,intime1,myIter,myThid)
+        ENDIF
        ENDIF
 
 #ifdef ALLOW_PTRACERS
@@ -149,12 +186,26 @@ C      data for the period ahead and the period behind myTime.
         DO iTracer = 1, PTRACERS_numInUse
          IF ( useRBCptrnum(iTracer) .AND.
      &        relaxPtracerFile(iTracer).NE. ' ' ) THEN
+          IF ( rbcsSingleTimeFiles ) THEN
+           IL=ILNBLNK( relaxPtracerFile(iTracer) )
+           WRITE(fullName,'(2a,i10.10)') relaxPtracerFile(iTracer)(1:IL)
+     &                                   ,'.',initer0
+           CALL READ_REC_XYZ_RS( fullName,
+     &                           rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),
+     &                           1, myIter, myThid )
+           WRITE(fullName,'(2a,i10.10)') relaxPtracerFile(iTracer)(1:IL)
+     &                                   ,'.',initer1
+           CALL READ_REC_XYZ_RS( fullName,
+     &                           rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),
+     &                           1, myIter, myThid )
+          ELSE
            CALL READ_REC_XYZ_RS( relaxPtracerFile(iTracer),
      &                           rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),
      &                           intime0, myIter, myThid )
            CALL READ_REC_XYZ_RS( relaxPtracerFile(iTracer),
      &                           rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),
      &                           intime1, myIter, myThid )
+          ENDIF
          ENDIF
         ENDDO
        ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.6 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.7 2010/11/10 00:34:21 jahn Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -56,7 +56,11 @@ C--   RBCS parameter
      &          useRBCptracers,
      &          rbcsIniter,
      &          rbcsForcingPeriod,
-     &          rbcsForcingCycle
+     &          rbcsForcingCycle,
+     &          rbcsForcingOffset,
+     &          rbcsSingleTimeFiles,
+     &          deltaTrbcs,
+     &          rbcsIter0
 
 #ifdef ALLOW_PTRACERS
       NAMELIST /RBCS_PARM02/
@@ -78,9 +82,13 @@ C--   Default values
       ENDDO
       relaxTFile = ' '
       relaxSFile = ' '
-      rbcsIniter = nIter0
+      rbcsIniter = 0
       rbcsForcingPeriod = 0. _d 0
       rbcsForcingCycle  = 0. _d 0
+      rbcsForcingOffset = 0. _d 0
+      rbcsSingleTimeFiles = .FALSE.
+      deltaTrbcs = deltaTclock
+      rbcsIter0 = 0
 #ifdef ALLOW_PTRACERS
       DO iTracer=1,PTRACERS_num
         useRBCptrnum(iTracer)=.FALSE.
@@ -111,6 +119,34 @@ C Open and read the data.rbcs file
 C Close the open data file
       CLOSE(iUnit)
 
+      IF (rbcsIniter.NE.0) THEN
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &  'rbcsIniter has been replaced by rbcsForcingOffset '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &  'which is in seconds. Please change your data.rbcs'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R RBCS_READPARAMS'
+      ENDIF
+      IF (startTime.LT.rbcsForcingOffset+0.5*rbcsForcingPeriod .AND.
+     &    .NOT. rbcsSingleTimeFiles) THEN
+       IF (rbcsForcingCycle.GT.0) THEN
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &  'startTime before rbcsForcingOffset+0.5*rbcsForcingPeriod '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &  'will use last record'
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ELSE
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &  'startTime before rbcsForcingOffset+0.5*rbcsForcingPeriod '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &  'not allowed with rbcsForcingCycle=0 unless rbcsSingleTimeFiles'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R RBCS_READPARAMS'
+       ENDIF
+      ENDIF
       IF ( useRBCtemp .AND. tauRelaxT.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &    'tauRelaxT cannot be zero with useRBCtemp'

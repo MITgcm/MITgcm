@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.8 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.9 2010/11/10 00:34:21 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_RBCS
@@ -15,6 +15,14 @@ c number of mask to read
       INTEGER maskLEN
       PARAMETER(maskLEN = 3 )
 
+C     rbcsForcingPeriod :: period of rbc data (in seconds)
+C     rbcsForcingCycle  :: cycle of rbc data (in seconds)
+C     rbcsForcingOffset :: model time at beginning of first rbc period
+C     rbcsSingleTimeFiles :: if .TRUE., rbc fields are given 1 file per time
+C                         :: labeled by iteration number (see rbcsIter0,deltaTrbcs)
+C     deltaTrbcs :: time step used to compute iteration numbers for singleTimeFiles
+C     rbcsIter0  :: singleTimeFile iteration number corresponding to rbcsForcingOffset
+C
       _RS RBC_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,maskLEN)
       _RL RBCtemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL RBCsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -22,7 +30,11 @@ c number of mask to read
       _RL tauRelaxS
       _RL rbcsForcingPeriod
       _RL rbcsForcingCycle
+      _RL rbcsForcingOffset
+      _RL deltaTrbcs
       INTEGER rbcsIniter
+      INTEGER rbcsIter0
+      LOGICAL rbcsSingleTimeFiles
       LOGICAL useRBCtemp
       LOGICAL useRBCsalt
       CHARACTER*(MAX_LEN_FNAM) relaxMaskFile(maskLEN)
@@ -37,10 +49,14 @@ c number of mask to read
      &          tauRelaxT,
      &          tauRelaxS,
      &          rbcsForcingPeriod,
-     &          rbcsForcingCycle
+     &          rbcsForcingCycle,
+     &          rbcsForcingOffset,
+     &          deltaTrbcs
       COMMON /RBCS_PARM01_I/
-     &          rbcsIniter
+     &          rbcsIniter,
+     &          rbcsIter0
       COMMON /RBCS_PARM01_L/
+     &          rbcsSingleTimeFiles,
      &          useRBCtemp,
      &          useRBCsalt
       COMMON /RBCS_PARM01_C/
