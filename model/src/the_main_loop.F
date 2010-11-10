@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.108 2010/10/20 22:08:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.109 2010/11/10 22:07:52 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -444,6 +444,24 @@ c--     >>> Loop body start <<<
         nIter0 = NINT( (startTime-baseTime)/deltaTClock )
         ikey_dynamics = ilev_1
 #endif
+
+#ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_ECCO
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesfields',myThid)
+#endif
+c--   Accumulate time averages of temperature, salinity
+#ifdef ALLOW_AUTODIFF
+C--   Reset the model iteration counter and the model time.
+      myIter = nIter0 + (iloop-1)
+      myTime = startTime + float(iloop-1)*deltaTclock
+#endif
+      CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
+      CALL COST_AVERAGESFIELDS( mytime, mythid )
+      CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
+#endif /* ALLOW_ECCO */
+#endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
