@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1330 2010/11/09 14:08:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1331 2010/11/10 00:34:43 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/rbcs:
+  - replace rbcsInIter by rbcsForcingOffset, the time in seconds at the
+    beginning of the first rbcs forcing period.
+  - add option rbcsSingleTimeFiles that makes rbcs read forcing data like the
+    offline package, i.e., one file per time, labeled by iteration number;
+    deltaTrbcs sets the timestep with which the data was generated;
+    rbcsIter0 is the forcing iteration corresponding to rbcsForcingOffset.
+  - rbcsForcingCycle=0 makes forcing non-cyclic.
+  - make arithmetic safe for negative times and odd forcing periods.
 
 checkpoint62n (2010/11/09)
 o pkg/seaice:
