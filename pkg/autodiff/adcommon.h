@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.24 2010/08/09 16:05:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.25 2010/11/10 22:11:17 gforget Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -175,6 +175,13 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL advice  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adseaice_dynvars_1/ 
      &     adarea, adheff, adhsnow, aduice, advice
+#endif
+
+#ifdef ALLOW_GGL90
+      _RL adggl90tke     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adggl90diffkr  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      common /adggl90_fields/
+     &     adggl90tke, adggl90diffkr
 #endif
 
 #ifdef ALLOW_DEPTH_CONTROL

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.46 2010/05/20 03:00:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.47 2010/11/10 22:11:17 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -175,6 +175,12 @@ C--     Read IO error counter
 #endif
         endif
 
+#ifdef ALLOW_GGL90
+c        CALL WRITE_FLD_XYZ_RL ( 'ADJggl90diffkr.',suff, adggl90diffkr,
+c     &       myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL ( 'ADJggl90tke.',suff, adggl90tke,
+     &       myIter, myThid)
+#endif
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr,
      &       myIter, myThid)
