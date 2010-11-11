@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1332 2010/11/11 09:43:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1333 2010/11/11 16:38:03 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F: a few cosmetic changes that reduce the
+  number of lines of code
 o pkg/obcs: add boundary conditions following Stevens (1990)
   - the code follows old MOM/NAOSIM code
   - so far it is only implemented for the eastern and western boundaries
