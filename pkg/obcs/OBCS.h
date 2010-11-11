@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.24 2010/10/25 22:44:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.25 2010/11/11 09:42:54 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -6,6 +6,16 @@ C $Name:  $
 C useOrlanskiNorth/South/East/West
 C                  :: specify Orlanski boundary conditions for northern/
 C                     southern/eastern/Western
+C useStevensNorth/South/East/West
+C                  :: use open boundary computations following Stevens (1990)
+C T/SrelaxStevens  :: relaxation time scale (in seconds) for T/S-points
+C                     for Stevens boundary conditions
+C useStevensPhaseVel 
+C                  :: use phase velocity contribution for open boundary
+C                     computations following Stevens (1990), default = true
+C useStevensAdvection
+C                  :: use advective contribution for open boundary
+C                     computations following Stevens (1990), default = true
 C useOBCSsponge    :: turns on sponge layer along boundary (def=false)
 C spongeThickness  :: number grid points that make up the sponge layer (def=0)
 C U/Vrelaxobcsinner/bound :: relaxation time scale (in seconds) for U/V-points
@@ -34,6 +44,9 @@ C                     uice/vice :: sea ice u/v drift velocities
      & spongeThickness,
      & useOrlanskiNorth,useOrlanskiSouth,
      & useOrlanskiEast,useOrlanskiWest,
+     & useStevensNorth,useStevensSouth,
+     & useStevensEast,useStevensWest, 
+     & useStevensPhaseVel, useStevensAdvection,
      & useOBCSsponge, useOBCSbalance, useOBCSprescribe,
      & OBCSprintDiags, useOBCSYearlyFields,
      & OBCSfixTopo
@@ -42,6 +55,12 @@ C                     uice/vice :: sea ice u/v drift velocities
       LOGICAL useOrlanskiSouth
       LOGICAL useOrlanskiEast
       LOGICAL useOrlanskiWest
+      LOGICAL useStevensNorth
+      LOGICAL useStevensSouth
+      LOGICAL useStevensEast
+      LOGICAL useStevensWest
+      LOGICAL useStevensPhaseVel
+      LOGICAL useStevensAdvection
       LOGICAL useOBCSsponge
       LOGICAL useOBCSbalance
       LOGICAL useOBCSprescribe
@@ -51,11 +70,14 @@ C                     uice/vice :: sea ice u/v drift velocities
 
       COMMON /PARM_R_OB/
      & Urelaxobcsinner,Urelaxobcsbound,
-     & Vrelaxobcsinner,Vrelaxobcsbound
+     & Vrelaxobcsinner,Vrelaxobcsbound,
+     & TrelaxStevens, SrelaxStevens
       _RS Urelaxobcsinner
       _RS Urelaxobcsbound
       _RS Vrelaxobcsinner
       _RS Vrelaxobcsbound
+      _RS TrelaxStevens
+      _RS SrelaxStevens
 
       COMMON /OBCS_ACTIVE_TILES/
      &  tileHasOBN, tileHasOBS, tileHasOBE, tileHasOBW

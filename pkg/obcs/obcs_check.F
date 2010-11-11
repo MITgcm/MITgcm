@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.16 2010/10/25 22:47:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.17 2010/11/11 09:42:54 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -194,6 +194,92 @@ C     msgBuf   :: Informational/error message buffer
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
       ENDIF
+
+#ifdef ALLOW_OBCS_STEVENS
+      WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS_STEVENS'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+#ifdef ALLOW_ORLANSKI
+C     check compatibility with Orlanski
+      IF (      ( useStevensNorth.AND.useOrlanskiNorth )
+     &     .OR. ( useStevensSouth.AND.useOrlanskiSouth )
+     &     .OR. (  useStevensEast.AND.useOrlanskiEast )
+     &     .OR. (  useStevensWest.AND.useOrlanskiWest ) ) THEN
+       WRITE(msgBuf,'(A)')
+     & 'OBCS_CHECK: ERROR: both useOrlanski* and useStevens* logicals'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     &      'OBCS_CHECK: ERROR: are true for at least one boundary'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+#endif /* ALLOW_ORLANSKI */
+      IF (useStevensNorth.OR.useStevensSouth.OR.
+     &    useStevensEast.OR.useStevensWest) THEN
+       IF (nonlinFreeSurf.GT.0) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ENDIF
+       IF (usePTracers) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: WARNING: useStevens* OBC with'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: WARNING: pTracers not yet implemented'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: WARNING: therefore expect the unexpected'
+         CALL PRINT_ERROR( msgBuf , 1)
+CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ENDIF
+       IF (useSEAICE) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: WARNING: useStevens* OBC with'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: WARNING: SEAICE not yet implemented'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: WARNING: therefore expect the unexpected'
+         CALL PRINT_ERROR( msgBuf , 1)
+CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ENDIF
+CML       IF (usePTracers) THEN
+CML        WRITE(msgBuf,'(A)')
+CML     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML        WRITE(msgBuf,'(A)')
+CML     &  'OBCS_CHECK: ERROR: pTracers not yet implemented'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+CML       ENDIF
+CML       IF (useSEAICE) THEN
+CML        WRITE(msgBuf,'(A)')
+CML     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML        WRITE(msgBuf,'(A)')
+CML     &  'OBCS_CHECK: ERROR: SEAICE not yet implemented'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+CML       ENDIF
+      ENDIF
+#else
+      IF (useStevensNorth.OR.useStevensSouth.OR.
+     &    useStevensEast.OR.useStevensWest) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: #undef OBCS_ALLOW_STEVENS  and'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: one of useStevens* logicals is true'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF 
+#endif /* ALLOW_OBCS_STEVENS */
 
 #ifndef ALLOW_OBCS_PRESCRIBE
       IF (useOBCSprescribe) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.27 2010/10/13 20:57:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.28 2010/11/11 09:42:54 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -113,6 +113,8 @@ C     buf :: used to exchange OB_Jnorth, ...
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
      &          useOrlanskiNorth,useOrlanskiSouth,
      &          useOrlanskiEast,useOrlanskiWest,
+     &          useStevensNorth,useStevensSouth,
+     &          useStevensEast,useStevensWest,
      &          OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &          OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
@@ -140,6 +142,11 @@ C     buf :: used to exchange OB_Jnorth, ...
      &          Vrelaxobcsinner,Vrelaxobcsbound,
      &          spongeThickness
 #endif
+#ifdef ALLOW_OBCS_STEVENS
+      NAMELIST /OBCS_PARM04/
+     &          TrelaxStevens,SrelaxStevens,
+     &          useStevensPhaseVel,useStevensAdvection
+#endif ALLOW_OBCS_STEVENS
 
       _BEGIN_MASTER(myThid)
 
@@ -183,6 +190,12 @@ C--   Default flags and values for OBCS
       useOrlanskiSouth   =.FALSE.
       useOrlanskiEast    =.FALSE.
       useOrlanskiWest    =.FALSE.
+      useStevensNorth    =.FALSE.
+      useStevensSouth    =.FALSE.
+      useStevensEast     =.FALSE.
+      useStevensWest     =.FALSE.
+      useStevensPhaseVel =.TRUE.
+      useStevensAdvection=.TRUE.
       useOBCSsponge      =.FALSE.
       useOBCSbalance     =.FALSE.
       useOBCSprescribe   =.FALSE.
@@ -294,6 +307,13 @@ CML      Vrelaxobcsinner = 5. _d 0
 CML      Vrelaxobcsbound = 1. _d 0
       IF (useOBCSsponge)
      & READ(UNIT=iUnit,NML=OBCS_PARM03)
+#endif
+#ifdef ALLOW_OBCS_STEVENS
+      TrelaxStevens   = 0. _d 0
+      SrelaxStevens   = 0. _d 0
+      IF (      useStevensNorth .OR. useStevensSouth 
+     &     .OR. useStevensEast  .OR. useStevensWest  )
+     & READ(UNIT=iUnit,NML=OBCS_PARM04)
 #endif
 
       IF ( debugLevel .GE. debLevB ) THEN
