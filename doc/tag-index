@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1331 2010/11/10 00:34:43 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1332 2010/11/11 09:43:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs: add boundary conditions following Stevens (1990)
+  - the code follows old MOM/NAOSIM code
+  - so far it is only implemented for the eastern and western boundaries
+    and NOT for pTracers
 o pkg/rbcs:
   - replace rbcsInIter by rbcsForcingOffset, the time in seconds at the
     beginning of the first rbcs forcing period.
