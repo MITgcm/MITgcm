@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.97 2010/11/05 08:10:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.98 2010/11/11 16:37:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -157,14 +157,18 @@ c temporary variables available for the various computations
       _RL saltFluxAdjust      (1:sNx,1:sNy)
 #endif
 
+      INTEGER nDim
 #ifdef SEAICE_MULTICATEGORY
-      INTEGER it
       INTEGER ilockey
-      _RL RK
+      PARAMETER ( nDim = MULTDIM )
+#else
+      PARAMETER ( nDim = 1 )
+#endif /* SEAICE_MULTICATEGORY */
+      INTEGER it
+      _RL pFac
       _RL heffActualP         (1:sNx,1:sNy)
       _RL a_QbyATMmult_cover  (1:sNx,1:sNy)
       _RL a_QSWbyATMmult_cover(1:sNx,1:sNy)
-#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       _RL DIAGarray     (1:sNx,1:sNy)
@@ -172,13 +176,9 @@ c temporary variables available for the various computations
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
-
-
 c ===================================================================
 c =================PART 0: constants and initializations=============
 c ===================================================================
-
-
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
@@ -276,10 +276,8 @@ c
 #ifdef SEAICE_SALINITY
           saltFluxAdjust(I,J)        = 0.0 _d 0
 #endif
-#ifdef SEAICE_MULTICATEGORY
           a_QbyATMmult_cover(I,J)    = 0.0 _d 0
           a_QSWbyATMmult_cover(I,J)  = 0.0 _d 0
-#endif
          ENDDO
         ENDDO
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
@@ -506,13 +504,6 @@ C wind speed from exf
 C determine available heat due to the atmosphere -- for ice covered water
 C =======================================================================
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tice   = comlev1, key = ikey_dynamics, byte = isbyte
-# ifdef SEAICE_MULTICATEGORY
-CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 #ifdef ALLOW_ATM_WIND
         IF (useRelativeWind) THEN
 C     Compute relative wind speed over sea ice.
@@ -537,20 +528,32 @@ C     Compute relative wind speed over sea ice.
         ENDIF
 #endif
 
-#ifdef SEAICE_MULTICATEGORY
-C--  Start loop over muli-categories
-        DO IT=1,MULTDIM
 #ifdef ALLOW_AUTODIFF_TAMC
-         ilockey = (iicekey-1)*MULTDIM + IT
+CADJ STORE tice   = comlev1, key = ikey_dynamics, byte = isbyte
+# ifdef SEAICE_MULTICATEGORY
+CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
+# endif /* SEAICE_MULTICATEGORY */
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   Start loop over muli-categories, if SEAICE_MULTICATEGORY is undefined
+C     nDim = 1, and there is only one loop iteration
+        DO IT=1,nDim
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_MULTICATEGORY
+C     Why do we need this store directive when we have just stored 
+C     TICES before the loop?
+         ilockey = (iicekey-1)*nDim + IT
 CADJ STORE tices(:,:,it,bi,bj) = comlev1_multdim,
 CADJ &                           key = ilockey, byte = isbyte
+#endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
-         RK=REAL(IT)
+         pFac = (2.0 _d 0*real(IT)-1.0 _d 0)/nDim
          DO J=1,sNy
           DO I=1,sNx
-           heffActualP(I,J)=
-     &        (heffActual(I,J)/MULTDIM)*((2.0 _d 0*RK)-1.0 _d 0)
+           heffActualP(I,J)= heffActual(I,J)*pFac
+#ifdef SEAICE_MULTICATEGORY
            TICE(I,J,bi,bj)=TICES(I,J,IT,bi,bj)
+#endif /* SEAICE_MULTICATEGORY */
           ENDDO
          ENDDO
          CALL SEAICE_SOLVE4TEMP(
@@ -561,22 +564,17 @@ CADJ &                           key = ilockey, byte = isbyte
          DO J=1,sNy
           DO I=1,sNx
 C     average over categories
-           a_QbyATM_cover (I,J) =
-     &       a_QbyATM_cover(I,J) + a_QbyATMmult_cover(I,J)/MULTDIM
-           a_QSWbyATM_cover (I,J) =
-     &       a_QSWbyATM_cover(I,J) + a_QSWbyATMmult_cover(I,J)/MULTDIM
+           a_QbyATM_cover (I,J)   = a_QbyATM_cover(I,J) 
+     &          + a_QbyATMmult_cover(I,J)/nDim
+           a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J) 
+     &          + a_QSWbyATMmult_cover(I,J)/nDim
+#ifdef SEAICE_MULTICATEGORY
            TICES(I,J,IT,bi,bj) = TICE(I,J,bi,bj)
+#endif /* SEAICE_MULTICATEGORY */
           ENDDO
          ENDDO
         ENDDO
 C--  End loop over multi-categories
-#else  /* SEAICE_MULTICATEGORY */
-        CALL SEAICE_SOLVE4TEMP(
-     I       UG, heffActual, hsnowActual,
-     U       TICE,
-     O       a_QbyATM_cover, a_QSWbyATM_cover,
-     I       bi, bj, myTime, myIter, myThid )
-#endif /* SEAICE_MULTICATEGORY */
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
@@ -916,21 +914,16 @@ C gain of new ice over open water
 c compute cover fraction tendency
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            d_AREAbyATM(I,J)=tmpscal4/HO_south
-#ifndef SEAICE_GROWTH_LEGACY
-     &          +HALF*tmpscal3/heffActual(I,J)
-#else
-     &          +HALF*tmpscal3*AREApreTH(I,J)
-     &          /(tmpscal0+.00001 _d 0)
-#endif
           ELSE
            d_AREAbyATM(I,J)=tmpscal4/HO
-#ifndef SEAICE_GROWTH_LEGACY
-     &          +HALF*tmpscal3/heffActual(I,J)
-#else
-     &          +HALF*tmpscal3*AREApreTH(I,J)
-     &          /(tmpscal0+.00001 _d 0)
-#endif
           ENDIF
+          d_AREAbyATM(I,J)=d_AREAbyATM(I,J)
+#ifndef SEAICE_GROWTH_LEGACY
+     &         +HALF*tmpscal3/heffActual(I,J)
+#else
+     &         +HALF*tmpscal3*AREApreTH(I,J)
+     &         /(tmpscal0+.00001 _d 0)
+#endif
 c apply tendency
           IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
