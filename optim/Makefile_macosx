@@ -1,0 +1,100 @@
+
+#***********************************************************************
+# Makefile for the ECCO off-line large scale optimization.
+#
+# started: Patrick Heimbach heimbach@mit.edu 19-Jun-2000
+#
+# changed: 
+#
+#***********************************************************************
+
+# The optimization routines.
+SRC		=	optim_main.F			\
+			optim_sub.F			\
+			optim_numbmod.F			\
+			optim_initmod.F			\
+			optim_readdata.F		\
+			optim_writedata.F		\
+			optim_write_control.F		\
+			xerbla.F                        \
+			simul.F
+
+EXEDIR     = ./
+
+# Location of cpp preprocessor
+# default is (Linux)
+CPP             = cat $< | /usr/local/bin/cpp -P -traditional
+# on SUNOS
+# CPP		= cat $< | /usr/ccs/lib/cpp
+
+INCLUDEDIRS     = -I.				\
+		-I../mysetups/ecco_v4_cs32/build_1d/
+
+LIBDIRS         = -L.				\
+                  -L../lsopt/
+
+LIBS            = -llsopt_ecco			\
+                  -framework vecLib
+
+# OPTMODE is either equal to OFFLINE or ONLINE
+OPTMODE         = OFFLINE
+EXECUTABLE      = $(EXEDIR)optim.x
+
+# The cpp flags.
+CPPFLAGS = -DREAL_BYTE=4		\
+	-DMAX_INDEPEND=1000000		\
+	-D_RL='double precision'	\
+	-D_RS='double precision'	\
+	-D$(OPTMODE)
+
+#                -DMAX_INDEPEND=293570968        \
+# FORTRAN compiler and its flags.
+# default is (Linux)
+FC              = gfortran
+FFLAGS          =  -fconvert=big-endian
+
+# ifort compilers
+#FC              = ifort
+#FFLAGS          = -mp -132 -r8 -i4 -w95 -W0 -WB -CB -fpe0 -traceback -convert big_endian -assume byterecl
+
+# SGI o3k IRIX64
+#FC              = f77
+#FFLAGS          = -extend_source -bytereclen -mips4 -r8 -static
+
+# AER cluster
+#FC		= /opt/mpich/bin/mpif77
+#FFLAGS		= -byteswapio -r8 -Mnodclchk -Mextend
+
+# File removal.
+RM		= rm -f
+
+SMALLF      = $(SRC:.F=.for)
+OBJECTS     = $(SRC:.F=.o)
+
+.SUFFIXES: .o .for .F
+
+all: $(EXECUTABLE)
+$(EXECUTABLE): $(SMALLF)
+	$(FC) $(FFLAGS) -c $(SMALLF)
+	$(FC) -o $@ $(FFLAGS) $(OBJECTS) $(LIBDIRS) $(LIBS)
+
+depend:
+	makedepend -o .for $(INCLUDEDIRS) $(SRC)
+
+# The normal chain of rules is (  .F - .for - .o  )
+.F.for:
+	$(CPP) $(CPPFLAGS) $(INCLUDEDIRS) > $@
+xerbla.for: xerbla.F
+	$(CPP) $(INCLUDEDIRS) > $@
+.for.o:
+	$(FC) $(FFLAGS) -c $<
+
+# Cleaning options.
+clean:
+	$(RM) $(EXEDIR)optim.x *.o *.for
+
+scratch:
+	$(RM) OPWARMD OPWARMI $(EXEDIR)optim.x $(OBJ)
+
+# DO NOT DELETE
+
