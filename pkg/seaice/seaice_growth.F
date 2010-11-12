@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.98 2010/11/11 16:37:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.99 2010/11/12 23:10:07 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -535,25 +535,20 @@ CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
 # endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Start loop over muli-categories, if SEAICE_MULTICATEGORY is undefined
-C     nDim = 1, and there is only one loop iteration
+#ifdef SEAICE_MULTICATEGORY
         DO IT=1,nDim
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef SEAICE_MULTICATEGORY
 C     Why do we need this store directive when we have just stored 
 C     TICES before the loop?
          ilockey = (iicekey-1)*nDim + IT
 CADJ STORE tices(:,:,it,bi,bj) = comlev1_multdim,
 CADJ &                           key = ilockey, byte = isbyte
-#endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
          pFac = (2.0 _d 0*real(IT)-1.0 _d 0)/nDim
          DO J=1,sNy
           DO I=1,sNx
            heffActualP(I,J)= heffActual(I,J)*pFac
-#ifdef SEAICE_MULTICATEGORY
            TICE(I,J,bi,bj)=TICES(I,J,IT,bi,bj)
-#endif /* SEAICE_MULTICATEGORY */
           ENDDO
          ENDDO
          CALL SEAICE_SOLVE4TEMP(
@@ -568,12 +563,17 @@ C     average over categories
      &          + a_QbyATMmult_cover(I,J)/nDim
            a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J) 
      &          + a_QSWbyATMmult_cover(I,J)/nDim
-#ifdef SEAICE_MULTICATEGORY
            TICES(I,J,IT,bi,bj) = TICE(I,J,bi,bj)
-#endif /* SEAICE_MULTICATEGORY */
           ENDDO
          ENDDO
         ENDDO
+#else
+        CALL SEAICE_SOLVE4TEMP(
+     I       UG, heffActual, hsnowActual,
+     U       TICE,
+     O       a_QbyATM_cover, a_QSWbyATM_cover,
+     I       bi, bj, myTime, myIter, myThid )
+#endif /* SEAICE_MULTICATEGORY */
 C--  End loop over multi-categories
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -792,13 +792,13 @@ C ===============================
 #ifndef SEAICE_GROWTH_LEGACY
 #ifdef SEAICE_DO_OPEN_WATER_GROWTH
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH(:,:) = comlev1_bibj,
+CADJ STORE HEFF(:,:,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 #endif
         DO J=1,sNy
          DO I=1,sNx
           if ( (r_QbyATM_open(I,J).GT.0. _d 0).AND.
-     &         (AREApreTH(I,J).GT.0. _d 0) ) then
+     &         (HEFF(I,J,bi,bj).GT.0. _d 0) ) then
             tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j)
 c at this point r_QbyOCN(i,j)<=0 and represents the heat
 c that is still needed to get to the first layer to freezing point
