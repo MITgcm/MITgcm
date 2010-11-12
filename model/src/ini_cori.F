@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.32 2010/04/19 15:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.33 2010/11/12 03:16:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,7 @@ C     !USES:
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     myThid  :: my Thread Id number
       INTEGER myThid
 CEOP
 
@@ -54,7 +55,7 @@ C     facGrid :: Factor for grid to meter conversion
 
 
 C     Initialise coriolis parameter
-      IF     ( useConstantF ) THEN
+      IF     ( selectCoriMap.EQ.0 ) THEN
 C       Constant F case
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -62,12 +63,12 @@ C       Constant F case
               DO i=1-Olx,sNx+Olx
                 fCori(i,j,bi,bj)  = f0
                 fCoriG(i,j,bi,bj) = f0
-                fCoriCos(i,j,bi,bj)=0. _d 0
+                fCoriCos(i,j,bi,bj)=fPrime
               ENDDO
             ENDDO
           ENDDO
         ENDDO
-      ELSEIF ( useBetaPlaneF ) THEN
+      ELSEIF ( selectCoriMap.EQ.1 ) THEN
 C       Beta plane case
         facGrid = 1. _d 0
         IF ( usingSphericalPolarGrid
@@ -78,12 +79,12 @@ C       Beta plane case
               DO i=1-Olx,sNx+Olx
                 fCori(i,j,bi,bj)  = f0+beta*_yC(i,j,bi,bj)*facGrid
                 fCoriG(i,j,bi,bj) = f0+beta* yG(i,j,bi,bj)*facGrid
-                fCoriCos(i,j,bi,bj)=0. _d 0
+                fCoriCos(i,j,bi,bj)=fPrime
               ENDDO
             ENDDO
           ENDDO
         ENDDO
-      ELSEIF ( useSphereF ) THEN
+      ELSEIF ( selectCoriMap.EQ.2 ) THEN
 C       Spherical case
 C       Note in this case we assume yC is in degrees.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -104,7 +105,7 @@ c       CALL WRITE_FLD_XY_RL('fCoriC',' ',fCori ,  0,myThid)
 c       CALL WRITE_FLD_XY_RL('fCoriG',' ',fCoriG , 0,myThid)
 c       CALL WRITE_FLD_XY_RL('fCorCs',' ',fCoriCos,0,myThid)
       ELSE
-C       Special custom form
+C       Initialise to zero
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1-Oly,sNy+Oly
@@ -116,6 +117,10 @@ C       Special custom form
             ENDDO
           ENDDO
         ENDDO
+      ENDIF
+
+      IF ( selectCoriMap.EQ.3 ) THEN
+C     Special custom form: read from files
         CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )
         CALL READ_REC_XY_RS( 'fCorCs.bin', fCoriCos,1, 0, myThid )
         IF ( .NOT.useCubedSphereExchange ) THEN

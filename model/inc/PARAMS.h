@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.242 2010/10/05 17:43:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.243 2010/11/12 03:15:54 jmc Exp $
 C $Name:  $
 C
 
@@ -151,13 +151,18 @@ C     nTimeSteps          :: Number of timesteps to execute
 C     writeStatePrec      :: Precision used for writing model state.
 C     writeBinaryPrec     :: Precision used for writing binary files
 C     readBinaryPrec      :: Precision used for reading binary files
+C     selectCoriMap       :: select setting of Coriolis parameter map:
+C                           =0 f-Plane (Constant Coriolis, = f0)
+C                           =1 Beta-Plane Coriolis (= f0 + beta.y)
+C                           =2 Spherical Coriolis (= 2.omega.sin(phi))
+C                           =3 Read Coriolis 2-d fields from files.
+C     selectSigmaCoord    :: option related to sigma vertical coordinate
 C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
 C     selectNHfreeSurf    :: option for Non-Hydrostatic (free-)Surface formulation:
 C                           =0 (default) hydrostatic surf. ; > 0 add NH effects.
-C     selectSigmaCoord    :: option related to sigma vertical coordinate
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
@@ -183,9 +188,10 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        nIter0, nTimeSteps, nEndIter,
      &        writeStatePrec,
      &        writeBinaryPrec, readBinaryPrec,
+     &        selectCoriMap,
+     &        selectSigmaCoord,
      &        nonlinFreeSurf, select_rStar,
      &        selectNHfreeSurf,
-     &        selectSigmaCoord,
      &        selectAddFluid,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
@@ -203,10 +209,11 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER writeStatePrec
       INTEGER writeBinaryPrec
       INTEGER readBinaryPrec
+      INTEGER selectCoriMap
+      INTEGER selectSigmaCoord
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
       INTEGER selectNHfreeSurf
-      INTEGER selectSigmaCoord
       INTEGER selectAddFluid
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
@@ -257,9 +264,6 @@ C     metricTerms   :: Flag which turns metric terms on or off.
 C     useNHMTerms   :: If TRUE use non-hydrostatic metric terms.
 C     useCoriolis   :: Flag which turns the coriolis terms on and off.
 C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
-C     useConstantF  :: Coriolis parameter set to f0
-C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
-C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
 C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     vectorInvariantMomentum :: use Vector-Invariant form (mom_vecinv package)
 C                                (default = F = use mom_fluxform package)
@@ -357,7 +361,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & momViscosity, momAdvection, momForcing,
      & momPressureForcing, metricTerms, useNHMTerms,
      & useCoriolis, use3dCoriolis,
-     & useConstantF, useBetaPlaneF, useSphereF,
      & useCDscheme, vectorInvariantMomentum,
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
      & upwindVorticity, highOrderVorticity,
@@ -437,9 +440,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL tempStepping
       LOGICAL saltStepping
       LOGICAL metricTerms
-      LOGICAL useConstantF
-      LOGICAL useBetaPlaneF
-      LOGICAL useSphereF
       LOGICAL use3dCoriolis
       LOGICAL useCDscheme
       LOGICAL useEnergyConservingCoriolis
@@ -543,6 +543,8 @@ C     recip_rSphere  :: Reciprocal radius of sphere ( m ).
 C     f0         :: Reference coriolis parameter ( 1/s )
 C                   ( Southern edge f for beta plane )
 C     beta       :: df/dy ( s^-1.m^-1 )
+C     fPrime     :: Second Coriolis parameter ( 1/s ), related to Y-component
+C                   of rotation (reference value = 2.Omega.Cos(Phi))
 C     omega      :: Angular velocity ( rad/s )
 C     rotationPeriod :: Rotation period (s) (= 2.pi/omega)
 C     viscArNr   :: vertical profile of Eddy viscosity coeff.
@@ -705,7 +707,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & delR, delRc, delX, delY,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
-     & xgOrigin, ygOrigin, rSphere, recip_RSphere, f0, beta,
+     & xgOrigin, ygOrigin, rSphere, recip_rSphere,
+     & f0, beta, fPrime, omega, rotationPeriod,
      & viscFacAdj, viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
@@ -732,7 +735,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
-     & cosPower, cAdjFreq, omega, rotationPeriod,
+     & cosPower, cAdjFreq,
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
@@ -763,6 +766,10 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL rSphere
       _RL recip_rSphere
       _RL f0
+      _RL beta
+      _RL fPrime
+      _RL omega
+      _RL rotationPeriod
       _RL freeSurfFac
       _RL implicSurfPress
       _RL implicDiv2Dflow
@@ -773,7 +780,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL hFacMinDr
       _RL hFacInf
       _RL hFacSup
-      _RL beta
       _RL viscArNr(Nr)
       _RL viscFacAdj
       _RL viscAh
@@ -847,8 +853,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL mtFacMom
       _RL cosPower
       _RL cAdjFreq
-      _RL omega
-      _RL rotationPeriod
       _RL tauThetaClimRelax
       _RL tauSaltClimRelax
       _RL latBandClimRelax

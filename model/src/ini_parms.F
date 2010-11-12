@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.232 2010/09/11 21:24:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.233 2010/11/12 03:16:16 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -116,6 +116,9 @@ C     nRetired :: Counter used to trap gracefully namelists containing "retired"
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
 C Namelist PARM01:
+C     useConstantF  :: Coriolis coeff set to f0     (replaced by selectCoriMap=0)
+C     useBetaPlaneF :: Coriolis coeff = f0 + beta.y (replaced by selectCoriMap=1)
+C     useSphereF    :: Coriolis = 2.omega.sin(phi)  (replaced by selectCoriMap=2)
 C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
 C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
@@ -143,6 +146,7 @@ C     shelfIceFile :: File containing the topography of the shelfice draught
 C                     (replaced by SHELFICEtopoFile in SHELFICE.h)
 
       INTEGER nRetired
+      LOGICAL useConstantF, useBetaPlaneF, useSphereF
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
@@ -163,7 +167,7 @@ C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravitySign, nh_Am2,
      & gravity, gBaro, rhonil, tAlpha, sBeta,
-     & f0, beta, omega, rotationPeriod,
+     & selectCoriMap, f0, beta, fPrime, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC4leith,
@@ -292,6 +296,9 @@ C--   Initialise "which vertical coordinate system used" flags.
 
 C--   Initialise retired parameters to unlikely value
       nRetired = 0
+      useConstantF    = .FALSE.
+      useBetaPlaneF   = .FALSE.
+      useSphereF      = .TRUE.
       tempDiffusion   = .TRUE.
       saltDiffusion   = .TRUE.
       tracerAdvScheme = UNSET_I
@@ -686,6 +693,33 @@ c     CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
 
 C     Check for retired parameters still being used
       nRetired = 0
+      IF ( useConstantF ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "useConstantF" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: set "selectCoriMap"',
+     &  ' [0,1,2,3] to impose a setting over grid default'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( useBetaPlaneF ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "useBetaPlaneF" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: set "selectCoriMap"',
+     &  ' [0,1,2,3] to impose a setting over grid default'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( .NOT. useSphereF ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "useSphereF" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: set "selectCoriMap"',
+     &  ' [0,1,2,3] to impose a setting over grid default'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
       IF ( zonal_filt_lat .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
@@ -1174,11 +1208,9 @@ C--   Make metric term & Coriolis settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN
        metricTerms   = .FALSE.
        useNHMTerms   = .FALSE.
-       useBetaPlaneF = .TRUE.
       ENDIF
       IF ( usingCylindricalGrid ) THEN
        useNHMTerms   = .FALSE.
-       useBetaPlaneF = .TRUE.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
@@ -1186,12 +1218,19 @@ C--   Make metric term & Coriolis settings consistent with underlying grid.
       IF ( usingCurvilinearGrid ) THEN
        metricTerms   = .FALSE.
       ENDIF
-      IF ( useConstantF ) useBetaPlaneF = .FALSE.
-      IF ( useConstantF )  useSphereF   = .FALSE.
-      IF ( useBetaPlaneF ) useSphereF   = .FALSE.
-      IF ( usingCartesianGrid .OR. usingCylindricalGrid
-     &     .OR. .NOT.(nonHydrostatic.OR.quasiHydrostatic) )
-     &                    use3dCoriolis = .FALSE.
+      IF ( selectCoriMap.EQ.-1 ) THEN
+        IF ( usingCartesianGrid.OR.usingCylindricalGrid ) THEN
+C       default is to use Beta-Plane Coriolis
+          selectCoriMap = 1
+        ELSE
+C       default for other grids is to use Spherical Coriolis
+          selectCoriMap = 2
+        ENDIF
+      ENDIF
+      IF ( .NOT.(nonHydrostatic.OR.quasiHydrostatic) )
+     &                          use3dCoriolis = .FALSE.
+      IF ( (selectCoriMap.EQ.0 .OR.selectCoriMap.EQ.1)
+     &     .AND. fPrime.EQ.0. ) use3dCoriolis = .FALSE.
 
 C--   Grid rotation
       IF ( phiEuler .NE. 0. _d 0 .OR. thetaEuler .NE. 0. _d 0

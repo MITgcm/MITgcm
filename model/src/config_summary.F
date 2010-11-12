@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.124 2010/09/11 21:24:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.125 2010/11/12 03:16:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,6 +47,7 @@ C     ioUnit :: Temp. for fortran I/O unit
 C     i, k   :: Loop counters.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 rUnits
+      CHARACTER*10 endList
       INTEGER ioUnit
       INTEGER i, k
       _RL     bufRL(Nr+1)
@@ -60,6 +61,7 @@ C     i, k   :: Loop counters.
 
       ioUnit = standardMessageUnit
       rUnits = ' m'
+      endList = '    ;     '
       IF ( usingPCoords ) rUnits = 'Pa'
 
       WRITE(msgBuf,'(A)')
@@ -236,6 +238,8 @@ C     i, k   :: Loop counters.
      &'   /* Reference coriolis parameter ( 1/s ) */')
       CALL WRITE_0D_RL( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
+      CALL WRITE_0D_RL( fPrime,  INDEX_NONE,'fPrime =',
+     &'   /* Second coriolis parameter ( 1/s ) */')
       CALL WRITE_0D_L( rigidLid, INDEX_NONE, 'rigidLid =',
      &'   /* Rigid lid on/off flag */')
       CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
@@ -262,12 +266,16 @@ C     i, k   :: Loop counters.
      & '  /* minimum partial cell factor (hFac) */')
       CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMinDr =',
      &  ' /* minimum partial cell thickness ('//rUnits//') */')
-      CALL WRITE_0D_I( nonlinFreeSurf, INDEX_NONE,
-     & 'nonlinFreeSurf =',
-     & '  /* Non-linear Free Surf. options (-1,0,1,2,3)*/')
+      WRITE(msgBuf,'(2A)') 'nonlinFreeSurf =',
+     &  ' /* Non-linear Free Surf. options (-1,0,1,2,3)*/'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = nonlinFreeSurf
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
       WRITE(msgBuf,'(2A)') '     -1,0= Off ; 1,2,3= On,',
      &  ' 2=+rescale gU,gV, 3=+update cg2d solv.'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_RL( hFacInf, INDEX_NONE, 'hFacInf = ',
      & '  /* lower threshold for hFac (nonlinFreeSurf only)*/')
       CALL WRITE_0D_RL( hFacSup, INDEX_NONE, 'hFacSup = ',
@@ -331,12 +339,18 @@ C     i, k   :: Loop counters.
      &                '  /* metric-Terms on/off flag */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
-      CALL WRITE_0D_L( useConstantF,  INDEX_NONE,
-     & 'useConstantF =', '  /* use Constant f0 Coriolis flag */')
-      CALL WRITE_0D_L( useBetaPlaneF,  INDEX_NONE,
-     & 'useBetaPlaneF =', ' /* use Beta-Plane Coriolis flag */')
-      CALL WRITE_0D_L( useSphereF,  INDEX_NONE,
-     & 'useSphereF  =', '   /* use Spherical Coriolis flag */')
+c------------
+      WRITE(msgBuf,'(2A)')
+     & 'selectCoriMap =', ' /* Coriolis Map options (0,1,2,3)*/'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = selectCoriMap
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)') '    0= f-Plane ; 1= Beta-Plane ;',
+     &  ' 2= Spherical ; 3= read from file'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+c------------
       CALL WRITE_0D_L( use3dCoriolis,  INDEX_NONE,
      & 'use3dCoriolis =', ' /* 3-D Coriolis on/off flag */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
@@ -349,8 +363,6 @@ C     i, k   :: Loop counters.
      & 'useJamartMomAdv=',' /* V.I. Non-linear terms Jamart flag */')
       CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
      & 'useAbsVorticity=',' /* Work with f+zeta in Coriolis */')
-c     CALL WRITE_0D_I( selectVortScheme, INDEX_NONE,
-c    & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */')
       WRITE(msgBuf,'(2A)')
      & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -376,8 +388,7 @@ c    &             ' and enstrophy (2D, nonDiv.) conserving scheme'
 c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 c     WRITE(msgBuf,'(2A)') '         from Arakawa & Lamb, 77'
 c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)')   '    ;     '
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
      & 'upwindVorticity=',' /* Upwind bias vorticity flag */')
       CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,

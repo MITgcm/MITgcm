@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.149 2010/09/11 21:24:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.150 2010/11/12 03:16:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,9 +79,7 @@ C     General curvilinear coordinate system
 C     General cylindrical coordinate system
       usingCylindricalGrid= .FALSE.
 C     Coriolis map:
-      useConstantF        = .FALSE.
-      useBetaPlaneF       = .FALSE.
-      useSphereF          = .TRUE.
+      selectCoriMap       = -1
       use3dCoriolis       = .TRUE.
 C     grid rotation
       rotateGrid          = .FALSE.
@@ -98,6 +96,7 @@ C         (so that the default produces same results as before)
 c     rhoConstFresh       = 999.8 _d 0
       f0                  = 1. _d -4
       beta                = 1. _d -11
+      fPrime              = 0. _d 0
 C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       rotationPeriod      = 86164. _d 0
       viscAh              = 0. _d 3
