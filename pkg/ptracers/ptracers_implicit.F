@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.7 2010/01/02 23:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.8 2010/11/14 23:32:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -14,6 +14,10 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C     Calls the implicit vertical advection/diffusion routine
 C     for each passive tracer.
+C     And apply open boundary conditions for each passive tracer
+C Note: would be better to apply OBC in a dedicated S/R ;
+C     can be done here assuming no other contribution modify passive
+C     tracer after implicit vertical diffus/advect is applied.
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -56,9 +60,6 @@ C  iTracer :: tracer index
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER GAD_TR
-#ifdef ALLOW_OBCS
-      INTEGER k
-#endif
 CEOP
 
       iMin=0
@@ -129,20 +130,18 @@ CADJ &     key=iptrkey, byte=isbyte
      I         GAD_TR, kappaRk, recip_HFacC,
      U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I         myThid )
+        ENDIF
 
 #ifdef ALLOW_OBCS
-C--      Apply open boundary conditions
+C--     Apply open boundary conditions
         IF ( useOBCS ) THEN
-         DO k=1,Nr
           CALL OBCS_APPLY_PTRACER(
-     I         bi, bj, k, iTracer,
-     U         gPtr(1-Olx,1-Oly,k,bi,bj,iTracer),
+     I         bi, bj, 0, iTracer,
+     U         gPtr(1-Olx,1-Oly,1,bi,bj,iTracer),
      I         myThid )
-         ENDDO
         ENDIF
 #endif /* ALLOW_OBCS */
 
-        ENDIF
 C End of tracer loop
       ENDDO
 
