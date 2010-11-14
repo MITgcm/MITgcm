@@ -1,12 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.5 2010/01/31 20:25:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.6 2010/11/14 23:26:39 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_APPLY_SEAICE
+C     !INTERFACE:
+
       SUBROUTINE OBCS_APPLY_SEAICE( myThid )
-C     /==========================================================\
-C     | S/R OBCS_APPLY_SEAICE                                    |
-C     \==========================================================/
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | S/R OBCS_APPLY_SEAICE
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
@@ -20,223 +28,265 @@ C     == Global variables ==
 # include "SEAICE_PARAMS.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+C    myThid   :: my Thread Id number
       INTEGER myThid
+CEOP
 
 #if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER I, J, bi, bj, I_obc, J_obc
+      INTEGER bi, bj
+      INTEGER i, j
+      INTEGER Iobc, Jobc
 #ifdef OBCS_SEAICE_SMOOTH_EDGE
+      INTEGER k
       _RL edge_val
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C     Set model variables to OB values on Northern Boundary
 #ifdef ALLOW_OBCS_NORTH
-        DO I=1-Olx,sNx+Olx
-         J_obc = OB_Jn(I,bi,bj)
-         IF ( J_obc.NE.0 ) THEN
-          DO J = J_obc, J_obc+Oly
-           IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' )
-     &          HEFF(I,J,bi,bj)  = OBNh (I,bi,bj)
-           IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' )
-     &          AREA(I,J,bi,bj)  = OBNa (I,bi,bj)
-           IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' )
-     &          HSNOW(I,J,bi,bj) = OBNsn(I,bi,bj)
+        IF ( tileHasOBN(bi,bj) ) THEN
+C     Set model variables to OB values on Northern Boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(I,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+            DO j = Jobc, Jobc+Oly
+              HEFF(i,j,bi,bj)  = OBNh (i,bi,bj)
+              AREA(i,j,bi,bj)  = OBNa (i,bi,bj)
+              HSNOW(i,j,bi,bj) = OBNsn(i,bi,bj)
 # ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' )
-     &          HSALT(I,J,bi,bj) = OBNsl(I,bi,bj)
+              HSALT(i,j,bi,bj) = OBNsl(i,bi,bj)
 # endif
-          ENDDO
-# ifdef OBCS_SEAICE_SMOOTH_EDGE
-          IF ( _maskS(I,J_obc-1,1,bi,bj) .NE. 0. ) THEN
-           IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HEFF(I,J_obc-1,bi,bj)+HEFF(I,J_obc-2,bi,bj))
-            HEFF(I,J_obc-1,bi,bj) = edge_val
-            HEFF(I,J_obc-2,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (AREA(I,J_obc-1,bi,bj)+AREA(I,J_obc-2,bi,bj))
-            AREA(I,J_obc-1,bi,bj) = edge_val
-            AREA(I,J_obc-2,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSNOW(I,J_obc-1,bi,bj)+HSNOW(I,J_obc-2,bi,bj))
-            HSNOW(I,J_obc-1,bi,bj) = edge_val
-            HSNOW(I,J_obc-2,bi,bj) = edge_val
-           ENDIF
-#  ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSALT(I,J_obc-1,bi,bj)+HSALT(I,J_obc-2,bi,bj))
-            HSALT(I,J_obc-1,bi,bj) = edge_val
-            HSALT(I,J_obc-2,bi,bj) = edge_val
-           ENDIF
-#  endif
+            ENDDO
           ENDIF
-# endif /* OBCS_SEAICE_SMOOTH_EDGE */
-         ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
-C     Set model variables to OB values on Southern Boundary
 #ifdef ALLOW_OBCS_SOUTH
-        DO I=1-Olx,sNx+Olx
-         J_obc = OB_Js(I,bi,bj)
-         IF ( J_obc.NE.0 ) THEN
-          DO J = J_obc-Oly, J_obc
-           IF ( SEAICEadvHeff .AND. OBShfile .NE. ' ' )
-     &          HEFF(I,J,bi,bj)  = OBSh (I,bi,bj)
-           IF ( SEAICEadvArea .AND. OBSafile .NE. ' ' )
-     &          AREA(I,J,bi,bj)  = OBSa (I,bi,bj)
-           IF ( SEAICEadvSNOW .AND. OBSsnfile .NE. ' ' )
-     &          HSNOW(I,J,bi,bj) = OBSsn(I,bi,bj)
+        IF ( tileHasOBS(bi,bj) ) THEN
+C     Set model variables to OB values on Southern Boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(I,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+            DO j = Jobc-Oly, Jobc
+              HEFF(i,j,bi,bj)  = OBSh (i,bi,bj)
+              AREA(i,j,bi,bj)  = OBSa (i,bi,bj)
+              HSNOW(i,j,bi,bj) = OBSsn(i,bi,bj)
 # ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBSslfile .NE. ' ' )
-     &          HSALT(I,J,bi,bj) = OBSsl(I,bi,bj)
+              HSALT(i,j,bi,bj) = OBSsl(i,bi,bj)
 # endif
-          ENDDO
-# ifdef OBCS_SEAICE_SMOOTH_EDGE
-          IF ( _maskS(I,J_obc+2,1,bi,bj) .NE. 0. ) THEN
-           IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HEFF(I,J_obc+1,bi,bj)+HEFF(I,J_obc+2,bi,bj))
-            HEFF(I,J_obc+1,bi,bj) = edge_val
-            HEFF(I,J_obc+2,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (AREA(I,J_obc+1,bi,bj)+AREA(I,J_obc+2,bi,bj))
-            AREA(I,J_obc+1,bi,bj) = edge_val
-            AREA(I,J_obc+2,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSNOW(I,J_obc+1,bi,bj)+HSNOW(I,J_obc+2,bi,bj))
-            HSNOW(I,J_obc+1,bi,bj) = edge_val
-            HSNOW(I,J_obc+2,bi,bj) = edge_val
-           ENDIF
-#  ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSALT(I,J_obc+1,bi,bj)+HSALT(I,J_obc+2,bi,bj))
-            HSALT(I,J_obc+1,bi,bj) = edge_val
-            HSALT(I,J_obc+2,bi,bj) = edge_val
-           ENDIF
-#  endif
+            ENDDO
           ENDIF
-# endif /* OBCS_SEAICE_SMOOTH_EDGE */
-         ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
-C     Set model variables to OB values on Eastern Boundary
 #ifdef ALLOW_OBCS_EAST
-        DO J=1-Oly,sNy+Oly
-         I_obc = OB_Ie(J,bi,bj)
-         IF (I_obc.NE.0) THEN
-          DO I = I_obc, I_obc+Olx
-           IF ( SEAICEadvHeff .AND. OBEhfile .NE. ' ' )
-     &          HEFF(I,J,bi,bj)  = OBEh (J,bi,bj)
-           IF ( SEAICEadvArea .AND. OBEafile .NE. ' ' )
-     &          AREA(I,J,bi,bj)  = OBEa (J,bi,bj)
-           IF ( SEAICEadvSNOW .AND. OBEsnfile .NE. ' ' )
-     &          HSNOW(I,J,bi,bj) = OBEsn(J,bi,bj)
+        IF ( tileHasOBE(bi,bj) ) THEN
+C     Set model variables to OB values on Eastern Boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(J,bi,bj)
+          IF (Iobc.NE.0) THEN
+            DO i = Iobc, Iobc+Olx
+              HEFF(i,j,bi,bj)  = OBEh (j,bi,bj)
+              AREA(i,j,bi,bj)  = OBEa (j,bi,bj)
+              HSNOW(i,j,bi,bj) = OBEsn(j,bi,bj)
 # ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBEslfile .NE. ' ' )
-     &          HSALT(I,J,bi,bj) = OBEsl(J,bi,bj)
+              HSALT(i,j,bi,bj) = OBEsl(j,bi,bj)
 # endif
-          ENDDO
-# ifdef OBCS_SEAICE_SMOOTH_EDGE
-          IF ( _maskW(I_obc-1,J,1,bi,bj) .NE. 0. ) THEN
-           IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HEFF(I_obc-1,J,bi,bj)+HEFF(I_obc-2,J,bi,bj))
-            HEFF(I_obc-1,J,bi,bj) = edge_val
-            HEFF(I_obc-2,J,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (AREA(I_obc-1,J,bi,bj)+AREA(I_obc-2,J,bi,bj))
-            AREA(I_obc-1,J,bi,bj) = edge_val
-            AREA(I_obc-2,J,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSNOW(I_obc-1,J,bi,bj)+HSNOW(I_obc-2,J,bi,bj))
-            HSNOW(I_obc-1,J,bi,bj) = edge_val
-            HSNOW(I_obc-2,J,bi,bj) = edge_val
-           ENDIF
-#  ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSALT(I_obc-1,J,bi,bj)+HSALT(I_obc-2,J,bi,bj))
-            HSALT(I_obc-1,J,bi,bj) = edge_val
-            HSALT(I_obc-2,J,bi,bj) = edge_val
-           ENDIF
-#  endif
+            ENDDO
           ENDIF
-# endif /* OBCS_SEAICE_SMOOTH_EDGE */
-         ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
-C     Set model variables to OB values on Western Boundary
 #ifdef ALLOW_OBCS_WEST
-        DO J=1-Oly,sNy+Oly
-         I_obc=OB_Iw(J,bi,bj)
-         IF (I_obc.NE.0) THEN
-          DO I = I_obc-Olx, I_obc
-           IF ( SEAICEadvHeff .AND. OBWhfile .NE. ' ' )
-     &          HEFF(I,J,bi,bj)  = OBWh (J,bi,bj)
-           IF ( SEAICEadvArea .AND. OBWafile .NE. ' ' )
-     &          AREA(I,J,bi,bj)  = OBWa (J,bi,bj)
-           IF ( SEAICEadvSNOW .AND. OBWsnfile .NE. ' ' )
-     &          HSNOW(I,J,bi,bj) = OBWsn(J,bi,bj)
+        IF ( tileHasOBW(bi,bj) ) THEN
+C     Set model variables to OB values on Western Boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc=OB_Iw(j,bi,bj)
+          IF (Iobc.NE.0) THEN
+            DO i = Iobc-Olx, Iobc
+              HEFF(i,j,bi,bj)  = OBWh (j,bi,bj)
+              AREA(i,j,bi,bj)  = OBWa (j,bi,bj)
+              HSNOW(i,j,bi,bj) = OBWsn(j,bi,bj)
 # ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBWslfile .NE. ' ' )
-     &          HSALT(I,J,bi,bj) = OBWsl(J,bi,bj)
+              HSALT(i,j,bi,bj) = OBWsl(j,bi,bj)
 # endif
-          ENDDO
-# ifdef OBCS_SEAICE_SMOOTH_EDGE
-          IF ( _maskW(I_obc+2,J,1,bi,bj) .NE. 0. ) THEN
-           IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HEFF(I_obc+1,J,bi,bj)+HEFF(I_obc+2,J,bi,bj))
-            HEFF(I_obc+1,J,bi,bj) = edge_val
-            HEFF(I_obc+2,J,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (AREA(I_obc+1,J,bi,bj)+AREA(I_obc+2,J,bi,bj))
-            AREA(I_obc+1,J,bi,bj) = edge_val
-            AREA(I_obc+2,J,bi,bj) = edge_val
-           ENDIF
-           IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSNOW(I_obc+1,J,bi,bj)+HSNOW(I_obc+2,J,bi,bj))
-            HSNOW(I_obc+1,J,bi,bj) = edge_val
-            HSNOW(I_obc+2,J,bi,bj) = edge_val
-           ENDIF
-#  ifdef SEAICE_SALINITY
-           IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
-            edge_val = 0.5 _d 0 *
-     &           (HSALT(I_obc+1,J,bi,bj)+HSALT(I_obc+2,J,bi,bj))
-            HSALT(I_obc+1,J,bi,bj) = edge_val
-            HSALT(I_obc+2,J,bi,bj) = edge_val
-           ENDIF
-#  endif
+            ENDDO
           ENDIF
-# endif /* OBCS_SEAICE_SMOOTH_EDGE */
-         ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 #endif /* ALLOW_OBCS_WEST */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef OBCS_SEAICE_SMOOTH_EDGE
+        k = 1
+
+#ifdef ALLOW_OBCS_NORTH
+        IF ( tileHasOBN(bi,bj) ) THEN
+C     Northern Boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(I,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           IF ( _maskS(i,Jobc-1,k,bi,bj) .NE. 0. ) THEN
+            IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HEFF(i,Jobc-1,bi,bj)+HEFF(i,Jobc-2,bi,bj))
+             HEFF(i,Jobc-1,bi,bj) = edge_val
+             HEFF(i,Jobc-2,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (AREA(i,Jobc-1,bi,bj)+AREA(i,Jobc-2,bi,bj))
+             AREA(i,Jobc-1,bi,bj) = edge_val
+             AREA(i,Jobc-2,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSNOW(i,Jobc-1,bi,bj)+HSNOW(i,Jobc-2,bi,bj))
+             HSNOW(i,Jobc-1,bi,bj) = edge_val
+             HSNOW(i,Jobc-2,bi,bj) = edge_val
+            ENDIF
+#  ifdef SEAICE_SALINITY
+            IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSALT(i,Jobc-1,bi,bj)+HSALT(i,Jobc-2,bi,bj))
+             HSALT(i,Jobc-1,bi,bj) = edge_val
+             HSALT(i,Jobc-2,bi,bj) = edge_val
+            ENDIF
+#  endif
+           ENDIF
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+
+#ifdef ALLOW_OBCS_SOUTH
+        IF ( tileHasOBS(bi,bj) ) THEN
+C     Southern Boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(I,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           IF ( _maskS(i,Jobc+2,k,bi,bj) .NE. 0. ) THEN
+            IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HEFF(i,Jobc+1,bi,bj)+HEFF(i,Jobc+2,bi,bj))
+             HEFF(i,Jobc+1,bi,bj) = edge_val
+             HEFF(i,Jobc+2,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (AREA(i,Jobc+1,bi,bj)+AREA(i,Jobc+2,bi,bj))
+             AREA(i,Jobc+1,bi,bj) = edge_val
+             AREA(i,Jobc+2,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSNOW(i,Jobc+1,bi,bj)+HSNOW(i,Jobc+2,bi,bj))
+             HSNOW(i,Jobc+1,bi,bj) = edge_val
+             HSNOW(i,Jobc+2,bi,bj) = edge_val
+            ENDIF
+#  ifdef SEAICE_SALINITY
+            IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSALT(i,Jobc+1,bi,bj)+HSALT(i,Jobc+2,bi,bj))
+             HSALT(i,Jobc+1,bi,bj) = edge_val
+             HSALT(i,Jobc+2,bi,bj) = edge_val
+            ENDIF
+#  endif
+           ENDIF
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+
+#ifdef ALLOW_OBCS_EAST
+        IF ( tileHasOBE(bi,bj) ) THEN
+C     Eastern Boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(J,bi,bj)
+          IF (Iobc.NE.0) THEN
+           IF ( _maskW(Iobc-1,j,k,bi,bj) .NE. 0. ) THEN
+            IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HEFF(Iobc-1,j,bi,bj)+HEFF(Iobc-2,j,bi,bj))
+             HEFF(Iobc-1,j,bi,bj) = edge_val
+             HEFF(Iobc-2,j,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (AREA(Iobc-1,j,bi,bj)+AREA(Iobc-2,j,bi,bj))
+             AREA(Iobc-1,j,bi,bj) = edge_val
+             AREA(Iobc-2,j,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSNOW(Iobc-1,j,bi,bj)+HSNOW(Iobc-2,j,bi,bj))
+             HSNOW(Iobc-1,j,bi,bj) = edge_val
+             HSNOW(Iobc-2,j,bi,bj) = edge_val
+            ENDIF
+#  ifdef SEAICE_SALINITY
+            IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSALT(Iobc-1,j,bi,bj)+HSALT(Iobc-2,j,bi,bj))
+             HSALT(Iobc-1,j,bi,bj) = edge_val
+             HSALT(Iobc-2,j,bi,bj) = edge_val
+            ENDIF
+#  endif
+           ENDIF
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_EAST */
+
+#ifdef ALLOW_OBCS_WEST
+        IF ( tileHasOBW(bi,bj) ) THEN
+C     Western Boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc=OB_Iw(j,bi,bj)
+          IF (Iobc.NE.0) THEN
+           IF ( _maskW(Iobc+2,j,k,bi,bj) .NE. 0. ) THEN
+            IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HEFF(Iobc+1,j,bi,bj)+HEFF(Iobc+2,j,bi,bj))
+             HEFF(Iobc+1,j,bi,bj) = edge_val
+             HEFF(Iobc+2,j,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvArea .AND. OBNafile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (AREA(Iobc+1,j,bi,bj)+AREA(Iobc+2,j,bi,bj))
+             AREA(Iobc+1,j,bi,bj) = edge_val
+             AREA(Iobc+2,j,bi,bj) = edge_val
+            ENDIF
+            IF ( SEAICEadvSNOW .AND. OBNsnfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSNOW(Iobc+1,j,bi,bj)+HSNOW(Iobc+2,j,bi,bj))
+             HSNOW(Iobc+1,j,bi,bj) = edge_val
+             HSNOW(Iobc+2,j,bi,bj) = edge_val
+            ENDIF
+#  ifdef SEAICE_SALINITY
+            IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
+             edge_val = 0.5 _d 0 *
+     &           (HSALT(Iobc+1,j,bi,bj)+HSALT(Iobc+2,j,bi,bj))
+             HSALT(Iobc+1,j,bi,bj) = edge_val
+             HSALT(Iobc+2,j,bi,bj) = edge_val
+            ENDIF
+#  endif
+           ENDIF
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_WEST */
+
+#endif /* OBCS_SEAICE_SMOOTH_EDGE */
 
        ENDDO
       ENDDO
