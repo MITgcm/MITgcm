@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.131 2010/11/07 23:33:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.132 2010/11/14 23:35:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -714,13 +714,6 @@ CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /*ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 
-#ifdef   ALLOW_OBCS
-C--      Apply open boundary conditions
-c        IF (useOBCS) THEN
-c          CALL OBCS_APPLY_TS( bi, bj, k, gT, gS, myThid )
-c        END IF
-#endif   /* ALLOW_OBCS */
-
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
 C  freezing at surface level has been moved to FORWARD_STEP
@@ -892,6 +885,7 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #ifndef ALLOW_LONGSTEP
         IF     ( usePTRACERS ) THEN
 C--     Vertical advection/diffusion (implicit) for passive tracers
+C       Also apply open boundary conditions for each passive tracer
            CALL PTRACERS_IMPLICIT(
      U                             kappaRk,
      I                             bi, bj, myTime, myIter, myThid )
@@ -901,13 +895,6 @@ C--     Vertical advection/diffusion (implicit) for passive tracers
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
-c       IF ( ( implicitDiffusion
-c    &    .OR. tempImplVertAdv
-c    &    .OR. saltImplVertAdv
-c    &       ) .AND. useOBCS     ) THEN
-c          DO K=1,Nr
-c            CALL OBCS_APPLY_TS( bi, bj, k, gT, gS, myThid )
-c          ENDDO
         IF ( useOBCS ) THEN
            CALL OBCS_APPLY_TS( bi, bj, 0, gT, gS, myThid )
         ENDIF
