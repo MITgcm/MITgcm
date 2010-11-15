@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.21 2010/10/05 17:43:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.22 2010/11/15 01:07:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -108,9 +108,9 @@ C      One caveat is that this model does not work in conjunction
 C      with new nest(ing) approach, so we exclude it in certain cases.
 cgms)
 #ifndef ALLOW_NEST_PARENT
-# ifndef ALLOW_NEST_CHILD
+#ifndef ALLOW_NEST_CHILD
        MPI_COMM_MODEL = MPI_COMM_WORLD
-# endif /* ALLOW_NEST_CHILD */
+#endif /* ALLOW_NEST_CHILD */
 #endif /* ALLOW_NEST_PARENT */
 
 #ifdef ALLOW_OASIS
@@ -138,30 +138,21 @@ C--    Ask coupler interface for a communicator
        IF ( useCoupler) CALL CPL_INIT
 #endif
 
-C--    Get my process number
-C--    Case without Nest(ing)
-#ifndef ALLOW_NEST_PARENT
-#ifndef ALLOW_NEST_CHILD
-        CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
-#endif
-#endif
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    Get my process number
 C--    Case with Nest(ing)
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_NEST_PARENT
-       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
-       CALL MPI_COMM_SIZE( MPI_COMM_WORLD, size, mpiRC )
+        CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
+        CALL MPI_COMM_SIZE( MPI_COMM_WORLD, size, mpiRC )
         npd=size-(NCPUs_PAR_P+NCPUs_CLD_P(1))
 
         MSTR_DRV_P(1) = 0
         MSTR_PAR_P(1) = npd
         MSTR_CLD_P(1) = NCPUs_PAR_P + npd
 
-
         DO Count_Lev = 2, NST_LEV_TOT_P
-         MSTR_DRV_P(Count_Lev) =
-     $MSTR_PAR_P(Count_Lev-1) + NCPUs_CLD_P(Count_Lev - 1)
+         MSTR_DRV_P(Count_Lev) = MSTR_PAR_P(Count_Lev-1)
+     &                         + NCPUs_CLD_P(Count_Lev-1)
          MSTR_CLD_P(Count_Lev) = MSTR_DRV_P(Count_Lev) + 1
          MSTR_PAR_P(Count_Lev) = MSTR_CLD_P(Count_Lev-1)
         ENDDO
@@ -190,14 +181,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         MSTR_PAR_C(1) = npd
         MSTR_CLD_C(1) = NCPUs_PAR_C + npd
 
-
         DO Count_Lev = 2, NST_LEV_TOT_C
          MSTR_DRV_C(Count_Lev) = MSTR_CLD_C(Count_Lev-1) +
      &          NCPUs_CLD_C(Count_Lev - 1)
          MSTR_CLD_C(Count_Lev) = MSTR_DRV_C(Count_Lev) + 1
          MSTR_PAR_C(Count_Lev) = MSTR_CLD_C(Count_Lev-1)
         ENDDO
-
 
         IF (NST_LEV_C.EQ.1) THEN
          IF (mpiMyWId.GE.MSTR_PAR_C(1).AND.mpiMyWId.LT.MSTR_CLD_C(1))
@@ -214,20 +203,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         write(*,*) 'mpiMyWId=',mpiMyWId,'color=',color
 #endif /* ALLOW_NEST_CHILD */
 
-
 #if defined(ALLOW_NEST_PARENT) || defined(ALLOW_NEST_CHILD)
-        call MPI_COMM_SPLIT (MPI_COMM_WORLD, color, 0,
-     &                       MPI_COMM_MODEL,mpiRC)
+       CALL MPI_COMM_SPLIT ( MPI_COMM_WORLD, color, 0,
+     &                       MPI_COMM_MODEL, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
-        write(*,*) 'error SPLIT'
-        ENDIF
-C--    Get my process number
-       CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
-
-#endif /* ALLOW_NEST_PARENT */
+         write(*,*) 'error SPLIT'
+       ENDIF
+#endif /* ALLOW_NEST_PARENT | ALLOW_NEST_CHILD */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C--    Get my process number
+       CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
