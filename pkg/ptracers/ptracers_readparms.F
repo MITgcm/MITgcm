@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.36 2010/09/05 22:28:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.37 2010/11/16 17:46:00 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -32,6 +32,9 @@ C     !INPUT PARAMETERS:
 CEOP
 
 #ifdef ALLOW_PTRACERS
+C     !FUNCTIONS
+      LOGICAL  GAD_VALID_ADVSCHEME
+      EXTERNAL GAD_VALID_ADVSCHEME
 
 C     !LOCAL VARIABLES:
 C     k,iTracer  :: loop indices
@@ -40,6 +43,7 @@ C     msgBuf     :: message buffer
       INTEGER k, iTracer
       INTEGER iUnit
       INTEGER ic
+      LOGICAL validNum
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL PTRACERS_diffKr(PTRACERS_num)
       _RL tauTr1ClimRelax
@@ -183,15 +187,17 @@ C     Check we are not trying to use more tracers than allowed
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
-C     Check that enough parameters were specified
+C     Check for valid advection-scheme number
       DO iTracer=1,PTRACERS_numInUse
-        IF (PTRACERS_advScheme(iTracer).EQ.0) THEN
-          WRITE(msgBuf,'(A,A,I3)')
-     &         ' PTRACERS_READPARMS: ',
-     &         'No advect. scheme specified for tracer #',
-     &         iTracer
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        validNum = GAD_VALID_ADVSCHEME( PTRACERS_advScheme(iTracer) )
+        IF ( .NOT.validNum ) THEN
+         WRITE(msgBuf,'(2A,I6)') 'PTRACERS_READPARMS: ',
+     &   'invalid advection scheme number=',PTRACERS_advScheme(iTracer)
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I6)') 'PTRACERS_READPARMS: ',
+     &   'for tracer #', iTracer
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
         ENDIF
       ENDDO
 #ifndef INCLUDE_IMPLVERTADV_CODE
@@ -364,4 +370,3 @@ C     Everyone else must wait for the parameters to be loaded
 
       RETURN
       END
-
