@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1334 2010/11/12 03:18:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1335 2010/11/16 17:53:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - record overlap minimum size for each advection scheme;
+  - refine criteria on overlap minimum size;
+  - check and stop (in gad_check) if overlap size is too small.
+o pkg/obcs:
+  - with ptracers: remove multiple calls to obcs_apply_ptracer (only done
+    once, in ptracers_implicit.F)
+  - with seaice: remove test on empty file name in obcs_apply_seaice (always
+    apply OB values when tile has OB)
 o model/src, coriolis setting:
   - integer parameter "selectCoriMap" (=0,1,2) replaces 3 logical
     useConstantF, useBetaPlaneF, useSphereF ; can now read coriolis from
