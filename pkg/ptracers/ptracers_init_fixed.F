@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.7 2008/05/09 21:44:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.8 2010/11/16 17:48:00 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -33,9 +33,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     iTracer  :: tracer index
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       INTEGER iTracer
-      INTEGER minOlSize
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _BEGIN_MASTER( myThid )
@@ -48,7 +47,7 @@ C     Initialise internal parameter in common block:
         PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
       ENDDO
 
-C     Loop over tracers
+C--   Loop over tracers
       DO iTracer = 1, PTRACERS_numInUse
 
         IF (
@@ -83,9 +82,13 @@ C     Loop over tracers
      &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
      &     PTRACERS_SOM_Advection(iTracer)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT, myThid)
+     &                      SQUEEZE_RIGHT, myThid )
 
-C       end of Tracer loop
+C-    Update Overlap minimum size according to tracer advection
+        GAD_OlMinSize(1) = MAX( GAD_OlMinSize(1),
+     &          GAD_Scheme_olSize(PTRACERS_advScheme(iTracer)) )
+
+C--   end of Tracer loop
       ENDDO
 
 #ifdef PTRACERS_ALLOW_DYN_STATE
@@ -97,28 +100,18 @@ C       end of Tracer loop
      &                                  myThid )
 #endif
 
-      _END_MASTER( myThid )
-      _BARRIER
-
-C--   Check size of the overlap :
+C--   Constrain on size of the overlap :
       IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
 C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
-        minOlSize = 2
-        DO iTracer = 1, PTRACERS_numInUse
-         IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_FLUX_LIMIT .OR.
-     &        PTRACERS_advScheme(iTracer).EQ.ENUM_DST3_FLUX_LIMIT .OR.
-     &        PTRACERS_advScheme(iTracer).EQ.ENUM_DST3 ) minOlSize = 4
-        ENDDO
-        IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
-          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
-     &     'Multi-Dim Advection with 5-points stencil'
-          CALL PRINT_ERROR( msgBuf , myThid)
-          WRITE(msgBuf,'(2A,I2)') 'PTRACERS_INIT_FIXED: ',
-     &     'advection scheme needs at least Olx,Oly=', minOlSize
-          CALL PRINT_ERROR( msgBuf , myThid)
-          STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
-        ENDIF
+        GAD_OlMinSize(3) = MAX( GAD_OlMinSize(3), 2 )
       ENDIF
+      WRITE(msgBuf,'(2A,9I3)') 'PTRACERS_INIT_FIXED: ',
+     &      'GAD_OlMinSize=', GAD_OlMinSize
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+      _END_MASTER( myThid )
+      _BARRIER
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

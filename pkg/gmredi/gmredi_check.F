@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.19 2010/03/24 21:21:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.20 2010/11/16 17:44:21 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -43,7 +43,7 @@ C     myThid :: my Thread Id number
 #ifdef ALLOW_GMREDI
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf :: Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 #ifdef ALLOW_PTRACERS
@@ -170,35 +170,17 @@ C     Make sure we are not trying to use some arrays that are unavailable
 C     Check size of overlap region
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
      &       .AND. GM_Visbeck_alpha.NE.0.
-     &       .AND. useMultiDimAdvec
-     &       .AND. (Olx.LT.3 .OR. Oly.LT.3) ) THEN
+     &       .AND. useMultiDimAdvec ) THEN
 C       Visbeck variable K requires 1 more row/column in the overlap:
 C       might need to increase Olx,Oly from 2 to 3 if GM advective
 C       form & multi-dim advection are used. This happens when:
 C       a) using a 5 points stencil advection scheme ; or
 C       b) using a 3 points stencil advection scheme on CS-grid
-C note: not clear how to check (b) since none of the advection scheme
-C       currently implemented falls in this category, except if
-C       GAD_FLUX_LIMITER.h is changed to use a "constant" flux-limiter
-C       (from Lax-Wendroff to 1rst Order upwind).
-C-------
-c       IF ( (useCubedSphereExchange
-c    &       .AND.(    tempAdvScheme.EQ.ENUM_LAXWENDROFF
-c    &            .OR. saltAdvScheme.EQ.ENUM_LAXWENDROFF )
-c    &       ).OR.(    tempAdvScheme.EQ.ENUM_FLUX_LIMIT
-c    &            .OR. saltAdvScheme.EQ.ENUM_FLUX_LIMIT
-c    &            .OR. tempAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
-c    &            .OR. saltAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
-c    &            .OR. tempAdvScheme.EQ.ENUM_DST3
-c    &            .OR. saltAdvScheme.EQ.ENUM_DST3 )
-c    &     ) THEN
-          WRITE(msgBuf,'(A,A)')
-     &     'GMREDI_CHECK: Visbeck + GM_AdvForm in MultiDimAdvec'
-          CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(A)') 'GMREDI_CHECK: need at least Olx,Oly = 3'
-          CALL PRINT_ERROR( msgBuf , myThid )
-          STOP 'ABNORMAL END: S/R GMREDI_CHECK'
-c       ENDIF
+        GAD_OlMinSize(2) = MAX( GAD_OlMinSize(2), 1)
+        WRITE(msgBuf,'(A,9I3)')
+     &      'GMREDI_CHECK: GAD_OlMinSize=', GAD_OlMinSize
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
       ENDIF
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
