@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.50 2010/09/25 23:09:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.51 2010/11/16 17:41:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,9 +87,7 @@ C---  Start with non-standard packages (without or with non standard flag)
       ENDIF
 #endif
 
-#ifdef ALLOW_GENERIC_ADVDIFF
-      IF (useGAD) CALL GAD_CHECK( myThid )
-#else
+#ifndef ALLOW_GENERIC_ADVDIFF
       IF ( tempStepping .OR. saltStepping ) THEN
         WRITE(msgBuf,'(2A)')
      &  'PACKAGES_CHECK: cannot step forward Temp or Salt',
@@ -336,6 +334,16 @@ C---  Continue with standard packages (with standard usePKG flag)
      & 'NEST_PARENT',' ',myThid)
 #endif
 
+#ifdef ALLOW_OASIS
+      IF (useOASIS) CALL OASIS_CHECK( myThid )
+#else
+      IF (useOASIS) CALL PACKAGES_ERROR_MSG('OASIS',' ',myThid)
+#endif
+
+#ifdef ALLOW_ECCO
+      CALL ECCO_CHECK( myThid )
+#endif
+
 #ifndef ALLOW_EMBED_FILES
       IF (useEMBED_FILES) CALL PACKAGES_ERROR_MSG(
      &                                  'EMBED_FILES',' ',myThid)
@@ -347,14 +355,10 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useMYPACKAGE) CALL PACKAGES_ERROR_MSG('MYPACKAGE',' ',myThid)
 #endif
 
-#ifdef ALLOW_OASIS
-      IF (useOASIS) CALL OASIS_CHECK( myThid )
-#else
-      IF (useOASIS) CALL PACKAGES_ERROR_MSG('OASIS',' ',myThid)
-#endif
-
-#ifdef ALLOW_ECCO
-      CALL ECCO_CHECK( myThid )
+#ifdef ALLOW_GENERIC_ADVDIFF
+C-    Check generic AdvDiff setting and related overlap minimum size:
+C     for this reason, called after other ${pkg}_check S/R
+      IF (useGAD) CALL GAD_CHECK( myThid )
 #endif
 
 C---  Exclusive packages (which cannot be used together):
