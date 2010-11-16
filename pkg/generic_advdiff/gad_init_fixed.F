@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.6 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.7 2010/11/16 17:39:13 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -25,17 +25,63 @@ C     myThid  :: My Thread Id. number
       INTEGER myThid
 CEOP
 
+C     !FUNCTIONS
+      LOGICAL  GAD_VALID_ADVSCHEME
+      EXTERNAL GAD_VALID_ADVSCHEME
+
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf  :: Informational/error meesage buffer
+C     msgBuf  :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER   minOlSize
+      LOGICAL   validNum
       INTEGER   n
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
-C-- Set SOM I/O suffix (used for pickup, diagnostics ...)
+C-- Initialise advection scheme parameter
+      DO n=1,GAD_Scheme_MaxNum
+        GAD_Scheme_olSize(n) = 0
+      ENDDO
+      validNum = GAD_VALID_ADVSCHEME( ENUM_UPWIND_1RST     )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_CENTERED_2ND    )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_UPWIND_3RD      )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_CENTERED_4TH    )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_DST2            )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_FLUX_LIMIT      )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_DST3            )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_DST3_FLUX_LIMIT )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_OS7MP           )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_SOM_PRATHER     )
+     &     .AND. GAD_VALID_ADVSCHEME( ENUM_SOM_LIMITER     )
+      IF ( .NOT.validNum ) THEN
+        WRITE(msgBuf,'(A)')
+     &     'GAD_INIT_FIXED: Coding error in Advection-Scheme Number'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I4)') 'GAD_INIT_FIXED:',
+     &     ' one exceeds GAD_Scheme_MaxNum=', GAD_Scheme_MaxNum
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
+      ENDIF
+C-  Set overlap minimum size for each advection scheme:
+      GAD_Scheme_olSize( ENUM_UPWIND_1RST     ) = 1
+      GAD_Scheme_olSize( ENUM_CENTERED_2ND    ) = 1
+      GAD_Scheme_olSize( ENUM_UPWIND_3RD      ) = 2
+      GAD_Scheme_olSize( ENUM_CENTERED_4TH    ) = 2
+      GAD_Scheme_olSize( ENUM_DST2            ) = 1
+      GAD_Scheme_olSize( ENUM_FLUX_LIMIT      ) = 2
+      GAD_Scheme_olSize( ENUM_DST3            ) = 2
+      GAD_Scheme_olSize( ENUM_DST3_FLUX_LIMIT ) = 2
+      GAD_Scheme_olSize( ENUM_OS7MP           ) = 4
+      GAD_Scheme_olSize( ENUM_SOM_PRATHER     ) = 1
+      GAD_Scheme_olSize( ENUM_SOM_LIMITER     ) = 1
+C-  Initialise overlap minimum size for GAD pkg:
+      GAD_OlMinSize(1) = 0
+      GAD_OlMinSize(2) = 0
+      GAD_OlMinSize(3) = 1
+
+C-  Set SOM I/O suffix (used for pickup, diagnostics ...)
       DO n=1,nSOM
         somSfx(n) = '  '
         IF (n.EQ.1) somSfx(n) = '_x'
@@ -48,6 +94,36 @@ C-- Set SOM I/O suffix (used for pickup, diagnostics ...)
         IF (n.EQ.8) somSfx(n) = 'xz'
         IF (n.EQ.9) somSfx(n) = 'yz'
       ENDDO
+
+C-- Check that Temp & Salt have valid advection scheme number:
+      validNum = GAD_VALID_ADVSCHEME(tempAdvScheme)
+      IF ( .NOT.validNum ) THEN
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
+     &   ' invalid Temp. advection scheme number=', tempAdvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
+      ENDIF
+      validNum = GAD_VALID_ADVSCHEME(tempVertAdvScheme)
+      IF ( .NOT.validNum ) THEN
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
+     &   ' invalid Temp. Vert. Adv.scheme number=', tempVertAdvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
+      ENDIF
+      validNum = GAD_VALID_ADVSCHEME(saltAdvScheme)
+      IF ( .NOT.validNum ) THEN
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
+     &   ' invalid Salt. advection scheme number=', saltAdvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
+      ENDIF
+      validNum = GAD_VALID_ADVSCHEME(saltVertAdvScheme)
+      IF ( .NOT.validNum ) THEN
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
+     &   ' invalid Salt. Vert. Adv.scheme number=', saltVertAdvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
+      ENDIF
 
 C-- Set Temp & Salt 2nd-Order Moment Advec. flag according to advection scheme
       tempSOM_Advection = tempAdvScheme.GE.ENUM_SOM_PRATHER
@@ -105,6 +181,23 @@ C     with synchronous time-step, which would require to do also AB(u,v,w)
 #ifdef GAD_SMOLARKIEWICZ_HACK
       SmolarkiewiczMaxFrac = 1. _d 0
 #endif
+
+C-- Set Overlap minimum size according to Temp & Salt advection
+      IF ( tempAdvection ) THEN
+         GAD_OlMinSize(1) = MAX( GAD_OlMinSize(1),
+     &                           GAD_Scheme_olSize(tempAdvScheme) )
+      ENDIF
+      IF ( saltAdvection ) THEN
+         GAD_OlMinSize(1) = MAX( GAD_OlMinSize(1),
+     &                           GAD_Scheme_olSize(saltAdvScheme) )
+      ENDIF
+      IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
+C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
+        GAD_OlMinSize(3) = MAX( GAD_OlMinSize(3), 2 )
+      ENDIF
+      WRITE(msgBuf,'(A,9I3)')
+     &      'GAD_INIT_FIXED: GAD_OlMinSize=', GAD_OlMinSize
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 
       _END_MASTER(myThid)
 
@@ -178,32 +271,6 @@ C-- Print out GAD parameters :
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Check size of the overlap :
-      IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
-C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
-        minOlSize = 2
-        IF ( tempMultiDimAdvec ) THEN
-          IF ( tempAdvScheme.EQ.ENUM_FLUX_LIMIT .OR.
-     &         tempAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT .OR.
-     &         tempAdvScheme.EQ.ENUM_DST3 ) minOlSize = 4
-        ENDIF
-        IF ( saltMultiDimAdvec ) THEN
-          IF ( saltAdvScheme.EQ.ENUM_FLUX_LIMIT .OR.
-     &         saltAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT .OR.
-     &         saltAdvScheme.EQ.ENUM_DST3 ) minOlSize = 4
-        ENDIF
-        IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
-          WRITE(msgBuf,'(A)')
-     &     'GAD_INIT_FIXED: Multi-Dim Advection with 5-points stencil'
-          CALL PRINT_ERROR( msgBuf , myThid)
-          WRITE(msgBuf,'(A,I2)')
-     &     'GAD_INIT_FIXED: advection scheme needs at least Olx,Oly=',
-     &      minOlSize
-          CALL PRINT_ERROR( msgBuf , myThid)
-          STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
-        ENDIF
-      ENDIF
 
       _END_MASTER(myThid)
       _BARRIER

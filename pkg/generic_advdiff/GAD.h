@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.22 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.23 2010/11/16 17:39:13 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -63,6 +63,10 @@ C ENUM_SOM_LIMITER :: 2nd Order-Moment Advection Scheme, Prather Limiter
       INTEGER ENUM_SOM_LIMITER
       PARAMETER(ENUM_SOM_LIMITER=81)
 
+C GAD_Scheme_MaxNum :: maximum possible number for an advection scheme
+      INTEGER GAD_Scheme_MaxNum
+      PARAMETER( GAD_Scheme_MaxNum = 100 )
+
 C nSOM :: number of 1rst & 2nd Order-Moments: 1+1 (1D), 2+3 (2D), 3+6 (3D)
       INTEGER nSOM
       PARAMETER( nSOM = 3+6 )
@@ -104,6 +108,16 @@ C      somSfx       :: 1rst & 2nd Order moment suffix
       CHARACTER*2 somSfx(nSOM)
       COMMON /GAD_PARM_C/
      & somSfx
+
+C--   COMMON /GAD_PARM_I/ Integer parameters for GAD pkg routines
+C GAD_Scheme_olSize :: overlap minimum size for this advection scheme
+C GAD_OlMinSize     :: overlap minimum size for GAD routines
+C           1: min required; 2: to add to current min; 3: factor to apply
+      INTEGER GAD_Scheme_olSize(GAD_Scheme_MaxNum)
+      INTEGER GAD_OlMinSize(3)
+      COMMON /GAD_PARM_I/
+     &        GAD_Scheme_olSize,
+     &        GAD_OlMinSize
 
 C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines
 C tempSOM_Advection :: set to T if using 2nd-Order Moment advection for Temp

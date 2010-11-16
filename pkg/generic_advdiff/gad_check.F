@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.4 2010/03/16 00:14:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.5 2010/11/16 17:39:13 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -35,6 +35,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER minOlSize, n
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -97,45 +98,27 @@ C-      issue a warning in Error msg file:
         ENDIF
       ENDIF
 
-C--- note: minimum size of overlap due to tracer limitations is checked in
-C     GAD_INIT, PTRACERS_INIT_FIXED and GMREDI_CHECK ; can all move here.
+C--   Check size of overlap region
+C--   Note: checking minimum size of overlap due to tracer limitations moved here;
+C     previously done in GAD_INIT_FIXED, PTRACERS_INIT_FIXED and GMREDI_CHECK;
 C     for mom limitations, done in CONFIG_CHECK, but can move to MOM_INIT_FIXED
-#ifndef ALLOW_GENERIC_ADVDIFF
-C--- to be modified: --------
-C     Check size of overlap region
-      IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
-     &       .AND. GM_Visbeck_alpha.NE.0.
-     &       .AND. useMultiDimAdvec
-     &       .AND. (Olx.LT.3 .OR. Oly.LT.3) ) THEN
-C       Visbeck variable K requires 1 more row/column in the overlap:
-C       might need to increase Olx,Oly from 2 to 3 if GM advective
 
-C       a) using a 5 points stencil advection scheme ; or
-C       b) using a 3 points stencil advection scheme on CS-grid
-C note: not clear how to check (b) since none of the advection scheme
-C       currently implemented falls in this category, except if
-C       GAD_FLUX_LIMITER.h is changed to use a "constant" flux-limiter
-C       (from Lax-Wendroff to 1rst Order upwind).
-C-------
-c       IF ( (useCubedSphereExchange
-c    &       .AND.(    tempAdvScheme.EQ.ENUM_LAXWENDROFF
-c    &            .OR. saltAdvScheme.EQ.ENUM_LAXWENDROFF )
-c    &       ).OR.(    tempAdvScheme.EQ.ENUM_FLUX_LIMIT
-c    &            .OR. saltAdvScheme.EQ.ENUM_FLUX_LIMIT
-c    &            .OR. tempAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
-c    &            .OR. saltAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
-c    &            .OR. tempAdvScheme.EQ.ENUM_DST3
-c    &            .OR. saltAdvScheme.EQ.ENUM_DST3 )
-c    &     ) THEN
-          WRITE(msgBuf,'(A,A)')
-     &     'GAD_CHECK: Visbeck + GM_AdvForm in MultiDimAdvec'
-          CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(A)') 'GAD_CHECK: need at least Olx,Oly = 3'
-          CALL PRINT_ERROR( msgBuf , myThid )
-          STOP 'ABNORMAL END: S/R GAD_CHECK'
-c       ENDIF
+      minOlSize = MAX( GAD_OlMinSize(1)+GAD_OlMinSize(2),
+     &                 GAD_OlMinSize(2)+GAD_OlMinSize(3),
+     &                 GAD_OlMinSize(1)*GAD_OlMinSize(3) )
+      IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
+        WRITE(msgBuf,'(A,2I3,A)') 'GAD_CHECK: Overlap Size Olx,Oly=',
+     &                             Olx, Oly,' too small'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
+     &     'One tracer (T,S,pTrac, ...) advection scheme'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I3,A,3I2,A)') 'GAD_CHECK: ',
+     &     'needs at least Olx,Oly=', minOlSize,
+     &     ' (OlMinSize=', (GAD_OlMinSize(n),n=1,3), ')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_CHECK'
       ENDIF
-#endif /* ALLOW_GENERIC_ADVDIFF */
 
       _END_MASTER(myThid)
 
