@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.22 2010/10/29 15:26:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.23 2010/11/17 14:58:23 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,52 +41,6 @@ c     introduce turning angle (default is zero)
       COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-
-#ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
-      These lines are put here on purpose to cause the compilation
-      to fail because the following code is retired and can no longer
-      be used. It was probably never used anyway.
-CMLC--   Following formulation is problematic and is no longer used.
-CML#ifdef SEAICE_ALLOW_DYNAMICS
-CML      IF ( SEAICEuseDYNAMICS ) THEN
-CMLC--   Compute ice-affected wind stress
-CML       DO bj=myByLo(myThid),myByHi(myThid)
-CML        DO bi=myBxLo(myThid),myBxHi(myThid)
-CML         DO j=1,sNy
-CML          DO i=1,sNx
-CML           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)
-CML     &          *(COSWAT*(GWATX(I,J,bi,bj)-UICE(I,J,bi,bj))
-CML     &          -SIGN(SINWAT,COR_ICE(I,J,bi,bj))
-CML     &          *(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
-CML           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)
-CML     &          *(SIGN(SINWAT,COR_ICE(I,J,bi,bj))
-CML     &          *(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
-CML     &          +COSWAT*(GWATY(I,J,bi,bj)-VICE(I,J,bi,bj)))
-CML           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-( COR_ICE(I,J,bi,bj)
-CML     &          *GWATY(I,J,bi,bj)-COR_ICE(I,J,bi,bj)*VICEC(I,J,bi,bj))
-CML           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(-COR_ICE(I,J,bi,bj)
-CML     &          *GWATX(I,J,bi,bj)+COR_ICE(I,J,bi,bj)*UICEC(I,J,bi,bj))
-CML           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-(UICE(I,J,bi,bj)
-CML     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
-CML           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(VICE(I,J,bi,bj)
-CML     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
-CML          ENDDO
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML       DO bj=myByLo(myThid),myByHi(myThid)
-CML        DO bi=myBxLo(myThid),myBxHi(myThid)
-CML         DO j=1,sNy
-CML          DO i=1,sNx
-CML           WINDX(I,J,bi,bj)=-WINDX(I,J,bi,bj)
-CML           WINDY(I,J,bi,bj)=-WINDY(I,J,bi,bj)
-CML          ENDDO
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML      ENDIF
-CML#endif /*  SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_ORIGINAL_BAD_ICE_STRESS */
 
 C--   Update overlap regions
       CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
