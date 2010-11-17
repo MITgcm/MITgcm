@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.243 2010/11/12 03:15:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.244 2010/11/17 21:15:08 jmc Exp $
 C $Name:  $
 C
 
@@ -178,7 +178,8 @@ C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
 C     selectVortScheme    :: Scheme selector for Vorticity term (Vector Inv.)
 C     monitorSelect       :: select group of variables to monitor
 C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
-C     debugLevel          :: debug level selector: higher -> more writing
+C-    debugLevel          :: controls printing of algorithm intermediate results
+C                            and statistics ; higher -> more writing
 
       COMMON /PARM_I/
      &        cg2dMaxIters,
@@ -349,6 +350,7 @@ C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0)
 C                        & Last iteration, in addition multiple of dumpFreq iter.
+C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
 
       COMMON /PARM_L/
      & fluidIsAir, fluidIsWater,
