@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.233 2010/11/12 03:16:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.234 2010/11/17 21:13:10 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1156,7 +1156,7 @@ C     Y coordinate : Check for multiple definitions
         delY(j) = dySpacing
        ENDDO
       ENDIF
-C
+
       IF ( rSphere .NE. 0. ) THEN
        recip_rSphere = 1. _d 0/rSphere
       ELSE
@@ -1395,11 +1395,13 @@ C     to temp_EvPrRn and salt_EvPrRn in they are not set in data file
       IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
       IF (salt_addMass .EQ. UNSET_RL) salt_addMass = salt_EvPrRn
 
-c-- gradually replacing debugMode by debugLevel
-      IF ( debugMode ) debugLevel = debLevB
-      IF ( debugLevel .GE. debLevB ) debugMode = .TRUE.
+C-    debugMode controls printing of debug messages (sequence of S/R calls).
+C-    debugLevel controls printing of algorithm intermediate results and stats.
+C--   Increase debugLevel to debLevB when debugMode is set.
+      IF ( debugMode ) debugLevel = MAX( debugLevel, debLevB )
+c     IF ( debugLevel .GE. debLevB ) debugMode = .TRUE.
 
-c-- flag for approximate adjoint
+C--   flag for approximate adjoint
       IF ( inAdExact ) THEN
        inAdTrue  = .FALSE.
        inAdFALSE = .FALSE.
@@ -1407,7 +1409,7 @@ c-- flag for approximate adjoint
        inAdTrue  = .TRUE.
        inAdFALSE = .FALSE.
       ENDIF
-C
+
       CLOSE(iUnit)
 
 C--   Check whether any retired parameters were found.
@@ -1426,6 +1428,6 @@ C--   Stop if they were
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-C
+
       RETURN
       END
