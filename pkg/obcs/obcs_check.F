@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.17 2010/11/11 09:42:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.18 2010/11/18 22:39:11 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -34,48 +34,40 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER i,j,bi,bj
-      INTEGER k1,k2
+      INTEGER bi,bj
 
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      IF ( debugLevel.GE.debLevB ) THEN
+      IF ( debugLevel.GE.debLevA ) THEN
        _BEGIN_MASTER( myThid )
        DO bj = 1,nSy
         DO bi = 1,nSx
-         WRITE(msgBuf,'(A,2I4,A)') 'OBC N : bi,bj=',bi,bj,' , OB_Jn:'
+         WRITE(msgBuf,'(A,2(I4,A))')
+     &     '======== Tile bi=', bi, ' , bj=', bj, ' ========'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         DO k1=1,sNx,100
-          k2 = MIN(sNx,k1+99)
-          WRITE(standardMessageUnit,*) '=',(OB_Jn(i,bi,bj),i=k1,k2)
-         ENDDO
-         WRITE(msgBuf,'(A,2I4,A)') 'OBC S : bi,bj=',bi,bj,' , OB_Js:'
+         WRITE(msgBuf,'(A)') ' OB_Jn = /* Northern OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         DO k1=1,sNx,100
-          k2 = MIN(sNx,k1+99)
-          WRITE(standardMessageUnit,*) '=',(OB_Js(i,bi,bj),i=k1,k2)
-         ENDDO
-         WRITE(msgBuf,'(A,2I4,A)') 'OBC E : bi,bj=',bi,bj,' , OB_Ie:'
+         CALL PRINT_LIST_I( OB_Jn(1-Olx,bi,bj), 1-Olx, sNx+Olx, INDEX_I,
+     &                     .FALSE., .TRUE., standardMessageUnit )
+         WRITE(msgBuf,'(A)') ' OB_Js = /* Southern OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         DO k1=1,sNy,100
-          k2 = MIN(sNy,k1+99)
-          WRITE(standardMessageUnit,*) '=',(OB_Ie(j,bi,bj),j=k1,k2)
-         ENDDO
-         WRITE(msgBuf,'(A,2I4,A)') 'OBC W : bi,bj=',bi,bj,' , OB_Iw:'
+         CALL PRINT_LIST_I( OB_Js(1-Olx,bi,bj), 1-Olx, sNx+Olx, INDEX_I,
+     &                     .FALSE., .TRUE., standardMessageUnit )
+         WRITE(msgBuf,'(A)') ' OB_Ie = /* Eastern OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         DO k1=1,sNy,100
-          k2 = MIN(sNy,k1+99)
-          WRITE(standardMessageUnit,*) '=',(OB_Iw(j,bi,bj),j=k1,k2)
-         ENDDO
-         WRITE(msgBuf,'(A)') ' '
+         CALL PRINT_LIST_I( OB_Ie(1-Oly,bi,bj), 1-Oly, sNy+Oly, INDEX_J,
+     &                     .FALSE., .TRUE., standardMessageUnit )
+         WRITE(msgBuf,'(A)') ' OB_Iw = /* Western OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
+         CALL PRINT_LIST_I( OB_Iw(1-Oly,bi,bj), 1-Oly, sNy+Oly, INDEX_J,
+     &                     .FALSE., .TRUE., standardMessageUnit )
         ENDDO
        ENDDO
        _END_MASTER(myThid)
@@ -199,7 +191,6 @@ C     msgBuf   :: Informational/error message buffer
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS_STEVENS'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid)
-#ifdef ALLOW_ORLANSKI
 C     check compatibility with Orlanski
       IF (      ( useStevensNorth.AND.useOrlanskiNorth )
      &     .OR. ( useStevensSouth.AND.useOrlanskiSouth )
@@ -207,64 +198,63 @@ C     check compatibility with Orlanski
      &     .OR. (  useStevensWest.AND.useOrlanskiWest ) ) THEN
        WRITE(msgBuf,'(A)')
      & 'OBCS_CHECK: ERROR: both useOrlanski* and useStevens* logicals'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &      'OBCS_CHECK: ERROR: are true for at least one boundary'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
-#endif /* ALLOW_ORLANSKI */
       IF (useStevensNorth.OR.useStevensSouth.OR.
      &    useStevensEast.OR.useStevensWest) THEN
        IF (nonlinFreeSurf.GT.0) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: useStevens* OBC with'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (usePTracers) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: WARNING: useStevens* OBC with'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: WARNING: pTracers not yet implemented'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: WARNING: therefore expect the unexpected'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
 CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (useSEAICE) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: WARNING: useStevens* OBC with'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: WARNING: SEAICE not yet implemented'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: WARNING: therefore expect the unexpected'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
 CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
 CML       IF (usePTracers) THEN
 CML        WRITE(msgBuf,'(A)')
 CML     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
-CML         CALL PRINT_ERROR( msgBuf , 1)
+CML        CALL PRINT_ERROR( msgBuf, myThid )
 CML        WRITE(msgBuf,'(A)')
 CML     &  'OBCS_CHECK: ERROR: pTracers not yet implemented'
-CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         CALL PRINT_ERROR( msgBuf, myThid )
 CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
 CML       ENDIF
 CML       IF (useSEAICE) THEN
 CML        WRITE(msgBuf,'(A)')
 CML     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
-CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         CALL PRINT_ERROR( msgBuf, myThid )
 CML        WRITE(msgBuf,'(A)')
 CML     &  'OBCS_CHECK: ERROR: SEAICE not yet implemented'
-CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         CALL PRINT_ERROR( msgBuf, myThid )
 CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
 CML       ENDIF
       ENDIF
@@ -273,12 +263,12 @@ CML       ENDIF
      &    useStevensEast.OR.useStevensWest) THEN
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: #undef OBCS_ALLOW_STEVENS  and'
-         CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ERROR: one of useStevens* logicals is true'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
-      ENDIF 
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
 
 #ifndef ALLOW_OBCS_PRESCRIBE
@@ -292,6 +282,18 @@ CML       ENDIF
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
+
+#ifndef ALLOW_OBCS_SPONGE
+      IF (useOBCSsponge) THEN
+       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      'Cannot set useOBCSsponge=.TRUE. (data.obcs)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &  'with ALLOW_OBCS_SPONGE left undefined (OBCS_OPTIONS.h)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+#endif /* ALLOW_OBCS_SPONGE */
 
 #ifndef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance ) THEN
