@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.82 2010/11/08 17:38:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.83 2010/11/18 17:32:37 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,8 +62,7 @@ c     _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
+      IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
 
 C--   Winds are from pkg/exf, which does not update edges.
@@ -157,8 +156,7 @@ CADJ STORE seaice_sigma12 = comlev1, key=ikey_dynamics, kind=isbyte
 
 C solve ice momentum equations and calculate ocean surface stress
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
+      IF (debugMode) CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
 #endif
 #ifdef SEAICE_CGRID
       CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
@@ -189,8 +187,7 @@ C NOW DO ADVECTION and DIFFUSION
       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
      &        .OR. SEAICEadvSalt .OR. SEAICEadvAge ) THEN
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &      CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
+       IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
        CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
       ENDIF
@@ -215,8 +212,7 @@ C     must call growth after calling advection
 C     because of ugly time level business
        IF ( usePW79thermodynamics ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
+        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
 #ifndef SEAICE_ALLOW_TD_IF
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
@@ -313,8 +309,7 @@ CML   CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_LEAVE( 'SEAICE_MODEL', myThid )
+      IF (debugMode) CALL DEBUG_LEAVE( 'SEAICE_MODEL', myThid )
 #endif
 
       RETURN
