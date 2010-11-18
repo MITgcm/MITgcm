@@ -1,16 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.28 2010/11/11 09:42:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.29 2010/11/18 22:37:25 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_READPARMS
+C     !INTERFACE:
       SUBROUTINE OBCS_READPARMS( myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_READPARMS
 C     | o Routine to initialize OBCS variables and constants.
 C     *==========================================================*
-C     *==========================================================*
-      IMPLICIT NONE
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -29,14 +35,16 @@ C     === Global variables ===
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_OBCS
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf      :: Informational/error message buffer
+C     iUnit       :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
       INTEGER I, J
@@ -108,6 +116,7 @@ C     OBEW_Ny :: height of global domain for OB_Ieast, OB_Iwest
 C     buf :: used to exchange OB_Jnorth, ...
       _RS buf(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
+CEOP
 
       NAMELIST /OBCS_PARM01/
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
@@ -146,7 +155,7 @@ C     buf :: used to exchange OB_Jnorth, ...
       NAMELIST /OBCS_PARM04/
      &          TrelaxStevens,SrelaxStevens,
      &          useStevensPhaseVel,useStevensAdvection
-#endif ALLOW_OBCS_STEVENS
+#endif /* ALLOW_OBCS_STEVENS */
 
       _BEGIN_MASTER(myThid)
 
@@ -161,21 +170,6 @@ C     buf :: used to exchange OB_Jnorth, ...
       OBEW_Nx = Nx
       OBEW_Ny = Ny
 #endif
-
-C--   OBCS_READPARMS has been called so we know that
-C     the package is active.
-c     OBCSIsOn=.TRUE.
-
-      IF ( debugLevel .GE. debLevB ) THEN
-       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , 1)
-      ENDIF
-
-      CALL OPEN_COPY_DATA_FILE(
-     I                          'data.obcs', 'OBCS_READPARMS',
-     O                          iUnit,
-     I                          myThid )
 
 C--   Default flags and values for OBCS
       DO I=1,OBNS_Nx
@@ -260,22 +254,17 @@ C--   Default flags and values for OBCS
       ENDDO
 #endif
 
+C     Open and read the data.obcs file
+      WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      CALL OPEN_COPY_DATA_FILE(
+     I                          'data.obcs', 'OBCS_READPARMS',
+     O                          iUnit,
+     I                          myThid )
+
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OBCS_PARM01)
-
-C     Account for periodicity if negative indices were supplied
-      DO J=1,OBEW_Ny
-       IF (OB_Ieast(J).lt.0) OB_Ieast(J)=OB_Ieast(J)+OBEW_Nx+1
-      ENDDO
-      DO I=1,OBNS_Nx
-       IF (OB_Jnorth(I).lt.0) OB_Jnorth(I)=OB_Jnorth(I)+OBNS_Ny+1
-      ENDDO
-      IF ( debugLevel .GE. debLevB ) THEN
-       write(*,*) 'OB Jn =',OB_Jnorth
-       write(*,*) 'OB Js =',OB_Jsouth
-       write(*,*) 'OB Ie =',OB_Ieast
-       write(*,*) 'OB Iw =',OB_Iwest
-      ENDIF
 
 #ifdef ALLOW_ORLANSKI
 C     Default Orlanski radiation parameters
@@ -311,21 +300,56 @@ CML      Vrelaxobcsbound = 1. _d 0
 #ifdef ALLOW_OBCS_STEVENS
       TrelaxStevens   = 0. _d 0
       SrelaxStevens   = 0. _d 0
-      IF (      useStevensNorth .OR. useStevensSouth 
+      IF (      useStevensNorth .OR. useStevensSouth
      &     .OR. useStevensEast  .OR. useStevensWest  )
      & READ(UNIT=iUnit,NML=OBCS_PARM04)
 #endif
 
-      IF ( debugLevel .GE. debLevB ) THEN
-       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , 1)
-      ENDIF
+      WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
 
 C--   Close the open data file
       CLOSE(iUnit)
-      _END_MASTER(myThid)
 
+C-    Account for periodicity if negative indices were supplied
+      DO J=1,OBEW_Ny
+       IF (OB_Ieast(J).LT.0) OB_Ieast(J)=OB_Ieast(J)+OBEW_Nx+1
+      ENDDO
+      DO I=1,OBNS_Nx
+       IF (OB_Jnorth(I).LT.0) OB_Jnorth(I)=OB_Jnorth(I)+OBNS_Ny+1
+      ENDDO
+      IF ( debugLevel.GE.debLevA ) THEN
+c       write(*,*) 'OB Jn =',OB_Jnorth
+c       write(*,*) 'OB Js =',OB_Jsouth
+c       write(*,*) 'OB Ie =',OB_Ieast
+c       write(*,*) 'OB Iw =',OB_Iwest
+        WRITE(msgBuf,'(A)') ' Northern OB global indices : OB_Jnorth ='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_LIST_I( OB_Jnorth, 1, OBNS_Nx, INDEX_I,
+     &                    .FALSE., .TRUE., standardMessageUnit )
+        WRITE(msgBuf,'(A)') ' Southern OB global indices : OB_Jsouth ='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_LIST_I( OB_Jsouth, 1, OBNS_Nx, INDEX_I,
+     &                    .FALSE., .TRUE., standardMessageUnit )
+        WRITE(msgBuf,'(A)') ' Eastern  OB global indices : OB_Ieast ='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_LIST_I( OB_Ieast, 1, OBEW_Ny, INDEX_J,
+     &                    .FALSE., .TRUE., standardMessageUnit )
+        WRITE(msgBuf,'(A)') ' Western  OB global indices : OB_Iwest ='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_LIST_I( OB_Iwest, 1, OBEW_Ny, INDEX_J,
+     &                    .FALSE., .TRUE., standardMessageUnit )
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      _END_MASTER(myThid)
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
@@ -333,7 +357,7 @@ C--   Calculate the tiled index arrays OB_Jn/Js/Ie/Iw here from the
 C     global arrays OB_Jnorth/Jsouth/Ieast/Iwest.
 C     Note: This part of the code has been moved from obcs_init_fixed to
 C     routine routine because the OB_Jn/Js/Ie/Iw index arrays are
-C     required by ini_depth which is called befoer obcs_init_fixed
+C     required by ini_depth which is called before obcs_init_fixed
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
