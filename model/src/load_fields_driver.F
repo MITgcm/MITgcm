@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.8 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.9 2010/11/18 00:57:24 jmc Exp $
 C $Name:  $
 
 
@@ -120,16 +120,14 @@ C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_ENTER( 'LOAD_FIELDS_DRIVER', myThid )
+      IF (debugMode) CALL DEBUG_ENTER( 'LOAD_FIELDS_DRIVER', myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN
 C--   Bulk-Formulae pkg: load all forcing fields at current time
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
+        IF (debugMode) CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
 #endif
         CALL TIMER_START('BULKF_FIELDS_LOAD  [LOAD_FLDS_DRIVER]',myThid)
         CALL BULKF_FIELDS_LOAD( myTime, myIter, myThid )
@@ -141,8 +139,7 @@ C--   Call external forcing package
 #ifdef ALLOW_EXF
       IF (useEXF) THEN
 # ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('EXF_GETFORCING',myThid)
+        IF (debugMode) CALL DEBUG_CALL('EXF_GETFORCING',myThid)
 # endif
         CALL TIMER_START('EXF_GETFORCING     [LOAD_FLDS_DRIVER]',myThid)
         CALL EXF_GETFORCING( myTime, myIter, myThid )
@@ -150,26 +147,21 @@ C--   Call external forcing package
       ENDIF
 #endif /* ALLOW_EXF */
 
-
 C--   Call external CheapAML forcing package
 #ifdef ALLOW_CHEAPAML
       IF ( useCheapAML  ) THEN
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('CHEAPAML_FIELDS_LOAD',myThid)
+        IF (debugMode) CALL DEBUG_CALL('CHEAPAML_FIELDS_LOAD',myThid)
 #endif
-          CALL CHEAPAML_FIELDS_LOAD( myTime,myIter, myThid )
-       ENDIF
+        CALL CHEAPAML_FIELDS_LOAD( myTime, myIter, myThid )
+      ENDIF
 #endif /*ALLOW_CHEAPAML */
-
-
 
 c     IF ( .NOT.useEXF ) THEN
 C- note (useEBM): needs modifications to be compatible with this call
       IF ( .NOT.(useEXF.OR.useEBM) ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
+        IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
         CALL TIMER_START('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
         CALL EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
@@ -186,8 +178,7 @@ CADJ STORE Qsw    = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_OFFLINE
       IF ( useOffLine ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('OFFLINE_FIELDS_LOAD',myThid)
+        IF (debugMode) CALL DEBUG_CALL('OFFLINE_FIELDS_LOAD',myThid)
 #endif /* ALLOW_DEBUG */
         CALL TIMER_START('OFFLINE_FLDS_LOAD  [LOAD_FLDS_DRIVER]',myThid)
         CALL OFFLINE_FIELDS_LOAD( myTime, myIter, myThid )
@@ -198,8 +189,7 @@ CADJ STORE Qsw    = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_GCHEM
       IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('GCHEM_FIELDS_LOAD',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GCHEM_FIELDS_LOAD',myThid)
 #endif /* ALLOW_DEBUG */
         CALL GCHEM_FIELDS_LOAD( myTime, myIter, myThid )
       ENDIF
@@ -219,8 +209,7 @@ C-     Update AIM bottom boundary data
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_LEAVE( 'LOAD_FIELDS_DRIVER', myThid )
+      IF (debugMode) CALL DEBUG_LEAVE( 'LOAD_FIELDS_DRIVER', myThid )
 #endif
 
       RETURN

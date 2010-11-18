@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.152 2010/11/17 06:05:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.153 2010/11/18 00:57:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -247,8 +247,7 @@ C---
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_ENTER( 'DYNAMICS', myThid )
+      IF (debugMode) CALL DEBUG_ENTER( 'DYNAMICS', myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -640,8 +639,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Step forward W field in N-H algorithm
         IF ( nonHydrostatic ) THEN
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('CALC_GW', myThid )
+         IF (debugMode) CALL DEBUG_CALL('CALC_GW', myThid )
 #endif
          CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
          CALL CALC_GW(
@@ -691,7 +689,7 @@ Cml)
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
-      If ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevB ) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (DYNAMICS)',myThid)
@@ -721,8 +719,7 @@ C       but it does not mean that it is less wrong with this exchange.
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_LEAVE( 'DYNAMICS', myThid )
+      IF (debugMode) CALL DEBUG_LEAVE( 'DYNAMICS', myThid )
 #endif
 
       RETURN

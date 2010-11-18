@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.8 2009/04/29 21:46:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.9 2010/11/18 00:57:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,9 +27,9 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: my Thread Id number
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -40,8 +40,7 @@ C     == Local variables
 C     bi, bj
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevB )
-     &  CALL DEBUG_ENTER('DO_ATMOSPHERIC_PHYS',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('DO_ATMOSPHERIC_PHYS',myThid)
 #endif
 
 #ifdef ALLOW_FIZHI
@@ -61,8 +60,7 @@ C     bi, bj
       IF ( useAIM ) THEN
 C       AIM - atmospheric intermediate model, physics package code.
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel.GE.debLevB )
-     &   CALL DEBUG_CALL('AIM_DO_PHYSICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('AIM_DO_PHYSICS',myThid)
 #endif
         CALL TIMER_START('AIM_DO_PHYSICS [DO_ATMOSPHERIC_PHYS]',myThid)
         CALL AIM_DO_PHYSICS( myTime, myIter, myThid )
@@ -73,8 +71,7 @@ C       do exchanges for AIM related quantities:
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &  CALL DEBUG_LEAVE('DO_ATMOSPHERIC_PHYS',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('DO_ATMOSPHERIC_PHYS',myThid)
 #endif
 
       RETURN

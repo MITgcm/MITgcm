@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.185 2010/11/10 22:07:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.186 2010/11/18 00:57:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -179,8 +179,7 @@ C     myIterBeg :: iteration number at beginning of time step
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -221,7 +220,7 @@ C--   State-variables diagnostics
 
 #ifdef ALLOW_NEST_CHILD
       IF ( useNEST_CHILD) THEN
-       CALL NEST_CHILD_SETMEMO( myTime, myIter, myThid )
+        CALL NEST_CHILD_SETMEMO( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_NEST_CHILD */
 
@@ -236,15 +235,14 @@ C--   State-variables diagnostics
       IF (debugMode) CALL DEBUG_CALL('',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
-        CALL TIMER_START('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
-        CALL PROFILES_INLOOP( mytime, mythid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
+      CALL TIMER_START('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
+      CALL PROFILES_INLOOP( mytime, mythid )
+      CALL TIMER_STOP ('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
 #endif
 
 C--   Call driver to load external forcing fields from file
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     & CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
+      IF (debugMode) CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 cph Important STORE that avoids hidden recomp. of load_fields_driver
@@ -261,8 +259,7 @@ C--   Call Bulk-Formulae forcing package
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('BULKF_FORCING',myThid)
+        IF (debugMode) CALL DEBUG_CALL('BULKF_FORCING',myThid)
 #endif
         CALL TIMER_START('BULKF_FORCING       [FORWARD_STEP]',myThid)
 C-    calculate qnet and empmr (and wind stress)
@@ -275,13 +272,12 @@ C--   Call external chepaml forcing package
 #ifdef ALLOW_CHEAPAML
       IF ( useCheapAML  ) THEN
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('CHEAPAML',myThid)
+        IF (debugMode) CALL DEBUG_CALL('CHEAPAML',myThid)
 #endif
-       CALL TIMER_START('CHEAPAML      [FORWARD_STEP]',mythid)
+        CALL TIMER_START('CHEAPAML      [FORWARD_STEP]',mythid)
 C-    calculate qnet (and wind stress)
-       CALL CHEAPAML( myTime, myIter,myThid )
-       CALL TIMER_STOP ('CHEAPAML      [FORWARD_STEP]',mythid)
+        CALL CHEAPAML( myTime, myIter,myThid )
+        CALL TIMER_STOP ('CHEAPAML      [FORWARD_STEP]',mythid)
       ENDIF
 #endif /*ALLOW_CHEAPAML */
 
@@ -321,20 +317,18 @@ C      Read in coupling data that I import.
 #ifdef ALLOW_EBM
       IF ( useEBM ) THEN
 # ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('EBM',myThid)
+        IF (debugMode) CALL DEBUG_CALL('EBM',myThid)
 # endif
-         CALL TIMER_START('EBM                [FORWARD_STEP]',myThid)
-         CALL EBM_DRIVER ( myTime, myIter, myThid )
-         CALL TIMER_STOP ('EBM                [FORWARD_STEP]',myThid)
+        CALL TIMER_START('EBM                [FORWARD_STEP]',myThid)
+        CALL EBM_DRIVER ( myTime, myIter, myThid )
+        CALL TIMER_STOP ('EBM                [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* ALLOW_EBM */
 
 C--     Step forward fields and calculate time tendency terms.
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     & CALL DEBUG_CALL('DO_ATMOSPHERIC_PHYS',myThid)
+      IF (debugMode) CALL DEBUG_CALL('DO_ATMOSPHERIC_PHYS',myThid)
 #endif
       CALL TIMER_START('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',myThid)
       CALL DO_ATMOSPHERIC_PHYS( myTime, myIter, myThid )
@@ -376,8 +370,7 @@ CADJ &     kind = isbyte
       IF ( .NOT. useOffLine ) THEN
 #endif
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
 #endif
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
@@ -430,8 +423,7 @@ CADJ &     kind = isbyte
 #endif
       IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
 #endif
         CALL TIMER_START('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
         CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
@@ -509,15 +501,14 @@ C       where Qsw, KPP and GMRedi stuff is computed).
 C       This is like diagnostics package and will reproduce offline
 C       results.
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
+        IF (debugMode) CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
 #endif
         CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
         CALL LONGSTEP_AVERAGE( myTime, myIter, myThid )
         CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
@@ -531,8 +522,7 @@ C       results.
 
       IF ( .NOT.staggerTimeStep ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
 CADJ STORE salt               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -549,15 +539,14 @@ C       Average T and S after thermodynamics, but U,V,W before dynamics.
 C       This will reproduce online results with staggerTimeStep=.FALSE.
 C       for LS_nIter=1
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
+        IF (debugMode) CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
 #endif
         CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
         CALL LONGSTEP_AVERAGE( myTime, myIter, myThid )
         CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
@@ -638,8 +627,7 @@ C--   Step forward fields and calculate time tendency terms.
       IF ( momStepping ) THEN
 #endif
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('DYNAMICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('DYNAMICS',myThid)
 #endif
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',myThid)
         CALL DYNAMICS( myTime, myIter, myThid )
@@ -884,7 +872,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( staggerTimeStep ) THEN
 C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &   CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
 #endif
         CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
@@ -901,8 +889,7 @@ C--   State-variables diagnostics
 #endif
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',myThid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
@@ -930,8 +917,7 @@ C       Average everything at the end of the timestep.  This will
 C       reproduce online results with staggerTimeStep=.TRUE.
 C       when LS_nIter=1
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
+        IF (debugMode) CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
 #endif
         CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
 C       myIter has been update after dynamics, but the averaging window
@@ -940,7 +926,7 @@ C       should be determined by myIter at beginning of timestep
         CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
@@ -978,8 +964,7 @@ CADJ &     kind = isbyte
 #endif
        IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
+         IF (debugMode) CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
 #endif /* ALLOW_DEBUG */
          CALL TIMER_START('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
          CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
@@ -1103,8 +1088,7 @@ C--   Save state for restarts
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif
 
       RETURN

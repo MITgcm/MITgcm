@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.95 2010/10/28 14:36:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.96 2010/11/18 00:57:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,8 +118,7 @@ C--   dummy statement to end declaration part
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
 #endif
 
       doDiagsRho = 0
@@ -153,8 +152,7 @@ C--   dummy statement to end declaration part
 C--   Calculate future values on open boundaries
 C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('OBCS_CALC',myThid)
+       IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
        CALL OBCS_CALC( myTime+deltaTclock, myIter+1,
      I                 uVel, vVel, wVel, theta, salt, myThid )
@@ -236,8 +234,7 @@ CADJ &     kind = isbyte
 #  endif /* ANNUAL_BALANCE */
 # endif
 # ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
+        IF (debugMode) CALL DEBUG_CALL('SEAICE_MODEL',myThid)
 # endif
         CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
         CALL SEAICE_MODEL( myTime, myIter, myThid )
@@ -262,8 +259,7 @@ CADJ &     kind = isbyte
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('THSICE_MAIN',myThid)
+        IF (debugMode) CALL DEBUG_CALL('THSICE_MAIN',myThid)
 #endif
 C--     Step forward Therm.Sea-Ice variables
 C       and modify forcing terms including effects from ice
@@ -280,8 +276,7 @@ CADJ &     kind = isbyte
 # endif
       IF ( useShelfIce .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
 #endif
 C     compute temperature and (virtual) salt flux at the
 C     shelf-ice ocean interface
@@ -296,8 +291,7 @@ C     shelf-ice ocean interface
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('ICEFRONT_THERMODYNAMICS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_THERMODYNAMICS',myThid)
 #endif
 C     compute temperature and (virtual) salt flux at the
 C     ice-front ocean interface
@@ -431,24 +425,23 @@ c          rhoInSitu(i,j,k,bi,bj) = 0.
         jMax = sNy+OLy
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, 
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, 
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE totphihyd(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # ifdef ALLOW_KPP
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, 
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, 
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
+        IF (debugMode) CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
 #endif
 
 C--     Start of diagnostic loop
@@ -465,14 +458,13 @@ cph Needed for rhoK, rhoKm1, in the case useGMREDI.
 C--   Always compute density (stored in common block) here; even when it is not
 C     needed here, will be used anyway in calc_phi_hyd (data flow easier this way)
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('FIND_RHO_2D',myThid)
+          IF (debugMode) CALL DEBUG_CALL('FIND_RHO_2D',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
           IF ( fluidIsWater ) THEN
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, 
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
 CADJ &     kind = isbyte
-CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, 
+CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_DOWN_SLOPE
@@ -509,11 +501,11 @@ C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
      &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, 
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,
 CADJ &     kind = isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, 
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,
 CADJ &     kind = isbyte
-CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey, 
+CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
              CALL FIND_RHO_2D(
@@ -524,8 +516,7 @@ CADJ &     kind = isbyte
      I                 k-1, bi, bj, myThid )
             ENDIF
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('GRAD_SIGMA',myThid)
+            IF (debugMode) CALL DEBUG_CALL('GRAD_SIGMA',myThid)
 #endif
 cph Avoid variable aliasing for adjoint !!!
             DO j=jMin,jMax
@@ -553,8 +544,7 @@ C--       Implicit Vertical Diffusion for Convection
 c ==> should use sigmaR !!!
           IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('CALC_IVDC',myThid)
+            IF (debugMode) CALL DEBUG_CALL('CALC_IVDC',myThid)
 #endif
             CALL CALC_IVDC(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
@@ -576,7 +566,7 @@ C--     end of diagnostic k loop (Nr:1)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE IVDConvCount(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 #endif
 
@@ -605,24 +595,23 @@ C--     Diagnose Mixed Layer Depth:
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
+        IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # ifdef EXACT_CONSERV
 CADJ STORE PmEpR(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # endif
 # ifdef NONLIN_FRSURF
 CADJ STORE hFac_surfC(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE recip_hFacC(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # endif
 #endif
@@ -633,7 +622,7 @@ CADJ &     kind = isbyte
 # ifdef EXACT_CONSERV
 cph-test
 cphCADJ STORE PmEpR(:,:,bi,bj)
-cphCADJ &     = comlev1_bibj, key=itdkey, 
+cphCADJ &     = comlev1_bibj, key=itdkey,
 cphCADJ &     kind = isbyte
 # endif
 #endif
@@ -641,19 +630,19 @@ cphCADJ &     kind = isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
 CADJ STORE surfaceForcingU(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE surfaceForcingV(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE surfaceForcingS(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE surfaceForcingT(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE surfaceForcingTice(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, 
+CADJ &     = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -661,8 +650,7 @@ CADJ &     kind = isbyte
 C--     Compute KPP mixing coefficients
         IF (useKPP) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('KPP_CALC',myThid)
+          IF (debugMode) CALL DEBUG_CALL('KPP_CALC',myThid)
 #endif
           CALL TIMER_START('KPP_CALC [DO_OCEANIC_PHYS]', myThid)
           CALL KPP_CALC(
@@ -681,8 +669,7 @@ C--     Compute KPP mixing coefficients
 C--     Compute PP81 mixing coefficients
         IF (usePP81) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('PP81_CALC',myThid)
+          IF (debugMode) CALL DEBUG_CALL('PP81_CALC',myThid)
 #endif
           CALL PP81_CALC(
      I                  bi, bj, myTime, myThid )
@@ -693,8 +680,7 @@ C--     Compute PP81 mixing coefficients
 C--     Compute MY82 mixing coefficients
         IF (useMY82) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('MY82_CALC',myThid)
+          IF (debugMode) CALL DEBUG_CALL('MY82_CALC',myThid)
 #endif
           CALL MY82_CALC(
      I                  bi, bj, myTime, myThid )
@@ -709,8 +695,7 @@ CADJ &     kind = isbyte
 C--     Compute GGL90 mixing coefficients
         IF (useGGL90) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GGL90_CALC',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GGL90_CALC',myThid)
 #endif
           CALL TIMER_START('GGL90_CALC [DO_OCEANIC_PHYS]', myThid)
           CALL GGL90_CALC(
@@ -736,11 +721,11 @@ cph storing here is needed only for one GMREDI_OPTIONS:
 cph define GM_BOLUS_ADVEC
 cph keep it although TAF says you dont need to.
 cph but I have avoided the #ifdef for now, in case more things change
-CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, 
+CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
-CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, 
+CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
-CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, 
+CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -748,8 +733,7 @@ CADJ &     kind = isbyte
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
 #endif
           CALL GMREDI_CALC_TENSOR(
      I             iMin, iMax, jMin, jMax,
@@ -816,8 +800,7 @@ C--   end bi,bj loops.
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_LEAVE('DO_OCEANIC_PHYS',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('DO_OCEANIC_PHYS',myThid)
 #endif
 
       RETURN
