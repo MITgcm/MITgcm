@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.3 2010/01/18 01:04:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.4 2010/11/18 00:38:55 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -126,8 +126,7 @@ C                      index into fVerTerm.
 CEOP
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_ENTER('LONGSTEP_THERMODYNAMICS',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('LONGSTEP_THERMODYNAMICS',myThid)
 #endif
 
 C     time for a ptracer time step?
@@ -269,19 +268,17 @@ C of whether multiDimAdvection is set or not.
 #ifdef ALLOW_PTRACERS
         IF ( usePTRACERS ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
+          IF (debugMode) CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
 #endif
-         CALL PTRACERS_ADVECTION(
-     I             bi,bj,myIter,myTime,myThid )
+          CALL PTRACERS_ADVECTION(
+     I             bi,bj,myTime,myIter,myThid )
         ENDIF
 #endif /* ALLOW_PTRACERS */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP IN LONGSTEP',
-     &                   myThid)
+        IF (debugMode) CALL DEBUG_MSG(
+     &                'ENTERING DOWNWARD K LOOP IN LONGSTEP', myThid)
 #endif
 
 C--     Start of thermodynamics loop
@@ -476,7 +473,7 @@ C--   end bi,bj loops.
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      If (debugMode) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
        CALL DEBUG_STATS_RL(Nr,LS_uVel,'LS_Uvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,LS_vVel,'LS_Vvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,LS_wVel,'LS_Wvel (THERMODYNAMICS)',myThid)
@@ -495,8 +492,7 @@ C     LS_doTimeStep
       ENDIF
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_LEAVE('LONGSTEP_THERMODYNAMICS',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('LONGSTEP_THERMODYNAMICS',myThid)
 #endif
 
 #endif /* ALLOW_LONGSTEP */

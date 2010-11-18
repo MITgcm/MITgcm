@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.132 2010/11/14 23:35:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.133 2010/11/18 00:38:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -193,8 +193,7 @@ C                      index into fVerTerm.
 CEOP
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -371,8 +370,7 @@ C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
         IF ( tempSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 #endif
           CALL GAD_SOM_ADVECT(
      I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
@@ -386,8 +384,7 @@ C disable this section of code.
         IF (tempMultiDimAdvec) THEN
 #endif /* GAD_ALLOW_TS_SOM_ADV */
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
           CALL GAD_ADVECTION(
      I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
@@ -399,8 +396,7 @@ C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
         IF ( saltSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 #endif
           CALL GAD_SOM_ADVECT(
      I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
@@ -414,8 +410,7 @@ C disable this section of code.
         IF (saltMultiDimAdvec) THEN
 #endif /* GAD_ALLOW_TS_SOM_ADV */
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
           CALL GAD_ADVECTION(
      I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
@@ -432,17 +427,16 @@ C of whether multiDimAdvection is set or not.
 #ifndef ALLOW_LONGSTEP
         IF ( usePTRACERS ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
+         IF (debugMode) CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
 #endif
-         CALL PTRACERS_ADVECTION( bi,bj,myIter,myTime,myThid )
+         CALL PTRACERS_ADVECTION( bi,bj,myTime,myIter,myThid )
         ENDIF
 #endif /* ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP',myThid)
 #endif
 
@@ -907,7 +901,7 @@ C--   end bi,bj loops.
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      If (debugMode) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (THERMODYNAMICS)',myThid)
@@ -930,8 +924,7 @@ C--   end bi,bj loops.
 #endif /* ALLOW_DEBUG */
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_LEAVE('THERMODYNAMICS',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('THERMODYNAMICS',myThid)
 #endif
 
 #endif /* ALLOW_GENERIC_ADVDIFF */
