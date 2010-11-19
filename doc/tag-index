@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1336 2010/11/19 00:29:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1337 2010/11/19 16:22:33 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - seaice_growth.F: fix bug in conservation of freshwater connected to
+    capping of heff
+  - replace irritating parameters SEAICE_latentWater/Ice and SEAICE_sensHeat
+    by something more sensible (parameters that are what their name implies)
+  - change some defaults, so that by default exf-parameters are used for
+    things like rhoAir, cpAir,latent/sensible heat parameters, in order
+    to reproduce the old results, many data.seaice now contain funny values
+    for cpAir and latent heat of sublimation
+o packages_readparms.F: move exf_readparms up in line so that 
+    exf-parameters are visible for other packages (e.g. seaice)
 o debugMode & debugLevel=2:
   - differentiate between debugMode & debugLevel=2:
     debugMode: controls printing of debug messages (sequence of S/R calls).
