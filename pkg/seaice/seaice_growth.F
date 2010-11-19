@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.99 2010/11/12 23:10:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.100 2010/11/19 14:32:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -117,6 +117,9 @@ c
       _RL d_HEFFbyOCNonICE    (1:sNx,1:sNy)
       _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
       _RL d_HEFFbyFLOODING    (1:sNx,1:sNy)
+#ifdef SEAICE_CAP_HEFF
+      _RL d_HEFFbyCAPPING     (1:sNx,1:sNy)
+#endif /* SEAICE_CAP_HEFF */
 c
       _RL d_HEFFbyATMonOCN_open(1:sNx,1:sNy)
 c
@@ -262,6 +265,9 @@ c
           d_HEFFbyOCNonICE(I,J)      = 0.0 _d 0
           d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
           d_HEFFbyFLOODING(I,J)      = 0.0 _d 0
+#ifdef SEAICE_CAP_HEFF
+          d_HEFFbyCAPPING(I,J)       = 0.0 _d 0
+#endif /* SEAICE_CAP_HEFF */
 c
           d_HEFFbyATMonOCN_open(I,J) = 0.0 _d 0
 c
@@ -1088,10 +1094,8 @@ CADJ &                         key = iicekey, byte = isbyte
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)*HEFFM(I,J,bi,bj)
 #ifdef SEAICE_CAP_HEFF
 C     This is not energy conserving, but at least it conserves fresh water
-          tmpscal0         = MAX(HEFF(I,J,bi,bj)-MAX_HEFF,0. _d 0)
-          HEFF(I,J,bi,bj)  = HEFF(I,J,bi,bj) - tmpscal0
-          EmPmR(I,J,bi,bj) = EmPmR(I,J,bi,bj) 
-     &         - tmpscal0*SEAICE_rhoIce/SEAICE_deltaTtherm
+          d_HEFFbyCAPPING(I,J) = -MAX(HEFF(I,J,bi,bj)-MAX_HEFF,0. _d 0)
+          HEFF(I,J,bi,bj)  = HEFF(I,J,bi,bj) + d_HEFFbyCAPPING(I,J)
 #endif /* SEAICE_CAP_HEFF */
           HSNOW(I,J,bi,bj)  = HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
@@ -1271,6 +1275,9 @@ C ==================================================
      &            +d_HEFFbyATMonOCN(I,J)
      &            +d_HEFFbyNEG(I,J)
      &            +d_HSNWbyNEG(I,J)/ICE2SNOW
+#ifdef SEAICE_CAP_HEFF 
+     &            +d_HEFFbyCAPPING(I,J)
+#endif /* SEAICE_CAP_HEFF */
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREApreTH(I,J) )
