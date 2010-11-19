@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.66 2010/09/25 23:09:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.67 2010/11/19 14:41:18 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,6 +33,8 @@ C       |
 C       |-- RUNCLOCK_READPARMS
 C       |
 C       |-- CAL_READPARMS
+C       |
+C       |-- EXF_READPARMS
 C       |
 C       |-- GMREDI_READPARMS
 C       |
@@ -86,8 +88,6 @@ C       |
 C       |-- COST_READPARMS
 C       |
 C       |-- GRDCHK_READPARMS
-C       |
-C       |-- EXF_READPARMS
 C       |
 C       |-- EBM_READPARMS
 C       |
@@ -144,6 +144,11 @@ C--   Initialize RUNCLOCK parameters
 #ifdef ALLOW_CAL
 C--   Initialise the calendar package.
       IF ( useCAL ) CALL CAL_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_EXF
+C--   Custom routine to set forcing fields.
+      IF (useEXF) CALL EXF_READPARMS  ( myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
@@ -267,11 +272,6 @@ C--   Initialise the cost parameters
 #ifdef ALLOW_GRDCHK
 C--   Initialise gradient check parameters
       if (useGrdchk) CALL GRDCHK_READPARMS( myThid )
-#endif
-
-C--   Custom routine to set forcing fields.
-#ifdef ALLOW_EXF
-      IF (useEXF) CALL EXF_READPARMS  ( myThid )
 #endif
 
 #ifdef ALLOW_EBM
