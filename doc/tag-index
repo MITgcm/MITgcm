@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1335 2010/11/16 17:53:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1336 2010/11/19 00:29:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o debugMode & debugLevel=2:
+  - differentiate between debugMode & debugLevel=2:
+    debugMode: controls printing of debug messages (sequence of S/R calls).
+    debugLevel: controls printing of algorithm intermediate results and stats.
+  - remove "if debugLevel=2 => debugMode" but keep "debugMode =>  debugLevel=2";
+    => allows to print debug-stats without all sequence of call messages.
+  - switch control of debug print from debugLevel to debugMode in many S/R.
+o pkg/obcs (obcs-sponge):
+    fix bug that was introduced on Oct 25 (in dynamics.F v1.151): put back the
+    call to OBCS_PRESCRIBE_EXCHANGES (need to exch gU,gV when using obcs-sponge)
 o pkg/generic_advdiff:
   - record overlap minimum size for each advection scheme;
   - refine criteria on overlap minimum size;
