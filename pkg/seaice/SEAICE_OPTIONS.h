@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.41 2010/10/28 23:11:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.42 2010/11/19 22:14:53 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -42,7 +42,7 @@ C     in the middle of an integration.
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
-#undef SEAICE_GROWTH_LEGACY
+#define SEAICE_GROWTH_LEGACY
 
 C--   options only available in the merged version (from Ian Fenty s code)
 #ifndef SEAICE_GROWTH_LEGACY
