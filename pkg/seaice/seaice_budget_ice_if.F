@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice_if.F,v 1.5 2010/10/07 15:16:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice_if.F,v 1.6 2010/11/19 16:21:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -105,9 +105,9 @@ c     Ian Saturation Vapor Pressure
 C FREEZING TEMPERATURE OF SEAWATER
       TB=273.15 _d + 00 - 1.96 _d + 00
 C SENSIBLE HEAT CONSTANT
-      D1=SEAICE_sensHeat
+      D1 =SEAICE_dalton*SEAICE_cpAir*SEAICE_rhoAir
 C ICE LATENT HEAT CONSTANT
-      D1I=SEAICE_latentIce
+      D1I=SEAICE_dalton*SEAICE_lhSublim*SEAICE_rhoAir
 C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
       D3=SEAICE_emissivity
 C MELTING TEMPERATURE OF ICE

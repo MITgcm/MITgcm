@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.84 2010/10/31 20:07:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.85 2010/11/19 16:21:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,6 +22,9 @@ C     === Global variables ===
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
+#ifdef ALLOW_EXF
+# include "EXF_CONSTANTS.h"
+#endif /* ALLOW_EXF */
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -36,6 +39,10 @@ C     iUnit  :: Work variable for IO unit number
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+
+C     retired parameters
+      INTEGER nRetired
+      _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -56,12 +63,14 @@ C--   SEAICE parameters
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
+     & SEAICE_cpAir,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
+     & SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
@@ -170,7 +179,6 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_mon_mnc  = .FALSE.
 #endif
       SEAICE_initialHEFF = ZERO
-      SEAICE_rhoAir      = 1.3    _d 0
       SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_rhoSnow     = 330.   _d 0
       ICE2WATR           = UNSET_RL
@@ -192,12 +200,22 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_waterAlbedo = 0.1    _d +00
       SEAICE_strength    = 2.75   _d +04
       SEAICE_eccen       = 2.     _d 0
-C     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
-      SEAICE_sensHeat    = 2.284  _d +00
-C     SEAICE_latentWater = 1.75 _d -03 * 2.500 _d 06 * 1.3
-      SEAICE_latentWater = 5.6875 _d +03
-C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
-      SEAICE_latentIce   = 6.4474 _d +03
+C     coefficients for flux computations/bulk formulae
+      SEAICE_dalton      = 1.75   _d -03
+      SEAICE_lhSublim    = 2.834  _d +06
+#ifdef ALLOW_EXF
+C     Use parameters that have already been set in data.exf
+C     to be consistent
+      SEAICE_rhoAir      = atmrho
+      SEAICE_cpAir       = atmcp
+      SEAICE_lhEvap      = flamb
+      SEAICE_lhFusion    = flami
+#else
+      SEAICE_rhoAir      = 1.3    _d 0
+      SEAICE_cpAir       = 1004.  _d 0
+      SEAICE_lhEvap      = 2.50   _d 6
+      SEAICE_lhFusion    = 3.34   _d 5
+#endif /* ALLOW_EXF */
       SEAICE_iceConduct  = 2.1656 _d +00
       SEAICE_snowConduct = 3.1    _d -01
       SEAICE_emissivity  = 5.5    _d -08
@@ -238,6 +256,17 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       MIN_TICE          = -50.    _d 0
       SEAICE_EPS        = 1.      _d -10
       SEAICE_EPS_SQ     = -99999.
+C     retired parameters
+C     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
+C     SEAICE_sensHeat    = 2.284  _d +00
+      SEAICE_sensHeat    = UNSET_RL
+C     SEAICE_latentWater = 1.75 _d -03 * 2.500 _d 06 * 1.3
+C     SEAICE_latentWater = 5.6875 _d +03
+      SEAICE_latentWater = UNSET_RL
+C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
+C     SEAICE_latentIce   = 6.4474 _d +03
+      SEAICE_latentIce   = UNSET_RL
+C     end retired parameters
 
 #ifdef ALLOW_COST
       mult_ice_export   =  0. _d 0
@@ -414,6 +443,42 @@ C     in data.seaice
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
+C     retired parameter
+      nRetired = 0 
+      IF ( SEAICE_sensHeat    .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: "SEAICE_sensHeat" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: set "SEAICE_cpAir", ',
+     &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICE_latentWater .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: "SEAICE_latentWater" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: set "SEAICE_lhEvap", ',
+     &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICE_latentIce   .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: "SEAICE_latentIce" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: set "SEAICE_lhFusion", ',
+     &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
 C-    Set Output type flags :
       SEAICE_tave_mdsio = .TRUE.
       SEAICE_dump_mdsio = .TRUE.
@@ -428,6 +493,16 @@ C-    Set Output type flags :
      &       .AND. SEAICE_mon_mnc  ) SEAICE_mon_stdio  = .FALSE.
       ENDIF
 #endif
+
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'Error reading parameter file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'some out of date parameters were found in the namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 

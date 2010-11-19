@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.65 2010/10/31 20:07:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.66 2010/11/19 16:21:08 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -150,6 +150,7 @@ C     SEAICE_rhoIce      - density of sea ice                          (kg/m^3)
 C     SEAICE_rhoSnow     - density of snow                             (kg/m^3)
 C     ICE2WATR           - ratio of sea ice density to water density
 C     OCEAN_drag         - air-ocean drag coefficient
+C     SEAICE_cpAir       - specific heat of air                        (J/kg/K)
 C
 C     SEAICE_drag        - air-ice drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
@@ -171,18 +172,10 @@ C
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
 C     SEAICE_eccen       - sea-ice eccentricity of the elliptical yield curve
-C     SEAICE_sensHeat    - bulk sensible heat transfer coefficient 
-C                          = (sensible heat transfer coefficient)
-C                          x (heat capacity of air) 
-C                          x (density of air)
-C     SEAICE_latentWater - bulk latent heat transfer coefficient for water
-C                          = (latent heat transfer coefficient for water)
-C                          x (specific latent heat water to water vapor)
-C                          x (density of air)
-C     SEAICE_latentIce   - bulk latent heat transfer coefficient for ice
-C                          = (latent heat transfer coefficient for ice)
-C                          x (latent heat ice to water vapor) 
-C                          x (density of air)
+C     SEAICE_lhSublim    - latent heat of sublimation for ice and snow (J/kg)
+C     SEAICE_lhFusion    - latent heat of fusion for ice and snow (J/kg)
+C     SEAICE_lhEvap      - latent heat of evaporation for water (J/kg)
+C     SEAICE_dalton      - Dalton number (= sensible heat transfer coefficient)
 C     SEAICE_iceConduct  - sea-ice conductivity
 C     SEAICE_snowConduct - snow conductivity
 C     SEAICE_emissivity  - Stefan-Boltzman constant * emissivity
@@ -218,13 +211,15 @@ C
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
+      _RL SEAICE_cpAir
       _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO
       _RL SEAICE_drag_south, SEAICE_waterDrag_south
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
-      _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
+      _RL SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap
+      _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
       _RL SEAICE_salinity, SEAICEstressFactor
@@ -249,7 +244,8 @@ C
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
-     &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
+     &    SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap, 
+     &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SEAICE_salinity, SEAICEstressFactor,

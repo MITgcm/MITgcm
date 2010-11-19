@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.100 2010/11/19 14:32:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.101 2010/11/19 16:21:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,7 +83,7 @@ C     number of surface interface layer
       INTEGER kSurface
 C     constants
       _RL TBC, ICE2SNOW
-      _RL QI, QS, Lfusion
+      _RL QI, QS
 
 C     a_QbyATM_cover :: available heat (in W/m^2) due to the interaction of
 C             the atmosphere and the ocean surface - for ice covered water
@@ -200,12 +200,10 @@ C     FREEZING TEMP. OF SEA WATER (deg C)
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
 
-C     FRESH ICE/SNOW LATENT HEAT OF FUSION (J/kg)
-      Lfusion       = 3.34 _d +05
 C     HEAT OF FUSION OF ICE (J/m^3)
-      QI           = SEAICE_rhoIce*Lfusion
+      QI           = SEAICE_rhoIce*SEAICE_lhFusion
 C     HEAT OF FUSION OF SNOW (J/m^3)
-      QS           = SEAICE_rhoSnow*Lfusion
+      QS           = SEAICE_rhoSnow*SEAICE_lhFusion
 C
 C     note that QI/QS=ICE2SNOW -- except it wasnt in old code
 

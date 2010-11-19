@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.10 2010/01/20 00:44:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.11 2010/11/19 16:21:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,9 +69,9 @@ C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
       QS1=0.622 _d +00/1013.0 _d +00
 C SENSIBLE HEAT CONSTANT
-      D1=SEAICE_sensHeat
+      D1=SEAICE_dalton*SEAICE_cpAir*SEAICE_rhoAir
 C WATER LATENT HEAT CONSTANT
-      D1W=SEAICE_latentWater
+      D1W=SEAICE_dalton*SEAICE_lhEvap*SEAICE_rhoAir
 C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
       D3=SEAICE_emissivity
 C MELTING TEMPERATURE OF ICE

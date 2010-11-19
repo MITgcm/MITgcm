@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.29 2010/11/02 08:58:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.30 2010/11/19 16:21:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,12 +202,16 @@ C     == end of interface ==
      & 'SEAICE_waterAlbedo=', ' /* water albedo */')
       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
      & 'SEAICE_strength   =', ' /* sea-ice strength Pstar */')
-      CALL WRITE_0D_RL( SEAICE_sensHeat   ,INDEX_NONE,
-     & 'SEAICE_sensHeat   =', ' /* sensible heat transfer */')
-      CALL WRITE_0D_RL( SEAICE_latentWater,INDEX_NONE,
-     & 'SEAICE_latentWater=', ' /* latent heat transfer for water */')
-      CALL WRITE_0D_RL( SEAICE_latentIce  ,INDEX_NONE,
-     & 'SEAICE_latentIce  =', ' /* latent heat transfer for ice */')
+      CALL WRITE_0D_RL( SEAICE_cpAir      ,INDEX_NONE,
+     & 'SEAICE_cpAir      =', ' /* heat capacity of air */')
+      CALL WRITE_0D_RL( SEAICE_dalton     ,INDEX_NONE,
+     & 'SEAICE_dalton     =', ' /* constant dalton number */')
+      CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
+     & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')
+      CALL WRITE_0D_RL( SEAICE_lhFusion   ,INDEX_NONE,
+     & 'SEAICE_lhFusion   =', ' /* latent heat of fusion */')
+      CALL WRITE_0D_RL( SEAICE_lhSublim   ,INDEX_NONE,
+     & 'SEAICE_lhSublim   =', ' /* latent heat of sublimation */')
       CALL WRITE_0D_RL( SEAICE_iceConduct ,INDEX_NONE,
      & 'SEAICE_iceConduct =', ' /* sea-ice conductivity */')
       CALL WRITE_0D_RL( SEAICE_snowConduct,INDEX_NONE,
