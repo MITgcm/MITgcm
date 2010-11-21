@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.17 2010/11/03 19:44:48 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.18 2010/11/21 15:19:19 jmc Exp $
 
 #  Ed Hill
 
@@ -189,12 +189,6 @@ do
 
   echo "Running testreport using:"
   comm="./testreport -adm -a jmc@mitgcm.org"
-#---
-  chk=`expr $TODAY % 2`
- if test $chk != 0 ; then
-  OPTFILE='../tools/build_options/linux_ia32_g77'
- fi
-#---
 # comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
