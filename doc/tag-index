@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1337 2010/11/19 16:22:33 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1338 2010/11/22 14:02:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,7 +6,7 @@ $Name:  $
 
 o pkg/seaice: 
   - seaice_growth.F: fix bug in conservation of freshwater connected to
-    capping of heff
+    capping of heff, put contribution into d_HEFFbyNEG
   - replace irritating parameters SEAICE_latentWater/Ice and SEAICE_sensHeat
     by something more sensible (parameters that are what their name implies)
   - change some defaults, so that by default exf-parameters are used for
