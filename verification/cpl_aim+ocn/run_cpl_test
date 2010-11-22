@@ -1,13 +1,16 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.15 2010/01/13 00:25:37 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.16 2010/11/22 19:03:43 jmc Exp $
 # $Name:  $
 
+#- default:
 Np=3
-#- parse options:
 MTH=
 MTHo=
 MTHa=
+GMKopt='-ieee'
+
+#- parse options:
 if [ $# -ge 1 ] ; then if test $1 = '-mth' ; then
   MTH='-omp' ; shift
   if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
@@ -55,13 +58,15 @@ if test $kpr = 1
 then
 
 #- choice of the optfile: take a local one in dir verification with sufix '+mpi'
- nbOpF=`ls ../linux_*+mpi 2> /dev/null | wc -l`
+ nbOpF=`ls ../linux_* | grep '+mpi' 2> /dev/null | wc -l`
  if test $nbOpF = 1
  then 
-   OPTFILE=`ls ../linux_*+mpi`
+   OPTFILE=`ls ../linux_* | grep '+mpi'`
    zz=`grep '^FC=' $OPTFILE`
    echo " Using optfile: $OPTFILE  (compiler=$zz) $MTH"
- else echo 'Pb in finding optfile' ; exit;
+ else 
+   echo "Pb in finding optfile: found $nbOpF :"
+   ls ../linux_* | grep '+mpi' ; exit 
  fi
  zz=`echo $OPTFILE | grep -c '^\/'`
  if test $zz = 0 ; then OPTFILE="../$OPTFILE" ; fi
@@ -69,7 +74,7 @@ then
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
- ../../../tools/genmake2 -of $OPTFILE -mpi -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (cpl):'
  make depend > TTT.mkdepend.$$
@@ -82,7 +87,7 @@ then
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (ocn):'
  make depend > TTT.mkdepend.$$
@@ -95,7 +100,7 @@ then
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (atm):'
  make depend > TTT.mkdepend.$$
@@ -164,7 +169,10 @@ then
    echo ""
  fi
 # /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+#- on danton (mpich-1):
  mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
+#- on beagle:
+#mpirun -pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
  tail -20 std_outp
  ls -l rank_?/pickup*.ckptA.001.001.data
 
