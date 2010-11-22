@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.2 2010/10/25 20:42:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.3 2010/11/22 23:48:33 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -43,9 +43,8 @@ c     == routine arguments ==
 
 #ifdef ALLOW_COST_ATLANTIC
 c--   Compute meridional heat transport
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_atlantic',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_atlantic',myThid)
 #endif
       call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
       call cost_atlantic(  mytime, myiter,mythid )
@@ -54,9 +53,8 @@ c--   Compute meridional heat transport
 
 c--   Compute the cost function contribution of the boundary forcing,
 c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_forcing',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_forcing',myThid)
 #endif
       call timer_start('cost_forcing       [ECCO SPIN-DOWN]', mythid)
       call cost_forcing( myiter, mytime, mythid )
@@ -81,9 +79,8 @@ cph)
 
 c--   Compute cost function contribution of SSH.
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-# ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_ssh',myThid)
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_ssh',myThid)
 # endif
 # if (defined(ALLOW_SSHV4_COST))
       call timer_start('cost_sshv4         [ECCO SPIN-DOWN]', mythid)
@@ -113,18 +110,16 @@ c--   Compute bottom pressure cost
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_hyd',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_hyd',myThid)
 #endif
       call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
       call cost_hyd( myiter, mytime, mythid )
       call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', mythid)
 
 #ifdef ALLOW_SEAICE
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('seaice_cost_driver',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('seaice_cost_driver',myThid)
 #endif
       IF ( useSeaice) THEN
       call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
@@ -134,9 +129,8 @@ c--   Compute cost function contribution of Temperature and Salinity.
 #endif
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_obcs',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_obcs',myThid)
 #endif
       call timer_start('cost_obcs          [ECCO SPIN-DOWN]', mythid)
       call cost_obcs( myiter, mytime, mythid )
@@ -144,9 +138,8 @@ c--   Compute cost function contribution of Temperature and Salinity.
 #endif
 
 #ifdef ALLOW_CURMTR_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_curmtr',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_curmtr',myThid)
 #endif
       call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
       call cost_curmtr( myiter, mytime, mythid )
@@ -156,9 +149,8 @@ c--   Compute cost function contribution of Temperature and Salinity.
 c--   Compute cost function contribution of drifter velocities.
 #ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 #ifndef ALLOW_AUTODIFF_WHTAPEIO
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_drifter',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_drifter',myThid)
 #endif
       call timer_start('cost_drifter         [ECCO SPIN-DOWN]', mythid)
       call cost_drifter( myiter, mytime, mythid )
@@ -169,9 +161,8 @@ c--   Compute cost function contribution of drifter velocities.
 c--   Compute cost function contribution of wind stress observations.
 #if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_scat',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_scat',myThid)
 #endif
       call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid)
       call cost_scat( myiter, mytime, mythid )
@@ -181,18 +172,16 @@ c--   Compute cost function contribution of wind stress observations.
 c--   Compute cost function contribution of drift between the first
 c     and the last year.
 #ifdef ALLOW_DRIFT_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_drift',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_drift',myThid)
 #endif
       call timer_start('cost_drift         [ECCO SPIN-DOWN]', mythid)
       call cost_drift( myiter, mytime, mythid )
       call timer_stop ('cost_drift         [ECCO SPIN-DOWN]', mythid)
 #endif
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_driftw',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_driftw',myThid)
 #endif
       call timer_start('cost_driftw        [ECCO SPIN-DOWN]', mythid)
       call cost_driftw( myiter, mytime, mythid )
@@ -229,5 +218,3 @@ c--   Compute user defined cost function contributions (basic)
 
       return
       end
-
-

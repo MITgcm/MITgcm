@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.8 2006/04/27 12:49:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.9 2010/11/22 23:47:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,9 +13,9 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE ADMTLM_DRIVER                                 
-C     | o Master controlling routine for model using the MITgcm   
-C     |   UV parallel wrapper.                                    
+C     | SUBROUTINE ADMTLM_DRIVER
+C     | o Master controlling routine for model using the MITgcm
+C     |   UV parallel wrapper.
 C     *==========================================================*
 C     \ev
 
@@ -42,7 +42,7 @@ C     == Local ==
 C
 CEOP
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('ADMTLM_DRIVER',myThid)
 #endif
 
@@ -85,7 +85,7 @@ c
 c
 #endif
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('ADMTLM_DRIVER',myThid)
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/forward_step.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/forward_step.F,v 1.2 2010/11/22 23:48:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,9 +18,9 @@ C     |
 C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
 C     | Adjoint Model Compiler (TAMC). For this purpose the initialization
 C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,   
+C     | not depend on a specific model run are set in INITIALISE_FIXED,
 C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.   
+C     | initialized in INITIALISE_VARIA.
 C     |
 C     *==================================================================
 C     \ev
@@ -34,24 +34,23 @@ C     == Global variables ==
 
 C     !LOCAL VARIABLES:
 C     == Routine arguments ==
-C     note: under the multi-threaded model myiter and 
-C           mytime are local variables passed around as routine 
-C           arguments. Although this is fiddly it saves the need to 
-C           impose additional synchronisation points when they are 
+C     note: under the multi-threaded model myiter and
+C           mytime are local variables passed around as routine
+C           arguments. Although this is fiddly it saves the need to
+C           impose additional synchronisation points when they are
 C           updated.
 C     myiter - iteration counter for this thread
 C     mytime - time counter for this thread
 C     mythid - thread number for this instance of the routine.
       integer iloop
-      integer mythid 
+      integer mythid
       integer myiter
       _RL     mytime
 
 CEOP
 
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
 
 c--  This is a placeholder routine for the ecco setup.

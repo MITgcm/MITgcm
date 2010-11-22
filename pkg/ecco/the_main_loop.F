@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.96 2010/10/01 00:06:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.97 2010/11/22 23:48:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -207,9 +207,8 @@ c     == local variables ==
 
 c--   == end of interface ==
 
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -259,9 +258,8 @@ CADJ STORE hFacC = tapelev_init, key=1
 #endif
 
 C--   Set initial conditions (variable arrays)
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
 #endif
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
@@ -468,8 +466,7 @@ c--     Set the model iteration counter and the model time.
 C--   State-variables diagnostics
       IF ( useDiagnostics ) THEN
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('DO_STATEVARS_DIAGS',myThid)
+      IF (debugMode) CALL DEBUG_CALL('DO_STATEVARS_DIAGS',myThid)
 #endif
 C--   Switch on/off diagnostics for snap-shot output:
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
@@ -482,8 +479,7 @@ C--   Switch on/off diagnostics for snap-shot output:
 #ifdef ALLOW_PROFILES
 c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('profiles_inloop',myThid)
+      IF (debugMode) CALL DEBUG_CALL('profiles_inloop',myThid)
 #endif
         call timer_start('PROFILES_INLOOP       [ECCO MAIN]', mythid)
         call profiles_inloop( mytime, mythid )
@@ -493,8 +489,7 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 #ifdef ALLOW_COST
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesfields',myThid)
+      IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
 #endif
 c--     Accumulate time averages of temperature, salinity
         call timer_start('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
@@ -524,8 +519,7 @@ c**************************************
 
 C--   Call driver to load external forcing fields from file
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
+      IF (debugMode) CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 cph Important STORE that avoids hidden recomp. of load_fields_driver
@@ -552,8 +546,7 @@ CADJ STORE ptracer  = comlev1, key=ikey_dynamics, kind=isbyte
 #ifdef ALLOW_EBM
         IF ( useEBM ) THEN
 # ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('EBM',myThid)
+         IF (debugMode) CALL DEBUG_CALL('EBM',myThid)
 # endif
          CALL TIMER_START('EBM                [FORWARD_STEP]',mythid)
          CALL EBM_DRIVER ( myTime, myIter, myThid )
@@ -564,8 +557,7 @@ CADJ STORE ptracer  = comlev1, key=ikey_dynamics, kind=isbyte
 C--     Step forward fields and calculate time tendency terms.
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('DO_ATMOSPHERIC_PHYS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('DO_ATMOSPHERIC_PHYS',myThid)
 #endif
        CALL TIMER_START('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
        CALL DO_ATMOSPHERIC_PHYS( myTime, myIter, myThid )
@@ -591,8 +583,7 @@ CADJ STORE hFacC              = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifndef ALLOW_OFFLINE
 # ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
 # endif
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
@@ -630,8 +621,7 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
        IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
 #endif
         CALL TIMER_START('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
         CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
@@ -683,8 +673,7 @@ CADJ STORE etanm1             = comlev1, key=ikey_dynamics, kind=isbyte
 
       IF ( .NOT.staggerTimeStep ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
@@ -710,8 +699,7 @@ C--   Step forward fields and calculate time tendency terms.
       IF ( momStepping ) THEN
 #endif
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('DYNAMICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('DYNAMICS',myThid)
 #endif
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
@@ -849,8 +837,7 @@ CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('SOLVE_FOR_PRESSURE',myThid)
+        IF (debugMode) CALL DEBUG_CALL('SOLVE_FOR_PRESSURE',myThid)
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
         CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
@@ -862,7 +849,7 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 c     IF ( momStepping ) THEN
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_CALL('MOMENTUM_CORRECTION_STEP',myThid)
 #endif
         CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
@@ -878,8 +865,7 @@ cph-test
 cphCADJ STORE etaH          = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('UPDATE_ETAH',myThid)
+        IF (debugMode) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
 #endif
 C--   Update etaH(n+1) :
         CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
@@ -917,7 +903,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( staggerTimeStep ) THEN
 C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
 #endif
         CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
@@ -934,8 +920,7 @@ C--   State-variables diagnostics
 #endif
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
@@ -951,7 +936,7 @@ cph find_rho which may use pressure()
 CADJ STORE totphihyd  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
+        IF (debugMode)
      &    CALL DEBUG_CALL('TRACERS_CORRECTION_STEP',myThid)
 #endif
 C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
@@ -969,8 +954,7 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
         IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
+         IF (debugMode) CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
 #endif /* ALLOW_DEBUG */
          CALL TIMER_START('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
          CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
@@ -984,8 +968,8 @@ c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
 c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('DO_FIELDS_BLOCKING_EXCHANGES',myThid)
+      IF (debugMode)
+     &       CALL DEBUG_CALL('DO_FIELDS_BLOCKING_EXCHANGES',myThid)
 #endif /* ALLOW_DEBUG */
 C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
@@ -995,8 +979,7 @@ C--   Do "blocking" sends and receives for field "overlap" terms
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('DO_STATEVARS_DIAGS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('DO_STATEVARS_DIAGS',myThid)
 #endif /* ALLOW_DEBUG */
        CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        CALL DO_STATEVARS_DIAGS( myTime, 2, myIter, myThid )
@@ -1019,8 +1002,7 @@ C--   Calculate float trajectories
 
 #ifdef ALLOW_TIMEAVE
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('DO_STATEVARS_TAVE',myThid)
+      IF (debugMode) CALL DEBUG_CALL('DO_STATEVARS_TAVE',myThid)
 #endif /* ALLOW_DEBUG */
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
@@ -1031,8 +1013,7 @@ C--   State-variables time-averaging
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('MONITOR',myThid)
+      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
 #endif /* ALLOW_DEBUG */
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
@@ -1042,8 +1023,7 @@ C--   Check status of solution (statistics, cfl, etc...)
 #endif
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
+      IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
 #endif /* ALLOW_DEBUG */
 C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
@@ -1055,8 +1035,7 @@ C--   Do IO if needed.
       IF ( useSIGREG ) THEN
         IF ( i_got_signal .GT. 0 ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &         CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
+          IF (debugMode) CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
 #endif /* ALLOW_DEBUG */
           CALL DO_WRITE_PICKUP(
      I                .TRUE., myTime, myIter, myThid )
@@ -1066,8 +1045,7 @@ C--   Do IO if needed.
 # endif /* HAVE_SIGREG */
 C--   Save state for restarts
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
+      IF (debugMode) CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
 #endif /* ALLOW_DEBUG */
       CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
       CALL DO_WRITE_PICKUP(
@@ -1082,8 +1060,7 @@ C--   Save state for restarts
 #endif
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &        CALL DEBUG_CALL('END OF TIMESTEP',myThid)
+      IF (debugMode) CALL DEBUG_CALL('END OF TIMESTEP',myThid)
 #endif /* ALLOW_DEBUG */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1129,9 +1106,8 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 CADJ STORE mytime = onetape
 #endif
 c--   Accumulate time averages of temperature, salinity, and SSH.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesfields',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
 #endif
       call timer_start('cost_averagesfields [ECCO SPIN-DOWN]', mythid)
       call cost_averagesfields( mytime, mythid )
@@ -1144,9 +1120,8 @@ c**************************************
 
 #ifdef ALLOW_COST_ATLANTIC
 c--   Compute meridional heat transport
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_atlantic',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_atlantic',myThid)
 #endif
       call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
       call cost_atlantic(  mytime, myiter,mythid )
@@ -1155,9 +1130,8 @@ c--   Compute meridional heat transport
 
 c--   Compute the cost function contribution of the boundary forcing,
 c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_forcing',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_forcing',myThid)
 #endif
       call timer_start('cost_forcing       [ECCO SPIN-DOWN]', mythid)
       call cost_forcing( myiter, mytime, mythid )
@@ -1182,9 +1156,8 @@ cph)
 
 c--   Compute cost function contribution of SSH.
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-# ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_ssh',myThid)
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_ssh',myThid)
 # endif
 # if (defined(ALLOW_SSHV4_COST))
       call timer_start('cost_sshv4         [ECCO SPIN-DOWN]', mythid)
@@ -1214,20 +1187,18 @@ c--   Compute bottom pressure cost
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_hyd',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_hyd',myThid)
 #endif
       call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
       call cost_hyd( myiter, mytime, mythid )
       call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', mythid)
 
 #ifdef ALLOW_SEAICE
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('seaice_cost_driver',myThid)
-#endif
       IF ( useSeaice) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('seaice_cost_driver',myThid)
+#endif
       call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
       call seaice_cost_driver( myiter, mytime, mythid )
       call timer_stop ('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
@@ -1235,9 +1206,8 @@ c--   Compute cost function contribution of Temperature and Salinity.
 #endif
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_obcs',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_obcs',myThid)
 #endif
       call timer_start('cost_obcs          [ECCO SPIN-DOWN]', mythid)
       call cost_obcs( myiter, mytime, mythid )
@@ -1245,9 +1215,8 @@ c--   Compute cost function contribution of Temperature and Salinity.
 #endif
 
 #ifdef ALLOW_CURMTR_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_curmtr',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_curmtr',myThid)
 #endif
       call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
       call cost_curmtr( myiter, mytime, mythid )
@@ -1257,9 +1226,8 @@ c--   Compute cost function contribution of Temperature and Salinity.
 c--   Compute cost function contribution of drifter velocities.
 #ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 #ifndef ALLOW_AUTODIFF_WHTAPEIO
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_drifter',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_drifter',myThid)
 #endif
       call timer_start('cost_drifter         [ECCO SPIN-DOWN]', mythid)
       call cost_drifter( myiter, mytime, mythid )
@@ -1270,9 +1238,8 @@ c--   Compute cost function contribution of drifter velocities.
 c--   Compute cost function contribution of wind stress observations.
 #if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_scat',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_scat',myThid)
 #endif
       call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid)
       call cost_scat( myiter, mytime, mythid )
@@ -1282,18 +1249,16 @@ c--   Compute cost function contribution of wind stress observations.
 c--   Compute cost function contribution of drift between the first
 c     and the last year.
 #ifdef ALLOW_DRIFT_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_drift',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_drift',myThid)
 #endif
       call timer_start('cost_drift         [ECCO SPIN-DOWN]', mythid)
       call cost_drift( myiter, mytime, mythid )
       call timer_stop ('cost_drift         [ECCO SPIN-DOWN]', mythid)
 #endif
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_driftw',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_driftw',myThid)
 #endif
       call timer_start('cost_driftw        [ECCO SPIN-DOWN]', mythid)
       call cost_driftw( myiter, mytime, mythid )
@@ -1327,9 +1292,8 @@ c--   Compute user defined cost function contributions (basic)
       call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', mythid)
 
 c--   Sum all cost function contributions.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_final',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_final',myThid)
 #endif
       call timer_start('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
       call cost_final( mythid )
@@ -1339,11 +1303,9 @@ c--   Sum all cost function contributions.
 
       call timer_stop ('ECCO SPIN-DOWN', mythid)
 
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
 #endif
 
       return
       end
-
