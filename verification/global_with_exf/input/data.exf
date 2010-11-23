@@ -4,7 +4,7 @@
 # *********************
  &EXF_NML_01
  exf_iprec         = 32,
- exf_yftype        = 'RL',
+#exf_verbose       = .TRUE.,
  &
 
 # *********************
