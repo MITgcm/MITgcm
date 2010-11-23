@@ -1,10 +1,8 @@
-# $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input_ad.thsice/data.exf,v 1.1 2010/10/21 03:56:33 heimbach Exp $
-#
 # *********************
 # External Forcing Data
 # *********************
  &EXF_NML_01
-#
+#exf_verbose       = .TRUE.,
 #useExfCheckRange  = .TRUE.,
 #useStabilityFct_overIce=.TRUE.,
 #snow_emissivity   = 0.98,
@@ -19,7 +17,6 @@
  exf_monFreq       = 0.,
  repeatPeriod      = 31104000.,
  exf_iprec         = 64,
- exf_yftype        = 'RL',
  &
 
 # *********************
