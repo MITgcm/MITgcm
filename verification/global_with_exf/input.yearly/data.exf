@@ -5,8 +5,8 @@
  &EXF_NML_01
 #repeatPeriod= 31104000.,
  exf_iprec         = 32,
- exf_yftype        = 'RL',
  useEXFYearlyFields= .TRUE.,
+ exf_verbose       = .TRUE.,
  &
 
 # *********************
