@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.2 2010/03/16 00:27:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.3 2010/11/23 18:58:47 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -23,11 +23,7 @@ C
 c   pkg/exf CPP options:
 c   --------------------
 c
-c   >>> INCLUDE_EXTERNAL_FORCING_PACKAGE <<<
-c       Include this package into the setup.
-c
-c   >>> EXF_VERBOSE <<<
-c       Do a bit more printout for the log file than usual.
+c   > ( EXF_VERBOSE ) < replaced with run-time, logical parameter "exf_verbose".
 c
 c   >>> ALLOW_ATM_WIND <<<
 c       If defined, 10-m wind fields can be read-in from files.
@@ -130,9 +126,6 @@ c         |     |     |     |     | Compute open-water ustress, vstress,
 c         |     |     |     |     | hflux, swflux, and evap.
 c
 c   ====================================================================
-
-C   Do more printout for the protocol file than usual.
-#define EXF_VERBOSE
 
 C   Bulk formulae related flags.
 #undef  ALLOW_ATM_TEMP
