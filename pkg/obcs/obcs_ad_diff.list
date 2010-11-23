@@ -10,6 +10,7 @@ obcs_apply_ptracer.f
 obcs_calc.f	
 obcs_copy_tracer.f
 obcs_init_variables.f
+obcs_prescribe_exchanges.f
 obcs_prescribe_read.f
 obcs_sponge.f	
 orlanski_east.f
