@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.62 2010/05/12 01:08:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.63 2010/11/23 18:55:54 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -72,9 +72,9 @@ c     Surface flux data.
      &   ocean_emissivity,     ice_emissivity, snow_emissivity,
      &          exf_iceCd,          exf_iceCe,     exf_iceCh,
      &   exf_scal_BulkCdn,     climtempfreeze,
-     &          exf_iprec,         exf_yftype,   exf_monFreq,
-     &     exf_iprec_obcs,
-     & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
+     &          exf_iprec,     exf_iprec_obcs,     exf_yftype,
+     &        exf_verbose,   useExfCheckRange,     exf_monFreq,
+     & useExfYearlyFields,  twoDigitYear,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
      & useRelativeWind, noNegativeEvap,
      & select_ZenAlbedo, useExfZenIncoming,
@@ -227,6 +227,7 @@ c     Surface flux data.
 c     Set default values.
 
       year2sec           = 365.*86400.
+      exf_verbose        = debugMode
       exf_monFreq        = monitorFreq
       useExfCheckRange   = .TRUE.
       useExfZenAlbedo    = .FALSE.

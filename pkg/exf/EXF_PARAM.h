@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.21 2010/06/22 16:14:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.22 2010/11/23 18:55:54 jmc Exp $
 C $Name:  $
 c
 c
@@ -60,7 +60,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     hfluxstartdate
       _RL     hfluxperiod
       _RL     hfluxconst
-      _RL     hflux_exfremo_intercept 
+      _RL     hflux_exfremo_intercept
       _RL     hflux_exfremo_slope
       character*1 hfluxmask
       parameter(  hfluxmask = 's' )
@@ -70,7 +70,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     atempstartdate
       _RL     atempperiod
       _RL     atempconst
-      _RL     atemp_exfremo_intercept 
+      _RL     atemp_exfremo_intercept
       _RL     atemp_exfremo_slope
       character*1 atempmask
       parameter(  atempmask = 's' )
@@ -80,7 +80,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     aqhstartdate
       _RL     aqhperiod
       _RL     aqhconst
-      _RL     aqh_exfremo_intercept 
+      _RL     aqh_exfremo_intercept
       _RL     aqh_exfremo_slope
       character*1 aqhmask
       parameter(  aqhmask = 's' )
@@ -90,7 +90,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     sfluxstartdate
       _RL     sfluxperiod
       _RL     sfluxconst
-      _RL     sflux_exfremo_intercept 
+      _RL     sflux_exfremo_intercept
       _RL     sflux_exfremo_slope
       character*1 sfluxmask
       parameter(  sfluxmask = 's' )
@@ -100,7 +100,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     evapstartdate
       _RL     evapperiod
       _RL     evapconst
-      _RL     evap_exfremo_intercept 
+      _RL     evap_exfremo_intercept
       _RL     evap_exfremo_slope
       character*1 evapmask
       parameter(  evapmask = 's' )
@@ -110,7 +110,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     precipstartdate
       _RL     precipperiod
       _RL     precipconst
-      _RL     precip_exfremo_intercept 
+      _RL     precip_exfremo_intercept
       _RL     precip_exfremo_slope
       character*1 precipmask
       parameter(  precipmask = 's' )
@@ -120,7 +120,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     snowprecipstartdate
       _RL     snowprecipperiod
       _RL     snowprecipconst
-      _RL     snowprecip_exfremo_intercept 
+      _RL     snowprecip_exfremo_intercept
       _RL     snowprecip_exfremo_slope
       character*1 snowprecipmask
       parameter(  snowprecipmask = 's' )
@@ -130,7 +130,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     runoffstartdate
       _RL     runoffperiod
       _RL     runoffconst
-      _RL     runoff_exfremo_intercept 
+      _RL     runoff_exfremo_intercept
       _RL     runoff_exfremo_slope
       character*1 runoffmask
       parameter(  runoffmask = 's' )
@@ -140,7 +140,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     ustressstartdate
       _RL     ustressperiod
       _RL     ustressconst
-      _RL     ustress_exfremo_intercept 
+      _RL     ustress_exfremo_intercept
       _RL     ustress_exfremo_slope
       character*1 ustressmask
       parameter(  ustressmask = 'u' )
@@ -150,7 +150,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     vstressstartdate
       _RL     vstressperiod
       _RL     vstressconst
-      _RL     vstress_exfremo_intercept 
+      _RL     vstress_exfremo_intercept
       _RL     vstress_exfremo_slope
       character*1 vstressmask
       parameter(  vstressmask = 'v' )
@@ -160,7 +160,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     uwindstartdate
       _RL     uwindperiod
       _RL     uwindconst
-      _RL     uwind_exfremo_intercept 
+      _RL     uwind_exfremo_intercept
       _RL     uwind_exfremo_slope
       character*1 uwindmask
       parameter(  uwindmask = 's' )
@@ -170,7 +170,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     vwindstartdate
       _RL     vwindperiod
       _RL     vwindconst
-      _RL     vwind_exfremo_intercept 
+      _RL     vwind_exfremo_intercept
       _RL     vwind_exfremo_slope
       character*1 vwindmask
       parameter(  vwindmask = 's' )
@@ -180,7 +180,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     wspeedstartdate
       _RL     wspeedperiod
       _RL     wspeedconst
-      _RL     wspeed_exfremo_intercept 
+      _RL     wspeed_exfremo_intercept
       _RL     wspeed_exfremo_slope
       character*1 wspeedmask
       parameter(  wspeedmask = 's' )
@@ -190,7 +190,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     swfluxstartdate
       _RL     swfluxperiod
       _RL     swfluxconst
-      _RL     swflux_exfremo_intercept 
+      _RL     swflux_exfremo_intercept
       _RL     swflux_exfremo_slope
       character*1 swfluxmask
       parameter(  swfluxmask = 's' )
@@ -200,7 +200,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     lwfluxstartdate
       _RL     lwfluxperiod
       _RL     lwfluxconst
-      _RL     lwflux_exfremo_intercept 
+      _RL     lwflux_exfremo_intercept
       _RL     lwflux_exfremo_slope
       character*1 lwfluxmask
       parameter(  lwfluxmask = 's' )
@@ -210,7 +210,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     swdownstartdate
       _RL     swdownperiod
       _RL     swdownconst
-      _RL     swdown_exfremo_intercept 
+      _RL     swdown_exfremo_intercept
       _RL     swdown_exfremo_slope
       character*1 swdownmask
       parameter(  swdownmask = 's' )
@@ -220,7 +220,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     lwdownstartdate
       _RL     lwdownperiod
       _RL     lwdownconst
-      _RL     lwdown_exfremo_intercept 
+      _RL     lwdown_exfremo_intercept
       _RL     lwdown_exfremo_slope
       character*1 lwdownmask
       parameter(  lwdownmask = 's' )
@@ -230,7 +230,7 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     apressurestartdate
       _RL     apressureperiod
       _RL     apressureconst
-      _RL     apressure_exfremo_intercept 
+      _RL     apressure_exfremo_intercept
       _RL     apressure_exfremo_slope
       character*1 apressuremask
       parameter(  apressuremask = 's' )
@@ -253,7 +253,7 @@ c     Calendar data.
       _RL     climsstperiod
       _RL     climsstTauRelax
       _RL     climsstconst
-      _RL     climsst_exfremo_intercept 
+      _RL     climsst_exfremo_intercept
       _RL     climsst_exfremo_slope
       character*1 climsstmask
       parameter(  climsstmask = 's' )
@@ -264,7 +264,7 @@ c     Calendar data.
       _RL     climsssperiod
       _RL     climsssTauRelax
       _RL     climsssconst
-      _RL     climsss_exfremo_intercept 
+      _RL     climsss_exfremo_intercept
       _RL     climsss_exfremo_slope
       character*1 climsssmask
       parameter(  climsssmask = 's' )
@@ -275,7 +275,7 @@ c     Calendar data.
       _RL     climustrperiod
       _RL     climustrTauRelax
       _RL     climustrconst
-      _RL     climustr_exfremo_intercept 
+      _RL     climustr_exfremo_intercept
       _RL     climustr_exfremo_slope
       character*1 climustrmask
       parameter(  climustrmask = 'u' )
@@ -286,7 +286,7 @@ c     Calendar data.
       _RL     climvstrperiod
       _RL     climvstrTauRelax
       _RL     climvstrconst
-      _RL     climvstr_exfremo_intercept 
+      _RL     climvstr_exfremo_intercept
       _RL     climvstr_exfremo_slope
       character*1 climvstrmask
       parameter(  climvstrmask = 'v' )
@@ -303,7 +303,7 @@ c     with pkg/icefront to specify sub-glacial runoff
       _RL     sgrunoffstartdate
       _RL     sgrunoffperiod
       _RL     sgrunoffconst
-      _RL     sgrunoff_exfremo_intercept 
+      _RL     sgrunoff_exfremo_intercept
       _RL     sgrunoff_exfremo_slope
       _RL     exf_inscal_sgrunoff
       character*1 sgrunoffmask
@@ -373,6 +373,8 @@ c     File names.
       character*(128) climustrfile
       character*(128) climvstrfile
 
+C     exf_verbose        :: print more messages to STDOUT (e.g., when read new rec)
+C     useExfCheckRange   :: check range of input/output field values
 C     useExfYearlyFields :: when set, automatically add extension
 C                           _YEAR to input file names; the yearly files need
 C                           to contain all the records that pertain to
@@ -390,13 +392,14 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
 C     useExfZenAlbedo    :: ocean albedo (direct part) may vary with zenith angle (see select_ZenAlbedo)
 C     select_ZenAlbedo   :: switch to different methods to compute albedo (direct part)
 C                        :: 0 just use exf_albedo
-C                        :: 1 use daily mean albedo from exf_zenithangle_table.F 
+C                        :: 1 use daily mean albedo from exf_zenithangle_table.F
 C                        :: 2 use daily mean albedo computed as in pkg/aim_v23
-C                        :: 3 use daily variable albedo 
+C                        :: 3 use daily variable albedo
 C     useExfZenIncoming  :: compute incoming solar radiation along with zenith angle
 
-      logical useExfYearlyFields, twoDigitYear
+      logical exf_verbose
       logical useExfCheckRange
+      logical useExfYearlyFields, twoDigitYear
       logical readStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
@@ -409,8 +412,8 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
       logical useExfZenIncoming
 
       common /exf_param_l/
+     &       exf_verbose, useExfCheckRange,
      &       useExfYearlyFields, twoDigitYear,
-     &       useExfCheckRange,
      &       useExfZenAlbedo, useExfZenIncoming,
      &       readStressOnAgrid, readStressOnCgrid,
      &       stressIsOnCgrid, useStabilityFct_overIce,

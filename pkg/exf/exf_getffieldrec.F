@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.22 2009/06/03 09:59:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.23 2010/11/23 18:55:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
-
 
       subroutine exf_GetFFieldRec(
      I                             fldstartdate, fldperiod,
@@ -10,9 +9,7 @@ C $Name:  $
      O                             fac,
      O                             first, changed,
      O                             count0, count1, year0, year1,
-     I                             mytime,
-     I                             myiter, mythid
-     &                           )
+     I                             mytime, myiter, mythid )
 
 c     ==================================================================
 c     o Get flags, counters, and the linear interpolation factor for a
@@ -73,9 +70,7 @@ c     myDateSeconds :: seconds from beginning of year to mydate
       _RL fldsectot, fldsecs, fldsecs0, fldsecs1
       _RL secondsInYear, myDateSeconds
 
-#ifdef EXF_VERBOSE
       character*(max_len_mbuf) msgbuf
-#endif
 
 c     == external ==
 
@@ -102,7 +97,7 @@ c     never used in this context.
        year0   = 0
        year1   = year0
       else
-c     fldperiod .ne. 0 
+c     fldperiod .ne. 0
       if (.not.usefldyearlyfields) then
 
 c     Determine offset in seconds from beginning of input data
@@ -162,7 +157,7 @@ c     Determine the record just before mycurrentdate.
      &       myDateSeconds = myDateSeconds + secondsInYear
         fldsectot = myDateSeconds - fldstartdate
         count0    = int((fldsectot+0.5)/fldperiod) + 1
-        
+
 c     Determine the flux year and record just after mycurrentdate.
         year1  = year0
         count1 = count0 + 1
@@ -186,9 +181,9 @@ c     Set switch for reading new record.
       endif
 c     if (fldperiod .eq. 0.)
 
-#ifdef EXF_VERBOSE
 c     Do some printing for the protocol.
-      _BEGIN_MASTER( mythid )
+      IF ( exf_verbose ) THEN
+        _BEGIN_MASTER( mythid )
         write(msgbuf,'(a)') ' exf_GetFFieldsRec:'
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
@@ -205,7 +200,8 @@ c     Do some printing for the protocol.
         write(msgbuf,'(a)') ' exf_GetFFieldsRec:'
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
+        _END_MASTER( mythid )
+      ENDIF
 
+      return
       end

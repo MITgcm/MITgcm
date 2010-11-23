@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.23 2010/04/15 00:47:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.24 2010/11/23 18:55:54 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -94,9 +94,10 @@ C--   Print general parameters:
      &  ' /* add extension _YEAR to input file names */')
       CALL WRITE_0D_L( twoDigitYear, INDEX_NONE, 'twoDigitYear =',
      &  ' /* use 2-digit year extension */')
+      CALL WRITE_0D_L( exf_verbose, INDEX_NONE, 'exf_verbose =',
+     &  ' /* print more messages to STDOUT */')
       CALL WRITE_0D_L( useExfCheckRange, INDEX_NONE,
-     &  'useExfCheckRange =',
-     &  ' /* check for fields range */')
+     &  'useExfCheckRange =', ' /* check for fields range */')
       CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq =',
      &  ' /* EXF monitor frequency [ s ] */')
       CALL WRITE_0D_RL( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
@@ -178,11 +179,11 @@ C--   Print general parameters:
       CALL WRITE_0D_RL( exf_albedo, INDEX_NONE, 'exf_albedo =',
      & '  /* Sea-water albedo [-] */')
       CALL WRITE_0D_L( useExfZenAlbedo, INDEX_NONE, 'useExfZenAlbedo =',
-     &  ' /* Sea-water albedo varies with zenith angle */') 
+     &  ' /* Sea-water albedo varies with zenith angle */')
       CALL WRITE_0D_I( select_ZenAlbedo,INDEX_NONE,'select_ZenAlbedo =',
      &  ' /* Sea-water albedo computation method */')
       CALL WRITE_0D_L( useExfZenIncoming, INDEX_NONE,
-     &  'useExfZenIncoming =',' /* compute incoming solar radiation */') 
+     &  'useExfZenIncoming =',' /* compute incoming solar radiation */')
       CALL WRITE_0D_RL( ocean_emissivity, INDEX_NONE,
      &  'ocean_emissivity =',
      &  ' /* longwave ocean-surface emissivity [-] */')

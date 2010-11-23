@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.17 2010/04/15 00:47:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.18 2010/11/23 18:55:54 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -25,8 +25,7 @@ C
 c   pkg/exf CPP options:
 c   --------------------
 c
-c   >>> EXF_VERBOSE <<<
-c       Do a bit more printout for the log file than usual.
+c   > ( EXF_VERBOSE ) < replaced with run-time, logical parameter "exf_verbose".
 c
 c   >>> ALLOW_ATM_WIND <<<
 c       If defined, 10-m wind fields can be read-in from files.
@@ -136,9 +135,6 @@ c         |     |     |     |     | Compute open-water ustress, vstress,
 c         |     |     |     |     | hflux, swflux, and evap.
 c
 c   ====================================================================
-
-C   Do more printout for the protocol file than usual.
-#undef EXF_VERBOSE
 
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
