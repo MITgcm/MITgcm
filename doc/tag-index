@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1339 2010/11/24 15:37:24 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1340 2010/11/24 16:07:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - change CPP option EXF_VERBOSE to run-time logical param exf_verbose.
 o pkg/seaice: 
   - seaice_ocean_stress: split a loop for better vectorization of the 
     adjoint code 
