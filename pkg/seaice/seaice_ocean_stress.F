@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.28 2010/11/24 15:36:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.29 2010/11/24 15:51:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -68,6 +68,7 @@ C     stress and internal ice stresses to surface layer of ocean
      &          + stressDivergenceX(I,J,bi,bj) * SEAICEstressFactor
           ENDDO
          ENDDO
+C     This loop separation makes the adjoint code vectorize
          DO J=1,sNy
           DO I=1,sNx
            areaS = 0.5 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
