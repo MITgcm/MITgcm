@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.38 2010/11/05 08:13:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.39 2010/11/25 16:43:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -187,6 +187,15 @@ C--
        WRITE(msgBuf,'(2A,2I4)') 'SEAICE_CHECK:',
      &  ' MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS = ',
      &  MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ( IMAX_TICE .GT. NMAX_TICE ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' need to increase NMAX_TICE in SEAICE_PARAMS.h'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,2I4)') 'SEAICE_CHECK:',
+     &  ' NMAX_TICE, MAX_TICE = ', NMAX_TICE, IMAX_TICE
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

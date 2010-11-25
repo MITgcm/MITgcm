@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.53 2010/10/06 20:06:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.54 2010/11/25 16:43:14 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -222,6 +222,8 @@ cif)
       INTEGER iicekey
       INTEGER nEVPstepMax
       PARAMETER ( nEVPstepMax=60 )
+      INTEGER NMAX_TICE
+      PARAMETER ( NMAX_TICE=10 )
 #endif
 
 CEH3 ;;; Local Variables: ***
