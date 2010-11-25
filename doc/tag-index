@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1341 2010/11/25 15:08:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1342 2010/11/25 16:43:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: explicitly store tsurfloc in seaice_solve4temp.F to avoid 
+  unnecessary copying in adjoint code, requires new parameter NMAX_ITER
 
 checkpoint62o (2010/11/25)
 o pkg/exf:
