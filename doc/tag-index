@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1340 2010/11/24 16:07:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1341 2010/11/25 15:08:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62o (2010/11/25)
 o pkg/exf:
   - change CPP option EXF_VERBOSE to run-time logical param exf_verbose.
-o pkg/seaice: 
-  - seaice_ocean_stress: split a loop for better vectorization of the 
-    adjoint code 
+o pkg/seaice:
+  - seaice_ocean_stress: split a loop for better vectorization of the
+    adjoint code
   - seaice_growth.F: fix bug in conservation of freshwater connected to
     capping of heff, put contribution into d_HEFFbyNEG
   - replace irritating parameters SEAICE_latentWater/Ice and SEAICE_sensHeat
@@ -17,7 +18,7 @@ o pkg/seaice:
     things like rhoAir, cpAir,latent/sensible heat parameters, in order
     to reproduce the old results, many data.seaice now contain funny values
     for cpAir and latent heat of sublimation
-o packages_readparms.F: move exf_readparms up in line so that 
+o packages_readparms.F: move exf_readparms up in line so that
     exf-parameters are visible for other packages (e.g. seaice)
 o debugMode & debugLevel=2:
   - differentiate between debugMode & debugLevel=2:
