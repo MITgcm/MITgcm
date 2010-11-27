@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.78 2010/04/06 20:58:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.79 2010/11/27 23:08:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,8 +64,6 @@ C       |-- PROFILES_INIT_VARIA
 C       |
 C       |-- FLT_INIT_VARIA
 C       |
-C       |-- OBCS_INIT_VARIABLES
-C       |
 C       |-- BULKF_INIT_VARIA
 C       |
 C       |-- THSICE_INI_VARS
@@ -92,6 +90,8 @@ C       |
 C       |-- CHEAPAML_INIT_VARIA
 C       |
 C       |-- MYPACKAGE_INIT_VARIA
+C       |
+C       |-- OBCS_INIT_VARIABLES
 
 C     !USES:
       IMPLICIT NONE
@@ -107,7 +107,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid -  Number of this instances
+C     myThid  :: my Thread Id number
       INTEGER myThid
 CEOP
 
@@ -228,14 +228,6 @@ cph# endif
       ENDIF
 #endif /* ALLOW_ICEFRONT */
 
-cph-- moved further down
-cph#ifdef ALLOW_OBCS
-cphC--   Open boundaries data
-cph      IF (useOBCS) THEN
-cph        CALL OBCS_INIT_VARIABLES( myThid )
-cph      ENDIF
-cph#endif
-
 #ifdef ALLOW_PTRACERS
 # ifndef ALLOW_AUTODIFF_TAMC
       IF ( usePTRACERS ) THEN
@@ -341,16 +333,6 @@ c--   Initialise float position
         CALL FLT_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_FLT */
-
-#ifdef ALLOW_OBCS
-C--   Open boundaries data
-      IF (useOBCS) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('OBCS_INIT_VARIABLES',myThid)
-# endif
-        CALL OBCS_INIT_VARIABLES( myThid )
-      ENDIF
-#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_BULK_FORCE
       IF (useBulkForce) THEN
@@ -459,6 +441,16 @@ C Initialize FIZHI state variables
         CALL MYPACKAGE_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#ifdef ALLOW_OBCS
+C--   put this call in last position (needs to come after few {PKG}_init_varia)
+      IF (useOBCS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OBCS_INIT_VARIABLES',myThid)
+# endif
+        CALL OBCS_INIT_VARIABLES( myThid )
+      ENDIF
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode)
