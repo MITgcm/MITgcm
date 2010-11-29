@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.86 2010/11/22 08:49:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.87 2010/11/29 23:21:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -122,6 +122,7 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
+      SEAICEadjMODE      = 0
       SEAICEuseFREEDRIFT = .FALSE.
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.

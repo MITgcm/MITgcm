@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.66 2010/11/19 16:21:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.67 2010/11/29 23:21:09 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -100,6 +100,7 @@ C
       INTEGER SEAICEadvSchSnow
       INTEGER SEAICEadvSchSalt
       INTEGER SEAICEadvSchAge
+      INTEGER SEAICEadjMODE
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
      &     SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
@@ -108,7 +109,8 @@ C
      &     SEAICEadvSchHeff,
      &     SEAICEadvSchSnow,
      &     SEAICEadvSchSalt,
-     &     SEAICEadvSchAge
+     &     SEAICEadvSchAge,
+     &     SEAICEadjMODE
       PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.

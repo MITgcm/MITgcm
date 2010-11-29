@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.8 2010/11/25 16:42:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.9 2010/11/29 23:21:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -575,6 +575,25 @@ C              (excludes upward conductive fluxes)
          F_ia(I,J)    = F_lwd(I,J) + F_swi(I,J) + F_lwu(I,J) +
      &        F_sens(I,J) + F_lh(I,J)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
+
+#ifdef SEAICE_MODIFY_GROWTH_ADJ
+Cgf no additional dependency through solver, snow, etc.
+         if ( SEAICEadjMODE.GE.2 ) then
+         CALL ZERO_ADJ_1D( 1, TSURF(I,J,bi,bj), myThid)
+         t1 = TSURF(I,J,bi,bj)
+         t2 = t1*t1
+         t3 = t2*t1
+         t4 = t2*t2
+         qhice(I,J)=QS1*(C1*t4+C2*t3 +C3*t2+C4*t1+C5)
+
+         A1(I,J)=0.3 _d 0 *SWDOWN(I,J,bi,bj)+lwdownLoc(I,J)*0.97 _d 0
+     &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
+         A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3*t4
+
+         F_ia(I,J)=-A1(I,J)-A2(I,J)
+         IcePenetSWFlux(I,J)= 0. _d 0
+         endif
+#endif
 
 C     Caclulate the net ice-ocean and ice-atmosphere fluxes
          IF (F_c(I,J) .LT. 0.0 _d 0) THEN
