@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62l
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62m
 (PID.TID 0000.0001) // Build user:        gforget
-(PID.TID 0000.0001) // Build host:        faulks.csail.mit.edu
-(PID.TID 0000.0001) // Build date:        Fri Oct 15 10:43:30 EDT 2010
+(PID.TID 0000.0001) // Build host:        baudelaire
+(PID.TID 0000.0001) // Build date:        Mon Nov 29 17:31:36 EST 2010
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -20,7 +20,7 @@
 (PID.TID 0000.0001) > &EEPARMS
 (PID.TID 0000.0001) > nTx=1,
 (PID.TID 0000.0001) > nTy=1,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) ># Note: Some systems use & as the
 (PID.TID 0000.0001) ># namelist terminator. Other systems
 (PID.TID 0000.0001) ># use a / character (as shown here).
@@ -178,7 +178,7 @@
 (PID.TID 0000.0001) > tempAdvScheme=30,
 (PID.TID 0000.0001) > saltAdvScheme=30,
 (PID.TID 0000.0001) >#ph)
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Elliptic solver parameters
 (PID.TID 0000.0001) >#
@@ -188,7 +188,7 @@
 (PID.TID 0000.0001) > &PARM02
 (PID.TID 0000.0001) > cg2dMaxIters=1000,
 (PID.TID 0000.0001) > cg2dTargetResidual=1.D-13,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Time stepping parameters
 (PID.TID 0000.0001) >#
@@ -223,7 +223,7 @@
 (PID.TID 0000.0001) > adjDumpFreq=1.,
 (PID.TID 0000.0001) >#forcing_In_AB = .FALSE.
 (PID.TID 0000.0001) > tracForcingOutAB=1,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Gridding parameters
 (PID.TID 0000.0001) >#
@@ -243,7 +243,7 @@
 (PID.TID 0000.0001) > ygOrigin=46.,
 (PID.TID 0000.0001) > xgOrigin=280.,
 (PID.TID 0000.0001) > rSphere         = 6371.D3
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Input datasets
 (PID.TID 0000.0001) >#
@@ -259,7 +259,7 @@
 (PID.TID 0000.0001) > bathyFile       = 'bathy.labsea1979',
 (PID.TID 0000.0001) > hydrogThetaFile = 'LevCli_temp.labsea1979',
 (PID.TID 0000.0001) > hydrogSaltFile  = 'LevCli_salt.labsea1979',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM01
@@ -288,7 +288,7 @@
 (PID.TID 0000.0001) >  useMNC    = .TRUE.,
 (PID.TID 0000.0001) >  useECCO   = .TRUE.,
 (PID.TID 0000.0001) >  useGrdchk = .TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
 (PID.TID 0000.0001)  MNC_READPARMS: opening file 'data.mnc'
@@ -309,7 +309,7 @@
 (PID.TID 0000.0001) >#timeave_mnc=.FALSE.,
 (PID.TID 0000.0001) > pickup_write_mnc=.FALSE.,
 (PID.TID 0000.0001) > pickup_read_mnc=.FALSE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) ># Note: Some systems use & as the
 (PID.TID 0000.0001) ># namelist terminator. Other systems
 (PID.TID 0000.0001) ># use a / character (as shown here).
@@ -329,7 +329,7 @@
 (PID.TID 0000.0001) ># TheCalendar='model',
 (PID.TID 0000.0001) > startDate_1=19790101,
 (PID.TID 0000.0001) > startDate_2=000000,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) CAL_READPARMS: finished reading data.cal
 (PID.TID 0000.0001) 
@@ -395,6 +395,127 @@
 (PID.TID 0000.0001) // Calendar configuration  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) EXF_READPARMS: opening data.exf
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.exf
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.exf"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/lab_sea/results/output_adm.noseaicedyn.txt,v 1.26 2010/11/29 23:36:13 gforget Exp $
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) ># External Forcing Data
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_01
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > useExfCheckRange  = .TRUE.,
+(PID.TID 0000.0001) > repeatPeriod      = 31622400.0,
+(PID.TID 0000.0001) > exf_iprec         = 32,
+(PID.TID 0000.0001) > exf_yftype        = 'RL',
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_02
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > hfluxstartdate1   = 19781216,
+(PID.TID 0000.0001) > hfluxstartdate2   = 180000,
+(PID.TID 0000.0001) > hfluxperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > sfluxstartdate1   = 19781216,
+(PID.TID 0000.0001) > sfluxstartdate2   = 180000,
+(PID.TID 0000.0001) > sfluxperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > ustressstartdate1 = 19781216,
+(PID.TID 0000.0001) > ustressstartdate2 = 180000,
+(PID.TID 0000.0001) > ustressperiod     = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > vstressstartdate1 = 19781216,
+(PID.TID 0000.0001) > vstressstartdate2 = 180000,
+(PID.TID 0000.0001) > vstressperiod     = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > atempstartdate1   = 19781216,
+(PID.TID 0000.0001) > atempstartdate2   = 180000,
+(PID.TID 0000.0001) > atempperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > aqhstartdate1     = 19781216,
+(PID.TID 0000.0001) > aqhstartdate2     = 180000,
+(PID.TID 0000.0001) > aqhperiod         = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) >#evapstartdate1    = 19781216,
+(PID.TID 0000.0001) >#evapstartdate2    = 180000,
+(PID.TID 0000.0001) >#evapperiod        = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > precipstartdate1  = 19781216,
+(PID.TID 0000.0001) > precipstartdate2  = 180000,
+(PID.TID 0000.0001) > precipperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > uwindstartdate1   = 19781216,
+(PID.TID 0000.0001) > uwindstartdate2   = 180000,
+(PID.TID 0000.0001) > uwindperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > vwindstartdate1   = 19781216,
+(PID.TID 0000.0001) > vwindstartdate2   = 180000,
+(PID.TID 0000.0001) > vwindperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > swfluxstartdate1  = 19781216,
+(PID.TID 0000.0001) > swfluxstartdate2  = 180000,
+(PID.TID 0000.0001) > swfluxperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > lwfluxstartdate1  = 19781216,
+(PID.TID 0000.0001) > lwfluxstartdate2  = 180000,
+(PID.TID 0000.0001) > lwfluxperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > swdownstartdate1  = 19781216,
+(PID.TID 0000.0001) > swdownstartdate2  = 180000,
+(PID.TID 0000.0001) > swdownperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > lwdownstartdate1  = 19781216,
+(PID.TID 0000.0001) > lwdownstartdate2  = 180000,
+(PID.TID 0000.0001) > lwdownperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > climsststartdate1  = 19781216,
+(PID.TID 0000.0001) > climsststartdate2  = 180000,
+(PID.TID 0000.0001) > climsstperiod      = 2635200.0,
+(PID.TID 0000.0001) > climsstTauRelax    = 0.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > climsssstartdate1  = 19781216,
+(PID.TID 0000.0001) > climsssstartdate2  = 180000,
+(PID.TID 0000.0001) > climsssperiod      = 2635200.0,
+(PID.TID 0000.0001) > climsssTauRelax    = 4142330.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > hfluxfile         = ' ',
+(PID.TID 0000.0001) > sfluxfile         = ' ',
+(PID.TID 0000.0001) > ustressfile       = ' ',
+(PID.TID 0000.0001) > vstressfile       = ' ',
+(PID.TID 0000.0001) > atempfile         = 'tair.labsea1979',
+(PID.TID 0000.0001) > aqhfile           = 'qa.labsea1979',
+(PID.TID 0000.0001) > uwindfile         = 'u10m.labsea1979',
+(PID.TID 0000.0001) > vwindfile         = 'v10m.labsea1979',
+(PID.TID 0000.0001) >#evapfile          = 'evap.labsea1979',
+(PID.TID 0000.0001) > precipfile        = 'prate.labsea1979',
+(PID.TID 0000.0001) > lwfluxfile        = ' ',
+(PID.TID 0000.0001) > swfluxfile        = ' ',
+(PID.TID 0000.0001) > lwdownfile        = 'flo.labsea1979',
+(PID.TID 0000.0001) > swdownfile        = 'fsh.labsea1979',
+(PID.TID 0000.0001) > runoffFile        = ' '
+(PID.TID 0000.0001) > climsstfile       = ' ',
+(PID.TID 0000.0001) > climsssfile       = 'SSS_monthly.labsea1979',
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_03
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_04
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_03
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_04
+(PID.TID 0000.0001) EXF_READPARMS: finished reading data.exf
 (PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.gmredi
 (PID.TID 0000.0001) // =======================================================
@@ -433,7 +554,7 @@
 (PID.TID 0000.0001) >  GM_Visbeck_length  = 2.D+5,
 (PID.TID 0000.0001) >  GM_Visbeck_depth   = 1.D+3,
 (PID.TID 0000.0001) >  GM_Visbeck_maxval_K= 2.5D+3,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
@@ -454,7 +575,7 @@
 (PID.TID 0000.0001) >  DWNSLP_drFlow= 30.,
 (PID.TID 0000.0001) ># temp_useDWNSLP=.FALSE.,
 (PID.TID 0000.0001) ># salt_useDWNSLP=.FALSE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  DWNSLP_READPARMS: finished reading data.downslp
 (PID.TID 0000.0001) DWNSLP_slope =   /* DOWNSLP fixed slope (=0 => use local slope) */
@@ -476,7 +597,7 @@
 (PID.TID 0000.0001) > KPPmixingMaps   = .FALSE.,
 (PID.TID 0000.0001) > KPPwriteState   = .TRUE.,
 (PID.TID 0000.0001) > KPP_ghatUseTotalDiffus=.TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  KPP_INIT: finished reading data.kpp
 (PID.TID 0000.0001) 
@@ -508,7 +629,11 @@
 (PID.TID 0000.0001) >#     SEAICE_dump_mnc    = .FALSE.,
 (PID.TID 0000.0001) >#     SEAICE_mon_mnc     = .FALSE.,
 (PID.TID 0000.0001) >      ICE2WATR           = 0.92D0,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) ># for backward compatibility only:
+(PID.TID 0000.0001) > SEAICE_cpAir       = 1.0039560439560439e+03,
+(PID.TID 0000.0001) > SEAICE_lhSublim    = 2.8340219780219775e+06,
+(PID.TID 0000.0001) > SEAICE_rhoAir      = 1.3E0,
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) > &SEAICE_PARM02
 (PID.TID 0000.0001) >  mult_ice   = 1.,
 (PID.TID 0000.0001) ># choose which seaice cost term you want
@@ -519,7 +644,7 @@
 (PID.TID 0000.0001) > costIceStart2        = 00000,
 (PID.TID 0000.0001) > costIceEnd1        = 20000201,
 (PID.TID 0000.0001) > costIceEnd2        = 00000,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  SEAICE_READPARMS: finished reading data.seaice
 (PID.TID 0000.0001) 
@@ -710,14 +835,20 @@
 (PID.TID 0000.0001) SEAICE_strength   = /* sea-ice strength Pstar */
 (PID.TID 0000.0001)                 2.750000000000000E+04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_sensHeat   = /* sensible heat transfer */
-(PID.TID 0000.0001)                 2.284000000000000E+00
+(PID.TID 0000.0001) SEAICE_cpAir      = /* heat capacity of air */
+(PID.TID 0000.0001)                 1.003956043956044E+03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_latentWater= /* latent heat transfer for water */
-(PID.TID 0000.0001)                 5.687500000000000E+03
+(PID.TID 0000.0001) SEAICE_dalton     = /* constant dalton number */
+(PID.TID 0000.0001)                 1.750000000000000E-03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_latentIce  = /* latent heat transfer for ice */
-(PID.TID 0000.0001)                 6.447400000000000E+03
+(PID.TID 0000.0001) SEAICE_lhEvap     = /* latent heat of evaporation */
+(PID.TID 0000.0001)                 2.500000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_lhFusion   = /* latent heat of fusion */
+(PID.TID 0000.0001)                 3.340000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_lhSublim   = /* latent heat of sublimation */
+(PID.TID 0000.0001)                 2.834021978021977E+06
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_iceConduct = /* sea-ice conductivity */
 (PID.TID 0000.0001)                 2.165600000000000E+00
@@ -760,6 +891,7 @@
 (PID.TID 0000.0001) A22               = /* parameter used in growth.F */
 (PID.TID 0000.0001)                 1.500000000000000E-01
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined
 (PID.TID 0000.0001) MAX_HEFF          = /* maximum ice thickness */
 (PID.TID 0000.0001)                 1.000000000000000E+01
 (PID.TID 0000.0001)     ;
@@ -792,7 +924,7 @@
 (PID.TID 0000.0001) ># ********************************
 (PID.TID 0000.0001) > &OPTIM
 (PID.TID 0000.0001) > optimcycle=0,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) OPTIM_READPARMS: finished reading data.optim
 (PID.TID 0000.0001) CTRL_READPARMS: opening data.ctrl
@@ -892,13 +1024,13 @@
 (PID.TID 0000.0001) > xx_vwindstartdate2 = 000000,
 (PID.TID 0000.0001) > xx_vwindperiod     = 864000.0,
 (PID.TID 0000.0001) > xx_vwind_file      = 'xx_vwind',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># names for ctrl_pack/unpack
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &CTRL_PACKNAMES
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) CTRL_READPARMS: finished reading data.ctrl
 (PID.TID 0000.0001) COST_READPARMS: opening data.cost
@@ -912,7 +1044,7 @@
 (PID.TID 0000.0001) ># cost function
 (PID.TID 0000.0001) ># ******************
 (PID.TID 0000.0001) > &COST_NML
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) COST_READPARMS: finished reading data.cost
 (PID.TID 0000.0001) GRDCHK_READPARMS: opening data.grdchk
@@ -933,7 +1065,7 @@
 (PID.TID 0000.0001) > nstep            = 1,
 (PID.TID 0000.0001) > nend             = 4,
 (PID.TID 0000.0001) > grdchkvarindex   = 7,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) GRDCHK_READPARMS: finished reading data.grdchk
 (PID.TID 0000.0001) 
@@ -950,127 +1082,6 @@
 (PID.TID 0000.0001) // Gradient check configuration  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) EXF_READPARMS: opening data.exf
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.exf
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.exf"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/lab_sea/results/output_adm.noseaicedyn.txt,v 1.25 2010/10/15 19:14:39 gforget Exp $
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) ># External Forcing Data
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_01
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > useExfCheckRange  = .TRUE.,
-(PID.TID 0000.0001) > repeatPeriod      = 31622400.0,
-(PID.TID 0000.0001) > exf_iprec         = 32,
-(PID.TID 0000.0001) > exf_yftype        = 'RL',
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_02
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > hfluxstartdate1   = 19781216,
-(PID.TID 0000.0001) > hfluxstartdate2   = 180000,
-(PID.TID 0000.0001) > hfluxperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > sfluxstartdate1   = 19781216,
-(PID.TID 0000.0001) > sfluxstartdate2   = 180000,
-(PID.TID 0000.0001) > sfluxperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > ustressstartdate1 = 19781216,
-(PID.TID 0000.0001) > ustressstartdate2 = 180000,
-(PID.TID 0000.0001) > ustressperiod     = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > vstressstartdate1 = 19781216,
-(PID.TID 0000.0001) > vstressstartdate2 = 180000,
-(PID.TID 0000.0001) > vstressperiod     = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > atempstartdate1   = 19781216,
-(PID.TID 0000.0001) > atempstartdate2   = 180000,
-(PID.TID 0000.0001) > atempperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > aqhstartdate1     = 19781216,
-(PID.TID 0000.0001) > aqhstartdate2     = 180000,
-(PID.TID 0000.0001) > aqhperiod         = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) >#evapstartdate1    = 19781216,
-(PID.TID 0000.0001) >#evapstartdate2    = 180000,
-(PID.TID 0000.0001) >#evapperiod        = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > precipstartdate1  = 19781216,
-(PID.TID 0000.0001) > precipstartdate2  = 180000,
-(PID.TID 0000.0001) > precipperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > uwindstartdate1   = 19781216,
-(PID.TID 0000.0001) > uwindstartdate2   = 180000,
-(PID.TID 0000.0001) > uwindperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > vwindstartdate1   = 19781216,
-(PID.TID 0000.0001) > vwindstartdate2   = 180000,
-(PID.TID 0000.0001) > vwindperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > swfluxstartdate1  = 19781216,
-(PID.TID 0000.0001) > swfluxstartdate2  = 180000,
-(PID.TID 0000.0001) > swfluxperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > lwfluxstartdate1  = 19781216,
-(PID.TID 0000.0001) > lwfluxstartdate2  = 180000,
-(PID.TID 0000.0001) > lwfluxperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > swdownstartdate1  = 19781216,
-(PID.TID 0000.0001) > swdownstartdate2  = 180000,
-(PID.TID 0000.0001) > swdownperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > lwdownstartdate1  = 19781216,
-(PID.TID 0000.0001) > lwdownstartdate2  = 180000,
-(PID.TID 0000.0001) > lwdownperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > climsststartdate1  = 19781216,
-(PID.TID 0000.0001) > climsststartdate2  = 180000,
-(PID.TID 0000.0001) > climsstperiod      = 2635200.0,
-(PID.TID 0000.0001) > climsstTauRelax    = 0.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > climsssstartdate1  = 19781216,
-(PID.TID 0000.0001) > climsssstartdate2  = 180000,
-(PID.TID 0000.0001) > climsssperiod      = 2635200.0,
-(PID.TID 0000.0001) > climsssTauRelax    = 4142330.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > hfluxfile         = ' ',
-(PID.TID 0000.0001) > sfluxfile         = ' ',
-(PID.TID 0000.0001) > ustressfile       = ' ',
-(PID.TID 0000.0001) > vstressfile       = ' ',
-(PID.TID 0000.0001) > atempfile         = 'tair.labsea1979',
-(PID.TID 0000.0001) > aqhfile           = 'qa.labsea1979',
-(PID.TID 0000.0001) > uwindfile         = 'u10m.labsea1979',
-(PID.TID 0000.0001) > vwindfile         = 'v10m.labsea1979',
-(PID.TID 0000.0001) >#evapfile          = 'evap.labsea1979',
-(PID.TID 0000.0001) > precipfile        = 'prate.labsea1979',
-(PID.TID 0000.0001) > lwfluxfile        = ' ',
-(PID.TID 0000.0001) > swfluxfile        = ' ',
-(PID.TID 0000.0001) > lwdownfile        = 'flo.labsea1979',
-(PID.TID 0000.0001) > swdownfile        = 'fsh.labsea1979',
-(PID.TID 0000.0001) > runoffFile        = ' '
-(PID.TID 0000.0001) > climsstfile       = ' ',
-(PID.TID 0000.0001) > climsssfile       = 'SSS_monthly.labsea1979',
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_03
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_04
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_03
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_04
-(PID.TID 0000.0001) EXF_READPARMS: finished reading data.exf
 (PID.TID 0000.0001) ECCO_READPARMS: opening data.ecco
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.ecco
 (PID.TID 0000.0001) // =======================================================
@@ -1168,7 +1179,7 @@
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) > cost_iprec  = 64,
 (PID.TID 0000.0001) > cost_yftype = 'RL',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) ECCO_READPARMS: finished reading #1: ecco_cost_nml
 (PID.TID 0000.0001) ECCO_READPARMS: start assigning cost dates
@@ -1358,6 +1369,7 @@
 (PID.TID 0000.0001) // END OF FIELD                                          =
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  2  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) // GAD parameters :
@@ -1416,6 +1428,9 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) twoDigitYear = /* use 2-digit year extension */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exf_verbose = /* print more messages to STDOUT */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useExfCheckRange = /* check for fields range */
@@ -2048,6 +2063,9 @@
 (PID.TID 0000.0001) beta =   /* Beta ( 1/(m.s) ) */
 (PID.TID 0000.0001)                 9.999999999999999E-12
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) fPrime =   /* Second coriolis parameter ( 1/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rigidLid =   /* Rigid lid on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -2078,10 +2096,10 @@
 (PID.TID 0000.0001) hFacMinDr = /* minimum partial cell thickness ( m) */
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nonlinFreeSurf =  /* Non-linear Free Surf. options (-1,0,1,2,3)*/
+(PID.TID 0000.0001) nonlinFreeSurf = /* Non-linear Free Surf. options (-1,0,1,2,3)*/
 (PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)      -1,0= Off ; 1,2,3= On, 2=+rescale gU,gV, 3=+update cg2d solv.
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacInf =   /* lower threshold for hFac (nonlinFreeSurf only)*/
 (PID.TID 0000.0001)                 2.000000000000000E-01
 (PID.TID 0000.0001)     ;
@@ -2154,14 +2172,9 @@
 (PID.TID 0000.0001) useNHMTerms = /* Non-Hydrostatic Metric-Terms on/off */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useConstantF =  /* use Constant f0 Coriolis flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useBetaPlaneF = /* use Beta-Plane Coriolis flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useSphereF  =   /* use Spherical Coriolis flag */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001) selectCoriMap = /* Coriolis Map options (0,1,2,3)*/
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     0= f-Plane ; 1= Beta-Plane ; 2= Spherical ; 3= read from file
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) use3dCoriolis = /* 3-D Coriolis on/off flag */
 (PID.TID 0000.0001)                   F
@@ -2831,7 +2844,6 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == Packages configuration : Check & print summary ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) KPP_CHECK: #define ALLOW_KPP
 (PID.TID 0000.0001) GMREDI_CHECK: #define GMREDI
 (PID.TID 0000.0001) GM_AdvForm =     /* if FALSE => use SkewFlux Form */
@@ -2886,6 +2898,7 @@
 (PID.TID 0000.0001) CTRL_CHECK: ctrl package
 (PID.TID 0000.0001) COST_CHECK: cost package
 (PID.TID 0000.0001) GRDCHK_CHECK: grdchk package
+(PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // CONFIG_CHECK : Normal End
 (PID.TID 0000.0001) // =======================================================
@@ -3049,8 +3062,8 @@
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =  -0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
@@ -4283,7 +4296,7 @@
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -4314,92 +4327,91 @@
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057442E+04
- --> f_salt    = 0.100073979381095E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602691E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.000000000000000E+00
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.000000000000000E+00
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326792548E-01
- --> fc               = 0.701291666914496E+04
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057442D+04
+ --> f_salt    = 0.100073979381095D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602691D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.000000000000000D+00
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.000000000000000D+00
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326792548D-01
+ --> fc               = 0.701291666914496D+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
@@ -5069,7 +5081,7 @@
 (PID.TID 0000.0001) %MON ad_time_secondsf             =   1.0800000000000E+04
 (PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   1.9521852963000E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -1.5543763444585E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =  -9.7189689452976E-04
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =  -9.7189689452973E-04
 (PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   4.9948615368596E-01
 (PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   7.0922124343522E-02
 (PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   3.1934090820281E-01
@@ -5084,14 +5096,14 @@
 (PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   2.8361007935229E-03
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_max        =   5.8277670007432E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_min        =  -7.2106390372972E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   1.7475944416992E-03
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   1.7475944416991E-03
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_sd         =   1.5284884628095E-01
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_del2       =   1.7992619863266E-02
 (PID.TID 0000.0001) %MON ad_dynstat_adtheta_max       =   4.3635298640759E-02
 (PID.TID 0000.0001) %MON ad_dynstat_adtheta_min       =  -9.2347487415784E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -3.6590149989092E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   4.8495552727510E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   1.6855223848443E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -3.6590149991207E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   4.8495552729284E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   1.6855223844860E-02
 (PID.TID 0000.0001) %MON ad_dynstat_adsalt_max        =   3.7763833957867E-01
 (PID.TID 0000.0001) %MON ad_dynstat_adsalt_min        =  -5.4151080529614E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -2.6677542539895E-02
@@ -5129,42 +5141,42 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- cg2d: Sum(rhs),rhsMax =   1.91079790878845E-15  1.37542575883388E-03
+ cg2d: Sum(rhs),rhsMax =   1.93074722876219E-15  1.37542575883387E-03
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON ad_time_tsnumber             =                     2
 (PID.TID 0000.0001) %MON ad_time_secondsf             =   7.2000000000000E+03
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   4.8763983421992E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -3.9752230749607E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =   2.5434008526922E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   1.1979279302272E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   1.3159102525065E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   8.6620549990427E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_min        =  -1.5137193530975E+00
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_mean       =  -3.0385983518851E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_sd         =   3.1930390583948E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_del2       =   3.8481865070921E-03
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_max        =   2.4897696842727E+00
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_min        =  -3.1680566881886E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_mean       =   9.4569797515043E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_sd         =   6.8945466772595E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   4.4851354665413E-03
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_max        =   6.8143342693951E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_min        =  -9.2394519704524E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   8.6205856396787E-04
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_sd         =   1.9652107493477E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_del2       =   1.8431757855828E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_max       =   1.0134393677243E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   4.8763983421065E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -3.9752230745324E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =   2.5434008530630E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   1.1979279301696E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   1.3159102525471E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   8.6620549988395E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_min        =  -1.5137193527611E+00
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_mean       =  -3.0385983512099E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_sd         =   3.1930390576307E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_del2       =   3.8481865062915E-03
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_max        =   2.4897696843197E+00
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_min        =  -3.1680566881818E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_mean       =   9.4569797519371E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_sd         =   6.8945466774293E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   4.4851354666366E-03
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_max        =   6.8143342659427E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_min        =  -9.2394519705137E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   8.6205856340277E-04
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_sd         =   1.9652107491292E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_del2       =   1.8431757851772E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_max       =   1.0134393676839E-01
 (PID.TID 0000.0001) %MON ad_dynstat_adtheta_min       =  -1.3847346776959E+01
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -4.7164788808439E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   6.7261388630849E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   2.8353446708905E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_max        =   6.4228382405393E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -4.7164788823733E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   6.7261388638862E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   2.8353446678674E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_max        =   6.4228382403710E-01
 (PID.TID 0000.0001) %MON ad_dynstat_adsalt_min        =  -8.1192257110539E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -3.4322568712686E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_sd         =   5.3423410790814E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_del2       =   1.7961413415295E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -3.4322568712202E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_sd         =   5.3423410790443E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_del2       =   1.7961413415286E-02
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_max        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_min        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_mean       =   0.0000000000000E+00
@@ -5190,14 +5202,14 @@
 (PID.TID 0000.0001) %MON ad_forcing_adfv_mean         =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adfv_sd           =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adfv_del2         =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ad_advcfl_aduvel_max         =   4.0716446763561E-02
-(PID.TID 0000.0001) %MON ad_advcfl_advvel_max         =   4.0303866074901E-02
-(PID.TID 0000.0001) %MON ad_advcfl_adwvel_max         =   6.6524054187257E+03
-(PID.TID 0000.0001) %MON ad_advcfl_adW_hf_max         =   2.4531603369823E+03
+(PID.TID 0000.0001) %MON ad_advcfl_aduvel_max         =   4.0716446754514E-02
+(PID.TID 0000.0001) %MON ad_advcfl_advvel_max         =   4.0303866075664E-02
+(PID.TID 0000.0001) %MON ad_advcfl_adwvel_max         =   6.6524054187698E+03
+(PID.TID 0000.0001) %MON ad_advcfl_adW_hf_max         =   2.4531603357394E+03
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- cg2d: Sum(rhs),rhsMax =   6.50694775838900E-15  1.18102942939095E-03
+ cg2d: Sum(rhs),rhsMax =   8.03697386420055E-15  1.18102942946663E-03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -5275,36 +5287,36 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON ad_time_tsnumber             =                     1
 (PID.TID 0000.0001) %MON ad_time_secondsf             =   3.6000000000000E+03
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   1.1113742869513E+01
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -6.7310924845554E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =   7.5673510317326E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   2.4241233579175E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   2.2423317458128E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   1.5117863201887E+00
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_min        =  -1.3599325861649E+00
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_mean       =   4.6080895107778E-02
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_sd         =   2.7280598165705E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_del2       =   5.1170457674301E-03
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_max        =   4.0789782348971E+00
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_min        =  -6.5267658176178E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_mean       =   1.3054760951038E+00
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_sd         =   9.9964677652090E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   7.9869909703192E-03
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_max        =   5.0341732086449E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_min        =  -5.2992756014878E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   2.1999249275387E-04
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_sd         =   1.3605207498674E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adwvel_del2       =   1.6314781510984E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_max       =   1.7688342251014E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   1.1113742868453E+01
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -6.7310924821468E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =   7.5673510343903E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   2.4241233575363E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   2.2423317460683E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   1.5117863200628E+00
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_min        =  -1.3599325785199E+00
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_mean       =   4.6080895462450E-02
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_sd         =   2.7280598135066E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_del2       =   5.1170457599767E-03
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_max        =   4.0789782348876E+00
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_min        =  -6.5267658176196E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_mean       =   1.3054760953589E+00
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_sd         =   9.9964677652259E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   7.9869909695074E-03
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_max        =   5.0341731997263E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_min        =  -5.2992755936984E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   2.1999249037583E-04
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_sd         =   1.3605207491056E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adwvel_del2       =   1.6314781495604E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_max       =   1.7688342249169E-01
 (PID.TID 0000.0001) %MON ad_dynstat_adtheta_min       =  -1.8456860081693E+01
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -5.6919220792532E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   8.4775280360883E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   3.7239818655783E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -5.6919220827588E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   8.4775280375295E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   3.7239818601863E-02
 (PID.TID 0000.0001) %MON ad_dynstat_adsalt_max        =   8.0583831325866E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adsalt_min        =  -1.3653781478008E+01
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -3.7679396302840E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_sd         =   7.6643370819741E-01
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_del2       =   2.6030617324400E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -3.7679396299363E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_sd         =   7.6643370816874E-01
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_del2       =   2.6030617324384E-02
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_max        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_min        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_mean       =   0.0000000000000E+00
@@ -5330,14 +5342,14 @@
 (PID.TID 0000.0001) %MON ad_forcing_adfv_mean         =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adfv_sd           =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adfv_del2         =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ad_advcfl_aduvel_max         =   3.5883484852901E-02
-(PID.TID 0000.0001) %MON ad_advcfl_advvel_max         =   6.6029638620874E-02
-(PID.TID 0000.0001) %MON ad_advcfl_adwvel_max         =   3.8154784330712E+03
-(PID.TID 0000.0001) %MON ad_advcfl_adW_hf_max         =   1.8123023551122E+03
+(PID.TID 0000.0001) %MON ad_advcfl_aduvel_max         =   3.5883484849912E-02
+(PID.TID 0000.0001) %MON ad_advcfl_advvel_max         =   6.6029638620720E-02
+(PID.TID 0000.0001) %MON ad_advcfl_adwvel_max         =   3.8154784274628E+03
+(PID.TID 0000.0001) %MON ad_advcfl_adW_hf_max         =   1.8123023519015E+03
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- cg2d: Sum(rhs),rhsMax =   7.08044733954694E-14  1.71858525560604E-04
+ cg2d: Sum(rhs),rhsMax =   7.80209230555329E-14  1.71858525536455E-04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -5600,21 +5612,21 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON ad_time_tsnumber             =                     0
 (PID.TID 0000.0001) %MON ad_time_secondsf             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   6.1780197819955E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -3.5580268483759E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =   9.9408092672974E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   1.7094126495108E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   1.2362900065711E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   4.3638242993685E+00
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_min        =  -6.8058224380128E-01
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_mean       =   1.5032715058810E+00
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_sd         =   1.1347508975258E+00
-(PID.TID 0000.0001) %MON ad_dynstat_aduvel_del2       =   5.0375276247398E-03
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_max        =   6.0067439662562E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_min        =  -2.9753870919771E+00
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_mean       =  -6.4550339021180E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_sd         =   7.3499926598876E-01
-(PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   8.0585150438106E-03
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_max         =   6.1780197816354E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_min         =  -3.5580268491935E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_mean        =   9.9408092699769E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_sd          =   1.7094126494783E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adeta_del2        =   1.2362900067337E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_max        =   4.3638242979172E+00
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_min        =  -6.8058224380216E-01
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_mean       =   1.5032715055627E+00
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_sd         =   1.1347508971818E+00
+(PID.TID 0000.0001) %MON ad_dynstat_aduvel_del2       =   5.0375276193422E-03
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_max        =   6.0067439673313E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_min        =  -2.9753870926045E+00
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_mean       =  -6.4550339036125E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_sd         =   7.3499926605214E-01
+(PID.TID 0000.0001) %MON ad_dynstat_advvel_del2       =   8.0585150439935E-03
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_max        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_min        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_mean       =   0.0000000000000E+00
@@ -5622,14 +5634,14 @@
 (PID.TID 0000.0001) %MON ad_dynstat_adwvel_del2       =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_dynstat_adtheta_max       =   1.7153222077268E+03
 (PID.TID 0000.0001) %MON ad_dynstat_adtheta_min       =  -1.7095032437347E+03
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -5.9766540030946E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   1.9893702694613E+01
-(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   3.9521612643249E+00
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_max        =   9.8611197057213E+03
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_min        =  -9.9512128898567E+03
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -4.7736100797339E-02
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_sd         =   1.1418878374776E+02
-(PID.TID 0000.0001) %MON ad_dynstat_adsalt_del2       =   2.2816856037481E+01
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_mean      =  -5.9766539721596E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_sd        =   1.9893702694649E+01
+(PID.TID 0000.0001) %MON ad_dynstat_adtheta_del2      =   3.9521612643599E+00
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_max        =   9.8611197057215E+03
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_min        =  -9.9512128898569E+03
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_mean       =  -4.7736100793750E-02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_sd         =   1.1418878374810E+02
+(PID.TID 0000.0001) %MON ad_dynstat_adsalt_del2       =   2.2816856037695E+01
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_max        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_min        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adqnet_mean       =   0.0000000000000E+00
@@ -5655,8 +5667,8 @@
 (PID.TID 0000.0001) %MON ad_forcing_adfv_mean         =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adfv_sd           =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_forcing_adfv_del2         =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ad_advcfl_aduvel_max         =   1.1737936719062E-01
-(PID.TID 0000.0001) %MON ad_advcfl_advvel_max         =   4.8164938160161E-02
+(PID.TID 0000.0001) %MON ad_advcfl_aduvel_max         =   1.1737936715158E-01
+(PID.TID 0000.0001) %MON ad_advcfl_advvel_max         =   4.8164938170317E-02
 (PID.TID 0000.0001) %MON ad_advcfl_adwvel_max         =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ad_advcfl_adW_hf_max         =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
@@ -6076,13 +6088,13 @@
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_siheff.0000000000.001.002.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_siheff.0000000000.002.002.data
  ph-check entering grdchk_main 
- ph-check fcref =   7012.91667
+ ph-check fcref =    7012.9166691449636     
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
  grad-res closest next position: 
  grad-res     0   10    4    8    1    1    1
- ph-grd -->hit<--  6 8 1 1
+ ph-grd -->hit<--            6           8           1           1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.002.data
@@ -6463,7 +6475,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -6494,98 +6506,97 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057442E+04
- --> f_salt    = 0.100073979382954E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602691E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326790542E-01
- --> fc               = 0.701291666916356E+04
- ph-check fcpertplus =   7012.91667
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057442D+04
+ --> f_salt    = 0.100073979382954D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602691D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326790542D-01
+ --> fc               = 0.701291666916356D+04
+ ph-check fcpertplus =    7012.9166691635592     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
- ph-check fcpertminus =   7012.91667
+ ph-check fcpertminus =    7012.9166691449636     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -6962,7 +6973,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -6993,104 +7004,103 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057442E+04
- --> f_salt    = 0.100073979379235E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602691E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326794555E-01
- --> fc               = 0.701291666912636E+04
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057442D+04
+ --> f_salt    = 0.100073979379235D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602691D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326794555D-01
+ --> fc               = 0.701291666912636D+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    1    6    8    1    1    1    1   0.701291666914E+04 0.701291666916E+04 0.701291666913E+04
- grad-res     0    1    1   10   14    1    1    1   0.185980315196E-03 0.185978024092E-03 0.123190646677E-04
+ grad-res     0    1    1   10   14    1    1    1   0.185980315196E-03 0.185978024092E-03 0.123190648676E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.01291666914496E+03
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.85980315195567E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.85980315195604E-04
  ph-grd  ierr ---------------------------
- ph-grd  ierr =  0, icomp =  10, ichknum =  1
- ph-grd -->hit<--  7 8 1 1
+ ph-grd  ierr =            0 , icomp =           10 , ichknum =            1
+ ph-grd -->hit<--            7           8           1           1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.002.data
@@ -7471,7 +7481,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -7502,98 +7512,97 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057443E+04
- --> f_salt    = 0.100073979382894E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602692E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326791013E-01
- --> fc               = 0.701291666916296E+04
- ph-check fcpertplus =   7012.91667
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057443D+04
+ --> f_salt    = 0.100073979382894D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602692D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326791013D-01
+ --> fc               = 0.701291666916296D+04
+ ph-check fcpertplus =    7012.9166691629644     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
- ph-check fcpertminus =   7012.91667
+ ph-check fcpertminus =    7012.9166691449636     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -7970,7 +7979,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -8001,104 +8010,103 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057441E+04
- --> f_salt    = 0.100073979379296E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602690E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326794084E-01
- --> fc               = 0.701291666912696E+04
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057441D+04
+ --> f_salt    = 0.100073979379296D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602690D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326794084D-01
+ --> fc               = 0.701291666912696D+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    2    7    8    1    1    1    1   0.701291666914E+04 0.701291666916E+04 0.701291666913E+04
- grad-res     0    2    2   11   14    1    1    1   0.180027802207E-03 0.180025381269E-03 0.134475783768E-04
+ grad-res     0    2    2   11   14    1    1    1   0.180027802207E-03 0.180025381269E-03 0.134475786113E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.01291666914496E+03
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.80027802206914E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.80027802206956E-04
  ph-grd  ierr ---------------------------
- ph-grd  ierr =  0, icomp =  11, ichknum =  2
- ph-grd -->hit<--  8 8 1 1
+ ph-grd  ierr =            0 , icomp =           11 , ichknum =            2
+ ph-grd -->hit<--            8           8           1           1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.002.data
@@ -8479,7 +8487,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -8510,98 +8518,97 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057443E+04
- --> f_salt    = 0.100073979383413E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602692E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326791233E-01
- --> fc               = 0.701291666916816E+04
- ph-check fcpertplus =   7012.91667
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057443D+04
+ --> f_salt    = 0.100073979383413D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602692D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326791233D-01
+ --> fc               = 0.701291666916816D+04
+ ph-check fcpertplus =    7012.9166691681621     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
- ph-check fcpertminus =   7012.91667
+ ph-check fcpertminus =    7012.9166691449636     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -8978,7 +8985,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -9009,104 +9016,103 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057442E+04
- --> f_salt    = 0.100073979378776E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602691E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326793862E-01
- --> fc               = 0.701291666912177E+04
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057442D+04
+ --> f_salt    = 0.100073979378776D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602691D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326793862D-01
+ --> fc               = 0.701291666912177D+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    3    8    8    1    1    1    1   0.701291666914E+04 0.701291666917E+04 0.701291666912E+04
- grad-res     0    3    3   12   14    1    1    1   0.231991305311E-03 0.231984813581E-03 0.279826423449E-04
+ grad-res     0    3    3   12   14    1    1    1   0.231991305311E-03 0.231984813581E-03 0.279826424852E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.01291666914496E+03
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    2.31991305310944E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    2.31991305310977E-04
  ph-grd  ierr ---------------------------
- ph-grd  ierr =  0, icomp =  12, ichknum =  3
- ph-grd -->hit<--  9 8 1 1
+ ph-grd  ierr =            0 , icomp =           12 , ichknum =            3
+ ph-grd -->hit<--            9           8           1           1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.002.data
@@ -9487,7 +9493,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -9518,98 +9524,97 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057444E+04
- --> f_salt    = 0.100073979384107E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602693E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326791068E-01
- --> fc               = 0.701291666917512E+04
- ph-check fcpertplus =   7012.91667
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057444D+04
+ --> f_salt    = 0.100073979384107D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602693D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326791068D-01
+ --> fc               = 0.701291666917512D+04
+ ph-check fcpertplus =    7012.9166691751179     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
- ph-check fcpertminus =   7012.91667
+ ph-check fcpertminus =    7012.9166691449636     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -9986,7 +9991,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -10017,104 +10022,103 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057441E+04
- --> f_salt    = 0.100073979378082E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602690E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326794028E-01
- --> fc               = 0.701291666911481E+04
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057441D+04
+ --> f_salt    = 0.100073979378082D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602690D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326794028D-01
+ --> fc               = 0.701291666911481D+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    4    9    8    1    1    1    1   0.701291666914E+04 0.701291666918E+04 0.701291666911E+04
- grad-res     0    4    4   13   14    1    1    1   0.301555503398E-03 0.301556610793E-03 -.367227675713E-05
+ grad-res     0    4    4   13   14    1    1    1   0.301555503399E-03 0.301556610793E-03 -.367227453846E-05
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.01291666914496E+03
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.01555503398075E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.01555503398744E-04
  ph-grd  ierr ---------------------------
- ph-grd  ierr =  0, icomp =  13, ichknum =  4
- ph-grd -->hit<--  10 8 1 1
+ ph-grd  ierr =            0 , icomp =           13 , ichknum =            4
+ ph-grd -->hit<--           10           8           1           1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.002.data
@@ -10495,7 +10499,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -10526,98 +10530,97 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057445E+04
- --> f_salt    = 0.100073979384861E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602694E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326800529E-01
- --> fc               = 0.701291666918268E+04
- ph-check fcpertplus =   7012.91667
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057445D+04
+ --> f_salt    = 0.100073979384861D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602694D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326800529D-01
+ --> fc               = 0.701291666918268D+04
+ ph-check fcpertplus =    7012.9166691826758     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
- ph-check fcpertminus =   7012.91667
+ ph-check fcpertminus =    7012.9166691449636     
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -10994,7 +10997,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.002.data
-(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000E+03
+(PID.TID 0000.0001)  cost_ssh: offset_sum =  0.115000000000000D+03
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: psbar.0000000000.001.002.data
@@ -11025,103 +11028,102 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: sbar.0000000000.002.002.data
 (PID.TID 0000.0001) ph-cost call cost_smrarea
-  SICD cost smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  SICD num points smrarea/sst/sss   0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  0.
- --> f_ice     = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_smrarea = 0.000000000000000E+00
- --> f_temp    = 0.300979905057440E+04
- --> f_salt    = 0.100073979377328E+04
- --> f_temp0   = 0.000000000000000E+00
- --> f_salt0   = 0.000000000000000E+00
- --> f_temp0smoo = 0.000000000000000E+00
- --> f_salt0smoo = 0.000000000000000E+00
- --> f_sst     = 0.300232663602689E+04
- --> f_tmi     = 0.000000000000000E+00
- --> f_sss     = 0.000000000000000E+00
- --> f_bp      = 0.000000000000000E+00
- --> f_ssh       = 0.000000000000000E+00
- --> f_tp        = 0.000000000000000E+00
- --> f_ers       = 0.000000000000000E+00
- --> f_gfo       = 0.000000000000000E+00
- --> f_tauu    = 0.000000000000000E+00
- --> f_tauum   = 0.000000000000000E+00
- --> f_tauusmoo = 0.000000000000000E+00
- --> f_tauv    = 0.000000000000000E+00
- --> f_tauvm   = 0.000000000000000E+00
- --> f_tauvsmoo = 0.000000000000000E+00
- --> f_hflux   = 0.000000000000000E+00
- --> f_hfluxmm = 0.000000000000000E+00
- --> f_hfluxsmoo = 0.000000000000000E+00
- --> f_sflux   = 0.000000000000000E+00
- --> f_sfluxmm = 0.000000000000000E+00
- --> f_sfluxsmoo = 0.000000000000000E+00
- --> f_uwind     = 0.000000000000000E+00
- --> f_vwind     = 0.000000000000000E+00
- --> f_atemp     = 0.200000000000000E-07
- --> f_aqh     = 0.000000000000000E+00
- --> f_precip  = 0.000000000000000E+00
- --> f_swflux  = 0.000000000000000E+00
- --> f_swdown  = 0.000000000000000E+00
- --> f_uwindm     = 0.000000000000000E+00
- --> f_vwindm     = 0.000000000000000E+00
- --> f_atempm     = 0.250000000000000E-08
- --> f_aqhm     = 0.000000000000000E+00
- --> f_precipm  = 0.000000000000000E+00
- --> f_swfluxm  = 0.000000000000000E+00
- --> f_swdownm  = 0.000000000000000E+00
- --> f_uwindsmoo     = 0.000000000000000E+00
- --> f_vwindsmoo     = 0.000000000000000E+00
- --> f_atempsmoo     = 0.000000000000000E+00
- --> f_aqhsmoo     = 0.000000000000000E+00
- --> f_precipsmoo  = 0.000000000000000E+00
- --> f_swfluxsmoo  = 0.000000000000000E+00
- --> f_swdownsmoo  = 0.000000000000000E+00
- --> f_atl     = 0.000000000000000E+00
- --> f_ctdt    = 0.000000000000000E+00
- --> f_ctds    = 0.000000000000000E+00
- --> f_ctdtclim= 0.000000000000000E+00
- --> f_ctdsclim= 0.000000000000000E+00
- --> f_xbt     = 0.000000000000000E+00
- --> f_argot   = 0.000000000000000E+00
- --> f_argos   = 0.000000000000000E+00
- --> f_drifter   = 0.000000000000000E+00
- --> f_tdrift  = 0.000000000000000E+00
- --> f_sdrift  = 0.000000000000000E+00
- --> f_wdrift  = 0.000000000000000E+00
- --> f_scatx   = 0.000000000000000E+00
- --> f_scaty   = 0.000000000000000E+00
- --> f_scatxm  = 0.000000000000000E+00
- --> f_scatym  = 0.000000000000000E+00
- --> f_obcsn   = 0.000000000000000E+00
- --> f_obcss   = 0.000000000000000E+00
- --> f_obcsw   = 0.000000000000000E+00
- --> f_obcse   = 0.000000000000000E+00
- --> f_ageos   = 0.000000000000000E+00
- --> f_curmtr  = 0.000000000000000E+00
- --> f_kapgm   = 0.000000000000000E+00
- --> f_kapredi   = 0.000000000000000E+00
- --> f_diffkr  = 0.000000000000000E+00
- --> f_eddytau = 0.000000000000000E+00
- --> f_bottomdrag = 0.000000000000000E+00
- --> f_hfluxmm2           = 0.000000000000000E+00
- --> f_sfluxmm2           = 0.000000000000000E+00
- --> f_transp             = 0.000000000000000E+00
- --> objf_hmean           = 0.511887326784570E-01
- --> fc               = 0.701291666910725E+04
+  SICD cost smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+  SICD num points smrarea/sst/sss    0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ --> f_ice     = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_smrarea = 0.000000000000000D+00
+ --> f_temp    = 0.300979905057440D+04
+ --> f_salt    = 0.100073979377328D+04
+ --> f_temp0   = 0.000000000000000D+00
+ --> f_salt0   = 0.000000000000000D+00
+ --> f_temp0smoo = 0.000000000000000D+00
+ --> f_salt0smoo = 0.000000000000000D+00
+ --> f_sst     = 0.300232663602689D+04
+ --> f_tmi     = 0.000000000000000D+00
+ --> f_sss     = 0.000000000000000D+00
+ --> f_bp      = 0.000000000000000D+00
+ --> f_ssh       = 0.000000000000000D+00
+ --> f_tp        = 0.000000000000000D+00
+ --> f_ers       = 0.000000000000000D+00
+ --> f_gfo       = 0.000000000000000D+00
+ --> f_tauu    = 0.000000000000000D+00
+ --> f_tauum   = 0.000000000000000D+00
+ --> f_tauusmoo = 0.000000000000000D+00
+ --> f_tauv    = 0.000000000000000D+00
+ --> f_tauvm   = 0.000000000000000D+00
+ --> f_tauvsmoo = 0.000000000000000D+00
+ --> f_hflux   = 0.000000000000000D+00
+ --> f_hfluxmm = 0.000000000000000D+00
+ --> f_hfluxsmoo = 0.000000000000000D+00
+ --> f_sflux   = 0.000000000000000D+00
+ --> f_sfluxmm = 0.000000000000000D+00
+ --> f_sfluxsmoo = 0.000000000000000D+00
+ --> f_uwind     = 0.000000000000000D+00
+ --> f_vwind     = 0.000000000000000D+00
+ --> f_atemp     = 0.200000000000000D-07
+ --> f_aqh     = 0.000000000000000D+00
+ --> f_precip  = 0.000000000000000D+00
+ --> f_swflux  = 0.000000000000000D+00
+ --> f_swdown  = 0.000000000000000D+00
+ --> f_uwindm     = 0.000000000000000D+00
+ --> f_vwindm     = 0.000000000000000D+00
+ --> f_atempm     = 0.250000000000000D-08
+ --> f_aqhm     = 0.000000000000000D+00
+ --> f_precipm  = 0.000000000000000D+00
+ --> f_swfluxm  = 0.000000000000000D+00
+ --> f_swdownm  = 0.000000000000000D+00
+ --> f_uwindsmoo     = 0.000000000000000D+00
+ --> f_vwindsmoo     = 0.000000000000000D+00
+ --> f_atempsmoo     = 0.000000000000000D+00
+ --> f_aqhsmoo     = 0.000000000000000D+00
+ --> f_precipsmoo  = 0.000000000000000D+00
+ --> f_swfluxsmoo  = 0.000000000000000D+00
+ --> f_swdownsmoo  = 0.000000000000000D+00
+ --> f_atl     = 0.000000000000000D+00
+ --> f_ctdt    = 0.000000000000000D+00
+ --> f_ctds    = 0.000000000000000D+00
+ --> f_ctdtclim= 0.000000000000000D+00
+ --> f_ctdsclim= 0.000000000000000D+00
+ --> f_xbt     = 0.000000000000000D+00
+ --> f_argot   = 0.000000000000000D+00
+ --> f_argos   = 0.000000000000000D+00
+ --> f_drifter   = 0.000000000000000D+00
+ --> f_tdrift  = 0.000000000000000D+00
+ --> f_sdrift  = 0.000000000000000D+00
+ --> f_wdrift  = 0.000000000000000D+00
+ --> f_scatx   = 0.000000000000000D+00
+ --> f_scaty   = 0.000000000000000D+00
+ --> f_scatxm  = 0.000000000000000D+00
+ --> f_scatym  = 0.000000000000000D+00
+ --> f_obcsn   = 0.000000000000000D+00
+ --> f_obcss   = 0.000000000000000D+00
+ --> f_obcsw   = 0.000000000000000D+00
+ --> f_obcse   = 0.000000000000000D+00
+ --> f_ageos   = 0.000000000000000D+00
+ --> f_curmtr  = 0.000000000000000D+00
+ --> f_kapgm   = 0.000000000000000D+00
+ --> f_kapredi   = 0.000000000000000D+00
+ --> f_diffkr  = 0.000000000000000D+00
+ --> f_eddytau = 0.000000000000000D+00
+ --> f_bottomdrag = 0.000000000000000D+00
+ --> f_hfluxmm2           = 0.000000000000000D+00
+ --> f_sfluxmm2           = 0.000000000000000D+00
+ --> f_transp             = 0.000000000000000D+00
+ --> objf_hmean           = 0.511887326784570D-01
+ --> fc               = 0.701291666910725D+04
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    5   10    8    1    1    1    1   0.701291666914E+04 0.701291666918E+04 0.701291666911E+04
- grad-res     0    5    5   14   14    1    1    1   0.377131085253E-03 0.377126525564E-03 0.120904635921E-04
+ grad-res     0    5    5   14   14    1    1    1   0.377131085275E-03 0.377126525564E-03 0.120905215448E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    7.01291666914496E+03
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.77131085253309E-04
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.77131085275165E-04
  ph-grd  ierr ---------------------------
- ph-grd  ierr =  0, icomp =  14, ichknum =  5
+ ph-grd  ierr =            0 , icomp =           14 , ichknum =            5
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> START <<<
@@ -11135,256 +11137,256 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1     6     8     1    0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   1  7.0129166691450E+03  7.0129166691636E+03  7.0129166691264E+03
-(PID.TID 0000.0001) grdchk output (g):   1     1.8597802409204E-04  1.8598031519557E-04  1.2319064667698E-05
+(PID.TID 0000.0001) grdchk output (g):   1     1.8597802409204E-04  1.8598031519560E-04  1.2319064867650E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2     7     8     1    0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   2  7.0129166691450E+03  7.0129166691630E+03  7.0129166691270E+03
-(PID.TID 0000.0001) grdchk output (g):   2     1.8002538126893E-04  1.8002780220691E-04  1.3447578376846E-05
+(PID.TID 0000.0001) grdchk output (g):   2     1.8002538126893E-04  1.8002780220696E-04  1.3447578611325E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3     8     8     1    0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   3  7.0129166691450E+03  7.0129166691682E+03  7.0129166691218E+03
-(PID.TID 0000.0001) grdchk output (g):   3     2.3198481358122E-04  2.3199130531094E-04  2.7982642344937E-05
+(PID.TID 0000.0001) grdchk output (g):   3     2.3198481358122E-04  2.3199130531098E-04  2.7982642485158E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4     9     8     1    0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   4  7.0129166691450E+03  7.0129166691751E+03  7.0129166691148E+03
-(PID.TID 0000.0001) grdchk output (g):   4     3.0155661079334E-04  3.0155550339807E-04 -3.6722767571273E-06
+(PID.TID 0000.0001) grdchk output (g):   4     3.0155661079334E-04  3.0155550339874E-04 -3.6722745384576E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   5    10     8     1    0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   5  7.0129166691450E+03  7.0129166691827E+03  7.0129166691073E+03
-(PID.TID 0000.0001) grdchk output (g):   5     3.7712652556365E-04  3.7713108525331E-04  1.2090463592074E-05
+(PID.TID 0000.0001) grdchk output (g):   5     3.7712652556365E-04  3.7713108527517E-04  1.2090521544827E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  49.748438
-(PID.TID 0000.0001)         System time:  4.12137293
-(PID.TID 0000.0001)     Wall clock time:  74.4006491
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   29.120000000000001
+(PID.TID 0000.0001)         System time:   1.0600000000000001
+(PID.TID 0000.0001)     Wall clock time:   48.691162109375000
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  2.69359009
-(PID.TID 0000.0001)         System time:  0.463928992
-(PID.TID 0000.0001)     Wall clock time:  6.81918097
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  0.54000000000000004
+(PID.TID 0000.0001)         System time:  0.13000000000000000
+(PID.TID 0000.0001)     Wall clock time:   4.5606279373168945
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  21.8186839
-(PID.TID 0000.0001)         System time:  1.84971899
-(PID.TID 0000.0001)     Wall clock time:  36.29808
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   12.330000000000002
+(PID.TID 0000.0001)         System time:  0.52000000000000002
+(PID.TID 0000.0001)     Wall clock time:   22.325572967529297
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.349959612
-(PID.TID 0000.0001)         System time:  0.351945639
-(PID.TID 0000.0001)     Wall clock time:  0.972786188
-(PID.TID 0000.0001)          No. starts: 52
-(PID.TID 0000.0001)           No. stops: 52
+(PID.TID 0000.0001)           User time:  0.18999999999999417
+(PID.TID 0000.0001)         System time:  6.00000000000000533E-002
+(PID.TID 0000.0001)     Wall clock time:  0.49406743049621582
+(PID.TID 0000.0001)          No. starts:          52
+(PID.TID 0000.0001)           No. stops:          52
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:  1.99569702
-(PID.TID 0000.0001)         System time:  0.548915029
-(PID.TID 0000.0001)     Wall clock time:  7.18432307
-(PID.TID 0000.0001)          No. starts: 264
-(PID.TID 0000.0001)           No. stops: 264
+(PID.TID 0000.0001)           User time:  0.48999999999999844
+(PID.TID 0000.0001)         System time:  0.19000000000000039
+(PID.TID 0000.0001)     Wall clock time:   4.5251030921936035
+(PID.TID 0000.0001)          No. starts:         264
+(PID.TID 0000.0001)           No. stops:         264
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.821873665
-(PID.TID 0000.0001)         System time:  0.00199991465
-(PID.TID 0000.0001)     Wall clock time:  0.82519412
-(PID.TID 0000.0001)          No. starts: 52
-(PID.TID 0000.0001)           No. stops: 52
+(PID.TID 0000.0001)           User time:  0.52000000000000668
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.52424669265747070
+(PID.TID 0000.0001)          No. starts:          52
+(PID.TID 0000.0001)           No. stops:          52
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.142975092
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.139807701
-(PID.TID 0000.0001)          No. starts: 52
-(PID.TID 0000.0001)           No. stops: 52
+(PID.TID 0000.0001)           User time:  7.00000000000038369E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  9.43484306335449219E-002
+(PID.TID 0000.0001)          No. starts:          52
+(PID.TID 0000.0001)           No. stops:          52
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  7.89383125
-(PID.TID 0000.0001)         System time:  0.0159981847
-(PID.TID 0000.0001)     Wall clock time:  8.16183996
-(PID.TID 0000.0001)          No. starts: 208
-(PID.TID 0000.0001)           No. stops: 208
+(PID.TID 0000.0001)           User time:   4.4400000000000048
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   4.5246081352233887
+(PID.TID 0000.0001)          No. starts:         208
+(PID.TID 0000.0001)           No. stops:         208
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0789871216
-(PID.TID 0000.0001)         System time:  0.0809879303
-(PID.TID 0000.0001)     Wall clock time:  0.270320892
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  3.99999999999991473E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.10804009437561035
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0719890594
-(PID.TID 0000.0001)         System time:  0.0789880753
-(PID.TID 0000.0001)     Wall clock time:  0.236803055
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  4.00000000000009237E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  8.63389968872070313E-002
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  25.064188
-(PID.TID 0000.0001)         System time:  1.64174986
-(PID.TID 0000.0001)     Wall clock time:  30.7378111
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   16.159999999999997
+(PID.TID 0000.0001)         System time:  0.39000000000000001
+(PID.TID 0000.0001)     Wall clock time:   21.596740007400513
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ECCO SPIN-UP":
-(PID.TID 0000.0001)           User time:  1.13983536
-(PID.TID 0000.0001)         System time:  0.115982533
-(PID.TID 0000.0001)     Wall clock time:  1.31226325
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.61000000000000298
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:  0.67597079277038574
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.13883591
-(PID.TID 0000.0001)         System time:  0.115982533
-(PID.TID 0000.0001)     Wall clock time:  1.30985832
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.61000000000000298
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:  0.67508172988891602
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "ECCO MAIN LOOP":
-(PID.TID 0000.0001)           User time:  22.8825188
-(PID.TID 0000.0001)         System time:  0.296954632
-(PID.TID 0000.0001)     Wall clock time:  23.3730361
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   15.179999999999993
+(PID.TID 0000.0001)         System time:  5.00000000000000444E-002
+(PID.TID 0000.0001)     Wall clock time:   15.395287990570068
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS   [ECCO MAIN]":
-(PID.TID 0000.0001)           User time:  0.037984848
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0442538261
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.33094692230224609E-002
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.255971909
-(PID.TID 0000.0001)         System time:  0.261959553
-(PID.TID 0000.0001)     Wall clock time:  0.685367584
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:  0.12999999999999190
+(PID.TID 0000.0001)         System time:  4.00000000000000355E-002
+(PID.TID 0000.0001)     Wall clock time:  0.32183122634887695
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00399589539
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00176668167
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.42504882812500000E-004
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  10.1644592
-(PID.TID 0000.0001)         System time:  0.0269958973
-(PID.TID 0000.0001)     Wall clock time:  10.2073798
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   5.5399999999999991
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   5.5533547401428223
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.70128822
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  4.7090385
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   3.9900000000000162
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   4.0098314285278320
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.461933136
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.459555626
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:  0.44999999999998863
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.41150760650634766
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.181972504
-(PID.TID 0000.0001)         System time:  0.000999927521
-(PID.TID 0000.0001)     Wall clock time:  0.18009901
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:  0.13000000000000611
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.14708757400512695
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.403930664
-(PID.TID 0000.0001)         System time:  0.00100016594
-(PID.TID 0000.0001)     Wall clock time:  0.409545183
-(PID.TID 0000.0001)          No. starts: 80
-(PID.TID 0000.0001)           No. stops: 80
+(PID.TID 0000.0001)           User time:  0.26999999999999957
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.23074722290039063
+(PID.TID 0000.0001)          No. starts:          80
+(PID.TID 0000.0001)           No. stops:          80
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.86212158
-(PID.TID 0000.0001)         System time:  0.00499892235
-(PID.TID 0000.0001)     Wall clock time:  5.86879277
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   4.1699999999999946
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   4.1994609832763672
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0769882202
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0756947994
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:  3.99999999999991473E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.92584705352783203E-002
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00299835205
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00183296204
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.26054000854492188E-004
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00199890137
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0018055439
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.10556793212890625E-004
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0799865723
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0787298679
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:  5.99999999999987210E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  5.28092384338378906E-002
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00299835205
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00182175636
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.09603118896484375E-004
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "ECCO SPIN-DOWN":
-(PID.TID 0000.0001)           User time:  0.999839783
-(PID.TID 0000.0001)         System time:  1.10183311
-(PID.TID 0000.0001)     Wall clock time:  5.38096642
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.36000000000000298
+(PID.TID 0000.0001)         System time:  0.28999999999999981
+(PID.TID 0000.0001)     Wall clock time:   4.9051432609558105
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.136972427
-(PID.TID 0000.0001)         System time:  0.254962921
-(PID.TID 0000.0001)     Wall clock time:  1.58381987
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  7.00000000000038369E-002
+(PID.TID 0000.0001)         System time:  6.99999999999998401E-002
+(PID.TID 0000.0001)     Wall clock time:   1.7683432102203369
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_FORCING       [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.201965332
-(PID.TID 0000.0001)         System time:  0.353944063
-(PID.TID 0000.0001)     Wall clock time:  0.823782206
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  5.00000000000007105E-002
+(PID.TID 0000.0001)         System time:  8.99999999999998579E-002
+(PID.TID 0000.0001)     Wall clock time:  0.40190005302429199
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_SSH           [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.0439968109
-(PID.TID 0000.0001)         System time:  0.0699892044
-(PID.TID 0000.0001)     Wall clock time:  0.342191935
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  2.00000000000031264E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.30721449851989746
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_HYD           [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.59390831
-(PID.TID 0000.0001)         System time:  0.405937672
-(PID.TID 0000.0001)     Wall clock time:  2.54311466
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:  0.21999999999999886
+(PID.TID 0000.0001)         System time:  0.13000000000000012
+(PID.TID 0000.0001)     Wall clock time:   2.3056941032409668
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "SEAICE_COST_DRIVER [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00198674202
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.20782852172851563E-003
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_INTERNAL_PARAMS  [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000468492508
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.76668167114257813E-004
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_GENCOST_ALL    [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000483036041
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.63078308105468750E-004
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_USERCOST_ALL    [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.000999450684
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000473499298
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.64031982421875000E-004
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.016002655
-(PID.TID 0000.0001)         System time:  0.0169992447
-(PID.TID 0000.0001)     Wall clock time:  0.0797178745
-(PID.TID 0000.0001)          No. starts: 10
-(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.11859798431396484
+(PID.TID 0000.0001)          No. starts:          10
+(PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
