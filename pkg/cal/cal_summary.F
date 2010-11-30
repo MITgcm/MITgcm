@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_summary.F,v 1.3 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_summary.F,v 1.4 2010/11/30 20:50:54 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -124,22 +124,22 @@ c     == end of interface ==
      &'   /* Model end date HH-MM-SS  */')
       call write_0d_i( numcalyears, INDEX_NONE,
      &                'intyears =',
-     &'   /* Number of calendar years affected by the integration  */')
+     &  ' /* Number of calendar years affected by the integration */')
       call write_0d_i( numcalmonths, INDEX_NONE,
-     &                'intmonths =',
-     &'   /* Number of calendar months affected by the integration  */')
+     &                'intmonths=',
+     &  ' /* Number of calendar months affected by the integration */')
       call write_0d_i( numcaldays, INDEX_NONE,
      &                'intdays =',
-     &'   /* Number of calendar days affected by the integration  */')
-      call write_0d_i( modeliter0, INDEX_NONE,
-     &                'nIter0 =',
-     &'   /* Base timestep number  */')
-      call write_0d_i( modeliterend, INDEX_NONE,
-     &                'nEndIter =',
-     &'   /* Final timestep number  */')
-      call write_0d_i( modelintsteps, INDEX_NONE,
-     &                'nTimeSteps =',
-     &'   /* Number of model timesteps  */')
+     &  ' /* Number of calendar days affected by the integration */')
+c     call write_0d_i( modeliter0, INDEX_NONE,
+c    &                'nIter0 =',
+c    &'   /* Base timestep number  */')
+c     call write_0d_i( modeliterend, INDEX_NONE,
+c    &                'nEndIter =',
+c    &'   /* Final timestep number  */')
+c     call write_0d_i( modelintsteps, INDEX_NONE,
+c    &                'nTimeSteps =',
+c    &'   /* Number of model timesteps  */')
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
