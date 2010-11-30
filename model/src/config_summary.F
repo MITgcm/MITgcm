@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.125 2010/11/12 03:16:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.126 2010/11/30 20:52:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -527,20 +527,22 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( pickupStrictlyMatch, INDEX_NONE,
      & 'pickupStrictlyMatch=',
      & ' /* stop if pickup do not strictly match */')
-      CALL WRITE_0D_I( nIter0, INDEX_NONE,'nIter0 =',
-     &'   /* Run starting timestep number  */')
+      CALL WRITE_0D_I( nIter0, INDEX_NONE, 'nIter0   =',
+     &'   /* Run starting timestep number */')
       CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
-     &'   /* Number of timesteps */')
+     &  ' /* Number of timesteps */')
+      CALL WRITE_0D_I( nEndIter, INDEX_NONE, 'nEndIter =',
+     &'   /* Run ending timestep number */')
       CALL WRITE_0D_RL( baseTime, INDEX_NONE,'baseTime =',
-     &'   /* Model base time ( s ). */')
+     &'   /* Model base time ( s ) */')
       CALL WRITE_0D_RL( startTime, INDEX_NONE,'startTime =',
-     &'   /* Run start time ( s ). */')
-      CALL WRITE_0D_RL( endTime, INDEX_NONE,'endTime =',
-     &'   /* Integration ending time ( s ). */')
+     & '  /* Run start time ( s ) */')
+      CALL WRITE_0D_RL( endTime, INDEX_NONE,'endTime  =',
+     &'   /* Integration ending time ( s ) */')
       CALL WRITE_0D_RL( pChkPtFreq, INDEX_NONE,'pChkPtFreq =',
-     &'   /* Permanent restart/checkpoint file interval ( s ). */')
-      CALL WRITE_0D_RL( chkPtFreq, INDEX_NONE,'chkPtFreq =',
-     &'   /* Rolling restart/checkpoint file interval ( s ). */')
+     &  ' /* Permanent restart/pickup file interval ( s ) */')
+      CALL WRITE_0D_RL( chkPtFreq, INDEX_NONE,'chkPtFreq  =',
+     &  ' /* Rolling restart/pickup file interval ( s ) */')
       CALL WRITE_0D_L(pickup_write_mdsio,INDEX_NONE,
      &     'pickup_write_mdsio =', '   /* Model IO flag. */')
       CALL WRITE_0D_L(pickup_read_mdsio,INDEX_NONE,
