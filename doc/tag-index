@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1343 2010/11/29 14:17:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1344 2010/12/02 18:54:35 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,8 @@ o nesting pkgs:
   - packages_init_variables : put call to OBCS_INIT_VARIABLES in last position
   - update Gianmaria's Nesting pkgs (from Contrib/nesting_sannino)
   - add parameter files + utils dir + output from short run on beagle.
+o pkg/seaice:
+    fix seaice_growth.F store directives; update results of exp. lab_sea.ad
 o pkg/seaice: explicitly store tsurfloc in seaice_solve4temp.F to avoid
   unnecessary copying in adjoint code, requires new parameter NMAX_ITER
 
