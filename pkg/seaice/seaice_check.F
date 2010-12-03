@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.39 2010/11/25 16:43:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.40 2010/12/03 05:00:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -356,18 +356,6 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
-
-#ifdef ALLOW_SALT_PLUME
-#ifndef SEAICE_SALINITY
-      IF ( UseSALT_PlUME ) THEN
-        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: UseSALT_PlUME requires that'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_SALINITY be defined.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-#endif /* SEAICE_SALINITY */
-#endif /* ALLOW_SALT_PLUME */
 
 #if !defined(SEAICE_ALLOW_TEM) || !defined(SEAICE_CGRID)
       IF ( SEAICEuseTEM ) THEN

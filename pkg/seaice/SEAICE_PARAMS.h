@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.67 2010/11/29 23:21:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.68 2010/12/03 05:00:37 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -186,6 +186,7 @@ C     SEAICE_shortwave   - penetration shortwave radiation factor
 C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
 C     SEAICE_salinity    - initial salinity of sea ice defined as a
 C                          fraction of the model surface level salinity
+C     SIsal0             - prescribed salinity of seaice (in g/kg).
 C     SEAICE_gamma_t     - timescale for melting ice from a warm mixed layer (s),
 C                          3d = 259200s is a reasonable value, default=unset
 C     SEAICE_gamma_t_frz - timescale for freezing ice from a cold mixed layer (s),
@@ -224,7 +225,7 @@ C
       _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
-      _RL SEAICE_salinity, SEAICEstressFactor
+      _RL SEAICE_salinity, SIsal0, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22
@@ -250,7 +251,7 @@ C
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
-     &    SEAICE_salinity, SEAICEstressFactor,
+     &    SEAICE_salinity, SIsal0, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22,
