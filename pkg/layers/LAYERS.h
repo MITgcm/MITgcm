@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.4 2009/12/28 02:37:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.5 2010/12/04 23:50:32 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -8,9 +8,11 @@ C--   For computing volume fluxes in isopyncal layers
 
 C --  Parms
       LOGICAL layers_MNC, layers_MDSIO
+      INTEGER LAYER_nb
       _RL layers_taveFreq, layers_diagFreq
       COMMON /LAYERS_PARMS/ layers_MNC, layers_MDSIO,
-     &                      layers_taveFreq, layers_diagFreq
+     &                      layers_taveFreq, layers_diagFreq,
+     &                      LAYER_nb
 
 C     3D Layers fields. The vertical dimension in these fields is nLayers,
 C     i.e. the isopycnal coordinate.

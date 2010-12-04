@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.4 2009/12/28 02:39:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.5 2010/12/04 23:50:32 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
+#include "GMREDI_OPTIONS.h"
 
 CBOP 0
 C !ROUTINE: LAYERS_CALC
@@ -25,6 +26,9 @@ C !USES:
 #include "DYNVARS.h"
 #include "LAYERS_SIZE.h"
 #include "LAYERS.h"
+#if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
+#include "GMREDI.h"
+#endif
 
 C !INPUT PARAMETERS:
 C     myTime :: Current time in simulation
@@ -49,9 +53,9 @@ C     TatV     :: temperature at U point
 C     TatV     :: temperature at V point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kk,kg,kci
+      INTEGER i,j,k,kk,kg,kci,kcip1
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
-      _RL TatU, TatV
+      _RL TatU, TatV, delPsi, maskp1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -60,7 +64,7 @@ C --- The tile loops
       DO bj=myByLo(myThid),myByHi(myThid)
       DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C     Initialize the serach indices
+C     Initialize the search indices
       DO j = 1,sNy+1
         DO i = 1,sNx+1
 C       The temperature index (layer_G) goes from cold to warm.
@@ -103,10 +107,17 @@ C       DO i=1-Olx+1,sNx+Olx-1
 
 #ifdef LAYERS_UFLUX
 C ------ Find theta at the U point (west) on the fine Z grid
+         IF (LAYER_nb .EQ. 1) THEN
          TatU = MapFact(kk) *
      &    0.5 _d 0 * (theta(i-1,j,k,bi,bj)+theta(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
      &    0.5 _d 0 * (theta(i-1,j,k+1,bi,bj)+theta(i,j,k+1,bi,bj))
+         ELSEIF (LAYER_nb .EQ. 2) THEN
+         TatU = MapFact(kk) *
+     &    0.5 _d 0 * (salt(i-1,j,k,bi,bj)+salt(i,j,k,bi,bj)) +
+     &    (1-MapFact(kk)) *
+     &    0.5 _d 0 * (salt(i-1,j,k+1,bi,bj)+salt(i,j,k+1,bi,bj))
+         ENDIF
 
 C ------ Now that we know T everywhere, determine the binning.
 
@@ -145,6 +156,20 @@ C ------ Augment the bin values
      &    layers_UFlux(i,j,kgu(i,j),bi,bj) +
      &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
 
+#if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
+         IF (GM_AdvForm) THEN
+           kcip1 = MIN(kci+1,Nr)
+           maskp1 = 1.
+           IF (kci.GE.Nr) maskp1 = 0.
+           delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
+     &            - GM_PsiX(i,j, kci, bi,bj)
+           layers_UFlux(i,j,kgu(i,j),bi,bj) =
+     &      layers_UFlux(i,j,kgu(i,j),bi,bj) 
+     &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
+     &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
+         ENDIF
+#endif
+
 #ifdef LAYERS_THICKNESS
          layers_HU(i,j,kgu(i,j),bi,bj) = layers_HU(i,j,kgu(i,j),bi,bj)
      &    + dZZf(kk) * hFacW(i,j,kci,bi,bj)
@@ -154,10 +179,17 @@ C ------ Augment the bin values
 
 #ifdef LAYERS_VFLUX
 C ------ Find theta at the V point (south) on the fine Z grid
+         IF (LAYER_nb .EQ. 1) THEN
          TatV = MapFact(kk) *
      &    0.5 _d 0 * (theta(i,j-1,k,bi,bj)+theta(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
      &    0.5 _d 0 * (theta(i,j-1,k+1,bi,bj)+theta(i,j,k+1,bi,bj))
+         ELSEIF (LAYER_nb .EQ. 2) THEN
+         TatV = MapFact(kk) *
+     &    0.5 _d 0 * (salt(i,j-1,k,bi,bj)+salt(i,j,k,bi,bj)) +
+     &    (1-MapFact(kk)) *
+     &    0.5 _d 0 * (salt(i,j-1,k+1,bi,bj)+salt(i,j,k+1,bi,bj))
+         ENDIF
 
 C ------ Now that we know T everywhere, determine the binning
          IF (TatV .GE. layers_G(Nlayers)) THEN
@@ -194,6 +226,20 @@ C ------ Augment the bin values
          layers_VFlux(i,j,kgv(i,j),bi,bj) =
      &    layers_VFlux(i,j,kgv(i,j),bi,bj)
      &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
+
+#if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
+         IF (GM_AdvForm) THEN
+           kcip1 = MIN(kci+1,Nr)
+           maskp1 = 1.
+           IF (kci.GE.Nr) maskp1 = 0.
+           delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
+     &            - GM_PsiX(i,j, kci, bi,bj)
+           layers_UFlux(i,j,kgu(i,j),bi,bj) =
+     &      layers_UFlux(i,j,kgu(i,j),bi,bj)
+     &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
+     &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
+         ENDIF
+#endif
 
 #ifdef LAYERS_THICKNESS
          layers_HV(i,j,kgv(i,j),bi,bj) = layers_HV(i,j,kgv(i,j),bi,bj)
