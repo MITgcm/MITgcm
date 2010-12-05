@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.5 2010/12/04 23:50:32 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.6 2010/12/05 14:17:39 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
+#ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"
+#endif
 
 CBOP 0
 C !ROUTINE: LAYERS_CALC
@@ -26,8 +28,8 @@ C !USES:
 #include "DYNVARS.h"
 #include "LAYERS_SIZE.h"
 #include "LAYERS.h"
-#if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
-#include "GMREDI.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 
 C !INPUT PARAMETERS:
@@ -53,10 +55,14 @@ C     TatV     :: temperature at U point
 C     TatV     :: temperature at V point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kk,kg,kci,kcip1
+      INTEGER i,j,k,kk,kg,kci
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
-      _RL TatU, TatV, delPsi, maskp1
+      _RL TatU, TatV
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
+      INTEGER kcip1
+      _RL delPsi, maskp1
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -164,7 +170,7 @@ C ------ Augment the bin values
            delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
      &            - GM_PsiX(i,j, kci, bi,bj)
            layers_UFlux(i,j,kgu(i,j),bi,bj) =
-     &      layers_UFlux(i,j,kgu(i,j),bi,bj) 
+     &      layers_UFlux(i,j,kgu(i,j),bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
          ENDIF
