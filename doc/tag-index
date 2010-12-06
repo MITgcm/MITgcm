@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1344 2010/12/02 18:54:35 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1345 2010/12/06 10:52:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add adTapeDir to specify a special directory where adjoint tapes are 
+  written/read (adread_adwrite.F). adTapeDir is specified in data/PARM05 
+  and cannot be used together with mdsioLocalDir.
 o nesting pkgs:
   - packages_init_variables : put call to OBCS_INIT_VARIABLES in last position
   - update Gianmaria's Nesting pkgs (from Contrib/nesting_sannino)
