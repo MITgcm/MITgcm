@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.28 2010/11/18 19:44:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.29 2010/12/06 14:25:36 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -22,11 +22,14 @@ C     === Global variables ===
 #include "GRID.h"
 #include "OBCS.h"
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
-#include "PTRACERS_FIELDS.h"
-#include "OBCS_PTRACERS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+# include "PTRACERS_FIELDS.h"
+# include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */
+#ifdef ALLOW_NEST_CHILD
+# include "NEST_CHILD.h"
+#endif /* ALLOW_NEST_CHILD */
 
 C     == Routine arguments ==
       INTEGER futureIter
@@ -55,6 +58,7 @@ C     msgBuf       :: Informational/error message buffer
       INTEGER iTracer
 #endif /* ALLOW_PTRACERS */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('OBCS_CALC',myThid)
@@ -62,6 +66,16 @@ C     msgBuf       :: Informational/error message buffer
 
       DO bj=myByLo(myThid),myByHi(myThid)
       DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_NEST_CHILD
+      IF ( useNEST_CHILD ) THEN
+        IF ( PASSI.LT.2 ) THEN
+         CALL NEST_CHILD_RECV ( myThid )
+        ENDIF
+      ENDIF
+#endif /* ALLOW_NEST_CHILD */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS_EAST
 C     Eastern OB
@@ -75,6 +89,23 @@ C     Eastern OB
      &          uVel, vVel, wVel, theta, salt,
      &          myThid )
 #endif
+#ifdef ALLOW_NEST_CHILD
+      ELSEIF ( useNEST_CHILD ) THEN
+        DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+            I_obc=OB_Ie(j,bi,bj)
+            IF (I_obc.ne.0) THEN
+              OBEu(j,k,bi,bj)= U_F1(j,k,2)
+              OBEv(j,k,bi,bj)= V_F1(j,k,2)
+              OBEt(j,k,bi,bj)= T_F1(j,k,2)
+              OBEs(j,k,bi,bj)= S_F1(j,k,2)
+#ifdef NONLIN_FRSURF
+              OBEeta(j,bi,bj)= ETA_F1(j,1,2)
+#endif
+            ENDIF
+          ENDDO
+        ENDDO
+#endif /* ALLOW_NEST_CHILD */
       ELSE
         DO K=1,Nr
           DO J=1-Oly,sNy+Oly
@@ -96,7 +127,7 @@ C     Eastern OB
       ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
-C ------------------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS_WEST
 C     Western OB
@@ -110,6 +141,23 @@ C     Western OB
      &          uVel, vVel, wVel, theta, salt,
      &          myThid )
 #endif
+#ifdef ALLOW_NEST_CHILD
+      ELSEIF ( useNEST_CHILD ) THEN
+        DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+            I_obc=OB_Iw(j,bi,bj)
+            IF (I_obc.ne.0) THEN
+              OBWu(j,k,bi,bj)= U_F1(j,k,1)
+              OBWv(j,k,bi,bj)= V_F1(j,k,1)
+              OBWt(j,k,bi,bj)= T_F1(j,k,1)
+              OBWs(j,k,bi,bj)= S_F1(j,k,1)
+#ifdef NONLIN_FRSURF
+              OBWeta(j,bi,bj)= ETA_F1(j,1,1)
+#endif
+           ENDIF
+          ENDDO
+        ENDDO
+#endif /* ALLOW_NEST_CHILD */
       ELSE
         DO K=1,Nr
           DO J=1-Oly,sNy+Oly
@@ -131,7 +179,7 @@ C     Western OB
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
-C ------------------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS_NORTH
 C         Northern OB
@@ -166,7 +214,7 @@ C         Northern OB
       ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
-C ------------------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS_SOUTH
 C         Southern OB
@@ -200,6 +248,8 @@ C         Southern OB
         ENDDO
       ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_PTRACERS
       IF ( usePTRACERS ) THEN
@@ -346,7 +396,7 @@ C--   end bi,bj loops.
       ENDDO
       ENDDO
 
-C ------------------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS_PRESCRIBE
       IF (useOBCSprescribe) THEN
@@ -359,6 +409,7 @@ C--     Calculate future values on open boundaries
 #endif /* ALLOW_OBCS_PRESCRIBE */
 
 C ------------------------------------------------------------------------------
+
 #ifndef ALLOW_AUTODIFF_TAMC
 C     I do not think that we want this to be differentiated for now
 #ifdef ALLOW_OBCS_STEVENS
@@ -374,7 +425,8 @@ C     Orlanski and prescribed boundary conditions
       ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
 #endif /* ndef ALLOW_AUTODIFF_TAMC */
-C ------------------------------------------------------------------------------
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance) THEN
@@ -533,10 +585,12 @@ c            OBSu(I,K,bi,bj) = 0.
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 
-#endif /* ALLOW_OBCS */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
 #endif
+#endif /* ALLOW_OBCS */
+
       RETURN
       END
