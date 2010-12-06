@@ -1,27 +1,27 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/check_gridfiles.m,v 1.1 2008/08/05 20:00:19 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/check_gridfiles.m,v 1.2 2010/12/06 13:53:22 jmc Exp $
 % $Name:  $
 
 %- for a symetric cubed-sphere grid (nr=ng=nb), check that:
 %  1) all the faces have identical grid-spacing & grid-cell area
 %     + long & lat match exactly.
-%  2) grid-spacing & grid-cell area (+ long & lat) are symetric 
+%  2) grid-spacing & grid-cell area (+ long & lat) are symetric
 %     regarding the 3 symetry axes of a square.
 
-nc=32; 
-%nc=102; 
-%nc=510; 
+ nc=32;
+%nc=96;
 
-rDir='./';
-inpName='tile.mitgrid';
-%inpName='onedegcube';
+ rDir='./';
+ inpName='tile.mitgrid';
+%rDir='../../cs96_dxC3_dXYa/';
+%inpName='cs96_dxC3_dXYa';
 strict=0; %- set to 1 to only check interior [nc,nc] if cell center var.
 
 np=nc+1; nh=nc/2;
 
 for n=1:6,
 %-- read :
- p=strfind(inpName,'.');
+ p=strfind(inpName,'.mitgrid');
  if isempty(p),
    namF=sprintf([rDir,inpName,'.face%3.3i.bin'],n);
  else
@@ -33,15 +33,11 @@ for n=1:6,
  s=size(vv1,1); k1=s/np/np;
  fprintf(['read: ',namF,' : size: %i (%ix%ix%i)\n'],s,np,np,k1);
  vv1=reshape(vv1,[np np k1]);
-%-- do not add angle:
- vv2=vv1; k2=k1;
-%- XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG:
-%------------------------------------------------------------------
-%-- save each face:
+%--- save each face:
  if n == 1,
-   vvf=zeros(np,np,6,k2);
+   vvf=zeros(np,np,6,k1);
  end
- vvf(:,:,n,:)=vv2;
+ vvf(:,:,n,:)=vv1;
 end
 
 %- XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG:
@@ -49,8 +45,38 @@ end
 gpos=[3 3 3   3   3  0  0  0   0   0   1   2   1   2   2   1];
 % gpos: 0 = grid-cell corner ; 1 = U point ; 2 = V point ; 3 = Tracer point
 
-%- do not check the angle (even if in the files, k=17,18)
-for k=1:min(k2,16),
+namV={'xC','yC','dxF','dyF','rAc','xG','yG','dxV','dyU','rAz', ...
+      'dxC','dyC','rAw','rAs','dxG','dyG','AngleCS','AngleSN'};
+
+%-------------------------------------------------------------------------------
+
+%-- Check "mising corner" values (for grid-cell corner variables)
+%   m1: North-West corner (1,nc+1) on face f1,f3,f5 ;
+%   m2: South-East corner (nc+1,1) on face f2,f4,f5 ;
+% Note: Since these value are not exchanged, they need to be
+%       identical in the 3 grid-files.
+fprintf('-- check (missing) corner values :\n');
+
+for k=1:min(k1,16),
+ if gpos(k) == 0,
+  for m=1:2,
+    if m == 1, tmp=vvf(1,np,[m:2:6],k);
+    else       tmp=vvf(np,1,[m:2:6],k); end
+    dd=tmp(2:3)-tmp(1);
+    mxd=max(abs(dd));
+    if mxd > 0.,
+     fprintf(' %3s k= %2i : Corner Max diff m%i = %g (f%i,f%i= %g %g)\n', ...
+             char(namV(k)),k,m,mxd,m+[2 4],dd(1),dd(2))
+    end
+  end
+ end
+end
+
+%-------------------------------------------------------------------------------
+
+fprintf('-- check longitude & latitude :\n');
+
+for k=1:min(k1,16),
  var=vvf(:,:,1,k); avr=mean(var(:));
  if k <  3 | k == 6 | k == 7,
 %-- check long & latitude:
@@ -83,8 +109,9 @@ for k=1:min(k2,16),
      ss=360*round(dd/360); dd=dd-ss;
      dd=abs(dd);
      mxd=max(dd(:));
-    if mxd > epsil, 
-     fprintf(' k,n= %2i %2i : Max diff f1 = %g (mn,Mx= %g %g)\n',k,n,mxd,mnD,MxD)
+    if mxd > epsil,
+     fprintf(' %3s k,n= %2i %2i : Max diff f1 = %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,n,mxd,mnD,MxD)
     end
   end
   n=6;
@@ -105,8 +132,9 @@ for k=1:min(k2,16),
      mnD=min(dd(:)); MxD=max(dd(:));
      ss=360*round(dd/360); dd=dd-ss;
      dd=abs(dd); mxd=max(dd(:));
-    if mxd > epsil, 
-     fprintf(' k,n= %2i %2i : Max diff f3 = %g (mn,Mx= %g %g)\n',k,n,mxd,mnD,MxD)
+    if mxd > epsil,
+     fprintf(' %3s k,n= %2i %2i : Max diff f3 = %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,n,mxd,mnD,MxD)
     end
   %-- check for symetry versus x=Xmid median on face 1
   mxd=0;
@@ -118,14 +146,15 @@ for k=1:min(k2,16),
     sym=var([np:-1:1],:);
   end
   if k == 1 | k == 6,
-    dd=sym+var; 
+    dd=sym+var;
   else
-    dd=sym-var; 
+    dd=sym-var;
   end
   mnD=min(dd(:)); MxD=max(dd(:));
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > epsil, 
-     fprintf(' k= %2i : Sym1.1 Max diff= %g (mn,Mx= %g %g)\n',k,mxd,mnD,MxD)
+  if mxd > epsil,
+     fprintf(' %3s k= %2i : Sym1.1 Max diff= %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,mxd,mnD,MxD)
   end
   %-- check for symetry versus y=Ymid median on face 1
   mxd=0;
@@ -137,14 +166,15 @@ for k=1:min(k2,16),
     sym=var(:,[np:-1:1]);
   end
   if k == 1 | k == 6,
-    dd=sym-var; 
+    dd=sym-var;
   else
-    dd=sym+var; 
+    dd=sym+var;
   end
   mnD=min(dd(:)); MxD=max(dd(:));
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > epsil, 
-     fprintf(' k= %2i : Sym1.2 Max diff= %g (mn,Mx= %g %g)\n',k,mxd,mnD,MxD)
+  if mxd > epsil,
+     fprintf(' %3s k= %2i : Sym1.2 Max diff= %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,mxd,mnD,MxD)
   end
   %-- check for symetry versus x=Xmid median on face 3
   %   check only half of the face (enough since check Sym.2 on full face)
@@ -165,8 +195,9 @@ for k=1:min(k2,16),
   end
   mnD=min(dd(:)); MxD=max(dd(:));
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > epsil, 
-     fprintf(' k= %2i : Sym3.1 Max diff= %g (mn,Mx= %g %g)\n',k,mxd,mnD,MxD)
+  if mxd > epsil,
+     fprintf(' %3s k= %2i : Sym3.1 Max diff= %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,mxd,mnD,MxD)
   end
   %-- check for symetry versus y=Ymid median on face 3
   mxd=0;
@@ -185,8 +216,9 @@ for k=1:min(k2,16),
   end
   mnD=min(dd(:)); MxD=max(dd(:));
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > epsil, 
-     fprintf(' k= %2i : Sym3.2 Max diff= %g (mn,Mx= %g %g)\n',k,mxd,mnD,MxD)
+  if mxd > epsil,
+     fprintf(' %3s k= %2i : Sym3.2 Max diff= %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,mxd,mnD,MxD)
   end
   %-- check for symetry versus y=x diagonal on face 3
   %   check only 1/4 of the face (enough since already check Sym.1 & Sym.2)
@@ -208,11 +240,20 @@ for k=1:min(k2,16),
   end
   mnD=min(dd(:)); MxD=max(dd(:));
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > epsil, 
-     fprintf(' k= %2i : Sym3.3 Max diff= %g (mn,Mx= %g %g)\n',k,mxd,mnD,MxD)
+  if mxd > epsil,
+     fprintf(' %3s k= %2i : Sym3.3 Max diff= %g (mn,Mx= %g %g)\n', ...
+             char(namV(k)),k,mxd,mnD,MxD)
   end
  end
-%-------------------------------------------
+end
+
+%-------------------------------------------------------------------------------
+
+fprintf('-- check grid-spacing & area :\n');
+
+%- do not check the angle (even if in the files, k=17,18)
+for k=1:min(k1,16),
+ var=vvf(:,:,1,k); avr=mean(var(:));
 %-- check grid-spacing & area:
  if k > 2 & k ~= 6 & k ~= 7,
   %-- check for identical values across faces
@@ -224,8 +265,9 @@ for k=1:min(k2,16),
       if gpos(k) == 3, dd=dd(1:nc,1:nc); end
     end
     dd=abs(dd); mxd=max(dd(:));
-    if mxd > 0, 
-     fprintf(' k,n= %2i %2i : Max diff f1 = %g (av= %g)\n',k,n,mxd,avr)
+    if mxd > 0,
+     fprintf(' %3s k,n= %2i %2i : Max diff f1 = %g (av= %g)\n', ...
+             char(namV(k)),k,n,mxd,avr)
     end
   end
   %-- check for symetry versus x=Xmid median (only on face 1)
@@ -240,8 +282,8 @@ for k=1:min(k2,16),
   dd=sym-var;
   if strict == 1 & rem(gpos(k),2) == 1, dd=dd(:,1:nc); end
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > 0, 
-     fprintf(' k= %2i : Sym.1 Max diff= %g (av= %g)\n',k,mxd,avr)
+  if mxd > 0,
+     fprintf(' %3s k= %2i : Sym.1 Max diff= %g (av= %g)\n',char(namV(k)),k,mxd,avr)
   end
   %-- check for symetry versus y=Ymid median (only on face 1)
   msd=0;
@@ -252,11 +294,11 @@ for k=1:min(k2,16),
     var=vvf(:,:,1,k);
     sym=var(:,[np:-1:1]);
   end
-  dd=sym-var; 
+  dd=sym-var;
   if strict == 1 & gpos(k) >=2, dd=dd(1:nc,:); end
   dd=abs(dd); mxd=max(dd(:));
-  if mxd > 0, 
-     fprintf(' k= %2i : Sym.2 Max diff= %g (av= %g)\n',k,mxd,avr)
+  if mxd > 0,
+     fprintf(' %3s k= %2i : Sym.2 Max diff= %g (av= %g)\n',char(namV(k)),k,mxd,avr)
   end
   %-- check for symetry versus x=y diagnonal (only on face 1)
   msd=0;
@@ -300,12 +342,14 @@ for k=1:min(k2,16),
     dd=sym-var; dd=abs(dd);
     mxd=max(dd(:));
   end
-  if mxd > 0, 
-     fprintf(' k= %2i : Sym.3 Max diff= %g (av= %g)\n',k,mxd,avr)
+  if mxd > 0,
+     fprintf(' %3s k= %2i : Sym.3 Max diff= %g (av= %g)\n',char(namV(k)),k,mxd,avr)
   end
  end
 end
-%  vvf=zeros(np,np,6,k2);
+%-------------------------------------------------------------------------------
+
+%  size of storage array vvf : (np,np,6,k1)
 %- XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG:
 %   1  2  3   4   5  6  7  8   9  10  11  12  13  14  15  16
 %pos=[0 0 0   0   0  3  3  3   3   3   1   2   1   2   2   1];
@@ -314,17 +358,19 @@ return
 shift=-1; ccB=[0 0]; cbV=1; AxBx=[-180 180 -90 90]; kEnv=0;
  AxBx2=[30 60 25 50];
 
- xc0=vvf(1:nc,1:nc,:,1); xc0=reshape(permute(xc0,[1 3 2]),[nc*6 nc]);
- yc0=vvf(1:nc,1:nc,:,2); yc0=reshape(permute(yc0,[1 3 2]),[nc*6 nc]);
- xg0=vvf(1:nc,1:nc,:,6); xg0=reshape(permute(xg0,[1 3 2]),[nc*6 nc]);
- yg0=vvf(1:nc,1:nc,:,7); yg0=reshape(permute(yg0,[1 3 2]),[nc*6 nc]);
+ n6x=nc*6;
+ xc0=vvf(1:nc,1:nc,:,1); xc0=reshape(permute(xc0,[1 3 2]),[n6x nc]);
+ yc0=vvf(1:nc,1:nc,:,2); yc0=reshape(permute(yc0,[1 3 2]),[n6x nc]);
+ xg0=vvf(1:nc,1:nc,:,6); xg0=reshape(permute(xg0,[1 3 2]),[n6x nc]);
+ yg0=vvf(1:nc,1:nc,:,7); yg0=reshape(permute(yg0,[1 3 2]),[n6x nc]);
 
  figure(2);clf;
  xtxt=0;ytxt=-98;
 %subplot(311);
- var=vvf(1:nc,1:nc,:,5); var=reshape(permute(var,[1 3 2]),[nc*6 nc]);
+ k=5;
+ var=vvf(1:nc,1:nc,:,k); var=reshape(permute(var,[1 3 2]),[n6x nc]);
  grph_CS(var,xc0,yc0,xg0,yg0,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
  mnV=min(var(:)); MxV=max(var(:));
  fprintf('min,Max= %9.5g  , %9.5g\n',mnV,MxV);
- text(xtxt,ytxt,sprintf('min,Max= %9.5g  , %9.5g',mnV,MxV));
+ text(xtxt,ytxt,sprintf('%s : min,Max= %9.5g  , %9.5g',char(namV(k)),mnV,MxV));
 %title([titexp,'rAc [m^2]'])
