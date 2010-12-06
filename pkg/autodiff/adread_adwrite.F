@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.12 2010/10/19 22:00:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.13 2010/12/06 10:51:56 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,9 +127,11 @@ c     == local variables ==
       character*(7) itername
       character*(MAX_LEN_FNAM) fname
       character*(MAX_LEN_MBUF) msgBuf
-      integer il
+      integer il, jl, lenLoc
       integer bx,by
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
       integer n2d,length2d
+#endif
 
 c     == functions ==
       integer  ilnblnk
@@ -149,6 +151,19 @@ CEOP
        sizetmp = 64
       ENDIF
 
+      il = ilnblnk( name )
+      jl = ilnblnk( adTapeDir )
+      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+      lenLoc = il+jl
+      write(fname(1:lenLoc),'(a,a)') adTapeDir(1:jl),name(1:il)
+#else
+      lenLoc = il+jl+7
+      write(itername,'(a,i4.4)') '.it',optimcycle
+      write(fname(1:lenLoc),'(a,a,a)') 
+     &     adTapeDir(1:jl),name(1:il),itername
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
 
 c    determine number of 2d fields
@@ -156,7 +171,7 @@ c    determine number of 2d fields
       n2d=int(length/length2d)
 c
       if (n2d*length2d.EQ.length) then
-      call mds_read_whalos(name,len,sizetmp,
+      call mds_read_whalos(fname,lenLoc,sizetmp,
      &               0,n2d,var,irec,mythid)
       else
 c   The other case actually does not (and should not) occur within the main loop, 
@@ -182,27 +197,19 @@ c   The issue could be revisited if needed.
       
 #else
 
-      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
-      write(itername,'(a,i4.4)') '.it',optimcycle
-
-      il = ilnblnk( name )
-
-      write(fname(1:il+7),'(a,a)') name(1:il),itername
-
       _BEGIN_MASTER( mythid )
-        by = myByLo(myThid)
-        bx = myBxLo(myThid)
+       by = myByLo(myThid)
+       bx = myBxLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-         WRITE(msgBuf,'(A,I3,A)')
-     &     'ADREAD: call mdsreadvector for size, fname = ',
-     &      sizetmp, fname(1:il+7)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
-      ENDIF
+       if ( debugLevel .GE. debLevB ) then
+        write(msgBuf,'(A,I12,4I6)')
+     &       'ADREAD: ph', length, bx, by, irec
+        call print_message( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+       endif
 #endif
-        call mdsreadvector( fname, sizetmp, 'RL',
-     &                      length, var, bx, by, irec, mythid )
+       call mdsreadvector( fname, sizetmp, 'RL',
+     &                     length, var, bx, by, irec, mythid )
       _END_MASTER( mythid )
 
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
@@ -287,10 +294,12 @@ c     == local variables ==
       character*(7) itername
       character*(MAX_LEN_FNAM) fname
       character*(MAX_LEN_MBUF) msgBuf
-      integer il
+      integer il,jl,lenLoc
       integer bx,by
       logical globalfile
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
       integer n2d,length2d
+#endif
 
 c     == functions ==
       integer ilnblnk
@@ -310,48 +319,59 @@ CEOP
        sizetmp = 64
       ENDIF
 
+      il = ilnblnk( name )
+      jl = ilnblnk( adTapeDir )
+      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+      lenLoc = il+jl
+      write(fname(1:lenLoc),'(a,a)') adTapeDir(1:jl),name(1:il)
+#else
+      lenLoc = il+jl+7
+      write(itername,'(a,i4.4)') '.it',optimcycle
+      write(fname(1:lenLoc),'(a,a,a)') 
+     &     adTapeDir(1:jl),name(1:il),itername
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+#ifdef ALLOW_DEBUG
+      if ( debugLevel .GE. debLevB ) then
+       write(msgBuf,'(A,I3,A,A)')
+     &      'ADWRITE: call mdsio routine for size, fname = ',
+     &      sizetmp, ', ', fname(1:lenLoc)
+       call print_message( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid)
+      endif
+#endif
+
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
 c    determine number of 2d fields
       length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy
       n2d=int(length/length2d)
 c
       if (n2d*length2d.EQ.length) then
-      call mds_write_whalos(name,len,sizetmp,
-     &               0,n2d,var,irec,mythid)
+       call mds_write_whalos(fname,lenLoc,sizetmp,
+     &                       0,n2d,var,irec,mythid)
       else
-         WRITE(msgBuf,'(3A)') 
-     &        'ADREAD: ',name,'was not read from tape.'
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
+       write(msgBuf,'(3A)') 
+     &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
+       call print_message( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid)
       endif
 
 #else
 
       globalfile = .false.
-      il         = ilnblnk( name )
-      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
-
-      write(itername,'(a,i4.4)') '.it',optimcycle
-
-      write(fname(1:il+7),'(a,a)') name(1:il),itername
 
       _BEGIN_MASTER( mythid )
-        by = myByLo(myThid)
-        bx = myBxLo(myThid)
+       by = myByLo(myThid)
+       bx = myBxLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-         WRITE(msgBuf,'(A,I3,A)')
-     &     'ADWRITE: call mdswritevector for size, fname = ',
-     &     sizetmp, fname(1:il+7)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
-         WRITE(msgBuf,'(A,I12,4I6)')
-     &     'ADWRITE: ph', length, bx, by, irec
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
-      ENDIF
+       if ( debugLevel .GE. debLevB ) then
+        write(msgBuf,'(A,I12,4I6)')
+     &       'ADWRITE: ph', length, bx, by, irec
+        call print_message( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+       endif
 #endif
-        call mdswritevector( fname, sizetmp, globalfile, 'RL',
+       call mdswritevector( fname, sizetmp, globalfile, 'RL',
      &                       length, var, bx, by, irec, 0, mythid )
       _END_MASTER( mythid )
 
