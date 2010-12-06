@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.244 2010/11/17 21:15:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.245 2010/12/06 10:45:51 mlosch Exp $
 C $Name:  $
 C
 
@@ -33,6 +33,11 @@ C     pickupSuff      :: force to start from pickup files (even if nIter0=0)
 C                        and read pickup files with this suffix (max 10 Char.)
 C     mdsioLocalDir   :: read-write tiled file from/to this directory name
 C                        (+ 4 digits Processor-Rank) instead of current dir.
+C     adTapeDir       :: read-write checkpointing tape files from/to this 
+C                        directory name instead of current dir. Conflicts
+C                        mdsioLocalDir, so only one of the two can be set.
+C                        In contrast to mdsioLocalDir, if specified adTapeDir
+C                        must exist before the model starts.
 C     tRefFile      :: File containing reference Potential Temperat.  tRef (1.D)
 C     sRefFile      :: File containing reference salinity/spec.humid. sRef (1.D)
 C     rhoRefFile    :: File containing reference density profile rhoRef (1.D)
@@ -78,7 +83,7 @@ C     eddyPsiYFile    :: File containing meridional Eddy streamfunction data
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/
      &                buoyancyRelation, eosType,
-     &                pickupSuff, mdsioLocalDir,
+     &                pickupSuff, mdsioLocalDir, adTapeDir,
      &                tRefFile, sRefFile, rhoRefFile,
      &                delRFile, delRcFile, hybSigmFile,
      &                delXFile, delYFile, horizGridFile,
@@ -99,6 +104,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(6)  eosType
       CHARACTER*(10) pickupSuff
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
+      CHARACTER*(MAX_LEN_FNAM) adTapeDir
       CHARACTER*(MAX_LEN_FNAM) tRefFile
       CHARACTER*(MAX_LEN_FNAM) sRefFile
       CHARACTER*(MAX_LEN_FNAM) rhoRefFile
@@ -962,6 +968,7 @@ C Logical flags for selecting packages
      &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,
      &        useMYPACKAGE
+
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***
