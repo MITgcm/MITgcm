@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.37 2010/10/25 18:46:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.38 2010/12/06 10:46:17 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -148,6 +148,13 @@ C-    now we make local directories with myProcessStr appended
         CALL SYSTEM( namBuf(1:pIL) )
         namBuf(1:iL) = mdsioLocalDir(1:iL)
         WRITE(mdsioLocalDir,'(3A)') namBuf(1:iL),myProcessStr(1:4),'/'
+      ENDIF
+
+C     append "/", if necessay
+      IF ( adTapeDir .NE. ' ' ) THEN
+       iL = ILNBLNK( adTapeDir )
+       IF ( il .LT. MAX_LEN_FNAM .AND. adTapeDir(iL:iL) .NE. '/' )
+     &      WRITE(adTapeDir,'(2A)') adTapeDir(1:iL),'/'
       ENDIF
 
 C-    Initialise MFLDS variables in common block

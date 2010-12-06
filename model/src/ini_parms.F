@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.234 2010/11/17 21:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.235 2010/12/06 10:46:17 mlosch Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -275,7 +275,7 @@ C--   Input files
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile,tCylIn,tCylOut,
      & eddyPsiXFile, eddyPsiYFile,
-     & mdsioLocalDir,
+     & mdsioLocalDir, adTapeDir,
      & the_run_name
 CEOP
 
@@ -1354,6 +1354,16 @@ C     Check for retired parameters still being used
      &  'S/R INI_PARMS: "shelfIceFile" is not allowed in "data", ',
      &  'substitute "SHELFICEtopoFile" in data.shelfice'
        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+C     Check if two conflicting I/O directories have been specified
+      IF (mdsioLocalDir .NE. ' ' .AND. adTapeDir .NE. ' ') THEN
+         WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: mdsioLocalDir and adTapeDir cannot be'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: specified at the same time'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
 C     Check for relaxation term:
