@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.74 2009/12/21 00:24:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.75 2010/12/06 14:22:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -242,6 +242,7 @@ C Southern boundary
            cg2d_x(i,OB_Js(i,bi,bj),bi,bj)=0.
           ENDIF
          ENDDO
+#ifndef ALLOW_NEST_CHILD
          DO j=1,sNy
 C Eastern boundary
           IF (OB_Ie(j,bi,bj).NE.0) THEN
@@ -254,6 +255,7 @@ C Western boundary
            cg2d_x(OB_Iw(j,bi,bj),j,bi,bj)=0.
           ENDIF
          ENDDO
+#endif /* ALLOW_NEST_CHILD */
         ENDIF
 #endif /* ALLOW_OBCS */
 C-    end bi,bj loops
