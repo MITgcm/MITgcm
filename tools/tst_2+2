@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.8 2010/01/04 17:43:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.9 2010/12/08 16:47:11 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -145,8 +145,8 @@ fi
 #-------------------------
 echo "prepare parameter file 'data.tst' :"
 cp -p -f data data.tst
-listOut='startTime endTime nIter0 nTimeSteps nEndIter chkPtFreq pChkPtFreq globalFiles'
-listOut=$listOut' pickupSuff usePickupBeforeC54 mdsioLocalDir'
+listOut='startTime endTime nIter0 nTimeSteps nEndIter chkPtFreq pChkPtFreq'
+listOut=$listOut' pickupSuff usePickupBeforeC54 mdsioLocalDir pickupStrictlyMatch'
 #- comment out (in data.tst) all parameters from list: 'listOut'
 for yy in $listOut
 do
