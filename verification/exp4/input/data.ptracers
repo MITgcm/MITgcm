@@ -5,7 +5,9 @@
 # 2) a weak relaxation is applied in the Eastern part of the channel (using rbcs).
  &PTRACERS_PARM01
  PTRACERS_numInUse=1,
- PTRACERS_ref(1,1) = 8*35.,
+#- to test if this syntax is accepted:
+ PTRACERS_ref(1:8,1) = 8*35.,
+#PTRACERS_ref(1,1) = 8*35.,
  PTRACERS_names(1)='salt_mimic',
  PTRACERS_advScheme(1)=4,
  &
