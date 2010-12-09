@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.6 2010/03/21 21:34:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.7 2010/12/09 23:13:46 jmc Exp $
 # $Name:  $
 #
 #  These are the build options used with the PGI compiler for the
@@ -14,9 +14,10 @@
 
 FC='mpif77'
 CC='mpicc'
-if test "x$ALWAYS_USE_F90" = x1 ; then
+#- as a test: try to always use pgf90
+#if test "x$ALWAYS_USE_F90" = x1 ; then
     FC='mpif90'
-fi
+#fi
 LINK=$FC
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
