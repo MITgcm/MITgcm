@@ -49,7 +49,7 @@
  readBinaryPrec     = 32,
  writeBinaryPrec    = 64,
 #- not safe to use globalFiles in multi-processors runs
- globalFiles        = .TRUE.
+#globalFiles        = .TRUE.
  &
 
 # Elliptic solver parameters

@@ -45,7 +45,8 @@
  momStepping=.FALSE.
  readBinaryPrec=32,
  writeBinaryPrec=32,
- globalFiles=.TRUE.,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.0,
  gravity         = 9.8156,
