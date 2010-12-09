@@ -1,7 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.17 2010/01/31 20:25:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.18 2010/12/09 03:47:40 jmc Exp $
 C $Name:  $
+
 #include "OBCS_OPTIONS.h"
 
+C--  File obcs_external_fields_load.F: Routines to read of OBC fields from files
+C--   Contents
+C--   o OBCS_EXTERNAL_FIELDS_LOAD
+C--   o OBCS_EXTERNAL_FIELDS_INTERP_XZ
+C--   o OBCS_EXTERNAL_FIELDS_INTERP_YZ
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: OBCS_EXTERNAL_FIELDS_LOAD
 C     !INTERFACE:
@@ -391,7 +399,7 @@ C     Northern boundary
         ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
         IF ( OBNwFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBNwFile,fp,Nr,OBNw0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBNwFile,fp,Nr,OBNw0,iRec0,myIter,myThid )
         ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
@@ -417,7 +425,7 @@ C     Southern boundary
         ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
         IF ( OBSwFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBSwFile,fp,Nr,OBSw0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBSwFile,fp,Nr,OBSw0,iRec0,myIter,myThid )
         ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
@@ -619,6 +627,7 @@ C     end if (usePTRACERS)
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: OBCS_EXTERNAL_FIELDS_INTERP_XZ
 C     !INTERFACE:
@@ -667,6 +676,8 @@ CEOP
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: OBCS_EXTERNAL_FIELDS_INTERP_YZ
 C     !INTERFACE:
