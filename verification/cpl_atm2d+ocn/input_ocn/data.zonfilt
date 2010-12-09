@@ -1,9 +1,8 @@
  &ZONFILT_PARM01
-      zonal_filt_uvStar   = .TRUE.
-      zonal_filt_TrStagg  = .TRUE.
-      zonal_filt_lat      = 82.
-      zonal_filt_sinpow   = 2
-      zonal_filt_cospow   = 2
-      zonal_filt_mode2dx  = 0
- &end
-
+      zonal_filt_uvStar   = .TRUE.,
+      zonal_filt_TrStagg  = .TRUE.,
+      zonal_filt_lat      = 82.,
+      zonal_filt_sinpow   = 2,
+      zonal_filt_cospow   = 2,
+      zonal_filt_mode2dx  = 0,
+ &
