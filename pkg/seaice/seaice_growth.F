@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.106 2010/12/03 05:00:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.107 2010/12/09 21:35:35 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -980,6 +980,16 @@ C =============PART 5: determine ice salinity increments=============
 C ===================================================================
 
 #ifndef SEAICE_SALINITY
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_SALT_PLUME
+CADJ STORE d_HEFFbyNEG = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyFLOODING = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
+#  endif /* ALLOW_SALT_PLUME */
+# endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
 Cgf note: flooding does count negatively
@@ -987,7 +997,7 @@ Cgf note: flooding does count negatively
      &               d_HEFFbyATMonOCN(I,J) - d_HEFFbyFLOODING(I,J)
           tmpscal2 = tmpscal1 * SIsal0 * HEFFM(I,J,bi,bj)
      &            /SEAICE_deltaTtherm * ICE2WATR * rhoConstFresh
-          saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) + tmpscal2
+          saltFlux(I,J,bi,bj) = tmpscal2
 #ifdef ALLOW_SALT_PLUME
           tmpscal3 = tmpscal1*salt(I,j,kSurface,bi,bj)*HEFFM(I,J,bi,bj)
      &            /SEAICE_deltaTtherm * ICE2WATR * rhoConstFresh

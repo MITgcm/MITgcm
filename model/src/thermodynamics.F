@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.133 2010/11/18 00:38:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.134 2010/12/09 21:35:33 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -113,6 +113,9 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
+# endif
+# ifdef ALLOW_SALT_PLUME
+#  include "SALT_PLUME.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -440,6 +443,15 @@ C of whether multiDimAdvection is set or not.
      &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP',myThid)
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_SALT_PLUME
+CADJ STORE saltPlumeFlux(:,:,bi,bj)   =
+CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
+CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
+CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--     Start of thermodynamics loop
         DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -658,6 +670,7 @@ CADJ STORE gs(:,:,:,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+
           CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA, yA, maskUp, uFld, vFld, wFld,
