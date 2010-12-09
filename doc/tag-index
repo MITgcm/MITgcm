@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1345 2010/12/06 10:52:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1346 2010/12/09 19:12:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o add adTapeDir to specify a special directory where adjoint tapes are 
-  written/read (adread_adwrite.F). adTapeDir is specified in data/PARM05 
+o globalFiles:
+  commented out in parameter file "data" since it's not safe with MPI
+  (e.g., wrong on aces); keep it if useSingleCpuIO=T (but not doing much
+  in this case); no longer commented out in restart test (tst_2+2).
+o add adTapeDir to specify a special directory where adjoint tapes are
+  written/read (adread_adwrite.F). adTapeDir is specified in data/PARM05
   and cannot be used together with mdsioLocalDir.
 o nesting pkgs:
   - packages_init_variables : put call to OBCS_INIT_VARIABLES in last position
