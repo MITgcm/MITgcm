@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.5 2010/10/16 17:06:04 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.6 2010/12/13 22:47:22 jmc Exp $
 #  $Name:  $
 #
 # Build options for Suse 9 Opteron
@@ -9,12 +9,12 @@
 #
 
 FC=g77
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
-#MAKEDEPEND=/usr/X11R6/bin/gccmakedep
-#MAKEDEPEND=/usr/X11R6/bin/makedepend
+GET_FC_VERSION="-v"
+
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
     FFLAGS='-Wimplicit -Wunused -Wuninitialized'
