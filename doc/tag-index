@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1346 2010/12/09 19:12:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1347 2010/12/13 13:54:53 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add diagnostics for snow precipitation
 o globalFiles:
   commented out in parameter file "data" since it's not safe with MPI
   (e.g., wrong on aces); keep it if useSingleCpuIO=T (but not doing much
