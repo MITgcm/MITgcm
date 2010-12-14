@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+cd /u/edhill/bin/MITgcm/tools
+/usr/bin/cvs -q up -d
+
+cd /nobackup1/edhill
+test -e MITgcm  &&  rm -rf MITgcm
+export CVSROOT=':pserver:cvsanon@mitgcm.org:/u/gcmpack'
+cvs co MITgcm > /dev/null 2>&1
+
+cd /u/edhill/bin/
+/PBS/bin/qsub ./pbs_altix_test
+

@@ -1,0 +1,105 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/Attic/script_testreport,v 1.1 2010/12/14 22:44:33 jmc Exp $
+# $Name:  $
+
+#PBS -N Testreport
+#PBS -l ncpus=2
+#PBS -l walltime=26:00:00
+#PBS -V
+
+### script to run testreport, tar the result, and send it to jmc@mitgcm.org
+
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+
+date_str=`date +%Y%m%d`"_0"
+
+. /usr/share/modules/init/bash
+module purge
+module load modules intel-comp.10.1.013 mpt.1.16.0.0 pd-netcdf.3.6.0-p1
+module list
+
+hnum=`hostname | sed -e"s/columbia//"`
+fs=/nobackup$hnum
+echo $fs
+cd $fs/dfer
+pwd
+
+cp -p -r ~/TEMPO/MITgcm .
+cd MITgcm/verification
+
+tst1=1
+tst2=1
+tst3=1
+
+##### NO MPI + IEEE
+if [ $tst1 -eq 1 ]; then
+
+./testreport -of='../tools/build_options/linux_ia64_ifort' -match 10 -j 2
+../tools/do_tst_2+2
+
+tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
+tdir1=tr_columbia_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+fi
+
+##### MPI + IEEE
+if [ $tst2 -eq 1 ]; then
+
+./testreport -of='../tools/build_options/linux_ia64_ifort+mpi_altix_nas' -mpi -match 10 -command='mpirun -np 2 ./mitgcmuv' -j 2
+../tools/do_tst_2+2 -mpi -exe 'mpirun -np 2 ./mitgcmuv' -a NONE -o columbia-ieee
+
+tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
+#sed "s/linux_ia64_ifort+mpi_altix_nas/linux_ia64_ifort+mpi_altix_nas_ieee/" $tdir1/summary.txt > $tdir1/toto
+#mv -f $tdir1/toto $tdir1/summary.txt
+tdir1=tr_columbia-ieee_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+tdir0=`ls -dt1 rs_* | grep -v tr_out | head -1`
+tdir1=rs_columbia-ieee_$date_str
+mv $tdir0 $tdir1
+tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+fi
+
+#####  MPI + NO IEEE
+if [ $tst3 -eq 1 ]; then
+
+./testreport -of='../tools/build_options/linux_ia64_ifort+mpi_altix_nas' -mpi -noieee -match 10 -command='mpirun -np 2 ./mitgcmuv' -j 2
+../tools/do_tst_2+2 -mpi -exe 'mpirun -np 2 ./mitgcmuv'
+
+tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
+#sed "s/linux_ia64_ifort+mpi_altix_nas/linux_ia64_ifort+mpi_altix_nas_noieee/" $tdir1/summary.txt > $tdir1/toto
+#mv -f $tdir1/toto $tdir1/summary.txt
+tdir1=tr_columbia-noieee_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+fi
+
+exit
+

@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+#PBS -S /bin/bash
+#PBS -N MITgcm_ifort
+#PBS -l ncpus=2
+## PBS -l mem=7776MB
+#PBS -l walltime=4:00:00
+#PBS -j oe
+## PBS -W group_list=g26167
+## PBS -m e
+
+echo -n "Setting up modules...  "
+. /usr/share/modules/init/bash
+module purge
+module load modules scsl.1.5.0.0 intel-comp.9.0.027 mpt.1.12.0.0
+echo "done"
+
+ulimit -s unlimited
+
+cd MITgcm/verification/
+./testreport -mpi \
+   -of=/nobackup1/edhill/MITgcm/tools/build_options/linux_ia64_ifort+mpi_altix_nas -pc \
+   -command '(mpirun -np 2 ./mitgcmuv)' \
+   -j 16 -a edhill@mitgcm.org
+
+# -end of script-
+
