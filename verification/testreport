@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.149 2010/11/16 17:09:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.150 2010/12/14 18:45:52 jmc Exp $
 #  $Name:  $
 #
 
@@ -1393,6 +1393,20 @@ for dir in $TESTDIRS ; do
 	    echo "from '$dir/$builddir/Makefile', extract:" > $DRESULTS/genmake_state
 	    sed -n '/^# executed by:/,+1 p' $dir/$builddir/Makefile >> $DRESULTS/genmake_state
 	    echo $mkOpt >> $DRESULTS/genmake_state
+	    gmkLog=$dir/$builddir/genmake.log
+	    grep '^Get compiler version using:' $gmkLog > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" = x0 ; then
+		echo "from '$gmkLog', extract compiler version:" >> $DRESULTS/genmake_state
+		sed -n '/Get compiler version/,/--- compiler version/p' $gmkLog | \
+		       grep -v '^... compiler version ' > tr_vers.tmp_log
+		grep -i 'version ' tr_vers.tmp_log >> $DRESULTS/genmake_state
+		RETVAL=$?
+		if test "x$RETVAL" != x0 ; then
+		   cat tr_vers.tmp_log >> $DRESULTS/genmake_state
+		fi
+		rm -f tr_vers.tmp_log
+	    fi
 	fi
     fi
     #postclean $dir/$builddir
