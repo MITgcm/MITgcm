@@ -1,10 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1347 2010/12/13 13:54:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1348 2010/12/14 19:13:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice: add diagnostics for snow precipitation
+o eesupp/src:
+  new S/R with new option (NML_EXTENDED_F77) to change array specification
+  from F95 standard to commonly accepted extended F77 form.
+  This would allow to use F95 syntax in namelist (needed with gfortran 4.4.5)
+  and to revert back to the original syntax (with -DNML_EXTENDED_F77)
+  for less tolerant f77 compiler (e.g., pgf77, g77).
 o globalFiles:
   commented out in parameter file "data" since it's not safe with MPI
   (e.g., wrong on aces); keep it if useSingleCpuIO=T (but not doing much
