@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.7 2010/04/20 20:13:27 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.8 2010/12/14 21:15:54 jmc Exp $
 #  $Name:  $
 
 # Adapted from linux_amd64_ifort_generic_mpi
@@ -54,6 +54,7 @@ DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="-V"
 OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0 -g'
