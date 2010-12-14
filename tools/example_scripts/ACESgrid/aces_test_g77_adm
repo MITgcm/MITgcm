@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_g77.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.2 2010/05/20 19:22:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.3 2010/12/14 21:34:45 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -38,7 +38,7 @@ checkOut=1
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
-dsp=`df . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 if [ $dsp -gt 99 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .

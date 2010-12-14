@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.6 2010/05/20 19:22:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.7 2010/12/14 21:34:45 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -51,7 +51,7 @@ EXE="mpiexec -pernode -comm pmi -np $NCPU ./mitgcmuv"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
-dsp=`df . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 if [ $dsp -gt 99 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .

@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.13 2010/05/20 19:22:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.14 2010/12/14 21:34:45 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -41,7 +41,7 @@ EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
-dsp=`df . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 if [ $dsp -gt 99 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
