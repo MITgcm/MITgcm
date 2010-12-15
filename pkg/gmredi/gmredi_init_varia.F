@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.11 2010/01/02 23:10:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.1 2010/12/15 23:06:43 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: GMREDI_INIT
+C     !ROUTINE: GMREDI_INIT_VARIA
 C     !INTERFACE:
-      SUBROUTINE GMREDI_INIT( myThid )
+      SUBROUTINE GMREDI_INIT_VARIA( myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_INIT
+C     | SUBROUTINE GMREDI_INIT_VARIA
 C     | o Routine to initialize GM/Redi variables
 C     *==========================================================*
 C     \ev

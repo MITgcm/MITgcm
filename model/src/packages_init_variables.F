@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.79 2010/11/27 23:08:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.80 2010/12/15 23:06:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,7 +26,7 @@ C       |-- GAD_GAD_INIT_VARIA
 C       |
 C       |-- CD_CODE_INI_VARS
 C       |
-C       |-- GMREDI_INIT
+C       |-- GMREDI_INIT_VARIA
 C       |
 C       |-- DWNSLP_INIT_VARIA
 C       |
@@ -147,9 +147,9 @@ C             therefore call CD-ini-vars before others pkg.
 C--   Initialize GM/Redi parameterization
       IF (useGMRedi) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT_VARIA',myThid)
 # endif
-        CALL GMREDI_INIT( myThid )
+        CALL GMREDI_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_GMREDI */
 
