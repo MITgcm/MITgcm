@@ -1,0 +1,112 @@
+#PBS -S /bin/csh
+#PBS -N Testreport
+#PBS -l select=1:ncpus=2:mpiprocs=2:model=har
+#PBS -l walltime=05:00:00
+#PBS -V
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/script_testpleiades,v 1.1 2010/12/15 02:22:13 dfer Exp $
+# $Name:  $
+
+### script to run testreport, tar the result, and send it to jmc@mitgcm.org
+### on Pleiades (Ice)
+
+#- to get case insensitive "ls" (and order of tested experiments)
+setenv LC_ALL "en_US.UTF-8"
+
+set date_str=`date +%Y%m%d`"_0"
+
+module purge
+module load comp-intel/11.1.046 mpi/mpt.1.25 netcdf/3.6.0/intel
+module list
+
+#hnum=`hostname | sed -e"s/columbia//"`
+#fs=/nobackup$hnum
+#echo $fs
+#cd $fs/dfer
+#pwd
+
+#cp -p -r ~/TEMPO/MITgcm .
+cd ~/MITgcm/verification
+
+set tst1=0
+set tst2=1
+set tst3=1
+
+##### NO MPI + IEEE
+if ( $tst1 == 1 ) then
+
+./testreport -of='linux_ia64_ifort' -match 10 -j 2
+../tools/do_tst_2+2
+
+set tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
+set tdir1=tr_columbia_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+set tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+endif
+
+##### MPI + IEEE
+if ( $tst2 == 1 ) then
+
+./testreport -of='../tools/build_options/linux_amd64_ifort+mpi_ice_nas' -mpi -match 10 -command='mpiexec_mpt -np 2 ./mitgcmuv' -j 2
+
+../tools/do_tst_2+2 -mpi -exe 'mpiexec_mpt -np 2 ./mitgcmuv' -a NONE -o pleiades-ieee
+
+set tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
+set tdir1=tr_pleiades-ieee_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+set tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 dfer@ocean.mit.edu
+
+set tdir0=`ls -dt1 rs_* | grep -v tr_out | head -1`
+#set tdir1=rs_pleiades-ieee_$date_str
+#mv $tdir0 $tdir1
+set tdir2=$tdir0.tar.gz
+tar -czf $tdir2 $tdir0
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 dfer@ocean.mit.edu
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+endif
+
+#####  MPI + NO IEEE
+if ( $tst3 == 1 ) then
+
+./testreport -of='../tools/build_options/linux_amd64_ifort+mpi_ice_nas' -mpi -noieee -match 10 -command='mpiexec_mpt -np 2 ./mitgcmuv' -j 2
+../tools/do_tst_2+2 -mpi -exe 'mpiexec_mpt -np 2 ./mitgcmuv' -a NONE -o pleiades-noieee
+
+set tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
+set tdir1=tr_pleiades-noieee_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+set tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 dfer@ocean.mit.edu
+
+set tdir0=`ls -dt1 rs_* | grep -v tr_out | head -1`
+#set tdir1=rs_pleiades-ieee_$date_str
+#mv $tdir0 $tdir1
+set tdir2=$tdir0.tar.gz
+tar -czf $tdir2 $tdir0
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 dfer@ocean.mit.edu
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+endif
+
+exit
+
