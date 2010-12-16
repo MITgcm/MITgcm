@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.6 2010/12/05 14:17:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.7 2010/12/16 00:56:48 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -163,7 +163,7 @@ C ------ Augment the bin values
      &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
 
 #if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
-         IF (GM_AdvForm) THEN
+         IF ( GM_AdvForm .AND. useBOLUS ) THEN
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.
@@ -234,7 +234,7 @@ C ------ Augment the bin values
      &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
 
 #if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
-         IF (GM_AdvForm) THEN
+         IF ( GM_AdvForm .AND. useBOLUS ) THEN
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.

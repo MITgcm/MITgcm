@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.5 2010/12/04 23:50:32 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.6 2010/12/16 00:56:48 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -7,12 +7,12 @@ C--   Header for LAYERS package. By Ryan Abernathey.
 C--   For computing volume fluxes in isopyncal layers
 
 C --  Parms
-      LOGICAL layers_MNC, layers_MDSIO
+      LOGICAL layers_MNC, layers_MDSIO, useBOLUS
       INTEGER LAYER_nb
       _RL layers_taveFreq, layers_diagFreq
       COMMON /LAYERS_PARMS/ layers_MNC, layers_MDSIO,
      &                      layers_taveFreq, layers_diagFreq,
-     &                      LAYER_nb
+     &                      LAYER_nb, useBOLUS
 
 C     3D Layers fields. The vertical dimension in these fields is nLayers,
 C     i.e. the isopycnal coordinate.
