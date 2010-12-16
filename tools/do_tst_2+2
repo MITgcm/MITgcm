@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.6 2010/03/25 23:09:29 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.7 2010/12/16 20:15:21 jmc Exp $
 # $Name:  $
 
 usage()
@@ -153,8 +153,19 @@ do
         comm=`grep '^# OPTFILE=' $xx/build/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
         echo "from '$xx/build/Makefile', extract:" > $DRESULTS/genmake_state
         sed -n '/^# executed by:/,+1 p' $xx/build/Makefile >> $DRESULTS/genmake_state
-        echo $comm >> $DRESULTS/genmake_state
+        echo " $comm" >> $DRESULTS/genmake_state
         eval $comm
+        gmkLog=$xx/build/genmake.log
+        grep '^Get compiler version using:' $gmkLog > /dev/null 2>&1
+        out=$?
+        if test "x$out" = x0 ; then
+            echo "from '$gmkLog', extract compiler version:" >> $DRESULTS/genmake_state
+            sed -n '/Get compiler version/,/<-- compiler version/p' $gmkLog \
+                       | grep -v '^... compiler version ' > tr_vers.tmp_log
+            sed -n '1,/^$/p' tr_vers.tmp_log | sed '/^$/d' | sed 's/^./ &/' \
+                      >> $DRESULTS/genmake_state
+            rm -f tr_vers.tmp_log
+        fi
       fi
       if test $yy = 'run' ; then nam=$xx
       else nam=$xx`echo $yy | sed 's/tr_run//'` ; fi
