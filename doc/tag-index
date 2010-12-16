@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1348 2010/12/14 19:13:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1349 2010/12/16 08:34:01 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: add diagnostics for snow precipitation
+o pkg/seaice: add diagnostics for snow precipitation and sublimation flux
+  - first attempt to close budgets by taking into account the freshwater
+    flux implied by the sublimation of snow and ice. So far only the 
+    volume budget is closed, turn on with soon-to-be-retired-again CPP-Flag
+    SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
 o eesupp/src:
   new S/R with new option (NML_EXTENDED_F77) to change array specification
   from F95 standard to commonly accepted extended F77 form.
