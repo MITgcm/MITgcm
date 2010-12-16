@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.108 2010/12/13 13:54:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.109 2010/12/16 08:32:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -99,7 +99,7 @@ C     r_QbyATM_open  :: same but for open water
       _RL a_QbyATM_cover      (1:sNx,1:sNy)
       _RL a_QbyATM_open       (1:sNx,1:sNy)
       _RL r_QbyATM_cover      (1:sNx,1:sNy)
-      _RL r_QbyATM_open      (1:sNx,1:sNy)
+      _RL r_QbyATM_open       (1:sNx,1:sNy)
 C     a_QSWbyATM_open   - short wave heat flux over ocean in W/m^2
 C     a_QSWbyATM_cover  - short wave heat flux under ice in W/m^2
       _RL a_QSWbyATM_open     (1:sNx,1:sNy)
@@ -132,6 +132,16 @@ C ICE/SNOW stocks tendencies associated with the various melt/freeze processes
       _RL d_HSNWbyRAIN        (1:sNx,1:sNy)
 
       _RL d_HFRWbyRAIN        (1:sNx,1:sNy)
+C
+C     a_FWbySublim :: fresh water flux implied by latent heat of 
+C                     sublimation to atmosphere, same sign convention
+C                     as EVAP (positive upward)
+      _RL a_FWbySublim        (1:sNx,1:sNy)
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
+      _RL d_HEFFbySublim      (1:sNx,1:sNy)
+      _RL d_HSNWbySublim      (1:sNx,1:sNy)
+      _RL rodt, rrodt
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
 
 C     actual ice thickness with upper and lower limit
       _RL heffActual          (1:sNx,1:sNy)
@@ -174,11 +184,12 @@ C temporary variables available for the various computations
       INTEGER it
       _RL pFac
       _RL heffActualP         (1:sNx,1:sNy)
+      _RL a_QbyATMmult_cover  (1:sNx,1:sNy)
+      _RL a_QSWbyATMmult_cover(1:sNx,1:sNy)
+      _RL a_FWbySublimMult    (1:sNx,1:sNy)
 #else
       PARAMETER ( nDim = 1 )
 #endif /* SEAICE_MULTICATEGORY */
-      _RL a_QbyATMmult_cover  (1:sNx,1:sNy)
-      _RL a_QSWbyATMmult_cover(1:sNx,1:sNy)
 
 #ifdef ALLOW_DIAGNOSTICS
       _RL DIAGarray     (1:sNx,1:sNy)
@@ -225,16 +236,16 @@ C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          iicekey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        iicekey = (act1 + 1) + act2*max1
+     &                       + act3*max1*max2
+     &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 
@@ -265,7 +276,12 @@ C =====================
           d_HSNWbyATMonSNW(I,J)      = 0.0 _d 0
           d_HSNWbyOCNonSNW(I,J)      = 0.0 _d 0
           d_HSNWbyRAIN(I,J)          = 0.0 _d 0
-
+          a_FWbySublim(I,J)          = 0.0 _d 0
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
+          d_HEFFbySublim(I,J)        = 0.0 _d 0
+          d_HSNWbySublim(I,J)        = 0.0 _d 0
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+c
           d_HFRWbyRAIN(I,J)          = 0.0 _d 0
 
           tmparr1(I,J)               = 0.0 _d 0
@@ -273,8 +289,11 @@ C =====================
 #ifdef SEAICE_SALINITY
           saltFluxAdjust(I,J)        = 0.0 _d 0
 #endif
+#ifdef SEAICE_MULTICATEGORY
           a_QbyATMmult_cover(I,J)    = 0.0 _d 0
           a_QSWbyATMmult_cover(I,J)  = 0.0 _d 0
+          a_FWbySublimMult(I,J)      = 0.0 _d 0
+#endif /* SEAICE_MULTICATEGORY */
          ENDDO
         ENDDO
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
@@ -541,6 +560,8 @@ CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
 # endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C--   Start loop over multi-categories, if SEAICE_MULTICATEGORY is undefined
+C     nDim = 1, and there is only one loop iteration
 #ifdef SEAICE_MULTICATEGORY
         DO IT=1,nDim
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -561,14 +582,17 @@ CADJ &                           key = ilockey, byte = isbyte
      I        UG, heffActualP, hsnowActual,
      U        TICE,
      O        a_QbyATMmult_cover, a_QSWbyATMmult_cover,
+     O        a_FWbySublimMult,
      I        bi, bj, myTime, myIter, myThid )
          DO J=1,sNy
           DO I=1,sNx
 C     average over categories
-           a_QbyATM_cover (I,J)   = a_QbyATM_cover(I,J)
+           a_QbyATM_cover   (I,J) = a_QbyATM_cover(I,J)
      &          + a_QbyATMmult_cover(I,J)/nDim
            a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J)
      &          + a_QSWbyATMmult_cover(I,J)/nDim
+           a_FWbySublim     (I,J) = a_FWbySublim(I,J) 
+     &          + a_FWbySublimMult(I,J)/nDim
            TICES(I,J,IT,bi,bj) = TICE(I,J,bi,bj)
           ENDDO
          ENDDO
@@ -577,7 +601,7 @@ C     average over categories
         CALL SEAICE_SOLVE4TEMP(
      I       UG, heffActual, hsnowActual,
      U       TICE,
-     O       a_QbyATM_cover, a_QSWbyATM_cover,
+     O       a_QbyATM_cover, a_QSWbyATM_cover, a_FWbySublim,
      I       bi, bj, myTime, myIter, myThid )
 #endif /* SEAICE_MULTICATEGORY */
 C--  End loop over multi-categories
@@ -587,30 +611,70 @@ C--  End loop over multi-categories
          IF ( DIAGNOSTICS_IS_ON('SIatmQnt',myThid) ) THEN
           DO J=1,sNy
            DO I=1,sNx
+CML If I consider the atmosphere above the ice, the surface flux 
+CML which is relevant for the air temperature dT/dt Eq 
+CML accounts for sensible and radiation (with different treatment
+CML according to wave-length) fluxes but not for "latent heat flux",
+CML since it does not contribute to heating the air.
+CML So this diagnostic is only good for heat budget calculations within
+CML the ice-ocean system.
             DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj) * (
-     &           a_QbyATM_cover(I,J) * AREApreTH(I,J) +
-     &           a_QbyATM_open(I,J) * ( ONE - AREApreTH(I,J) ) )
+     &             a_QbyATM_cover(I,J) * AREApreTH(I,J)
+     &           + a_QbyATM_open(I,J) * ( ONE - AREApreTH(I,J) ) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmQnt',0,1,3,bi,bj,myThid)
          ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIfwSubl',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj) *
+     &           a_FWbySublim(I,J) * AREApreTH(I,J)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIfwSubl',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIatmFW ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj)*(
+     &           PRECIP(I,J,bi,bj)
+     &           - EVAP(I,J,bi,bj)
+     &           *( ONE - AREApreTH(I,J) )
+#ifdef ALLOW_RUNOFF
+     &           + RUNOFF(I,J,bi,bj)
+#endif /* ALLOW_RUNOFF */
+     &           )*rhoConstFresh
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
+     &           - a_FWbySublim(I,J)*AREApreTH(I,J)
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmFW ',0,1,3,bi,bj,myThid)
+         ENDIF
         ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 C switch heat fluxes from W/m2 to 'effective' ice meters
         DO J=1,sNy
          DO I=1,sNx
-           a_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)
+          a_QbyATM_cover(I,J)   = a_QbyATM_cover(I,J)
      &         * convertQ2HI * AREApreTH(I,J)
-           a_QSWbyATM_cover(I,J) = a_QSWbyATM_cover(I,J)
+          a_QSWbyATM_cover(I,J) = a_QSWbyATM_cover(I,J)
      &         * convertQ2HI * AREApreTH(I,J)
-           a_QbyATM_open(I,J) = a_QbyATM_open(I,J)
+          a_QbyATM_open(I,J)    = a_QbyATM_open(I,J)
      &         * convertQ2HI * ( ONE - AREApreTH(I,J) )
-           a_QSWbyATM_open(I,J) = a_QSWbyATM_open(I,J)
+          a_QSWbyATM_open(I,J)  = a_QSWbyATM_open(I,J)
      &         * convertQ2HI * ( ONE - AREApreTH(I,J) )
 C and initialize r_QbyATM_cover/r_QbyATM_open
-           r_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
-           r_QbyATM_open(I,J)=a_QbyATM_open(I,J)
+          r_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
+          r_QbyATM_open(I,J)=a_QbyATM_open(I,J)
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+C     Convert fresh water flux by sublimation to 'effective' ice meters. 
+C     Negative sublimation is resublimation and will be added as snow.
+          a_FWbySublim(I,J) = SEAICE_deltaTtherm/SEAICE_rhoIce
+     &           * a_FWbySublim(I,J)*AREApreTH(I,J)
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
          ENDDO
         ENDDO
 
@@ -702,6 +766,32 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
 C compute snow melt tendency due to snow-atmosphere interaction
 C ==================================================================
 
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE a_FWbySublim     = comlev1_bibj,key=iicekey,byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     First apply sublimation to snow
+        rodt  = ICE2SNOW
+        rrodt = 1./rodt
+        DO J=1,sNy
+         DO I=1,sNx
+          IF ( a_FWbySublim(I,J) .LT. 0. _d 0 ) THEN
+C     resublimate as snow
+           d_HSNWbySublim(I,J) = -a_FWbySublim(I,J)*rodt
+           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbySublim(I,J)
+           a_FWbySublim(I,J) = 0. _d 0
+          ENDIF
+C     sublimate snow first
+          tmpscal1 = MIN(a_FWbySublim(I,J)*rodt,HSNOW(I,J,bi,bj))
+          tmpscal2 = MAX(tmpscal1,0. _d 0)
+          d_HSNWbySublim(I,J) = - tmpscal2
+          HSNOW(I,J,bi,bj)    = HSNOW(I,J,bi,bj)  - tmpscal2
+          a_FWbySublim(I,J)   = a_FWbySublim(I,J) - tmpscal2*rrodt
+         ENDDO
+        ENDDO
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
@@ -724,9 +814,29 @@ Cgf no additional dependency through snow
 C compute ice thickness tendency due to the atmosphere
 C ====================================================
 
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE r_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE a_FWbySublim    = comlev1_bibj,key=iicekey,byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Apply sublimation to ice
+        rodt  = 1. _d 0
+        rrodt = 1./rodt
+        DO J=1,sNy
+         DO I=1,sNx
+C     If anything is left, sublimate ice
+          tmpscal1 = MIN(a_FWbySublim(I,J)*rodt,HEFF(I,J,bi,bj))
+          tmpscal2 = MAX(tmpscal1,0. _d 0)
+          d_HEFFbySublim(I,J) = - tmpscal2
+          HEFF(I,J,bi,bj)     = HEFF(I,J,bi,bj)   - tmpscal2
+          a_FWbySublim(I,J)   = a_FWbySublim(I,J) - tmpscal2*rrodt
+         ENDDO
+        ENDDO
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE r_QbyATM_cover  = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 Cgf note: this block is not actually tested by lab_sea
@@ -742,7 +852,6 @@ Cgf warming conditions, the lab_sea results were not changed.
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
          ENDDO
         ENDDO
-
 
 C attribute precip to fresh water or snow stock,
 C depending on atmospheric conditions.
@@ -1320,41 +1429,27 @@ C ==================================================
 #ifdef ALLOW_ATM_TEMP
         DO J=1,sNy
          DO I=1,sNx
-         tmpscal1= d_HSNWbyATMonSNW(I,J)/ICE2SNOW
-     &            +d_HFRWbyRAIN(I,J)
-     &            +d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
-     &            +d_HEFFbyOCNonICE(I,J)
-     &            +d_HEFFbyATMonOCN(I,J)
-     &            +d_HEFFbyNEG(I,J)
-     &            +d_HSNWbyNEG(I,J)/ICE2SNOW
+          tmpscal1= d_HSNWbyATMonSNW(I,J)/ICE2SNOW
+     &             +d_HFRWbyRAIN(I,J)
+     &             +d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
+     &             +d_HEFFbyOCNonICE(I,J)
+     &             +d_HEFFbyATMonOCN(I,J)
+     &             +d_HEFFbyNEG(I,J)
+     &             +d_HSNWbyNEG(I,J)/ICE2SNOW
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+     &             +a_FWbySublim(I,J)
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREApreTH(I,J) )
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
-#endif
+#endif /* ALLOW_RUNOFF */
      &         + tmpscal1*convertHI2PRECIP
      &         )*rhoConstFresh
          ENDDO
         ENDDO
 
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-         IF ( DIAGNOSTICS_IS_ON('SIatmFW ',myThid) ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-            DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj)*(
-     &           PRECIP(I,J,bi,bj)
-     &           - EVAP(I,J,bi,bj)
-     &           *( ONE - AREApreTH(I,J) )
-     &           + RUNOFF(I,J,bi,bj)
-     &           )*rhoConstFresh
-           ENDDO
-          ENDDO
-          CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmFW ',0,1,3,bi,bj,myThid)
-         ENDIF
-        ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
         DO J=1,sNy
          DO I=1,sNx
