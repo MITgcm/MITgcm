@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.9 2010/11/29 23:21:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.10 2010/12/16 08:31:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -13,6 +13,7 @@ C     !INTERFACE:
      O   F_io_net, F_ia_net,
 #endif
      O   F_ia, IcePenetSWFlux,
+     O   FWsublim,
      I   bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -54,11 +55,14 @@ C     HSNOW_ACTUAL :: actual snow thickness
 C     TSURF   :: surface temperature of ice in Kelvin, updated
 C     bi,bj   :: loop indices
 C     OUTPUT:
-C     F_io_net :: net upward conductive heat flux through ice at the base of the ice
+C     F_io_net :: net upward conductive heat flux through ice at the base 
+C                 of the ice
 C     F_ia_net :: net heat flux divergence at the sea ice/snow surface:
 C                 includes ice conductive fluxes and atmospheric fluxes (W/m^2)
 C     F_ia     :: upward sea ice/snow surface heat flux to atmosphere (W/m^2)
 C     IcePenetSWFlux :: short wave heat flux under ice
+C     FWsublim :: fresh water (mass) flux implied by latent heat of 
+C                 sublimation (kg/m^2/s)
       _RL UG             (1:sNx,1:sNy)
       _RL HICE_ACTUAL    (1:sNx,1:sNy)
       _RL HSNOW_ACTUAL   (1:sNx,1:sNy)
@@ -67,6 +71,7 @@ C     IcePenetSWFlux :: short wave heat flux under ice
       _RL F_ia_net       (1:sNx,1:sNy)
       _RL F_ia           (1:sNx,1:sNy)
       _RL IcePenetSWFlux (1:sNx,1:sNy)
+      _RL FWsublim       (1:sNx,1:sNy)
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -77,9 +82,9 @@ C     === Local variables ===
       _RL F_swi      (1:sNx,1:sNy)
       _RL F_lwd      (1:sNx,1:sNy)
       _RL F_lwu      (1:sNx,1:sNy)
-      _RL F_lh       (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
+      _RL F_lh       (1:sNx,1:sNy)
       _RL F_c        (1:sNx,1:sNy)
       _RL qhice      (1:sNx,1:sNy)
 
@@ -213,6 +218,8 @@ C
         F_io_net (I,J) = 0. _d 0
         F_ia_net (I,J) = 0. _d 0
 
+        F_lh     (I,J) = 0. _d 0
+
 C     Reset the snow/ice surface to TMELT and bound the atmospheric temperature
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
         tsurfLoc (I,J) = MIN(273.16 _d 0 + MAX_TICE,TSURF(I,J,bi,bj))
@@ -226,7 +233,6 @@ c       B(I,J)  = 0.0 _d 0
         F_swi    (I,J) = 0. _d 0
         F_lwd    (I,J) = 0. _d 0
         F_lwu    (I,J) = 0. _d 0
-        F_lh     (I,J) = 0. _d 0
         F_sens   (I,J) = 0. _d 0
 
         tsurfLoc (I,J) = TSURF(I,J,bi,bj)
@@ -430,11 +436,12 @@ C     The following form does the same, but is faster
      &         mm_pi)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
-C                 Caclulate the flux terms based on the updated tsurfLoc
+C     Calculate the flux terms based on the updated tsurfLoc
+          F_c(I,J)    = -effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
+          F_lh(I,J)   = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
           A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3*t4
           A3(I,J) = 4.0 _d 0 * D3 * t3 + effConduct(I,J) + D1*UG(I,J)
-          F_c(I,J)=-effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
 C     A constant for SVP derivative w.r.t TICE
 C         cc3t = TEN **(aa1 / t1)
@@ -447,10 +454,6 @@ c     d(qh)/d(TICE)
 c     d(F_ia)/d(TICE)
           dFiDTs1 = 4.0 _d 0 * D3*t3 + effConduct(I,J) + D1*UG(I,J)
      &         + D1I*UG(I,J)*dqhice_dTice
-
-          F_lh(I,J) = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
-
-          F_c(I,J)  = -effConduct(I,J) * (TB(I,J) - t1)
 
           F_lwu(I,J)= t4 * D3
 
@@ -603,6 +606,10 @@ C     Caclulate the net ice-ocean and ice-atmosphere fluxes
           F_io_net(I,J) = 0.0 _d 0
           F_ia_net(I,J) = F_ia(I,J)
          ENDIF                  !/* conductive fluxes up or down */
+C     Fresh water flux (kg/m^2/s) from latent heat of sublimation.
+C     F_lh is positive upward (sea ice looses heat) and FWsublim
+C     is also positive upward (atmosphere gains freshwater)
+         FWsublim(I,J) = F_lh(I,J)/SEAICE_lhSublim
 
 #ifdef SEAICE_DEBUG
          IF ( (I .EQ. SEAICE_debugPointX)   .and.
