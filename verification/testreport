@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.151 2010/12/15 17:46:30 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.152 2010/12/17 17:32:24 jmc Exp $
 #  $Name:  $
 #
 
@@ -1166,8 +1166,8 @@ if test "x$OPTFILE" != xNONE ; then
     fi
 else
     echo >> $SUMMARY
-    echo "No \"OPTFILE\" was explicitly specified by testreport," >> $SUMMARY
-    echo "   so the genmake default will be used." >> $SUMMARY
+    echo "No \"OPTFILE\" was specified ; genmake2 found and uses:" >> $SUMMARY
+    #-note: to be filled later after 1rst run
 fi
 echo
 echo >> $SUMMARY
@@ -1393,16 +1393,26 @@ for dir in $TESTDIRS ; do
 	    echo "from '$dir/$builddir/Makefile', extract:" > $DRESULTS/genmake_state
 	    sed -n '/^# executed by:/,+1 p' $dir/$builddir/Makefile >> $DRESULTS/genmake_state
 	    echo " $mkOpt" >> $DRESULTS/genmake_state
+	    if test "x$OPTFILE" = xNONE ; then
+		eval $mkOpt
+		sed "/^No \"OPTFILE\" was specified ; genmake2/a\  OPTFILE=${OPTFILE}"\
+			$SUMMARY > tr_0.tmp_log
+		RETVAL=$?
+		if test "x$RETVAL" = x0 ; then rm -f $SUMMARY
+			cp tr_0.tmp_log $SUMMARY
+		else rm -f tr_0.tmp_log
+		fi
+	    fi
 	    gmkLog=$dir/$builddir/genmake.log
 	    grep '^Get compiler version using:' $gmkLog > /dev/null 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" = x0 ; then
 		echo "from '$gmkLog', extract compiler version:" >> $DRESULTS/genmake_state
 		sed -n '/Get compiler version/,/<-- compiler version/p' $gmkLog \
-		       | grep -v '^... compiler version ' > tr_vers.tmp_log
-		sed -n '1,/^$/p' tr_vers.tmp_log | sed '/^$/d' | sed 's/^./ &/' \
+		       | grep -v '^... compiler version ' > tr_1.tmp_log
+		sed -n '1,/^$/p' tr_1.tmp_log | sed '/^$/d' | sed 's/^./ &/' \
 			>> $DRESULTS/genmake_state
-		rm -f tr_vers.tmp_log
+		rm -f tr_1.tmp_log
 	    fi
 	fi
     fi
