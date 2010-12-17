@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1351 2010/12/17 19:47:47 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1352 2010/12/17 22:00:37 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o global_ocean.cs32x15: additional input.seaice experiment
+    that uses pkg/seaice rather than pkg/thsice.
 checkpoint62p (2010/12/17)
 o pkg/thsice: rename (ad tape index) iicekey as ticekey, and move it
     to THSICE_SIZE.h to avoid conflict with pkg/seaice.
