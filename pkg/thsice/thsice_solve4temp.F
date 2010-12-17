@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.28 2010/10/26 22:26:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.29 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -187,13 +187,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
       act3 = myThid - 1
       max3 = nTx*nTy
       act4 = ikey_dynamics - 1
-      iicekey = (act1 + 1) + act2*max1
+      ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE flxsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE flxsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
         tIc1(i,j) = 0. _d 0
@@ -335,14 +335,14 @@ C--   Compute coefficients used in quadratic formula.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt(:,:)    = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE tsf(:,:)      = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 
 C--   Get surface fluxes over melting surface
 #ifdef ALLOW_AUTODIFF_TAMC
       IF ( useBlkFlx ) THEN
-CADJ STORE tsf(:,:)      = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
 #else
       IF ( useBlkFlx .AND. iterate4Tsf  ) THEN
 #endif
@@ -385,10 +385,10 @@ C     Tsfc converges.
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt(:,:)    = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE flx0exsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE flx0exsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 
 C ----- begin iteration  -----
@@ -428,11 +428,11 @@ C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt(:,:)    = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE iceflag(:,:)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE tsf(:,:)      = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceflag(:,:)  = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 
 C--   Compute new top layer and surface temperatures.

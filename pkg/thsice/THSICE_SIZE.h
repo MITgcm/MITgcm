@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_SIZE.h,v 1.4 2007/09/17 21:58:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_SIZE.h,v 1.5 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -24,6 +24,13 @@ C--   identifiers for advected properties
      &            GAD_SI_HICE  = -7,
      &            GAD_SI_QICE1 = -8,
      &            GAD_SI_QICE2 = -9 )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER ticekey
+      INTEGER ikey_1, ikey_2, ikey_3, ikey_4
+      INTEGER MaxTsf
+      PARAMETER ( MaxTsf = 20 )
+#endif
 
 #endif /* ALLOW_THSICE */
 

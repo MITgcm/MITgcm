@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.12 2010/10/26 22:26:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.13 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -152,7 +152,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       act3 = myThid - 1
       max3 = nTx*nTy
       act4 = ikey_dynamics - 1
-      iicekey = (act1 + 1) + act2*max1
+      ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */

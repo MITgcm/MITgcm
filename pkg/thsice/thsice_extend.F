@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.11 2010/10/21 19:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.12 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -128,7 +128,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       act3 = myThid - 1
       max3 = nTx*nTy
       act4 = ikey_dynamics - 1
-      iicekey = (act1 + 1) + act2*max1
+      ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -136,11 +136,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       deltaTice = thSIce_deltaT
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hIce(:,:)   = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE hSnow(:,:)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE icFrac(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE qIc1(:,:)   = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE qIc2(:,:)   = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE hIce(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE hSnow(:,:)  = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE icFrac(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE qIc1(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE qIc2(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax

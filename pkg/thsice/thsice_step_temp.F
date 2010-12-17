@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.11 2010/10/16 19:22:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.12 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -93,7 +93,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          iicekey = (act1 + 1) + act2*max1
+          ticekey = (act1 + 1) + act2*max1
      &                         + act3*max1*max2
      &                         + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -108,7 +108,7 @@ C-    Initialise flxAtm,evpAtm
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 c     IF ( fluidIsWater ) THEN
        CALL THSICE_ALBEDO(
@@ -126,7 +126,7 @@ C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icflxsw(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE icflxsw(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -157,11 +157,11 @@ C-      surface net SW flux:
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.29 2010/10/21 19:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.30 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -116,7 +116,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       act3 = myThid - 1
       max3 = nTx*nTy
       act4 = ikey_dynamics - 1
-      iicekey = (act1 + 1) + act2*max1
+      ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -141,12 +141,12 @@ C-    Initialise
       snowFac = thSIce_deltaT/(rhos*hNewSnowAge)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE iceheight(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE icfrwatm(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE snowheight(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceheight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE icfrwatm(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE snowheight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -223,7 +223,7 @@ C-------
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 
       CALL THSICE_CALC_THICKN(
@@ -241,10 +241,10 @@ CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
      I          myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE fsalt(:,:)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE flx2oc(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE frw2oc(:,:) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE fsalt(:,:)  = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE flx2oc(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE frw2oc(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 C--    Net fluxes :
       DO j = jMin, jMax
@@ -320,7 +320,7 @@ C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE snowHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj,key=iicekey,byte=isbyte
+CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -367,7 +367,7 @@ C--    Net fluxes :
 
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE snowHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj,key=iicekey,byte=isbyte
+CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
 # endif
       DO j = jMin, jMax
        DO i = iMin, iMax

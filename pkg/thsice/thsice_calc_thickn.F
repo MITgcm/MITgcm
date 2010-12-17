@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.23 2010/10/26 22:26:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.24 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -229,7 +229,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       act3 = myThid - 1
       max3 = nTx*nTy
       act4 = ikey_dynamics - 1
-      iicekey = (act1 + 1) + act2*max1
+      ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -585,10 +585,10 @@ C     end i/j-loops
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etop(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE ebot(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE etop(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE ebot(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
       DO k = nlyr, 1, -1
@@ -741,8 +741,8 @@ C     end i/j-loops
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE evaploc(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE evaploc(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
 C-    else: hIce > 0
@@ -816,11 +816,11 @@ C     end k-loop
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etop(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE icemask(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hice(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE etop(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE icemask(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
 C     still else: hice > 0
@@ -860,11 +860,11 @@ C     end i/j-loops
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icemask(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hice(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hsnow(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE icemask(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hsnow(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
       DO j = jMin, jMax
@@ -1041,11 +1041,11 @@ C     end i/j-loops
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icemask(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE icfrac(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE hsnow(:,:) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE icemask(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE icfrac(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hsnow(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
       DO j = jMin, jMax

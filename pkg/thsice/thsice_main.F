@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.22 2010/10/21 02:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.23 2010/12/17 04:00:14 gforget Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -28,6 +28,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
+#include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -93,17 +94,17 @@ C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          iicekey = (act1 + 1) + act2*max1
+          ticekey = (act1 + 1) + act2*max1
      &                         + act3*max1*max2
      &                         + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ocefwfx(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE oceqnet(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE ocefwfx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE oceqnet(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 # ifdef ALLOW_EXF
-CADJ STORE qsw(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE qsw(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 # endif
 #endif
 
@@ -140,8 +141,8 @@ C--     Mixed layer thickness: take the 1rst layer
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
         DO j = jMin, jMax
@@ -164,19 +165,19 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj, key = iicekey
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE Tsrf(:,:,bi,bj)    = comlev1_bibj, key = iicekey
-CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj, key = iicekey
-CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj, key = iicekey
-CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE snowPrc(:,:,bi,bj)  = comlev1_bibj, key = iicekey
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj, key = ticekey
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE Tsrf(:,:,bi,bj)    = comlev1_bibj, key = ticekey
+CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj, key = ticekey
+CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj, key = ticekey
+CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE snowPrc(:,:,bi,bj)  = comlev1_bibj, key = ticekey
 
-CADJ STORE hOceMxL(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE tOceMxL(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE sOceMxL(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE v2ocMxL(:,:,bi,bj) = comlev1_bibj, key = iicekey
+CADJ STORE hOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE tOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE sOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE v2ocMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #endif
 
 C-      do sea-ice advection before getting surface fluxes
@@ -205,25 +206,25 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key = iicekey
+CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #endif
         CALL THSICE_STEP_TEMP(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE empmr(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj, key = iicekey
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj, key = iicekey
-cphCADJ STORE Tsrf(:,:,bi,bj)    = comlev1_bibj, key = iicekey
-CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj, key = iicekey
-CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj, key = iicekey
-CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj, key = iicekey
-CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key = iicekey
+CADJ STORE empmr(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj, key = ticekey
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj, key = ticekey
+cphCADJ STORE Tsrf(:,:,bi,bj)    = comlev1_bibj, key = ticekey
+CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj, key = ticekey
+CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj, key = ticekey
+CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj, key = ticekey
+CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #endif
 
         CALL THSICE_STEP_FWD(
@@ -240,8 +241,8 @@ c     ENDDO
 C--   note: If useSEAICE=.true., the stress is computed in seaice_model,
 C--   and stressReduction is always set to zero
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
         IF ( stressReduction.GT. 0. _d 0 ) THEN
           DO j = jMin, jMax
