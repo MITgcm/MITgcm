@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1350 2010/12/17 14:35:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1351 2010/12/17 19:47:47 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 checkpoint62p (2010/12/17)
+o pkg/thsice: rename (ad tape index) iicekey as ticekey, and move it
+    to THSICE_SIZE.h to avoid conflict with pkg/seaice.
+o pkg/seaice: add seaice_diffusion.f seaice_map_thsice.f to adjoint.
+    allow for use of multim. advection in seaice adjoint.
 o pkg/seaice: add diagnostics for snow precipitation and sublimation flux
   - first attempt to close budgets by taking into account the freshwater
     flux implied by the sublimation of snow and ice. So far only the
