@@ -11,6 +11,7 @@ seaice_budget_ocean_if.f
 seaice_check.f
 seaice_output.f
 seaice_diagnostics_state.f
+seaice_diffusion.f
 seaice_get_dynforcing.f
 seaice_growth.f
 seaice_growth_if.f
@@ -40,3 +41,4 @@ seaice_evp.f
 seaice_lsr.f
 seaice_freedrift.f
 seaice_ocean_stress.f
+seaice_map_thsice.f
