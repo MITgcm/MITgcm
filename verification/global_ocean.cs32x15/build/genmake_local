@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/build/genmake_local,v 1.3 2010/12/17 13:43:29 jmc Exp $
+
+#  This is the local options file for the "new" version of genmake
+
+MAKEDEPEND=cyrus_makedepend
