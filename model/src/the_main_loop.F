@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.110 2010/11/18 00:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.111 2010/12/17 04:04:58 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -107,7 +107,6 @@ c They provide the fields to be stored.
 #  endif
 #  ifdef ALLOW_THSICE
 #   include "THSICE_SIZE.h"
-#   include "THSICE_PARAMS.h"
 #   include "THSICE_VARS.h"
 #  endif
 #  ifdef ALLOW_EBM
