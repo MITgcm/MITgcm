@@ -1,0 +1,8 @@
+# Packages
+ &PACKAGES
+ useGMRedi=.TRUE.,
+ useEXF   =.TRUE.,
+ useSEAICE=.TRUE.,
+ useDiagnostics=.TRUE.,
+#useMNC = .TRUE.,
+ &

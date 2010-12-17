@@ -1,0 +1,91 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscAh =3.E5,
+ viscAr =1.E-3,
+ diffKhT=0.,
+ diffK4T=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffK4S=0.,
+ diffKrS=3.E-5,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ gravity=9.81,
+ rhonil=1035.,
+ rhoConstFresh=1000.,
+ eosType='JMD95Z',
+ staggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ useRealFreshWaterFlux=.TRUE.,
+ hFacMin=.1,
+ hFacMinDr=20.,
+#tempAdvScheme=77,
+#saltAdvScheme=77,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+#debugLevel = 2,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+#cg2dTargetResidual=1.E-9,
+ cg2dTargetResWunit=1.E-14,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=72000,
+ nTimeSteps=10,
+#endTime=31104000.,
+ deltaTmom   =1200.,
+ deltaTtracer=86400.,
+ deltaTfreesurf=86400.,
+ deltaTClock =86400.,
+ abEps = 0.1,
+ forcing_In_AB=.FALSE.,
+ pChkptFreq   =3110400000.,
+ chkptFreq    = 155520000.,
+#tave_lastIter=0.,
+#taveFreq     = 2592000.,
+#dumpFreq     =  864000.,
+ monitorFreq  = 15552000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+# 6 months restoring timescale for temperature
+#tauThetaClimRelax = 15552000.,
+# 2 months restoring timescale for tsalinity
+#tauSaltClimRelax = 5184000.,
+#latBandClimRelax=60.,
+ monitorFreq =1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
+ delR= 50., 70., 100., 140., 190.,
+       240., 290., 340., 390., 440.,
+       490., 540., 590., 640., 690.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='bathy_Hmin50.bin',
+ hydrogThetaFile='lev_T_cs_15k.bin',
+ hydrogSaltFile ='lev_S_cs_15k.bin',
+ &
