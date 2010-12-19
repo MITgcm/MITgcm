@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.26 2010/01/15 18:57:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.27 2010/12/19 23:50:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -35,11 +35,11 @@ C     timePhase :: phase (in s) within the "frequency" period to write output
 C     averagingFreq  :: frequency (in s) for periodic averaging interval
 C     averagingPhase :: phase     (in s) for periodic averaging interval
 C     repeatCycle    :: number of averaging intervals in 1 cycle
-C     mising_value     :: missing value for floats   in output
-C     mising_value_int :: missing value for integers in output
+C     missing_value  :: missing value for real-type fields in output file
+C     missing_value_int :: missing value for integers in output
 C     levels    :: List Output Levels
 C     fields    :: List Output Fields
-C     filename  :: List Output Filename
+C     fileName  :: List Output Filename
 C--   for regional-statistics
 C     set_regMask(n) :: region-mask set-index that define the region "n"
 C     val_regMask(n) :: corresponding mask value of region "n" in the region-mask
@@ -48,7 +48,7 @@ C     stat_freq   :: Frequency (in s) of statistics output
 C     stat_phase  :: phase (in s) to write statistics output
 C     stat_region :: List of statistics output Regions
 C     stat_fields :: List of statistics output Fields
-C     stat_fname  :: List of statistics output Filename
+C     stat_fName  :: List of statistics output Filename
       INTEGER     ldimLoc, kdimLoc, fdimLoc, rdimLoc
       PARAMETER ( ldimLoc = 2*numlists )
       PARAMETER ( kdimLoc = 2*numLevels )
@@ -63,9 +63,9 @@ C     stat_fname  :: List of statistics output Filename
       _RL         stat_freq(ldimLoc), stat_phase(ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
       CHARACTER*8 stat_fields(fdimLoc,ldimLoc)
-      CHARACTER*80 filename(ldimLoc), blkFilName
+      CHARACTER*80 fileName(ldimLoc), blkFilName
       CHARACTER*80 stat_fname(ldimLoc)
-      CHARACTER*8 fileflags(ldimLoc)
+      CHARACTER*8 fileFlags(ldimLoc)
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*12 suffix
@@ -83,7 +83,7 @@ C--   full level output:
      &     frequency, timePhase,
      &     averagingFreq, averagingPhase, repeatCycle,
      &     missing_value, missing_value_int,
-     &     levels, fields, filename, fileflags,
+     &     levels, fields, fileName, fileFlags,
      &     dumpAtLast, diag_mnc,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
@@ -109,10 +109,10 @@ C     Initialize and Read Diagnostics Namelist
         averagingFreq(l) = 0.
         averagingPhase(l)= 0.
         repeatCycle(l)   = 0
-        filename(l)   = blkFilName
+        fileName(l)   = blkFilName
         missing_value(l)     = UNSET_RL
         missing_value_int(l) = UNSET_I
-        fileflags(l)  = blk8c
+        fileFlags(l)  = blk8c
         DO k = 1,kdimLoc
           levels(k,l) = UNSET_RL
         ENDDO
@@ -221,7 +221,7 @@ C     Fill Diagnostics Common Block with Namelist Info
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
 
       DO l = 1,ldimLoc
-       iLen = ILNBLNK(filename(l))
+       iLen = ILNBLNK(fileName(l))
 C-     Only lists with non-empty file name (iLen>0) are considered
        IF ( iLen.GE.1 .AND. nlists.LT.numlists ) THEN
          n = nlists + 1
@@ -241,7 +241,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
      &       averagingFreq(l), repeatCycle(l)
            CALL PRINT_ERROR( msgBuf , myThid )
            WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &         ' for list l=', l, ', filename: ', filename(l)
+     &         ' for list l=', l, ', fileName: ', fileName(l)
            CALL PRINT_ERROR( msgBuf , myThid )
            STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
          ELSEIF ( frequency(l) .EQ. 0. ) THEN
@@ -255,8 +255,8 @@ C-     Only lists with non-empty file name (iLen>0) are considered
      &        misvalFlt(n) = missing_value(l)
          IF ( missing_value_int(l) .NE. UNSET_I )
      &        misvalInt(n) = missing_value_int(l)
-         fnames(n)  = filename (l)
-         fflags(n)  = fileflags(l)
+         fnames(n)  = fileName (l)
+         fflags(n)  = fileFlags(l)
          nlevels(n) = 0
          IF ( levels(1,l).NE.UNSET_RL ) THEN
            DO k=1,kdimLoc
@@ -272,7 +272,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
      &         'when trying to add level(k=', k, ' )=', levels(k,l)
               CALL PRINT_ERROR( msgBuf , myThid )
               WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &         ' for list l=', l, ', filename: ', filename(l)
+     &         ' for list l=', l, ', fileName: ', fileName(l)
               CALL PRINT_ERROR( msgBuf , myThid )
               STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
              ENDIF
@@ -295,7 +295,7 @@ C-       will set levels later, once the Nb of levels of each diag is known
      &        'when trying to add field (m=', m, ' ): ',fields(m,l)
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &        ' in list l=', l, ', filename: ', filename(l)
+     &        ' in list l=', l, ', fileName: ', fileName(l)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
            ENDIF
@@ -310,7 +310,7 @@ c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
      &    'when trying to add list l=', l
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A,F18.6,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &    ' Frq=', frequency(l), ', filename: ', filename(l)
+     &    ' Frq=', frequency(l), ', fileName: ', fileName(l)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
        ENDIF

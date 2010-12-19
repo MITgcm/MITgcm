@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGSTATS_REGIONS.h,v 1.2 2006/01/24 02:59:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGSTATS_REGIONS.h,v 1.3 2010/12/19 23:50:57 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -19,7 +19,7 @@ CEOP
 C     DIAG_STATS_REGMASK common block:
 C     diagSt_regMask :: region mask
 C     diagSt_kRegMsk :: region-mask set-index that identifies the region
-C     diagSt_vRegMsk :: region identificator value in the region mask
+C     diagSt_vRegMsk :: region identifier value in the region mask
 C     (point i,j belong to region "n" <=> regMask(i,j,kRegMsk(n)) = vRegMsk(n))
 
 #ifdef DIAGSTATS_REGION_MASK
