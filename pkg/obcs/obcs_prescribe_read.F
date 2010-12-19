@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.25 2009/08/11 15:46:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.26 2010/12/19 20:29:29 heimbach Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -180,12 +180,12 @@ cgg    calendar information as other boundaries.
 # endif
 
       IF ( .NOT. useEXF ) THEN
-#ifndef ALLOW_AUTODIFF_TAMC
+cph#ifndef ALLOW_AUTODIFF_TAMC
        CALL OBCS_EXTERNAL_FIELDS_LOAD(
      &     myCurrentTime, myCurrentIter, myThid )
-#else
-       STOP 'PH HAS DISABLED THIS RUNTIME OPTION FOR ALLOW_EXF'
-#endif
+cph#else
+cph       STOP 'PH HAS DISABLED THIS RUNTIME OPTION FOR ALLOW_EXF'
+cph#endif
       ENDIF
 
 #endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE */
