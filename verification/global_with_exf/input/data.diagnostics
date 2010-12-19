@@ -19,7 +19,7 @@
 #--------------------
 # This example dumps EXF diagnostics as snapshot after 30 days
  &DIAGNOSTICS_LIST
-  fields(1:5 ,1) = 'EXFtaux ','EXFtauy ','EXFqnet ','EXFempmr',
+  fields(1:4 ,1) = 'EXFtaux ','EXFtauy ','EXFqnet ','EXFempmr',
    fileName(1) = 'diagsEXF',
   frequency(1) = -864000.,
   fields(1:2,2)  = 'THETA   ','SALT    ',

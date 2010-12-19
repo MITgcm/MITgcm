@@ -21,7 +21,7 @@
   dumpAtLast=.TRUE.,
 # diag_mnc=.FALSE.,
 #--
-  fields(1:7,1)  = 'momKE   ','momHDiv ','momVort3',
+  fields(1:5,1)  = 'momKE   ','momHDiv ','momVort3',
                    'Strain  ','Tension ',
    fileName(1) = 'momDiag',
   frequency(1) = 864000.,

@@ -20,6 +20,7 @@
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
 # dumpAtLast   = .TRUE.,
+#--
   fields(1:17,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
                    'oceTAUX ','oceTAUY ','TRELAX  ','SRELAX  ',
                    'surForcT','surForcS','TFLUX   ','SFLUX   ',
@@ -39,7 +40,7 @@
                    'GM_PsiX ','GM_PsiY ',
                    'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
                    'GM_Kux  ','GM_Kvy  ',
-#                  'GM_Kuz  ','GM_Kvz  ',
+                   'GM_Kuz  ','GM_Kvz  ',
 #- disable this output list by commenting out the file name
 #  fileName(3) = 'oceDiag',
   frequency(3) = 1555200000.,

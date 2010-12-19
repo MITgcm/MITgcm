@@ -26,7 +26,7 @@
                    'EXFhl   ','EXFhs   ','EXFswnet','EXFlwnet',
                    'EXFuwind','EXFvwind','EXFatemp',
    fileName(1) = 'diagsEXF',
-  frequency(1) = -2592000.,
+  frequency(1) = -36000.,
  &
 
 #--------------------
