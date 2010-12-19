@@ -1,12 +1,14 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_g77,v 1.4 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_g77,v 1.5 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 FC=g77
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then

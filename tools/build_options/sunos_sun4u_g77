@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.7 2005/02/28 08:47:36 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.8 2010/12/19 22:42:23 jmc Exp $
 #  $Name:  $
 #
 # tested without NetCDF support on
@@ -9,7 +9,7 @@
 # with g77 version 2.95.3 20010315 (release) (from FSF-g77 version 0.5.25 20010315 (release))
 
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 AWK='gawk'
 MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
 #MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
@@ -17,11 +17,15 @@ MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
 CPP='/usr/ccs/lib/cpp -P'
 # this one works, too
 #CPP='/opt/sfw/bin/cpp -traditional -P'
+
 FC=g77
 CC=gcc
-# This is an example of how to specify where your 
-# netcdf libraries and include files are; 
-# in this particular example, they are in 
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
+# This is an example of how to specify where your
+# netcdf libraries and include files are;
+# in this particular example, they are in
 # /usr/local/libs and /usr/local/include.
 # For g77, it is  probably necessary to use libraries
 # that have been compiled with g77 as well.
@@ -37,5 +41,4 @@ else
     FFLAGS='-Wimplicit -Wunused -ffloat-store'
     FOPTIM='-O0'
 fi
-
 

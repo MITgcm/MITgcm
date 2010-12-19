@@ -1,15 +1,16 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.5 2010/03/21 21:34:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.6 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 FC='/opt/mpich/bin/mpif77'
 CC='/opt/mpich/bin/mpicc'
 LINK='/opt/mpich/bin/mpif77'
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
 
 INCLUDES='-I/opt/mpich/include'
 LIBS='-L/opt/mpich/lib/ -lfmpich -lmpich'

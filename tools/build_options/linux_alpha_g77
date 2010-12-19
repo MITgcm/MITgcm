@@ -1,16 +1,20 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_alpha_g77,v 1.4 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_alpha_g77,v 1.5 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 FC='g77'
-FFLAGS=' '
-DEFINES='-DWORDLENGTH=4'
+
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
+
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
-    FOPTIM='-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3'
+    FFLAGS=' '
+    #FOPTIM='-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3'
     FOPTIM='-O3 -funroll-loops'
 else
     FFLAGS='-Wimplicit -Wunused -ffloat-store'

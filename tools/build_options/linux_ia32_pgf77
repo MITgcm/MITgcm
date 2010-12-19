@@ -1,14 +1,15 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.8 2010/03/21 21:34:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.9 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 FC='pgf77'
 CC='pgcc'
 
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754

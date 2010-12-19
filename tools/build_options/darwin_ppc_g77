@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_g77,v 1.7 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_g77,v 1.8 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 # tested on G4-PowerBook, 1GHz
@@ -9,14 +9,18 @@
 # g77 can be optained from FINK: http://fink.sourceforge.net
 #
 
-CPP='/usr/bin/cpp -traditional -P'
 FC=g77
 LINK=g77
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 #EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
 #EH3 MAKEDEPEND=makedepend
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='/usr/bin/cpp -traditional -P'
+
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
 INCLUDES='-I/sw/include'
 LIBS='-L/sw/lib'
 
@@ -38,5 +42,3 @@ fi
 #else
 NOOPTFLAGS=-O0
 #endif /* REAL4_IS_SLOW */
-
-

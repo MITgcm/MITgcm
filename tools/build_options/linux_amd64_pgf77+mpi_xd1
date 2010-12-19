@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.8 2010/03/21 21:34:01 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.9 2010/12/19 22:42:23 jmc Exp $
 #  $Name:  $
 #
 # tested on xd1.awi-bremerhaven.de
@@ -17,9 +17,10 @@ LINK='mpif77'
 
 MPI='true'
 
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='/usr/bin/cpp -P -traditional'
 EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
 
 INCLUDES='-I/usr/mpich/mpich-1.2.6-pgi524/include -I/opt/awi/netcdf-3.6.0-p1/include'
 LIBS='-L/usr/mpich/mpich-1.2.6-pgi524/lib -Mmpi -L/opt/awi/netcdf-3.6.0-p1/lib -lnetcdf'

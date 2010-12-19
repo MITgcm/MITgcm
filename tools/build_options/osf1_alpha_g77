@@ -1,14 +1,16 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.5 2005/03/04 00:12:23 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.6 2010/12/19 22:42:23 jmc Exp $
 #  $Name:  $
 #
 
 
 FC=g77
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='/usr/local/bin/cpp  -traditional -P'
 NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
 #EH3  Remove the buggy mkdep since the newly included cyrus version
 #EH3  works much better on machines such as "halem"
 #EH3  MAKEDEPEND='mkdep -f depend.out'
@@ -17,8 +19,8 @@ FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 
 # netcdf
 # DOES NOT (YET) WORK because the netcdf library installed on Halem
-# was compiled with the "f77" compiler and the library is not 
-# compatible with g77 -- so we need to either build our own lib for 
+# was compiled with the "f77" compiler and the library is not
+# compatible with g77 -- so we need to either build our own lib for
 # g77 or ask the admins to do so.
 #   INCLUDES="$INCLUDES -I/usr/ulocal/stow/netcdf-3.5.1/include"
 #   LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib -lnetcdf"

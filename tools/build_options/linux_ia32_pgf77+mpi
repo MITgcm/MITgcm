@@ -1,13 +1,14 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi,v 1.6 2010/03/21 21:34:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi,v 1.7 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 FC='pgf77'
 
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 #CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
 
 INCLUDES='-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include'
 LIBS='-L/usr/local/mpich-1.2.1/pgi_fortran_binding/lib/ -lfmpich -lmpich'
@@ -25,7 +26,7 @@ if test "x$IEEE" = x ; then
 else
     #  Try to follow IEEE-754
     FFLAGS="$FFLAGS -byteswapio"
-    FOPTIM='-tp p6 -v -O2 -Munroll -Kieee'
+    FOPTIM='-tp p6 -v -O0 -Munroll -Kieee'
 # -Mvect=cachesize:512000,transform
 fi
 #- might want to use '-r8' for fizhi pkg:

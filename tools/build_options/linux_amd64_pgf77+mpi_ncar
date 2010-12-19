@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_ncar,v 1.2 2010/03/21 21:34:01 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_ncar,v 1.3 2010/12/19 22:42:23 jmc Exp $
 #  $Name:  $
 #
 # Build options for Suse SLES-8.1 Opteron
@@ -11,9 +11,10 @@ FC=mpif77
 CC=mpicc
 LINK=mpif77
 
-DEFINES='-DWORDLENGTH=4 -DALLOW_USE_MPI -DALWAYS_USE_MPI'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
 
 MAKEDEPEND=/usr/X11R6/bin/makedepend
 INCLUDES=-I/opt/mpich-gm/include
@@ -27,7 +28,7 @@ if test "x$IEEE" = x ; then
 else
     #  Try to follow IEEE-754
     FFLAGS="$FFLAGS -byteswapio -Ktrap=fp"
-    FOPTIM='-tp k8-64 -pc=64 -fastsse -O3 -Msmart -Kieee -Mvect=cachesize:1048576,transform'
+    FOPTIM='-tp k8-64 -pc=64 -fastsse -O0 -Msmart -Kieee -Mvect=cachesize:1048576,transform'
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"

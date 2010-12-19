@@ -1,21 +1,25 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.7 2010/03/21 21:32:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.8 2010/12/19 22:42:23 jmc Exp $
 # $Name:  $
 
 # on author:
 # (csh,tcsh) setenv PGI /usr/local/pkg/pgi/pgi-6.1-5
 # (sh,bash)  export PGI=/usr/local/pkg/pgi/pgi-6.1-5
 
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+
 FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf77'
 CC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgcc'
 if test "x$ALWAYS_USE_F90" = x1 ; then
     FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf90'
+else
+    DEFINES="$DEFINES -DNML_EXTENDED_F77"
 fi
 
-DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
 
 # INCLUDES="-I/scratch/edhill/netcdf_for_pgi/pgi_fc3/include"
 # LIBS="-L/scratch/edhill/netcdf_for_pgi/pgi_fc3/lib"
