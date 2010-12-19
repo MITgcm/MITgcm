@@ -1,61 +1,90 @@
 # Diagnostic Package Choices
- &diagnostics_list
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
       diag_mnc = .TRUE.,
-    dumpatlast = .TRUE.,
-  frequency(1) = 00.06,
+    dumpAtLast = .TRUE.,
+#--
+  fields(1:27,1) = 'RADSWT  ','OSR     ','OLR     ','PLALBEDO','CLDFRC  ','PREACC  ',
+                   'PRECON  ','EVAP    ','RADSWG  ','ALBNIRDF','ALBVISDF','LWGDOWN ',
+                   'LWGUP   ','EFLUX   ','HFLUX   ','T2M     ','Q2M     ','UFLUX   ',
+                   'VFLUX   ','U10M    ','V10M    ','PS      ','OSRCLR  ','OLRCLR  ',
+                   'SWGCLR  ','LWGCLR  ','RSURF   ',
    levels(1,1) = 1.,
-   fields(1,1) = 'RADSWT  ','OSR     ','OLR     ','PLALBEDO','CLDFRC  ','PREACC  ',
-                 'PRECON  ','EVAP    ','RADSWG  ','ALBNIRDF','ALBVISDF','LWGDOWN ',
-                 'LWGUP   ','EFLUX   ','HFLUX   ','T2M     ','Q2M     ','UFLUX   ',
-                 'VFLUX   ','U10M    ','V10M    ','PS      ','OSRCLR  ','OLRCLR  ',
-                 'SWGCLR  ','LWGCLR  ','RSURF   ',
-   filename(1) = 'SHfields',
+   fileName(1) = 'SHfields',
+  frequency(1) = 00.06,
+
+  fields(1:8,2)  = 'UVEL    ','VVEL    ','PHIHYD  ','WVEL    ','SALT    ','RELHUM  ',
+                   'RCENTER ','THETA   ',
+    fileFlags(2) = ' P      ',
+  levels(1:17,2) = 1000.E+2, 925.E+2, 850.E+2, 700.E+2, 600.E+2, 500.E+2,
+                    400.E+2, 300.E+2, 250.E+2, 200.E+2, 150.E+2, 100.E+2,
+                     70.E+2,  50.E+2,  30.E+2,  20.E+2,  10.E+2,
+   fileName(2) = 'MLfields',
   frequency(2) = -00.06,
-  fileflags(2) = ' P      ',
-   levels(1,2) = 1000.E+2, 925.E+2, 850.E+2, 700.E+2, 600.E+2, 500.E+2,
-                  400.E+2, 300.E+2, 250.E+2, 200.E+2, 150.E+2, 100.E+2,
-                   70.E+2,  50.E+2,  30.E+2,  20.E+2,  10.E+2,
-   fields(1,2) = 'UVEL    ','VVEL    ','PHIHYD  ','WVEL    ','SALT    ','RELHUM  ',
-                 'RCENTER ','THETA   ',
-   filename(2) = 'MLfields',
+
+  fields(1:17,3) = 'UVELSQ  ','VVELSQ  ','THETASQ ','WVELSQ  ','PHIHYDSQ','SALTSQ   ',
+                   'UV_VEL_C','WU_VEL  ','WV_VEL  ','VVELTH  ','WVELTH  ','VVELSLT  ',
+                   'WVELSLT ','UVELSLT ','UVELTH  ','UVELPHI ','VVELPHI ',
+    fileFlags(3) = ' P      ',
+  levels(1:17,3) = 1000.E+2, 925.E+2, 850.E+2, 700.E+2, 600.E+2, 500.E+2,
+                    400.E+2, 300.E+2, 250.E+2, 200.E+2, 150.E+2, 100.E+2,
+                     70.E+2,  50.E+2,  30.E+2,  20.E+2,  10.E+2,
+   fileName(3) = 'MFfields',
   frequency(3) = -00.06,
-  fileflags(3) = ' P      ',
-   levels(1,3) = 1000.E+2, 925.E+2, 850.E+2, 700.E+2, 600.E+2, 500.E+2,
-                  400.E+2, 300.E+2, 250.E+2, 200.E+2, 150.E+2, 100.E+2,
-                   70.E+2,  50.E+2,  30.E+2,  20.E+2,  10.E+2,
-   fields(1,3) = 'UVELSQ  ','VVELSQ  ','THETASQ ','WVELSQ  ','PHIHYDSQ','SALTSQ   ',
-                 'UV_VEL_C','WU_VEL  ','WV_VEL  ','VVELTH  ','WVELTH  ','VVELSLT  ',
-                 'WVELSLT ','UVELSLT ','UVELTH  ','UVELPHI ','VVELPHI ',
-   filename(3) = 'MFfields',
+
 # need to add RSURF output with same freq as other interpolated diagnostics
-  frequency(5) = -00.06,
    fields(1,5) = 'RSURF ',
-   filename(5) = 'snapshot_ps',
+   fileName(5) = 'snapshot_ps',
+  frequency(5) = -00.06,
+# fields(1:9,4)  = 'RADSW   ','RADLW   ','TURBT   ','MOISTT  ','TURBQ   ','MOISTQ  ',
+#                  'TURBU   ','TURBV   ','DPPHYS  ',
+# levels(1:28,4) = 1., 2., 3., 4., 5., 6., 7., 8., 9.,10.,11.,12.,13.,14.,
+#                 15.,16.,17.,18.,19.,20.,21.,22.,23.,24.,25.,26.,27.,28.,
+#  fileName(4) = 'PFfields',
 # frequency(4) = -00.06,
-#  levels(1,4) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,21.,22.,23.,24.,25.,26.,27.,28.,
-#  fields(1,4) = 'RADSW   ','RADLW   ','TURBT   ','MOISTT  ','TURBQ   ','MOISTQ  ',
-#                'TURBU   ','TURBV   ','DPPHYS  ',
-#  filename(4) = 'PFfields',
  &
 
+#--------------------
 # Parameter for Diagnostics of per level statistics:
-#-----------------
-# for each output-stream:
-#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
 #  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
 #               > 0 : write time-average output every stat_freq seconds
 #  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
 #  stat_region(:,n) : list of "regions" (default: 1 region only=global)
-#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
-#                 file for the list of all available diag. in this particular config)
-#-----------------
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
  &DIAG_STATIS_PARMS
-     stat_freq(1) = 1.00,
-    stat_phase(1) = 0.,
- stat_fields(1,1) = 'RADSWT  ','OSR     ','OLR     ','PLALBEDO','CLDFRC  ','PREACC  ',
-                    'PRECON  ','EVAP    ','RADSWG  ','ALBNIRDF','ALBVISDF','LWGDOWN ',
-                    'LWGUP   ','EFLUX   ','HFLUX   ','T2M     ','Q2M     ','UFLUX   ',
-                    'VFLUX   ','U10M    ','V10M    ','PS      ','OSRCLR  ','OLRCLR  ',
-                    'SWGCLR  ','LWGCLR  ',
-    stat_fname(1) = 'GTfields',
+ stat_fields(1:26,1) = 'RADSWT  ','OSR     ','OLR     ','PLALBEDO','CLDFRC  ','PREACC  ',
+                       'PRECON  ','EVAP    ','RADSWG  ','ALBNIRDF','ALBVISDF','LWGDOWN ',
+                       'LWGUP   ','EFLUX   ','HFLUX   ','T2M     ','Q2M     ','UFLUX   ',
+                       'VFLUX   ','U10M    ','V10M    ','PS      ','OSRCLR  ','OLRCLR  ',
+                       'SWGCLR  ','LWGCLR  ',
+  stat_fName(1) = 'GTfields',
+   stat_freq(1) = 1.00,
+  stat_phase(1) = 0.,
  &

@@ -1,67 +1,78 @@
 # Diagnostic Package Choices
-#-----------------
-# for each output-stream:
-#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
 #  frequency(n):< 0 : write snap-shot output every |frequency| seconds
 #               > 0 : write time-average output every frequency seconds
 #  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
 #  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
-#                 when this entry is missing, select all common levels of this list
-#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
-#                 for the list of all available diag. in this particular config)
-#-----------------
- &diagnostics_list
-  frequency(1) = 4500.,
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
+  fields(1:3,1)  = 'ETAN    ','ETANSQ  ','DETADT2 ',
    levels(1,1) = 1.,
-   fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
-   filename(1) = 'surfDiag',
+   fileName(1) = 'surfDiag',
+  frequency(1) = 4500.,
+  fields(1:17,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SALT    ',
+                   'UVELSQ  ','VVELSQ  ','THETASQ ','UV_VEL_Z',
+                   'UVELMASS','VVELMASS',
+                   'UTHMASS ','VTHMASS ','WVELTH  ',
+                   'USLTMASS','VSLTMASS','WVELSLT ',
+   levels(1:5,2) = 1.,2.,3.,4.,5.,
+   fileName(2) = 'dynDiag',
   frequency(2) = 4500.,
-   levels(1,2) = 1.,2.,3.,4.,5.,
-   fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SALT    ',
-                 'UVELSQ  ','VVELSQ  ','THETASQ ','UV_VEL_Z',
-                 'UVELMASS','VVELMASS',
-                 'UTHMASS ','VTHMASS ','WVELTH  ',
-                 'USLTMASS','VSLTMASS','WVELSLT ',
-   filename(2) = 'dynDiag',
+  fields(1:20,3) = 'UFLUX   ','VFLUX   ',
+                   'TSR     ','OLR     ','RADSWG  ','RADLWG  ',
+                   'HFLUX   ','EVAP    ','PRECON  ','PRECLS  ',
+                   'CLDFRC  ','CLDPRS  ','CLDMAS  ',
+                   'DRAG    ','WINDS   ','TS      ','QS      ',
+                   'ENPREC  ','ALBVISDF','DTSIMPL ',
+#                  'TSRCLR  ','OLRCLR  ','SWGCLR  ','LWGCLR  ',
+   fileName(3) = 'aimDiag',
   frequency(3) = 4500.,
-   levels(1,3) = 1.,
-   fields(1,3) = 'UFLUX   ', 'VFLUX   ',
-                 'TSR     ', 'OLR     ', 'RADSWG  ', 'RADLWG  ', 
-                 'HFLUX   ', 'EVAP    ', 'PRECON  ', 'PRECLS  ', 
-                 'CLDFRC  ', 'CLDPRS  ', 'CLDMAS  ',
-                 'DRAG    ', 'WINDS   ', 'TS      ', 'QS      ',
-                 'ENPREC  ', 'ALBVISDF', 'DTSIMPL ',
-#                'TSRCLR  ', 'OLRCLR  ', 'SWGCLR  ', 'LWGCLR  ',
-   filename(3) = 'aimDiag',
+  fields(1:9,4) =  'RELHUM  ','DIABT   ','DIABQ   ',
+                   'RADSW   ','RADLW   ','DTCONV  ','DTLS    ',
+                   'DQCONV  ','DQLS    ',
+#                  'SWCLR   ', 'LWCLR   ',
+   fileName(4) = 'aimDDT',
   frequency(4) = 4500.,
-   levels(1,4) = 1.,2.,3.,4.,5.,
-   fields(1,4) = 'RELHUM  ', 'DIABT   ', 'DIABQ   ',
-                 'RADSW   ', 'RADLW   ', 'DTCONV  ', 'DTLS    ',
-                 'DQCONV  ', 'DQLS    ',
-#                'SWCLR   ', 'LWCLR   ',
-   filename(4) = 'aimDDT',
  &
 
+#--------------------
 # Parameter for Diagnostics of per level statistics:
-#-----------------
-# for each output-stream:
-#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
 #  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
 #               > 0 : write time-average output every stat_freq seconds
 #  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
 #  stat_region(:,n) : list of "regions" (default: 1 region only=global)
-#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
-#                 file for the list of all available diag. in this particular config)
-#-----------------
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
- stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
-    stat_fname(1)= 'dynStDiag',
-     stat_freq(1)= -3600.,
-    stat_phase(1)= 0.,
- stat_fields(1,4)= 'LdSnowH ', 'GrdSurfT', 'GrdTemp ', 'GrdWater',
-    stat_fname(4)= 'landStDiag',
-     stat_freq(4)= -3600.,
-    stat_phase(4)= 0.,
+ stat_fields(1:5,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+  stat_fName(1) = 'dynStDiag',
+   stat_freq(1) = -3600.,
+  stat_phase(1) = 0.,
+ stat_fields(1:4,4)  = 'LdSnowH ', 'GrdSurfT', 'GrdTemp ', 'GrdWater',
+  stat_fName(4) = 'landStDiag',
+   stat_freq(4) = -3600.,
+  stat_phase(4) = 0.,
  &
 

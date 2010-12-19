@@ -1,32 +1,57 @@
 # Diagnostic Package Choices
- &diagnostics_list
-  frequency(1) = 0.003,
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
+  fields(1:2,1) = 'TCANOPY ','RSURF   ',
    levels(1,1) = 1.,
-   fields(1,1) = 'TCANOPY ','RSURF   ',
-   filename(1) = 'surface',
+   fileName(1) = 'surface',
+  frequency(1) = 0.003,
  &
 
+#--------------------
 # Parameter for Diagnostics of per level statistics:
-#-----------------
-# for each output-stream:
-#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
 #  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
 #               > 0 : write time-average output every stat_freq seconds
 #  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
 #  stat_region(:,n) : list of "regions" (default: 1 region only=global)
-#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
-#                 file for the list of all available diag. in this particular config)
-#-----------------
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
  &DIAG_STATIS_PARMS
- stat_fields(1,1)= 'UVEL    ','VVEL    ','WVEL    ','THETA   ',
-                   'UAVE    ','VAVE    ','TAVE    ','TURBU   ',
-                   'GWDU    ','GWDV    ','RFU     ','RFV     ',
-                   'DIABU   ','DIABUDYN','DIABV   ','DIABVDYN',
-                   'TENDUFIZ','TENDVFIZ','CORRDU  ','CORRDV  ',
-#   stat_fname(1)= 'dynStDiag',
-     stat_freq(1)= 0.0002,
-    stat_phase(1)= 0.,
+ stat_fields(1:20,1) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ',
+                       'UAVE    ','VAVE    ','TAVE    ','TURBU   ',
+                       'GWDU    ','GWDV    ','RFU     ','RFV     ',
+                       'DIABU   ','DIABUDYN','DIABV   ','DIABVDYN',
+                       'TENDUFIZ','TENDVFIZ','CORRDU  ','CORRDV  ',
+# stat_fName(1) = 'dynStDiag',
+   stat_freq(1) = 0.0002,
+  stat_phase(1) = 0.,
  &
+#- ignore the following since are out of namelist
   frequency(1) = 100.0,
    levels(1,1) = 1.,
    fields(1,1) = 'TCANOPY ','OLR     ','PREACC  ','CLDFRC  ','OSR     ','RADSWT  ',
@@ -41,11 +66,11 @@
                  'USTAR   ','Z0      ','U2M     ','V2M     ','T2M     ','Q2M     ',
                  'U10M    ','V10M    ','T10M    ','Q10M    ','SNOWFALL','RUNOFF  ',
                  'ALBEDO  ','ALBVISDF','ALBVISDR','PLALBEDO',
-   filename(1) = 'surface',
+   fileName(1) = 'surface',
   frequency(2) = 100.0,
-  fileflags(2) = ' P1     ',
+  fileFlags(2) = ' P1     ',
    levels(1,2) =  100000.0, 97500.0, 95000.0, 92500.0, 90000.0, 85000.0, 80000.0,
-                   70000.0, 60000.0, 50000.0, 40000.0, 30000.0, 25000.0, 20000.0, 
+                   70000.0, 60000.0, 50000.0, 40000.0, 30000.0, 25000.0, 20000.0,
                    15000.0, 10000.0, 7000.0,  5000.0,  3000.0,  2000.0,
    fields(1,2) = 'TURBT   ','TURBQ   ','MOISTT  ','MOISTQ  ','TURBU   ','TURBV   ',
                  'RADLW   ','RADSW   ','GWDU    ','GWDV    ','GWDT    ','CLDLSP  ',
@@ -54,28 +79,28 @@
                  'RFU     ','RFV     ','DTRAIN  ','QFILL   ','TRBFCC  ','DIABU   ',
                  'DIABV   ','DIABT   ','DIABQ   ','TENDUFIZ','TENDVFIZ','TENDTFIZ',
                  'TENDQFIZ','CORRDU  ','CORRDV  ','CORRDT  ','CORRDQ  ',
-   filename(2) = 'upperfiz',
+   fileName(2) = 'upperfiz',
   frequency(3) = 100.0,
    fields(1,3) = 'UVEL    ',
-   filename(3) = 'uVeltave',
+   fileName(3) = 'uVeltave',
   frequency(4) = 100.0,
    fields(1,4) = 'VVEL    ',
-   filename(4) = 'vVeltave',
+   fileName(4) = 'vVeltave',
   frequency(5) = 100.0,
    fields(1,5) = 'THETA   ',
-   filename(5) = 'Ttave',
+   fileName(5) = 'Ttave',
   frequency(6) = 100.0,
    fields(1,6) = 'SALT    ',
-   filename(6) = 'Stave',
+   fileName(6) = 'Stave',
   frequency(7) = 100.0,
    fields(1,7) = 'PHIHYD  ',
-   filename(7) = 'phitave',
+   fileName(7) = 'phitave',
   frequency(8) = 100.0,
    fields(1,8) = 'DIABTDYN','DIABQDYN','DIABUDYN','DIABVDYN','RCENTER ','RELHUM  ',
                  'SALTFILL','TOTUTEND','TOTVTEND','TOTTTEND','TOTSTEND',
-   filename(8) = 'tendsdyn',
+   fileName(8) = 'tendsdyn',
   frequency(9) = 100.0,
    fields(1,9) = 'UVELSQ  ','VVELSQ  ','THETASQ ','WVELSQ  ','PHIHYDSQ','SALTSQ  ',
                  'UV_VEL_C','WU_VEL  ','WV_VEL  ','UTHMASS ','VTHMASS ','WTHMASS ',
                  'USLTMASS','VSLTMASS','WSLTMASS',
-   filename(9) = 'secmoms',
+   fileName(9) = 'secmoms',

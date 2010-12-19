@@ -1,39 +1,50 @@
 # Diagnostic Package Choices
-#-----------------
-# for each output-stream:
-#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
 #  frequency(n):< 0 : write snap-shot output every |frequency| seconds
 #               > 0 : write time-average output every frequency seconds
 #  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
 #  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
-#                 when this entry is missing, select all common levels of this list
-#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
-#                 for the list of all available diag. in this particular config)
-#-----------------
-# This example dumps all KPP diagnostics as
-# a snapshot every day, at mid day (t=12.h, baseTime=6.h, deltaT=1.h => iter=6)
- &diagnostics_list
-  frequency(1) = 10800.,
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
    fields(1,1) = 'TRAC01  ',
-   filename(1) = 'TRAC01',
+   fileName(1) = 'TRAC01',
+  frequency(1) = 10800.,
  &
 
+#--------------------
 # Parameter for Diagnostics of per level statistics:
-#-----------------
-# for each output-stream:
-#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
 #  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
 #               > 0 : write time-average output every stat_freq seconds
 #  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
 #  stat_region(:,n) : list of "regions" (default: 1 region only=global)
-#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
-#                 file for the list of all available diag. in this particular config)
-#-----------------
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
-#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
-#   stat_fname(1)= 'dynStDiag',
-#    stat_freq(1)= -864000.,
-#   stat_phase(1)= 0.,
+#stat_fields(1:5,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+# stat_fName(1) = 'dynStDiag',
+#  stat_freq(1) = -864000.,
+# stat_phase(1) = 0.,
  &
 
