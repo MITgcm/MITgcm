@@ -1,11 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1352 2010/12/17 22:00:37 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1353 2010/12/19 23:20:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o towards more F95 syntax for array specification in namelist:
+  - change "data.diagnostics" (data.ptracers was changed before checkpoint62p)
+    of all verification experiments.
+       e.g.:    line: fields(1,3)='ETAN    ','ETANSQ  ',
+      was changed to: fields(1:2,3)='ETAN    ','ETANSQ  ',
+  - finish adding "-DNML_EXTENDED_F77" to DEFINES list in pgf77 and g77 optfiles
 o global_ocean.cs32x15: additional input.seaice experiment
     that uses pkg/seaice rather than pkg/thsice.
+
 checkpoint62p (2010/12/17)
 o pkg/thsice: rename (ad tape index) iicekey as ticekey, and move it
     to THSICE_SIZE.h to avoid conflict with pkg/seaice.
