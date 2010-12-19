@@ -20,10 +20,12 @@
 # This example dumps snapshot of all KPP diagnostics every day,
 #  at mid day (t=12.h, baseTime=6.h, deltaT=1.h => iter=6)
  &DIAGNOSTICS_LIST
-  fields(1:7,1)  = 'KPPviscA','KPPdiffS','KPPdiffT','KPPghatK',
-                   'KPPhbl  ','KPPfrac ','MXLDEPTH',
-   fileName(1) = 'diagsKPP',
+  fields(1:4,1)  = 'KPPviscA','KPPdiffS','KPPdiffT','KPPghatK',
+   fileName(1) = 'diag3dKPP',
   frequency(1) = -86400.,
+  fields(1:3,2)  = 'KPPhbl  ','KPPfrac ','MXLDEPTH',
+   fileName(2) = 'diag2dKPP',
+  frequency(2) = -86400.,
  &
 
 #--------------------

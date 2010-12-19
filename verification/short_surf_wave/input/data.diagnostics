@@ -48,6 +48,6 @@
                        'UVEL    ','WVEL    ',
   stat_fName(1) = 'dynStDiag',
    stat_freq(1) = -0.1,
-# stat_phase(1) = 0.,
+  stat_phase(1) = 0.,
  &
 

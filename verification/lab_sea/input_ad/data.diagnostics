@@ -33,9 +33,12 @@
    fileName(2) = 'diagsSI',
   frequency(2) =  36000.,
 
-  fields(1:3,3)  = 'MXLDEPTH','KPPhbl  ','KPPghatK',
+  fields(1:2,3)  = 'MXLDEPTH','KPPhbl  ',
    fileName(3) = 'diagsKPP',
   frequency(3) =  36000.,
+  fields(1,4)  = 'KPPghatK',
+   fileName(4) = 'KPPghatK',
+  frequency(4) =  36000.,
  &
 
 #--------------------

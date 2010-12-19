@@ -28,7 +28,7 @@
   fields(1:5,2)  = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SHAP_dU ',
    fileName(2) = 'dynDiag',
 # frequency(2) = 2592000.,
-  frequency(3) = 86400.,
+  frequency(2) = 86400.,
   fields(1:8,3)  = 'UVELSQ  ','VVELSQ  ','WVELSQ  ','THETASQ ',
                    'UTHMASS ','VTHMASS ','WVELTH  ','UV_VEL_C',
    fileName(3) = 'secmomDiag',

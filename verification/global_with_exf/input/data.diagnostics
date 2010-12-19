@@ -24,7 +24,7 @@
   frequency(1) = -864000.,
   fields(1:2,2)  = 'THETA   ','SALT    ',
    levels(1,2) = 1.,
-   fileName(1) = 'diagSurf',
+   fileName(2) = 'diagSurf',
   frequency(2) = -864000.,
   fields(1:2,3)  = 'UVEL    ', 'VVEL    ',
    levels(1,3) = 2.,

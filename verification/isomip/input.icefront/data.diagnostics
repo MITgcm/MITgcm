@@ -18,9 +18,12 @@
 #  fileFlags(n)     : specific code (8c string) for output file "n"
 #--------------------
  &DIAGNOSTICS_LIST
-  fields(1:4,1)  = 'SHIfwFlx','SHIhtFlx','ICFfwFlx','ICFhtFlx',
+  fields(1:2,1)  = 'SHIfwFlx','SHIhtFlx',
    fileName(1) = 'shelficeDiag',
   frequency(1) = 18000.,
+  fields(1:2,2)  = 'ICFfwFlx','ICFhtFlx',
+   fileName(2) = 'icefrontDiag',
+  frequency(2) = 18000.,
  &
 
 #--------------------

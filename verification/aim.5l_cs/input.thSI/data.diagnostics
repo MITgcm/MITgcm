@@ -87,6 +87,7 @@
    stat_freq(1) = -3600.,
   stat_phase(1) = 0.,
  stat_fields(1:4,4)  = 'LdSnowH ', 'GrdSurfT', 'GrdTemp ', 'GrdWater',
+  stat_region(1:3,4) = 1, 2, 3,
   stat_fName(4) = 'landStDiag',
    stat_freq(4) = -3600.,
   stat_phase(4) = 0.,
