@@ -1,30 +1,43 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.2 2010/03/21 21:34:01 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.3 2010/12/20 14:45:18 jmc Exp $
 #  $Name:  $
 #
-# Build options for Suse SLES-8.1 Opteron
-# tested on (Linux ln0127en 2.4.21-143-numa #1 SMP Fri Oct 31 00:17:52 UTC 2003 x86_64 unknown) system 20041512
+# Build options for PGI compiler on Linux AMD64 platform
 #
+# tested with PGI version 10.9 on baudelaire (Linux 2.6.34.7-61.fc13.x86_64), using:
+#-------
+#   -  sh,bash:
+#     > export PGI=/srv/software/pgi/pgi-10.9
+#     > export PATH=$PGI/linux86-64/10.9/bin:$PATH
+#     > export MANPATH=$MANPATH:$PGI/linux86-64/10.9/man
+#     > export LM_LICENSE_FILE=$PGI/license.dat
+#   - csh,tcsh:
+#     > setenv PGI /srv/software/pgi/pgi-10.9
+#     > set path=($PGI/linux86-64/10.9/bin $path)
+#     > setenv MANPATH "$MANPATH":$PGI/linux86-64/10.9/man
+#     > setenv LM_LICENSE_FILE $PGI/license.dat
+#-------
 
 FC=pgf77
+CC=pgcc
 
-DEFINES='-DWORDLENGTH=4'
-CPP='cpp  -traditional -P'
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
-
-MAKEDEPEND=/usr/X11R6/bin/makedepend
+GET_FC_VERSION="-V"
 
 NOOPTFLAGS='-O0'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS="$FFLAGS -byteswapio -Mnodclchk -Ktrap=fp"
-    FOPTIM='-tp k8-64 -pc=64 -O2 -scalarsse -Mvect=sse' #-fastsse -O3 -Msmart -Mvect=cachesize:1048576,transform'
+    FFLAGS="$FFLAGS -byteswapio -Ktrap=fp"
+    FOPTIM='-tp k8-64 -pc=64 -O2 -Mvect=sse'
+   #FOPTIM="$FOPTIM -fastsse -O3 -Msmart -Mvect=cachesize:1048576,transform"
 else
     #  Try to follow IEEE-754
-    FFLAGS="$FFLAGS -byteswapio -Ktrap=fp"
-    FOPTIM='-tp k8-64 -pc=64 -O2 -scalarsse -Mvect=sse -Kieee' #-fastsse -O3 -Msmart -Kieee -Mvect=cachesize:1048576,transform'
+    FFLAGS="$FFLAGS -byteswapio -Ktrap=fp -Mdclchk"
+    FOPTIM='-pc=64 -O0 -Kieee'
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
