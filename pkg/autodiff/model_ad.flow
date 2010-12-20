@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.7 2010/10/16 12:28:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.8 2010/12/20 20:04:28 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -26,12 +26,6 @@ C subroutine  turnoff_model_io
 C----------------------------------------
 CADJ SUBROUTINE TURNOFF_MODEL_IO INPUT  = 1,2
 CADJ SUBROUTINE TURNOFF_MODEL_IO OUTPUT =
-
-C----------------------------------------
-C subroutine  modeldata_example
-C----------------------------------------
-CADJ SUBROUTINE modeldata_example INPUT  = 1
-CADJ SUBROUTINE modeldata_example OUTPUT =
 
 C----------------------------------------
 C subroutine  plot_field_xyrs
