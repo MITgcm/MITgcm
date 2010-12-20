@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.235 2010/12/06 10:46:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.236 2010/12/20 19:58:48 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -18,18 +18,11 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "GRID.h"
 #include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: Number of this instance of INI_PARMS
       INTEGER myThid
-
-C     !FUNCTIONS:
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     dxSpacing, dySpacing :: Default spacing in X and Y.
@@ -44,22 +37,16 @@ C     goptCount  :: Used to count the nuber of grid options (only one is allowed
 C     msgBuf     :: Informational/error message buffer
 C     errIO      :: IO error flag
 C     iUnit      :: Work variable for IO unit number
-C     record     :: Work variable for IO buffer
-C     K, I, J    :: Loop counters
+C     k, i, j    :: Loop counters
 C     xxxDefault :: Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
       _RL deltaTtracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(MAX_LEN_PREC) record
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
-      CHARACTER*(MAX_LEN_FNAM) scratchFile1
-      CHARACTER*(MAX_LEN_FNAM) scratchFile2
-#endif
       LOGICAL SadournyCoriolis
       LOGICAL forcing_In_AB
       INTEGER goptCount
-      INTEGER k, i, j, IL, iUnit
+      INTEGER k, i, j, iUnit
       INTEGER errIO
 C     Default values for variables which have vertical coordinate system
 C     dependency.
@@ -319,74 +306,16 @@ C--   Initialise retired parameters to unlikely value
       shelfIceFile    = ' '
 
 C--   Open the parameter file
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
-      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
-      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
-#else
-      OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
-      OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
-#endif
-      OPEN(UNIT=modelDataUnit,FILE='data',STATUS='OLD',
-     &     IOSTAT=errIO)
-      IF ( errIO .LT. 0 ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Unable to open model parameter'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'file "data"'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL MODELDATA_EXAMPLE( myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
-      ENDIF
-
-      DO WHILE ( .TRUE. )
-       READ(modelDataUnit,FMT='(A)',END=1001) RECORD
-       IL = MAX(ILNBLNK(RECORD),1)
-       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
-        CALL NML_SET_TERMINATOR( RECORD )
-        WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
-       ENDIF
-       WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
-      ENDDO
- 1001 CONTINUE
-      CLOSE(modelDataUnit)
-
-C--   Report contents of model parameter file
       WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '// Model parameter file "data"'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      iUnit = scrUnit2
-      REWIND(iUnit)
-      DO WHILE ( .TRUE. )
-       READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
-       IL = MAX(ILNBLNK(RECORD),1)
-       WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-      ENDDO
- 2001 CONTINUE
-      CLOSE(iUnit)
-      WRITE(msgBuf,'(A)') ' '
+     &     ' INI_PARMS: opening model parameter file "data"'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
+      CALL OPEN_COPY_DATA_FILE( 'data', 'INI_PARMS',
+     O                          iUnit, myThid )
 
-C--   Read settings from model parameter file "data".
-      iUnit = scrUnit1
-      REWIND(iUnit)
+C--   Read settings from iUnit (= a copy of model parameter file "data").
+      errIO = 0
 
 C--   Set default "physical" parameters
       viscAhW  = UNSET_RL
@@ -425,27 +354,19 @@ C--   Set default "physical" parameters
       tempVertAdvScheme = 0
       saltVertAdvScheme = 0
 C--   z,p,r coord input switching.
-      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM01'
+      WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM01) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
+     &  'S/R INI_PARMS: Error reading model parameter file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
+       WRITE(msgBuf,'(A)') 'S/R INI_PARMS: Problem in namelist PARM01'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist PARM01'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM01 : OK'
+       WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM01 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
@@ -804,27 +725,19 @@ C     Check for retired parameters still being used
       ENDIF
 
 C--   Elliptic solver parameters
-      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM02'
+      WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM02) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
+     &  'S/R INI_PARMS: Error reading model parameter file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
+       WRITE(msgBuf,'(A)') 'S/R INI_PARMS: Problem in namelist PARM02'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data".'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist PARM02'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM02 : OK'
+       WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM02 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
@@ -835,27 +748,19 @@ C--   Time stepping parameters
       latBandClimRelax  = UNSET_RL
       deltaTtracer      = 0. _d 0
       forcing_In_AB     = .TRUE.
-      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM03'
+      WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM03'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM03) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
+     &  'S/R INI_PARMS: Error reading model parameter file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
+       WRITE(msgBuf,'(A)') 'S/R INI_PARMS: Problem in namelist PARM03'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist PARM03'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM03 : OK'
+       WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM03 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
@@ -1069,27 +974,19 @@ C     In cartesian coords distances are in metres
 C     In spherical polar distances are in degrees
       dxSpacing = UNSET_RL
       dySpacing = UNSET_RL
-      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM04'
+      WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
+     &  'S/R INI_PARMS: Error reading model parameter file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
+       WRITE(msgBuf,'(A)') 'S/R INI_PARMS: Problem in namelist PARM04'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist PARM04'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM04 : OK'
+       WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM04 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
@@ -1326,24 +1223,19 @@ c       STOP 'ABNORMAL END: S/R INI_PARMS'
 c     ENDIF
 
 C--   Input files
-      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM05'
+      WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM05'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
+     &  'S/R INI_PARMS: Error reading model parameter file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data"'
+       WRITE(msgBuf,'(A)') 'S/R INI_PARMS: Problem in namelist PARM05'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist PARM05'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM05 : OK'
+       WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM05 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
@@ -1420,7 +1312,12 @@ C--   flag for approximate adjoint
        inAdFALSE = .FALSE.
       ENDIF
 
+C--   Close the open data file
       CLOSE(iUnit)
+
+      WRITE(msgBuf,'(A)') ' INI_PARMS: finished reading file "data"'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
 
 C--   Check whether any retired parameters were found.
 C--   Stop if they were
