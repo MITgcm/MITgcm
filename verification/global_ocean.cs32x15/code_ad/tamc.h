@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/tamc.h,v 1.6 2010/10/21 03:42:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/tamc.h,v 1.7 2010/12/21 23:07:31 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,7 +115,7 @@ cph      INTEGER    maxpass
 cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
 #else
       INTEGER    maxpass
-      PARAMETER( maxpass     = 3 )
+      PARAMETER( maxpass     = 6 )
 #endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 3 )
