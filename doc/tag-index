@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1353 2010/12/19 23:20:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1354 2010/12/21 23:36:55 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o global_ocean.cs32x15: additional input_ad.seaice experiment
+    that uses pkg/seaice rather than pkg/thsice.
+    (using multidim advection for seaice)
 o towards more F95 syntax for array specification in namelist:
   - change "data.diagnostics" (data.ptracers was changed before checkpoint62p)
     of all verification experiments.
