@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.8 2010/10/13 20:56:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.9 2010/12/22 21:22:46 jahn Exp $
 C $Name:  $
 
 CBOP
@@ -19,6 +19,13 @@ C     |   Tile Ids and is function of tile-process repartition
 C     |  (needs SIZE.h to be included before)
 C     *==========================================================*
 CEOP
+ 
+C---   Parameters for enumerating directions
+       INTEGER W2_NORTH, W2_SOUTH, W2_EAST, W2_WEST
+       PARAMETER ( W2_NORTH = 1 )
+       PARAMETER ( W2_SOUTH = 2 )
+       PARAMETER ( W2_EAST  = 3 )
+       PARAMETER ( W2_WEST  = 4 )
 
 C---   Topology data structures
 C      exch2_global_Nx   :: Global-file domain length.
@@ -83,6 +90,7 @@ C                        :: to source connection (neighbour entry "n").
        INTEGER exch2_nNeighbours( W2_maxNbTiles )
        INTEGER exch2_neighbourId(  W2_maxNeighbours, W2_maxNbTiles )
        INTEGER exch2_opposingSend( W2_maxNeighbours, W2_maxNbTiles )
+       INTEGER exch2_neighbourDir( W2_maxNeighbours, W2_maxNbTiles )
        INTEGER exch2_pij(4,W2_maxNeighbours, W2_maxNbTiles )
        INTEGER exch2_oi (  W2_maxNeighbours, W2_maxNbTiles )
        INTEGER exch2_oj (  W2_maxNeighbours, W2_maxNbTiles )
@@ -101,7 +109,7 @@ C                        :: to source connection (neighbour entry "n").
      &        exch2_isWedge, exch2_isNedge,
      &        exch2_isEedge, exch2_isSedge,
      &        exch2_nNeighbours, exch2_neighbourId,
-     &        exch2_opposingSend,
+     &        exch2_opposingSend, exch2_neighbourDir,
      &        exch2_pij,
      &        exch2_oi, exch2_oj
 

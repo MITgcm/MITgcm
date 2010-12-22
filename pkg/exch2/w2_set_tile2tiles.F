@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.4 2010/12/22 21:22:46 jahn Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -62,6 +62,7 @@ C--   Initialise local arrays
       DO is=1,W2_maxNbTiles
        DO ns=1,W2_maxNeighbours
         tile_edge2edge(ns,is) = 0
+        exch2_neighbourDir(ns,is) = 0
        ENDDO
       ENDDO
 
@@ -269,7 +270,10 @@ C     neighbour Id "ns" with matching edge <-> edge connection (ii==i).
       DO is=1,nTiles
        DO ns=1,exch2_nNeighbours(is)
         i  = tile_edge2edge(ns,is)/10
-c       ii = MOD(tile_edge2edge(ns,is),10)
+        ii = MOD(tile_edge2edge(ns,is),10)
+        IF ( ii .NE. 0) THEN
+          exch2_neighbourDir(ns,is) = i
+        ENDIF
         it = exch2_neighbourId(ns,is)
         DO nt=1,exch2_nNeighbours(it)
 c         i  = tile_edge2edge(nt,it)/10
