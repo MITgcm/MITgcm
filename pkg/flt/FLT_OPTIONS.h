@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_OPTIONS.h,v 1.1 2008/12/03 01:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_OPTIONS.h,v 1.2 2010/12/22 21:20:49 jahn Exp $
 C $Name:  $
 
 C CPP options file for FLT package
@@ -23,6 +23,10 @@ c
 #ifdef ALLOW_3D_FLT
 #define ALLOW_FLT_3D_NOISE
 #endif
+
+c define this to revert to old second-order Runge-Kutta integration
+c
+#undef  FLT_SECOND_ORDER_RUNGE_KUTTA
 
 #endif /* ALLOW_FLT */
 #endif /* FLT_OPTIONS_H */
