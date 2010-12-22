@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.6 2010/12/22 21:20:49 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.7 2010/12/22 21:24:58 jahn Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -104,7 +104,11 @@ C     check if exchanges between tiles are necessary
 
 c        IF (Nx .NE. sNx .OR. Ny .NE. sNy) THEN
          CALL TIMER_START('FLOATS EXCHG       [FLT  LOOP]',myThid)
+#ifdef ALLOW_EXCH2
+         CALL FLT_EXCH2( myTime, myIter, myThid )
+#else
          CALL FLT_EXCHG( myTime, myIter, myThid )
+#endif
          CALL TIMER_STOP ('FLOATS EXCHG       [FLT  LOOP]',myThid)
 c        ENDIF
 

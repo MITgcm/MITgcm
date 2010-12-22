@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.4 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.5 2010/12/22 21:26:15 jahn Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -18,6 +18,9 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_PARAMS.h"
+#endif
 #include "FLT_SIZE.h"
 #include "FLT.h"
 
@@ -64,6 +67,15 @@ C Set domain dependent constants:
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
       _END_MASTER(myThid)
+
+#ifdef ALLOW_EXCH2
+      IF (nFacets .GT. 1) THEN
+        WRITE(msgBuf,'(2A)') 'FLT_INIT_FIXED:',
+     &         ' more than 1 exch2 facet not yet supported'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R FLT_INIT_FIXED'
+      ENDIF
+#endif
 
       RETURN
       END
