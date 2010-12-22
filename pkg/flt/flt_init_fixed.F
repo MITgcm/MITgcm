@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.3 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.4 2010/12/22 21:25:18 jahn Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -18,6 +18,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "FLT_SIZE.h"
 #include "FLT.h"
 
 C     == routine arguments ==
