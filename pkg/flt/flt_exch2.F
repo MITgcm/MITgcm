@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exch2.F,v 1.1 2010/12/22 21:24:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exch2.F,v 1.2 2010/12/22 21:25:18 jahn Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -25,6 +25,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
+#include "FLT_SIZE.h"
 #include "FLT.h"
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"

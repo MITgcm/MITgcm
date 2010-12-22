@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.7 2010/12/22 21:24:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.8 2010/12/22 21:25:18 jahn Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -77,6 +77,7 @@ C     !USES:
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "FLT_SIZE.h"
 #include "FLT.h"
 
 C     == routine arguments ==

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga4.F,v 1.1 2010/12/22 21:20:49 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga4.F,v 1.2 2010/12/22 21:25:18 jahn Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -26,6 +26,7 @@ C     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "FLT_SIZE.h"
 #include "FLT.h"
 
 C     == routine arguments ==
