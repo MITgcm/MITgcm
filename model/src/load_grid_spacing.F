@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.4 2010/12/22 00:05:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.5 2010/12/22 23:31:51 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#undef LOAD_GRID_SPACING_OLD
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
