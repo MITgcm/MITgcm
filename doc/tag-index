@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1354 2010/12/21 23:36:55 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1355 2010/12/22 00:41:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio+rw:
+  new S/R to read local (or tile independent) vector (read counterpart of
+   mds_writevec_loc, and front-end write_glvec_rl/rs).
 o global_ocean.cs32x15: additional input_ad.seaice experiment
     that uses pkg/seaice rather than pkg/thsice.
     (using multidim advection for seaice)
