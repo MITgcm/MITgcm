@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_readvec_loc.F,v 1.2 2010/12/23 02:46:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_readvec_loc.F,v 1.3 2010/12/23 14:54:02 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -51,6 +51,9 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT/OUTPUT PARAMETERS:
