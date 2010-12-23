@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.19 2010/10/20 17:51:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.20 2010/12/23 02:43:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -379,7 +379,7 @@ c-- part 1: preliminary reads and definitions
       call active_read_xy(weighttype, wei2d, 1,
      &    .FALSE., .FALSE., 0 , mythid, 1)
 
-      call active_read_xyz(masktype, msk3d, 1, 
+      call active_read_xyz(masktype, msk3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, 1)
 
       if ( doPackDiag ) then
@@ -399,8 +399,8 @@ c-- part 2: loop over records
 
       do irec = 1, ncvarrecs(ivartype)
 
-c-- 2.1: 
-      call READ_REC_3D_RL( fname, ctrlprec, 
+c-- 2.1:
+      call READ_REC_3D_RL( fname, ctrlprec,
      &        1, fld2dDim, irec, 0, mythid)
 
 c-- 2.2: normalize field if needed
@@ -414,7 +414,7 @@ c-- 2.2: normalize field if needed
            else
 #ifdef ALLOW_SMOOTH_CORREL2D
             if (lxxadxx) then
-               fld2dNodim(i,j,bi,bj) = 
+               fld2dNodim(i,j,bi,bj) =
      &              fld2dDim(i,j,bi,bj) / forcingPrecond
             else
                fld2dNodim(i,j,bi,bj) =
@@ -425,7 +425,7 @@ c-- 2.2: normalize field if needed
             fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
 # else
             if (lxxadxx) then
-               fld2dNodim(i,j,bi,bj) = 
+               fld2dNodim(i,j,bi,bj) =
      &              fld2dDim(i,j,bi,bj) * sqrt(wei2d(i,j,bi,bj))
      &                       / forcingPrecond
             else
@@ -465,14 +465,14 @@ c-- 2.4: array -> buffer -> global buffer -> global file
       do k = 1, 1
 
         CALL MDS_PASS_R8toRL( fld2d_buf, fld2dNodim,
-     &                       1, k, 1, 0, 0, .FALSE., myThid )
+     &                 0, 0, 1, k, 1, 0, 0, .FALSE., myThid )
         CALL BAR2( myThid )
         CALL GATHER_2D_R8( fld2d_buf_glo, fld2d_buf,
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
         CALL MDS_PASS_R8toRL( msk2d_buf, msk3d,
-     &                       1, k, Nr, 0, 0, .FALSE., myThid )
+     &                 0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
         CALL BAR2( myThid )
         CALL GATHER_2D_R8( msk2d_buf_glo, msk2d_buf,
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
@@ -510,9 +510,9 @@ c-- 2.4: array -> buffer -> global buffer -> global file
       enddo
       enddo
 
-# endif /* ALLOW_PACKUNPACK_METHOD2 */ 
+# endif /* ALLOW_PACKUNPACK_METHOD2 */
 # endif /* EXCLUDE_CTRL_PACK */
-	
+
       return
       end
 

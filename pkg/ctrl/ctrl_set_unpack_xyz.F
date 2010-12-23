@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.22 2010/09/26 02:51:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.23 2010/12/23 02:43:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -338,7 +338,7 @@ c-- part 1: preliminary reads and definitions
      &    .FALSE., .FALSE., 0 , mythid, 1)
 #endif
 
-      call active_read_xyz(masktype, msk3d, 1, 
+      call active_read_xyz(masktype, msk3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, 1)
 
       if ( doPackDiag ) then
@@ -380,7 +380,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
       do k = 1, nr
 
         CALL MDS_PASS_R8toRL( msk2d_buf, msk3d,
-     &                       1, k, Nr, 0, 0, .FALSE., myThid )
+     &                 0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
         CALL BAR2( myThid )
         CALL GATHER_2D_R8( msk2d_buf_glo, msk2d_buf,
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
@@ -427,7 +427,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
         CALL MDS_PASS_R8toRL( fld2d_buf, fld3dNodim,
-     &                       1, k, nr, 0, 0, .TRUE., myThid )
+     &                 0, 0, 1, k, Nr, 0, 0, .TRUE., myThid )
 
       enddo !do k = 1, nr
 
@@ -449,7 +449,7 @@ c-- 2.2: normalize field if needed
 #ifdef ALLOW_ADMTLM
             nveccount = nveccount + 1
             fld3dNodim(i,j,k,bi,bj)=phtmpadmtlm(nveccount)
-#endif           
+#endif
 #ifdef ALLOW_SMOOTH_CORREL3D
             fld3dDim(i,j,k,bi,bj)=fld3dNodim(i,j,k,bi,bj)
 #else
@@ -457,8 +457,8 @@ c-- 2.2: normalize field if needed
             fld3dDim(i,j,k,bi,bj) = fld3dNodim(i,j,k,bi,bj)
 # else
             if (lxxadxx) then
-               fld3dDim(i,j,k,bi,bj) = 
-     &              fld3dNodim(i,j,k,bi,bj) * delZnorm 
+               fld3dDim(i,j,k,bi,bj) =
+     &              fld3dNodim(i,j,k,bi,bj) * delZnorm
 #  ifdef CTRL_PACK_PRECISE
      &              / sqrt(wei3d(i,j,k,bi,bj))
 #  else
@@ -491,14 +491,14 @@ c error: twice the same one
      &        Nr, fld3dDim, irec, 0, mythid)
       endif
 
-c-- 2.4: 
-      call WRITE_REC_3D_RL( fname, ctrlprec, 
+c-- 2.4:
+      call WRITE_REC_3D_RL( fname, ctrlprec,
      &        Nr, fld3dDim, irec, 0, mythid)
 
 
       enddo !do irec = 1, ncvarrecs(ivartype)
 
-# endif /* ALLOW_PACKUNPACK_METHOD2 */ 
+# endif /* ALLOW_PACKUNPACK_METHOD2 */
 # endif /* EXCLUDE_CTRL_PACK */
 
       return
