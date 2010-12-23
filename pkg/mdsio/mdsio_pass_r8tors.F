@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_pass_r8tors.F,v 1.3 2009/06/08 03:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_pass_r8tors.F,v 1.4 2010/12/23 02:40:42 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -12,7 +12,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: MDS_PASS_R8toRS
 C !INTERFACE:
-      SUBROUTINE MDS_PASS_R8toRS( buffer, arrFld, nNz, kLo, kSize,
+      SUBROUTINE MDS_PASS_R8toRS(
+     U                            buffer, arrFld,
+     I                            oLi, oLj, nNz, kLo, kSize,
      I                            biArg, bjArg, copyTo, myThid )
 
 C !DESCRIPTION:
@@ -31,6 +33,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C Routine arguments
 C buffer  (real*8) :: buffer 3-D array (Input/Output if copyTo=T/F)
 C arrFld   ( RS )  :: model 3-D tiled array (Output/Input if copyTo=T/F)
+C oLi     (integer):: Overlap size (dim-1) of buffer to copy - to/from - arrFld
+C oLj     (integer):: Overlap size (dim-2) of buffer to copy - to/from - arrFld
 C nNz     (integer):: Number of levels to - fill in / extract from - arrFld
 C kLo     (integer):: 1rst level to - fill in / extract from - arrFld
 C kSize   (integer):: third dimension of 3-D array "arrFld"
@@ -38,8 +42,9 @@ C biArg   (integer):: tile X-index to - fill in / extract from - tiled buffer
 C bjArg   (integer):: tile Y-index to - fill in / extract from - tiled buffer
 C copyTo  (logical):: if =T, copy 2-D -> 3-D ; if =F: copy 2-D <- 3-D
 C myThid  (integer):: my Thread Id number
+      INTEGER oLi, oLj
       INTEGER nNz, kSize
-      Real*8 buffer(1:sNx,1:sNy,nNz,nSx,nSy)
+      Real*8 buffer(1-oLi:sNx+oLi,1-oLj:sNy+oLj,nNz,nSx,nSy)
       _RS    arrFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       INTEGER kLo
       INTEGER biArg
@@ -53,6 +58,10 @@ C   bi,bj :: tile indices
       INTEGER i,j,k,bi,bj
       INTEGER kLev
 CEOP
+      IF ( oLi.LT.0 .OR. oLi.GT.OLx .OR.
+     &     oLj.LT.0 .OR. oLj.GT.OLy ) THEN
+        STOP 'ABNORMAL END: MDS_PASS_R8toRS invalid oLi,oLj Arg'
+      ENDIF
 
       IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
         IF ( copyTo ) THEN
@@ -60,8 +69,8 @@ CEOP
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO k=1,nNz
              kLev = kLo+k-1
-             DO j=1,sNy
-              DO i=1,sNx
+             DO j=1-oLj,sNy+oLj
+              DO i=1-oLi,sNx+oLi
                 arrFld(i,j,kLev,bi,bj) = buffer(i,j,k,bi,bj)
               ENDDO
              ENDDO
@@ -73,8 +82,8 @@ CEOP
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO k=1,nNz
              kLev = kLo+k-1
-             DO j=1,sNy
-              DO i=1,sNx
+             DO j=1-oLj,sNy+oLj
+              DO i=1-oLi,sNx+oLi
                 buffer(i,j,k,bi,bj) = arrFld(i,j,kLev,bi,bj)
               ENDDO
              ENDDO
@@ -89,8 +98,8 @@ CEOP
         IF ( copyTo ) THEN
           DO k=1,nNz
             kLev = kLo+k-1
-            DO j=1,sNy
-              DO i=1,sNx
+            DO j=1-oLj,sNy+oLj
+              DO i=1-oLi,sNx+oLi
                 arrFld(i,j,kLev,1,1) = buffer(i,j,k,bi,bj)
               ENDDO
             ENDDO
@@ -98,8 +107,8 @@ CEOP
         ELSE
           DO k=1,nNz
             kLev = kLo+k-1
-            DO j=1,sNy
-              DO i=1,sNx
+            DO j=1-oLj,sNy+oLj
+              DO i=1-oLi,sNx+oLi
                 buffer(i,j,k,bi,bj) = arrFld(i,j,kLev,1,1)
               ENDDO
             ENDDO
