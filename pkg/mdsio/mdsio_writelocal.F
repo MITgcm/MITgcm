@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.19 2010/08/24 14:56:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.20 2010/12/23 02:41:47 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -42,7 +42,8 @@ C  shared buffer IO to store data from all threads, then synchronise and
 C  let the master thread write nThreads tiles. If multiple tiles per thread,
 C  will repeat this sequence each time this S/R is called by the master thread
 C  with a different biArg,biArg. IMPORTANT: 2nd case requires that all threads
-C  call this S/R and assumes symetry in tiles per thread treatment.
+C  call this S/R and assumes symmetry in tiles per thread treatment.
+C Convention regarding thread synchronisation (BARRIER): see mdsio_write_field.F
 C MDS_WRITELOCAL creates either a file of the form "fName.data" and
 C  "fName.meta" if the logical flag "globalFile" is set true. Otherwise
 C  it creates MDS tiled files of the form "fName.xxx.yyy.data" and
@@ -211,15 +212,19 @@ c       CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
       ENDIF
 
+C Wait for all thread to finish. This prevents other threads (e.g., master)
+C  to continue to acces 3-D buffer while this thread is filling it.
+      IF ( nthLoop.GT.1 ) CALL BAR2( myThid )
+
 C-------------------------------------------------
 C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
       IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( shared3dBuf_r4, fldRS,
-     I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
+     I           0, 0, nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R4toRL( shared3dBuf_r4, fldRL,
-     I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
+     I           0, 0, nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITELOCAL: illegal value for arrType'
@@ -229,10 +234,10 @@ C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( shared3dBuf_r8, fldRS,
-     I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
+     I           0, 0, nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R8toRL( shared3dBuf_r8, fldRL,
-     I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
+     I           0, 0, nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITELOCAL: illegal value for arrType'
@@ -432,7 +437,7 @@ C-    end if iAmDoingIO
 
 C Make other threads wait for I/O completion so that after this,
 C  3-D buffer can again be modified by any thread
-      IF ( nthLoop.GT.1 ) CALL BAR2( myThid )
+c     IF ( nthLoop.GT.1 ) CALL BAR2( myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       RETURN

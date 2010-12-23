@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.16 2009/09/01 19:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.17 2010/12/23 02:41:47 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -56,6 +56,16 @@ C  was the last record written. Nor is there a consistency check between the
 C  routine arguments and file, i.e., if you write record 2 after record 4
 C  the meta information will record the number of records to be 2. This,
 C  again, is because we have read the meta information. To be fixed.
+C
+C- Multi-threaded: Only Master thread does IO (and MPI calls) and get data
+C   from a shared buffer that any thread can copy to.
+C- Convention regarding thread synchronisation (BARRIER):
+C  A per-thread (or per tile) partition of the 2-D shared-buffer (sharedLocBuf_r4/r8)
+C   is readily available => any access (e.g., by master-thread) to a portion
+C   owned by an other thread is put between BARRIER (protected).
+C  No thread partition exist for the 3-D shared buffer (shared3dBuf_r4/r8);
+C   Therefore, the 3-D buffer is considered to be owned by master-thread and
+C   any access by other than master thread is put between BARRIER (protected).
 C
 C Created: 03/16/99 adcroft@mit.edu
 C Changed: 01/06/02 menemenlis@jpl.nasa.gov
@@ -255,10 +265,10 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( sharedLocBuf_r4, fldRS,
-     I                       1, k, kSize, 0, 0, .FALSE., myThid )
+     I                 0, 0, 1, k, kSize, 0, 0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R4toRL( sharedLocBuf_r4, fldRL,
-     I                       1, k, kSize, 0, 0, .FALSE., myThid )
+     I                 0, 0, 1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
@@ -276,11 +286,10 @@ C Wait for all threads to finish filling shared buffer
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( sharedLocBuf_r8, fldRS,
-     I                       1, k, kSize, 0, 0, .FALSE., myThid )
-
+     I                 0, 0, 1, k, kSize, 0, 0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R8toRL( sharedLocBuf_r8, fldRL,
-     I                       1, k, kSize, 0, 0, .FALSE., myThid )
+     I                 0, 0, 1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
@@ -333,14 +342,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  else .NOT.useSingleCpuIO
       ELSE
 
+C Wait for all thread to finish. This prevents other threads (e.g., master)
+C  to continue to acces 3-D buffer while this thread is filling it.
+        CALL BAR2( myThid )
+
 C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( shared3dBuf_r4, fldRS,
-     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R4toRL( shared3dBuf_r4, fldRL,
-     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
@@ -351,10 +364,10 @@ C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( shared3dBuf_r8, fldRS,
-     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R8toRL( shared3dBuf_r8, fldRL,
-     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
@@ -530,7 +543,7 @@ C- endif iAmDoingIO
 
 C Make other threads wait for I/O completion so that after this,
 C  3-D buffer can again be modified by any thread
-       CALL BAR2( myThid )
+c      CALL BAR2( myThid )
 
 C     if useSingleCpuIO / else / end
       ENDIF

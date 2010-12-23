@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.15 2009/09/01 19:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.16 2010/12/23 02:41:47 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -46,8 +46,17 @@ C  levels (from kLo to kHi) ; (kSize,kLo,kHi)=(1,1,1) implies a 2-D model
 C  field and (kSize,kLo,kHi)=(Nr,1,Nr) implies a 3-D model field.
 C irecord is the record number to be read and must be >= 1.
 C The file data is stored in fldRL/RS *but* the overlaps are *not* updated,
-C  i.e., an exchange must be called. This is because the routine is
-C  sometimes called from within a MASTER_THID region.
+C  i.e., an exchange must be called.
+C
+C- Multi-threaded: Only Master thread does IO (and MPI calls) and put data
+C   to a shared buffer that any thread can get access to.
+C- Convention regarding thread synchronisation (BARRIER):
+C  A per-thread (or per tile) partition of the 2-D shared-buffer (sharedLocBuf_r4/r8)
+C   is readily available => any access (e.g., by master-thread) to a portion
+C   owned by an other thread is put between BARRIER (protected).
+C  No thread partition exist for the 3-D shared buffer (shared3dBuf_r4/r8).
+C   Therefore, the 3-D buffer is considered to be owned by master-thread and
+C   any access by other than master thread is put between BARRIER (protected).
 C
 C Created: 03/16/99 adcroft@mit.edu
 CEOP
@@ -297,10 +306,10 @@ C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( sharedLocBuf_r4, fldRS,
-     I                        1, k, kSize, 0, 0, .TRUE., myThid )
+     I                  0, 0, 1, k, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R4toRL( sharedLocBuf_r4, fldRL,
-     I                        1, k, kSize, 0, 0, .TRUE., myThid )
+     I                  0, 0, 1, k, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &          ' MDS_READ_FIELD: illegal value for arrType'
@@ -318,10 +327,10 @@ C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( sharedLocBuf_r8, fldRS,
-     I                        1, k, kSize, 0, 0, .TRUE., myThid )
+     I                  0, 0, 1, k, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R8toRL( sharedLocBuf_r8, fldRL,
-     I                        1, k, kSize, 0, 0, .TRUE., myThid )
+     I                  0, 0, 1, k, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &          ' MDS_READ_FIELD: illegal value for arrType'
@@ -350,7 +359,7 @@ C---  else .NOT.useSingleCpuIO
 
 C Wait for all thread to finish. This prevents other threads to continue
 C  to acces 3-D buffer while master thread is reading
-       CALL BAR2( myThid )
+c      CALL BAR2( myThid )
 
 C Only do I/O if I am the master thread
        IF ( iAmDoingIO ) THEN
@@ -505,10 +514,10 @@ C---    Copy from 3-D buffer to fldRL/RS (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( shared3dBuf_r4, fldRS,
-     I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R4toRL( shared3dBuf_r4, fldRL,
-     I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_READ_FIELD: illegal value for arrType'
@@ -519,10 +528,10 @@ C---    Copy from 3-D buffer to fldRL/RS (multi-threads):
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( shared3dBuf_r8, fldRS,
-     I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R8toRL( shared3dBuf_r8, fldRL,
-     I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+     I              0, 0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_READ_FIELD: illegal value for arrType'
@@ -537,6 +546,11 @@ C---    Copy from 3-D buffer to fldRL/RS (multi-threads):
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
         ENDIF
+
+C Wait for all threads to finish getting data from 3-D shared buffer.
+C  This prevents the master-thread to change the buffer content before
+C  every one got his data.
+       CALL BAR2( myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     if useSingleCpuIO / else / end
