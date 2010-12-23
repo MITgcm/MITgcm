@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.5 2009/09/01 19:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.6 2010/12/23 02:46:18 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -52,6 +52,7 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "MDSIO_BUFF_3D.h"
 
 C !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(*) fName
@@ -79,10 +80,7 @@ C !LOCAL VARIABLES:
       INTEGER iG,jG,iRec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER length_of_rec
-      INTEGER loc_size
-      PARAMETER( loc_size = Nx+Ny+Nr )
-      Real*4 r4seg(loc_size)
-      Real*8 r8seg(loc_size)
+      INTEGER buffSize
       _RL dummyRL(1)
       CHARACTER*8 blank8c
 CEOP
@@ -114,7 +112,8 @@ C Record number must be >= 1
         ENDIF
 
 C Check buffer size
-        IF ( nSize.GT.loc_size ) THEN
+        buffSize = sNx*sNy*size3dBuf*nSx*nSy
+        IF ( nSize.GT.buffSize ) THEN
           WRITE(msgBuf,'(3A)')
      &     ' MDS_WRITEVEC_LOC: writing to file "', fName(1:IL), '":'
           CALL PRINT_ERROR( msgBuf, myThid )
@@ -122,7 +121,10 @@ C Check buffer size
      &      ' MDS_WRITEVEC_LOC: dim of array to write=', nSize
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(A,I9)')
-     &      ' MDS_WRITEVEC_LOC: exceeds buffer size=', loc_size
+     &      ' MDS_WRITEVEC_LOC: exceeds buffer size=', buffSize
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
+     &    ' increase "size3dBuf" in "MDSIO_BUFF_3D.h" and recompile'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R MDS_WRITEVEC_LOC'
         ENDIF
@@ -181,10 +183,10 @@ C- End if block: File Unit is already open / Need to open it
 
         IF (fileIsOpen) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_WR_REC_RS( fldRS, r4seg, r8seg,
+            CALL MDS_WR_REC_RS( fldRS, shared3dBuf_r4, shared3dBuf_r8,
      I                          filePrec, dUnit, iRec, nSize, myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_WR_REC_RL( fldRL, r4seg, r8seg,
+            CALL MDS_WR_REC_RL( fldRL, shared3dBuf_r4, shared3dBuf_r8,
      I                          filePrec, dUnit, iRec, nSize, myThid )
           ELSE
             WRITE(msgBuf,'(A)')
