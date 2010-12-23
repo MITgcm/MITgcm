@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_3D.h,v 1.2 2009/06/08 14:38:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_3D.h,v 1.3 2010/12/23 02:42:16 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -26,7 +26,9 @@ C           which should be enough for most applications.
 #endif
 
 C--   COMMON /MDS_3D_BUFFERS/  3-D Shared Local Buffers
-C     Those buffers have be in common block to be shared by all threads
+C     Those buffers have be in common block to be shared by all threads;
+C     considered to be "owned" by master-thread and any access by other 
+C     than master thread needs to be put protected by BARRIER.
 C shared3dBuf_rx :: Heap storage buffer to which master thread
 C                   read-in/write-from data which all threads copy from
 C                   (during read) or copy to (during write).
