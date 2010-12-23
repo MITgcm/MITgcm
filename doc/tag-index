@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1356 2010/12/22 21:28:00 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1357 2010/12/23 18:08:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - add 2 arguments to S/R MDS_PASS_R4/8toRL/S for overlap size of buffer
+    to copy to/from, so that it can be used to replace MDS_PASS_WH_R8toRL/RS.
+  - change barrier call for safe multi-threads access to 3-D shared buffer.
+  - MDS_READ/WRITEVEC_LOC use buffers from MDSIO_BUFF_3D.h (instead of local ones)
+  - replace call to MDS_PASS_WH_R4/8toRL with call to MDS_PASS_R4/8toRL and
+    remove the 4 S/R MDS_PASS_WH_R4/8toRL/S.
 o pkg/flt:
   - add fourth-order Runge-Kutta integration
   - add basic exch2 support (only 1 facet supported so far!)
