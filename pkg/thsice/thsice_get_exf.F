@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.17 2010/10/21 02:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.18 2010/12/24 00:53:42 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -90,9 +90,9 @@ C             deltap   :: potential temperature diff (K)
 C     copied from exf_bulkformulae:
 C     these need to be 2D-arrays for vectorizing code
 C     turbulent temperature scale [K]
-      _RL tstar (1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RL tstar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     turbulent humidity scale  [kg/kg]
-      _RL qstar (1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RL qstar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     friction velocity [m/s]
       _RL ustar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     neutral, zref (=10m) values of rd
@@ -101,15 +101,15 @@ C     neutral, zref (=10m) values of rd
       _RL rh    (1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! = Ch / sqrt(Cd)     [-]
       _RL re    (1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! = Ce / sqrt(Cd)     [-]
 C     specific humidity difference [kg/kg]
-      _RL delq  (1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RL delq  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C
-      _RL ssq   (1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RL ssq   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ren, rhn           ! neutral, zref (=10m) values of re, rh
       _RL usn, usm           ! neutral, zref (=10m) wind-speed (+limited)
       _RL stable             ! = 1 if stable ; = 0 if unstable
 C     stability parameter at zwd [-] (=z/Monin-Obuklov length)
-      _RL huol       
+      _RL huol
       _RL htol               ! stability parameter at zth [-]
       _RL hqol
       _RL x                  ! stability function  [-]
@@ -145,6 +145,10 @@ C     latent heat of evaporation or sublimation [J/kg]
 c     INTEGER ikey_1
 c     INTEGER ikey_2
 #endif
+#ifdef ALLOW_DBUG_THSICE
+      LOGICAL dBugFlag
+      INTEGER stdUnit
+#endif
 
 C     == external functions ==
 
@@ -156,6 +160,14 @@ c     _RL       exf_BulkRhn
 c     external  exf_BulkRhn
 
 C     == end of interface ==
+
+C-    Define grid-point location where to print debugging values
+#include "THSICE_DEBUG.h"
+
+#ifdef ALLOW_DBUG_THSICE
+      dBugFlag = debugLevel.GE.debLevB
+      stdUnit = standardMessageUnit
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c         act1 = bi - myBxLo(myThid)
@@ -201,11 +213,15 @@ C     initialisation of local arrays
 C
       DO j=jMin,jMax
        DO i=iMin,iMax
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7---+----
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef ALLOW_DBUG_THSICE
+        IF ( dBug(i,j,bi,bj) .AND. iceFlag(i,j) ) WRITE(stdUnit,
+     &    '(A,2I4,2I2,2F12.6)') 'ThSI_GET_EXF: i,j,atemp,lwd=',
+     &           i,j,bi,bj, atemp(i,j,bi,bj),lwdown(i,j,bi,bj)
+#endif
 
 C--   Use atmospheric state to compute surface fluxes.
         IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
-         
          IF ( hSnow(i,j).GT.3. _d -1 ) THEN
           emiss = snow_emissivity
          ELSE
@@ -226,7 +242,7 @@ c        ssq(i,j)    = saltsat*tmpbulk/atmrho
          ssq(i,j)    = tmpbulk/atmrho
          deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
          delq(i,j)   = aqh(i,j,bi,bj) - ssq(i,j)
-C     Do the part of the output variables that do not depend 
+C     Do the part of the output variables that do not depend
 C     on the ice here to save a few re-computations
 C     This is not yet dEvdT, but just a cheap way to save a 2D-field
 C     for ssq and recomputing Ts2 lateron
@@ -238,7 +254,7 @@ c        flwNet_dwn  =       lwdown(i,j,bi,bj) - flwup
 C-    assume long-wave albedo = 1 - emissivity :
          flwNet_dwn  = emiss*lwdown(i,j,bi,bj) - flwup
 #else
-         STOP 
+         STOP
      &     'ABNORMAL END: S/R THSICE_GET_EXF: DOWNWARD_RADIATION undef'
 #endif
 C--   This is not yet the total derivative with respect to surface temperature
@@ -248,6 +264,8 @@ C--   This is not yet the Net downward radiation excluding shortwave
         ENDIF
        ENDDO
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( useStabilityFct_overIce ) THEN
        DO j=jMin,jMax
@@ -382,9 +400,7 @@ C     end iteration loop
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
-          
           tau     = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
-          
           evapLoc(i,j)  = -tau*qstar(i,j)
           hlLocal       = -lath*evapLoc(i,j)
           hsLocal       = atmcp*tau*tstar(i,j)
@@ -405,17 +421,22 @@ C--   Update net downward radiation excluding shortwave
         ENDDO
        ENDDO
       ELSE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Compute the turbulent surface fluxes using fixed transfert Coeffs
 C     with no stability dependence ( useStabilityFct_overIce = false )
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
-          
           wsm           = sh(i,j,bi,bj)
           tau           = atmrho*exf_iceCe*wsm
           evapLoc(i,j)  = -tau*delq(i,j)
           hlLocal       = -lath*evapLoc(i,j)
           hsLocal       = atmcp*atmrho*exf_iceCh*wsm*deltap(i,j)
+#ifdef ALLOW_DBUG_THSICE
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,'(A,4F12.6)')
+     &      'ThSI_GET_EXF: wsm,hl,hs,Lw=',
+     &                     wsm,hlLocal,hsLocal,flxExcSw(i,j)
+#endif
 C---  surf.Temp derivative of turbulent Fluxes
 C     complete computation of dEvdT
           dEvdT(i,j)    = tau*dEvdT(i,j)
@@ -425,12 +446,17 @@ C--   Update total derivative with respect to surface temperature
           dFlxdT(i,j)   = dFlxdT(i,j)   + dfshdT  + dflhdT
 C--   Update net downward radiation excluding shortwave
           flxExcSw(i,j) = flxExcSw(i,j) + hsLocal + hlLocal
-          
+#ifdef ALLOW_DBUG_THSICE
+          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,'(A,4F12.6)')
+     &      'ThSI_GET_EXF: flx,dFlxdT,evap,dEvdT',
+     &       flxExcSw(i,j), dFlxdT(i,j), evapLoc(i,j),dEvdT(i,j)
+#endif
          ENDIF
         ENDDO
        ENDDO
 C     endif useStabilityFct_overIce
       ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO j=jMin,jMax
        DO i=iMin,iMax
         IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).LE.0. _d 0 ) THEN
@@ -440,7 +466,6 @@ C--   in case atemp is zero:
          evapLoc (i,j) = 0. _d 0
          dEvdT   (i,j) = 0. _d 0
         ENDIF
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7---+----
        ENDDO
       ENDDO
 
