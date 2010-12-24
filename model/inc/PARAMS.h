@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.245 2010/12/06 10:45:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.246 2010/12/24 21:48:39 jmc Exp $
 C $Name:  $
 C
 
@@ -33,7 +33,7 @@ C     pickupSuff      :: force to start from pickup files (even if nIter0=0)
 C                        and read pickup files with this suffix (max 10 Char.)
 C     mdsioLocalDir   :: read-write tiled file from/to this directory name
 C                        (+ 4 digits Processor-Rank) instead of current dir.
-C     adTapeDir       :: read-write checkpointing tape files from/to this 
+C     adTapeDir       :: read-write checkpointing tape files from/to this
 C                        directory name instead of current dir. Conflicts
 C                        mdsioLocalDir, so only one of the two can be set.
 C                        In contrast to mdsioLocalDir, if specified adTapeDir
@@ -357,6 +357,7 @@ C     monitor_stdio      :: use stdio for monitor output
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0)
 C                        & Last iteration, in addition multiple of dumpFreq iter.
 C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
+C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
 
       COMMON /PARM_L/
      & fluidIsAir, fluidIsWater,
@@ -377,7 +378,7 @@ C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
      & tempAdvection, tempIsActiveTr, tempForcing,
      & saltAdvection, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useRealFreshWaterFlux,
+     & useRealFreshWaterFlux, useSRCGSolver,
      & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
      & uniformLin_PhiSurf,
      & quasiHydrostatic, nonHydrostatic,
@@ -395,9 +396,9 @@ C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & writePickupAtEnd,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
-     & outputTypesInclusive, dumpInitAndLast, debugMode,
-     & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & useSRCGSolver
+     & outputTypesInclusive, dumpInitAndLast,
+     & debugMode, printDomain,
+     & inAdMode, inAdTrue, inAdFalse, inAdExact
 
       LOGICAL fluidIsAir
       LOGICAL fluidIsWater
@@ -414,6 +415,9 @@ C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
       LOGICAL useNHMTerms
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
+      LOGICAL useFullLeith
+      LOGICAL useStrainTensionVisc
+      LOGICAL useAreaViscLength
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
@@ -431,9 +435,7 @@ C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
       LOGICAL checkIniTemp
       LOGICAL checkIniSalt
       LOGICAL useRealFreshWaterFlux
-      LOGICAL useFullLeith
-      LOGICAL useStrainTensionVisc
-      LOGICAL useAreaViscLength
+      LOGICAL useSRCGSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
@@ -483,9 +485,8 @@ C     debugMode       :: controls printing of debug msg (sequence of S/R calls).
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
       LOGICAL dumpInitAndLast
-      LOGICAL debugMode
+      LOGICAL debugMode, printDomain
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
-      LOGICAL useSRCGSolver
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
