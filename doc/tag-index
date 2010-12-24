@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1357 2010/12/23 18:08:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1358 2010/12/24 23:15:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o global_ocean.cs32x15:
+   change SIZE.h of AD set-up to get same tiling as with MPI.
+   Update output_adm, output_adm.thsice (pass@14) & output_adm.seaice (fail@11)
+o model/src:
+   add flag to control printing of domain fields (bathymetry, hFac ...) in
+   ini_mask_etc (call to plot_fieds_xy*).
+o pkg/thsice:
+   if useEXF, some forcing fields are not valid in overlap: fixed by computing
+   over the interior only + apply EXCH at the end (like with SEAICE advection).
 o pkg/mdsio:
   - add 2 arguments to S/R MDS_PASS_R4/8toRL/S for overlap size of buffer
     to copy to/from, so that it can be used to replace MDS_PASS_WH_R8toRL/RS.
