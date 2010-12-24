@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.23 2010/12/17 04:00:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.24 2010/12/24 00:55:40 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -61,14 +61,20 @@ c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( stressReduction.GT. 0. _d 0 ) THEN
+      IF ( useEXF .OR. useSEAICE ) THEN
+C-    EXF does not provide valid fields in overlap
+       iMin = 1
+       iMax = sNx
+       jMin = 1
+       jMax = sNy
+      ELSEIF ( stressReduction.GT. 0. _d 0 ) THEN
 C-     needs new Ice Fraction in halo region to apply wind-stress reduction
        iMin = 1-OLx
        iMax = sNx+OLx-1
        jMin = 1-OLy
        jMax = sNy+OLy-1
 #ifdef ATMOSPHERIC_LOADING
-      ELSEIF ( useRealFreshWaterFlux .AND. .NOT.useSEAICE ) THEN
+      ELSEIF ( useRealFreshWaterFlux ) THEN
 C-     needs sea-ice loading in part of the halo regions for grad.Phi0surf
 C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
        iMin = 0
@@ -235,9 +241,30 @@ CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key = ticekey
         CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
 
-c      ENDDO
-c     ENDDO
+C--  end bi,bj loop
+       ENDDO
+      ENDDO
 
+C     add a small piece of code to check AddFluid implementation:
+c#include "thsice_test_addfluid.h"
+
+      IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
+C--   Exchange fields that are advected by seaice dynamics
+        _EXCH_XY_RL( iceMask, myThid )
+        _EXCH_XY_RL( iceHeight, myThid )
+        _EXCH_XY_RL( snowHeight, myThid )
+        _EXCH_XY_RL( Qice1, myThid )
+        _EXCH_XY_RL( Qice2, myThid )
+      ELSEIF ( useEXF .AND. stressReduction.GT. 0. _d 0 ) THEN
+        _EXCH_XY_RL( iceMask, myThid )
+      ENDIF
+#ifdef ATMOSPHERIC_LOADING
+      IF ( useRealFreshWaterFlux .AND. (useEXF.OR.useSEAICE ) )
+     &  _EXCH_XY_RS( sIceLoad, myThid )
+#endif
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   note: If useSEAICE=.true., the stress is computed in seaice_model,
 C--   and stressReduction is always set to zero
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -264,23 +291,6 @@ CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 C--  end bi,bj loop
        ENDDO
       ENDDO
-
-C     add a small piece of code to check AddFluid implementation:
-c#include "thsice_test_addfluid.h"
-
-      IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
-C--   Exchange fields that are advected by seaice dynamics
-        _EXCH_XY_RL( iceMask, myThid )
-        _EXCH_XY_RL( iceHeight, myThid )
-        _EXCH_XY_RL( snowHeight, myThid )
-        _EXCH_XY_RL( Qice1, myThid )
-        _EXCH_XY_RL( Qice2, myThid )
-
-#ifdef ATMOSPHERIC_LOADING
-        IF (useRealFreshWaterFlux)
-     &  _EXCH_XY_RS( sIceLoad, myThid )
-#endif
-      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif  /*ALLOW_THSICE*/
