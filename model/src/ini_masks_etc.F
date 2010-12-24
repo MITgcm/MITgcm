@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.47 2010/09/11 21:24:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.48 2010/12/24 21:51:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -201,12 +201,14 @@ C-    end bi,bj loops.
        ENDDO
       ENDDO
 
-c     CALL PLOT_FIELD_XYRS( tmpfld,
-c    &         'Model Depths K Index' , 1, myThid )
-      CALL PLOT_FIELD_XYRS(R_low,
-     &         'Model R_low (ini_masks_etc)', 1, myThid)
-      CALL PLOT_FIELD_XYRS(Ro_surf,
-     &         'Model Ro_surf (ini_masks_etc)', 1, myThid)
+      IF ( printDomain ) THEN
+c       CALL PLOT_FIELD_XYRS( tmpfld,
+c    &           'Model Depths K Index' , 1, myThid )
+        CALL PLOT_FIELD_XYRS(R_low,
+     &           'Model R_low (ini_masks_etc)', 1, myThid )
+        CALL PLOT_FIELD_XYRS(Ro_surf,
+     &           'Model Ro_surf (ini_masks_etc)', 1, myThid )
+      ENDIF
 
 C--   Calculate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -334,10 +336,11 @@ c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
 
-      _BARRIER
-      CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 1, myThid )
-      CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 1, myThid )
-      CALL PLOT_FIELD_XYZRS( hFacS, 'hFacS' , Nr, 1, myThid )
+      IF ( printDomain ) THEN
+        CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 1, myThid )
+        CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 1, myThid )
+        CALL PLOT_FIELD_XYZRS( hFacS, 'hFacS' , Nr, 1, myThid )
+      ENDIF
 
 C--   Masks and reciprocals of hFac[CWS]
       DO bj = myByLo(myThid), myByHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.3 2010/11/23 20:13:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.4 2010/12/24 21:51:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,7 @@ C     averaged fields in reverse checkpointing loops
       pChkPtFreq   = 0.
       dumpInitAndLast = .FALSE.
       writePickupAtEnd= .FALSE.
+      printDomain  = .FALSE.
 
 #ifdef ALLOW_MNC
 C--   Not the best solution to fix some MNC output, since it is likely

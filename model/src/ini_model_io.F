@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.39 2010/12/07 11:51:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.40 2010/12/24 21:51:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,7 +135,8 @@ C-    Initialise Alternating pickup-suffix
       checkPtSuff(1)    = 'ckptA'
       checkPtSuff(2)    = 'ckptB'
 
-C-    Flags specific to RW and MDSIO
+C-    Flags specific to RW and MDSIO (and PLOT_FIELDS)
+      printDomain = debugLevel.GE.debLevA
 
 C-    now we make local directories with myProcessStr appended
       IF ( mdsioLocalDir .NE. ' ' ) THEN
