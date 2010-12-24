@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.51 2010/11/16 17:41:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.52 2010/12/24 21:54:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -371,6 +371,16 @@ C---  Exclusive packages (which cannot be used together):
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
+
+#ifdef ALLOW_AUTODIFF
+C--   Here INI_MASK_ETC will be called a 2nd time by INITIALISE_VARIA.
+C     This hack prevents a 2nd printing when default debugLevel is used.
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+      IF ( debugLevel.LE.debLevA ) printDomain = .FALSE.
+      _END_MASTER( myThid )
+      _BARRIER
+#endif
 
       RETURN
       END
