@@ -1,26 +1,38 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_gfortran+mpi_generic,v 1.1 2010/02/16 23:56:02 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_gfortran+mpi_generic,v 1.2 2010/12/25 18:25:56 jmc Exp $
 #  $Name:  $
 #
 
-#  Tested with gcc-gfortran v4.1.1 on FC5, FC6, FC8, using flags
+#  Tested with gcc-gfortran v4.1.x on FC5, FC6, FC8, using flags
 #              formally for gcc-gfortran 4.3*
-#       + with gcc-gfortran v4.3.0 on FC9
-#  It fixes the ' \' versus ' &' terminator problem ;
-#  some namelist problems remain with old version (The biggest seems 
-#     to be the inability to support namelist syntax such as:
-#     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
-#      which results in run-time errors).
-
+#       + with gcc-gfortran v4.3.x on FC9, FC10
+#       + with gcc-gfortran v4.4.x on FC11,FC12,FC13
+#
+# on baudelaire.csail.mit.edu (FC13), uses:
+#  export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
+#  export MPI_INC_DIR=$MPI_GCC_DIR/include
+#  export PATH=$MPI_GCC_DIR/bin:$PATH
+#
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
 
 FC=${FC:=mpif77}
 F90C=${F90C:=mpif90}
 CC=${CC:=mpicc}
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DNML_TERMINATOR'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
 OMPFLAG='-fopenmp'
 
 NOOPTFLAGS='-O0'
@@ -38,19 +50,25 @@ fi
 
 # Requires gfortran from 2006 onwards for -fconvert=big-endian
 FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
-#- otherwise, switch to the home-made byte-swap:
-#DEFINES="-D_BYTESWAPIO $DEFINES"
+# for big objects:
+FFLAGS="$FFLAGS -fPIC"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FOPTIM='-O3 -funroll-loops'
+    CFLAGS="$FOPTIM -fPIC"
 else
     #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
     FOPTIM='-O0'
+    CFLAGS="$FOPTIM -fPIC"
+#   to get plenty of warnings :
+#   FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
+#   more checking (to use with testreport, put DEVEL option in IEEE section):
+#   FOPTIM="$FOPTIM -g -ffpe-trap=invalid,zero,overflow -fbounds-check"
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS=$FOPTIM
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
