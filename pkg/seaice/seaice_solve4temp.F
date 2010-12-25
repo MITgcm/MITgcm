@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.10 2010/12/16 08:31:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.11 2010/12/25 00:47:26 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,6 +83,7 @@ C     === Local variables ===
       _RL F_lwd      (1:sNx,1:sNy)
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
+      _RL hice_tmp
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
       _RL F_lh       (1:sNx,1:sNy)
       _RL F_c        (1:sNx,1:sNy)
@@ -352,7 +353,7 @@ C     ocean beneath ice.
 
 C     Set a mininum sea ice thickness of 5 cm to bound
 C     the magnitude of conductive heat fluxes.
-         HICE_ACTUAL(I,J) = max(HICE_ACTUAL(I,J),5. _d -2)
+         hice_tmp = max(HICE_ACTUAL(I,J),5. _d -2)
 
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
@@ -364,7 +365,7 @@ C     snow/ice system.
      &        XKS/XKI)/HICE_ACTUAL(I,J)
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
          effConduct(I,J) = XKI * XKS /
-     &        (XKS * HICE_ACTUAL(I,J) + XKI * HSNOW_ACTUAL(I,J))
+     &        (XKS * hice_tmp + XKI * HSNOW_ACTUAL(I,J))
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
@@ -508,6 +509,7 @@ C                 realistic values.
           IF (tsurfLoc(I,J) .LT. 50.0 _d 0 ) THEN
            tsurfLoc(I,J) = TMELT
           ENDIF
+          tsurfLoc(I,J) =MIN(tsurfLoc(I,J),TMELT)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
@@ -548,7 +550,6 @@ C     SW PENETRATION UNDER ICE
          ENDIF
 
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
-         tsurfLoc(I,J) = MIN(tsurfLoc(I,J),TMELT)
          TSURF(I,J,bi,bj) = tsurfLoc(I,J)
 
 C     Recalculate the fluxes based on the (possibly) adjusted TSURF
