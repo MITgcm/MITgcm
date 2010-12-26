@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.217 2010/12/15 17:10:38 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.218 2010/12/26 01:04:45 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -346,6 +346,22 @@ look_for_makedepend()  {
     #    3) locally build and use the cyrus implementation
     #    4) fall back to the buggy local xmakedpend script
     #
+    echo >> $LOGFILE
+    echo "running: look_for_makedepend()" >> $LOGFILE
+    if test "x${MAKEDEPEND}" != x ; then
+	echo "${MAKEDEPEND}" | grep -i cyrus > /dev/null 2>&1
+	RETVAL=$?
+	if test x"$RETVAL" = x0 ; then
+	    build_cyrus_makedepend
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		echo "WARNING: unable to build cyrus-makedepend. Try 'makedepend'"
+		MAKEDEPEND=
+	    fi
+	else
+	    echo " -->     MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
+	fi
+    fi
     if test "x${MAKEDEPEND}" = x ; then
 	which makedepend > /dev/null 2>&1
 	RV0=$?
@@ -370,27 +386,24 @@ EOF
 	test -f $MAKEFILE".tst"  &&  mv -f $MAKEFILE".tst" $MAKEFILE
 	if test "x${RV0}${RV1}" = x00 ; then
 	    MAKEDEPEND=makedepend
+	    echo " --> set MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
 	else
-	    echo "    a system-default makedepend was not found."
+	    echo "    system-default makedepend not found. Try to build cyrus-makedepend"
 	    #  Try to build the cyrus implementation
 	    build_cyrus_makedepend
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
+		echo "WARNING: unable to build cyrus-makedepend. Use local xmakedepend"
 		MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+		echo " --> set MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
 	    fi
-	    rm -f ./genmake_cy_md
-	fi
-    else
-	#  echo "MAKEDEPEND=${MAKEDEPEND}"
-	echo "${MAKEDEPEND}" | grep -i cyrus > /dev/null 2>&1
-	RETVAL=$?
-	if test x"$RETVAL" = x0 ; then
-	    build_cyrus_makedepend
 	fi
     fi
 }
 
 build_cyrus_makedepend()  {
+    echo >> $LOGFILE
+    echo "running: build_cyrus_makedepend()" >> $LOGFILE
     rm -f ./genmake_cy_md
     (
 	cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
@@ -407,9 +420,10 @@ build_cyrus_makedepend()  {
     rm -f ./genmake_cy_md
     if test "x$RETVAL" = x0 ; then
 	MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+ 	echo " --> set MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
 	return 0
     else
-	echo "WARNING: unable to build cyrus-imapd-makedepend"
+	echo "WARNING: fail to build cyrus-imapd-makedepend" >> $LOGFILE
 	return 1
     fi
 }
@@ -1391,8 +1405,8 @@ if test "x${ROOTDIR}" = x ; then
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
 	    if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
 		ROOTDIR=$d
-		printf "Warning:  ROOTDIR was not specified but there appears to be"
-		echo " a copy of MITgcm at \"$ROOTDIR\" so we'll try it."
+		printf "Warning: ROOTDIR was not specified ;"
+		echo " try using a local copy of MITgcm found at \"$ROOTDIR\""
 		break
 	    fi
 	done
