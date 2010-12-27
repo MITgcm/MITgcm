@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.10 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.11 2010/12/27 19:21:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -31,9 +31,7 @@ C     == routine arguments ==
       INTEGER myIter, myThid
 
 C     == Functions ==
-      INTEGER ILNBLNK
       _RL FLT_MAP_K2R
-      EXTERNAL ILNBLNK
       EXTERNAL FLT_MAP_K2R
 
 C     == local variables ==
@@ -43,35 +41,30 @@ C     == local variables ==
       INTEGER ip, k, ii
       _RL ix, jy, i0x, j0y, xx, yy, zz
       _RL uu,vv,tt,ss, pp
-      INTEGER ioUnit, irecord
       _RL tmp(imax)
       _RL npart_read, npart_times
       _RS dummyRS(1)
+      INTEGER fp, ioUnit, irecord
       CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(80) dataFName
-      INTEGER iG,jG,IL
-      LOGICAL exst
-      LOGICAL globalFile
 
 C     == end of interface ==
 
       fn = 'float_profiles'
+      fp = writeBinaryPrec
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C (1) read actual number floats from file (if exists)
-         IL=ILNBLNK( fn )
-         iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-         jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         WRITE(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fn(1:IL),'.',iG,'.',jG,'.data'
-         INQUIRE( file=dataFname, exist=exst )
-         IF (exst) THEN
-            CALL FLT_MDSREADVECTOR(fn,globalFile,precFloat64,'RL',
-     &                             imax,tmp,bi,bj,1,myThid)
+         ioUnit = -2
+         CALL MDS_READVEC_LOC(  fn, fp, ioUnit,
+     &                          'RL', imax, tmp, dummyRS,
+     &                           bi, bj, 1, myThid )
+         IF ( ioUnit.GT. 0 ) THEN
             npart_read  = tmp(1)
             npart_times = tmp(5)
+C-       close the read-unit (safer to use a different unit for writing)
+            CLOSE( ioUnit )
          ELSE
             npart_read  = 0.
             npart_times = 0.
@@ -97,7 +90,7 @@ C total number of floats
             tmp(ii) = 0.
          ENDDO
          ioUnit = -1
-         CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
+         CALL MDS_WRITEVEC_LOC( fn, fp, ioUnit,
      &                          'RL', imax, tmp, dummyRS,
      &                          bi,bj,-1, myIter, myThid )
 
@@ -166,7 +159,7 @@ C     Convert to coordinates
 C (3) write float positions into file
            irecord = npart_read+ip+1
            IF ( ip.NE.npart_tile(bi,bj) ) irecord = -irecord
-           CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
+           CALL MDS_WRITEVEC_LOC( fn, fp, ioUnit,
      &                            'RL', imax, tmp, dummyRS,
      &                            bi,bj,irecord, myIter, myThid )
 

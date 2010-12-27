@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.7 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.8 2010/12/27 19:21:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -9,15 +9,19 @@ C     ==================================================================
 C     SUBROUTINE FLT_INIT_VARIA
 C     ==================================================================
 C     o This routine initializes the start/restart positions.
-C       It does the following:
-C     o First it checks for local files. These are supposed to be restarts
-C       from a previous integration. The floats can therefore be read in
-C       without any further check (because they exist on the specific tile).
-C     o If no local files are available the routine assumes that this
-C       is an initialization. In that case it reads a global file
+C     o Either read initial position from file "flt_file" or
+C       read pickup file. The 2 type of files are similar, except
+C       initial positions are given on grid-coordinate (distance/degree
+C       depending on the grid) whereas in pickup file, positions are
+C       fractional indices along the grid and local to the tile.
+C       For this reason global pickup file is not supported.
+C       Initialisation:
+C     o First it check for global file, and when found, reads the global file
 C       (that has the same format as local files) and sorts those floats
 C       that exist on the specific tile into the local array.
-C     o At the end the float positions are written to the trajectory file
+C     o If no global file is available or in a case of a restart (pickup
+C       file from a previous integration) then read tiled file without
+C       any further check (because they exist on the specific tile).
 C     ==================================================================
 
 C     !USES:
@@ -45,9 +49,10 @@ C     == local variables ==
       INTEGER imax
       PARAMETER(imax=9)
       _RL tmp(imax)
+      _RS dummyRS(1)
       _RL ix, jy, kz
       _RL iLo, iHi, jLo, jHi
-      LOGICAL globalFile
+      INTEGER fp, ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -59,16 +64,31 @@ C     more floats at an earlier restart
 
 C     == end of interface ==
 
+C-    Tile boundary on index map:
+      iLo = 0.5 _d 0
+      iHi = 0.5 _d 0 + DFLOAT(sNx)
+      jLo = 0.5 _d 0
+      jHi = 0.5 _d 0 + DFLOAT(sNy)
+
 C-    all threads initialise local var:
       npart_read = 0
       npart_dist = 0.
 
-C read floats initial condition from file
       _BEGIN_MASTER(myThid)
+
+      DO bj = 1,nSy
+       DO bi = 1,nSx
+        npart_tile(bi,bj) = 0
+       ENDDO
+      ENDDO
+
+C read floats initial condition from file
       IF ( nIter0.EQ.0 ) THEN
         fn = flt_file
+        fp = readBinaryPrec
       ELSE
         WRITE(fn,'(A,I10.10)') 'pickup_flt.', nIter0
+        fp = precFloat64
       ENDIF
       iL = ILNBLNK(fn)
       WRITE(msgBuf,'(2A)')
@@ -76,51 +96,39 @@ C read floats initial condition from file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      DO bj = 1,nSy
-       DO bi = 1,nSx
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     tile boundary on index map:
-         iLo = 0.5 _d 0
-         iHi = 0.5 _d 0 + DFLOAT(sNx)
-         jLo = 0.5 _d 0
-         jHi = 0.5 _d 0 + DFLOAT(sNy)
+C--   Initial position: first try to read from a global file.
+      ioUnit = -2
+      bi = 0
+      bj = 0
+      IF ( nIter0.EQ.0 ) THEN
+C-    read actual number of floats from file
+        CALL MDS_READVEC_LOC( fn, fp, ioUnit,
+     &                        'RL', imax, tmp, dummyRS,
+     &                        bi, bj, 1, myThid )
+      ENDIF
 
-C (1) read actual number floats from file
-         CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
-     &                            imax, tmp, bi, bj, 1, myThid )
-         WRITE(msgBuf,'(A,2I4,A,1P2E15.8)')
+      IF ( ioUnit.GT.0 .AND. nIter0.EQ.0 ) THEN
+C--   Found a global file
+        WRITE(msgBuf,'(A,2I4,A,1P2E15.8)')
      &    ' bi,bj=', bi, bj, ' , npart,max_npart=', tmp(1), tmp(6)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         npart_read = NINT(tmp(1))
-         max_npart  = tmp(6)
-
-         IF (globalFile) THEN
-           npart_tile(bi,bj) = 0
-         ELSE
-           npart_tile(bi,bj) = npart_read
-           npart_read = MIN( npart_read, max_npart_tile )
-         ENDIF
-
-         DO ip=1,npart_read
-
-           CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
-     &                             imax, tmp, bi, bj, ip+1, myThid )
-
-           IF ( nIter0.EQ.0 ) THEN
-C--   For initial condition only, convert coordinates to index map:
-             CALL FLT_MAP_XY2IJLOCAL( ix, jy,
-     I                    tmp(3), tmp(4),bi,bj,myThid )
-             kz = FLT_MAP_R2K( tmp(5), bi, bj, myThid )
-           ELSE
-             ix = tmp(3)
-             jy = tmp(4)
-             kz = tmp(5)
-           ENDIF
-
-           IF ( globalFile .AND. nIter0.EQ.0 ) THEN
-C     Check if floats are existing on tile. If not, jump to next float
-
+        npart_read = NINT(tmp(1))
+        max_npart  = tmp(6)
+        DO ip=1,npart_read
+C-    read individual float position from file
+          CALL MDS_READVEC_LOC( fn, fp, ioUnit,
+     &                          'RL', imax, tmp, dummyRS,
+     &                          bi, bj, ip+1, myThid )
+          DO bj = 1,nSy
+           DO bi = 1,nSx
+C-    For initial condition only, convert coordinates to index map:
+            CALL FLT_MAP_XY2IJLOCAL( ix, jy,
+     I                               tmp(3), tmp(4),bi,bj,myThid )
+            kz = FLT_MAP_R2K( tmp(5), bi, bj, myThid )
+C-    Check if float exists on this tile. If not, try next tile
             IF ( ix.GE.iLo .AND. ix.LT.iHi .AND.
      &           jy.GE.jLo .AND. jy.LT.jHi ) THEN
              npart_tile(bi,bj) = npart_tile(bi,bj) + 1
@@ -138,31 +146,74 @@ C     Check if floats are existing on tile. If not, jump to next float
 
              ENDIF
             ENDIF
+C-      end bi,bj loops
+           ENDDO
+          ENDDO
 
-           ELSEIF ( globalFile ) THEN
-            WRITE(msgBuf,'(2A)') 'FLT_INIT_VARIA:',
-     &                           ' global pickup not supported'
-            CALL PRINT_ERROR( msgBuf , myThid)
-            STOP 'ABNORMAL END: S/R FLT_INIT_VARIA'
+        ENDDO
+        CLOSE( ioUnit )
 
-           ELSE
+      ELSEIF ( ioUnit.GT.0 ) THEN
+         WRITE(msgBuf,'(2A)') 'FLT_INIT_VARIA:',
+     &                        ' global pickup not supported'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R FLT_INIT_VARIA'
+
+      ELSE
+C--   then try to read from a tiled file:
+
+        DO bj = 1,nSy
+         DO bi = 1,nSx
+           ioUnit = -1
+C-    read actual number floats from file
+           CALL MDS_READVEC_LOC( fn, fp, ioUnit,
+     &                           'RL', imax, tmp, dummyRS,
+     &                           bi, bj, 1, myThid )
+           WRITE(msgBuf,'(A,2I4,A,1P2E15.8)')
+     &     ' bi,bj=', bi, bj, ' , npart,max_npart=', tmp(1), tmp(6)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+
+           npart_tile(bi,bj) = NINT(tmp(1))
+           max_npart  = tmp(6)
+           npart_read = MIN( npart_tile(bi,bj), max_npart_tile )
+           DO ip=1,npart_read
+C-    read individual float position from file
+             CALL MDS_READVEC_LOC( fn, fp, ioUnit,
+     &                             'RL', imax, tmp, dummyRS,
+     &                             bi, bj, ip+1, myThid )
+             IF ( nIter0.EQ.0 ) THEN
+C--   For initial condition only, convert coordinates to index map:
+              CALL FLT_MAP_XY2IJLOCAL( ix, jy,
+     I                                 tmp(3), tmp(4),bi,bj,myThid )
+              kz = FLT_MAP_R2K( tmp(5), bi, bj, myThid )
+             ELSE
+              ix = tmp(3)
+              jy = tmp(4)
+              kz = tmp(5)
+             ENDIF
 C     not a global file: assume that all particles from this tiled-file
 C     belong to this current tile (=> do not no check)
+             npart(ip,bi,bj)  = tmp(1)
+             tstart(ip,bi,bj) = tmp(2)
+             ipart(ip,bi,bj)  = ix
+             jpart(ip,bi,bj)  = jy
+             kpart(ip,bi,bj)  = kz
+             kfloat(ip,bi,bj) = tmp(6)
+             iup(  ip,bi,bj)  = tmp(7)
+             itop( ip,bi,bj)  = tmp(8)
+             tend( ip,bi,bj)  = tmp(9)
+           ENDDO
+           CLOSE( ioUnit )
 
-              npart(ip,bi,bj)  = tmp(1)
-              tstart(ip,bi,bj) = tmp(2)
-              ipart(ip,bi,bj)  = tmp(3)
-              jpart(ip,bi,bj)  = tmp(4)
-              kpart(ip,bi,bj)  = tmp(5)
-              kfloat(ip,bi,bj) = tmp(6)
-              iup(  ip,bi,bj)  = tmp(7)
-              itop( ip,bi,bj)  = tmp(8)
-              tend( ip,bi,bj)  = tmp(9)
-
-           ENDIF
-
+C-      end bi,bj loops
          ENDDO
+        ENDDO
+C--   end global-file / tiled-file separated treatment
+      ENDIF
 
+      DO bj = 1,nSy
+       DO bi = 1,nSx
          npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
          IF ( npart_tile(bi,bj).GT.max_npart_tile ) THEN
            WRITE(msgBuf,'(2A,2I4,2(A,I8))') 'FLT_INIT_VARIA:',
@@ -172,7 +223,6 @@ C     belong to this current tile (=> do not no check)
            CALL PRINT_ERROR( msgBuf , myThid)
            STOP 'ABNORMAL END: S/R FLT_INIT_VARIA'
          ENDIF
-
        ENDDO
       ENDDO
       _END_MASTER( myThid )
