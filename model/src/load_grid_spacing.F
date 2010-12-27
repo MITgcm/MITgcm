@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.6 2010/12/27 14:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.7 2010/12/27 23:26:39 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -32,6 +32,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     msgBuf    :: Informational/error message buffer
       INTEGER iLen
+      INTEGER i, j, n
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -86,6 +87,64 @@ C--   hybrid sigma vertical coordinate coefficient
      &    ' a&b_HybSigmF loaded from file: ', hybSigmFile(1:iLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
+      ENDIF
+
+C--   Check horizontal grid-spacing
+      IF ( .NOT.usingCurvilinearGrid ) THEN
+C Note: To avoid multiple copies of the same code in several horiz.grid
+C       initialisation S/R, check horiz.grid spacing here, after
+C       loading delX,delY (and before calling any of these S/R).
+
+C--   Check delX grid-spacing:
+       n = 0
+       DO i=1,Nx
+C-    check that delX has been set
+        IF ( delX(i).EQ.UNSET_RL ) THEN
+         n = n+1
+         WRITE(msgBuf,'(2A,I5)') 'S/R LOAD_GRID_SPACING:',
+     &       ' No value for delX at i =', i
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+C-    check that delX is > 0
+        IF ( delX(i).LE.0. ) THEN
+         n = n+1
+         WRITE(msgBuf,'(2A,I5,A,1PE16.8,A)') 'S/R LOAD_GRID_SPACING:',
+     &       ' delX(i=', i, ')=', delX(i), ' : MUST BE >0'
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+       ENDDO
+       IF ( n.GE.1 ) THEN
+         WRITE(msgBuf,'(2A,I5,A)') 'S/R LOAD_GRID_SPACING:',
+     &       ' found', n, ' invalid delX values'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R LOAD_GRID_SPACING'
+       ENDIF
+
+C--   Check delY grid-spacing:
+       n = 0
+       DO j=1,Ny
+C-    check that delY has been set
+        IF ( delY(j).EQ.UNSET_RL ) THEN
+         n = n+1
+         WRITE(msgBuf,'(2A,I5)') 'S/R LOAD_GRID_SPACING:',
+     &       ' No value for delY at j =', j
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+C-    check that delY is > 0
+        IF ( delY(j).LE.0. ) THEN
+         n = n+1
+         WRITE(msgBuf,'(2A,I5,A,1PE16.8,A)') 'S/R LOAD_GRID_SPACING:',
+     &       ' delY(j=', j, ')=', delY(j), ' : MUST BE >0'
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+       ENDDO
+       IF ( n.GE.1 ) THEN
+         WRITE(msgBuf,'(2A,I5,A)') 'S/R LOAD_GRID_SPACING:',
+     &       ' found', n, ' invalid delY values'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R LOAD_GRID_SPACING'
+       ENDIF
+C--   end of grid-spacing check (not usingCurvilinearGrid)
       ENDIF
 
       _END_MASTER(myThid)
