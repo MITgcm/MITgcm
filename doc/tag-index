@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1358 2010/12/24 23:15:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1359 2010/12/27 20:00:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+  - use (recent) mdsio S/R MDS_READVEC_LOC instead of local FLT_MDSREADVECTOR
+  - precision of input and output files set according to readBinaryPrec
+    and writeBinaryPrec (previously always 64.b), pickup remains at 64 bits.
+  - initial float position from tiled file was not converted to index space
+    (looks like a bug): fixed to make it similar to initial pos. global file.
 o global_ocean.cs32x15:
    change SIZE.h of AD set-up to get same tiling as with MPI.
    Update output_adm, output_adm.thsice (pass@14) & output_adm.seaice (fail@11)
