@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1359 2010/12/27 20:00:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1360 2010/12/28 20:22:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - check horizontal grid-spacing for unset or zero/negative values.
+  - change AD test hs94.1x64x5 to be truly a 2-D set-up.
 o pkg/flt:
   - use (recent) mdsio S/R MDS_READVEC_LOC instead of local FLT_MDSREADVECTOR
   - precision of input and output files set according to readBinaryPrec
