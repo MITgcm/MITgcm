@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.23 2007/12/06 16:30:05 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.24 2010/12/28 23:49:54 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -7,7 +7,7 @@ C !TITLE: WRAPPER CODE SYNOPSIS
 C !AUTHORS: mitgcm developers ( support@mitgcm.org )
 C !AFFILIATION: Massachussetts Institute of Technology
 C !DATE:
-C !INTRODUCTION: 
+C !INTRODUCTION:
 C     Wrapper synopsis and code Routines in the subdirectories under
 C     eesupp/ ( src/ and inc/ ) provide the core framework within which
 C     numerical and ancilliary software of MITgcm operates.  The eesupp/
@@ -50,7 +50,6 @@ C     systems such as MPI and UNIX System V IPC memory mapping, as well
 C     bindings for high-performance propreitary systems such as Myrinet
 C     GM software and Compaq IMC memory channel technology.
 C
-C 
 CEOI
 
 
@@ -69,23 +68,23 @@ C !INTERFACE:
 
 C !DESCRIPTION:
 C     *==========================================================*
-C     | PROGRAM MAIN                                            
-C     | o MAIN wrapper for MITgcm UV implementation.            
+C     | PROGRAM MAIN
+C     | o MAIN wrapper for MITgcm UV implementation.
 C     *==========================================================*
-C     | MAIN controls the "execution environment".               
-C     | Its main functions are                                   
+C     | MAIN controls the "execution environment".
+C     | Its main functions are
 C     | 1. call procedure EEBOOT to perform execution environment
-C     |    initialisation.                                       
+C     |    initialisation.
 C     | 2. call procedure THE\_MODEL\_MAIN once for each concurrent
-C     |    thread. THE\_MODEL\_MAIN is the user supplied top-level 
-C     |    routine.                                              
-C     | 3. call procedure EEDIE to perform execution environment 
-C     |    shutdown.                                             
+C     |    thread. THE\_MODEL\_MAIN is the user supplied top-level
+C     |    routine.
+C     | 3. call procedure EEDIE to perform execution environment
+C     |    shutdown.
 C     *==========================================================*
 
 C      !CALLING SEQUENCE:
 C
-C      main()       
+C      main()
 C      |
 C      |--eeboot()         :: WRAPPER initilization
 C      |
@@ -123,7 +122,7 @@ C--   Local variables
 #ifdef USE_OMP_THREADING
       INTEGER OMP_GET_THREAD_NUM
       EXTERNAL OMP_GET_THREAD_NUM
-#endif 
+#endif
 
 CEOP
 
@@ -132,12 +131,12 @@ CEOP
 #endif
 
 C--   Set up the execution environment
-C     EEBOOT loads a execution environment parameter file 
-C     ( called "eedata" by default ) and sets variables 
+C     EEBOOT loads a execution environment parameter file
+C     ( called "eedata" by default ) and sets variables
 C     accordingly.
       CALL EEBOOT
 
-C--   Trap errors 
+C--   Trap errors
       IF ( eeBootError ) THEN
        fatalError = .TRUE.
        GOTO 999
@@ -157,25 +156,25 @@ C--   Trap errors
 #endif
 
 #ifdef HAVE_PTHREADS
-C      IF (usePTHREADS) THEN
+c      IF (usePTHREADS) THEN
         CALL PTINIT(nThreads)
-C      ELSE
+c      ELSE
 #else
 
-C--   Start nThreads concurrent threads.   
+C--   Start nThreads concurrent threads.
 C     Note: We do a fiddly check here. The check is performed
 C           by CHECK_THREADS. CHECK_THREADS does a count
 C           of all the threads. If after ten seconds it has not
 C           found nThreads threads are running it flags an
-C           error. This traps the case in which the input 
-C           parameter nThreads is different from the actual 
+C           error. This traps the case in which the input
+C           parameter nThreads is different from the actual
 C           number of concurrent threads the OS gives us. This
 C           case causes a deadlock if we do not trap it here.
 #include "MAIN_PDIRECTIVES1.h"
       DO I=1,nThreads
 #ifdef USE_OMP_THREADING
         IF ( OMP_GET_THREAD_NUM() .EQ. I-1 ) THEN
-#endif 
+#endif
          myThid = I
 
 C--      Do check to see if there are nThreads threads running
@@ -199,7 +198,7 @@ C--      Each threads sets flag indicating it is done
          ENDIF
 #ifdef USE_OMP_THREADING
         ENDIF
-#endif  
+#endif
       ENDDO
 #include "MAIN_PDIRECTIVES2.h"
 
@@ -213,25 +212,26 @@ C--   Write closedown status
       IF ( fatalError ) THEN
        STOP 'ABNORMAL END: PROGRAM MAIN'
       ELSE
+       WRITE(standardMessageUnit,'(A)')
+     &      'PROGRAM MAIN: Execution ended Normally'
        STOP 'NORMAL END'
       ENDIF
-C
-      END
 
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP 0
 C     !ROUTINE: PTREENTRY
-      
+
 C     !INTERFACE:
-      SUBROUTINE PTREENTRY( 
+      SUBROUTINE PTREENTRY(
      I     myThid )
 
 C     !DESCRIPTION:
 C     Re-entry point for a pthreads-based threading mechanism.  The
 C     intent is to produce a threading hack that will work with gcc/g77.
-      
+
 C     !USES:
       implicit none
 #include "SIZE.h"
@@ -253,7 +253,7 @@ CEOP
       write(*,*) 'myThid = ', myThid
       CALL CHECK_THREADS( myThid )
 
-C     CALL THE_MODEL_MAIN(myThid)
+c     CALL THE_MODEL_MAIN(myThid)
 
       threadIsComplete(myThid) = .TRUE.
 
