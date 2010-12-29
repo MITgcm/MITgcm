@@ -17,6 +17,8 @@ C ###########################################################
       INTEGER exchWidthY
       INTEGER cornerMode
       INTEGER myThid
+C dummy self dependence (nontrivial so mfef90 doesn't kill it)
+      array(1,1,1,1,1)=2*array(1,1,1,1,1)
       end subroutine
 C ###########################################################
 C      SUBROUTINE EXCH1_RS(
@@ -62,6 +64,7 @@ C ###########################################################
 #include "EXCH.h"
       Real*8 sumPhi
       INTEGER myThid
+C dummy self dependence (nontrivial so mfef90 doesn't kill it)
       sumPhi=2*sumPhi
       end subroutine
 C ###########################################################
@@ -83,5 +86,6 @@ C ###########################################################
       Real*8  lastResidual
       INTEGER numIters
       INTEGER myThid
-      cg2d_x(1,1,1,1)=cg2d_b(1,1,1,1)
+C dummy self dependence (nontrivial so mfef90 doesn't kill it)
+      cg2d_x(1,1,1,1)=2*cg2d_b(1,1,1,1)
       end subroutine
