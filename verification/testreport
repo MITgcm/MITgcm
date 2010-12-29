@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.152 2010/12/17 17:32:24 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.153 2010/12/29 22:35:50 jmc Exp $
 #  $Name:  $
 #
 
@@ -654,7 +654,8 @@ runmodel()
      		    echo " no previous $RUNLOG: assume NORMAL END" >> $RUNLOG 2>&1
 		fi
 	    fi
-	    ENDVAL=`cat $RUNLOG | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
+	    #ENDVAL=`cat $RUNLOG | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
+	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
 	fi
 	rm -f run.log_tmp
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
