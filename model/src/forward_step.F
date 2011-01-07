@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.186 2010/11/18 00:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.187 2011/01/07 12:29:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -121,6 +121,10 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
+# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+#  include "SHELFICE_COST.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
