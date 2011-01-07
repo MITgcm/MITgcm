@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.22 2010/05/09 16:23:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.23 2011/01/07 12:35:58 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,10 +11,6 @@ c     SUBROUTINE cost_final
 c     ==================================================================
 c
 c     o Sum of all cost function contributions.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c     changed: Christian Eckert eckert@mit.edu 25-Feb-2000
-c     heimbach@mit.edu 05-Nov-2003 Modularize cost package
 c
 c     ==================================================================
 c     SUBROUTINE cost_final
@@ -33,9 +29,12 @@ c     == global variables ==
 # include "ctrl.h"
 #endif
 #ifdef ALLOW_DIC
-cph-- quickly for testing
 # include "DIC_COST.h"
 #endif
+#ifdef ALLOW_COST_SHELFICE
+# include "SHELFICE_COST.h"
+#endif
+
 
 c     == routine arguments ==
 
@@ -85,6 +84,11 @@ c     == end of interface ==
 #ifdef ALLOW_COST_TEMP
       CALL COST_TEMP (myThid)
 #endif
+#ifdef ALLOW_SHELFICE
+# ifdef ALLOW_COST_SHELFICE
+      CALL SHELFICE_COST_FINAL (myThid)
+# endif
+#endif
 
 c--   Sum up all contributions.
       do bj = jtlo,jthi
@@ -108,6 +112,10 @@ c--   Sum up all contributions.
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
+#ifdef ALLOW_COST_SHELFICE
+          write(standardmessageunit,'(A,D22.15)')
+     &         ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
+#endif
 
           fc = fc
      &            + mult_test   * objf_test(bi,bj)
@@ -121,6 +129,9 @@ c--   Sum up all contributions.
 #endif
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
+#endif
+#ifdef ALLOW_COST_SHELFICE
+     &            + mult_shelfice * objf_shelfice(bi,bj)
 #endif
         enddo
       enddo

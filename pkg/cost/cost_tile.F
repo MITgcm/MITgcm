@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.12 2009/02/13 21:58:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.13 2011/01/07 12:35:58 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -109,6 +109,10 @@ CADJ &     kind = isbyte
 
 #if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT) || defined (ALLOW_COST_TEMP) )
          CALL COST_ACCUMULATE_MEAN (myThid)
+#endif
+
+#ifdef ALLOW_COST_SHELFICE
+         CALL SHELFICE_COST_ACCUMULATE (myThid)
 #endif
 
       ENDIF
