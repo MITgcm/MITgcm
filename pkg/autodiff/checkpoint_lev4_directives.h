@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.24 2010/10/28 18:28:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.25 2011/01/07 12:31:53 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -75,7 +75,9 @@ CADJ STORE StoreDynVars3D     = tapelev4, key = ilev_4
 c
 #endif /* AUTODIFF_USE_OLDSTORE_3D */
 
-cnewCADJ STORE ivdconvcount       = tapelevx, key = ilev_x
+
+
+CADJ STORE phi0surf      = tapelev4, key = ilev_4
 
 #ifdef EXACT_CONSERV
 cphCADJ STORE hDivFlow  = tapelev4, key = ilev_4
@@ -96,7 +98,6 @@ CADJ STORE hfacw         = tapelev4, key = ilev_4
 CADJ STORE recip_hfacc   = tapelev4, key = ilev_4
 CADJ STORE recip_hfacs   = tapelev4, key = ilev_4
 CADJ STORE recip_hfacw   = tapelev4, key = ilev_4
-CADJ STORE phi0surf      = tapelev4, key = ilev_4
 
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarexpc,rstarexps,rstarexpw 
@@ -138,9 +139,9 @@ CADJ &     = tapelev4, key = ilev_4
 # include "salt_plume_ad_check_lev4_dir.h"
 #endif
 
-#ifdef ALLOW_SEAICE
-# include "seaice_ad_check_lev4_dir.h"
-#endif /* ALLOW_SEAICE */
+#ifdef ALLOW_SHELFICE
+# include "shelfice_ad_check_lev4_dir.h"
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_THSICE
 # include "thsice_ad_check_lev4_dir.h"

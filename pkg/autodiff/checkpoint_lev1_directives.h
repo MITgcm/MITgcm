@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.50 2010/10/28 18:28:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.51 2011/01/07 12:31:53 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -8,6 +8,8 @@ c
 
 CADJ STORE totphihyd = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+CADJ STORE phi0surf = comlev1,
+CADJ &     key = ikey_dynamics, kind = isbyte
 #ifdef EXACT_CONSERV
 CADJ STORE pmepr = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -41,8 +43,6 @@ CADJ &     kind = isbyte
 CADJ STORE recip_hfacs = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE recip_hfacw = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE phi0surf    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 cph the following are frequently needed, e.g. with seaice
 CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
@@ -178,6 +178,10 @@ CADJ STORE uice,vice       = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_THSICE
 # include "thsice_ad_check_lev1_dir.h"
+#endif
+
+#ifdef ALLOW_SHELFICE
+# include "shelfice_ad_check_lev1_dir.h"
 #endif
 
 #ifdef ALLOW_RBCS

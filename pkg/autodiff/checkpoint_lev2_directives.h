@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.50 2010/10/28 18:28:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.51 2011/01/07 12:31:53 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -75,7 +75,9 @@ CADJ STORE StoreDynVars3D     = tapelev2, key = ilev_2
 c
 #endif /* AUTODIFF_USE_OLDSTORE_3D */
 
-cnewCADJ STORE ivdconvcount       = tapelevx, key = ilev_x
+
+
+CADJ STORE phi0surf      = tapelev2, key = ilev_2
 
 #ifdef EXACT_CONSERV
 cphCADJ STORE hDivFlow  = tapelev2, key = ilev_2
@@ -96,7 +98,6 @@ CADJ STORE hfacw         = tapelev2, key = ilev_2
 CADJ STORE recip_hfacc   = tapelev2, key = ilev_2
 CADJ STORE recip_hfacs   = tapelev2, key = ilev_2
 CADJ STORE recip_hfacw   = tapelev2, key = ilev_2
-CADJ STORE phi0surf      = tapelev2, key = ilev_2
 
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarexpc,rstarexps,rstarexpw 
@@ -145,6 +146,10 @@ CADJ &     = tapelev2, key = ilev_2
 #ifdef ALLOW_THSICE
 # include "thsice_ad_check_lev2_dir.h"
 #endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_SHELFICE
+# include "shelfice_ad_check_lev2_dir.h"
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_RBCS
 # include "rbcs_ad_check_lev2_dir.h"
