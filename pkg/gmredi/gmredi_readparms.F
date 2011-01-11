@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.19 2008/10/27 22:03:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.20 2011/01/11 00:54:45 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -34,20 +34,22 @@ C     === Routine arguments ===
 #ifdef ALLOW_GMREDI
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 CEOP
 
 C--   GM/Redi parameter
-C     GM_Small_Number :: epsilon used in computing the slope
+C     GM_Small_Number  :: epsilon used in computing the slope
 C     GM_slopeSqCutoff :: slope^2 cut-off value
       NAMELIST /GM_PARM01/
      &          GM_AdvForm, GM_AdvSeparate,
      &          GM_InMomAsStress,
      &          GM_isopycK,
      &          GM_background_K,
+     &          GM_iso2dFile, GM_iso1dFile,
+     &          GM_bol2dFile, GM_bol1dFile,
      &          GM_taper_scheme,
      &          GM_maxSlope,
      &          GM_Kmin_horiz,
@@ -61,11 +63,6 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_MNC
 
       _BEGIN_MASTER(myThid)
-
-C--   GMREDI_READPARMS has been called so we know that the package is active.
-C note: cannot test for GMRediIsOn outside GM-redi S/R (since is in GMREDI.h)
-C       + is not initialized (if useGMRedi=F) => useless => removed
-c     GMRediIsOn = .TRUE.
 
 C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
@@ -84,6 +81,10 @@ C--   Default values GM/Redi
       GM_Scrit            = 0.004 _d 0
       GM_Sd               = 0.001 _d 0
       GM_MNC              = useMNC
+      GM_iso2dFile        = ' '
+      GM_iso1dFile        = ' '
+      GM_bol2dFile        = ' '
+      GM_bol1dFile        = ' '
 
 C--   Default values GM/Redi I/O control
 c     GM_dumpFreq         = -1.
@@ -133,6 +134,10 @@ C     Some constants
         GM_skewflx = 1.
         GM_advect  = 0.
         GM_ExtraDiag = GM_isopycK.NE.GM_background_K
+      ENDIF
+      IF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
+     &     GM_iso1dFile .NE. GM_bol1dFile ) THEN
+        GM_ExtraDiag = .TRUE.
       ENDIF
 
 C     Make sure that we locally honor the global MNC on/off flag

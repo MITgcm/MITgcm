@@ -1,19 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.10 2008/05/30 02:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.11 2011/01/11 00:54:45 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: GMREDI_CALC_PSI_B
+C     !INTERFACE:
       SUBROUTINE GMREDI_CALC_PSI_B(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             ldd97_LrhoW, ldd97_LrhoS,
      I             myThid )
-C     /==========================================================\
-C     | SUBROUTINE GMREDI_CALC_PSI_B                             |
-C     | o Calculate stream-functions for GM bolus velocity       |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE GMREDI_CALC_PSI_B
+C     | o Calculate stream-functions for GM bolus velocity
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -30,8 +36,8 @@ C     == Global variables ==
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C
       _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -39,13 +45,15 @@ C
       _RL ldd97_LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_GMREDI
 #ifdef GM_BOLUS_ADVEC
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k, km1
+      _RL half_K
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -122,14 +130,17 @@ CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C-  Compute the 2 stream-function Components ( GM bolus vel.) 
+C-  Compute the 2 stream-function Components ( GM bolus vel.)
+       half_K = GM_background_K
+     &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
 #if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
      &     *( kapgm(i,j,k,bi,bj)
-#else 
-     &     *( GM_background_K
+#else
+     &     *( half_K
+     &          *(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
@@ -145,8 +156,9 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
 #if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
      &     *( kapgm(i,j,k,bi,bj)
-#else 
-     &     *( GM_background_K
+#else
+     &     *( half_K
+     &          *(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))

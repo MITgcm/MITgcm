@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.16 2008/10/27 22:03:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.17 2011/01/11 00:54:45 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -11,7 +11,13 @@ C--   Numerical Constant
       PARAMETER( op5  = 0.5 _d 0 )
       PARAMETER( op25 = 0.25 _d 0 )
 
-C--   GM/Redi Logical-type parameters
+C--   COMMON /GM_PARAMS_L/ GM/Redi Logical-type parameters
+C     GM_AdvForm       :: use Advective Form (instead of Skew-Flux form)
+C     GM_AdvSeparate   :: do separately advection by Eulerian and Bolus velocity
+C     GM_ExtraDiag     :: select extra diagnostics
+C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
+C     GM_MNC           ::
+C     GM_MDSIO         ::
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_ExtraDiag
@@ -23,13 +29,23 @@ C--   GM/Redi Logical-type parameters
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress
 
-C--   GM/Redi Character-type parameters
-C     GM_taper_scheme  :: select which tapering/clipping scheme to use
+C--   COMMON /GM_PARAMS_C/ GM/Redi Character-type parameters
+C     GM_taper_scheme :: select which tapering/clipping scheme to use
+C     GM_iso2dFile :: input file for 2.D horiz scaling of Isopycnal diffusivity
+C     GM_iso1dFile :: input file for 1.D vert. scaling of Isopycnal diffusivity
+C     GM_bol2dFile :: input file for 2.D horiz scaling of Thickness diffusivity
+C     GM_bol1dFile :: input file for 1.D vert. scaling of Thickness diffusivity
       CHARACTER*(40) GM_taper_scheme
+      CHARACTER*(MAX_LEN_FNAM) GM_iso2dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_iso1dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_bol2dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_bol1dFile
       COMMON /GM_PARAMS_C/
-     &                   GM_taper_scheme
+     &                   GM_taper_scheme,
+     &                   GM_iso2dFile, GM_iso1dFile,
+     &                   GM_bol2dFile, GM_bol1dFile
 
-C--   GM/Redi real-type parameters
+C--   COMMON /GM_PARAMS_R/ GM/Redi real-type parameters
 C     GM_isopycK       :: Isopycnal diffusivity [m^2/s] (Redi-tensor)
 C     GM_background_K  :: Thickness diffusivity [m^2/s] (GM bolus transport)
 C     GM_maxSlope      :: maximum slope (tapering/clipping) [-]
@@ -70,8 +86,8 @@ C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd
 
-C--   More GM/Redi parameters derived from previous block
-C     (not directly user configured)
+C--   COMMON /GM_DERIVED_PAR/ other GM/Redi parameters
+C     (derived from previous block and not directly user configured)
       _RL GM_rMaxSlope
       _RL GM_skewflx
       _RL GM_advect
@@ -79,13 +95,26 @@ C     (not directly user configured)
      &                   GM_rMaxSlope,
      &                   GM_skewflx, GM_advect
 
+C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients
+C     defined at grid-cell center (tracer location)
+C     GM_isoFac2d  :: 2.D horiz scaling factor [-] of Isopycnal diffusivity
+C     GM_bolFac2d  :: 2.D horiz scaling factor [-] of Thickness diffusivity
+C     GM_isoFac1d  :: 1.D vert. scaling factor [-] of Isopycnal diffusivity
+C     GM_bolFac1d  :: 1.D vert. scaling factor [-] of Thickness diffusivity
+      _RS GM_isoFac2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS GM_bolFac2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS GM_isoFac1d(Nr)
+      _RS GM_bolFac1d(Nr)
+      COMMON /GM_COEFFICIENTS/
+     &  GM_isoFac2d, GM_bolFac2d, GM_isoFac1d, GM_bolFac1d
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  GM/Redi tensor elements
 
 C     Bottom row of tensor corresponds to W points
-C     Kwx is K_31 element, X direction at W point
-C     Kwy is K_32 element, Y direction at W point
-C     Kwz is K_33 element, Z direction at W point
+C     Kwx :: K_31 element of GM/Redi tensor, X direction at W point
+C     Kwy :: K_32 element of GM/Redi tensor, Y direction at W point
+C     Kwz :: K_33 element of GM/Redi tensor, Z direction at W point
       _RL Kwx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kwy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kwz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -93,8 +122,8 @@ C     Kwz is K_33 element, Z direction at W point
 
 #ifdef GM_NON_UNITY_DIAGONAL
 C     Horizontal part of the tensor
-C     Kux is K_11 element, X direction at U point
-C     Kvy is K_22 element, Y direction at V point
+C     Kux :: K_11 element of GM/Redi tensor, X direction at U point
+C     Kvy :: K_22 element of GM/Redi tensor, Y direction at V point
       _RL Kux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kvy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GM_HorTensor/ Kux,Kvy
@@ -105,8 +134,8 @@ C     Kvy is K_22 element, Y direction at V point
 
 #ifdef GM_EXTRA_DIAGONAL
 C     First/second rows of tensor corresponds to U/V points
-C     Kuz is K_13 element, Z direction at U point
-C     Kvz is K_23 element, Z direction at V point
+C     Kuz :: K_13 element of GM/Redi tensor, Z direction at U point
+C     Kvz :: K_23 element of GM/Redi tensor, Z direction at V point
       _RL Kuz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kvz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GM_UVtensor/ Kuz,Kvz
