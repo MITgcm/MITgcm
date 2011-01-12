@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.97 2010/11/22 23:48:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.98 2011/01/12 00:07:15 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -386,6 +386,12 @@ CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
 CADJ INIT comlev1_multdim
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
 #  endif
+#  ifndef DISABLE_MULTIDIM_ADVECTION
+CADJ INIT comlev1_bibj_k_gadice = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
+CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass*maxpass
+#  endif /* DISABLE_MULTIDIM_ADVECTION */
 # endif /* ALLOW_SEAICE */
 c--
 #ifdef ALLOW_THSICE

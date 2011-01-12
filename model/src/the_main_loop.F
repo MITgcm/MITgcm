@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.112 2011/01/07 12:29:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.113 2011/01/12 00:08:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -349,14 +349,20 @@ c--
 #    ifdef SEAICE_ALLOW_DYNAMICS
 cphCADJ INIT comlev1_lsr = COMMON,nchklev_1*2
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
-#  endif
-#  ifdef SEAICE_ALLOW_EVP
+#   endif
+#   ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
-#  endif
-#  ifdef SEAICE_MULTICATEGORY
+#   endif
+#   ifdef SEAICE_MULTICATEGORY
 CADJ INIT comlev1_multdim 
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
-#  endif
+#   endif
+#    ifndef DISABLE_MULTIDIM_ADVECTION
+CADJ INIT comlev1_bibj_k_gadice = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
+CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass*maxpass
+#    endif /* DISABLE_MULTIDIM_ADVECTION */
 # endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
