@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.20 2010/11/08 03:27:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.21 2011/01/12 00:06:24 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -224,9 +224,8 @@ C--   Set tile-specific parameters for horizontal fluxes
       k = 1
 C--   Start of k loop for horizontal fluxes
 #ifdef ALLOW_AUTODIFF_TAMC
-      kkey = (igadkey-1)*Nr + k
 CADJ STORE iceFld =
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice, key=igadkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Content of CALC_COMMON_FACTORS, adapted for 2D fields
@@ -263,8 +262,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
-       passkey = ipass + (k-1)      *maxcube
-     &                 + (igadkey-1)*maxcube*Nr
+       passkey = ipass + (igadkey-1)*maxpass
        IF (nipass .GT. maxpass) THEN
         STOP 'SEAICE_ADVECTION: nipass > maxcube. check tamc.h'
        ENDIF
@@ -300,10 +298,10 @@ C--   X direction
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
@@ -333,7 +331,7 @@ C-     Internal exchange for calculations in X
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -500,9 +498,9 @@ C--   Y direction
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -532,7 +530,7 @@ C-     Internal exchange for calculations in Y
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

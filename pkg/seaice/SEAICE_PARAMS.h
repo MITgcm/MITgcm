@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.68 2010/12/03 05:00:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.69 2011/01/12 00:06:24 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -281,13 +281,13 @@ C--   Constants used by sea-ice model
 C--   identifiers for advected properties
       INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW
       INTEGER GAD_SALT,GAD_AGE
-      PARAMETER ( GAD_HEFF  = 101, 
-     &            GAD_AREA  = 102,
-     &            GAD_QICE1 = 103,
-     &            GAD_QICE2 = 104,
-     &            GAD_SNOW  = 105,
-     &            GAD_SALT  = 106,
-     &            GAD_AGE   = 107 )
+      PARAMETER ( GAD_HEFF  = 1, 
+     &            GAD_AREA  = 2,
+     &            GAD_SNOW  = 3,
+     &            GAD_SALT  = 4,
+     &            GAD_AGE   = 5,
+     &            GAD_QICE1 = 6,
+     &            GAD_QICE2 = 7)
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

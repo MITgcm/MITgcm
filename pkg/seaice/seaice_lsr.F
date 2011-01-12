@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.57 2010/11/05 08:13:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.58 2011/01/12 00:06:24 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_LSR( ilcall, myTime, myIter, myThid )
+      SUBROUTINE SEAICE_LSR( myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE  SEAICE_LSR                                   |
 C     | o Solve ice momentum equation with an LSR dynamics solver|
@@ -120,6 +120,23 @@ C     part of the overlap, because the overlap of u/vTmp is used
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+        DO ilcall=1,MPSEUDOTIMESTEPS
+#else
+        DO ilcall=1,NPSEUDOTIMESTEPS
+#endif
+         IF ( ilcall .LE. NPSEUDOTIMESTEPS ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE uicenm1 = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE vicenm1 = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     surrface level
       kSrf = 1
@@ -967,6 +984,9 @@ C--   Compute residual norm and print
      &      ilcall, sqrt(resnorm), EKnorm
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
+
+      ENDIF
+      ENDDO
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
