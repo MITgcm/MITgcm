@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1361 2010/12/29 16:41:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1362 2011/01/12 09:24:33 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice
+  seaice_lsr: move stress-divergence computations out of outer pseudo-
+  timestepping loop  
+o pkg/obcs/obcs_prescribe_read.F: move 'CALL OBCS_EXTERNAL_FIELDS_LOAD'
+  up, so that the calls of the ctrl_* subroutines are really at the end
+  of the routine.
 
 checkpoint62q (2010/12/29)
 o model/src:
