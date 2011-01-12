@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.5 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.6 2011/01/12 19:00:52 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -30,7 +30,7 @@ C     == local variables ==
 
       NAMELIST /FLT_NML/ flt_int_traj, flt_int_prof,
      &                   flt_noise, flt_deltaT,
-     &                   flt_file
+     &                   flt_file, mapIniPos2Index
 
 C     == end of interface ==
 
@@ -42,6 +42,7 @@ C     Set default values.
       flt_int_prof = 43200.
       flt_noise    = 0.0
       flt_file     = 'float_pos'
+      mapIniPos2Index = .TRUE.
 
       WRITE(msgBuf,'(A)') ' FLT_READPARMS: opening data.flt'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

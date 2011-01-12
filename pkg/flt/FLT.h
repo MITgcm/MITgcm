@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.5 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.6 2011/01/12 19:00:52 jmc Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -27,7 +27,7 @@ C     flt_xLo     :: Full domain lower X boundary
 C     flt_xHi     :: Full domain upper X boundary
 C     flt_yLo     :: Full domain lower Y boundary
 C     flt_yHi     :: Full domain upper Y boundary
-C
+
       _RL    flt_xLo, flt_xHi, flt_yLo, flt_yHi
       COMMON / FLT_CONST_R /
      &       flt_xLo, flt_xHi, flt_yLo, flt_yHi
@@ -48,7 +48,7 @@ C           be specified individually for every float. Because the mechanism
 C           for return ing to the surface is called in the profiling routine
 C           flt_int_prof has to be the minimum of all iup(max_npart).
 C           The subsampling of profiles can be done later in the analysis.
-C
+
       _RL flt_noise, flt_deltaT
       _RL flt_int_traj, flt_int_prof
       COMMON / FLT_PARAM_R /
@@ -59,20 +59,21 @@ C     flt_file    :: name of the file containing the initial positions.
 C                    At initialization the program first looks for a
 C                    global file flt_file.data. If that is not found it
 C                    looks for tiled files flt_file.iG.jG.data.
-C
       CHARACTER*(MAX_LEN_FNAM) flt_file
       COMMON / FLT_PARAM_C / flt_file
+
+C     mapIniPos2Index :: convert float initial position to (local) index map
+      LOGICAL mapIniPos2Index
+      COMMON / FLT_PARAM_L / mapIniPos2Index
 
 C== Float State ==
 
 C     npart_tile  :: actual number of floats per tile
-C
       INTEGER npart_tile(nSx,nSy)
       COMMON / FLT_STATE_I / npart_tile
 
 C     max_npart   :: total number of floats
 C                    (this is read from the input files)
-C
       _RL   max_npart
       COMMON / FLT_STATE_R / max_npart
 
