@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1362 2011/01/12 09:24:33 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1363 2011/01/12 16:25:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,10 +6,13 @@ $Name:  $
 
 o pkg/seaice
   seaice_lsr: move stress-divergence computations out of outer pseudo-
-  timestepping loop  
+  timestepping loop
 o pkg/obcs/obcs_prescribe_read.F: move 'CALL OBCS_EXTERNAL_FIELDS_LOAD'
   up, so that the calls of the ctrl_* subroutines are really at the end
   of the routine.
+o pkg/gmredi:
+  allow to specify a 2-D horizontal map and a 1-D vertical profil
+  as scaling factor for Isopycnal diffusivity (Redi) and GM diffusivity.
 
 checkpoint62q (2010/12/29)
 o model/src:
