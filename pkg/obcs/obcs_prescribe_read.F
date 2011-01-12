@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.26 2010/12/19 20:29:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.27 2011/01/12 09:05:37 mlosch Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -157,6 +157,15 @@ C     ENDIF useEXF
       ENDIF
 # endif /* ALLOW_EXF */
 
+      IF ( .NOT. useEXF ) THEN
+cph#ifndef ALLOW_AUTODIFF_TAMC
+       CALL OBCS_EXTERNAL_FIELDS_LOAD(
+     &     myCurrentTime, myCurrentIter, myThid )
+cph#else
+cph       STOP 'PH HAS DISABLED THIS RUNTIME OPTION FOR ALLOW_EXF'
+cph#endif
+      ENDIF
+
 # ifdef ALLOW_OBCS_CONTROL
 cgg   WARNING: Assuming North Open Boundary exists and has same
 cgg    calendar information as other boundaries.
@@ -178,15 +187,6 @@ cgg    calendar information as other boundaries.
 # ifdef ALLOW_OBCSE_CONTROL
       call ctrl_getobcse ( mycurrenttime, mycurrentiter, mythid )
 # endif
-
-      IF ( .NOT. useEXF ) THEN
-cph#ifndef ALLOW_AUTODIFF_TAMC
-       CALL OBCS_EXTERNAL_FIELDS_LOAD(
-     &     myCurrentTime, myCurrentIter, myThid )
-cph#else
-cph       STOP 'PH HAS DISABLED THIS RUNTIME OPTION FOR ALLOW_EXF'
-cph#endif
-      ENDIF
 
 #endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE */
 
