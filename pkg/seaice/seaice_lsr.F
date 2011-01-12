@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.58 2011/01/12 00:06:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.59 2011/01/12 09:14:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -893,7 +893,46 @@ C     APPLY MASKS
       ENDDO
 CML      CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
 
-      IF ( useHB87StressCoupling .AND. ilcall.EQ.NPSEUDOTIMESTEPS ) THEN
+#ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
+      IF ( debugLevel .GE. debLevB ) THEN
+       resnorm = 0. _d 0
+       EKnorm  = 0. _d 0
+       counter = 0. _d 0
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Compute residual norm and print
+         DO j=1,sNy
+          DO i=1,sNx
+           resnorm = resnorm + 0.5 _d 0 *
+     &          ( ( (uIceNm1(i,j,bi,bj)+uIceNm1(i+1,j,bi,bj))
+     &            - (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
+     &          + ( (vIceNm1(i,j,bi,bj)+vIceNm1(i,j+1,bi,bj))
+     &            - (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
+           IF ( area(i,j,bi,bj) .gt. 0.5 _d 0 ) THEN
+            EKnorm = EKnorm + 0.5 _d 0 * heff(i,j,bi,bj) *
+     &           ( ( (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
+     &           + ( (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
+            counter = counter + 1. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       _GLOBAL_SUM_RL( resnorm, myThid )
+       _GLOBAL_SUM_RL( EKnorm, myThid )
+       _GLOBAL_SUM_RL( counter, myThid )
+       IF ( counter .gt. 0. _d 0 ) EKnorm = EKnorm/counter
+       WRITE(*,'(A,I7,1X,2E22.14)')
+     &      'S/R seaice_lsr: IPSEUDO, RESNORM, EKNORM = ',
+     &      ilcall, sqrt(resnorm), EKnorm
+      ENDIF
+#endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
+
+      ENDIF
+C     end outer pseudo-time stepping loop
+      ENDDO
+
+      IF ( useHB87StressCoupling ) THEN
 C     compute the divergence of stress here to be used later
 C
 C     compute strain rate from latest velocities
@@ -949,44 +988,6 @@ C     evaluate divergence of stress and apply to forcing
         ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
-
-#ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
-      IF ( debugLevel .GE. debLevB ) THEN
-       resnorm = 0. _d 0
-       EKnorm  = 0. _d 0
-       counter = 0. _d 0
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-C--   Compute residual norm and print
-         DO j=1,sNy
-          DO i=1,sNx
-           resnorm = resnorm + 0.5 _d 0 *
-     &          ( ( (uIceNm1(i,j,bi,bj)+uIceNm1(i+1,j,bi,bj))
-     &            - (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
-     &          + ( (vIceNm1(i,j,bi,bj)+vIceNm1(i,j+1,bi,bj))
-     &            - (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
-           IF ( area(i,j,bi,bj) .gt. 0.5 _d 0 ) THEN
-            EKnorm = EKnorm + 0.5 _d 0 * heff(i,j,bi,bj) *
-     &           ( ( (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
-     &           + ( (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
-            counter = counter + 1. _d 0
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_SUM_RL( resnorm, myThid )
-       _GLOBAL_SUM_RL( EKnorm, myThid )
-       _GLOBAL_SUM_RL( counter, myThid )
-       IF ( counter .gt. 0. _d 0 ) EKnorm = EKnorm/counter
-       WRITE(*,'(A,I7,1X,2E22.14)')
-     &      'S/R seaice_lsr: IPSEUDO, RESNORM, EKNORM = ',
-     &      ilcall, sqrt(resnorm), EKnorm
-      ENDIF
-#endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
-
-      ENDIF
-      ENDDO
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
