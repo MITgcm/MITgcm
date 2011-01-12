@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.37 2011/01/11 00:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.38 2011/01/12 16:02:37 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -511,7 +511,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_KAPREDI_CONTROL
          Kwz(i,j,k,bi,bj)= ( kapredi(i,j,k,bi,bj)
 #else
-         Kwz(i,j,k,bi,bj)= ( GM_isopycK*GM_isoFac2d(i,j,bi,bj)
+         Kwz(i,j,k,bi,bj)= ( isopycK*GM_isoFac2d(i,j,bi,bj)
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &                     + VisbeckK(i,j,bi,bj)
@@ -683,7 +683,8 @@ C         store in tmp1k Kuz_Redi
 #ifdef ALLOW_KAPREDI_CONTROL
           tmp1k(i,j) = ( kapredi(i,j,k,bi,bj)
 #else
-          tmp1k(i,j) = ( GM_isopycK
+          tmp1k(i,j) = ( GM_isopycK*GM_isoFac1d(k)
+     &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*0.5 _d 0
@@ -874,7 +875,8 @@ C         store in tmp1k Kvz_Redi
 #ifdef ALLOW_KAPREDI_CONTROL
           tmp1k(i,j) = ( kapredi(i,j,k,bi,bj)
 #else
-          tmp1k(i,j) = ( GM_isopycK
+          tmp1k(i,j) = ( GM_isopycK*GM_isoFac1d(k)
+     &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*0.5 _d 0
@@ -965,15 +967,22 @@ C--   Time-average
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C     !ROUTINE: GMREDI_CALC_TENSOR_DUMMY
+C     !INTERFACE:
       SUBROUTINE GMREDI_CALC_TENSOR_DUMMY(
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE GMREDI_CALC_TENSOR                            |
-C     | o Calculate tensor elements for GM/Redi tensor.          |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE GMREDI_CALC_TENSOR_DUMMY
+C     | o Calculate tensor elements for GM/Redi tensor.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -981,8 +990,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "GMREDI.h"
 
-C     == Routine arguments ==
-C
+C     !INPUT/OUTPUT PARAMETERS:
       _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -991,10 +999,10 @@ C
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_GMREDI
-
+C     !LOCAL VARIABLES:
       INTEGER i, j, k
 
       DO k=1,Nr
