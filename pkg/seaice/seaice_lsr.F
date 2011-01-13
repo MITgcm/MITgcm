@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.59 2011/01/12 09:14:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.60 2011/01/13 00:13:41 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,6 +120,21 @@ C     part of the overlap, because the overlap of u/vTmp is used
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph break artificial dependencies
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          press(i,j,bi,bj)=0. _d 0
+          zeta(i,j,bi,bj)=0. _d 0
+          eta(i,j,bi,bj)=0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
         DO ilcall=1,MPSEUDOTIMESTEPS
