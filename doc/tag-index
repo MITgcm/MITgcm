@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1363 2011/01/12 16:25:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1364 2011/01/14 01:42:22 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src, pkg/autodiff, pkg/ecco, pkg/seaice:
+  alleviate the need for additional 3D tapes when using
+  the non-inear free surface in the adjoint. This is done
+  by adding an 'update' of hfacc etc. to their current 
+  value at the beginning of forward_step.F. 
 o pkg/seaice
   seaice_lsr: move stress-divergence computations out of outer pseudo-
   timestepping loop
@@ -13,6 +18,12 @@ o pkg/obcs/obcs_prescribe_read.F: move 'CALL OBCS_EXTERNAL_FIELDS_LOAD'
 o pkg/gmredi:
   allow to specify a 2-D horizontal map and a 1-D vertical profil
   as scaling factor for Isopycnal diffusivity (Redi) and GM diffusivity.
+o pkg/seaice:
+  move lsr iterations from seaice_dynsolver to seaice_lsr.
+o pkg/seaice:
+  reduce memory footprint of seaice mutldim advection tapes,
+  by using a 2D tape independent of the generic_advdiff ones,
+  and setting GAD_AREA=1 etc. rather than GAD_AREA=101 etc.
 
 checkpoint62q (2010/12/29)
 o model/src:
