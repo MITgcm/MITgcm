@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.8 2011/01/14 01:28:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.9 2011/01/14 23:23:54 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,7 +45,7 @@ C     !LOCAL VARIABLES:
 #ifdef NONLIN_FRSURF
 C     Local variables
 C     i,j,bi,bj - loop counter
-      INTEGER i,j,bi,bj
+      INTEGER i,j,k,bi,bj
       INTEGER ks
 CEOP
 
@@ -83,7 +83,7 @@ CADJ STORE hFac_surfNm1W(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 C-- Apply OBC to hFac_surfW,S before updating hFacW,S
-        IF (useOBCS) THEN
+        IF (useOBCS.AND.(nonlinFreeSurf.GT.0)) THEN
          IF (useLatest) then
          CALL OBCS_APPLY_SURF_DR(
      I                    bi, bj,
@@ -98,7 +98,7 @@ C-- Apply OBC to hFac_surfW,S before updating hFacW,S
         ENDIF
 #endif /* ALLOW_OBCS */
 
-       IF (useLatest) then
+       IF (useLatest.AND.(nonlinFreeSurf.GT.0)) then
 
 C-- Update the fractional thickness "hFacC" of the surface level ksurfC :
         DO j=1-Oly,sNy+Oly
@@ -133,7 +133,7 @@ C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
          ENDDO
         ENDDO
 
-       ELSE
+       ELSEIF (nonlinFreeSurf.GT.0) THEN
 
 C-- Update the fractional thickness "hFacC" of the surface level ksurfC
 C:
@@ -166,6 +166,21 @@ C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
            hFacS(i,j,ks,bi,bj) = hFac_surfNm1S(i,j,bi,bj)
            recip_hFacS(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfNm1S(i,j,bi,bj)
           ENDIF
+         ENDDO
+        ENDDO
+
+       ELSE
+
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           hFacC(i,j,k,bi,bj)=h0FacC(i,j,k,bi,bj)
+           IF (h0FacC(i,j,k,bi,bj) .NE. 0. ) THEN
+            recip_hFacC(i,j,k,bi,bj) = 1. _d 0 / h0FacC(i,j,k,bi,bj)
+           ELSE
+            recip_hFacC(i,j,k,bi,bj) = 0.
+           ENDIF
+          ENDDO
          ENDDO
         ENDDO
 
