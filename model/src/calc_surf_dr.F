@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.14 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.15 2011/01/14 01:28:31 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,6 +64,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
+       
+C--   before updating hFac_surfC/S/W save current fields
+         DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+             hFac_surfNm1C(i,j,bi,bj) = hFac_surfC(i,j,bi,bj)
+             hFac_surfNm1S(i,j,bi,bj) = hFac_surfS(i,j,bi,bj)
+             hFac_surfNm1W(i,j,bi,bj) = hFac_surfW(i,j,bi,bj)
+           ENDDO
+         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Compute the new fractional thickness of surface level (ksurfC):

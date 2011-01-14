@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.16 2010/09/11 21:23:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.17 2011/01/14 01:28:29 gforget Exp $
 C $Name:  $
 C
 CBOP
@@ -53,11 +53,16 @@ C     hFac_surfC ::  New thickness factor of the surface level
 C                        center (Tracer point)
 C     hFac_surfW ::  idem, West  interface (U point)
 C     hFac_surfS ::  idem, South interface (V point)
+C     hFac_surfNm1C, etc. :: prior values
       COMMON /SURF_CHANGE/
-     &     hFac_surfC, hFac_surfW, hFac_surfS
+     &     hFac_surfC, hFac_surfW, hFac_surfS,
+     &     hFac_surfNm1C, hFac_surfNm1W, hFac_surfNm1S
       _RS  hFac_surfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  hFac_surfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  hFac_surfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  hFac_surfNm1C(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  hFac_surfNm1W(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  hFac_surfNm1S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     Local variables in common block
 C     Rmin_surf :: minimum r_value of the free surface position
@@ -69,6 +74,7 @@ C--   COMMON /RSTAR_CHANGE/ transient variables used with r* Coordinate
 C     rStarFacC :: = dr/dr* = ratio of r-thickness / r*-thickness = h^n / H
 C     rStarFacW :: same but for West  face
 C     rStarFacS :: same but for South face
+C     rStarFacNm1C, etc. :: prior values
 C     rStarExpC :: column expansion factor = h^n+1/h^n , Centered
 C     rStarExpW :: column expansion factor = h^n+1/h^n , Western  face
 C     rStarExpS :: column expansion factor = h^n+1/h^n , Southern face
@@ -77,11 +83,15 @@ C     rStarDhWDt:: relative time derivative of h_West_face  (u.point)
 C     rStarDhSDt:: relative time derivative of h_South_face (v.point)
       COMMON /RSTAR_CHANGE/
      &     rStarFacC, rStarFacW, rStarFacS,
+     &     rStarFacNm1C, rStarFacNm1W, rStarFacNm1S,
      &     rStarExpC, rStarExpW, rStarExpS,
      &     rStarDhCDt,rStarDhWDt,rStarDhSDt
       _RL  rStarFacC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  rStarFacW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  rStarFacS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  rStarFacNm1C (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  rStarFacNm1W (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  rStarFacNm1S (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  rStarExpC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  rStarExpW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  rStarExpS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

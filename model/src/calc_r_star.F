@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.18 2010/09/20 15:54:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.19 2011/01/14 01:28:31 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,6 +77,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
+       
+C--   before updating rStarFacC/S/W save current fields
+         DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+             rStarFacNm1C(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
+             rStarFacNm1S(i,j,bi,bj) = rStarFacS(i,j,bi,bj)
+             rStarFacNm1W(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
+           ENDDO
+         ENDDO
+       
 C-    1rst bi,bj loop :
 
 C-- copy rStarFacX -> rStarExpX

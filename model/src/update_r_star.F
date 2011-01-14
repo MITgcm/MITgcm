@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.7 2008/08/12 22:42:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.8 2011/01/14 01:28:31 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: UPDATE_R_STAR
 C     !INTERFACE:
-      SUBROUTINE UPDATE_R_STAR( myTime, myIter, myThid )
+      SUBROUTINE UPDATE_R_STAR( useLatest, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE UPDATE_R_STAR                                 
@@ -32,9 +32,11 @@ c #include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C     useLatest - if true use rStarFacC, else use rStarFacNm1C
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
 C     myThid - Thread number for this instance of the routine.
+      LOGICAL useLatest
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -72,15 +74,30 @@ CADJ STORE rStarFacS(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
 CADJ STORE rStarFacW(:,:,bi,bj) = 
 CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE rStarFacNm1C(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE rStarFacNm1S(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE rStarFacNm1W(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 C-- Apply OBC to rStar_Factor_W,S before updating hFacW,S
         IF (useOBCS) THEN
+         IF (useLatest) THEN
          CALL OBCS_APPLY_R_STAR(
      I                    bi, bj,
      U                    rStarFacC, rStarFacW, rStarFacS,
      I                    myTime, myIter, myThid )
+         ELSE
+         CALL OBCS_APPLY_R_STAR(
+     I                    bi, bj,
+     U                    rStarFacNm1C, rStarFacNm1W, rStarFacNm1S,
+     I                    myTime, myIter, myThid )
+         ENDIF
         ENDIF
 #endif /* ALLOW_OBCS */
+
+       IF (useLatest) THEN
 
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
@@ -113,6 +130,43 @@ C
           ENDDO
          ENDDO
         ENDDO
+
+       ELSE
+
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+# ifndef DISABLE_RSTAR_CODE
+C-- Update the fractional thickness hFacC , hFacW & hFacS (&
+C"recip_hFac") :
+            hFacC(i,j,k,bi,bj) = h0FacC(i,j,k,bi,bj)
+     &                          *rStarFacNm1C(i,j,bi,bj)
+            hFacW(i,j,k,bi,bj) = h0FacW(i,j,k,bi,bj)
+     &                          *rStarFacNm1W(i,j,bi,bj)
+            hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)
+     &                          *rStarFacNm1S(i,j,bi,bj)
+#endif
+C
+#ifdef USE_MASK_AND_NO_IF
+            recip_hFacC(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
+     &        / ( _hFacC(i,j,k,bi,bj) + (1.-maskC(i,j,k,bi,bj)) )
+            recip_hFacW(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+     &        / ( _hFacW(i,j,k,bi,bj) + (1.-maskW(i,j,k,bi,bj)) )
+            recip_hFacS(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+     &        / ( _hFacS(i,j,k,bi,bj) + (1.-maskS(i,j,k,bi,bj)) )
+#else
+           IF (maskC(i,j,k,bi,bj).NE.0.)
+     &      recip_hFacC(i,j,k,bi,bj) = 1. _d 0 / _hFacC(i,j,k,bi,bj)
+           IF (maskW(i,j,k,bi,bj).NE.0.)
+     &      recip_hFacW(i,j,k,bi,bj) = 1. _d 0 / _hFacW(i,j,k,bi,bj)
+           IF (maskS(i,j,k,bi,bj).NE.0.)
+     &      recip_hFacS(i,j,k,bi,bj) = 1. _d 0 / _hFacS(i,j,k,bi,bj)
+#endif
+          ENDDO
+         ENDDO
+        ENDDO
+
+       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
