@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.153 2010/12/29 22:35:50 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.154 2011/01/14 23:55:00 jmc Exp $
 #  $Name:  $
 #
 
@@ -12,7 +12,8 @@ usage()
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
     echo "  (-mth)                   run multi-threaded (using eedata.mth)"
-    echo "  (-mpi)                   compile and run using MPI"
+    echo "  (-mpi)                   use MPI to compile and run on 2 processors"
+    echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
     echo "  (-ieee/-noieee)          if possible, use IEEE compiler flags"
     echo "                             (DEF=\"-ieee\")"
     echo "  (-gsl)                   compile with \"-gsl\" flag"
@@ -234,7 +235,14 @@ testoutput_run()
           listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
         fi
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(M)='$listVar'" 1>&2 ; fi
-	echo "listVar='$listVar'" > $locDIR"/summary.txt"
+	#- report to this experiment local summary file ---
+	echo "MACH='$MACH'" > $locDIR"/summary.txt"
+	echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
+	echo "DATE='$DATE'" >> $locDIR"/summary.txt"
+	grep '(PID\.TID 0000\.0001)      n.. =' $1/$2/$OUTPUTFILE \
+         | sed 's/(PID.TID 0000.0001)     //' >> $locDIR"/summary.txt"
+	echo "listVar='$listVar'" >> $locDIR"/summary.txt"
+        #---
         allargs=""
         for xx in $listVar
         do
@@ -339,7 +347,7 @@ genmakemodel()
 	    if test "x$GSL" = xt ; then
 		command="$command -gsl"
 	    fi
-	    if test "x$MPI" = xt ; then
+	    if test "x$MPI" != x0 ; then
 		command="$command -mpi"
 	    fi
 	    if test "x$MULTI_THREAD" = xt ; then
@@ -388,7 +396,6 @@ makeclean()
 	    #if test -e $OUTPUTFILE ; then rm -f $OUTPUTFILE ; fi
 	    if test -r Makefile ; then
 		printf 'clean build-dir: make Clean ... '
-		rm -f Makefile.old
 		$MAKE Clean >> make.tr_log 2>&1
 		RETVAL=$?
 		if test "x$RETVAL" != x0 ; then
@@ -494,6 +501,56 @@ makemodel()
     )
 }
 
+mk_mpi_size()
+{
+    # mk_mpi_size input_file output_file proc_Nb
+    #
+    # make new SIZE.h (=output_file) from SIZE.h_mpi (=input_file)
+    #     for an MPI build with no more than proc_Nb processors ;
+    # return the effective number of processors.
+
+    inp=$1
+    out=$2
+    np=$3
+    tmp=TTT.$$
+
+    px=`grep "^     & *nPx *=" $inp | sed "s/^     & *nPx *= *//" | sed 's/, *$//'`
+    py=`grep "^     & *nPy *=" $inp | sed "s/^     & *nPy *= *//" | sed 's/, *$//'`
+    sx=`grep "^     & *nSx *=" $inp | sed "s/^     & *nSx *= *//" | sed 's/, *$//'`
+    sy=`grep "^     & *nSy *=" $inp | sed "s/^     & *nSy *= *//" | sed 's/, *$//'`
+
+    #- find the largest divisor of input_file proc Nb, but not larger than $np
+    pp=0
+    for i in `seq 1 $px` ; do
+      if [ `expr $px % $i` -eq 0 ] ; then
+        for j in `seq 1 $py` ; do
+          if [ `expr $py % $j` -eq 0 ] ; then
+            ij=`expr $i \* $j`
+            if [ $ij -gt $pp ] ; then
+              if [ $ij -le $np ] ; then
+                ix=$i ; jy=$j ; pp=$ij
+                #echo "  ix,jy= $ix,$jy"
+              fi
+            fi
+          fi
+        done
+      fi
+    done
+
+    #- create new SIZE.h type file:
+    sx=`expr $sx \* $px / $ix`
+    sy=`expr $sy \* $py / $jy`
+    if [ $verbose -gt 1 ]; then
+	echo " px,py,np= $px,$py,$np : New MPI size: px,py= $ix,$jy : sx,sy= $sx,$sy"
+    fi
+    sed "/^     \& *nPx *=/s/[0-9]*,/$ix,/" $inp > $tmp
+    sed "/^     \& *nPy *=/s/[0-9]*,/$jy,/" $tmp > $out
+    sed "/^     \& *nSx *=/s/[0-9]*,/$sx,/" $out > $tmp
+    sed "/^     \& *nSy *=/s/[0-9]*,/$sy,/" $tmp > $out
+    rm -f $tmp
+    return $pp
+}
+
 symlink_mpifiles()
 {
     # Put special links so that MPI specific files are used
@@ -502,44 +559,44 @@ symlink_mpifiles()
 
     dir=$1
     code_dir=$2
-    BUILD_DIR=$dir/$3
-    CODE_DIR=$dir/$code_dir
+    build_dir=$dir/$3
 
     # These are files that should replace their counter-part when using -mpi
-    MPI_FILES=`(cd $CODE_DIR; find . -name "*_mpi" -print)`
+    MPI_FILES=`(cd $dir/$code_dir; find . -name "*_mpi" -print)`
 
-    #  Is this an MPI run?
-    if test "x$MPI" = xt ; then
-	# YES: We symbolically link these files to the build
-	# dir so long as there is no real file in place
-	for ii in $MPI_FILES ; do
-	    i=`echo $ii | sed 's:^\./::'`
-	    name=`echo $i | sed 's:_mpi::' `
-	    cmp $CODE_DIR/$i $BUILD_DIR/$name > /dev/null 2>&1
-	    RETVAL=$?
-	    if test "x$RETVAL" != x0 ; then
-		if ! test -f $BUILD_DIR/$i ; then
-	            #echo Linking $name to $i
-		    (cd $BUILD_DIR; ln -sf ../$code_dir/$i $name)
-		fi
-	    fi
-	done
-    else
-        # NO: We undo any _mpi symbolically linked files
-	for ii in $MPI_FILES ; do
-	    i=`echo $ii | sed 's:^\./::'`
-	    name=`echo $i | sed 's:_mpi::' `
-	    if test -L $BUILD_DIR/$name ; then
-		cmp $BUILD_DIR/$name "../$code_dir/$name"_mpi > /dev/null 2>&1
+    for ii in $MPI_FILES ; do
+	i=`echo $ii | sed 's:^\./::'`
+	name=`echo $i | sed 's:_mpi::'`
+	file="../$code_dir/$i"
+	if test $name = 'SIZE.h' ; then file="SIZE.h.mpi" ; fi
+
+	#  Is this an MPI run?
+	if test "x$MPI" = x0 ; then
+	    # NO: We undo any _mpi symbolically linked files
+	    if test -L $build_dir/$name ; then
+		( cd $build_dir ; cmp $name $file > /dev/null 2>&1 )
 		RETVAL=$?
 		if test "x$RETVAL" = x0 ; then
-		    #echo Un-linking $name from $linktarg
-		    rm -f $BUILD_DIR/$name
+		    if [ $verbose -gt 1 ]; then
+			echo "  Un-linking $name from ../$code_dir" ; fi
+		    rm -f $build_dir/$name
 		fi
 	    fi
-	done
-    fi
-
+	else
+	    # YES: We symbolically link these files to the build
+	    # dir so long as there is no real file in place
+	    ( cd $build_dir ; cmp $name $file > /dev/null 2>&1 )
+	    RETVAL=$?
+	    if [ $verbose -gt 1 ]; then echo "  cmp $name $file returns: $RETVAL" ; fi
+	    if test "x$RETVAL" != x0 ; then
+		if test -h $build_dir/$name ; then rm -f $build_dir/$name ; fi
+		if test ! -r $build_dir/$name ; then
+		    if [ $verbose -gt 1 ]; then echo "  Linking $name to $file" ; fi
+		    (cd $build_dir; ln -sf $file $name)
+		fi
+	    fi
+	fi
+    done
 }
 
 linkdata()
@@ -556,16 +613,16 @@ linkdata()
 	      if test -r "../"$1"/"$xx ; then
 	        # found 1 _mpi sfx file in 1rst input dir and it is readable
 		yy=`echo $xx | sed 's:\.mpi$::'`
-		if test "x$MPI" = "xt" ; then
-		# mpi test: remove symbolic link & link _mpi sfx file
+		if test "x$MPI" = "x0" ; then
+		    # not mpi test: remove symbolic link
+		    if test -h $yy ; then rm -f $yy ; fi
+		else
+		    # mpi test: remove symbolic link & link .mpi sfx file
 		    if test -h $yy ; then rm -f $yy ; fi
 		    if test ! -r $yy ; then
 			ln -sf "../"$1"/"$xx $yy ;
 			printf " $xx" 1>&2
 		    fi
-		else
-		# not mpi test: remove symbolic link
-		    if test -h $yy ; then rm -f $yy ; fi
 		fi
 	      fi
 	    done
@@ -613,21 +670,27 @@ runmodel()
 {
     # runmodel directory
     #
-    #  runs "$COMMAND in "directory"
+    #  runs $COMMAND in "directory"
     #  (where "$COMMAND" is relative to "directory")
     (
 	cd $1
 	printf 'runmodel in %s ... ' $1
 	if test -L $EXECUTABLE ; then
 	  if test -x "../"$builddir"/"$EXECUTABLE ; then
-	    diff -q $EXECUTABLE "../"$builddir"/"$EXECUTABLE > /dev/null 2>&1
-	    outD=$? ; if test $outD != 0 ; then rm -f $EXECUTABLE ; fi
+	    cmp $EXECUTABLE "../"$builddir"/"$EXECUTABLE > /dev/null 2>&1
+	    outD=$? ; if test "x$outD" != x0 ; then rm -f $EXECUTABLE ; fi
 	  else rm -f $EXECUTABLE
 	  fi
 	fi
         if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
 	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_tmp
 	    ln -sf "../"$builddir"/"$EXECUTABLE .
+	fi
+	if test "x$MPI" != x0 ; then
+	    #- adjust the MPI run command with the right number of Procs
+	    #echo "COMMAND='$COMMAND'"
+	    COMMAND=`echo $COMMAND | sed "s/-np * XX /-np $NPROC_MPI /"`
+	    #echo "COMMAND='$COMMAND'"
 	fi
         if test ! -x $EXECUTABLE ; then
 		rm -f $RUNLOG ; touch $RUNLOG
@@ -846,7 +909,7 @@ if test "x$CC" = x ; then
     CC=cc
 fi
 JOBS=
-MPI=f
+MPI=0
 MULTI_THREAD=f
 OUTDIR=
 DELDIR=
@@ -958,7 +1021,9 @@ for ac_option ; do
 	-postclean | --postclean | -pc | --pc)
 	    POSTCLEAN=t ;;
 
-	-mpi) MPI=t ;;
+	-mpi | --mpi) MPI=2 ;;
+	-MPI | --MPI) ac_prev=MPI ;;
+	-MPI=* | --MPI=*) MPI=$ac_optarg ;;
 
 	-mth) MULTI_THREAD=t ;;
 
@@ -1074,7 +1139,7 @@ OUTPUTFILE=$ref_outp
 if test "x$COMMAND" = x ; then
     COMMAND="./$EXECUTABLE > $OUTPUTFILE"
 fi
-if test "x$MPI" = xt ; then
+if test "x$MPI" != x0 ; then
     OUTPUTFILE="STDOUT.0000"
 fi
 
@@ -1232,7 +1297,7 @@ for dir in $TESTDIRS ; do
 	(   cd $BUILD_DIR
 	    rm -f $EXECUTABLE *.bak
 	    rm -f genmake_state genmake_*optfile genmake.log
-	    rm -f genmake.tr_log make.tr_log
+	    rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	)
 	if test -d $dir/$rundir/CVS ; then
             echo -n '  --- dir:' $dir/$rundir ': '
@@ -1257,20 +1322,37 @@ for dir in $TESTDIRS ; do
 
     # Check for specific files for particular type of run
 
-    if test ! -r $CODE_DIR"/SIZE.h_mpi" -a "x$MPI" = "xt" ; then
-	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
-	continue
+    if test "x$MPI" != "x0" ; then
+	if test -r $CODE_DIR"/SIZE.h_mpi" ; then
+	    #- create new SIZE.h with no more than '$MPI' Procs
+	    mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI
+	    NPROC_MPI=$?
+	    (   cd $BUILD_DIR
+		if test -r SIZE.h.mpi ; then
+		    cmp tr_size.mpi SIZE.h.mpi > /dev/null 2>&1 ; RETVAL=$?
+		else RETVAL=1
+		fi
+		if test "x$RETVAL" = x0 ; then
+		    rm -f tr_size.mpi
+		else
+		    rm -f SIZE.h.mpi ; mv tr_size.mpi SIZE.h.mpi
+		fi
+	    )
+	else
+	    echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
+	    continue
+	fi
     fi
     if test ! -r $dir"/input/eedata.mth" -a "x$MULTI_THREAD" = "xt" ; then
 	echo "can't find \"$dir/input/eedata.mth\" -- skipping $dir"
 	continue
     fi
-    if test "x$MPI" = "xt" -a "x$MULTI_THREAD" = "xt" ; then
-      retv=`check_eedata $CODE_DIR"/SIZE.h_mpi" $dir"/input/eedata.mth"`
-      if test $retv != 0 ; then
-	echo "input/eedata.mth tiling misfit -- skipping $dir"
-	continue
-      fi
+    if test "x$MPI" != "x0" -a "x$MULTI_THREAD" = "xt" ; then
+	retv=`check_eedata $BUILD_DIR"/SIZE.h.mpi" $dir"/input/eedata.mth"`
+	if test $retv != 0 ; then
+	    echo "input/eedata.mth tiling misfit -- skipping $dir"
+	    continue
+	fi
     fi
 
     #  Check whether there are "extra runs" for this testdir
@@ -1286,15 +1368,15 @@ for dir in $TESTDIRS ; do
         if test -f $outf -a -r $outf ; then
 	  if test "x$MULTI_THREAD" = "xt" ; then
 	    if test -r $dir"/"$exd"/eedata.mth" ; then
-	      if test "x$MPI" = "xt" ; then
-		retv=`check_eedata $CODE_DIR"/SIZE.h_mpi" $dir"/"$exd"/eedata.mth"`
+	      if test "x$MPI" = "x0" ; then
+		extra_runs="$extra_runs $name"
+	      else
+		retv=`check_eedata $BUILD_DIR"/SIZE.h.mpi" $dir"/"$exd"/eedata.mth"`
 		if test $retv = 0 ; then
 		    extra_runs="$extra_runs $name"
 		else
 		    echo $exd"/eedata.mth tiling misfit -- skipping $dir"
 		fi
-	      else
-		extra_runs="$extra_runs $name"
 	      fi
 	    #else echo $dir"/"$exd"/eedata.mth: not found"
 	    fi
@@ -1344,9 +1426,6 @@ for dir in $TESTDIRS ; do
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	touch $locDIR"/summary.txt"
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
-	echo "MACH='$MACH'" >> $locDIR"/summary.txt"
-	echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
-	echo "DATE='$DATE'" >> $locDIR"/summary.txt"
 	echo "tdir='$dir'" >> $locDIR"/summary.txt"
 	if test "x$ADM" = xt ; then
 	    head -1 $dir/$builddir/taf_ad.log >> $locDIR"/summary.txt"
@@ -1374,9 +1453,6 @@ for dir in $TESTDIRS ; do
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    touch $locDIR"/summary.txt"
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
-	    echo "MACH='$MACH'" >> $locDIR"/summary.txt"
-	    echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
-	    echo "DATE='$DATE'" >> $locDIR"/summary.txt"
 	    echo "tdir='$dir.$ex'" >> $locDIR"/summary.txt"
             if test "x$ADM" = xt ; then
 	        head -1 $dir/$builddir/taf_ad.log >> $locDIR"/summary.txt"
