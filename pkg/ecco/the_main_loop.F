@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.98 2011/01/12 00:07:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.99 2011/01/14 01:35:14 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -523,6 +523,80 @@ c**************************************
 c**************************************
 #endif
 
+C--   Reset geometric factors to their current values
+Cgf   (only has an impact for the adjoint)
+#ifdef NONLIN_FRSURF
+C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
+       IF ( select_rStar.GT.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+c
+CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+c
+CADJ STORE h0facc,h0facs,h0facw  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
+        CALL TIMER_START('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
+        CALL UPDATE_R_STAR( .FALSE., myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
+# endif /* DISABLE_RSTAR_CODE */
+       ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#endif
+        CALL TIMER_START('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
+        CALL UPDATE_SURF_DR( .FALSE., myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
+       ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
+#endif /* NONLIN_FRSURF */
+
 C--   Call driver to load external forcing fields from file
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
@@ -750,7 +824,6 @@ C        boundaries such as weeks, months, years, etc.
 C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
 C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
-      IF ( nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -763,7 +836,7 @@ CADJ STORE recip_hFacS    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE recip_hFacW    = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
         CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
-        CALL UPDATE_R_STAR( myTime, myIter, myThid )
+        CALL UPDATE_R_STAR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
 # ifdef ALLOW_AUTODIFF_TAMC
 cph-test
@@ -781,10 +854,9 @@ CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
         CALL TIMER_START('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
-        CALL UPDATE_SURF_DR( myTime, myIter, myThid )
+        CALL UPDATE_SURF_DR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
        ENDIF
-      ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
 cph-test
 CADJ STORE hFacC    = comlev1, key=ikey_dynamics, kind=isbyte

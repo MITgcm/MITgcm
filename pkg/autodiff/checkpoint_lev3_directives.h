@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.51 2011/01/07 12:31:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.52 2011/01/14 01:34:57 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -92,21 +92,18 @@ CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
 CADJ STORE hfac_surfc    = tapelev3, key = ilev_3
 CADJ STORE hfac_surfs    = tapelev3, key = ilev_3
 CADJ STORE hfac_surfw    = tapelev3, key = ilev_3
-CADJ STORE hfacc         = tapelev3, key = ilev_3
-CADJ STORE hfacs         = tapelev3, key = ilev_3
-CADJ STORE hfacw         = tapelev3, key = ilev_3
-CADJ STORE recip_hfacc   = tapelev3, key = ilev_3
-CADJ STORE recip_hfacs   = tapelev3, key = ilev_3
-CADJ STORE recip_hfacw   = tapelev3, key = ilev_3
+CADJ STORE hFac_surfNm1C= tapelev3, key = ilev_3
+CADJ STORE hFac_surfNm1S= tapelev3, key = ilev_3
+CADJ STORE hFac_surfNm1W= tapelev3, key = ilev_3
 
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarexpc,rstarexps,rstarexpw 
 CADJ &     = tapelev3, key = ilev_3
 CADJ STORE rstarfacc,rstarfacs,rstarfacw 
 CADJ &     = tapelev3, key = ilev_3
-CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
+CADJ STORE rStarFacNm1C,rStarFacNm1S,rStarFacNm1W
 CADJ &     = tapelev3, key = ilev_3
-CADJ STORE h0facc,h0facs,h0facw
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
 CADJ &     = tapelev3, key = ilev_3
 # endif
 #endif /* NONLIN_FRSURF */

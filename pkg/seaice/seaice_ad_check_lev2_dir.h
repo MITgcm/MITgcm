@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev2_dir.h,v 1.14 2010/12/17 04:02:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev2_dir.h,v 1.15 2011/01/14 01:34:58 gforget Exp $
 C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev2, key = ilev_2
@@ -7,7 +7,7 @@ CADJ STORE StoreSEAICE    = tapelev2, key = ilev_2
 CADJ STORE tices      =     tapelev2, key = ilev_2
 #endif
 
-#ifdef NONLIN_FRSURF
+#ifdef AUTODIFF_SOMETIMES_NEEDED
 CADJ STORE area  = tapelev2, key = ilev_2
 CADJ STORE heff  = tapelev2, key = ilev_2
 CADJ STORE uice  = tapelev2, key = ilev_2

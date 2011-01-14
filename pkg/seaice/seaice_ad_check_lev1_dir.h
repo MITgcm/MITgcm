@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.25 2010/12/17 04:02:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.26 2011/01/14 01:34:58 gforget Exp $
 C $Name:  $
 
 CADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -8,12 +8,10 @@ CADJ STORE tice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE tices      = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 
-#ifdef NONLIN_FRSURF
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
 # ifdef EXACT_CONSERV

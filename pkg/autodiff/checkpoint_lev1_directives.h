@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.51 2011/01/07 12:31:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.52 2011/01/14 01:34:57 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -34,17 +34,19 @@ CADJ &     kind = isbyte
 
 #ifdef NONLIN_FRSURF
 c
-CADJ STORE hfacc       = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
 CADJ STORE hfac_surfc  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE recip_hfacc = comlev1, key = ikey_dynamics,
+CADJ STORE hFac_surfNm1C = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE recip_hfacs = comlev1, key = ikey_dynamics,
+CADJ STORE hfac_surfs  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE recip_hfacw = comlev1, key = ikey_dynamics,
+CADJ STORE hFac_surfNm1S = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-cph the following are frequently needed, e.g. with seaice
+CADJ STORE hfac_surfw  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFac_surfNm1W = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+c
 CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE gs,gt              = comlev1, key = ikey_dynamics,
@@ -59,8 +61,6 @@ CADJ STORE gsnm,gtnm          = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 cphCADJ STORE gunm,gvnm          = comlev1, key = ikey_dynamics,
 cphCADJ &     kind = isbyte
-CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 CADJ STORE salt,theta         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -70,15 +70,17 @@ CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 c
 # ifndef DISABLE_RSTAR_CODE
-CADJ STORE h0facc,h0facs,h0facw 
+CADJ STORE rstarfacc,rstarfacs,rstarfacw
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE rstarfacc,rstarfacs,rstarfacw
+CADJ STORE rStarFacNm1C,rStarFacNm1S,rStarFacNm1W
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE rstarexpc,rstarexps,rstarexpw
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* NONLIN_FRSURF */
 
