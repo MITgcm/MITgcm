@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1364 2011/01/14 01:42:22 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1365 2011/01/15 00:47:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport:
+   allow to test MPI with different number of processors for each experiment:
+   create file "SIZE.h.mpi" in each build dir.
+   Note: update of "-command" argument not yet implemented.
 o model/src, pkg/autodiff, pkg/ecco, pkg/seaice:
   alleviate the need for additional 3D tapes when using
   the non-inear free surface in the adjoint. This is done
