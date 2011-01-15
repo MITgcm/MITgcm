@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/SIZE.h_mpi,v 1.1 2009/05/17 22:26:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/SIZE.h_mpi,v 1.2 2011/01/15 20:00:15 jmc Exp $
 C $Name:  $
 
 C
@@ -48,10 +48,10 @@ C     Nr  :: No. points in Z for full process domain.
      &           sNy =  15,
      &           OLx =   3,
      &           OLy =   3,
-     &           nSx =   4,
-     &           nSy =   3,
-     &           nPx =   2,
-     &           nPy =   1,
+     &           nSx =   2,
+     &           nSy =   1,
+     &           nPx =   4,
+     &           nPy =   3,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =  25)
