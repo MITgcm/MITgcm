@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.7 2010/12/16 20:15:21 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.8 2011/01/15 19:16:32 jmc Exp $
 # $Name:  $
 
 usage()
@@ -145,6 +145,19 @@ fi
 for xx in $LIST
 do
   echo ==============================================================================
+  if [ $mpi -ge 1 ] ; then
+    NP_MPI=2
+    mpi_size=$xx/build/SIZE.h.mpi
+    if test -f $mpi_size ; then
+      px=`grep '^     & *nPx *=' $mpi_size | sed 's/^     & *nPx *= *//' | sed 's/, *$//'`
+      py=`grep '^     & *nPy *=' $mpi_size | sed 's/^     & *nPy *= *//' | sed 's/, *$//'`
+      pp=`expr $px \* $py` > /dev/null 2>&1 ; out=$?
+      if test "x$out" = x0 ; then NP_MPI=$pp ; fi
+    fi
+    rCommand=`echo $COMMAND | sed "s/-np * XX /-np $NP_MPI /"`
+  else
+    rCommand=$COMMAND
+  fi
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
   for yy in $listD
   do
@@ -177,9 +190,9 @@ do
         $SCRIPT $scrArg >> outp.tst_2+2.log 2>&1
         out=$?
       else
-        echo "$SCRIPT $scrArg -command \"$COMMAND\"" >> outp.tst_2+2.log
+        echo "$SCRIPT $scrArg -command \"$rCommand\"" >> outp.tst_2+2.log
         echo ' ' >> outp.tst_2+2.log
-        $SCRIPT $scrArg -command "$COMMAND" >> outp.tst_2+2.log 2>&1
+        $SCRIPT $scrArg -command "$rCommand" >> outp.tst_2+2.log 2>&1
         out=$?
       fi
       case $out in

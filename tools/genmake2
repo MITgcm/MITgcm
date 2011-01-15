@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.218 2010/12/26 01:04:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.219 2011/01/15 19:16:32 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2719,7 +2719,8 @@ Clean:
 CLEAN:
 	@make Clean
 	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.bak
-	-rm -f $LOGFILE genmake_state genmake_*optfile genmake.tr_log make.tr_log
+	-rm -f $LOGFILE genmake_state genmake_*optfile
+	-rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
