@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.4 2010/12/26 17:02:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.5 2011/01/16 01:17:45 jmc Exp $
 
 #  Ed Hill
 
@@ -83,322 +83,147 @@ last_Tst=`echo $tst_list | awk '{print $NF}'`
 for tt in $tst_list
 do
 
- echo "================================================================"
- typ=`echo $tt | sed 's/+rs//'`
- #- check day and time:
- curDay=`date +%d` ; curHour=`date +%H`
- if [ $curDay -ne $TODAY ] ; then
-   date ; echo "day is over => skip test $typ"
-   continue
- fi
- if [ $curHour -ge 18 ] ; then
-   date ; echo "too late to run test $typ"
-   continue
- fi
- #- clean-up old output files
- rm -f $tdir/output_${typ}*
- if test $sepDir = 1 ; then
-  new_dir="MITgcm_$typ"
-  if test -d $new_dir/CVS -a $checkOut = '0' ; then
-    pushd $new_dir
-    echo -n "Update the MITgcm code using: $cmdCVS ..."
-    $cmdCVS update -P -d
-    echo "  done"
-  else
-    test -e $new_dir  &&  rm -rf $new_dir
-    mkdir $new_dir
-    pushd $new_dir
-    cp -ra ../MITgcm/* .
+  echo "================================================================"
+  typ=`echo $tt | sed 's/+rs//'`
+  #- check day and time:
+  curDay=`date +%d` ; curHour=`date +%H`
+  if [ $curDay -ne $TODAY ] ; then
+    date ; echo "day is over => skip test $typ"
+    continue
   fi
- else
-  pushd MITgcm
- fi
- cd verification
+  if [ $curHour -ge 18 ] ; then
+    date ; echo "too late to run test $typ"
+    continue
+  fi
+  #- clean-up old output files
+  rm -f $tdir/output_${typ}*
+  if test $sepDir = 1 ; then
+    new_dir="MITgcm_$typ"
+    if test -d $new_dir/CVS -a $checkOut = '0' ; then
+      pushd $new_dir
+      echo -n "Update the MITgcm code using: $cmdCVS ..."
+      $cmdCVS update -P -d
+      echo "  done"
+    else
+      test -e $new_dir  &&  rm -rf $new_dir
+      mkdir $new_dir
+      pushd $new_dir
+      cp -ra ../MITgcm/* .
+    fi
+  else
+    pushd MITgcm
+  fi
+  cd verification
 
- MPI=0
- case $typ in
-  'g77'|'g7a')		OPTFILE='../tools/build_options/linux_amd64_g77' ;;
-  'gfo'|'adm'|'mth')	OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
-  'ifc')		OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
-  'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
-  'mpa'|'mpi'|'mp2')	OPTFILE='../tools/build_options/linux_amd64_gfortran+mpi_generic'
-			MPI=1 ;;
-      *)		OPTFILE= ;;
- esac
- if test $typ = 'mth' -o  $typ = 'mp2' ; then
+#-- set the testreport command:
+  nbl='-100'
+  comm="./testreport" 
+  if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then 
+    nbl='-60'
+    comm="$comm -adm"
+  elif test $typ = 'mth' -o  $typ = 'mp2' ; then
     export GOMP_STACKSIZE=400m
- fi
- if test $MPI = 1 ; then
-    export MPI_INC_DIR=$MPI_GCC_DIR/include
-    EXE="mpirun -np 2 ./mitgcmuv"
- fi
+    export OMP_NUM_THREADS=2
+    comm="$comm -mth"
+  fi
+  comm="$comm -a jmc@mitgcm.org"
+#-- set the optfile (+ mpi & match-precision)
+  MPI=0
+  case $typ in
+   'g77'|'g7a')		OPTFILE='../tools/build_options/linux_amd64_g77' ;;
+   'gfo'|'adm'|'mth')	OPTFILE='../tools/build_options/linux_amd64_gfortran'
+			comm="$comm -match $MC" ;;
+   'ifc')		OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
+   'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
+   'mpa'|'mpi'|'mp2')	OPTFILE='../tools/build_options/linux_amd64_gfortran+mpi_generic'
+			comm="$comm -match $MC" ; MPI=1 ;;
+       *)		OPTFILE= ;;
+  esac
+#-- set MPI command:
+  if test $MPI = 1 ; then
+    if test $typ = 'mpa' ; then 
+      #EXE="mpirun -np 2 ./mitgcmuv_ad"
+      EXE="mpirun -np XX ./mitgcmuv_ad"
+    else
+      #EXE="mpirun -np 2 ./mitgcmuv"
+      EXE="mpirun -np XX ./mitgcmuv"
+    fi
+  fi
 
- if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
+  if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
 #-- cleaning:
-  echo "======================"
-  echo "Cleaning test directories:"
+    echo "======================"
+    echo "Cleaning test directories:"
     cmdCLN="./testreport -clean"
     echo " clean dir running: $cmdCLN"
     $cmdCLN > /dev/null 2>&1
-  echo "======================"
-  echo
- fi
+    echo "======================"
+    echo
+  fi
 
- if test $typ = 'g77'
- then
+#-- set specific Env Vars:
+  if test $typ = 'ifc' ; then
+    source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
+  fi
+  if test $typ = 'pgi' ; then
+    export PGI=/srv/software/pgi/pgi-10.9
+    export PATH="$PATH:$PGI/linux86-64/10.9/bin"
+    export LM_LICENSE_FILE=$PGI/license.dat
+  fi
 
+#-- run the testreport command:
   echo -n "Running testreport using:"
-  comm="./testreport -a jmc@mitgcm.org"
-# comm="$comm -match $MC"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
   if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
+   #comm="$comm -mpi -command \"\$EXE\""
+    comm="$comm -MPI 6 -command \"\$EXE\""
   else echo '' ; fi
   if test "x$option" != x ; then comm="$comm $option" ; fi
+ #if test $typ = 'pgi' ; then comm="$comm -skd tutorial_advection_in_gyre" ; fi
   echo "  \"eval $comm\""
   echo "======================"
   eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_$typ
+  tail $nbl $tdir/output_$typ
   echo
-
- fi
-
- if test $typ = 'gfo'
- then
-
-  echo -n "Running testreport using:"
-  comm="./testreport -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'g7a'
- then
-
-  echo -n "Running testreport using:"
-  comm="./testreport -adm -a jmc@mitgcm.org"
-# comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -60 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'adm'
- then
-
-  echo -n "Running testreport using:"
-  comm="./testreport -adm -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -60 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'ifc'
- then
-
-  source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
-  echo -n "Running testreport using:"
-  comm="./testreport -a jmc@mitgcm.org"
-# comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'mth'
- then
-
-  export OMP_NUM_THREADS=2
-  echo -n "Running testreport using:"
-  comm="./testreport -mth -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'pgi'
- then
-
-  export PGI=/srv/software/pgi/pgi-10.9
-  export PATH="$PATH:$PGI/linux86-64/10.9/bin"
-  export LM_LICENSE_FILE=$PGI/license.dat
-  echo -n "Running testreport using:"
-  comm="./testreport -a jmc@mitgcm.org"
-# comm="$comm -match $MC"
-  #comm="$comm -skd tutorial_advection_in_gyre"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_${typ}
-  echo
-
- fi
-
-#-- MPI tests ---
- if test $typ = 'mpa'
- then
-
-  EXE="mpirun -np 2 ./mitgcmuv_ad"
-  echo -n "Running testreport using:"
-  comm="./testreport -adm -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail  -60 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'mpi'
- then
-
-  echo -n "Running testreport using:"
-  comm="./testreport -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_$typ
-  echo
-
- fi
-
- if test $typ = 'mp2'
- then
-
-  export OMP_NUM_THREADS=2
-  echo -n "Running testreport using:"
-  comm="./testreport -mth -a jmc@mitgcm.org"
-  comm="$comm -match $MC"
-  if test "x$OPTFILE" != x ; then
-    comm="$comm -of=$OPTFILE"
-  fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -mpi -command \"\$EXE\""
-  else echo '' ; fi
-  if test "x$option" != x ; then comm="$comm $option" ; fi
-  echo "  \"eval $comm\""
-  echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail -100 $tdir/output_$typ
-  echo
-
- fi
 
 #-- also test restart (test 2+2=4)
- if test $tt != $typ
- then
-   echo "testing restart using:"
-   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-   if test $MPI = 1 ; then
-     echo "  \"$comm -mpi -exe $EXE\""
-     echo "======================"
-     $comm -mpi -exe "$EXE" > $tdir/output_2+2 2>&1
-   else
-     echo "  \"$comm\""
-     echo "======================"
-     $comm > $tdir/output_2+2 2>&1
-   fi
-  #tail -100 $tdir/output_2+2
-   echo ; cat tst_2+2_out.txt
-   echo
- fi
- export OMP_NUM_THREADS=1
+  if test $tt != $typ
+  then
+    echo "testing restart using:"
+    comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+    if test $MPI = 1 ; then
+      echo "  \"$comm -mpi -exe $EXE\""
+      echo "======================"
+      $comm -mpi -exe "$EXE" > $tdir/output_2+2 2>&1
+    else
+      echo "  \"$comm\""
+      echo "======================"
+      $comm > $tdir/output_2+2 2>&1
+    fi
+   #tail $nbl $tdir/output_2+2
+    echo ; cat tst_2+2_out.txt
+    echo
+  fi
+  export OMP_NUM_THREADS=1
 
- if test $sepDir = 0 ; then
+  if test $sepDir = 0 ; then
 #-- cleaning:
-  echo "======================"
-  echo "Cleaning test directories:"
-  if test $tt != $typ ; then
-    cmdCLN="../tools/do_tst_2+2 -clean"
-    echo " clean tst_2+2 running: $cmdCLN"
-    $cmdCLN >> $tdir/output_2+2 2>&1
-  fi
-  if test $tt != $last_Tst ; then
-    cmdCLN="./testreport -clean"
-    echo " clean dir running: $cmdCLN"
-    $cmdCLN > /dev/null 2>&1
-  fi
-  echo "======================"
-  echo
+   echo "======================"
+   echo "Cleaning test directories:"
+   if test $tt != $typ ; then
+     cmdCLN="../tools/do_tst_2+2 -clean"
+     echo " clean tst_2+2 running: $cmdCLN"
+     $cmdCLN >> $tdir/output_2+2 2>&1
+   fi
+   if test $tt != $last_Tst ; then
+     cmdCLN="./testreport -clean"
+     echo " clean dir running: $cmdCLN"
+     $cmdCLN > /dev/null 2>&1
+   fi
+   echo "======================"
+   echo
  fi
  popd
 
