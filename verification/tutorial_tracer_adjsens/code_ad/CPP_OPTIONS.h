@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h,v 1.3 2008/08/21 16:03:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h,v 1.4 2011/01/18 22:59:27 heimbach Exp $
 C $Name:  $
 
 C
@@ -14,6 +14,11 @@ C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP
 #define  SHORTWAVE_HEATING
 #endif
+
+C o Nonlinear free surface
+#define NONLIN_FRSURF
+cph#define DISABLE_RSTAR_CODE
+#define DISABLE_SIGMA_CODE
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE

@@ -33,6 +33,12 @@
  readBinaryPrec=32,
  exactConserv=.TRUE.,
  useCDscheme=.TRUE.,
+#nonlinear free surface
+ hFacInf=0.2,
+ hFacSup=2.0,
+ nonlinFreeSurf=2,
+ select_rStar=2,
+#
 # readPickupWithTracer  = .FALSE.,
 # writePickupWithTracer = .FALSE.,
  &
