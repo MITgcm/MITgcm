@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.188 2011/01/14 01:28:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.189 2011/01/18 21:04:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,6 +12,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
 #endif
 
 CBOP
@@ -421,13 +424,13 @@ CADJ &     kind = isbyte
 CADJ STORE vvel               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
+# ifdef EXACT_CONSERV
+CADJ STORE empmr              = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE pmepr              = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 # ifdef ALLOW_OBCS
 CADJ STORE salt               = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE totphihyd          = comlev1, key=ikey_dynamics, kind=isbyte
-#  ifdef EXACT_CONSERV
-CADJ STORE empmr              = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE pmepr              = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
 # endif
 # ifdef ALLOW_PTRACERS
 CADJ STORE ptracer               = comlev1, key = ikey_dynamics,
@@ -602,8 +605,10 @@ C       results.
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE salt               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+#endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',myThid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',myThid)
