@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.40 2010/11/14 23:32:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.41 2011/01/18 19:37:41 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -128,6 +128,12 @@ CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 CADJ STORE gpTrNm1(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
+# ifdef NONLIN_FRSURF
+CADJ STORE gpTr(:,:,k,bi,bj,iTracer)
+CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
+CADJ STORE rFlx(:,:,k,iTracer)
+CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Calculate active tracer tendencies (gPtr) due to internal processes

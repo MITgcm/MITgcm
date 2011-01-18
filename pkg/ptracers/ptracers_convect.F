@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.6 2011/01/18 19:37:41 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -19,6 +19,10 @@ C !USES: ===============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj,k :: tile indices
@@ -42,6 +46,26 @@ CEOP
 
 C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act0 = iTracer - 1
+          max0 = PTRACERS_num
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iptrkey = (act0 + 1)
+     &                      + act1*max0
+     &                      + act2*max0*max1
+     &                      + act3*max0*max1*max2
+     &                      + act4*max0*max1*max2*max3
+          kkey = (iptrkey-1)*Nr + k
+CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
+CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
        CALL CONVECTIVELY_MIXTRACER(
      I         bi,bj,k,weightA,weightB,
