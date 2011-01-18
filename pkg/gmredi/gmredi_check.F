@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.21 2011/01/11 00:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.22 2011/01/18 22:37:48 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -156,6 +156,13 @@ C     Make sure we are not trying to use some arrays that are unavailable
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
+#endif
+
+#ifdef ALLOW_EDDYPSI
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: Bug in ALLOW_EDDYPSI + GM-Redi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
 #endif
 
 #ifdef ALLOW_PTRACERS
