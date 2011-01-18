@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.41 2011/01/18 19:37:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.42 2011/01/18 22:58:20 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -131,7 +131,7 @@ CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 # ifdef NONLIN_FRSURF
 CADJ STORE gpTr(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
-CADJ STORE rFlx(:,:,k,iTracer)
+CADJ STORE rFlx(:,:,:,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
