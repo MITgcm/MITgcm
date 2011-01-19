@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.8 2011/01/15 19:16:32 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.9 2011/01/19 23:43:13 jmc Exp $
 # $Name:  $
 
 usage()
@@ -154,7 +154,7 @@ do
       pp=`expr $px \* $py` > /dev/null 2>&1 ; out=$?
       if test "x$out" = x0 ; then NP_MPI=$pp ; fi
     fi
-    rCommand=`echo $COMMAND | sed "s/-np * XX /-np $NP_MPI /"`
+    rCommand=`echo $COMMAND | sed "s/ TR_NPROC / $NP_MPI /"`
   else
     rCommand=$COMMAND
   fi
