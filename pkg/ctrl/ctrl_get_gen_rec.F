@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.8 2011/01/19 08:31:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.9 2011/01/19 22:04:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,7 +83,7 @@ C     for simplied default model calendar without exf/cal
       _RL tmp1Wght, tmp2Wght
       _RL myRelTime
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
-#endif 
+#endif
 
 #ifdef ECCO_VERBOSE
       character*(max_len_mbuf) msgbuf
@@ -91,7 +91,7 @@ C     for simplied default model calendar without exf/cal
 
 c     == end of interface ==
 
-#if ALLOW_CAL
+#ifdef ALLOW_CAL
       lArgErr = .true.
       fldperiod = 0.
 
@@ -167,15 +167,15 @@ c           MITgcm estimation program.
       fac = 1. - fldsecs/fldperiod
 
 #else /* not ALLOW_CAL */
-C     Code, adapted from external_fields_load, for simplied 
+C     Code, adapted from external_fields_load, for simplied
 C     default model calendar without exf/cal, but
 C     based on myTime, myIter, deltaTclock, externForcingCycle, and startTime
 
       myRelTime = myTime - startTime
       first = (myRelTime .lt. 0.5*deltaTClock)
-      if ( xx_genperiod .eq. 0. _d 0 
+      if ( xx_genperiod .eq. 0. _d 0
      &     .or. externForcingCycle .eq. 0. _d 0 ) then
-C     control parameter is constant in time and only needs to be updated 
+C     control parameter is constant in time and only needs to be updated
 C     once in the beginning
        changed = .false.
        count0  = 1
@@ -185,7 +185,7 @@ C     once in the beginning
        if ( first ) changed = .false.
 
        nForcingPeriods = NINT(externForcingCycle/xx_genperiod)
-       
+
        rdt   = 1. _d 0 / deltaTclock
        Imytm = NINT(myRelTime*rdt)
        Ifprd = NINT(xx_genperiod*rdt)
@@ -239,4 +239,3 @@ c     Do some printing for the protocol.
 
       return
       end
-
