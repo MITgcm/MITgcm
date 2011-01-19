@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.7 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.8 2011/01/19 08:42:06 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -221,25 +221,14 @@ cgg     &                                        *   maskxz (i,k,bi,bj)
         if ( (obcssfirst) .or. (obcsschanged)) then
 
           do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nr
-                do i = imin,imax
-                  tmpfldxz(i,k,bi,bj) = xx_obcss1(i,k,bi,bj,iobcs)
-                enddo
-              enddo
+           do bi = itlo,ithi
+            do k = 1,nr
+             do i = imin,imax
+              xx_obcss0(i,k,bi,bj,iobcs) = xx_obcss1(i,k,bi,bj,iobcs)
+              tmpfldxz (i,k,bi,bj)       = 0. _d 0
+             enddo
             enddo
-          enddo
-
-          call exf_swapffields_xz( tmpfldxz2, tmpfldxz, mythid)
-
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nr
-                do i = imin,imax
-                  xx_obcss0(i,k,bi,bj,iobcs) = tmpfldxz2(i,k,bi,bj)
-                enddo
-              enddo
-            enddo
+           enddo
           enddo
 
           call active_read_xz( fnameobcss, tmpfldxz,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.7 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.8 2011/01/19 08:42:06 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -219,25 +219,14 @@ cgg     &                                        *   maskyz (j,k,bi,bj)
         if ( (obcsefirst) .or. (obcsechanged)) then
 
           do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do j = jmin,jmax
-                do k = 1,nr
-                  tmpfldyz(j,k,bi,bj) = xx_obcse1(j,k,bi,bj,iobcs)
-                enddo
-              enddo
+           do bi = itlo,ithi
+            do j = jmin,jmax
+             do k = 1,nr
+              xx_obcse0(j,k,bi,bj,iobcs) = xx_obcse1(j,k,bi,bj,iobcs)
+              tmpfldyz (j,k,bi,bj)       = 0. _d 0
+             enddo
             enddo
-          enddo
-
-          call exf_swapffields_yz( tmpfldyz2, tmpfldyz, mythid)
-
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do j = jmin,jmax
-                do k = 1,nr
-                  xx_obcse0(j,k,bi,bj,iobcs) = tmpfldyz2(j,k,bi,bj)
-                enddo
-              enddo
-            enddo
+           enddo
           enddo
 
           call active_read_yz( fnameobcse, tmpfldyz,

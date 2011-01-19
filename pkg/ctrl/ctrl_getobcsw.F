@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcsw.F,v 1.8 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcsw.F,v 1.9 2011/01/19 08:42:06 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -218,29 +218,15 @@ cgg     &                                        *   maskyz (j,k,bi,bj)
 
         if ( (obcswfirst) .or. (obcswchanged)) then
 
-cgg(    This is a terribly long way to do it. However, the dimensions do not exactly
-cgg     match up. I will blame Fortran for the ugliness.
-
           do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nr
-                do j = jmin,jmax
-                  tmpfldyz(j,k,bi,bj) = xx_obcsw1(j,k,bi,bj,iobcs)
-                enddo
-              enddo
+           do bi = itlo,ithi
+            do k = 1,nr
+             do j = jmin,jmax
+              xx_obcsw0(j,k,bi,bj,iobcs) = xx_obcsw1(j,k,bi,bj,iobcs)
+              tmpfldyz (j,k,bi,bj)       = 0. _d 0
+             enddo
             enddo
-          enddo
-
-          call exf_swapffields_yz( tmpfldyz2, tmpfldyz, mythid)
-
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nr
-                do j = jmin,jmax
-                  xx_obcsw0(j,k,bi,bj,iobcs) = tmpfldyz2(j,k,bi,bj)
-                enddo
-              enddo
-            enddo
+           enddo
           enddo
 
           call active_read_yz( fnameobcsw, tmpfldyz,
