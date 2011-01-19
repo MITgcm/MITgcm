@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.26 2011/01/14 01:34:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.27 2011/01/19 23:20:25 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -48,14 +48,10 @@ c
 CADJ STORE gs  = tapelev4, key = ilev_4
 CADJ STORE gt  = tapelev4, key = ilev_4             
 #ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtnm(:,:,:,:,1)   = tapelev4, key = ilev_4
-CADJ STORE gsnm(:,:,:,:,1)   = tapelev4, key = ilev_4
-CADJ STORE gunm(:,:,:,:,1)   = tapelev4, key = ilev_4
-CADJ STORE gvnm(:,:,:,:,1)   = tapelev4, key = ilev_4
-CADJ STORE gtnm(:,:,:,:,2)   = tapelev4, key = ilev_4
-CADJ STORE gsnm(:,:,:,:,2)   = tapelev4, key = ilev_4
-CADJ STORE gunm(:,:,:,:,2)   = tapelev4, key = ilev_4
-CADJ STORE gvnm(:,:,:,:,2)   = tapelev4, key = ilev_4
+CADJ STORE gtnm = tapelev4, key = ilev_4
+CADJ STORE gsnm = tapelev4, key = ilev_4
+CADJ STORE gunm = tapelev4, key = ilev_4
+CADJ STORE gvnm = tapelev4, key = ilev_4
 #else
 CADJ STORE gtnm1  = tapelev4, key = ilev_4             
 CADJ STORE gsnm1  = tapelev4, key = ilev_4             

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.13 2010/12/06 10:51:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.14 2011/01/19 23:20:25 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -172,7 +172,7 @@ c    determine number of 2d fields
 c
       if (n2d*length2d.EQ.length) then
       call mds_read_whalos(fname,lenLoc,sizetmp,
-     &               0,n2d,var,irec,mythid)
+     &               0,n2d,var,irec,useSingleCpuIO,mythid)
       else
 c   The other case actually does not (and should not) occur within the main loop, 
 c   where we only store global arrays (i.e. with bi,bj indices) to disk. 
@@ -348,7 +348,7 @@ c    determine number of 2d fields
 c
       if (n2d*length2d.EQ.length) then
        call mds_write_whalos(fname,lenLoc,sizetmp,
-     &                       0,n2d,var,irec,mythid)
+     &                 0,n2d,var,irec,useSingleCpuIO,mythid)
       else
        write(msgBuf,'(3A)') 
      &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'

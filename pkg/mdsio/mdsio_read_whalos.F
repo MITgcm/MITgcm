@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.4 2010/12/23 18:05:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.5 2011/01/19 23:20:24 gforget Exp $
 C $fName:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -14,6 +14,7 @@ C     !INTERFACE:
      I                   n2d,
      O                   fldRL,
      I                   irec,
+     I                   locSingleCPUIO,
      I                   mythid
      &                 )
 
@@ -58,6 +59,7 @@ c     mythid    -  number of the thread or instance of the program.
       integer n2d
       integer irec
       _RL     fldRL(1-Olx:sNx+Olx,1-Oly:sNy+Oly,n2d,nSx,nSy)
+      logical locSingleCPUIO
 CEOP
 
 #ifdef ALLOW_WHIO
@@ -79,7 +81,7 @@ C     gloNyWh :: global sum of sNyWh
 
       character*(MAX_LEN_FNAM) pfName
       character*(MAX_LEN_MBUF) msgBuf
-      integer IL,pIL
+      integer IL
       integer bx,by
 
       integer length2d, length3d, length_of_rec
@@ -93,38 +95,39 @@ C     gloNyWh :: global sum of sNyWh
 c     == functions ==
       INTEGER  ILNBLNK
       INTEGER  MDS_RECLEN
-      LOGICAL  MASTER_CPU_IO
       EXTERNAL ILNBLNK
       EXTERNAL MDS_RECLEN
-      EXTERNAL MASTER_CPU_IO
 
 c     == end of interface ==
 
       length2d=sNxWh*procNyWh
       length3d=length2d*nr
 
-C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
-      iAmDoingIO = MASTER_CPU_IO(myThid)
+C Only do I/O if I am the master thread (and mpi process 0 IF locSingleCpuIO):
+      iAmDoingIO = .FALSE.
+      IF ( .NOT.locSingleCpuIO .OR. myProcId.EQ.0 ) THEN
+        _BEGIN_MASTER( myThid )
+        iAmDoingIO = .TRUE.
+        _END_MASTER( myThid )
+      ENDIF      
+
       IF ( iAmDoingIO ) THEN
 c get the unit and open file
-      CALL MDSFINDUNIT( dUnit, myThid )
       IL  = ILNBLNK( fName )
-      pIL = ILNBLNK( mdsioLocalDir )
-      IF ( pIL.EQ.0 ) THEN
-        pfName = fName
-      ELSE
-       WRITE(pfName,'(2A)') mdsioLocalDir(1:pIL), fName(1:IL)
-      ENDIF
-      pIL=ILNBLNK( pfName )
-      IF ( .NOT.useSingleCpuIO ) THEN
-        WRITE(pfName,'(2A,I3.3,A)') pfName(1:pIL),'.',myProcId,'.data'
+      IF ( .NOT.locSingleCpuIO ) THEN
+        WRITE(pfName,'(2A,I3.3,A)') fName(1:IL),'.',myProcId,'.data'
         length_of_rec = MDS_RECLEN( filePrec,sNxWh*procNyWh, myThid )
       ELSE
-        WRITE(pfName,'(2A)') pfName(1:pIL),'.data'
+        WRITE(pfName,'(2A)') fName(1:IL),'.data'
         length_of_rec = MDS_RECLEN( filePrec,sNxWh*gloNyWh,myThid)
       ENDIF
-      OPEN( dUnit, file=pfName, status='old',
+      IF (fid.EQ.0) THEN
+        CALL MDSFINDUNIT( dUnit, myThid )
+        OPEN( dUnit, file=pfName, status='old',
      &         access='direct', recl=length_of_rec )
+      ELSE
+        dUnit=fid
+      ENDIF  
       ENDIF
 
 
@@ -132,8 +135,8 @@ c get the unit and open file
 
         _BARRIER
         IF ( iAmDoingIO ) THEN
-        irec2d=i2d+n2d*(irec-1)
-          IF ( .NOT.useSingleCpuIO ) then
+          irec2d=i2d+n2d*(irec-1)
+          IF ( .NOT.locSingleCpuIO ) then
             IF (filePrec .EQ. precFloat32) THEN
               READ(dUnit,rec=irec2d) fld2d_procbuff_r4
             ELSE
@@ -150,7 +153,7 @@ c get the unit and open file
         _BARRIER
 
         IF (filePrec .EQ. precFloat32) THEN
-          IF ( useSingleCpuIO ) then
+          IF ( locSingleCpuIO ) then
             CALL SCATTER_2D_WH_R4 ( fld2d_globuff_r4,
      &                              fld2d_procbuff_r4,myThid)
             CALL BAR2( myThid )
@@ -158,7 +161,7 @@ c get the unit and open file
           CALL MDS_PASS_R4toRL( fld2d_procbuff_r4, fldRL,
      &             OLx, OLy, 1, i2d, n2d, 0, 0, .TRUE., myThid )
         ELSE
-          IF ( useSingleCpuIO ) then
+          IF ( locSingleCpuIO ) then
             CALL SCATTER_2D_WH_R8 ( fld2d_globuff_r8,
      &                              fld2d_procbuff_r8,myThid)
             CALL BAR2( myThid )
@@ -169,7 +172,7 @@ c get the unit and open file
 
       enddo
 
-       IF ( iAmDoingIO ) THEN
+       IF ( iAmDoingIO.AND.(fid.EQ.0) ) THEN
          CLOSE( dUnit )
        ENDIF
 
