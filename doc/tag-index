@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1365 2011/01/15 00:47:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1366 2011/01/19 08:47:58 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl: add code that allows the use of ALLOW_OBCS?_CONTROL without 
+  exf/cal
+  - ctrl_init: fix initialisation (computation of diffrec) for obcs-ctrl
+    and handle case of obcs?period == 0
+    Not affected by these changes: There is still an inconsistency in
+    the computation of start/endrec for the obcs variables for ALLOW_CAL 
+    defined (see comment by Menemenlis, 7-Mar-2003)
+  - make S/R ctrl_get_gen_rec return something meaningful even if
+    ALLOW_CAL is not defined
+  - ctrl_getobcs?: simplify code so that it does not need to use 
+                   S/R exf_swapfields
 o testreport:
    allow to test MPI with different number of processors for each experiment:
    create file "SIZE.h.mpi" in each build dir.
