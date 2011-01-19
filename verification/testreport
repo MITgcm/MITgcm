@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.154 2011/01/14 23:55:00 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.155 2011/01/19 22:12:55 jmc Exp $
 #  $Name:  $
 #
 
@@ -521,20 +521,24 @@ mk_mpi_size()
 
     #- find the largest divisor of input_file proc Nb, but not larger than $np
     pp=0
-    for i in `seq 1 $px` ; do
+    i=1
+    while [ $i -le $px ] ; do
       if [ `expr $px % $i` -eq 0 ] ; then
-        for j in `seq 1 $py` ; do
-          if [ `expr $py % $j` -eq 0 ] ; then
-            ij=`expr $i \* $j`
-            if [ $ij -gt $pp ] ; then
-              if [ $ij -le $np ] ; then
-                ix=$i ; jy=$j ; pp=$ij
-                #echo "  ix,jy= $ix,$jy"
-              fi
-            fi
-          fi
-        done
+	j=1
+	while [ $j -le $py ] ; do
+	  if [ `expr $py % $j` -eq 0 ] ; then
+	    ij=`expr $i \* $j`
+	    if [ $ij -gt $pp ] ; then
+	      if [ $ij -le $np ] ; then
+		ix=$i ; jy=$j ; pp=$ij
+		#echo "  ix,jy= $ix,$jy"
+	      fi
+	    fi
+	  fi
+	  j=`expr $j + 1`
+	done
       fi
+      i=`expr $i + 1`
     done
 
     #- create new SIZE.h type file:
@@ -689,7 +693,8 @@ runmodel()
 	if test "x$MPI" != x0 ; then
 	    #- adjust the MPI run command with the right number of Procs
 	    #echo "COMMAND='$COMMAND'"
-	    COMMAND=`echo $COMMAND | sed "s/-np * XX /-np $NPROC_MPI /"`
+	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC / $NPROC_MPI /"`
+	    #COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / $MFILE_MPI /"`
 	    #echo "COMMAND='$COMMAND'"
 	fi
         if test ! -x $EXECUTABLE ; then
