@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.5 2011/01/16 01:17:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.6 2011/01/19 23:48:14 jmc Exp $
 
 #  Ed Hill
 
@@ -15,11 +15,9 @@ export LC_ALL="en_US.UTF-8"
 #  Turn off stack limit for FIZHI & AD-tests
 ulimit -s unlimited
 #  MPI test (for now, only with gfortran)
-#if test $MPI = 1 ; then
    export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
    export MPI_INC_DIR=$MPI_GCC_DIR/include
    export PATH="$PATH:$MPI_GCC_DIR/bin"
-#fi
 
 #- method to acces CVS:
  # export CVSROOT='/u/gcmpack'
@@ -142,11 +140,9 @@ do
 #-- set MPI command:
   if test $MPI = 1 ; then
     if test $typ = 'mpa' ; then 
-      #EXE="mpirun -np 2 ./mitgcmuv_ad"
-      EXE="mpirun -np XX ./mitgcmuv_ad"
+      EXE="mpirun -np TR_NPROC ./mitgcmuv_ad"
     else
-      #EXE="mpirun -np 2 ./mitgcmuv"
-      EXE="mpirun -np XX ./mitgcmuv"
+      EXE="mpirun -np TR_NPROC ./mitgcmuv"
     fi
   fi
 
@@ -177,7 +173,6 @@ do
     comm="$comm -of=$OPTFILE"
   fi
   if test $MPI = 1 ; then echo " (EXE='$EXE')"
-   #comm="$comm -mpi -command \"\$EXE\""
     comm="$comm -MPI 6 -command \"\$EXE\""
   else echo '' ; fi
   if test "x$option" != x ; then comm="$comm $option" ; fi
