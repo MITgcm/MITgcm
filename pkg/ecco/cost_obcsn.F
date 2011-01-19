@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.5 2011/01/19 13:46:19 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -6,12 +6,18 @@ C $Name:  $
 # include "OBCS_OPTIONS.h"
 #endif
 
+CBOP
+C     !ROUTINE: COST_OBCSN
+C     !INTERFACE:
       subroutine cost_obcsn(
      I                       myiter,
      I                       mytime,
+     I                       startrec,
+     I                       endrec,
      I                       mythid
      &                     )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE cost_obcsn
 c     ==================================================================
@@ -21,6 +27,9 @@ c
 c     ==================================================================
 c     SUBROUTINE cost_obcsn
 c     ==================================================================
+C     \ev
+
+C     !USES:
 
       implicit none
 
@@ -41,12 +50,16 @@ c     == global variables ==
 #include "ctrl_dummy.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
 
       integer myiter
       _RL     mytime
       integer mythid
+      integer startrec
+      integer endrec
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
@@ -59,15 +72,22 @@ c     == local variables ==
       integer il
       integer iobcs
       integer jp1
+      integer nrec
+      integer ilfld
+      integer igg
+      integer ihh
 
       _RL fctile
       _RL fcthread
       _RL dummy
+      _RL gg
+      _RL tmpx
+      _RL tmpfield (1-olx:snx+olx,nr,nsx,nsy)
+      _RL maskxz   (1-olx:snx+olx,nr,nsx,nsy)
+      _RL area
+      _RL volflux
 
-      character*(80) fnametheta
-      character*(80) fnamesalt
-      character*(80) fnameuvel
-      character*(80) fnamevvel
+      character*(80) fnamefld
 
       logical doglobalread
       logical ladinit
@@ -82,6 +102,7 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -96,158 +117,108 @@ c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
+c     Number of records to be used.
+      nrec = endrec-startrec+1
+
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
 
       jp1 = 0
       fcthread = 0. _d 0
 
+#ifdef ECCO_VERBOSE
+      _BEGIN_MASTER( mythid )
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8)')
+     &  ' cost_obcsn: number of records to process: ',nrec
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      _END_MASTER( mythid )
+#endif
+
+      if (optimcycle .ge. 0) then
+        ilfld=ilnblnk( xx_obcsn_file )
+        write(fnamefld(1:80),'(2a,i10.10)') 
+     &       xx_obcsn_file(1:ilfld), '.', optimcycle
+      endif
+
 c--   Loop over records.
-      do irec = 1,nmonsrec
+      do irec = 1,nrec
 
-c--     temperature
-        iobcs = 1
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)')
-     &       tbarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnametheta, tbar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        xx_tbar_mean_dummy )
+        area    = 0. _d 0
+        volflux = 0. _d 0
 
-        call mdsreadfieldxz( OBNtFile, readBinaryPrec, 'RS',
-     &                       nr, OBNt, irec, mythid)
+        call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
+     &                       ladinit, optimcycle, mythid
+     &        , xx_obcsn_dummy )
 
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-c--         Loop over the model layers
-            fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
+cgg    Need to solve for iobcs would have been.
+          gg    = (irec-1)/nobcs
+          igg   = int(gg)
+          iobcs = irec - igg*nobcs
+
+          call active_read_xz( 'maskobcsn', maskxz, 
+     &                         iobcs,
+     &                         doglobalread, ladinit, 0,
+     &                         mythid, dummy )
+
+#ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
+cih -- Balance net transport from the northern boundary.
+c      Compute total net transport.
+          if (iobcs .eq. 3) then
+            ihh = igg+1   
+            call ctrl_volflux( ihh, area, volflux, mythid)
+            _GLOBAL_SUM_RL( volflux, mythid )
+            _GLOBAL_SUM_RL( area,mythid )
+c            print*,'volflux,area',volflux,area
+          endif
+c      Correct barofield if normal velocity at the northern boundary.
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
                do i = imin,imax
-                  j = OB_Jn(I,bi,bj)
-                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (tbar(i,j,k,bi,bj) - OBNt(i,k,bi,bj))*
-     &                    (tbar(i,j,k,bi,bj) - OBNt(i,k,bi,bj))
+                  if (iobcs .eq. 3) then
+                     tmpfield(i,1,bi,bj) = (tmpfield(i,1,bi,bj) + 
+     &                    volflux/area)*maskxz(i,1,bi,bj)
+c                     print*,'volflux2,area2',volflux,area
+c                     print*,'barofield',tmpfield(i,1,bi,bj)
                   endif
                enddo
             enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
-            objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
           enddo
-        enddo
+#endif
 
-c--     salt
-        iobcs = 2
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( sbarfile )
-        write(fnamesalt(1:80),'(2a,i10.10)')
-     &       sbarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnamesalt, sbar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        xx_sbar_mean_dummy )
-
-        call mdsreadfieldxz( OBNsFile, readBinaryPrec, 'RS',
-     &                       nr, OBNs, irec, mythid)
-
+c--     Loop over this thread's tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
-c--         Loop over the model layers
+
+c--         Determine the weights to be used.
             fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do i = imin,imax
-                  j = OB_Jn(I,bi,bj)
-                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (sbar(i,j,k,bi,bj) - OBNs(i,k,bi,bj))*
-     &                    (sbar(i,j,k,bi,bj) - OBNs(i,k,bi,bj))
-                  endif
-               enddo
+
+            do k = 1, Nr
+              do i = imin,imax
+                 j = OB_Jn(I,bi,bj)
+cgg                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+                  tmpx = tmpfield(i,k,bi,bj)
+CMM                  fctile = fctile + wobcsn2(i,k,bi,bj,iobcs)
+                  fctile = fctile + wobcsn(k,iobcs)
+     &                          *tmpx*tmpx*maskxz(i,k,bi,bj)
+cgg                endif
+CMM                 if (wobcsn2(i,k,bi,bj,iobcs)*maskxz(i,k,bi,bj).ne.0.)
+                 if (wobcsn(k,iobcs)*maskxz(i,k,bi,bj).ne.0.)
+     &                    num_obcsn(bi,bj) = num_obcsn(bi,bj) + 1. _d 0
+cgg                print*,'S fctile',fctile
+              enddo
             enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
+
             objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
-          enddo
-        enddo
-
-c--     uvel
-        iobcs = 3
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( ubarfile )
-        write(fnameuvel(1:80),'(2a,i10.10)')
-     &       ubarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnameuvel, ubar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        dummy )
-
-        call mdsreadfieldxz( OBNuFile, readBinaryPrec, 'RS',
-     &                       nr, OBNu, irec, mythid)
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-c--         Loop over the model layers
-            fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do i = imin,imax
-                  j = OB_Jn(I,bi,bj)
-                  if (maskW(i,j,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (ubar(i,j,k,bi,bj) - OBNu(i,k,bi,bj))*
-     &                    (ubar(i,j,k,bi,bj) - OBNu(i,k,bi,bj))
-                  endif
-               enddo
-            enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
-            objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
-          enddo
-        enddo
-
-c--     vvel
-        iobcs = 4
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( vbarfile )
-        write(fnamevvel(1:80),'(2a,i10.10)')
-     &       vbarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnamevvel, vbar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        dummy )
-
-        call mdsreadfieldxz( OBNvFile, readBinaryPrec, 'RS',
-     &                       nr, OBNv, irec, mythid)
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-c--         Loop over the model layers
-            fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do i = imin,imax
-                  j = OB_Jn(I,bi,bj)
-                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (vbar(i,j,k,bi,bj) - OBNv(i,k,bi,bj))*
-     &                    (vbar(i,j,k,bi,bj) - OBNv(i,k,bi,bj))
-                  endif
-               enddo
-            enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
-            objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
+            fcthread         = fcthread + fctile
           enddo
         enddo
 

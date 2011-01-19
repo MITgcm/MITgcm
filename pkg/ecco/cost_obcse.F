@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcse.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcse.F,v 1.5 2011/01/19 13:46:19 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -6,12 +6,18 @@ C $Name:  $
 # include "OBCS_OPTIONS.h"
 #endif
 
+CBOP
+C     !ROUTINE: COST_OBCSE
+C     !INTERFACE:
       subroutine cost_obcse(
      I                       myiter,
      I                       mytime,
+     I                       startrec,
+     I                       endrec,
      I                       mythid
      &                     )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE cost_obcse
 c     ==================================================================
@@ -21,6 +27,9 @@ c
 c     ==================================================================
 c     SUBROUTINE cost_obcse
 c     ==================================================================
+C     \ev
+
+C     !USES:
 
       implicit none
 
@@ -41,12 +50,16 @@ c     == global variables ==
 #include "ctrl_dummy.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
 
       integer myiter
       _RL     mytime
       integer mythid
+      integer startrec
+      integer endrec
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
@@ -59,15 +72,20 @@ c     == local variables ==
       integer il
       integer iobcs
       integer ip1
+      integer nrec
+      integer ilfld
+      integer igg
 
       _RL fctile
       _RL fcthread
       _RL dummy
+      _RL gg
+      _RL tmpx
+cgg(
+      _RL tmpfield (1-oly:sny+oly,nr,nsx,nsy)
+      _RL maskyz   (1-oly:sny+oly,nr,nsx,nsy)
 
-      character*(80) fnametheta
-      character*(80) fnamesalt
-      character*(80) fnameuvel
-      character*(80) fnamevvel
+      character*(80) fnamefld
 
       logical doglobalread
       logical ladinit
@@ -82,6 +100,7 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -96,158 +115,79 @@ c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
+c     Number of records to be used.
+      nrec = endrec-startrec+1
+
 #ifdef ALLOW_OBCSE_COST_CONTRIBUTION
 
-      ip1 = 0
+      ip1 = 1
       fcthread = 0. _d 0
 
+#ifdef ECCO_VERBOSE
+      _BEGIN_MASTER( mythid )
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8)')
+     &  ' cost_obcse: number of records to process: ',nrec
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      _END_MASTER( mythid )
+#endif
+
+      if (optimcycle .ge. 0) then
+        ilfld=ilnblnk( xx_obcse_file )
+        write(fnamefld(1:80),'(2a,i10.10)') 
+     &       xx_obcse_file(1:ilfld), '.', optimcycle
+      endif
+
 c--   Loop over records.
-      do irec = 1,nmonsrec
+      do irec = 1,nrec
 
-c--     temperature
-        iobcs = 1
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)')
-     &       tbarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnametheta, tbar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        xx_tbar_mean_dummy )
+        call active_read_yz( fnamefld, tmpfield, irec, doglobalread,
+     &                       ladinit, optimcycle, mythid
+     &        , xx_obcse_dummy )
 
-        call mdsreadfieldyz( OBEtFile, ReadBinaryPrec, 'RS',
-     &                       nr, OBEt, irec, mythid)
+cgg    Need to solve for iobcs would have been.
+          gg    = (irec-1)/nobcs
+          igg   = int(gg)
+          iobcs = irec - igg*nobcs
 
+          call active_read_yz( 'maskobcse', maskyz, 
+     &                         iobcs,
+     &                         doglobalread, ladinit, 0,
+     &                         mythid, dummy )
+
+c--     Loop over this thread's tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
-c--         Loop over the model layers
+
+c--         Determine the weights to be used.
             fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do j = jmin,jmax
-                  i = OB_Ie(J,bi,bj)
-                  if (maskS(i+ip1,j,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcse(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (tbar(i,j,k,bi,bj) - OBEt(j,k,bi,bj))*
-     &                    (tbar(i,j,k,bi,bj) - OBEt(j,k,bi,bj))
-                  endif
-               enddo
+
+            do k = 1, Nr
+              do j = jmin,jmax
+                i = OB_Iw(j,bi,bj)
+cgg                if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
+                  tmpx = tmpfield(j,k,bi,bj)
+CMM                  fctile = fctile + wobcse2(j,k,bi,bj,iobcs)
+                  fctile = fctile + wobcse(k,iobcs)
+     &                        *tmpx*tmpx*maskyz(j,k,bi,bj)
+cgg                endif
+CMM                  if (wobcsw2(j,k,bi,bj,iobcs)*maskyz(j,k,bi,bj).ne.0.)
+                  if (wobcse(k,iobcs)*maskyz(j,k,bi,bj).ne.0.)
+     &                    num_obcse(bi,bj) = num_obcse(bi,bj) + 1. _d 0
+              enddo
             enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
+
             objf_obcse(bi,bj) = objf_obcse(bi,bj) + fctile
-          enddo
-        enddo
-
-c--     salt
-        iobcs = 2
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( sbarfile )
-        write(fnamesalt(1:80),'(2a,i10.10)')
-     &       sbarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnamesalt, sbar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        xx_sbar_mean_dummy )
-
-        call mdsreadfieldyz( OBEsFile, readBinaryPrec, 'RS',
-     &                       nr, OBEs, irec, mythid)
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-c--         Loop over the model layers
-            fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do j = jmin,jmax
-                  i = OB_Ie(J,bi,bj)
-                  if (maskS(i+ip1,j,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcse(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (sbar(i,j,k,bi,bj) - OBEs(j,k,bi,bj))*
-     &                    (sbar(i,j,k,bi,bj) - OBEs(j,k,bi,bj))
-                  endif
-               enddo
-            enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
-            objf_obcse(bi,bj) = objf_obcse(bi,bj) + fctile
-          enddo
-        enddo
-
-c--     uvel
-        iobcs = 3
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( ubarfile )
-        write(fnameuvel(1:80),'(2a,i10.10)')
-     &       ubarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnameuvel, ubar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        dummy )
-
-        call mdsreadfieldyz( OBEuFile, readBinaryPrec, 'RS',
-     &                       nr, OBEu, irec, mythid)
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-c--         Loop over the model layers
-            fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do j = jmin,jmax
-                  i = OB_Ie(J,bi,bj)
-                  if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcse(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (ubar(i,j,k,bi,bj) - OBEu(j,k,bi,bj))*
-     &                    (ubar(i,j,k,bi,bj) - OBEu(j,k,bi,bj))
-                  endif
-               enddo
-            enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
-            objf_obcse(bi,bj) = objf_obcse(bi,bj) + fctile
-          enddo
-        enddo
-
-c--     vvel
-        iobcs = 4
-c--     Read time averages and the monthly mean data.
-        il = ilnblnk( vbarfile )
-        write(fnamevvel(1:80),'(2a,i10.10)')
-     &       vbarfile(1:il),'.',optimcycle
-        call active_read_xyz( fnamevvel, vbar, irec,
-     &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
-     &                        dummy )
-
-        call mdsreadfieldyz( OBEvFile, readBinaryPrec, 'RS',
-     &                       nr, OBEv, irec, mythid)
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-c--         Loop over the model layers
-            fctile = 0. _d 0
-            do k = 1,nr
-c--           Compute model data misfit and cost function term for
-c             the temperature field.
-               do j = jmin,jmax
-                  i = OB_Ie(J,bi,bj)
-                  if (maskS(i,j,k,bi,bj) .ne. 0.) then
-                     fctile = fctile +
-     &                    wobcse(k,iobcs)*cosphi(i,j,bi,bj)*
-     &                    (vbar(i,j,k,bi,bj) - OBEv(j,k,bi,bj))*
-     &                    (vbar(i,j,k,bi,bj) - OBEv(j,k,bi,bj))
-                  endif
-               enddo
-            enddo
-c--         End of loop over layers.
-            fcthread         = fcthread           + fctile
-            objf_obcse(bi,bj) = objf_obcse(bi,bj) + fctile
+            fcthread         = fcthread + fctile
           enddo
         enddo
 
