@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.34 2010/07/13 00:02:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.35 2011/01/19 08:29:35 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -467,15 +467,25 @@ c--   Northern obc.
         call cal_TimePassed( xx_obcsnstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
-        startrec = int((modelstart - diffsecs)/xx_obcsnperiod) + 1
-        startrec = (startrec - 1)*nobcs + 1
-        endrec   = int((modelend   - diffsecs)/xx_obcsnperiod) + 2
-        endrec   = (endrec - startrec + 1)*nobcs
+        if ( xx_obcsnperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = 12*nobcs
+        else
+         startrec = int((modelstart - diffsecs)/xx_obcsnperiod) + 1
+         startrec = (startrec - 1)*nobcs + 1
+         endrec   = int((modelend   - diffsecs)/xx_obcsnperiod) + 2
+         endrec   = (endrec - startrec + 1)*nobcs
+        endif
 # else
-        startrec = 1
-        endrec   = 1
+        if ( xx_obcsnperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = nobcs
+        else
+         startrec = 1
+         endrec = (int((endTime - startTime)/xx_obcsnperiod) + 1)*nobcs
+        endif
 # endif
-        diffrec  = endrec
+        diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
      &       snx, 1, nr, 'm', 'xz', mythid )
@@ -493,15 +503,25 @@ c--   Southern obc.
         call cal_TimePassed( xx_obcssstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
-        startrec = int((modelstart - diffsecs)/xx_obcssperiod) + 1
-        startrec = (startrec - 1)*nobcs + 1
-        endrec   = int((modelend   - diffsecs)/xx_obcssperiod) + 2
-        endrec   = (endrec - startrec + 1)*nobcs
+        if ( xx_obcssperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = 12*nobcs
+        else
+         startrec = int((modelstart - diffsecs)/xx_obcssperiod) + 1
+         startrec = (startrec - 1)*nobcs + 1
+         endrec   = int((modelend   - diffsecs)/xx_obcssperiod) + 2
+         endrec   = (endrec - startrec + 1)*nobcs
+        endif
 # else
-        startrec = 1
-        endrec   = 1
+        if ( xx_obcssperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = nobcs
+        else
+         startrec = 1
+         endrec = (int((endTime - startTime)/xx_obcssperiod) + 1)*nobcs
+        endif
 # endif
-        diffrec  = endrec
+        diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_obcss_file, 12, 112, diffrec, startrec, endrec,
      &       snx, 1, nr, 'm', 'xz', mythid )
@@ -519,15 +539,25 @@ c--   Western obc.
         call cal_TimePassed( xx_obcswstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
-        startrec = int((modelstart - diffsecs)/xx_obcswperiod) + 1
-        startrec = (startrec - 1)*nobcs + 1
-        endrec   = int((modelend   - diffsecs)/xx_obcswperiod) + 2
-        endrec   = (endrec - startrec + 1)*nobcs
+        if ( xx_obcswperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = 12*nobcs
+        else
+         startrec = int((modelstart - diffsecs)/xx_obcswperiod) + 1
+         startrec = (startrec - 1)*nobcs + 1
+         endrec   = int((modelend   - diffsecs)/xx_obcswperiod) + 2
+         endrec   = (endrec - startrec + 1)*nobcs
+        endif
 # else
-        startrec = 1
-        endrec   = 1
+        if ( xx_obcswperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = nobcs
+        else
+         startrec = 1
+         endrec = (int((endTime - startTime)/xx_obcswperiod) + 1)*nobcs
+        endif
 # endif
-        diffrec  = endrec
+        diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
      &       1, sny, nr, 'm', 'yz', mythid )
@@ -545,15 +575,25 @@ c--   Eastern obc.
         call cal_TimePassed( xx_obcsestartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
-        startrec = int((modelstart - diffsecs)/xx_obcseperiod) + 1
-        startrec = (startrec - 1)*nobcs + 1
-        endrec   = int((modelend   - diffsecs)/xx_obcseperiod) + 2
-        endrec   = (endrec - startrec + 1)*nobcs
+        if ( xx_obcseperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = 12*nobcs
+        else
+         startrec = int((modelstart - diffsecs)/xx_obcseperiod) + 1
+         startrec = (startrec - 1)*nobcs + 1
+         endrec   = int((modelend   - diffsecs)/xx_obcseperiod) + 2
+         endrec   = (endrec - startrec + 1)*nobcs
+        endif
 # else
-        startrec = 1
-        endrec   = 1
+        if ( xx_obcseperiod .EQ. 0 ) then
+         startrec = 1
+         endrec   = nobcs
+        else
+         startrec = 1
+         endrec = (int((endTime - startTime)/xx_obcseperiod) + 1)*nobcs
+        endif
 # endif
-        diffrec  = endrec
+        diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_obcse_file, 14, 114, diffrec, startrec, endrec,
      &       1, sny, nr, 'm', 'yz', mythid )
