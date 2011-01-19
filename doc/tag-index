@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1366 2011/01/19 08:47:58 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1367 2011/01/19 13:52:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco: replace old ineffective way of penalizing deviations from
+  first guess (of obcs) with code by Matt Mazloff
 o pkg/ctrl: add code that allows the use of ALLOW_OBCS?_CONTROL without 
   exf/cal
   - ctrl_init: fix initialisation (computation of diffrec) for obcs-ctrl
