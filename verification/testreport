@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.155 2011/01/19 22:12:55 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.156 2011/01/20 21:55:52 jmc Exp $
 #  $Name:  $
 #
 
@@ -14,6 +14,7 @@ usage()
     echo "  (-mth)                   run multi-threaded (using eedata.mth)"
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
+    echo "  (-mfile|-mf) STRING      MPI: file with list of possible machines to run on"
     echo "  (-ieee/-noieee)          if possible, use IEEE compiler flags"
     echo "                             (DEF=\"-ieee\")"
     echo "  (-gsl)                   compile with \"-gsl\" flag"
@@ -41,18 +42,20 @@ usage()
     echo "                             (DEF=\"make\")"
     echo "  (-odir) STRING           used to build output directory name"
     echo "                             (DEF=\"hostname\")"
-    echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
-    echo "                             (DEF=\"1 2 3 4 5\")"
+#   echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
+#   echo "                             (DEF=\"1 2 3 4 5\")"
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
     echo "                             (DEF=\"$MATCH_CRIT\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
-    echo "  (-clean)                 *ONLY* run \"make CLEAN\""
+    echo "  (-clean)                 *ONLY* run \"make CLEAN\" & clean run-dir"
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
     echo "  (-runonly|-ro)           *ONLY* run stage (=\"-quick\" without make)"
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
     echo "  (-nogenmake|-ng)         skip the genmake stage"
     echo "  (-noclean|-nc)           skip the \"make clean\" stage"
     echo "  (-nodepend|-nd)          skip the \"make depend\" stage"
+    echo "  (-postclean|-pc)         after each exp. test, clean build-dir & run-dir"
+    echo "  (-deloutp|-do)           delete output files after successful run"
     echo "  (-deldir|-dd)            on success, delete the output directory"
     echo "  (-ts)                    provide timing information per timestep"
     echo "  (-papis)                 provide MFlop/s per timestep using PAPI"
@@ -692,38 +695,39 @@ runmodel()
 	fi
 	if test "x$MPI" != x0 ; then
 	    #- adjust the MPI run command with the right number of Procs
-	    #echo "COMMAND='$COMMAND'"
-	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC / $NPROC_MPI /"`
-	    #COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / $MFILE_MPI /"`
-	    #echo "COMMAND='$COMMAND'"
+	    #echo '' ; echo "  COMMAND='$COMMAND'"
+	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC / $LOC_NPROC /"`
+	    if test "x$MPI_MFILE" != x ; then
+	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+	    fi
+	    #echo "  COMMAND='$COMMAND'"
 	fi
         if test ! -x $EXECUTABLE ; then
-		rm -f $RUNLOG ; touch $RUNLOG
-		if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-		echo " no executable:" $EXECUTABLE >> $RUNLOG
-		RETVAL=8
-		ENDVAL=-1
+	    rm -f $RUNLOG ; touch $RUNLOG
+	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+	    echo " no executable:" $EXECUTABLE >> $RUNLOG
+	    RETVAL=8
+	    ENDVAL=-1
 	else
-            if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
-              # output do not exist or is older than executable:
-		rm -f $RUNLOG ; touch $RUNLOG
-		if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-		( eval $COMMAND ) >> $RUNLOG 2>&1
-		RETVAL=$?
-	    else
-		RETVAL=0
-		if test -f $RUNLOG ; then
-		    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-     		    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
-		else
-		    touch $RUNLOG
-		    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-     		    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
-     		    echo " no previous $RUNLOG: assume NORMAL END" >> $RUNLOG 2>&1
-		fi
-	    fi
-	    #ENDVAL=`cat $RUNLOG | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
+          if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
+            # output do not exist or is older than executable:
+	    rm -f $RUNLOG ; touch $RUNLOG
+	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+	    ( eval $COMMAND ) >> $RUNLOG 2>&1
+	    RETVAL=$?
 	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
+	    if [ $POSTCLEAN -eq 1 -a $ENDVAL -gt 0 ] ; then
+		find . -name "*.meta" -exec rm {} \;
+		find . -name "*.data" -exec rm {} \;
+		rm -rf mnc_test_*
+	    fi
+	  else
+	    RETVAL=0
+	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
+	    touch $RUNLOG
+	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+     	    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
+	  fi
 	fi
 	rm -f run.log_tmp
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
@@ -880,7 +884,6 @@ check_eedata()
 #  Default properties
 debug=0
 verbose=1
-clean=0
 
 IEEE=true
 if test "x$MITGCM_IEEE" != x ; then
@@ -895,7 +898,7 @@ NOMAKE=f
 NOGENMAKE=f
 NOCLEAN=f
 NODEPEND=f
-POSTCLEAN=f
+POSTCLEAN=0
 
 BASH=
 OPTFILE=NONE
@@ -915,6 +918,7 @@ if test "x$CC" = x ; then
 fi
 JOBS=
 MPI=0
+MPI_MFILE=
 MULTI_THREAD=f
 OUTDIR=
 DELDIR=
@@ -944,62 +948,38 @@ for ac_option ; do
 
     case $ac_option in
 	
-	-help | --help | -h | --h)
-	    usage ;;
-	
-	-optfile | --optfile | -of | --of)
-            ac_prev=OPTFILE ;;
-        -optfile=* | --optfile=* | -of=* | --of=*)
-            OPTFILE=$ac_optarg ;;
-	
-	-addr | --addr | -a | --a)
-            ac_prev=ADDRESSES ;;
-        -addr=* | --addr=* | -a=* | --a=*)
-            ADDRESSES=$ac_optarg ;;
-        -mpackdir | --mpackdir | -mpd | --mpd)
-            ac_prev=MPACKDIR ;;
-        -mpackdir=* | --mpackdir=* | -mpd=* | --mpd=*)
-            MPACKDIR=$ac_optarg ;;
+	-help | --help | -h | --h) usage ;;
 
-	-tdir | --tdir | -t | --t)
-            ac_prev=TESTDIRS ;;
-        -tdir=* | --tdir=* | -t=* | --t=*)
-            TESTDIRS=$ac_optarg ;;
+	-optfile | --optfile | -of | --of) ac_prev=OPTFILE ;;
+	-optfile=* | --optfile=* | -of=* | --of=*) OPTFILE=$ac_optarg ;;
 
-	-skipdir | --skipdir | -skd | --skd)
-            ac_prev=SKIPDIRS ;;
-        -skipdir=* | --skipdir=* | -skd=* | --skd=*)
-            SKIPDIRS=$ac_optarg ;;
+	-addr | --addr | -a | --a) ac_prev=ADDRESSES ;;
+	-addr=* | --addr=* | -a=* | --a=*) ADDRESSES=$ac_optarg ;;
+	-mpackdir | --mpackdir | -mpd | --mpd) ac_prev=MPACKDIR ;;
+	-mpackdir=* | --mpackdir=* | -mpd=* | --mpd=*) MPACKDIR=$ac_optarg ;;
 
-	-bash | --bash | -b | --b)
-            ac_prev=BASH ;;
-        -bash=* | --bash=* | -b=* | --b=*)
-            BASH=$ac_optarg ;;
+	-tdir | --tdir | -t | --t) ac_prev=TESTDIRS ;;
+	-tdir=* | --tdir=* | -t=* | --t=*) TESTDIRS=$ac_optarg ;;
+	-skipdir | --skipdir | -skd | --skd) ac_prev=SKIPDIRS ;;
+	-skipdir=* | --skipdir=* | -skd=* | --skd=*) SKIPDIRS=$ac_optarg ;;
 
-	-command | --command | -c | --c)
-	    ac_prev=COMMAND ;;
-	-command=* | --command=* | -c=* | --c=*)
-	    COMMAND=$ac_optarg ;;
+	-bash | --bash | -b | --b) ac_prev=BASH ;;
+	-bash=* | --bash=* | -b=* | --b=*) BASH=$ac_optarg ;;
 
-	-makedepend | --makedepend | -md | --md)
-	    ac_prev=MKDEPEND ;;
-	-makedepend=* | --makedepend=* | -md=* | --md=*)
-	    MKDEPEND=$ac_optarg ;;
+	-command | --command | -c | --c) ac_prev=COMMAND ;;
+	-command=* | --command=* | -c=* | --c=*) COMMAND=$ac_optarg ;;
 
-	-make | --make | -m | --m)
-	    ac_prev=MAKE ;;
-	-make=* | --make=* | -m=* | --m=*)
-	    MAKE=$ac_optarg ;;
+	-makedepend | --makedepend | -md | --md) ac_prev=MKDEPEND ;;
+	-makedepend=* | --makedepend=* | -md=* | --md=*) MKDEPEND=$ac_optarg ;;
 
-        -odir | --odir)
-            ac_prev=OUTDIR ;;
-        -odir=* | --odir=*)
-            OUTDIR=$ac_optarg ;;
+	-make | --make | -m | --m) ac_prev=MAKE ;;
+	-make=* | --make=* | -m=* | --m=*) MAKE=$ac_optarg ;;
 
-	-ptracers | --ptracers | -ptr | --ptr)
-	    ac_prev=PTRACERS_NUM ;;
-	-ptracers=* | --ptracers=* | -ptr=* | --ptr=*)
-	    PTRACERS_NUM=$ac_optarg ;;
+	-odir | --odir) ac_prev=OUTDIR ;;
+	-odir=* | --odir=*) OUTDIR=$ac_optarg ;;
+
+	-ptracers | --ptracers | -ptr | --ptr) ac_prev=PTRACERS_NUM ;;
+	-ptracers=* | --ptracers=* | -ptr=* | --ptr=*) PTRACERS_NUM=$ac_optarg ;;
 
 	-match | --match ) ac_prev=MATCH_CRIT ;;
 	-match=* | --match=* ) MATCH_CRIT=$ac_optarg ;;
@@ -1007,38 +987,33 @@ for ac_option ; do
 	-j | --j) ac_prev=JOBS ;;
 	-j=* | --j=*) JOBS=$ac_optarg ;;
 
-	-clean | --clean)
-	    CLEANUP=t ; DELDIR=t ;;
+	-clean | --clean) CLEANUP=t ; DELDIR=t ;;
 
-	-norun | --norun | -nr | --nr)
-	    NORUN=t ;;
-	-runonly | --runonly | -ro | --ro)
-	    QUICK=t ; NOMAKE=t ;;
-	-quick | --quick | -q | --q)
-	    QUICK=t ;;
-	-nogenmake | --nogenmake | -ng | --ng)
-	    NOGENMAKE=t ;;
-	-noclean | --noclean | -nc | --nc)
-	    NOCLEAN=t ;;
-	-nodepend | --nodepend | -nd | --nd)
-	    NODEPEND=t ;;
+	-norun | --norun | -nr | --nr) NORUN=t ;;
+	-runonly | --runonly | -ro | --ro) QUICK=t ; NOMAKE=t ;;
+	-quick | --quick | -q | --q) QUICK=t ;;
+	-nogenmake | --nogenmake | -ng | --ng) NOGENMAKE=t ;;
+	-noclean | --noclean | -nc | --nc) NOCLEAN=t ;;
+	-nodepend | --nodepend | -nd | --nd) NODEPEND=t ;;
 
-	-postclean | --postclean | -pc | --pc)
-	    POSTCLEAN=t ;;
+	-postclean | --postclean | -pc | --pc) POSTCLEAN=2 ;;
+	-deloutp | --deloutp | -do | --do) POSTCLEAN=1 ;;
 
 	-mpi | --mpi) MPI=2 ;;
 	-MPI | --MPI) ac_prev=MPI ;;
 	-MPI=* | --MPI=*) MPI=$ac_optarg ;;
 
+	-mfile | --mfile | -mf | --mf) ac_prev=MPI_MFILE ;;
+	-mfile=* | --mfile=* | -mf=* | --mf=*) MPI_MFILE=$ac_optarg ;;
+
 	-mth) MULTI_THREAD=t ;;
 
 	-adm | -ad) ADM=t ;;
-
 	-oad) OADM=t; NODEPEND=t ;;
 
 	-ieee) IEEE=true ;;
 	-noieee) IEEE= ;;
-        -gsl) GSL=t ;;
+	-gsl) GSL=t ;;
 
 	-verbose) verbose=2 ;;
 	-debug) debug=1 ;;
@@ -1052,15 +1027,10 @@ for ac_option ; do
 	-papis) PAPIS=t;;
 	-pcls) PCL=t;;
 
-        -*)
-            echo "Error: unrecognized option: "$ac_option
-            usage
-            ;;
-
-        *)
-            echo "Error: unrecognized argument: "$ac_option
-            usage
-            ;;
+	-*) echo "Error: unrecognized option: "$ac_option
+	    usage ;;
+	*)  echo "Error: unrecognized argument: "$ac_option
+	    usage ;;
 
      esac
 
@@ -1070,6 +1040,23 @@ if test "x$QUICK" = xt ; then
     NOGENMAKE=t
     NOCLEAN=t
     NODEPEND=t
+fi
+
+#- check length of MPI machine file:
+if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then
+    if test -r $MPI_MFILE ; then
+	nl=`wc -l $MPI_MFILE | awk '{print $1}'`
+	if [ $nl -lt $MPI ] ; then
+          echo "Error: need at least $MPI nodes (currently only $nl) in MPI_MFILE=$MPI_FILE"
+          usage
+	fi
+	if [ $verbose -gt 1 ]; then
+	    echo " MPI_MFILE=$MPI_MFILE : $nl procs for MPI=$MPI run"
+	fi
+    else
+          echo "Error: cannot access MPI_MFILE=$MPI_FILE"
+          usage
+    fi
 fi
 
 #- setting for forward or ADM testing
@@ -1139,6 +1126,7 @@ if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
     OPTFILE=$MITGCM_OF
 fi
 
+LOC_MFILE='tr_mpi_mfile'
 RUNLOG="run.tr_log"
 OUTPUTFILE=$ref_outp
 if test "x$COMMAND" = x ; then
@@ -1331,7 +1319,7 @@ for dir in $TESTDIRS ; do
 	if test -r $CODE_DIR"/SIZE.h_mpi" ; then
 	    #- create new SIZE.h with no more than '$MPI' Procs
 	    mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI
-	    NPROC_MPI=$?
+	    LOC_NPROC=$?
 	    (   cd $BUILD_DIR
 		if test -r SIZE.h.mpi ; then
 		    cmp tr_size.mpi SIZE.h.mpi > /dev/null 2>&1 ; RETVAL=$?
@@ -1346,6 +1334,21 @@ for dir in $TESTDIRS ; do
 	else
 	    echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
 	    continue
+	fi
+	if test "x$MPI_MFILE" != x ; then
+	    #- create new MPI machine-file with the right number of Procs
+	    rm -f $LOC_MFILE
+	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
+	    nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+	    if [ $nl -lt $LOC_NPROC ] ; then
+		rm -f $LOC_MFILE
+		cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
+		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $LOC_MFILE
+	    fi
+	    if [ $verbose -gt 1 ]; then
+		nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+		echo " new LOC_MFILE=$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
+	    fi
 	fi
     fi
     if test ! -r $dir"/input/eedata.mth" -a "x$MULTI_THREAD" = "xt" ; then
@@ -1464,7 +1467,7 @@ for dir in $TESTDIRS ; do
 	        grep -A3 'Seconds in section "ALL' $dir/$pfxdir.$ex/$OUTPUTFILE \
 			           >> $locDIR"/summary.txt"
             fi
-	    if test "x$POSTCLEAN" = xt ; then
+	    if test "x$POSTCLEAN" = x2 ; then
 		run_clean $dir/$pfxdir.$ex
 	    fi
 	done
@@ -1499,10 +1502,11 @@ for dir in $TESTDIRS ; do
 	fi
     fi
     #postclean $dir/$builddir
-    if test "x$POSTCLEAN" = xt ; then
+    if test "x$POSTCLEAN" = x2 ; then
  	makeclean $dir/$builddir \
  	    && run_clean $dir/$rundir
     fi
+    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
 
     echo "-------------------------------------------------------------------------------"
 
