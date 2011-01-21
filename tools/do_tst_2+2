@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.10 2011/01/21 02:18:46 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.11 2011/01/21 19:41:35 jmc Exp $
 # $Name:  $
 
 usage()
@@ -137,7 +137,7 @@ date  >> $SUMMARY
 echo 'run:' $CMDLINE >> $SUMMARY
 if test -f tr_out.txt ; then
  echo ' using output from:' >> $SUMMARY
- sed -n '2,/OPTFILE/ p' tr_out.txt >> $SUMMARY
+ sed -n '2,/^  OPTFILE=/ p' tr_out.txt >> $SUMMARY
  echo >> $SUMMARY
 fi
 echo  'test 2+2=4 summary :' >> $SUMMARY
