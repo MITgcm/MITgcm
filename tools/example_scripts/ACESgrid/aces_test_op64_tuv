@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.12 2010/12/14 21:34:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.13 2011/01/21 05:02:25 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -28,7 +28,7 @@ HERE=$TST_DIR/output
 sfx='tuv'
 module add open64
 OPTFILE="../tools/build_options/linux_ia32_open64.trapuv"
-options='-j 2 -gsl -match 10'
+options='-j 2 -gsl -do'
 export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
 
 checkOut=1
@@ -59,8 +59,8 @@ if [ $checkOut -eq 2 ] ; then
   if test -e $gcmDIR ; then
      rm -rf $gcmDIR
   fi
-  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
 # cvs co MITgcm
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 else
@@ -76,7 +76,7 @@ cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -odir aces-$sfx
 ./testreport $options -of $OPTFILE -odir aces-$sfx
 
-echo -n 'run ./testreport -clean ...'
-./testreport -clean > /dev/null 2>&1
-echo -n ' done at: ' ; date
+#echo -n 'run ./testreport -clean ...'
+#./testreport -clean > /dev/null 2>&1
+#echo -n ' done at: ' ; date
 
