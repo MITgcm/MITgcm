@@ -2,18 +2,18 @@
 #
 #PBS -q four-twelve
 #PBS -N tst_pgi
-#PBS -l nodes=2:ppn=2
+#PBS -l nodes=3:ppn=2
 #PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
- 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.14 2010/12/14 21:34:45 jmc Exp $
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.15 2011/01/21 05:04:38 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
-# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI 
+# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
@@ -26,17 +26,16 @@ HERE=$TST_DIR/output
 sfx='pgi'
 module add mpich/$sfx
 OPTFILE="../tools/build_options/linux_ia32_pgf77+mpi_aces"
-options='-mpi -match 10'
+options="-MPI 6 -mf $PBS_NODEFILE"
 #options="$options -skd tutorial_advection_in_gyre"
+EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
+
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
 
 checkOut=1
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
-
-MF=$HERE"/mf_"$sfx
-cat $PBS_NODEFILE | sort | uniq > $MF
-NCPU=`wc -l $MF | awk '{print $1}'`
-EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
@@ -62,8 +61,8 @@ if [ $checkOut -eq 2 ] ; then
   if test -e $gcmDIR ; then
      rm -rf $gcmDIR
   fi
-  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
 # cvs co MITgcm
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 else
