@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.16 2009/10/08 08:22:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.17 2011/01/21 01:19:03 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -32,12 +32,28 @@ C     \ev
 #ifdef ALLOW_AUTODIFF_MONITOR
 #include "adcommon.h"
 #endif
+#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+      integer myLev
+
+      tapeFileUnit=0
+      do myLev=1,4
+        tapeFileUnitS(myLev)=0
+      enddo
+
+      tapeFileCounter=0
+      tapeMaxCounter=30*nR
+
+      tapeConcatIO=.TRUE.
+      tapeSingleCpuIO=useSingleCpuIO
+      tapeBufferIO=.FALSE.
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
 #if (defined (ALLOW_MNC) && defined (ALLOW_AUTODIFF_MONITOR))
 

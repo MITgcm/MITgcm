@@ -1,5 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.10 2010/10/16 14:40:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.11 2011/01/21 01:19:03 gforget Exp $
 C $Name:  $
+
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+      COMMON /AUTODIFF_WHTAPEIO_I/
+     &  tapeFileCounter, tapeMaxCounter, tapeFileUnit, tapeFileUnitS
+      integer tapeFileCounter, tapeMaxCounter
+      integer tapeFileUnit, tapeFileUnitS(4)
+      COMMON /AUTODIFF_WHTAPEIO_L/ 
+     &  tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
+      logical tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
+#endif
 
       integer ilev_1
       integer ilev_2

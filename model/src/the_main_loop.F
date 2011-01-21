@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.113 2011/01/12 00:08:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.114 2011/01/21 01:19:59 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -269,9 +269,15 @@ c**************************************
       do ilev_4 = 1,nchklev_4
          if(ilev_4.le.max_lev4) then
 c**************************************
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+            CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 0, mythid )
+#endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev4_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
+#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+            CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 1, mythid )
+#endif      
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
@@ -281,9 +287,15 @@ CADJ    INIT tapelev3 = USER
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
 c**************************************
+#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+            CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 0, mythid )
+#endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev3_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
+#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+            CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 1, mythid )
+#endif
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
@@ -292,9 +304,15 @@ CADJ    INIT tapelev2 = USER
         do ilev_2 = 1,nchklev_2
          if(ilev_2.le.max_lev2) then
 c**************************************
+#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+            CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 0, mythid )
+#endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev2_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
+#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+            CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 1, mythid )
+#endif
 c**************************************
 
 c**************************************

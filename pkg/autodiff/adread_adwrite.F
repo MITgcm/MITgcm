@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.14 2011/01/19 23:20:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.15 2011/01/21 01:19:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,6 +99,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "ctrl.h"
 #include "optim.h"
+#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
@@ -130,7 +131,7 @@ c     == local variables ==
       integer il, jl, lenLoc
       integer bx,by
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-      integer n2d,length2d
+      integer n2d,length2d, jrec, i2d, j2d
 #endif
 
 c     == functions ==
@@ -171,8 +172,18 @@ c    determine number of 2d fields
       n2d=int(length/length2d)
 c
       if (n2d*length2d.EQ.length) then
-      call mds_read_whalos(fname,lenLoc,sizetmp,
-     &               0,n2d,var,irec,useSingleCpuIO,mythid)
+        do i2d=1,n2d
+          if (tapeFileUnit.EQ.0) THEN
+            jrec=irec
+          else
+            tapeFileCounter=tapeFileCounter+1
+            jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
+            if (tapeFileCounter.GT.tapeMaxCounter) stop
+          endif
+          j2d=(i2d-1)*length2d+1
+          call mds_read_whalos(fname,lenLoc,sizetmp,
+     &      tapeFileUnit,1,var(j2d),jrec,tapeSingleCpuIO,mythid)
+        enddo
       else
 c   The other case actually does not (and should not) occur within the main loop, 
 c   where we only store global arrays (i.e. with bi,bj indices) to disk. 
@@ -266,6 +277,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "ctrl.h"
 #include "optim.h"
+#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
@@ -298,7 +310,7 @@ c     == local variables ==
       integer bx,by
       logical globalfile
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-      integer n2d,length2d
+      integer n2d,length2d, jrec, i2d, j2d
 #endif
 
 c     == functions ==
@@ -347,8 +359,18 @@ c    determine number of 2d fields
       n2d=int(length/length2d)
 c
       if (n2d*length2d.EQ.length) then
-       call mds_write_whalos(fname,lenLoc,sizetmp,
-     &                 0,n2d,var,irec,useSingleCpuIO,mythid)
+        do i2d=1,n2d
+          if (tapeFileUnit.EQ.0) THEN
+            jrec=irec
+          else
+            tapeFileCounter=tapeFileCounter+1
+            jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
+            if (tapeFileCounter.GT.tapeMaxCounter) stop
+          endif
+          j2d=(i2d-1)*length2d+1
+          call mds_write_whalos(fname,lenLoc,sizetmp,
+     &      tapeFileUnit,1,var(j2d),jrec,tapeSingleCpuIO,mythid)
+        enddo
       else
        write(msgBuf,'(3A)') 
      &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
