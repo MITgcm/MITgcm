@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.8 2010/09/24 18:39:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.9 2011/01/21 22:02:33 gforget Exp $
 C $Name:  $
 
 #ifndef MDSIO_OPTIONS_H
@@ -29,6 +29,7 @@ C I/O that includes tile halos in the files
 #undef ALLOW_WHIO
 #ifdef ALLOW_AUTODIFF_TAMC
 # define ALLOW_WHIO
+# define ALLOW_WHIO_3D
 #endif
 
 #endif /* ALLOW_MDSIO */

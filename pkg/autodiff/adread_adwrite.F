@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.15 2011/01/21 01:19:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.16 2011/01/21 22:02:50 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -181,8 +181,8 @@ c
             if (tapeFileCounter.GT.tapeMaxCounter) stop
           endif
           j2d=(i2d-1)*length2d+1
-          call mds_read_whalos(fname,lenLoc,sizetmp,
-     &      tapeFileUnit,1,var(j2d),jrec,tapeSingleCpuIO,mythid)
+          call mds_read_whalos(fname,lenLoc,sizetmp,tapeFileUnit,
+     &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,mythid)
         enddo
       else
 c   The other case actually does not (and should not) occur within the main loop, 
@@ -368,8 +368,8 @@ c
             if (tapeFileCounter.GT.tapeMaxCounter) stop
           endif
           j2d=(i2d-1)*length2d+1
-          call mds_write_whalos(fname,lenLoc,sizetmp,
-     &      tapeFileUnit,1,var(j2d),jrec,tapeSingleCpuIO,mythid)
+          call mds_write_whalos(fname,lenLoc,sizetmp,tapeFileUnit,
+     &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,mythid)
         enddo
       else
        write(msgBuf,'(3A)') 

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.1 2011/01/21 01:19:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.2 2011/01/21 22:02:50 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#include "MDSIO_OPTIONS.h"
 
       subroutine autodiff_whtapeio_sync( myLev, myStep, myThid )
       IMPLICIT NONE
@@ -15,6 +16,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "ctrl.h"
 #include "AUTODIFF.h"
+#ifdef ALLOW_WHIO_3D
+# include "MDSIO_BUFF_WH.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -73,6 +77,9 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
           length_of_rec = MDS_RECLEN( filePrec,sNxWh*gloNyWh,myThid)
         ENDIF
       ENDIF
+#ifdef ALLOW_WHIO_3D
+      length_of_rec=length_of_rec*nWh
+#endif
 
       tapeFileUnit=tapeFileUnitS(myLev)
       tapeFileCounter=0
@@ -80,11 +87,43 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
       IF ( iAmDoingIO.AND.(myStep.EQ.0).AND.
      &    (myLev.GT.0).AND.(tapeFileUnit.EQ.0) ) THEN
         CALL MDSFINDUNIT( tapeFileUnit, myThid )
-        print*,'cgf opening :',tapeFileUnit,fName
         OPEN( tapeFileUnit, file=fName, status='unknown',
      &         access='direct', recl=length_of_rec )
         tapeFileUnitS(myLev)=tapeFileUnit
       ENDIF
+
+#ifdef ALLOW_WHIO_3D
+      _BARRIER
+      IF ((myStep.EQ.1).AND.iAmDoingIO.AND.
+     &    tapeBufferIO.AND.writeWh) THEN
+      if (iWh.LT.1) stop
+          IF ( .NOT.tapeSingleCpuIO ) then
+            IF (filePrec .EQ. precFloat32) THEN
+              WRITE(tapeFileUnit,rec=iWh) fld3d_procbuff_r4
+            ELSE
+              WRITE(tapeFileUnit,rec=iWh) fld3d_procbuff_r8
+            ENDIF
+          ELSE
+#  ifdef INCLUDE_WHIO_GLOBUFF_3D
+            IF (filePrec .EQ. precFloat32) THEN
+              WRITE(tapeFileUnit,rec=iWh) fld3d_globuff_r4
+            ELSE
+              WRITE(tapeFileUnit,rec=iWh) fld3d_globuff_r8
+            ENDIF
+#  endif
+          ENDIF
+      ENDIF
+      _BARRIER
+
+      IF (myStep.EQ.0) THEN
+        tapeBufferIO=.TRUE.
+      ELSE
+        tapeBufferIO=.FALSE.
+        writeWh=.FALSE.
+      ENDIF
+      iWh=0
+      jWh=0
+#endif /* ALLOW_WHIO_3D */
 
       ENDIF !IF ( tapeConcatIO ) THEN
 

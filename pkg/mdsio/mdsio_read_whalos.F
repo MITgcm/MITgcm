@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.5 2011/01/19 23:20:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.6 2011/01/21 22:02:33 gforget Exp $
 C $fName:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -15,6 +15,7 @@ C     !INTERFACE:
      O                   fldRL,
      I                   irec,
      I                   locSingleCPUIO,
+     I                   locBufferIO,
      I                   mythid
      &                 )
 
@@ -59,7 +60,7 @@ c     mythid    -  number of the thread or instance of the program.
       integer n2d
       integer irec
       _RL     fldRL(1-Olx:sNx+Olx,1-Oly:sNy+Oly,n2d,nSx,nSy)
-      logical locSingleCPUIO
+      logical locSingleCPUIO, locBufferIO
 CEOP
 
 #ifdef ALLOW_WHIO
@@ -84,7 +85,7 @@ C     gloNyWh :: global sum of sNyWh
       integer IL
       integer bx,by
 
-      integer length2d, length3d, length_of_rec
+      integer lengthBuff, length_of_rec
       integer i2d, i3d
       integer i,j,k,bi,bj,ii
       integer dUnit, irec2d
@@ -100,9 +101,16 @@ c     == functions ==
 
 c     == end of interface ==
 
-      length2d=sNxWh*procNyWh
-      length3d=length2d*nr
+#ifdef ALLOW_WHIO_3D
+      writeWh=.FALSE.
+#endif
 
+      IF ( .NOT.locSingleCpuIO ) then
+        lengthBuff=sNxWh*procNyWh
+      ELSE
+        lengthBuff=sNxWh*gloNyWh
+      ENDIF
+      
 C Only do I/O if I am the master thread (and mpi process 0 IF locSingleCpuIO):
       iAmDoingIO = .FALSE.
       IF ( .NOT.locSingleCpuIO .OR. myProcId.EQ.0 ) THEN
@@ -134,7 +142,57 @@ c get the unit and open file
       do i2d=1,n2d
 
         _BARRIER
+#ifdef ALLOW_WHIO_3D
+        IF ( iAmDoingIO.AND.locBufferIO.AND.(fid.NE.0) ) THEN
+c reset counter if needed
+          IF (jWh.EQ.nWh) jWh=0
+c increment counter
+          jWh=jWh+1
+c determine current file record
+          irec2d=i2d+n2d*(irec-1)
+          iWh=(irec2d-1)/nWh+1
+c read new chunk if needed
+          IF (jWh.EQ.1) THEN
+            IF ( .NOT.locSingleCpuIO ) then
+              IF (filePrec .EQ. precFloat32) THEN
+                READ(dUnit,rec=iWh) fld3d_procbuff_r4
+              ELSE
+                READ(dUnit,rec=iWh) fld3d_procbuff_r8
+              ENDIF
+            ELSE
+#  ifdef INCLUDE_WHIO_GLOBUFF_3D
+              IF (filePrec .EQ. precFloat32) THEN
+                READ(dUnit,rec=iWh) fld3d_globuff_r4
+              ELSE
+                READ(dUnit,rec=iWh) fld3d_globuff_r8
+              ENDIF
+#  endif
+            ENDIF
+          ENDIF
+c copy
+          DO i=1,lengthBuff
+            j=(jWh-1)*lengthBuff+i
+            IF ( .NOT.locSingleCpuIO ) then
+              IF (filePrec .EQ. precFloat32) THEN
+                fld2d_procbuff_r4(i)=fld3d_procbuff_r4(j)
+              ELSE
+                fld2d_procbuff_r8(i)=fld3d_procbuff_r8(j)
+              ENDIF
+            ELSE
+#  ifdef INCLUDE_WHIO_GLOBUFF_3D
+              IF (filePrec .EQ. precFloat32) THEN
+                fld2d_globuff_r4(i)=fld3d_globuff_r4(j)
+              ELSE
+                fld2d_globuff_r8(i)=fld3d_globuff_r8(j)
+              ENDIF
+#  endif
+            ENDIF
+          ENDDO
+
+        ELSEIF ( iAmDoingIO ) THEN
+#else
         IF ( iAmDoingIO ) THEN
+#endif
           irec2d=i2d+n2d*(irec-1)
           IF ( .NOT.locSingleCpuIO ) then
             IF (filePrec .EQ. precFloat32) THEN
@@ -143,27 +201,33 @@ c get the unit and open file
               READ(dUnit,rec=irec2d) fld2d_procbuff_r8
             ENDIF
           ELSE
+#  ifndef EXCLUDE_WHIO_GLOBUFF_2D
             IF (filePrec .EQ. precFloat32) THEN
               READ(dUnit,rec=irec2d) fld2d_globuff_r4
             ELSE
               READ(dUnit,rec=irec2d) fld2d_globuff_r8
             ENDIF
+#  endif
           ENDIF
         ENDIF
         _BARRIER
 
         IF (filePrec .EQ. precFloat32) THEN
           IF ( locSingleCpuIO ) then
+#  ifndef EXCLUDE_WHIO_GLOBUFF_2D
             CALL SCATTER_2D_WH_R4 ( fld2d_globuff_r4,
      &                              fld2d_procbuff_r4,myThid)
+#  endif
             CALL BAR2( myThid )
           ENDIF
           CALL MDS_PASS_R4toRL( fld2d_procbuff_r4, fldRL,
      &             OLx, OLy, 1, i2d, n2d, 0, 0, .TRUE., myThid )
         ELSE
           IF ( locSingleCpuIO ) then
+#  ifndef EXCLUDE_WHIO_GLOBUFF_2D
             CALL SCATTER_2D_WH_R8 ( fld2d_globuff_r8,
      &                              fld2d_procbuff_r8,myThid)
+#  endif
             CALL BAR2( myThid )
           ENDIF
           CALL MDS_PASS_R8toRL( fld2d_procbuff_r8, fldRL,
