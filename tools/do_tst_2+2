@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.9 2011/01/19 23:43:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.10 2011/01/21 02:18:46 jmc Exp $
 # $Name:  $
 
 usage()
@@ -14,6 +14,7 @@ usage()
         echo "  -skd LIST_EXP : skip experiments in LIST_EXP"
         echo "  -exe  COMMAND : use COMMAND to run the tests"
         echo "  -mpi          : run the tests using MPI"
+        echo "  -mf    STRING :(MPI) file with list of possible machines to run on"
         echo "  -o     STRING : used to build output directory name"
         echo "                      (DEF=\"hostname\")"
         echo "  -a,-A  STRING : email address to send output to"
@@ -30,6 +31,7 @@ SCRIPT='../tools/tst_2+2'
 scrArg='All'
 COMMAND=
 mpi=0
+MPI_MFILE=
 OUTDIR=`hostname | sed 's/\..*$//'`
 SAVELOG=0
 ADDRESS=
@@ -49,6 +51,7 @@ do
       -skd  ) yy=SKIPDIRS ;;
       -exe  ) yy=COMMAND ;;
       -mpi  ) mpi=1 ;;
+      -mf   ) yy=MPI_MFILE ;;
       -a    ) yy=ADDRESS ;;
       -A    ) yy=ADDRESS ; SAVELOG=1 ;;
       -o    ) yy=OUTDIR ;;
@@ -106,6 +109,12 @@ if test $CLEAN = 1 ; then
 fi
 #------------------------
 #  Create a uniquely named directory to store results
+CMDLINE=$0
+for xx in "$@" ; do nw=`echo $xx | wc -w`
+    if test $nw = '1' ; then CMDLINE="$CMDLINE $xx"
+                        else CMDLINE="$CMDLINE '$xx'" ; fi
+done
+#for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
 DATE=`date +%Y%m%d`
 BASE="rs_"$OUTDIR"_"$DATE"_"
 xx=0
@@ -125,6 +134,7 @@ OPTFILE=
 
 printf "Start time:  " >  $SUMMARY
 date  >> $SUMMARY
+echo 'run:' $CMDLINE >> $SUMMARY
 if test -f tr_out.txt ; then
  echo ' using output from:' >> $SUMMARY
  sed -n '2,/OPTFILE/ p' tr_out.txt >> $SUMMARY
@@ -136,6 +146,7 @@ echo 'P. Run  Result     experiment'  >> $SUMMARY
 echo '  1 2 3'  >> $SUMMARY
 
 #-- For MPI test:
+LOC_MFILE='tr_mpi_mfile'
 RUNOUTP="output.txt"
 if [ $mpi -ge 1 ] ; then
   SCRIPT="$SCRIPT -mpi"
@@ -145,19 +156,31 @@ fi
 for xx in $LIST
 do
   echo ==============================================================================
-  if [ $mpi -ge 1 ] ; then
-    NP_MPI=2
+  if [ $mpi -le 0 ] ; then
+    rCommand=$COMMAND
+  else
+    LOC_NPROC=2
     mpi_size=$xx/build/SIZE.h.mpi
     if test -f $mpi_size ; then
       px=`grep '^     & *nPx *=' $mpi_size | sed 's/^     & *nPx *= *//' | sed 's/, *$//'`
       py=`grep '^     & *nPy *=' $mpi_size | sed 's/^     & *nPy *= *//' | sed 's/, *$//'`
       pp=`expr $px \* $py` > /dev/null 2>&1 ; out=$?
-      if test "x$out" = x0 ; then NP_MPI=$pp ; fi
+      if test "x$out" = x0 ; then LOC_NPROC=$pp ; fi
     fi
-    rCommand=`echo $COMMAND | sed "s/ TR_NPROC / $NP_MPI /"`
-  else
-    rCommand=$COMMAND
+    rCommand=`echo $COMMAND | sed "s/ TR_NPROC / $LOC_NPROC /"`
+    if test "x$MPI_MFILE" != x ; then
+      #- create new MPI machine-file with the right number of Procs
+      rm -f $LOC_MFILE
+      cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
+      nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+      if [ $nl -lt $LOC_NPROC ] ; then
+        rm -f $LOC_MFILE
+        cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
+      fi
+      rCommand=`echo $rCommand | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+    fi
   fi
+
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
   for yy in $listD
   do
@@ -216,6 +239,7 @@ do
       cd $here
     fi
   done
+  if test "x$mpi" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
 done
 printf "End time:    " >> $SUMMARY
 date >> $SUMMARY
