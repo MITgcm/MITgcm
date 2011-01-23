@@ -8,6 +8,7 @@
 mfile*
 mitgcmuv*
 work.pc*
+SIZE.h.mpi
 PACKAGES_CONFIG.h
 BUILD_INFO.h
 AD_CONFIG.h
