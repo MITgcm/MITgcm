@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2010/12/21 23:07:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.6 2011/01/23 04:14:27 gforget Exp $
 C $Name:  $
 
 C
@@ -29,6 +29,8 @@ C o use divided adjoint to split adjoint computations
 
 #define ALLOW_AUTODIFF_WHTAPEIO
 #define ALLOW_PACKUNPACK_METHOD2
+#define AUTODIFF_USE_OLDSTORE_3D
+#define AUTODIFF_USE_OLDSTORE_2D
 
 C ********************************************************************
 C ***                     Calender Package                         ***
