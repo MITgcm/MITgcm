@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_WH.h,v 1.3 2011/01/21 22:02:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_WH.h,v 1.4 2011/01/23 04:13:03 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -36,7 +36,7 @@ C                   (during read) or copy to (during write).
       logical writeWh
       COMMON /MDS_WH_BUFFERS_3D_I/ iWh, jWh
       integer nWh, iWh, jWh
-      PARAMETER (nWh=10*Nr)
+      PARAMETER (nWh=3*Nr)
       COMMON /MDS_WH_BUFFERS_3D_RL/ 
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
      &                        fld3d_globuff_r8, fld3d_globuff_r4,
