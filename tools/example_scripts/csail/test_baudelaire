@@ -1,8 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.6 2011/01/19 23:48:14 jmc Exp $
-
-#  Ed Hill
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.7 2011/01/24 14:30:36 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -42,20 +40,20 @@ tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
 TODAY=`date +%d`
 tdir=$TESTDIR
 if test $checkOut = '0' ; then
- if test -e $tdir/MITgcm/CVS ; then
-  echo $tdir/MITgcm/CVS 'exist'
-  echo -n "Update the MITgcm code using: $cmdCVS ..."
-  cd $tdir/MITgcm
-  if test $sepDir = 1 ; then
-    $cmdCVS update -P -d > /dev/null
+  if test -e $tdir/MITgcm/CVS ; then
+    echo $tdir/MITgcm/CVS 'exist'
+    echo -n "Update the MITgcm code using: $cmdCVS ..."
+    cd $tdir/MITgcm
+    if test $sepDir = 1 ; then
+      $cmdCVS update -P -d > /dev/null
+    else
+      $cmdCVS update -P -d
+    fi
+    echo "  done"
   else
-    $cmdCVS update -P -d
+    echo -n $tdir/MITgcm 'missing ; '
+    checkOut=1
   fi
-  echo "  done"
- else
-  echo -n $tdir/MITgcm 'missing ; '
-  checkOut=1
- fi
 fi
 if test $checkOut = '1' ; then
   if test -e $tdir ; then
@@ -115,8 +113,8 @@ do
 
 #-- set the testreport command:
   nbl='-100'
-  comm="./testreport" 
-  if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then 
+  comm="./testreport"
+  if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then
     nbl='-60'
     comm="$comm -adm"
   elif test $typ = 'mth' -o  $typ = 'mp2' ; then
@@ -139,11 +137,21 @@ do
   esac
 #-- set MPI command:
   if test $MPI = 1 ; then
-    if test $typ = 'mpa' ; then 
+    if test $typ = 'mpa' ; then
       EXE="mpirun -np TR_NPROC ./mitgcmuv_ad"
     else
       EXE="mpirun -np TR_NPROC ./mitgcmuv"
     fi
+  fi
+
+#-- set specific Env Vars:
+  if test $typ = 'ifc' ; then
+    source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
+  fi
+  if test $typ = 'pgi' ; then
+    export PGI=/srv/software/pgi/pgi-10.9
+    export PATH="$PATH:$PGI/linux86-64/10.9/bin"
+    export LM_LICENSE_FILE=$PGI/license.dat
   fi
 
   if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
@@ -155,16 +163,6 @@ do
     $cmdCLN > /dev/null 2>&1
     echo "======================"
     echo
-  fi
-
-#-- set specific Env Vars:
-  if test $typ = 'ifc' ; then
-    source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
-  fi
-  if test $typ = 'pgi' ; then
-    export PGI=/srv/software/pgi/pgi-10.9
-    export PATH="$PATH:$PGI/linux86-64/10.9/bin"
-    export LM_LICENSE_FILE=$PGI/license.dat
   fi
 
 #-- run the testreport command:
@@ -205,21 +203,21 @@ do
 
   if test $sepDir = 0 ; then
 #-- cleaning:
-   echo "======================"
-   echo "Cleaning test directories:"
-   if test $tt != $typ ; then
-     cmdCLN="../tools/do_tst_2+2 -clean"
-     echo " clean tst_2+2 running: $cmdCLN"
-     $cmdCLN >> $tdir/output_2+2 2>&1
-   fi
-   if test $tt != $last_Tst ; then
-     cmdCLN="./testreport -clean"
-     echo " clean dir running: $cmdCLN"
-     $cmdCLN > /dev/null 2>&1
-   fi
-   echo "======================"
-   echo
- fi
- popd
+    echo "======================"
+    echo "Cleaning test directories:"
+    if test $tt != $typ ; then
+      cmdCLN="../tools/do_tst_2+2 -clean"
+      echo " clean tst_2+2 running: $cmdCLN"
+      $cmdCLN >> $tdir/output_2+2 2>&1
+    fi
+    if test $tt != $last_Tst ; then
+      cmdCLN="./testreport -clean"
+      echo " clean dir running: $cmdCLN"
+      $cmdCLN > /dev/null 2>&1
+    fi
+    echo "======================"
+    echo
+  fi
+  popd
 
 done
