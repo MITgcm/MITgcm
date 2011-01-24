@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1368 2011/01/21 05:54:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1369 2011/01/24 14:35:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62r (2011/01/24)
 o testreport:
  - add option -deloutp (-do) to remove output file after successful run
  - add option -mfile (-mf) for MPI machile-file and for each test-exp,
