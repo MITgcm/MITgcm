@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.97 2011/01/18 21:04:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.98 2011/01/26 03:46:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -133,20 +133,6 @@ C--   dummy statement to end declaration part
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#ifdef ALLOW_ADDFLUID
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           addmass(I,J,K,bi,bj) =  0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_ADDFLUID */
-
 #ifdef  ALLOW_OBCS
       IF (useOBCS) THEN
 C--   Calculate future values on open boundaries
@@ -158,6 +144,22 @@ C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
      I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_ADDFLUID
+      IF ( fluidIsWater ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             addMass(i,j,k,bi,bj) =  0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_SALT_PLUME
@@ -770,6 +772,11 @@ C--     Calculate Downsloping Flow for Down_Slope parameterization
         ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
+#ifndef ALLOW_AUTODIFF_TAMC
+C---  if fluid Is Water: end
+        ENDIF
+#endif
+
 #ifdef ALLOW_MYPACKAGE
         IF ( useMYPACKAGE ) THEN
          CALL MYPACKAGE_CALC_RHS(
@@ -777,20 +784,15 @@ C--     Calculate Downsloping Flow for Down_Slope parameterization
         ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
-#ifndef ALLOW_AUTODIFF_TAMC
-C---  if fluid Is Water: end
-        ENDIF
-#endif
-
 C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-#ifdef  ALLOW_KPP
+#ifdef ALLOW_KPP
       IF (useKPP) THEN
         CALL KPP_DO_EXCH( myThid )
       ENDIF
-#endif  /* ALLOW_KPP */
+#endif /* ALLOW_KPP */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
