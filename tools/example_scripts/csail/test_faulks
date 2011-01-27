@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.19 2011/01/24 14:30:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.20 2011/01/27 01:30:28 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -118,6 +118,7 @@ do
   if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then
     nbl='-60'
     comm="$comm -adm"
+#   comm="$comm -skd global_ocean.cs32x15"
   elif test $typ = 'mth' -o  $typ = 'mp2' ; then
     export KMP_STACKSIZE=400m
     export OMP_NUM_THREADS=2
@@ -134,7 +135,8 @@ do
        *)	OPTFILE= ;;
   esac
 #-- set MPI command:
-  if test $MPI = 1 ; then
+  if test $MPI != 0 ; then
+    if test $typ = 'mp2' ; then MPI=3 ; fi
     if test $typ = 'mpa' ; then
       EXE="mpirun -np TR_NPROC ./mitgcmuv_ad"
     else
@@ -147,6 +149,7 @@ do
 #   source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
 # fi
   if test $typ = 'pgi' ; then
+    listT='fizhi-cs-32x32x40 fizhi-cs-aqualev20'
     export PGI=/usr/local/pkg/pgi/pgi-6.1-5
   fi
 
@@ -161,9 +164,8 @@ do
     echo
   fi
 
-  if test $typ = 'pgi' ; then
+  if test $typ = 'pg2' ; then
 #- run 1rst time without sending email:
-    listT='fizhi-cs-32x32x40 fizhi-cs-aqualev20'
     echo "Running testreport using:"
     com1="./testreport -dd"
     if test "x$OPTFILE" != x ; then
@@ -185,9 +187,10 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
-  if test $MPI = 1 ; then echo " (EXE='$EXE')"
-    comm="$comm -MPI 6 -command \"\$EXE\""
-  else echo '' ; fi
+  if test $MPI = 0 ; then  echo ''
+  else echo " (EXE='$EXE')"
+    comm="$comm -MPI $MPI -command \"\$EXE\""
+  fi
   if test "x$option" != x ; then comm="$comm $option" ; fi
   if test $typ = 'pgi' ; then comm="$comm -t \"\$listT\"" ; fi
   echo "  \"eval $comm\""
@@ -201,14 +204,14 @@ do
   then
     echo "testing restart using:"
     comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-    if test $MPI = 1 ; then
-      echo "  \"$comm -mpi -exe $EXE\""
-      echo "======================"
-      $comm -mpi -exe "$EXE" > $tdir/output_2+2 2>&1
-    else
+    if test $MPI = 0 ; then
       echo "  \"$comm\""
       echo "======================"
       $comm > $tdir/output_2+2 2>&1
+    else
+      echo "  \"$comm -mpi -exe $EXE\""
+      echo "======================"
+      $comm -mpi -exe "$EXE" > $tdir/output_2+2 2>&1
     fi
    #tail $nbl $tdir/output_2+2
     echo ; cat tst_2+2_out.txt
