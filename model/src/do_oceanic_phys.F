@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.98 2011/01/26 03:46:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.99 2011/01/27 20:34:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -787,6 +787,12 @@ C---  if fluid Is Water: end
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_GMREDI
+      IF ( useGMRedi ) THEN
+        CALL GMREDI_DO_EXCH( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_KPP
       IF (useKPP) THEN
