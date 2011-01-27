@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.157 2011/01/27 04:51:03 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.158 2011/01/27 18:20:38 jmc Exp $
 #  $Name:  $
 #
 
@@ -238,12 +238,6 @@ testoutput_run()
           listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
         fi
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(M)='$listVar'" 1>&2 ; fi
-	#- report to this experiment local summary file ---
-	echo "MACH='$MACH'" > $locDIR"/summary.txt"
-	echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
-	echo "DATE='$DATE'" >> $locDIR"/summary.txt"
-	grep '(PID\.TID 0000\.0001)      n.. =' $1/$2/$OUTPUTFILE \
-         | sed 's/(PID.TID 0000.0001)     //' >> $locDIR"/summary.txt"
 	echo "listVar='$listVar'" >> $locDIR"/summary.txt"
         #---
         allargs=""
@@ -501,6 +495,13 @@ makemodel()
 	    fi
 	fi
     fi
+    if test "x$ADM" = xt -a -f taf_ad.log ; then
+	    head -1 taf_ad.log >> $CDIR"/summary.txt"
+	    nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
+	    nwar=`grep -c 'TAF RECOMPUTATION *.* WARNING ' taf_ad.log`
+	    echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
+				>> $CDIR"/summary.txt"
+    fi
     )
 }
 
@@ -682,6 +683,15 @@ runmodel()
     (
 	cd $1
 	printf 'runmodel in %s ... ' $1
+	if test "x$MPI" != x0 ; then
+	    #- adjust the MPI run command with the right number of Procs
+	    #echo '' ; echo "  COMMAND='$COMMAND'"
+	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC / $LOC_NPROC /"`
+	    if test "x$MPI_MFILE" != x ; then
+	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+	    fi
+	    #echo "  COMMAND='$COMMAND'"
+	fi
 	if test -L $EXECUTABLE ; then
 	  if test -x "../"$builddir"/"$EXECUTABLE ; then
 	    cmp $EXECUTABLE "../"$builddir"/"$EXECUTABLE > /dev/null 2>&1
@@ -692,15 +702,6 @@ runmodel()
         if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
 	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_tmp
 	    ln -sf "../"$builddir"/"$EXECUTABLE .
-	fi
-	if test "x$MPI" != x0 ; then
-	    #- adjust the MPI run command with the right number of Procs
-	    #echo '' ; echo "  COMMAND='$COMMAND'"
-	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC / $LOC_NPROC /"`
-	    if test "x$MPI_MFILE" != x ; then
-	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
-	    fi
-	    #echo "  COMMAND='$COMMAND'"
 	fi
         if test ! -x $EXECUTABLE ; then
 	    rm -f $RUNLOG ; touch $RUNLOG
@@ -730,13 +731,19 @@ runmodel()
 	  fi
 	fi
 	rm -f run.log_tmp
+	#- in all cases where OutputFile exists, report SIZE (and AD time)
+	if test -f $OUTPUTFILE ; then
+	  grep '(PID\.TID 0000\.0001)      n.. =' $OUTPUTFILE \
+		| sed 's/(PID.TID 0000.0001)     //' >> $CDIR"/summary.txt"
+	  if test "x$ADM" = xt ; then
+	    grep -A3 'Seconds in section "ALL' $OUTPUTFILE >> $CDIR"/summary.txt"
+	  fi
+	fi
+	if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
 	    echo successful
 	    printf '=> output from running in %s :\n' $1 1>&2
 	    tail $RUNLOG | sed 's/^.*/> &/g' 1>&2
-	    # === Reduce the size of the testing emails!
-	    #cp $OUTPUTFILE $CDIR"/"$OUTPUTFILE
-            if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 0
 	elif [ $RETVAL -ne 0 -a $ENDVAL -gt 0 ] ; then
 	    #-- for some weird cases (run is finihed but with error code)
@@ -749,7 +756,6 @@ runmodel()
 	    printf '=> output from running in %s :\n' $1 1>&2
 	    tail $RUNLOG | sed 's/^.*/> &/g' 1>&2
 	    cp $RUNLOG $CDIR"/"$RUNLOG
-            if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 1
 	fi
     )
@@ -1404,9 +1410,13 @@ for dir in $TESTDIRS ; do
     unset genmake makedepend make run
     results=$EMPTY_RESULTS
 
-    #  Create an output dir for each OPTFILE/tdir combination
+    #  Create an output dir & summary.txt file for each tested experiment (tdir)
     locDIR=$DRESULTS"/"$dir
     mkdir $locDIR
+    #- report to this experiment local summary file ---
+    echo "DATE='$DATE' ; tdir='$dir'" > $locDIR"/summary.txt"
+    echo "MACH='$MACH'" >> $locDIR"/summary.txt"
+    echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
     CDIR=`pwd`"/$locDIR"
 
     if test "x$NORUN" = xt ; then
@@ -1432,27 +1442,20 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo 1>&2
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-	touch $locDIR"/summary.txt"
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
-	echo "tdir='$dir'" >> $locDIR"/summary.txt"
-	if test "x$ADM" = xt ; then
-	    head -1 $dir/$builddir/taf_ad.log >> $locDIR"/summary.txt"
-	    nerr=`grep -c 'TAF *.* ERROR ' $dir/$builddir/taf_ad.log`
-	    nwar=`grep -c 'TAF RECOMPUTATION *.* WARNING ' $dir/$builddir/taf_ad.log`
-	    echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
-				>> $locDIR"/summary.txt"
-	    grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
-				>> $locDIR"/summary.txt"
-	fi
 
 	for ex in $extra_runs ; do
 	    unset run
             results=$EMPTY_RESULTS
 	    #  reference output file
 	    refExOut=`echo $ref_outp | sed "s/\./.${ex}./g"`
-	    #  Create an output dir for each OPTFILE/tdir.ex combination
+	    #  Create an output dir & summary.txt file for each extra run (tdir.ex)
 	    locDIR=$DRESULTS"/"$dir"."$ex
 	    mkdir $locDIR
+	    #- report to this experiment local summary file ---
+	    echo "DATE='$DATE' ; tdir='$dir.$ex'" > $locDIR"/summary.txt"
+	    #echo "MACH='$MACH'" >> $locDIR"/summary.txt"
+	    #echo "UNAMEA='$UNAMEA'" >> $locDIR"/summary.txt"
 	    CDIR=`pwd`"/$locDIR"
 	    test ! -e "$dir/$pfxdir.$ex" && mkdir "$dir/$pfxdir.$ex"
 	    run_clean $dir/$pfxdir.$ex
@@ -1463,13 +1466,7 @@ for dir in $TESTDIRS ; do
 	    fres="$fres.$ex"
 	    echo 1>&2
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-	    touch $locDIR"/summary.txt"
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
-	    echo "tdir='$dir.$ex'" >> $locDIR"/summary.txt"
-            if test "x$ADM" = xt ; then
-	        grep -A3 'Seconds in section "ALL' $dir/$pfxdir.$ex/$OUTPUTFILE \
-			           >> $locDIR"/summary.txt"
-            fi
 	    if test "x$POSTCLEAN" = x2 ; then
 		run_clean $dir/$pfxdir.$ex
 	    fi
