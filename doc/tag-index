@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1370 2011/01/27 20:52:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1371 2011/01/27 23:20:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,7 @@ $Name:  $
 o pkg/gmredi:
  - apply exchange to GM_PsiX,GM_PsiY to get valid values near CS-corners
    (needed for multi-dim advection).
+ - switch on GM Advective form in global_ocean.cs32x15 and update output.txt
 o model/src:
  - fix wrong re-setting of addMass array (ALLOW_ADDFLUID) for atmospheric run.
 
