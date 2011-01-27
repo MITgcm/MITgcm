@@ -6,12 +6,9 @@
  mnc_use_outdir=.TRUE.,
  mnc_outdir_str='mnc_test_',
 #mnc_outdir_date=.TRUE.,
-#monitor_mnc=.FALSE.,
-#snapshot_mnc=.FALSE.,
+ monitor_mnc=.FALSE.,
 #timeave_mnc=.FALSE.,
-#pickup_write_mnc=.FALSE.,
-#pickup_read_mnc=.FALSE.,
+#snapshot_mnc=.FALSE.,
+ pickup_read_mnc=.FALSE.,
+ pickup_write_mnc=.FALSE.,
  &
-# Note: Some systems use & as the
-# namelist terminator. Other systems
-# use a / character (as shown here).
