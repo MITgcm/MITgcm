@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.22 2010/05/28 07:16:43 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.23 2011/01/27 11:42:02 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -509,7 +509,14 @@ function A = ncgetatt(nc,varname)
       if ~ischar(attval)
         attval = double(attval);
       end
-      A.(char(attn))=attval;
+      if strcmp(attn,'_FillValue')
+        % matlab does not allow variable names to begin with an
+        % underscore ("_"), so we have to do change the name of this
+        % obsolete attribute.
+        A.FillValue_=attval;
+      else
+        A.(char(attn))=attval;
+      end
     end
   else
       A = 'none';
