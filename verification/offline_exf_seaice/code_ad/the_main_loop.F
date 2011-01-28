@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.5 2010/01/08 20:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.6 2011/01/28 16:18:26 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -294,6 +294,12 @@ CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
 #    ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nchklev_1
 #    endif
+#     ifndef DISABLE_MULTIDIM_ADVECTION
+CADJ INIT comlev1_bibj_k_gadice = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
+CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass*maxpass
+#    endif /* DISABLE_MULTIDIM_ADVECTION */
 #   endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
