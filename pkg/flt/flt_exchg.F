@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.13 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.14 2011/02/01 17:08:30 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -45,8 +45,19 @@ C     buffer for sending/receiving variables (E/W are also used for S/N)
       _RL fltbuf_sendW(imax2,nSx,nSy)
       _RL fltbuf_recvE(imax2,nSx,nSy)
       _RL fltbuf_recvW(imax2,nSx,nSy)
+#ifdef FLT_WITHOUT_X_PERIODICITY
+      LOGICAL wSide, eSide
+#endif /* FLT_WITHOUT_X_PERIODICITY */
+#ifdef FLT_WITHOUT_Y_PERIODICITY
+      LOGICAL sSide, nSide
+#endif /* FLT_WITHOUT_Y_PERIODICITY */
+      _RL     flt_stopped
 
 C     == end of interface ==
+
+C--   set the "end-time" of a stopped float
+      flt_stopped = -2.
+      flt_stopped = MIN( baseTime, flt_stopped )
 
 Caw Check if there are eastern/western tiles
 c     IF ( Nx.NE.sNx ) THEN
@@ -73,10 +84,23 @@ C initialize buffers
 
            ilo = 0.5 _d 0
            ihi = 0.5 _d 0 + DFLOAT(sNx)
+#ifdef FLT_WITHOUT_X_PERIODICITY
+           wSide = myXGlobalLo+bi .LE.2
+           eSide = myXGlobalLo+bi*sNx.GT.Nx
+#endif /* FLT_WITHOUT_X_PERIODICITY */
 
            DO ip=1,npart_tile(bi,bj)
 
+#ifdef FLT_WITHOUT_X_PERIODICITY
+             IF ( eSide .AND.
+     &           (myTime.LE.tend(ip,bi,bj) .OR. tend(ip,bi,bj).EQ.-1.)
+     &           .AND. ipart(ip,bi,bj).GE.ihi ) THEN
+C          stop the float:
+              tend(ip,bi,bj) = flt_stopped
+             ELSEIF ( ipart(ip,bi,bj).GE.ihi ) THEN
+#else /* FLT_WITHOUT_X_PERIODICITY */
              IF ( ipart(ip,bi,bj).GE.ihi ) THEN
+#endif /* FLT_WITHOUT_X_PERIODICITY */
               icountE=icountE+1
               IF ( icountE.LE.max_npart_exch ) THEN
 
@@ -100,7 +124,16 @@ C tag this float to be removed:
               ENDIF
              ENDIF
 
+#ifdef FLT_WITHOUT_X_PERIODICITY
+             IF ( wSide .AND.
+     &           (myTime.LE.tend(ip,bi,bj) .OR. tend(ip,bi,bj).EQ.-1.)
+     &           .AND. ipart(ip,bi,bj).LT.ilo ) THEN
+C          stop the float:
+              tend(ip,bi,bj) = flt_stopped
+             ELSEIF ( ipart(ip,bi,bj).LT.ilo ) THEN
+#else /* FLT_WITHOUT_X_PERIODICITY */
              IF ( ipart(ip,bi,bj).LT.ilo ) THEN
+#endif /* FLT_WITHOUT_X_PERIODICITY */
               icountW=icountW+1
               IF ( icountW.LE.max_npart_exch ) THEN
 
@@ -284,10 +317,23 @@ C initialize buffers
 
            jlo = 0.5 _d 0
            jhi = 0.5 _d 0 + DFLOAT(sNy)
+#ifdef FLT_WITHOUT_Y_PERIODICITY
+           sSide = myYGlobalLo+bj .LE.2
+           nSide = myYGlobalLo+bj*sNy.GT.Ny
+#endif /* FLT_WITHOUT_Y_PERIODICITY */
 
            DO ip=1,npart_tile(bi,bj)
 
+#ifdef FLT_WITHOUT_Y_PERIODICITY
+             IF ( nSide .AND.
+     &           (myTime.LE.tend(ip,bi,bj) .OR. tend(ip,bi,bj).EQ.-1.)
+     &           .AND. jpart(ip,bi,bj).GE.jhi ) THEN
+C          stop the float:
+              tend(ip,bi,bj) = flt_stopped
+             ELSEIF ( jpart(ip,bi,bj).GE.jhi ) THEN
+#else /* FLT_WITHOUT_Y_PERIODICITY */
              IF ( jpart(ip,bi,bj).GE.jhi ) THEN
+#endif /* FLT_WITHOUT_Y_PERIODICITY */
               icountN=icountN+1
               IF ( icountN.LE.max_npart_exch ) THEN
 
@@ -316,7 +362,16 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
               ENDIF
              ENDIF
 
+#ifdef FLT_WITHOUT_y_PERIODICITY
+             IF ( sSide .AND.
+     &           (myTime.LE.tend(ip,bi,bj) .OR. tend(ip,bi,bj).EQ.-1.)
+     &           .AND. jpart(ip,bi,bj).LT.jlo ) THEN
+C          stop the float:
+              tend(ip,bi,bj) = flt_stopped
+             ELSEIF ( jpart(ip,bi,bj).LT.jlo ) THEN
+#else /* FLT_WITHOUT_y_PERIODICITY */
              IF ( jpart(ip,bi,bj).LT.jlo ) THEN
+#endif /* FLT_WITHOUT_y_PERIODICITY */
               icountS=icountS+1
               IF ( icountS.LE.max_npart_exch ) THEN
 
