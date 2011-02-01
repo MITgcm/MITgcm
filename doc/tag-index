@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1371 2011/01/27 23:20:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1372 2011/02/01 17:10:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+ - add CPP options to prevent floats to re-enter the opposite side of
+   a periodic domain (default: keep periodicity)
 o pkg/gmredi:
  - apply exchange to GM_PsiX,GM_PsiY to get valid values near CS-corners
    (needed for multi-dim advection).
