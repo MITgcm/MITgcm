@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1372 2011/02/01 17:10:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1373 2011/02/03 02:03:25 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -13,6 +13,9 @@ o pkg/gmredi:
  - switch on GM Advective form in global_ocean.cs32x15 and update output.txt
 o model/src:
  - fix wrong re-setting of addMass array (ALLOW_ADDFLUID) for atmospheric run.
+o tutorial_tracer_adjsens
+ - extend to NLFS and replace maskC by hFacC
+   (change reference output accordingly)
 
 checkpoint62r (2011/01/24)
 o testreport:
