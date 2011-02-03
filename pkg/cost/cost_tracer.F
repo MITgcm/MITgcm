@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.9 2008/04/05 18:23:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.10 2011/02/03 02:00:53 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -28,7 +28,6 @@ C     == Global variables ===
 #  include "PTRACERS_FIELDS.h"
 # endif
 #endif
-
 #include "cost.h"
 
 C     == Routine arguments ==
@@ -43,6 +42,7 @@ C     == Local variables
 
       integer i, j, k
       integer ig, jg
+
 ce    some reference temperature
       thetaRef = 24.0D0
 
@@ -52,7 +52,7 @@ ce    some reference temperature
       DO j=1,sNy
          DO i=1,sNx
 #ifdef ALLOW_PTRACERS
-            locfc = locfc + maskC(i,j,k,bi,bj)*
+            locfc = locfc + hFacC(i,j,k,bi,bj)*
      &           lambdaTr1ClimRelax*ptracer(i,j,k,bi,bj,1)*
      &           rA(i,j,bi,bj)*drF(k)*dTtracerLev(k)
 #endif

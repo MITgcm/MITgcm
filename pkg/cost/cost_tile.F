@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.13 2011/01/07 12:35:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.14 2011/02/03 02:00:53 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,6 +78,10 @@ C     == Global variables ===
 #include "cost.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+#  include "PTRACERS_FIELDS.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -102,6 +106,14 @@ CADJ &     kind = isbyte
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hfacw, hfacs  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+# endif
+# ifdef ALLOW_PTRACERS
+#  ifdef NONLIN_FRSURF
+CADJ STORE hFacC  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE ptracer = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif
 # endif
 #endif
 
