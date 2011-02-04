@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.38 2008/05/27 00:08:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.39 2011/02/04 17:30:13 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -634,8 +634,8 @@ C--   fill tracer state-var diagnostics: end
 
       IF ( selectVars.EQ.4 ) THEN
 C Second fill sequence for state variable tendency diagnostics: add state variable
-C NOTE: send a '-1' for the bibjflag and allow counter to be incremented
-C       this means that diag fill is called from inside the bi-bj loop
+C NOTE: send a '-1' for the bibjflag and do not increment counter
+C     (next fill for these diagnostics WILL allow counter to be incremented)
 
         IF ( DIAGNOSTICS_IS_ON('TOTUTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
