@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1373 2011/02/03 02:03:25 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1374 2011/02/06 00:24:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml:
+ - from Nico Wienders: New version of this package.
 o pkg/flt:
  - add CPP options to prevent floats to re-enter the opposite side of
    a periodic domain (default: keep periodicity)
