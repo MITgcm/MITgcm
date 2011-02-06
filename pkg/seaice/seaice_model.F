@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.83 2010/11/18 17:32:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.84 2011/02/06 21:37:45 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -214,11 +214,7 @@ C     because of ugly time level business
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
-#ifndef SEAICE_ALLOW_TD_IF
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
-#else
-        CALL SEAICE_GROWTH_IF( myTime, myIter, myThid )
-#endif
        ENDIF
 
 C--   Apply ice tracer open boundary conditions

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.11 2010/12/25 00:47:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.12 2011/02/06 21:37:45 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,9 +9,6 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_SOLVE4TEMP(
      I   UG, HICE_ACTUAL, HSNOW_ACTUAL,
      U   TSURF,
-#ifdef SEAICE_ALLOW_TD_IF
-     O   F_io_net, F_ia_net,
-#endif
      O   F_ia, IcePenetSWFlux,
      O   FWsublim,
      I   bi, bj, myTime, myIter, myThid )
@@ -55,20 +52,20 @@ C     HSNOW_ACTUAL :: actual snow thickness
 C     TSURF   :: surface temperature of ice in Kelvin, updated
 C     bi,bj   :: loop indices
 C     OUTPUT:
-C     F_io_net :: net upward conductive heat flux through ice at the base 
+C     F_io_net :: net upward conductive heat flux through ice at the base
 C                 of the ice
 C     F_ia_net :: net heat flux divergence at the sea ice/snow surface:
 C                 includes ice conductive fluxes and atmospheric fluxes (W/m^2)
 C     F_ia     :: upward sea ice/snow surface heat flux to atmosphere (W/m^2)
 C     IcePenetSWFlux :: short wave heat flux under ice
-C     FWsublim :: fresh water (mass) flux implied by latent heat of 
+C     FWsublim :: fresh water (mass) flux implied by latent heat of
 C                 sublimation (kg/m^2/s)
       _RL UG             (1:sNx,1:sNy)
       _RL HICE_ACTUAL    (1:sNx,1:sNy)
       _RL HSNOW_ACTUAL   (1:sNx,1:sNy)
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL F_io_net       (1:sNx,1:sNy)
-      _RL F_ia_net       (1:sNx,1:sNy)
+c     _RL F_io_net       (1:sNx,1:sNy)
+c     _RL F_ia_net       (1:sNx,1:sNy)
       _RL F_ia           (1:sNx,1:sNy)
       _RL IcePenetSWFlux (1:sNx,1:sNy)
       _RL FWsublim       (1:sNx,1:sNy)
@@ -78,6 +75,8 @@ C                 sublimation (kg/m^2/s)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+      _RL F_io_net   (1:sNx,1:sNy)
+      _RL F_ia_net   (1:sNx,1:sNy)
 #ifndef SEAICE_SOLVE4TEMP_LEGACY
       _RL F_swi      (1:sNx,1:sNy)
       _RL F_lwd      (1:sNx,1:sNy)
