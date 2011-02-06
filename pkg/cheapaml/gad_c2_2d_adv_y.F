@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_c2_2d_adv_y.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_c2_2d_adv_y.F,v 1.2 2011/02/06 00:18:05 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,12 +7,12 @@ CBOP
 C !ROUTINE: GAD_C2_ADV_Y
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_C2_2d_ADV_Y( 
-     I           bi,bj,
-     I           vVel,
-     I           tracer,
-     O           vT,
-     I           myThid )
+      SUBROUTINE GAD_C2_2d_ADV_Y(
+     I   bi,bj,
+     I   vVel,
+     I   tracer,
+     O   vT,
+     I   myThid )
 
 C !DESCRIPTION:
 C Calculates the area integrated meridional flux due to advection of a tracer
@@ -46,14 +46,15 @@ C  i,j                  :: loop indices
 CEOP
 
       DO i=1-Olx,sNx+Olx
-       vT(i,1-Oly)=0.
+        vT(i,1-Oly)=0.
       ENDDO
       DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        vT(i,j) = 
-     &   vVel(i,j,bi,bj)*(Tracer(i,j)+Tracer(i,j-1))*0.5 _d 0
-       ENDDO
+        DO i=1-Olx,sNx+Olx
+          vT(i,j) =
+     &       vVel(i,j,bi,bj)*(Tracer(i,j)+Tracer(i,j-1))*0.5 _d 0
+        ENDDO
       ENDDO
 
       RETURN
       END
+

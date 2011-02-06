@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cheapaml_bulkcdn.F,v 1.3 2010/08/12 21:33:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cheapaml_bulkcdn.F,v 1.4 2011/02/06 00:18:05 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -9,23 +9,18 @@ c      real*8 function cheapaml_BulkCdn(
      &                        )
 
 c     ==================================================================
-c     FUNCTION exf_BulkCdn
+c     FUNCTION cheapaml_BulkCdn
 c     ==================================================================
 c
 c     o Compute the neutral drag coefficient as a function of the wind
 c       speed.
 c
-c     started: Christian Eckert eckert@mit.edu  27-Aug-1999
 c
-c     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
 c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
+c              - Restructured the code  from exf_BulkCdn in order to
+c                create the CHEAPaml package for the MITgcm.
 c
-c              Patrick Heimbach heimbach@mit.edu  05-May-2000
 c
-c              - Included appropriate CPP options
-c                ALLOW_BULKFORMULAE, ALLOW_ATM_TEMP
 c
 c     ==================================================================
 c     FUNCTION cheapaml_BulkCdn
@@ -42,7 +37,6 @@ c     == global variables ==
 #include "CHEAPAML.h"
 
 c     == function arguments ==
-c      real*8 umps
       _RL umps
 
 c     == end of interface ==
@@ -53,7 +47,6 @@ c     == end of interface ==
 #else
 
 c     == function arguments ==
-c      real*8 umps
       _RL  umps
       cheapaml_BulkCdn = 0.0
 #endif

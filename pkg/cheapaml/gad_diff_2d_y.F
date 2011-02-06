@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_y.F,v 1.2 2010/08/24 14:07:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_y.F,v 1.3 2011/02/06 00:18:05 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -32,7 +32,7 @@ C  bi,bj                :: tile indices
 C  diffKh               :: horizontal diffusivity
 C  tracer               :: tracer field
 C  myThid               :: thread number
-      INTEGER bi,bj,k,jG
+      INTEGER bi,bj
       _RL diffKh
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -43,23 +43,23 @@ C  dfx                  :: meridional diffusive flux
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER i,j
+      INTEGER i,j,jG
 CEOP
 
       DO i=1-Olx,sNx+Olx
-       dfy(i,1-Oly)=0.
+        dfy(i,1-Oly)=0.
       ENDDO
       DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        dfy(i,j) = -diffKh
-     &      *_recip_dyC(i,j,bi,bj)
-     &      *(Tracer(i,j)-Tracer(i,j-1))
+        DO i=1-Olx,sNx+Olx
+          dfy(i,j) = -diffKh
+     $       *_recip_dyC(i,j,bi,bj)
+     $       *(Tracer(i,j)-Tracer(i,j-1))
 #ifdef ISOTROPIC_COS_SCALING
-     &      *CosFacV(j,bi,bj)
+     $       *CosFacV(j,bi,bj)
 #endif
-                  jG = myYGlobalLo-1+(bj-1)*sNy+j
-        if(jG.eq.ny.or.jG.eq.1)dfy(i,j)=0.d0
-       ENDDO
+          jG = myYGlobalLo-1+(bj-1)*sNy+j
+          if(jG.eq.ny.or.jG.eq.1)dfy(i,j)=0.d0
+        ENDDO
       ENDDO
 
       RETURN

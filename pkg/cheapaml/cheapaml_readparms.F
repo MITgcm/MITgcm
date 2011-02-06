@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.3 2010/09/05 03:55:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.4 2011/02/06 00:18:05 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CHEAPAML_OPTIONS.h"
 
       SUBROUTINE CHEAPAML_READPARMS( myThid )
 C     /==========================================================\
@@ -27,25 +27,31 @@ C     iUnit       - Work variable for IO unit number
 
 C--   Bulk Formula parameter
       NAMELIST /CHEAPAML_CONST/
-     &  cheapaml_ntim, cheapaml_h,
-c     &  cheapaml_kdiff, cheapaml_taurelax1,
-c     &  cheapaml_taurelax2, cheapaml_xf,
-     &  cheapaml_kdiff,
+     &  cheapaml_ntim, cheapaml_mask_width,
+     &  cheapaml_h, cheapaml_kdiff,
      &  cheapaml_taurelax2,
      &  cdrag_1,cdrag_2,cdrag_3,
-     &  rhoa, cpair, stefan,
-     &       dsolms,dsolmn,
-     &       xphaseinit
-c     &  cheapaml_dtc, rhoa, cpair, stefan
+     &  rhoa, cpair, stefan, gasR,xkar,
+     &       dsolms,dsolmn,zu,zt,zq,
+     &       xphaseinit,gamma_blk,humid_fac,p0
       NAMELIST /CHEAPAML_PARM01/
      &         AirTempFile,
      &         SolarFile,
      &         UWindFile,
      &         VWindFile,
-     &         TRFile
+     &         TrFile,
+     &         QrFile,
+     &         AirQFile,
+     &         QrrelFile,
+     &         UStressFile, VStressFile,
+     &         WaveHFile,WavePFile,
+     &         AirQrelFile
       NAMELIST /CHEAPAML_PARM02/
-     &         useFreshwaterFlux
-
+     &         useFreshwaterFlux,
+     &         useFluxLimit,
+     &         FluxFormula,WaveModel,
+     &         useStressOption,
+     &         useRelativeHumidity
 
       _BEGIN_MASTER(myThid)
 
@@ -58,52 +64,72 @@ c     &  cheapaml_dtc, rhoa, cpair, stefan
      O                          iUnit,
      I                          myThid )
 
-      WRITE (msgBuf,'(A)') 'Test 1 ********************************'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
 C--   Default values
 C-    Physical constant :
       cheapaml_ntim = 5
-      cheapaml_h=1000.d0
+      cheapaml_h=1000. _d 0
       cheapaml_kdiff=1.d4
-c       cheapaml_taurelax1 = 30.d0
-      cheapaml_taurelax2 = .1d0
-c       cheapaml_xf=2.d0
-c       cheapaml_dtc=1.d0
+      cheapaml_taurelax2 = .1 _d 0
+      cheapaml_mask_width = 0
       rhoa   = 1.3 _d 0
-      cpair  = 1004.d0
+      cpair  = 1004. _d 0
       stefan = 5.67 _d -8
-      dsolms = 50.d0
-      dsolmn = 25.d0
-      xphaseinit = 0.d0
-      cdrag_1=0.0027d0
-      cdrag_2=0.00142d0
-      cdrag_3=0.0000764d0
+      dsolms = 50. _d 0
+      dsolmn = 25. _d 0
+C heights of variables
+      zu=10. _d 0
+      zt=zu
+      zq=zu
+      xphaseinit = 0. _d 0
+      cdrag_1=0.0027 _d 0
+      cdrag_2=0.00142 _d 0
+      cdrag_3=0.0000764 _d 0
+C gas constant
+      gasR=287.04 _d 0
+C atmospheric adiabatic lapse rate
+        gamma_blk=0.0098 _d 0
+C humidity factor for computing virtual potential temperature
+        humid_fac=0.606 _d 0
+C surface pressure in mb
+        p0=1000. _d 0
+C latent heat (J/kg)
+        lath=2.5d6
+C Celcius to Kelvin
+        Celcius2K=273.16 _d 0
+C von Karman constant
+        xkar=0.4 _d 0
 
 C-    Input data files names :
       AirTempFile=' '
-      AirQFile =' '
+      AirQFile=' '
+      AirQrelFile=' '
       SolarFile=' '
       UWindFile=' '
       VWindFile=' '
-      TRFile=' '
+      UStressFile=' '
+      VStressFile=' '
+      TrFile=' '
       QrFile=' '
+      QrrelFile=' '
+      WaveHFile=' '
+      WavePFile=' '
+      FluxFormula='LANL'
+      WaveModel='Smith'
 
 C-    e-p option turned off by default
         useFreshwaterFlux=.FALSE.
 
-      WRITE (msgBuf,'(A)') 'Test 2 ********************************'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+C-    turn off flux limiting advection by default
+        useFluxLimit=.FALSE.
+
+C -   turn off stress option by default
+        useStressOption=.FALSE.
+
+C -   turn off relative humidity flag by default
+        useRelativeHumidity = .FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)
-
-      WRITE (msgBuf,'(A)') 'Test 3333333333333333333333333333333333'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_CONST'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -114,40 +140,37 @@ C--   Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-      WRITE (msgBuf,'(A)') 'Test 4444444444444444444444444444444444'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_PARM02)
-
-      WRITE (msgBuf,'(A)') 'Test 55555555555555555555555555555555555'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_PARM02'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
-      WRITE (msgBuf,'(A)') 'Test 6666666666666666666666666666666666'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
 C--   Close the open data file
       CLOSE(iUnit)
 
+C compute derivative values
+C relaxation time scale factor
+      xgs=1. _d 0/cheapaml_taurelax2/8.64 _d 4
+C energy flux conversion factor
+      xef=1. _d 0 /rhoa/cpair
+C inverse of layer thickness
+      hm=1. _d 0/cheapaml_h
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iUnit = standardMessageUnit
       WRITE(iUnit,*) 'Caml: ntim     =',cheapaml_ntim
+      WRITE(iUnit,*) 'Caml: mask_w   =',cheapaml_mask_width
       WRITE(iUnit,*) 'Caml: h        =',cheapaml_h
       WRITE(iUnit,*) 'Caml: kdiff    =',cheapaml_kdiff
-c      WRITE(iUnit,*) 'Caml: tau1     =',cheapaml_taurelax1
       WRITE(iUnit,*) 'Caml: tau2     =',cheapaml_taurelax2
-c      WRITE(iUnit,*) 'Caml: xf       =',cheapaml_xf
-c      WRITE(iUnit,*) 'Caml: dtc      =',cheapaml_dtc
       WRITE(iUnit,*) 'Caml: rhoa     =',rhoa
       WRITE(iUnit,*) 'Caml: cpair    =',cpair
       WRITE(iUnit,*) 'Caml: stefan   =',stefan
+      Write(iUnit,*) 'Caml: useFreshwaterFlux  =',useFreshwaterFlux
+      Write(iUnit,*) 'Caml: useFluxLimit       =',useFluxLimit
+      Write(iUnit,*) 'Caml: useStressOption    =',useStressOption
+      Write(iUnit,*) 'Caml: useRelativeHumidity=',useRelativeHumidity
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
