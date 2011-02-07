@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.4 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.5 2011/02/07 13:42:38 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -332,7 +332,7 @@ c update edges
          _EXCH_XY_RS(Qnet,mythid)
       if(useFreshwaterFlux)then
          _EXCH_XY_RL(qair,mythid)
-         _EXCH_XY_RL(EmPmR,mythid)
+         _EXCH_XY_RS(EmPmR,mythid)
       endif
 
 c reset edges to open boundary profiles

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.4 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.5 2011/02/07 13:42:38 jmc Exp $
 C $Name:  $
 
 C--  File cheapaml_init_varia.F:
@@ -80,10 +80,10 @@ C do specific humidity
 
       IF ( AirQFile .NE. ' '.AND..NOT. useRelativeHumidity) THEN
          write(*,*)'Qair initialized from  ->',AirQFile
-         CALL READ_FLD_XY_RS( AirQFile,' ',qair,0,myThid )
+         CALL READ_FLD_XY_RL( AirQFile,' ',qair,0,myThid )
       ELSEIF ( AirQrelFile .NE. ' '.AND.useRelativeHumidity) THEN
          write(*,*)'Qair initialized from  ->',AirQrelFile
-         CALL READ_FLD_XY_RS( AirQrelFile,' ',rair,0,myThid )
+         CALL READ_FLD_XY_RL( AirQrelFile,' ',rair,0,myThid )
          write(*,*)'Computation of specific humidity'
          CALL CHEAPAML_CONVERT_HUM(rair,tair,qair, myThid )
 

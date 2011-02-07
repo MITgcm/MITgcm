@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.3 2011/02/06 00:18:05 jmc Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.4 2011/02/07 13:42:38 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -81,8 +81,8 @@ C af               :: advective fluxes
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
 c localW           :: local vertical velocity
-C MaskLocW         :: local copy of West Face Land Mask
-C MaskLocS         :: local copy of South Face Land Mask
+C maskLocW         :: local copy of West Face Land Mask
+C maskLocS         :: local copy of South Face Land Mask
 c#ifdef ALLOW_DIAGNOSTICS
 c     CHARACTER*8 diagName
 c     CHARACTER*4 GAD_DIAG_SUFX, diagSufx
@@ -96,8 +96,8 @@ c#endif
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL MaskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL MaskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
       DO j=1-OLy,sNy+OLy
@@ -149,7 +149,7 @@ C     -    Advective flux in X
 c     make local copy of west land mask
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            MaskLocW(i,j)=MaskW(i,j,1,bi,bj)
+            maskLocW(i,j)=maskW(i,j,1,bi,bj)
           ENDDO
         ENDDO
         call GAD_DST3FL_ADV_X(
@@ -238,7 +238,7 @@ c     prepare boundary tracer values
 c     make local copy of south land mask
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            MaskLocS(i,j)=MaskS(i,j,1,bi,bj)
+            maskLocS(i,j)=maskS(i,j,1,bi,bj)
           ENDDO
         ENDDO
         call GAD_DST3FL_ADV_Y(
