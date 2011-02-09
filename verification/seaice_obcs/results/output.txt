@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62m
-(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62r
+(PID.TID 0000.0001) // Build user:        gforget
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Mon Nov  8 03:57:26 EST 2010
+(PID.TID 0000.0001) // Build date:        Wed Feb  9 09:06:20 EST 2011
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -74,8 +74,10 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) DEBUG_MSG: ENTERED S/R THE_MODEL_MAIN
 (PID.TID 0000.0001) DEBUG_MSG: CALLING S/R INITIALISE_FIXED
+(PID.TID 0000.0001)  INI_PARMS: opening model parameter file "data"
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Model parameter file "data"
+(PID.TID 0000.0001) // Parameter file "data"
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) ># ====================
 (PID.TID 0000.0001) ># | Model parameters |
@@ -214,16 +216,17 @@
 (PID.TID 0000.0001) > vVelInitFile    = 'V.seaice_obcs',
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM01
-(PID.TID 0000.0001) S/R INI_PARMS ; read PARM01 : OK
-(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM02
-(PID.TID 0000.0001) S/R INI_PARMS ; read PARM02 : OK
-(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM03
-(PID.TID 0000.0001) S/R INI_PARMS ; read PARM03 : OK
-(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM04
-(PID.TID 0000.0001) S/R INI_PARMS ; read PARM04 : OK
-(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM05
-(PID.TID 0000.0001) S/R INI_PARMS ; read PARM05 : OK
+(PID.TID 0000.0001)  INI_PARMS ; starts to read PARM01
+(PID.TID 0000.0001)  INI_PARMS ; read PARM01 : OK
+(PID.TID 0000.0001)  INI_PARMS ; starts to read PARM02
+(PID.TID 0000.0001)  INI_PARMS ; read PARM02 : OK
+(PID.TID 0000.0001)  INI_PARMS ; starts to read PARM03
+(PID.TID 0000.0001)  INI_PARMS ; read PARM03 : OK
+(PID.TID 0000.0001)  INI_PARMS ; starts to read PARM04
+(PID.TID 0000.0001)  INI_PARMS ; read PARM04 : OK
+(PID.TID 0000.0001)  INI_PARMS ; starts to read PARM05
+(PID.TID 0000.0001)  INI_PARMS ; read PARM05 : OK
+(PID.TID 0000.0001)  INI_PARMS: finished reading file "data"
 (PID.TID 0000.0001)  PACKAGES_BOOT: opening data.pkg
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.pkg
 (PID.TID 0000.0001) // =======================================================
@@ -296,29 +299,171 @@
 (PID.TID 0000.0001) modelenddate (HHMMSS) =   /* Model end date HH-MM-SS  */
 (PID.TID 0000.0001)                   60000
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) intyears =   /* Number of calendar years affected by the integration  */
+(PID.TID 0000.0001) intyears = /* Number of calendar years affected by the integration */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) intmonths =   /* Number of calendar months affected by the integration  */
+(PID.TID 0000.0001) intmonths= /* Number of calendar months affected by the integration */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) intdays =   /* Number of calendar days affected by the integration  */
+(PID.TID 0000.0001) intdays = /* Number of calendar days affected by the integration */
 (PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nIter0 =   /* Base timestep number  */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nEndIter =   /* Final timestep number  */
-(PID.TID 0000.0001)                       6
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nTimeSteps =   /* Number of model timesteps  */
-(PID.TID 0000.0001)                       6
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Calendar configuration  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) EXF_READPARMS: opening data.exf
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.exf
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.exf"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/results/output.txt,v 1.20 2011/02/09 14:10:34 gforget Exp $
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) ># External Forcing Data
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_01
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > useExfCheckRange  = .TRUE.,
+(PID.TID 0000.0001) > repeatPeriod      = 31622400.0,
+(PID.TID 0000.0001) > exf_iprec         = 32,
+(PID.TID 0000.0001) > exf_yftype        = 'RL',
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_02
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > hfluxstartdate1   = 19781216,
+(PID.TID 0000.0001) > hfluxstartdate2   = 180000,
+(PID.TID 0000.0001) > hfluxperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > sfluxstartdate1   = 19781216,
+(PID.TID 0000.0001) > sfluxstartdate2   = 180000,
+(PID.TID 0000.0001) > sfluxperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > ustressstartdate1 = 19781216,
+(PID.TID 0000.0001) > ustressstartdate2 = 180000,
+(PID.TID 0000.0001) > ustressperiod     = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > vstressstartdate1 = 19781216,
+(PID.TID 0000.0001) > vstressstartdate2 = 180000,
+(PID.TID 0000.0001) > vstressperiod     = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > atempstartdate1   = 19781216,
+(PID.TID 0000.0001) > atempstartdate2   = 180000,
+(PID.TID 0000.0001) > atempperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > aqhstartdate1     = 19781216,
+(PID.TID 0000.0001) > aqhstartdate2     = 180000,
+(PID.TID 0000.0001) > aqhperiod         = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) >#evapstartdate1    = 19781216,
+(PID.TID 0000.0001) >#evapstartdate2    = 180000,
+(PID.TID 0000.0001) >#evapperiod        = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > precipstartdate1  = 19781216,
+(PID.TID 0000.0001) > precipstartdate2  = 180000,
+(PID.TID 0000.0001) > precipperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > uwindstartdate1   = 19781216,
+(PID.TID 0000.0001) > uwindstartdate2   = 180000,
+(PID.TID 0000.0001) > uwindperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > vwindstartdate1   = 19781216,
+(PID.TID 0000.0001) > vwindstartdate2   = 180000,
+(PID.TID 0000.0001) > vwindperiod       = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > swfluxstartdate1  = 19781216,
+(PID.TID 0000.0001) > swfluxstartdate2  = 180000,
+(PID.TID 0000.0001) > swfluxperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > lwfluxstartdate1  = 19781216,
+(PID.TID 0000.0001) > lwfluxstartdate2  = 180000,
+(PID.TID 0000.0001) > lwfluxperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > swdownstartdate1  = 19781216,
+(PID.TID 0000.0001) > swdownstartdate2  = 180000,
+(PID.TID 0000.0001) > swdownperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > lwdownstartdate1  = 19781216,
+(PID.TID 0000.0001) > lwdownstartdate2  = 180000,
+(PID.TID 0000.0001) > lwdownperiod      = 2635200.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > climsststartdate1  = 19781216,
+(PID.TID 0000.0001) > climsststartdate2  = 180000,
+(PID.TID 0000.0001) > climsstperiod      = 2635200.0,
+(PID.TID 0000.0001) > climsstTauRelax    = 0.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > climsssstartdate1  = 19781216,
+(PID.TID 0000.0001) > climsssstartdate2  = 180000,
+(PID.TID 0000.0001) > climsssperiod      = 2635200.0,
+(PID.TID 0000.0001) > climsssTauRelax    = 4142330.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > hfluxfile         = ' ',
+(PID.TID 0000.0001) > sfluxfile         = ' ',
+(PID.TID 0000.0001) > ustressfile       = ' ',
+(PID.TID 0000.0001) > vstressfile       = ' ',
+(PID.TID 0000.0001) > atempfile         = 'tair.seaice_obcs',
+(PID.TID 0000.0001) > aqhfile           = 'qa.seaice_obcs',
+(PID.TID 0000.0001) > uwindfile         = 'u10m.seaice_obcs',
+(PID.TID 0000.0001) > vwindfile         = 'v10m.seaice_obcs',
+(PID.TID 0000.0001) > precipfile        = 'prate.seaice_obcs',
+(PID.TID 0000.0001) > lwfluxfile        = ' ',
+(PID.TID 0000.0001) > swfluxfile        = ' ',
+(PID.TID 0000.0001) > lwdownfile        = 'flo.seaice_obcs',
+(PID.TID 0000.0001) > swdownfile        = 'fsh.seaice_obcs',
+(PID.TID 0000.0001) > runoffFile        = ' '
+(PID.TID 0000.0001) > climsstfile       = ' ',
+(PID.TID 0000.0001) > climsssfile       = 'SSS_monthly.seaice_obcs',
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_03
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_04
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &EXF_NML_OBCS
+(PID.TID 0000.0001) > obcsSstartdate1   = 19790101,
+(PID.TID 0000.0001) > obcsSstartdate2   = 000000,
+(PID.TID 0000.0001) > obcsSperiod       = 3600.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > obcsNstartdate1   = 19790101,
+(PID.TID 0000.0001) > obcsNstartdate2   = 000000,
+(PID.TID 0000.0001) > obcsNperiod       = 3600.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > obcsWstartdate1   = 19790101,
+(PID.TID 0000.0001) > obcsWstartdate2   = 000000,
+(PID.TID 0000.0001) > obcsWperiod       = 3600.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > obcsEstartdate1   = 19790101,
+(PID.TID 0000.0001) > obcsEstartdate2   = 000000,
+(PID.TID 0000.0001) > obcsEperiod       = 3600.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > siobSstartdate1   = 19790101,
+(PID.TID 0000.0001) > siobSstartdate2   = 000000,
+(PID.TID 0000.0001) > siobSperiod       = 3600.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > siobNstartdate1   = 19790101,
+(PID.TID 0000.0001) > siobNstartdate2   = 000000,
+(PID.TID 0000.0001) > siobNperiod       = 3600.0,
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > siobWstartdate1   = 19790101,
+(PID.TID 0000.0001) > siobWstartdate2   = 000000,
+(PID.TID 0000.0001) > siobWperiod       = 3600.0,
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_03
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_04
+(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_OBCS
+(PID.TID 0000.0001) EXF_READPARMS: finished reading data.exf
 (PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.gmredi
 (PID.TID 0000.0001) // =======================================================
@@ -351,30 +496,34 @@
 (PID.TID 0000.0001) // Parameter file "data.seaice"
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) ># SEAICE parameters
-(PID.TID 0000.0001) > &SEAICE_PARM01
-(PID.TID 0000.0001) >      SEAICE_dryIceAlb   = 0.8756,
-(PID.TID 0000.0001) >      SEAICE_wetIceAlb   = 0.7856,
-(PID.TID 0000.0001) >      SEAICE_drySnowAlb  = 0.9656,
-(PID.TID 0000.0001) >      SEAICE_wetSnowAlb  = 0.8256,
-(PID.TID 0000.0001) >      SEAICE_waterAlbedo = 0.2756,
-(PID.TID 0000.0001) >      SEAICE_strength    = 2.6780e+04,
-(PID.TID 0000.0001) >      OCEAN_drag         = 8.1541e-04,
-(PID.TID 0000.0001) >      SEAICE_waterDrag   = 5.3508,
-(PID.TID 0000.0001) >      SEAICEuseDYNAMICS  =.TRUE.,
-(PID.TID 0000.0001) >      LSR_ERROR          = 1.E-12,
-(PID.TID 0000.0001) >      SEAICEadvSnow      = .TRUE.,
-(PID.TID 0000.0001) >      SEAICEadvSalt      = .TRUE.,
-(PID.TID 0000.0001) >      SEAICEuseFlooding  = .TRUE.,
-(PID.TID 0000.0001) >      SEAICE_no_Slip     = .FALSE.,
-(PID.TID 0000.0001) >      SEAICE_salinity    = 0.3,
-(PID.TID 0000.0001) >      ICE2WATR           = 0.92D0,
-(PID.TID 0000.0001) >      SEAICE_gamma_t     = 259200.,
-(PID.TID 0000.0001) >      SEAICE_gamma_t_frz = 10800.,
-(PID.TID 0000.0001) >      SEAICEwriteState   = .TRUE.,
-(PID.TID 0000.0001) >      AreaFile           = 'AREA.seaice_obcs',
-(PID.TID 0000.0001) >      HsnowFile          = 'HSNOW.seaice_obcs',
-(PID.TID 0000.0001) >      HsaltFile          = 'HSALT.seaice_obcs',
-(PID.TID 0000.0001) >      HeffFile           = 'HEFF.seaice_obcs',
+(PID.TID 0000.0001) >&SEAICE_PARM01
+(PID.TID 0000.0001) > SEAICE_dryIceAlb   = 0.8756,
+(PID.TID 0000.0001) > SEAICE_wetIceAlb   = 0.7856,
+(PID.TID 0000.0001) > SEAICE_drySnowAlb  = 0.9656,
+(PID.TID 0000.0001) > SEAICE_wetSnowAlb  = 0.8256,
+(PID.TID 0000.0001) > SEAICE_waterAlbedo = 0.2756,
+(PID.TID 0000.0001) > SEAICE_strength    = 2.6780e+04,
+(PID.TID 0000.0001) > OCEAN_drag         = 8.1541e-04,
+(PID.TID 0000.0001) > SEAICE_waterDrag   = 5.3508,
+(PID.TID 0000.0001) > SEAICEuseDYNAMICS  =.TRUE.,
+(PID.TID 0000.0001) > LSR_ERROR          = 1.E-12,
+(PID.TID 0000.0001) > SEAICEadvSnow      = .TRUE.,
+(PID.TID 0000.0001) > SEAICEadvSalt      = .TRUE.,
+(PID.TID 0000.0001) > SEAICEuseFlooding  = .TRUE.,
+(PID.TID 0000.0001) > SEAICE_no_Slip     = .FALSE.,
+(PID.TID 0000.0001) > SEAICE_salinity    = 0.3,
+(PID.TID 0000.0001) > ICE2WATR           = 0.92D0,
+(PID.TID 0000.0001) > SEAICE_gamma_t     = 259200.,
+(PID.TID 0000.0001) > SEAICE_gamma_t_frz = 10800.,
+(PID.TID 0000.0001) > SEAICEwriteState   = .TRUE.,
+(PID.TID 0000.0001) > AreaFile           = 'AREA.seaice_obcs',
+(PID.TID 0000.0001) > HsnowFile          = 'HSNOW.seaice_obcs',
+(PID.TID 0000.0001) > HsaltFile          = 'HSALT.seaice_obcs',
+(PID.TID 0000.0001) > HeffFile           = 'HEFF.seaice_obcs',
+(PID.TID 0000.0001) ># for backward compatibility only:
+(PID.TID 0000.0001) > SEAICE_cpAir       = 1.0039560439560439e+03,
+(PID.TID 0000.0001) > SEAICE_lhSublim    = 2.8340219780219775e+06,
+(PID.TID 0000.0001) > SEAICE_rhoAir      = 1.3,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  SEAICE_READPARMS: finished reading data.seaice
@@ -566,14 +715,20 @@
 (PID.TID 0000.0001) SEAICE_strength   = /* sea-ice strength Pstar */
 (PID.TID 0000.0001)                 2.678000000000000E+04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_sensHeat   = /* sensible heat transfer */
-(PID.TID 0000.0001)                 2.284000000000000E+00
+(PID.TID 0000.0001) SEAICE_cpAir      = /* heat capacity of air */
+(PID.TID 0000.0001)                 1.003956043956044E+03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_latentWater= /* latent heat transfer for water */
-(PID.TID 0000.0001)                 5.687500000000000E+03
+(PID.TID 0000.0001) SEAICE_dalton     = /* constant dalton number */
+(PID.TID 0000.0001)                 1.750000000000000E-03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_latentIce  = /* latent heat transfer for ice */
-(PID.TID 0000.0001)                 6.447400000000000E+03
+(PID.TID 0000.0001) SEAICE_lhEvap     = /* latent heat of evaporation */
+(PID.TID 0000.0001)                 2.500000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_lhFusion   = /* latent heat of fusion */
+(PID.TID 0000.0001)                 3.340000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_lhSublim   = /* latent heat of sublimation */
+(PID.TID 0000.0001)                 2.834021978021977E+06
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_iceConduct = /* sea-ice conductivity */
 (PID.TID 0000.0001)                 2.165600000000000E+00
@@ -638,6 +793,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Seaice configuration (SEAICE_PARM01) >>> END <<<
 (PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001)  OBCS_READPARMS: opening data.obcs
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.obcs
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.obcs"
@@ -696,6 +852,16 @@
 (PID.TID 0000.0001) > OBWviceFile='OBWvice.seaice_obcs',
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001)  OBCS_READPARMS: finished reading data.obcs
+(PID.TID 0000.0001)  Northern OB global indices : OB_Jnorth =
+(PID.TID 0000.0001)    10 @        8                            /* I =  1: 10 */
+(PID.TID 0000.0001)  Southern OB global indices : OB_Jsouth =
+(PID.TID 0000.0001)    10 @        1                            /* I =  1: 10 */
+(PID.TID 0000.0001)  Eastern  OB global indices : OB_Ieast =
+(PID.TID 0000.0001)     8 @       10                            /* J =  1:  8 */
+(PID.TID 0000.0001)  Western  OB global indices : OB_Iwest =
+(PID.TID 0000.0001)     8 @        1                            /* J =  1:  8 */
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001) SALT_PLUME_READPARMS: opening data.salt_plume
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.salt_plume
 (PID.TID 0000.0001) // =======================================================
@@ -706,157 +872,6 @@
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SALT_PLUME_READPARMS: finished reading data.salt_plume
-(PID.TID 0000.0001) EXF_READPARMS: opening data.exf
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.exf
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.exf"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/results/output.txt,v 1.19 2010/11/08 18:46:36 jmc Exp $
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) ># External Forcing Data
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_01
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > useExfCheckRange  = .TRUE.,
-(PID.TID 0000.0001) > repeatPeriod      = 31622400.0,
-(PID.TID 0000.0001) > exf_iprec         = 32,
-(PID.TID 0000.0001) > exf_yftype        = 'RL',
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_02
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > hfluxstartdate1   = 19781216,
-(PID.TID 0000.0001) > hfluxstartdate2   = 180000,
-(PID.TID 0000.0001) > hfluxperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > sfluxstartdate1   = 19781216,
-(PID.TID 0000.0001) > sfluxstartdate2   = 180000,
-(PID.TID 0000.0001) > sfluxperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > ustressstartdate1 = 19781216,
-(PID.TID 0000.0001) > ustressstartdate2 = 180000,
-(PID.TID 0000.0001) > ustressperiod     = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > vstressstartdate1 = 19781216,
-(PID.TID 0000.0001) > vstressstartdate2 = 180000,
-(PID.TID 0000.0001) > vstressperiod     = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > atempstartdate1   = 19781216,
-(PID.TID 0000.0001) > atempstartdate2   = 180000,
-(PID.TID 0000.0001) > atempperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > aqhstartdate1     = 19781216,
-(PID.TID 0000.0001) > aqhstartdate2     = 180000,
-(PID.TID 0000.0001) > aqhperiod         = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) >#evapstartdate1    = 19781216,
-(PID.TID 0000.0001) >#evapstartdate2    = 180000,
-(PID.TID 0000.0001) >#evapperiod        = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > precipstartdate1  = 19781216,
-(PID.TID 0000.0001) > precipstartdate2  = 180000,
-(PID.TID 0000.0001) > precipperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > uwindstartdate1   = 19781216,
-(PID.TID 0000.0001) > uwindstartdate2   = 180000,
-(PID.TID 0000.0001) > uwindperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > vwindstartdate1   = 19781216,
-(PID.TID 0000.0001) > vwindstartdate2   = 180000,
-(PID.TID 0000.0001) > vwindperiod       = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > swfluxstartdate1  = 19781216,
-(PID.TID 0000.0001) > swfluxstartdate2  = 180000,
-(PID.TID 0000.0001) > swfluxperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > lwfluxstartdate1  = 19781216,
-(PID.TID 0000.0001) > lwfluxstartdate2  = 180000,
-(PID.TID 0000.0001) > lwfluxperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > swdownstartdate1  = 19781216,
-(PID.TID 0000.0001) > swdownstartdate2  = 180000,
-(PID.TID 0000.0001) > swdownperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > lwdownstartdate1  = 19781216,
-(PID.TID 0000.0001) > lwdownstartdate2  = 180000,
-(PID.TID 0000.0001) > lwdownperiod      = 2635200.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > climsststartdate1  = 19781216,
-(PID.TID 0000.0001) > climsststartdate2  = 180000,
-(PID.TID 0000.0001) > climsstperiod      = 2635200.0,
-(PID.TID 0000.0001) > climsstTauRelax    = 0.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > climsssstartdate1  = 19781216,
-(PID.TID 0000.0001) > climsssstartdate2  = 180000,
-(PID.TID 0000.0001) > climsssperiod      = 2635200.0,
-(PID.TID 0000.0001) > climsssTauRelax    = 4142330.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > hfluxfile         = ' ',
-(PID.TID 0000.0001) > sfluxfile         = ' ',
-(PID.TID 0000.0001) > ustressfile       = ' ',
-(PID.TID 0000.0001) > vstressfile       = ' ',
-(PID.TID 0000.0001) > atempfile         = 'tair.seaice_obcs',
-(PID.TID 0000.0001) > aqhfile           = 'qa.seaice_obcs',
-(PID.TID 0000.0001) > uwindfile         = 'u10m.seaice_obcs',
-(PID.TID 0000.0001) > vwindfile         = 'v10m.seaice_obcs',
-(PID.TID 0000.0001) > precipfile        = 'prate.seaice_obcs',
-(PID.TID 0000.0001) > lwfluxfile        = ' ',
-(PID.TID 0000.0001) > swfluxfile        = ' ',
-(PID.TID 0000.0001) > lwdownfile        = 'flo.seaice_obcs',
-(PID.TID 0000.0001) > swdownfile        = 'fsh.seaice_obcs',
-(PID.TID 0000.0001) > runoffFile        = ' '
-(PID.TID 0000.0001) > climsstfile       = ' ',
-(PID.TID 0000.0001) > climsssfile       = 'SSS_monthly.seaice_obcs',
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_03
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_04
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_OBCS
-(PID.TID 0000.0001) > obcsSstartdate1   = 19790101,
-(PID.TID 0000.0001) > obcsSstartdate2   = 000000,
-(PID.TID 0000.0001) > obcsSperiod       = 3600.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > obcsNstartdate1   = 19790101,
-(PID.TID 0000.0001) > obcsNstartdate2   = 000000,
-(PID.TID 0000.0001) > obcsNperiod       = 3600.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > obcsWstartdate1   = 19790101,
-(PID.TID 0000.0001) > obcsWstartdate2   = 000000,
-(PID.TID 0000.0001) > obcsWperiod       = 3600.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > obcsEstartdate1   = 19790101,
-(PID.TID 0000.0001) > obcsEstartdate2   = 000000,
-(PID.TID 0000.0001) > obcsEperiod       = 3600.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > siobSstartdate1   = 19790101,
-(PID.TID 0000.0001) > siobSstartdate2   = 000000,
-(PID.TID 0000.0001) > siobSperiod       = 3600.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > siobNstartdate1   = 19790101,
-(PID.TID 0000.0001) > siobNstartdate2   = 000000,
-(PID.TID 0000.0001) > siobNperiod       = 3600.0,
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > siobWstartdate1   = 19790101,
-(PID.TID 0000.0001) > siobWstartdate2   = 000000,
-(PID.TID 0000.0001) > siobWperiod       = 3600.0,
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_03
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_04
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_OBCS
-(PID.TID 0000.0001) EXF_READPARMS: finished reading data.exf
 (PID.TID 0000.0001) SET_PARMS: done
 (PID.TID 0000.0001) Enter INI_VERTICAL_GRID: setInterFDr=    T ; setCenterDr=    F
 (PID.TID 0000.0001) %MON XC_max                       =   2.9900000000000E+02
@@ -1030,6 +1045,7 @@
 (PID.TID 0000.0001) // END OF FIELD                                          =
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  4  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) // GAD parameters :
@@ -1088,6 +1104,9 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) twoDigitYear = /* use 2-digit year extension */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exf_verbose = /* print more messages to STDOUT */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useExfCheckRange = /* check for fields range */
@@ -1549,6 +1568,9 @@
 (PID.TID 0000.0001) beta =   /* Beta ( 1/(m.s) ) */
 (PID.TID 0000.0001)                 9.999999999999999E-12
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) fPrime =   /* Second coriolis parameter ( 1/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rigidLid =   /* Rigid lid on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -1579,10 +1601,10 @@
 (PID.TID 0000.0001) hFacMinDr = /* minimum partial cell thickness ( m) */
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nonlinFreeSurf =  /* Non-linear Free Surf. options (-1,0,1,2,3)*/
+(PID.TID 0000.0001) nonlinFreeSurf = /* Non-linear Free Surf. options (-1,0,1,2,3)*/
 (PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)      -1,0= Off ; 1,2,3= On, 2=+rescale gU,gV, 3=+update cg2d solv.
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacInf =   /* lower threshold for hFac (nonlinFreeSurf only)*/
 (PID.TID 0000.0001)                 2.000000000000000E-01
 (PID.TID 0000.0001)     ;
@@ -1655,14 +1677,9 @@
 (PID.TID 0000.0001) useNHMTerms = /* Non-Hydrostatic Metric-Terms on/off */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useConstantF =  /* use Constant f0 Coriolis flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useBetaPlaneF = /* use Beta-Plane Coriolis flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useSphereF  =   /* use Spherical Coriolis flag */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001) selectCoriMap = /* Coriolis Map options (0,1,2,3)*/
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     0= f-Plane ; 1= Beta-Plane ; 2= Spherical ; 3= read from file
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) use3dCoriolis = /* 3-D Coriolis on/off flag */
 (PID.TID 0000.0001)                   F
@@ -1834,25 +1851,28 @@
 (PID.TID 0000.0001) pickupStrictlyMatch= /* stop if pickup do not strictly match */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nIter0 =   /* Run starting timestep number  */
+(PID.TID 0000.0001) nIter0   =   /* Run starting timestep number */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nTimeSteps =   /* Number of timesteps */
+(PID.TID 0000.0001) nTimeSteps = /* Number of timesteps */
 (PID.TID 0000.0001)                       6
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) baseTime =   /* Model base time ( s ). */
+(PID.TID 0000.0001) nEndIter =   /* Run ending timestep number */
+(PID.TID 0000.0001)                       6
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) baseTime =   /* Model base time ( s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) startTime =   /* Run start time ( s ). */
+(PID.TID 0000.0001) startTime =  /* Run start time ( s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) endTime =   /* Integration ending time ( s ). */
+(PID.TID 0000.0001) endTime  =   /* Integration ending time ( s ) */
 (PID.TID 0000.0001)                 2.160000000000000E+04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) pChkPtFreq =   /* Permanent restart/checkpoint file interval ( s ). */
+(PID.TID 0000.0001) pChkPtFreq = /* Permanent restart/pickup file interval ( s ) */
 (PID.TID 0000.0001)                 3.600000000000000E+06
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) chkPtFreq =   /* Rolling restart/checkpoint file interval ( s ). */
+(PID.TID 0000.0001) chkPtFreq  = /* Rolling restart/pickup file interval ( s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) pickup_write_mdsio =   /* Model IO flag. */
@@ -2237,7 +2257,6 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == Packages configuration : Check & print summary ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) KPP_CHECK: #define ALLOW_KPP
 (PID.TID 0000.0001) GMREDI_CHECK: #define GMREDI
 (PID.TID 0000.0001) GM_AdvForm =     /* if FALSE => use SkewFlux Form */
@@ -2289,9 +2308,19 @@
 (PID.TID 0000.0001)                 5.000000000000000E+02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) OBCS_CHECK: #define ALLOW_OBCS
+(PID.TID 0000.0001) ======== Tile bi=   1 , bj=   1 ========
+(PID.TID 0000.0001)  OB_Jn = /* Northern OB local indices */
+(PID.TID 0000.0001)    18 @        8                            /* I = -3: 14 */
+(PID.TID 0000.0001)  OB_Js = /* Southern OB local indices */
+(PID.TID 0000.0001)    18 @        1                            /* I = -3: 14 */
+(PID.TID 0000.0001)  OB_Ie = /* Eastern OB local indices */
+(PID.TID 0000.0001)    16 @       10                            /* J = -3: 12 */
+(PID.TID 0000.0001)  OB_Iw = /* Western OB local indices */
+(PID.TID 0000.0001)    16 @        1                            /* J = -3: 12 */
 (PID.TID 0000.0001) OBCS_CHECK: OK
 (PID.TID 0000.0001) SEAICE_CHECK: #define ALLOW_SEAICE
 (PID.TID 0000.0001) SALT_PLUME_CHECK: #define SALT_PLUME
+(PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // CONFIG_CHECK : Normal End
 (PID.TID 0000.0001) // =======================================================
@@ -2686,7 +2715,7 @@
  cg2d: Sum(rhs),rhsMax =   6.82544426766332E-01  3.88838732674361E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.88492888720239E+00
 (PID.TID 0000.0001)                       cg2d_iters =    25
-(PID.TID 0000.0001)                         cg2d_res =    4.38907721637117E-13
+(PID.TID 0000.0001)                         cg2d_res =    4.38907725642834E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2963,9 +2992,9 @@
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWuice.seaice_obcs
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWvice.seaice_obcs
  cg2d: Sum(rhs),rhsMax =   1.27414031028547E+00  4.31673807889609E-01
-(PID.TID 0000.0001)                    cg2d_init_res =    5.38525803892464E-01
+(PID.TID 0000.0001)                    cg2d_init_res =    5.38525803892463E-01
 (PID.TID 0000.0001)                       cg2d_iters =    24
-(PID.TID 0000.0001)                         cg2d_res =    6.75960422536397E-13
+(PID.TID 0000.0001)                         cg2d_res =    6.75961232183520E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2975,7 +3004,7 @@
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.5356140161398E-01
 (PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.1094628664719E-02
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   6.8186040843094E-02
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   5.3578182715801E-03
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   5.3578182715800E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   7.1070267716092E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -4.6443480290525E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -1.2298811912837E-03
@@ -3050,7 +3079,7 @@
 (PID.TID 0000.0001) %MON vort_a_sd                    =   5.2648786376747E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7066550672587E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1053621183263E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -6.5857570677347E-06
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -6.5857570677348E-06
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -1.1010168544621E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -3241,10 +3270,10 @@
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWsn.seaice_obcs
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWuice.seaice_obcs
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWvice.seaice_obcs
- cg2d: Sum(rhs),rhsMax =   1.90424799912441E+00  4.10359371345922E-01
+ cg2d: Sum(rhs),rhsMax =   1.90424799912441E+00  4.10359371345923E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.72273325276252E-01
 (PID.TID 0000.0001)                       cg2d_iters =    24
-(PID.TID 0000.0001)                         cg2d_res =    3.47343875659795E-13
+(PID.TID 0000.0001)                         cg2d_res =    3.47343833286037E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3329,7 +3358,7 @@
 (PID.TID 0000.0001) %MON vort_a_sd                    =   5.2664085535451E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7066507250067E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1053529749035E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -8.8767166106806E-07
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -8.8767166106808E-07
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -8.7953778713692E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -3523,7 +3552,7 @@
  cg2d: Sum(rhs),rhsMax =   2.47435443131771E+00  3.86672012528876E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.73533271891910E-01
 (PID.TID 0000.0001)                       cg2d_iters =    24
-(PID.TID 0000.0001)                         cg2d_res =    4.40459617377218E-13
+(PID.TID 0000.0001)                         cg2d_res =    4.40459602490321E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3622,7 +3651,7 @@
 (PID.TID 0000.0001) %MON seaice_uice_min              =  -8.9974108651311E-02
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.8664909239451E-02
 (PID.TID 0000.0001) %MON seaice_uice_sd               =   7.0266211355210E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   6.7456564031751E-03
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   6.7456564031750E-03
 (PID.TID 0000.0001) %MON seaice_vice_max              =   5.0255311781076E-02
 (PID.TID 0000.0001) %MON seaice_vice_min              =  -1.6362505738768E-01
 (PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.2881236405797E-02
@@ -3802,7 +3831,7 @@
  cg2d: Sum(rhs),rhsMax =   2.84171968807683E+00  3.81312678269443E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.47360301077591E-01
 (PID.TID 0000.0001)                       cg2d_iters =    24
-(PID.TID 0000.0001)                         cg2d_res =    3.37272347379251E-13
+(PID.TID 0000.0001)                         cg2d_res =    3.37272438555427E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3819,10 +3848,10 @@
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   5.9716163924320E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   8.5898087754623E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   3.7323501167822E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -8.7622668119705E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -8.7622668119711E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.2174265998907E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   7.6233254951301E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   8.9404522662683E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   7.6233254951302E-03
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   8.9404522662684E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.7486061086989E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -3.5193175691975E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4546679027379E-06
@@ -3870,13 +3899,13 @@
 (PID.TID 0000.0001) %MON forcing_fu_del2              =   2.9638949270518E-03
 (PID.TID 0000.0001) %MON forcing_fv_max               =   4.8786685543180E-03
 (PID.TID 0000.0001) %MON forcing_fv_min               =  -5.9240331454082E-02
-(PID.TID 0000.0001) %MON forcing_fv_mean              =  -2.7355111395500E-02
+(PID.TID 0000.0001) %MON forcing_fv_mean              =  -2.7355111395499E-02
 (PID.TID 0000.0001) %MON forcing_fv_sd                =   1.7995000205083E-02
 (PID.TID 0000.0001) %MON forcing_fv_del2              =   2.2471185896095E-03
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   2.2643662917223E-03
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.8873130926841E-03
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.3111216386957E-03
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   3.9160668291042E-03
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   3.9160668291044E-03
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.7654801008466E-05
 (PID.TID 0000.0001) %MON ke_max                       =   6.8216126324051E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   4.8780513632621E-05
@@ -4079,9 +4108,9 @@
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWuice.seaice_obcs
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: OBWvice.seaice_obcs
  cg2d: Sum(rhs),rhsMax =   3.08667054037041E+00  3.79922898949935E-01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.05344827864728E-01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.05344827864723E-01
 (PID.TID 0000.0001)                       cg2d_iters =    23
-(PID.TID 0000.0001)                         cg2d_res =    7.34008628289014E-13
+(PID.TID 0000.0001)                         cg2d_res =    7.34008635310527E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4096,9 +4125,9 @@
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -3.6383036655254E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =   4.5682353514500E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   6.0786679218093E-03
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   8.6946328500651E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   8.6946328500650E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   4.0919574915871E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -9.4261700973971E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -9.4261700973978E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.3296885862900E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   7.8178050540904E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   9.0451397315782E-04
@@ -4106,7 +4135,7 @@
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -3.4528336389530E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.0630295404518E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0332619623123E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   5.9662965168291E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   5.9662965168290E-07
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   4.1448005348577E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.9998766564081E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.1233574546527E+00
@@ -4148,14 +4177,14 @@
 (PID.TID 0000.0001) %MON forcing_fu_sd                =   2.8719363603690E-02
 (PID.TID 0000.0001) %MON forcing_fu_del2              =   2.9986225133668E-03
 (PID.TID 0000.0001) %MON forcing_fv_max               =   4.8759291939421E-03
-(PID.TID 0000.0001) %MON forcing_fv_min               =  -5.9342871247948E-02
+(PID.TID 0000.0001) %MON forcing_fv_min               =  -5.9342871247949E-02
 (PID.TID 0000.0001) %MON forcing_fv_mean              =  -2.7475799747282E-02
 (PID.TID 0000.0001) %MON forcing_fv_sd                =   1.8047028024442E-02
 (PID.TID 0000.0001) %MON forcing_fv_del2              =   2.2799527874363E-03
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   2.3407641987981E-03
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.9350530434879E-03
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   4.6658370712000E-03
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   2.8024252661706E-03
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   2.8024252661708E-03
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.7756400750271E-05
 (PID.TID 0000.0001) %MON ke_max                       =   7.2506042760997E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   5.0946790706604E-05
@@ -4182,10 +4211,10 @@
 (PID.TID 0000.0001) %MON seaice_uice_sd               =   7.2131242941760E-02
 (PID.TID 0000.0001) %MON seaice_uice_del2             =   6.6809242683241E-03
 (PID.TID 0000.0001) %MON seaice_vice_max              =   5.7569801434096E-02
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.6906094590223E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.4605389930624E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.3762739381422E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   5.5951886682561E-03
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.6906094590224E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.4605389930625E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.3762739381423E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   5.5951886682562E-03
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   6.6555326011793E-01
 (PID.TID 0000.0001) %MON seaice_area_mean             =   9.5227985847194E-01
@@ -4211,135 +4240,135 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT         6 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.68000000000000005
+(PID.TID 0000.0001)           User time:  0.71999999999999997
 (PID.TID 0000.0001)         System time:  4.00000000000000008E-002
-(PID.TID 0000.0001)     Wall clock time:   1.1749470233917236
+(PID.TID 0000.0001)     Wall clock time:   1.6002230644226074
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  8.99999999999999967E-002
-(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:  0.35075497627258301
+(PID.TID 0000.0001)           User time:  0.10000000000000001
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  0.32739186286926270
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.59000000000000008
-(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:  0.82411313056945801
+(PID.TID 0000.0001)           User time:  0.62000000000000000
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   1.2727761268615723
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  2.99999999999999989E-002
-(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
-(PID.TID 0000.0001)     Wall clock time:  0.13454008102416992
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  0.29885983467102051
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.56000000000000005
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:  0.68952298164367676
+(PID.TID 0000.0001)           User time:  0.58999999999999997
+(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
+(PID.TID 0000.0001)     Wall clock time:  0.97387003898620605
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.56000000000000016
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:  0.68944406509399414
+(PID.TID 0000.0001)           User time:  0.58999999999999997
+(PID.TID 0000.0001)         System time:  1.99999999999999969E-002
+(PID.TID 0000.0001)     Wall clock time:  0.97379374504089355
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.54020786285400391E-002
+(PID.TID 0000.0001)     Wall clock time:  3.94167900085449219E-002
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.52714252471923828E-002
+(PID.TID 0000.0001)     Wall clock time:  3.92823219299316406E-002
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.91413879394531250E-005
+(PID.TID 0000.0001)     Wall clock time:  7.31945037841796875E-005
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.21000000000000008
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:  0.22673487663269043
+(PID.TID 0000.0001)           User time:  0.27000000000000002
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  0.31185317039489746
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
 (PID.TID 0000.0001)           User time:  7.00000000000000622E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.26287555694580078E-002
+(PID.TID 0000.0001)     Wall clock time:  7.66079425811767578E-002
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
 (PID.TID 0000.0001)           User time:  6.00000000000000533E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.38792705535888672E-002
+(PID.TID 0000.0001)     Wall clock time:  6.30729198455810547E-002
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.12000000000000000
+(PID.TID 0000.0001)           User time:  0.12000000000000011
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.12356495857238770
+(PID.TID 0000.0001)     Wall clock time:  0.12574076652526855
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10000000000000009
+(PID.TID 0000.0001)           User time:  9.99999999999998668E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.11331129074096680
+(PID.TID 0000.0001)     Wall clock time:  0.11308073997497559
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.87107849121093750E-003
+(PID.TID 0000.0001)     Wall clock time:  8.96930694580078125E-003
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.64281845092773438E-003
+(PID.TID 0000.0001)     Wall clock time:  6.66642189025878906E-003
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.42268562316894531E-003
+(PID.TID 0000.0001)     Wall clock time:  7.43198394775390625E-003
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.11999999999999988
+(PID.TID 0000.0001)           User time:  0.14999999999999991
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.15739226341247559
+(PID.TID 0000.0001)     Wall clock time:  0.15549087524414063
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.83820724487304688E-003
+(PID.TID 0000.0001)     Wall clock time:  1.85298919677734375E-003
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.99999999999999423E-002
+(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.04629898071289063E-002
+(PID.TID 0000.0001)     Wall clock time:  2.06544399261474609E-002
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.12407970428466797
+(PID.TID 0000.0001)     Wall clock time:  0.24771809577941895
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.33096694946289063E-003
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
+(PID.TID 0000.0001)     Wall clock time:  5.96919059753417969E-002
 (PID.TID 0000.0001)          No. starts:           6
 (PID.TID 0000.0001)           No. stops:           6
 (PID.TID 0000.0001) // ======================================================
@@ -4362,3 +4391,4 @@
 (PID.TID 0000.0001) //      Min. barrier spins =              1
 (PID.TID 0000.0001) //     Total barrier spins =           6586
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
+PROGRAM MAIN: Execution ended Normally
