@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.109 2010/12/16 08:32:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.110 2011/02/09 12:27:14 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -191,6 +191,15 @@ C temporary variables available for the various computations
       PARAMETER ( nDim = 1 )
 #endif /* SEAICE_MULTICATEGORY */
 
+#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
+C     Mixed Layer factor (dimensionless)
+      _RL mlTurbFac
+c     Stanton number (dimensionless)
+      _RL STANTON_NUMBER
+c     Friction velocity (m/s)
+      _RL USTAR_BASE
+#endif
+
 #ifdef ALLOW_DIAGNOSTICS
       _RL DIAGarray     (1:sNx,1:sNy)
 #endif
@@ -231,6 +240,11 @@ C conversion factors to go from Q (W/m2) to HEFF (ice meters)
 C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
       convertPRECIP2HI=SEAICE_deltaTtherm*rhoConstFresh/SEAICE_rhoIce
       convertHI2PRECIP=1./convertPRECIP2HI
+
+#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
+      STANTON_NUMBER = 0.0056 _d 0 
+      USTAR_BASE = 0.0125 _d 0
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -703,24 +717,36 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          IF ( .NOT. inAdMode ) THEN
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
            TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
+
+#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
+#  ifdef MCPHEE_STEP_FUNCTION
+           mlTurbFac = 12.5 _d 0
+           IF (AREApreTH(I,J) .GT. 0. _d 0) mlTurbFac = 1. _d 0
+#  else 
+           mlTurbFac = 12.5 _d 0 - 11.5 _d 0 *AREApreTH(I,J)
+#  endif /* GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR */
            IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
-              a_QbyOCN(i,j) = -SEAICE_availHeatFrac
-     &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * hFacC(i,j,kSurface,bi,bj) *
-     &             (HeatCapacity_Cp*rhoConst/QI)
+             tmpscal1 = STANTON_NUMBER * USTAR_BASE * mlTurbFac
            ELSE
-              a_QbyOCN(i,j) = -SEAICE_availHeatFracFrz
-     &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * hFacC(i,j,kSurface,bi,bj) *
-     &             (HeatCapacity_Cp*rhoConst/QI)
+             tmpscal1 = 0. _d 0
            ENDIF
-          ELSE
-           a_QbyOCN(i,j) = 0.
-          ENDIF
+           tmpscal1 = tmpscal1 
+     &              * SEAICE_deltaTtherm * hFacC(i,j,kSurface,bi,bj)
+#else /* MCPHEE_OCEAN_ICE_HEAT_FLUX */ 
+           IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
+             tmpscal1 = SEAICE_availHeatFrac
+           ELSE
+             tmpscal1 = SEAICE_availHeatFracFrz
+           ENDIF
+           tmpscal1 = tmpscal1 
+     &              * dRf(kSurface) * hFacC(i,j,kSurface,bi,bj)
+#endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */ 
+
+           a_QbyOCN(i,j) = -tmpscal1 * (HeatCapacity_Cp*rhoConst/QI)
+     &                   * (theta(I,J,kSurface,bi,bj)-TBC)
            r_QbyOCN(i,j) = a_QbyOCN(i,j)
          ENDDO
         ENDDO
