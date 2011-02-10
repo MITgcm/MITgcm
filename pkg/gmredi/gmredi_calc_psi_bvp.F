@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.1 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.2 2011/02/10 23:22:28 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -24,12 +24,10 @@ C     !USES:
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "GMREDI.h"
-#include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     bi,bj   :: Tile indices
@@ -52,6 +50,7 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER i,j,k, km1
       INTEGER errCode
+      _RL half_K
       _RL sigmaX_W
       _RL sigmaY_W
       _RL dSigmaDrW
@@ -97,6 +96,8 @@ C      Surface BC : set to zero
 
        DO k=2,Nr
         km1 = k-1
+        half_K = GM_background_K
+     &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
 C      Gradient of Sigma below U and V points
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
@@ -113,7 +114,8 @@ C      Part of main diagonal coming from zeroth order derivative
           GM_b3d(i,j,k) = MAX( -dSigmaDrW, GM_Small_Number )
 
 C      This is initially the RHS
-          GM_PsiX(i,j,k,bi,bj) = GM_background_K*sigmaX_W
+          GM_PsiX(i,j,k,bi,bj) = half_K*sigmaX_W
+     &       *(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -136,11 +138,14 @@ C-     at Bottom and below, use identity matrix
             GM_c3d(i,j,k) = 0. _d 0
           ELSE
             c2 = MAX( wkb_cW(i,j)*wkb_cW(i,j), GM_BVP_cHat2Min )
-            GM_a3d(i,j,k) = -c2*recip_drC(k)*recip_drF(km1)
+            GM_a3d(i,j,k) = -c2*recip_drC(k)
+     &                      *recip_drF(km1)*recip_hFacW(i,j,km1,bi,bj)
             GM_b3d(i,j,k) = GM_b3d(i,j,k)
-     &                    + c2*recip_drC(k)*(recip_drF(km1)
-     &                                      +recip_drF(k))
-            GM_c3d(i,j,k) = -c2*recip_drC(k)*recip_drF(k)
+     &                    + c2*recip_drC(k)
+     &                     *(recip_drF(km1)*recip_hFacW(i,j,km1,bi,bj)
+     &                      +recip_drF(k)*recip_hFacW(i,j,k,bi,bj) )
+            GM_c3d(i,j,k) = -c2*recip_drC(k)
+     &                      *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -162,6 +167,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        DO k=2,Nr
         km1 = k-1
+        half_K = GM_background_K
+     &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx,sNx+Olx
           sigmaY_W = op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
@@ -177,7 +184,8 @@ C      Part of main diagonal coming from zeroth order derivative
           GM_b3d(i,j,k) = MAX( -dSigmaDrS, GM_Small_Number )
 
 C      This is initially the RHS
-          GM_PsiY(i,j,k,bi,bj) = GM_background_K*sigmaY_W
+          GM_PsiY(i,j,k,bi,bj) = half_K*sigmaY_W
+     &       *(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -193,11 +201,14 @@ C-     at Bottom and below, use identity matrix
             GM_c3d(i,j,k) = 0. _d 0
           ELSE
             c2 = MAX( wkb_cS(i,j)*wkb_cS(i,j), GM_BVP_cHat2Min )
-            GM_a3d(i,j,k) = -c2*recip_drC(k)*recip_drF(km1)
+            GM_a3d(i,j,k) = -c2*recip_drC(k)
+     &                      *recip_drF(km1)*recip_hFacS(i,j,km1,bi,bj)
             GM_b3d(i,j,k) = GM_b3d(i,j,k)
-     &                    + c2*recip_drC(k)*(recip_drF(km1)
-     &                                      +recip_drF(k))
-            GM_c3d(i,j,k) = -c2*recip_drC(k)*recip_drF(k)
+     &                    + c2*recip_drC(k)
+     &                     *(recip_drF(km1)*recip_hFacS(i,j,km1,bi,bj)
+     &                      +recip_drF(k)*recip_hFacS(i,j,k,bi,bj) )
+            GM_c3d(i,j,k) = -c2*recip_drC(k)
+     &                      *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
           ENDIF
          ENDDO
         ENDDO
