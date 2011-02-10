@@ -11,21 +11,21 @@
  no_slip_bottom=.FALSE.,
  diffKrT=3.E-5,
  diffKrS=3.E-5,
+ diffKhT=0.E3,
+ diffKhS=0.E3,
  beta=0.E-11,
  f0  =1.E-4,
+ gravity=9.81,
+ eosType='LINEAR',
  tAlpha=2.E-4,
  sBeta =0.E-4,
- gravity=9.81,
  rhoConst=1000.,
  rhoNil=1000.,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
- diffKhT=0.E3,
- diffKhS=0.E3,
+ implicitDiffusion=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- implicitDiffusion=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -36,7 +36,7 @@
 
 # Time stepping parameters
  &PARM03
- startTime=0,
+ startTime=0.,
  nTimeSteps=20,
  deltaT=1800.,
  cAdjFreq=-1.,
