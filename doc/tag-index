@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1375 2011/02/09 12:38:57 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1376 2011/02/10 12:09:57 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - for SEAICE_DO_OPEN_WATER_GROWTH, replace Gael's implementation with Ian's.
+ - the new SEAICE_DO_OPEN_WATER_MELT allows open-water air-sea heat fluxes to also melt ice.
 o pkg/seaice: 
  - McPhee formula for Ice-Ocean fluxes (provided by Ian Fenty).
  - can be used by #define MCPHEE_OCEAN_ICE_HEAT_FLUX in SEAICE_OPTIONS.h
