@@ -1,0 +1,81 @@
+# Diagnostic Package Choices
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
+# diag_mnc     = .FALSE.,
+  fields(1:8 ,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
+                   'MXLDEPTH','GM_BVPcW','GM_BVPcS',
+#                  'GM_hTrsL','GM_baseS','GM_rLamb',
+#                  'GM_VisbK',
+   levels(1,1) = 1.,
+   fileName(1) = 'surfDiag',
+  frequency(1) = -86400.,
+  timePhase(1) = 0.,
+
+  fields(1:7,2)  = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
+                   'THETA   ','THETASQ ','UVELSQ  ',
+# do not specify levels => all levels are selected
+#  fileName(2) = 'dynDiag',
+  frequency(2) = -864000.,
+  timePhase(2) = 0.,
+
+  fields(1:8,3)  = 'DRHODR  ','RHOAnoma',
+                   'GM_Kwy  ','GM_Kwz  ','GM_Kvy  ',
+                   'THETA   ',
+                   'GM_PsiY ','GM_Kvz  ',
+   fileName(3) = 'oceDiag',
+  frequency(3) = -86400.,
+  timePhase(3) = 0.,
+
+  fields(1:5,4)  = 'ADVy_TH ','ADVr_TH ',
+                   'DFyE_TH ','DFrE_TH ',
+                   'DFrI_TH ',
+#                  'ADVx_SLT',
+#  fileName(4) = 'flxDiag',
+  frequency(4) = 1728000.,
+ &
+
+#--------------------
+# Parameter for Diagnostics of per level statistics:
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
+ &DIAG_STATIS_PARMS
+ stat_fields(1:11,1) = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+                       'MXLDEPTH',
+                       'GM_Kwy  ','GM_Kwz  ','GM_Kvy  ',
+                       'GM_PsiY ','GM_Kvz  ',
+#                      'GM_Kvz  ',
+#                      'GM_hTrsL','GM_baseS','GM_rLamb',
+  stat_fName(1) = 'dynStDiag',
+   stat_freq(1) = 18000.,
+# stat_phase(1) = 0.,
+ &

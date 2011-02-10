@@ -1,0 +1,13 @@
+# GM-Redi parameters
+ &GM_PARM01
+ GM_AdvForm=.TRUE.,
+ GM_useBVP = .TRUE.,
+#GM_BVP_modeNumber=5,
+ GM_background_K=1000.,
+ GM_taper_scheme='linear',
+ GM_maxSlope    =1.E-02,
+ GM_facTrL2dz   = 0.,
+#GM_facTrL2ML   = 5.,
+#GM_maxTransLay = 500.,
+ &
+
