@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.110 2011/02/09 12:27:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.111 2011/02/10 12:01:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -125,6 +125,7 @@ C ICE/SNOW stocks tendencies associated with the various melt/freeze processes
       _RL d_HEFFbyFLOODING    (1:sNx,1:sNy)
 
       _RL d_HEFFbyATMonOCN_open(1:sNx,1:sNy)
+      _RL d_HEFFbyATMonOCN_cover(1:sNx,1:sNy)
 
       _RL d_HSNWbyNEG         (1:sNx,1:sNy)
       _RL d_HSNWbyATMonSNW    (1:sNx,1:sNy)
@@ -286,6 +287,7 @@ C =====================
           d_HEFFbyFLOODING(I,J)      = 0.0 _d 0
 
           d_HEFFbyATMonOCN_open(I,J) = 0.0 _d 0
+          d_HEFFbyATMonOCN_cover(I,J) = 0.0 _d 0
 
           d_HSNWbyATMonSNW(I,J)      = 0.0 _d 0
           d_HSNWbyOCNonSNW(I,J)      = 0.0 _d 0
@@ -872,7 +874,14 @@ Cgf warming conditions, the lab_sea results were not changed.
 
         DO J=1,sNy
          DO I=1,sNx
+#ifdef SEAICE_GROWTH_LEGACY
           tmpscal2 = MAX(-HEFF(I,J,bi,bj),r_QbyATM_cover(I,J))
+#else
+          tmpscal2 = MAX(-HEFF(I,J,bi,bj),r_QbyATM_cover(I,J)+
+c         Limit ice growth by potential melt by ocean 
+     &        AREApreTH(I,J) * r_QbyOCN(I,J))
+#endif
+          d_HEFFbyATMonOCN_cover(I,J)=tmpscal2
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal2
           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)-tmpscal2
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
@@ -960,27 +969,23 @@ C ===============================
 CADJ STORE heff(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE a_QSWbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-          if ( (r_QbyATM_open(I,J).GT.0. _d 0).AND.
-     &         (HEFF(I,J,bi,bj).GT.0. _d 0) ) then
-            tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j)
-C at this point r_QbyOCN(i,j)<=0 and represents the heat
-C that is still needed to get to the first layer to freezing point
-            tmpscal2=SWFRACB*(a_QSWbyATM_cover(I,J)
-     &                       +a_QSWbyATM_open(I,J))
-C SWFRACB*tmpscal2<=0 is the heat (out of qnet) that is not
-C going to the first layer, which favors its freezing
-            tmpscal3=MAX(0. _d 0, tmpscal1-tmpscal2)
-          else
-            tmpscal3=0. _d 0
-          endif
+c           Initial ice growth is triggered by open water 
+c           heat flux overcoming potential melt by ocean
+            tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j) * 
+     &            (1.0 _d 0 - AREApreTH(i,J))
+c           Penetrative shortwave flux beyond first layer
+            tmpscal2=SWFRACB * a_QSWbyATM_open(I,J)
+#ifdef SEAICE_DO_OPEN_WATER_MELT
+C           allow not only growth but also melt by open ocean heat flux
+            tmpscal3=MAX(tmpscal1-tmpscal2, -HEFF(I,J,bi,bj))
+#else
+            tmpscal3=MAX(tmpscal1-tmpscal2, 0. _d 0)
+#endif /* SEAICE_DO_OPEN_WATER_MELT */
           d_HEFFbyATMonOCN_open(I,J)=tmpscal3
-C The distinct d_HEFFbyATMonOCN_open array is only needed for d_AREA computation.
-C For the rest it is treated as another contribution to d_HEFFbyATMonOCN.
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal3
           r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal3
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3
@@ -1024,6 +1029,7 @@ C ===================================================================
 CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN_open=comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN_cover=comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE a_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE heffActual = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
