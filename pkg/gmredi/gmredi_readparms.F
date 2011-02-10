@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.20 2011/01/11 00:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.21 2011/02/10 21:24:19 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -60,7 +60,8 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
      &          GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &          GM_Scrit, GM_Sd,
-     &          GM_MNC
+     &          GM_MNC,
+     &          GM_UseBVP,GM_BVP_cMin,GM_BVP_ModeNumber
 
       _BEGIN_MASTER(myThid)
 
@@ -98,6 +99,12 @@ C--   Default values Visbeck
       GM_Visbeck_maxSlope = UNSET_RL
       GM_Visbeck_minVal_K =    0. _d 0
       GM_Visbeck_maxVal_K = 2500. _d 0
+
+C--   Default values BVP
+      GM_UseBVP           = .FALSE.
+      GM_BVP_ModeNumber   = 1
+      GM_BVP_cMin         = 1. _d -1
+
 
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -138,6 +145,11 @@ C     Some constants
       IF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
      &     GM_iso1dFile .NE. GM_bol1dFile ) THEN
         GM_ExtraDiag = .TRUE.
+      ENDIF
+
+      IF (GM_UseBVP) THEN
+        GM_BVP_rModeNumber = 1. _d 0/DBLE(GM_BVP_ModeNumber)
+        GM_BVP_cHat2Min = GM_BVP_cMin**2*rhoConst/gravity
       ENDIF
 
 C     Make sure that we locally honor the global MNC on/off flag

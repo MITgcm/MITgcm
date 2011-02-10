@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.7 2010/01/12 21:34:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.8 2011/02/10 21:24:19 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -197,6 +197,24 @@ c     IF ( useDiagnotics ) THEN
         diagTitle = 'eddy-induced stress Y-comp. estimated from Kwy'
         diagUnits = 'N/m^2           '
         diagCode  = 'VM      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
+
+#ifdef GM_BOLUS_BVP
+        diagName  = 'GM_BVPcW'
+        diagTitle = 'WKB wave speed (at Western edge location)'
+        diagUnits = 'm/s             '
+        diagCode  = 'SU P    M1      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+        diagName  = 'GM_BVPcS'
+        diagTitle = 'WKB wave speed (at Southern edge location)'
+        diagUnits = 'm/s             '
+        diagCode  = 'SV P    M1      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )

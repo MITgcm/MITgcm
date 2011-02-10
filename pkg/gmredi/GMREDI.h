@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.17 2011/01/11 00:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.18 2011/02/10 21:24:19 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -14,20 +14,28 @@ C--   Numerical Constant
 C--   COMMON /GM_PARAMS_L/ GM/Redi Logical-type parameters
 C     GM_AdvForm       :: use Advective Form (instead of Skew-Flux form)
 C     GM_AdvSeparate   :: do separately advection by Eulerian and Bolus velocity
+C     GM_useBVP        :: use Boundary-Value-Problem method for Bolus transport
 C     GM_ExtraDiag     :: select extra diagnostics
 C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
 C     GM_MDSIO         ::
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
+      LOGICAL GM_useBVP
       LOGICAL GM_ExtraDiag
       LOGICAL GM_InMomAsStress
       LOGICAL GM_MNC
       LOGICAL GM_MDSIO
       COMMON /GM_PARAMS_L/
-     &                   GM_AdvForm, GM_AdvSeparate,
+     &                   GM_AdvForm, GM_AdvSeparate, GM_useBVP,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress
+
+C--   GM/Redi Integer-type parameters
+C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
+      INTEGER GM_BVP_modeNumber
+      COMMON /GM_PARAMS_I/
+     &                   GM_BVP_modeNumber
 
 C--   COMMON /GM_PARAMS_C/ GM/Redi Character-type parameters
 C     GM_taper_scheme :: select which tapering/clipping scheme to use
@@ -56,6 +64,7 @@ C-    transition layer thickness definition:
 C     GM_facTrL2dz   :: minimum Trans. Layer Thick. as a factor of local dz
 C     GM_facTrL2ML   :: maximum Trans. Layer Thick. as a factor of Mix-Layer Depth
 C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
+C     GM_BVP_cMin    :: minimum value for wave speed parameter "c" in BVP [m/s]
       _RL GM_isopycK
       _RL GM_background_K
       _RL GM_maxSlope
@@ -74,6 +83,7 @@ C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
       _RL GM_maxTransLay
       _RL GM_Scrit
       _RL GM_Sd
+      _RL GM_BVP_cMin
       COMMON /GM_PARAMS_R/
      &                   GM_isopycK, GM_background_K,
      &                   GM_maxSlope,
@@ -84,16 +94,20 @@ C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
      &                   GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                   GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
-     &                   GM_Scrit, GM_Sd
+     &                   GM_Scrit, GM_Sd, GM_BVP_cMin
 
 C--   COMMON /GM_DERIVED_PAR/ other GM/Redi parameters
 C     (derived from previous block and not directly user configured)
       _RL GM_rMaxSlope
       _RL GM_skewflx
       _RL GM_advect
+      _RL GM_BVP_rModeNumber
+      _RL GM_BVP_cHat2Min
       COMMON /GM_DERIVED_PAR/
      &                   GM_rMaxSlope,
-     &                   GM_skewflx, GM_advect
+     &                   GM_skewflx, GM_advect,
+     &                   GM_BVP_rModeNumber, GM_BVP_cHat2Min
+
 
 C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients
 C     defined at grid-cell center (tracer location)

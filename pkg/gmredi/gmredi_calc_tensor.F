@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.38 2011/01/12 16:02:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.39 2011/02/10 21:24:19 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -917,11 +917,22 @@ C-- end 3rd  loop on vertical level index k
 
 #ifdef GM_BOLUS_ADVEC
       IF (GM_AdvForm) THEN
-       CALL GMREDI_CALC_PSI_B(
+#ifdef GM_BOLUS_BVP
+       IF (GM_UseBVP) THEN
+        CALL GMREDI_CALC_PSI_BVP(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
-     I             ldd97_LrhoW, ldd97_LrhoS,
      I             myThid )
+       ELSE
+#endif
+        CALL GMREDI_CALC_PSI_B(
+     I              bi, bj, iMin, iMax, jMin, jMax,
+     I              sigmaX, sigmaY, sigmaR,
+     I              ldd97_LrhoW, ldd97_LrhoS,
+     I              myThid )
+#ifdef GM_BOLUS_BVP
+       ENDIF
+#endif
       ENDIF
 #endif
 
