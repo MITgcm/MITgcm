@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SIZE.h_mpi,v 1.5 2009/05/28 23:19:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SIZE.h_mpi,v 1.6 2011/02/12 22:04:41 jmc Exp $
 C $Name:  $
-
 
 CBOP
 C    !ROUTINE: SIZE.h
@@ -53,9 +52,9 @@ C    input.icedyn : needs at least Olx=Oly=4 (CS-grid multidimensional Advect.)
      &           sNy =  16,
      &           OLx =   4,
      &           OLy =   4,
-     &           nSx =   6,
+     &           nSx =   3,
      &           nSy =   1,
-     &           nPx =   2,
+     &           nPx =   4,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,

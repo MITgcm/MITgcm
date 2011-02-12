@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/SIZE.h_mpi,v 1.2 2009/05/17 22:30:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/SIZE.h_mpi,v 1.3 2011/02/12 22:04:41 jmc Exp $
 C $Name:  $
 
-C
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:
@@ -49,9 +48,9 @@ C     Nr  :: No. points in Z for full process domain.
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,
-     &           nSy =   2,
+     &           nSy =   1,
      &           nPx =   1,
-     &           nPy =   2,
+     &           nPy =   4,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =   5)

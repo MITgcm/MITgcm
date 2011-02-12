@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/SIZE.h_mpi,v 1.5 2009/06/29 03:26:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/SIZE.h_mpi,v 1.6 2011/02/12 22:04:41 jmc Exp $
 C $Name:  $
 
-C
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:
@@ -49,9 +48,9 @@ C     Nr  :: No. points in Z for full process domain.
      &           OLx =   4,
      &           OLy =   4,
      &           nSx =   1,
-     &           nSy =   3,
+     &           nSy =   1,
      &           nPx =   2,
-     &           nPy =   1,
+     &           nPy =   3,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =   1)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/code/SIZE.h_mpi,v 1.1 2010/01/23 23:25:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/code/SIZE.h_mpi,v 1.2 2011/02/12 22:04:41 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -47,9 +47,9 @@ C     Nr  :: No. points in Z for full process domain.
      &           sNy =   1,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   2,
+     &           nSx =   1,
      &           nSy =   1,
-     &           nPx =   2,
+     &           nPx =   4,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
