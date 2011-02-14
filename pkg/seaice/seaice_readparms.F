@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.88 2010/12/03 05:00:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.89 2011/02/14 23:51:07 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,7 +61,7 @@ C--   SEAICE parameters
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
-     & SEAICE_initialHEFF,
+     & SEAICE_initialHEFF, SEAICEareaFormula,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_cpAir,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -180,6 +180,11 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_mon_mnc  = .FALSE.
 #endif
       SEAICE_initialHEFF = ZERO
+#ifdef SEAICE_GROWTH_LEGACY
+      SEAICEareaFormula = 1
+#else
+      SEAICEareaFormula = 2
+#endif
       SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_rhoSnow     = 330.   _d 0
       ICE2WATR           = UNSET_RL

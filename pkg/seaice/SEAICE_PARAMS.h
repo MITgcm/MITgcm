@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.69 2011/01/12 00:06:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.70 2011/02/14 23:51:07 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -90,6 +90,8 @@ C                        (=volume), snow thickness, and salt if available
 C     SEAICEadvSchSnow - sets the advection scheme for snow on sea-ice
 C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
 C     SEAICEadvSchAge  - sets the advection scheme for sea ice age
+C     SEAICEareaFormula - sets the formula used to increment area as 
+C                         a function of heff increment
 C
       INTEGER LAD, IMAX_TICE
       INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
@@ -101,6 +103,7 @@ C
       INTEGER SEAICEadvSchSalt
       INTEGER SEAICEadvSchAge
       INTEGER SEAICEadjMODE
+      INTEGER SEAICEareaFormula
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
      &     SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
@@ -110,7 +113,8 @@ C
      &     SEAICEadvSchSnow,
      &     SEAICEadvSchSalt,
      &     SEAICEadvSchAge,
-     &     SEAICEadjMODE
+     &     SEAICEadjMODE,
+     &     SEAICEareaFormula
       PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.

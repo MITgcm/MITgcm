@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.44 2011/02/10 12:01:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.45 2011/02/14 23:51:07 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -51,8 +51,6 @@ C-    to switch on/off open-water freezing contribution to thickness tendency:
 C-    ifdef SEAICE_DO_OPEN_WATER_GROWTH then define SEAICE_DO_OPEN_WATER_MELT
 C     to also allow open-water air-sea heat fluxes melt ice
 #undef SEAICE_DO_OPEN_WATER_MELT
-C-    to switch on/off ocean heat contribution to seaice cover reduction:
-#define SEAICE_OCN_MELT_ACT_ON_AREA
 #endif
 
 C-    to use the MCPhee formula in computing ocean/ice fluxes

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.40 2010/12/03 05:00:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.41 2011/02/14 23:51:07 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,6 +43,14 @@ C--   SEAICE needs forcing_In_AB FALSE
       IF (tracForcingOutAB.NE.1) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' Need T,S forcing out of AB (tracForcingOutAB=1)'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--   check ice cover fraction formula
+      IF ((SEAICEareaFormula.LT.1).OR.(SEAICEareaFormula.GT.3)) THEN
+         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &         ' SEAICEareaFormula must be between 1 and 3'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

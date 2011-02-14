@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.30 2010/11/19 16:21:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.31 2011/02/14 23:51:07 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -96,6 +96,8 @@ C     == end of interface ==
      & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
       CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
      & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
+      CALL WRITE_0D_I ( SEAICEareaFormula,   INDEX_NONE,
+     & 'SEAICEareaFormula =', ' /* ice cover formula */')
       CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
      & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
       CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
