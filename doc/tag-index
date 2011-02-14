@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1377 2011/02/11 00:06:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1378 2011/02/14 23:59:10 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - introduce SEAICEareaFormula run time parameter, which selects the recipe for
+ computing the ice cover tendency from effective thickness tendencies. Include Ian Fenty's formula.
+ - remove 'undef SEAICE_OCN_MELT_ACT_ON_AREA' which may now be achieved using SEAICEareaFormula.
+ - simplify notations for the various d_HEFF/d_AREA terms.
 o pkg/gmredi:
  - add Boundary-Value-Problem bolus transport (Ferrari etal, OM 2010) code
    from Christopher Wolfe (UCSD); add partial cell factor in vertical derivative;
