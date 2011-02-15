@@ -2,11 +2,11 @@
 #
 #PBS -q long
 #PBS -N tst_mp2
-#PBS -l nodes=2:ppn=2
+#PBS -l nodes=3:ppn=2
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.7 2010/12/14 21:34:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.8 2011/02/15 18:33:15 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -35,18 +35,17 @@ sfx='mp2'
  module add mpiexec
  OPTFILE="../tools/build_options/linux_ia32_ifort+mpi_aces"
 #OPTFILE="$HERE/linux_ia32_ifort+mpi_aces"
- options='-j 2 -mpi -mth -match 10'
+ options="-j 2 -MPI 3 -mth -mf $PBS_NODEFILE"
  export OMP_NUM_THREADS=2
+ EXE="mpiexec -pernode -comm pmi -np TR_NPROC ./mitgcmuv"
 #export KMP_STACKSIZE=400m  <-- added in file "~/.bashrc"
+
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
 
 checkOut=1
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
-
-MF=$HERE"/mf_"$sfx
-cat $PBS_NODEFILE | sort | uniq > $MF
-NCPU=`wc -l $MF | awk '{print $1}'`
-EXE="mpiexec -pernode -comm pmi -np $NCPU ./mitgcmuv"
 
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
@@ -94,6 +93,7 @@ cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
 ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
 
-#echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o aces-$sfx -a NONE
-#../tools/do_tst_2+2 -mpi -exe "$EXE" -o aces-$sfx -a NONE
+#echo ''
+#echo ../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe \"$EXE\" -o aces-$sfx -a NONE
+#../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe "$EXE" -o aces-$sfx -a NONE
 
