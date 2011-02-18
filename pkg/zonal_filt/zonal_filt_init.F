@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.6 2010/01/31 20:24:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.7 2011/02/18 00:33:05 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -10,21 +10,21 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R ZONAL_FILT_INIT                                       
-C     | o Initialise FFT filter for latitude circle.              
+C     | S/R ZONAL_FILT_INIT
+C     | o Initialise FFT filter for latitude circle.
 C     *==========================================================*
-C     | The details of particular FFT libraries may differ.       
-C     | Changing to a different library may entail modifying the  
-C     | code here. However, the broad process is usually the      
-C     | same.                                                     
-C     | Note - Fourier modes for sNx and sNx+1 are damped in the  
-C     |        same way. This is because we have not implemented  
-C     |        a scheme that sets the damping factor for the      
-C     |        highest wave number for odd sNx. Instead the       
-C     |        highest wave number for odd sNx. Instead only      
-C     |        wave numbers 1:INT(sNx/2) are partially damped.    
-C     |        Wave number sNx/2 (if it exists) is removed        
-C     |        altogether.                                        
+C     | The details of particular FFT libraries may differ.
+C     | Changing to a different library may entail modifying the
+C     | code here. However, the broad process is usually the
+C     | same.
+C     | Note - Fourier modes for sNx and sNx+1 are damped in the
+C     |        same way. This is because we have not implemented
+C     |        a scheme that sets the damping factor for the
+C     |        highest wave number for odd sNx. Instead the
+C     |        highest wave number for odd sNx. Instead only
+C     |        wave numbers 1:INT(sNx/2) are partially damped.
+C     |        Wave number sNx/2 (if it exists) is removed
+C     |        altogether.
 C     *==========================================================*
 C     \ev
 
@@ -48,27 +48,39 @@ CEOP
 #ifdef ALLOW_ZONAL_FILT
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     alpha :: Used to evaluate frequency and latitude dependent
-C              amplitude damping factor.
-C     wvNum :: Wave number
-C     lat   :: Temporary holding latitude
-C     nWv   :: No. of waves that fit on grid.
+C     alpha  :: Used to evaluate frequency and latitude dependent
+C               amplitude damping factor.
+C     wvNum  :: Wave number
+C     lat    :: Temporary holding latitude
+C     nWv    :: No. of waves that fit on grid.
+C     msgBuf :: Informational/error message buffer
 c     _RL alpha, wvNum
 c     INTEGER nWv
       INTEGER i, j, bi, bj
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     !FUNCTIONS:
       _RL oneRL
       _RL ampfact
       PARAMETER( oneRL = 1. _d 0 )
       _RS lat
-      ampfact(lat,i) = MIN( oneRL, 
+      ampfact(lat,i) = MIN( oneRL,
      &   ( COS( ABS(lat)*deg2rad )
      &      /COS( zonal_filt_lat*deg2rad ) )**zonal_filt_cospow
      &      /(SIN( PI*FLOAT(i)/FLOAT(Nx) ) )**zonal_filt_sinpow
      &   )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( sNx.NE.Nx ) THEN
+         WRITE(msgBuf,'(A,I3,A)')
+     &    'S/R ZONAL_FILT_INIT: Multi-tiles ( nSx*nPx=', nSx*nPx, ' )'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &    ' in Zonal (X) dir. not implemented in Zonal-Filter code'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ZONAL_FILT_INIT'
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 C     o Initialise specific library FFT package
