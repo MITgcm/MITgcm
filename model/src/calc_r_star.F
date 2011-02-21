@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.19 2011/01/14 01:28:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.20 2011/02/21 16:47:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,7 +16,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CALC_R_STAR
 C     | o Calculate new column thickness & scaling factor for r*
-C     |    according to the surface r-position (Non-Lin Free-Surf)
+C     |   according to the surface r-position (Non-Lin Free-Surf)
 C     *==========================================================*
 C     \ev
 
@@ -31,14 +31,14 @@ C     == Global variables
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C     etaFld :: current eta field used to update the hFactor
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: Thread number for this instance of the routine.
-C     etaFld :: current eta field used to update the hFactor
+      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
 #ifdef NONLIN_FRSURF
 
@@ -54,20 +54,19 @@ C     numbWrMax       ::  maximum  Number of warning written on STD-ERR file
       INTEGER icntc1, icntc2, icntw, icnts
       INTEGER iic, jjc, iic2, jjc2, iiw, jjw, iis, jjs
       _RL tmpfldW, tmpfldS
-c     CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
-
-      rStarAreaWeight = .TRUE.
-C-    Area-weighted average consistent with KE (& vert. advection):
-      IF ( vectorInvariantMomentum .AND.
-     &     (selectKEscheme.EQ.1 .OR. selectKEscheme.EQ.3)
-     &   ) rStarAreaWeight =.FALSE.
 
 #ifdef W2_FILL_NULL_REGIONS
       INTEGER ii,jj
 #endif
       DATA numbWrite / 0 /
       numbWrMax = Nx*Ny
+
+      rStarAreaWeight = .TRUE.
+C-    Area-weighted average consistent with KE (& vert. advection):
+      IF ( vectorInvariantMomentum .AND.
+     &     (selectKEscheme.EQ.1 .OR. selectKEscheme.EQ.3)
+     &   ) rStarAreaWeight =.FALSE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -77,7 +76,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-       
+
 C--   before updating rStarFacC/S/W save current fields
          DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
@@ -86,7 +85,7 @@ C--   before updating rStarFacC/S/W save current fields
              rStarFacNm1W(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
            ENDDO
          ENDDO
-       
+
 C-    1rst bi,bj loop :
 
 C-- copy rStarFacX -> rStarExpX
