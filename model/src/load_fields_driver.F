@@ -1,16 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.9 2010/11/18 00:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.10 2011/02/21 22:26:50 jmc Exp $
 C $Name:  $
-
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-
-c#ifdef ALLOW_GMREDI
-c# include "GMREDI_OPTIONS.h"
-c#endif
-c#ifdef ALLOW_OBCS
-c# include "OBCS_OPTIONS.h"
-c#endif
 
 CBOP
 C     !ROUTINE: LOAD_FIELDS_DRIVER
@@ -32,6 +24,8 @@ C       |-- BULKF_FIELDS_LOAD
 C       |
 C       |-- EXF_GETFORCING
 C       |
+C       |-- CHEAPAML_FIELDS_LOAD
+C       |
 C       |-- EXTERNAL_FIELDS_LOAD
 C       |
 C       |-- OFFLINE_FIELDS_LOAD
@@ -41,9 +35,6 @@ C       |
 C       |-- RBCS_FIELDS_LOAD
 C       |
 C       |-- AIM_FIELDS_LOAD
-C       |
-C       |-- CHEAPAML_FIELDS_LOAD
-
 
 C     !USES:
       IMPLICIT NONE
@@ -51,64 +42,23 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "DYNVARS.h"
-
-c#ifdef ALLOW_SHAP_FILT
-c# include "SHAP_FILT.h"
-c#endif
-c#ifdef ALLOW_ZONAL_FILT
-c# include "ZONAL_FILT.h"
-c#endif
-c#ifdef COMPONENT_MODULE
-c# include "CPL_PARAMS.h"
-c#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-
 # include "tamc.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
 # include "FFIELDS.h"
 # include "EOS.h"
-c# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-c#  include "GRID.h"
-c# endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
 #  endif
 # endif
-c# ifdef ALLOW_OBCS
-c#  include "OBCS.h"
-c#  ifdef ALLOW_PTRACERS
-c#   include "PTRACERS_SIZE.h"
-c#   include "OBCS_PTRACERS.h"
-c#  endif
-c# endif
-c# ifdef ALLOW_CD_CODE
-c#  include "CD_CODE_VARS.h"
-c# endif
-c# ifdef ALLOW_THSICE
-c#  include "THSICE_VARS.h"
-c# endif
-c# ifdef ALLOW_EBM
-c#  include "EBM.h"
-c# endif
-c# ifdef EXACT_CONSERV
-c#  include "SURFACE.h"
-c# endif
-c# ifdef ALLOW_KPP
-c#  include "KPP.h"
-c# endif
-c# ifdef ALLOW_GMREDI
-c#  include "GMREDI.h"
-c# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     !LOCAL VARIABLES:
-C     == Routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
@@ -116,7 +66,7 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
-C     == Local variables ==
+C     !LOCAL VARIABLES:
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -159,7 +109,7 @@ C--   Call external CheapAML forcing package
 
 c     IF ( .NOT.useEXF ) THEN
 C- note (useEBM): needs modifications to be compatible with this call
-      IF ( .NOT.(useEXF.OR.useEBM) ) THEN
+      IF ( .NOT.(useEXF.OR.useEBM.OR.useCheapAML) ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
