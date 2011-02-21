@@ -1,37 +1,44 @@
-C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.2 2008/02/08 13:01:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.3 2011/02/21 17:57:36 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+C--  File rotate_spherical_polar_grid.F:
+C--   Contents
+C--   o ROTATE_SPHERICAL_POLAR_GRID
+C--   o CALC_ANGLES
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ROTATE_SPHERICAL_POLAR_GRID
 C     !INTERFACE:
-      SUBROUTINE ROTATE_SPHERICAL_POLAR_GRID( 
-     U     X, Y, 
-     I     myThid )
+      SUBROUTINE ROTATE_SPHERICAL_POLAR_GRID(
+     U                  X, Y,
+     I                  myThid )
+
 C     !DESCRIPTION: \bv
-C     /===================================================================\
-C     | SUBROUTINE ROTATE_SPHERICAL_POLAR_GRID                            |
-C     | o rotate the model coordinates on the input arrays to             |
-C     |   geographical coordinates                                        |
-C     | o this is useful when a rotated spherical grid is used,           |
-C     |   e.g., in order to avoid the pole singularity.                   |
-C     | The three Euler angles PhiEuler, ThetaEuler, and PsiEuler         |
-C     | define the rotation about the original z-axis (of an sphere       |
-C     | centered cartesian grid), the new x-axis, and the new z-axis,     |
-C     | respectively.                                                     |
-C     | The input coordinates X, Y are assumed to be the model coordinates|
-C     | on a rotated grid defined by the Euler angles. In this S/R they   | 
-C     | are rotated *BACK* to the geographical coordinate; that is why    |
-C     | all rotation matrices are the inverses of the original matrices.  | 
-C     | On exit X and Y are the geographical coordinates, that are        |
-C     | used to compute the Coriolis parameter and also to interpolate    |
-C     | forcing fields to as in pkg/exf/exf_interf.F                      | 
-C     | Naturally, this feature does not work with all packages, so the   |
-C     | some combinations are prohibited in config_summary (flt,          |
-C     | flt_zonal, ecco, profiles), because there the coordinates are     |
-C     | assumed to be regular spherical grid coordinates.                 |
-C     \===================================================================/
+C     *===================================================================*
+C     | SUBROUTINE ROTATE_SPHERICAL_POLAR_GRID
+C     | o rotate the model coordinates on the input arrays to
+C     |   geographical coordinates
+C     | o this is useful when a rotated spherical grid is used,
+C     |   e.g., in order to avoid the pole singularity.
+C     | The three Euler angles PhiEuler, ThetaEuler, and PsiEuler
+C     | define the rotation about the original z-axis (of an sphere
+C     | centered cartesian grid), the new x-axis, and the new z-axis,
+C     | respectively.
+C     | The input coordinates X, Y are assumed to be the model coordinates
+C     | on a rotated grid defined by the Euler angles. In this S/R they
+C     | are rotated *BACK* to the geographical coordinate; that is why
+C     | all rotation matrices are the inverses of the original matrices.
+C     | On exit X and Y are the geographical coordinates, that are
+C     | used to compute the Coriolis parameter and also to interpolate
+C     | forcing fields to as in pkg/exf/exf_interf.F
+C     | Naturally, this feature does not work with all packages, so the
+C     | some combinations are prohibited in config_summary (flt,
+C     | flt_zonal, ecco, profiles), because there the coordinates are
+C     | assumed to be regular spherical grid coordinates.
+C     *===================================================================*
 C     \ev
 
 C     !USES:
@@ -43,19 +50,18 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of ROTATECARTESIAN_GRID
-      INTEGER myThid
-C     X, Y   - on entry: model coordinate location
-C            - on exit: geographical coordinate location
+C     X, Y   :: on entry: model coordinate location
+C            :: on exit: geographical coordinate location
+C     myThid :: my Thread Id Number
       _RS X(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RS Y(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-CEndOfInterface
+      INTEGER myThid
+CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     xLoc, yLoc - local copies of X, Y
-C     bi,bj  - Loop counters
-C     I, J
+C     bi,bj  :: Tile indices
+C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  I,  J, iA, jA, kA
 C     Euler angles in radians
@@ -73,7 +79,7 @@ C     convert to radians
       thetaRad  = thetaEuler*deg2rad
       psiRad    = psiEuler  *deg2rad
 
-C     create inverse of full rotation matrix 
+C     create inverse of full rotation matrix
       Dinv(1,1) =  COS(phiRad)
       Dinv(1,2) = -SIN(phiRad)
       Dinv(1,3) =  0. _d 0
@@ -110,23 +116,23 @@ C
       Binv(3,2) =  0. _d 0
       Binv(3,3) =  1. _d 0
 C     Ainv = Binv*Cinv*Dinv (matrix multiplications)
-      DO ja=1,3
-       DO ia=1,3
-        Ainv(ia,ja) = 0. _d 0
-        CB  (ia,ja) = 0. _d 0
+      DO jA=1,3
+       DO iA=1,3
+        Ainv(iA,jA) = 0. _d 0
+        CB  (iA,jA) = 0. _d 0
        ENDDO
       ENDDO
-      DO ja=1,3
-       DO ia=1,3
-        DO ka=1,3
-         CB  (ia,ja) = CB  (ia,ja) + Cinv(ia,ka)*Binv(ka,ja)
+      DO jA=1,3
+       DO iA=1,3
+        DO kA=1,3
+         CB  (iA,jA) = CB  (iA,jA) + Cinv(iA,kA)*Binv(kA,jA)
         ENDDO
        ENDDO
       ENDDO
-      DO ja=1,3
-       DO ia=1,3
-        DO ka=1,3
-         Ainv(ia,ja) = Ainv(ia,ja) + Dinv(ia,ka)*CB(ka,ja)
+      DO jA=1,3
+       DO iA=1,3
+        DO kA=1,3
+         Ainv(iA,jA) = Ainv(iA,jA) + Dinv(iA,kA)*CB(kA,jA)
         ENDDO
        ENDDO
       ENDDO
@@ -139,11 +145,11 @@ C     For each tile ...
 C     loop over grid points
         DO J = 1-Oly,sNy+Oly
          DO I = 1-Olx,sNx+Olx
-C     transform spherical coordinates with unit radius 
+C     transform spherical coordinates with unit radius
 C     to sphere centered cartesian coordinates
-          XYZrot(1) = 
+          XYZrot(1) =
      &         COS( Y(I,J,bi,bj)*deg2rad )*COS( X(I,J,bi,bj)*deg2rad )
-          XYZrot(2) = 
+          XYZrot(2) =
      &         COS( Y(I,J,bi,bj)*deg2rad )*SIN( X(I,J,bi,bj)*deg2rad )
           XYZrot(3) = SIN( Y(I,J,bi,bj)*deg2rad )
 C     rotate cartesian coordinate (matrix multiplication)
@@ -155,7 +161,7 @@ C     rotate cartesian coordinate (matrix multiplication)
             XYZgeo(iA) = XYZgeo(iA) + Ainv(iA,jA)*XYZrot(jA)
            ENDDO
           ENDDO
-C     tranform cartesian coordinates back to spherical coordinates 
+C     tranform cartesian coordinates back to spherical coordinates
           hypotxy = SQRT( ABS(XYZgeo(1))*ABS(XYZgeo(1))
      &                  + ABS(XYZgeo(2))*ABS(XYZgeo(2)) )
           IF(XYZgeo(1) .EQ. 0. _d 0 .AND. XYZgeo(2) .EQ. 0. _d 0)THEN
@@ -163,7 +169,7 @@ C     happens exactly at the poles
            X(I,J,bi,bj) = 0. _d 0
           ELSE
            X(I,J,bi,bj) = ATAN2(XYZgeo(2),XYZgeo(1))/deg2rad
-           IF ( X(I,J,bi,bj) .LT. 0. _d 0 ) 
+           IF ( X(I,J,bi,bj) .LT. 0. _d 0 )
      &          X(I,J,bi,bj) = X(I,J,bi,bj) + 360. _d 0
           ENDIF
           IF(hypotxy .EQ. 0. _d 0 .AND. XYZgeo(3) .EQ. 0. _d 0)THEN
@@ -181,17 +187,19 @@ C     bi,bj-loops
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ROTATE_ANGLES
+C     !ROUTINE: CALC_ANGLES
 C     !INTERFACE:
-      SUBROUTINE CALC_ANGLES( 
-     I     myThid )
+      SUBROUTINE CALC_ANGLES(
+     I                        myThid )
+
 C     !DESCRIPTION: \bv
-C     /===================================================================\
-C     | SUBROUTINE CALC_ANGLES                                            |
-C     | o calculate the angle between geographical north and model grid   |
-C     |   north, assuming that yG holds the geographical coordinates      |
-C     \===================================================================/
+C     *===================================================================*
+C     | SUBROUTINE CALC_ANGLES
+C     | o calculate the angle between geographical north and model grid
+C     |   north, assuming that yG holds the geographical coordinates
+C     *===================================================================*
 C     \ev
 
 C     !USES:
@@ -204,52 +212,58 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of ROTATECARTESIAN_GRID
+C     myThid  :: my Thread Id Number
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     xLoc, yLoc - local copies of X, Y
-C     bi,bj  - Loop counters
-C     I, J
+C     bi,bj  :: Tile indices
+C     i, j   :: Loop counters
       INTEGER bi, bj
-      INTEGER  I,  J
+      INTEGER  i,  j
 C     pseudo velocities
       _RS uPseudo(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS vPseudo(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS uC, vC, uNorm
 CEOP
 
-      
 C     For each tile ...
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C     compute pseudo velocities from stream function psi = -yG*deg2rad,
 C     that is, zonal flow
-        DO J = 1-Oly,sNy+Oly-1
-         DO I = 1-Olx,sNx+Olx
-          IF ( _dyG(I,J,bi,bj) .GT. 0 ) uPseudo(I,J) = 
-     &         - ( yG(I,J,bi,bj) - yG(I,J+1,bi,bj) )*deg2rad
-     &         / _dyG(I,J,bi,bj)
+        DO j = 1-Oly,sNy+Oly-1
+         DO i = 1-Olx,sNx+Olx
+          IF ( _dyG(i,j,bi,bj).GT.0. ) THEN
+            uPseudo(i,j) =
+     &         - ( yG(i,j,bi,bj) - yG(i,j+1,bi,bj) )*deg2rad
+     &         / _dyG(i,j,bi,bj)
+          ELSE
+            uPseudo(i,j) = 0.
+          ENDIF
          ENDDO
         ENDDO
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-Olx,sNx+Olx-1
-          IF ( _dxG(I,J,bi,bj) .GT. 0 ) vPseudo(I,J) = 
-     &         + ( yG(I,J,bi,bj) - yG(I+1,J,bi,bj) )*deg2rad
-     &         / _dxG(I,J,bi,bj)
+        DO j = 1-Oly,sNy+Oly
+         DO i = 1-Olx,sNx+Olx-1
+          IF ( _dxG(i,j,bi,bj).GT.0. ) THEN
+            vPseudo(i,j) =
+     &         + ( yG(i,j,bi,bj) - yG(i+1,j,bi,bj) )*deg2rad
+     &         / _dxG(i,j,bi,bj)
+          ELSE
+            vPseudo(i,j) = 0.
+          ENDIF
          ENDDO
         ENDDO
-        DO J = 1-Oly,sNy+Oly-1
-         DO I = 1-Olx,sNx+Olx-1
-          uC = 0.5*(uPseudo(I,J) + uPseudo(I+1,J))
-          vC = 0.5*(vPseudo(I,J) + vPseudo(I,J+1))
+        DO j = 1-Oly,sNy+Oly-1
+         DO i = 1-Olx,sNx+Olx-1
+          uC = 0.5*(uPseudo(i,j) + uPseudo(i+1,j))
+          vC = 0.5*(vPseudo(i,j) + vPseudo(i,j+1))
           uNorm = SQRT(uC*uC+vC*vC)
           IF ( uNorm .NE. 0. _d 0 ) uNorm = 1./uNorm
-          angleCosC(I,J,bi,bj) =  uC*uNorm
-          angleSinC(I,J,bi,bj) = -vC*uNorm
+          angleCosC(i,j,bi,bj) =  uC*uNorm
+          angleSinC(i,j,bi,bj) = -vC*uNorm
          ENDDO
         ENDDO
 C     bi,bj-loops
