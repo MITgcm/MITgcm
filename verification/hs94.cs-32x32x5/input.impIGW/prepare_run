@@ -1,13 +1,15 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/input.impIGW/prepare_run,v 1.1 2011/02/22 14:52:29 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/input.impIGW/prepare_run,v 1.2 2011/02/22 16:55:53 jmc Exp $
 #  $Name:  $
  
-#- in order to save disc space, take files:
-fileList="dxC1_dXYa.face001.bin dxC1_dXYa.face002.bin dxC1_dXYa.face003.bin dxC1_dXYa.face004.bin dxC1_dXYa.face005.bin dxC1_dXYa.face006.bin"
-
+#- in order to save disc space, take grid files
 #- from this dir:
 fromDir="../../fizhi-cs-32x32x40/input"
+
+fileList=`( cd $fromDir ; ls dxC1_dXYa.face00?.bin )`
+
+#echo 'fileList=' $fileList
 
 #- and do a symbolic link in the current directory 
 #   (if the file does not already exist)
