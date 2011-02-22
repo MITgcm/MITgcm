@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.246 2010/12/24 21:48:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.247 2011/02/22 18:35:30 jmc Exp $
 C $Name:  $
 C
 
@@ -513,6 +513,11 @@ C     delR      :: Vertical grid spacing ( units of r ).
 C     delRc     :: Vertical grid spacing between cell centers (r unit).
 C     delX      :: Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
+C     xgOrigin   :: Origin of the X-axis (Cartesian Grid) / Longitude of Western
+C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
+C                :: parameter but it makes geographical references simple.)
+C     ygOrigin   :: Origin of the Y-axis (Cartesian Grid) / Latitude of Southern
+C                :: most face (Lat-Lon grid).
 C     gravity   :: Accel. due to gravity ( m/s^2 )
 C     recip_gravity and its inverse
 C     gBaro     :: Accel. due to gravity used in barotropic equation ( m/s^2 )
@@ -542,13 +547,9 @@ C     rUnit2mass :: units conversion factor (surface forcing),
 C                :: from vertical r-coordinate unit to mass per unit area [kg/m2].
 C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
 C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
-C     xgOrigin   :: Origin of the X-axis (Cartesian Grid) / Longitude of Western
-C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
-C                :: parameter but it makes geographical references simple.)
-C     ygOrigin   :: Origin of the Y-axis (Cartesian Grid) / Latitude of Southern
-C                :: most face (Lat-Lon grid).
 C     rSphere    :: Radius of sphere for a spherical polar grid ( m ).
 C     recip_rSphere  :: Reciprocal radius of sphere ( m ).
+C     radius_fromHorizGrid :: sphere Radius of input horiz. grid (Curvilinear Grid)
 C     f0         :: Reference coriolis parameter ( 1/s )
 C                   ( Southern edge f for beta plane )
 C     beta       :: df/dy ( s^-1.m^-1 )
@@ -713,10 +714,10 @@ C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
-     & delR, delRc, delX, delY,
+     & delR, delRc, delX, delY, xgOrigin, ygOrigin,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
-     & xgOrigin, ygOrigin, rSphere, recip_rSphere,
+     & rSphere, recip_rSphere, radius_fromHorizGrid,
      & f0, beta, fPrime, omega, rotationPeriod,
      & viscFacAdj, viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
@@ -764,16 +765,17 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL delRc(Nr+1)
       _RL delX(Nx)
       _RL delY(Ny)
+      _RL xgOrigin
+      _RL ygOrigin
       _RL deltaT
       _RL deltaTClock
       _RL deltaTmom
       _RL dTtracerLev(Nr)
       _RL deltaTfreesurf
       _RL abEps, alph_AB, beta_AB
-      _RL xgOrigin
-      _RL ygOrigin
       _RL rSphere
       _RL recip_rSphere
+      _RL radius_fromHorizGrid
       _RL f0
       _RL beta
       _RL fPrime

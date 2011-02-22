@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.236 2010/12/20 19:58:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.237 2011/02/22 18:36:47 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -244,7 +244,7 @@ C--   Gridding parameters
      & xgOrigin, ygOrigin, dxSpacing, dySpacing,
      & delX, delY, delXFile, delYFile, horizGridFile,
      & phiEuler, thetaEuler, psiEuler,
-     & rSphere, deepAtmosphere,
+     & rSphere, radius_fromHorizGrid, deepAtmosphere,
      & selectSigmaCoord, rSigmaBnd, hybSigmFile,
      & Ro_SeaLevel, delZ, delP, delR, delRc, delRFile, delRcFile,
      & rkFac, groundAtK1, thetaMin, phiMin
@@ -1054,11 +1054,6 @@ C     Y coordinate : Check for multiple definitions
        ENDDO
       ENDIF
 
-      IF ( rSphere .NE. 0. ) THEN
-       recip_rSphere = 1. _d 0/rSphere
-      ELSE
-       recip_rSphere = 0.
-      ENDIF
 C--   Check for conflicting grid definitions.
       goptCount = 0
       IF ( usingCartesianGrid )      goptCount = goptCount+1
@@ -1082,6 +1077,23 @@ C-     No horizontal grid is specified => use Cartesian grid as default:
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        usingCartesianGrid = .TRUE.
+      ENDIF
+C-    Radius of the Planet:
+      IF ( rSphere.EQ.UNSET_RL ) THEN
+        IF ( usingCurvilinearGrid .AND.
+     &       radius_fromHorizGrid.NE.UNSET_RL ) THEN
+           rSphere = radius_fromHorizGrid
+        ELSE
+           rSphere = 6370. _d 3
+        ENDIF
+      ENDIF
+      IF ( radius_fromHorizGrid.EQ.UNSET_RL ) THEN
+           radius_fromHorizGrid = rSphere
+      ENDIF
+      IF ( rSphere .NE. 0. ) THEN
+       recip_rSphere = 1. _d 0/rSphere
+      ELSE
+       recip_rSphere = 0.
       ENDIF
 C--   Default origin for  X & Y axis (longitude & latitude origin):
       IF ( xgOrigin .EQ. UNSET_RL ) xgOrigin = 0.

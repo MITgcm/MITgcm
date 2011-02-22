@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.48 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.49 2011/02/22 18:36:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,7 @@ CBOP
 C     !ROUTINE: INI_CURVILINEAR_GRID
 C     !INTERFACE:
       SUBROUTINE INI_CURVILINEAR_GRID( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_CURVILINEAR_GRID
@@ -49,6 +50,7 @@ C     == Local variables ==
       INTEGER i,j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER fp
+      _RL tmpFac, tmpFac2
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
@@ -402,6 +404,33 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
       CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
 
 #endif /* OLD_GRID_IO */
+
+C--   Scale all grid-factor when original grid-file corresponds to
+C     a different planet radius (radius_fromHorizGrid <> rSphere)
+      IF ( rSphere.NE.radius_fromHorizGrid ) THEN
+        tmpFac = rSphere / radius_fromHorizGrid
+        tmpFac2 = tmpFac*tmpFac
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            dxC(i,j,bi,bj) = dxC(i,j,bi,bj)*tmpFac
+            dyC(i,j,bi,bj) = dyC(i,j,bi,bj)*tmpFac
+            dxG(i,j,bi,bj) = dxG(i,j,bi,bj)*tmpFac
+            dyG(i,j,bi,bj) = dyG(i,j,bi,bj)*tmpFac
+            dxF(i,j,bi,bj) = dxF(i,j,bi,bj)*tmpFac
+            dyF(i,j,bi,bj) = dyF(i,j,bi,bj)*tmpFac
+            dxV(i,j,bi,bj) = dxV(i,j,bi,bj)*tmpFac
+            dyU(i,j,bi,bj) = dyU(i,j,bi,bj)*tmpFac
+            rA (i,j,bi,bj) = rA (i,j,bi,bj)*tmpFac2
+            rAz(i,j,bi,bj) = rAz(i,j,bi,bj)*tmpFac2
+            rAw(i,j,bi,bj) = rAw(i,j,bi,bj)*tmpFac2
+            rAs(i,j,bi,bj) = rAs(i,j,bi,bj)*tmpFac2
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Calculate (sines and cosines of) angles of grid north with
 C--   geographical north when they have not been read from a file

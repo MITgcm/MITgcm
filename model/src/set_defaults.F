@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.151 2010/12/06 10:46:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.152 2011/02/22 18:36:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,9 +73,10 @@ C     In cartesian coords distances are in metres
       usingCartesianGrid  = .FALSE.
 C     In spherical polar distances are in degrees
       usingSphericalPolarGrid = .FALSE.
-      rSphere             = 6370. _d 3
+      rSphere             = UNSET_RL
 C     General curvilinear coordinate system
       usingCurvilinearGrid= .FALSE.
+      radius_fromHorizGrid= UNSET_RL
 C     General cylindrical coordinate system
       usingCylindricalGrid= .FALSE.
 C     Coriolis map:
