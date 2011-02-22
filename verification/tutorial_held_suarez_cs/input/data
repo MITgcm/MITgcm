@@ -59,6 +59,7 @@
  &PARM04
  usingCurvilinearGrid=.TRUE.,
  horizGridFile='grid_cs32',
+ radius_fromHorizGrid=6370.E3,
  delR=20*50.E2,
  Ro_SeaLevel=1.E5,
  &

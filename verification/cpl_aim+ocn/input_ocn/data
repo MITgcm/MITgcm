@@ -74,6 +74,7 @@
  &PARM04
  usingCurvilinearGrid=.TRUE.,
  horizGridFile='grid_cs32',
+ radius_fromHorizGrid=6370.E3,
  delR= 50., 70., 100., 140., 190.,
        240., 290., 340., 390., 440.,
        490., 540., 590., 640., 690.,

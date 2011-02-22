@@ -64,9 +64,9 @@
 # Gridding parameters
  &PARM04
  usingCurvilinearGrid=.TRUE.,
+ radius_fromHorizGrid=6370.E3,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
  Ro_SeaLevel=1.E5,
- rSphere=6370.E3,
  &
 
 # Input datasets

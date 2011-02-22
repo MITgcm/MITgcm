@@ -55,6 +55,7 @@
 # Gridding parameters
  &PARM04
  usingCurvilinearGrid=.TRUE.,
+ radius_fromHorizGrid=6370.E3,
  delR=1.E5,
  Ro_SeaLevel=1.E5,
  &
