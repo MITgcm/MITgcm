@@ -35,7 +35,6 @@
  exactConserv=.TRUE.,
  uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
- nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=0.2,
@@ -74,12 +73,11 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
+ horizGridFile='dxC1_dXYa',
+ radius_fromHorizGrid=6370.E3,
  delR=10*1.E4,
  Ro_SeaLevel=1.E5,
- rSphere=6370.E3,
  &
 
 # Input datasets
