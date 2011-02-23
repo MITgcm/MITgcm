@@ -1,16 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1380 2011/02/22 18:44:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1381 2011/02/23 21:12:45 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice (seaice_growth v 1.113):
+ - reverting seaice_growth to v 1.111 in order to have code with exact bit
+   compatibility with MITgcm_contrib/ifenty/Fenty_seaice_thermo_code_merge
+   CPP option SEAICE_OCN_MELT_ACT_ON_AREA removed in v 1.112 is reintroduced
+   runtime flag SEAICEareaFormula is kept but is inactive
 o model/src:
  - add new param to scale curvilinear grid distance and area when using
    a different sphere radius from the grid-files.
  - test/check multi-threads EXCH applied to local variable (cg2d_x)
 
 checkpoint62s (2011/02/15)
-o pkg/seaice:
+o pkg/seaice (seaice_growth v 1.112):
  - introduce SEAICEareaFormula run time parameter, which selects the recipe for
    computing the ice cover tendency from effective thickness tendencies. Include
    Ian Fenty's formula.
@@ -21,7 +26,7 @@ o pkg/gmredi:
  - add Boundary-Value-Problem bolus transport (Ferrari etal, OM 2010) code
    from Christopher Wolfe (UCSD); add partial cell factor in vertical derivative;
    add a verification test-run (front_relax.bvp) to test GM_useBVP.
-o pkg/seaice:
+o pkg/seaice (seaice_growth v 1.111):
  - for SEAICE_DO_OPEN_WATER_GROWTH, replace Gael's implementation with Ian's.
  - the new SEAICE_DO_OPEN_WATER_MELT allows open-water air-sea heat fluxes to
    also melt ice.
