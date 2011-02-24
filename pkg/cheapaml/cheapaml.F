@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.8 2011/02/24 20:01:33 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.9 2011/02/24 20:21:42 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -298,7 +298,7 @@ c       do implicit time stepping over land
         do i=1-olx,snx+olx
         dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)
         Tair(i,j,bi,bj)=Tair(i,j,bi,bj)+xgs*deltaT*dtemp
-     .  *xrelf*(1. _d 0-hFacC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
+     .  *xrelf*(1. _d 0-maskC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
         enddo
         enddo
 
@@ -318,7 +318,7 @@ c       do implicit time stepping over land and or buffer
         do i=1-olx,snx+olx
         dq=qr(i,j,bi,bj)-qair(i,j,bi,bj)
         qair(i,j,bi,bj)=qair(i,j,bi,bj)+xgs*deltaT*dq
-     .  *xrelf*(1. _d 0-hFacC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
+     .  *xrelf*(1. _d 0-maskC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
         if (qair(i,j,bi,bj).lt.0.0) qair(i,j,bi,bj) = 0.0 _d 0
         enddo
         enddo
