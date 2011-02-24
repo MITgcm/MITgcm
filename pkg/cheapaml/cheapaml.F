@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.6 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.7 2011/02/24 18:06:30 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -270,8 +270,8 @@ c factor to compute rainfall from specific humidity
         else
         precip=0. _d 0
         endif
-        gqair(i,j,bi,bj)=(evp-precip)*hm/rhoa*hfacC(i,j,1,bi,bj)
-        EmPmR(i,j,bi,bj)=(evp-precip)/rhoConstFresh*hfacC(i,j,1,bi,bj)
+        gqair(i,j,bi,bj)=(evp-precip)*hm/rhoa*maskC(i,j,1,bi,bj)
+        EmPmR(i,j,bi,bj)=(evp-precip)*maskC(i,j,1,bi,bj)
         endif
 
 c       CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
