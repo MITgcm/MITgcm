@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.7 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.8 2011/02/24 16:11:41 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
+
 
 C     !ROUTINE: CHEAPAML_FIELDS_LOAD
 C     !INTERFACE:
@@ -21,9 +22,9 @@ C     === Global variables ===
 c #include "GRID.h"
 c #include "DYNVARS.h"
 C #include "BULKF.h"
-c #ifdef ALLOW_THSICE
-c #include "THSICE_VARS.h"
-c #endif
+c#ifdef ALLOW_THSICE
+c#include "THSICE_VARS.h"
+c#endif
 #include "CHEAPAML.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -64,6 +65,7 @@ C     aWght, bWght :: Interpolation weights
      &         wavesp0,  wavesp1,
      &         rair0,    rair1
 
+
       _RL  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  trair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  qrair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -85,19 +87,20 @@ C     aWght, bWght :: Interpolation weights
       _RL  rair0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  rair1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      INTEGER bi,bj,i,j,intime0,intime1
-      INTEGER iG,jG
-      _RL aWght,bWght,rdt,u
-      _RL ssq0,ssq1,ssq2,ssqa
+        INTEGER bi,bj,i,j,intime0,intime1
+        INTEGER iG,jG
+        _RL aWght,bWght,rdt,u
+        _RL ssq0,ssq1,ssq2,ssqa
 c xsolph - phase of year, assuming time zero is mid winter
 c xinxx - cos ( xsolph )
-      _RL xsolph,xinxx
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+        _RL xsolph,xinxx
+        INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c coefficients used to compute saturation specific humidity
-      DATA   ssq0,           ssq1,           ssq2
+        DATA   ssq0,           ssq1,           ssq2
      &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
 
-      IF ( periodicExternalForcing ) THEN
+      IF ( periodicExternalForcing_cheap ) THEN
+
 
 c the objective here is to give cheapaml a default periodic forcing
 c consisting only of annually varying solar forcing, and thus Trelaxation
@@ -106,294 +109,282 @@ c keys off of solardata.  if a solar data file exists, the model will
 c assume there are files to be read and interpolated between, as is standard
 c for the MITGCM.
 
-       IF ( SolarFile .EQ. ' '  ) THEN
-        IF (useStressOption)then
-         write(*,*)' stress option is turned on.  this is not',
-     &   'consistent with the default time dependent forcing option'
-         STOP 'ABNORMAL END: S/R CHEAPAML_FIELDS_LOAD'
+      IF ( SolarFile .EQ. ' '  ) THEN
+      IF (useStressOption)then
+        write(*,*)' stress option is turned on.  this is not
+     & consistent with the default time dependent forcing option'
+        stop
         ENDIF
-        if ( myIter .EQ. nIter0 )then
+         if ( myIter .EQ. nIter0 )then
          WRITE(*,*)
-     &   'S/R  Assuming Standard Annually Varying Solar Forcing'
-        endif
-        xsolph=myTime*2.d0*3.14159 _d 0/365. _d 0/86400. _d 0
-        xinxx=cos(xsolph+xphaseinit+3.14159 _d 0)
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            jG = myYGlobalLo-1+(bj-1)*sNy+j
-            local=225.d0+dsolms*xinxx-float((jg-1))/float((ny-1))*
-     &        (37.5d0-dsolmn*xinxx)
-            Solar(i,j,bi,bj) = local
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        _EXCH_XY_RL(solar, myThid)
-c relaxation temperature in radiative equilibrium
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            jG = myYGlobalLo-1+(bj-1)*sNy+j
-            local=solar(i,j,bi,bj)
-            local=(2.d0*local/stefan)**(0.25d0)-Celcius2K
-            Tr(i,j,bi,bj) = local
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        _EXCH_XY_RL(Tr, myThid)
-c default specific humidity profile to 80% relative humidity
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-c           jG = myYGlobalLo-1+(bj-1)*sNy+j
-            local = Tr(i,j,bi,bj)+Celcius2K
-            ssqa = ssq0*exp( lath*(ssq1-ssq2/local)) / p0
-            qr(i,j,bi,bj) = 0.8d0*ssqa
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        _EXCH_XY_RL(qr, myThid)
-c u wind field
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            jG = myYGlobalLo-1+(bj-1)*sNy+j
-            local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
-            uwind(i,j,bi,bj) = local
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        _EXCH_XY_RL(uwind, myThid)
-c v wind field
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            jG = myYGlobalLo-1+(bj-1)*sNy+j
-            vwind(i,j,bi,bj) = 0.d0
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        _EXCH_XY_RL(vwind, myThid)
-
-       ELSE
-C      else: solarFile non empty
-
-C here for usual interpolative forcings
-C First call requires that we initialize everything to zero for safety
-        IF ( myIter .EQ. nIter0 ) THEN
+     &  'S/R  Assuming Standard Annually Varying Solar Forcing'
+         endif
+         xsolph=myTime*2.d0*3.14159 _d 0/365. _d 0/86400. _d 0
+         xinxx=cos(xsolph+xphaseinit+3.14159 _d 0)
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              trair0  (i,j,bi,bj) = 0.
-              trair1  (i,j,bi,bj) = 0.
-              qrair0  (i,j,bi,bj) = 0.
-              qrair1  (i,j,bi,bj) = 0.
-              solar0  (i,j,bi,bj) = 0.
-              solar1  (i,j,bi,bj) = 0.
-              uwind0  (i,j,bi,bj) = 0.
-              uwind1  (i,j,bi,bj) = 0.
-              vwind0  (i,j,bi,bj) = 0.
-              vwind1  (i,j,bi,bj) = 0.
-              ustress0(i,j,bi,bj) = 0.
-              ustress1(i,j,bi,bj) = 0.
-              vstress0(i,j,bi,bj) = 0.
-              vstress1(i,j,bi,bj) = 0.
-              wavesh0 (i,j,bi,bj) = 0.
-              wavesh1 (i,j,bi,bj) = 0.
-              wavesp0 (i,j,bi,bj) = 0.
-              wavesp1 (i,j,bi,bj) = 0.
-              rair0   (i,j,bi,bj) = 0.
-              rair1   (i,j,bi,bj) = 0.
+           DO j=1,sNy
+            DO i=1,sNx
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+            local=225.d0+dsolms*xinxx-float((jg-1))/float((ny-1))*
+     &        (37.5d0-dsolmn*xinxx)
+                  Solar(i,j,bi,bj) = local
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDIF
-
-C Now calculate whether it is time to update the forcing arrays
-        rdt=1. _d 0 / deltaTclock
-        nForcingPeriods=
-     &   int(externForcingCycle/externForcingPeriod+0.5)
-        Imytm=int(myTime*rdt+0.5)
-        Ifprd=int(externForcingPeriod*rdt+0.5)
-        Ifcyc=int(externForcingCycle*rdt+0.5)
-        Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
-
-        intime0=int(Iftm/Ifprd)
-        intime1=mod(intime0+1,nForcingPeriods)
-c       aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
-        aWght=dfloat( Iftm-Ifprd*intime0 )/dfloat( Ifprd )
-        bWght=1.-aWght
-
-        intime0=intime0+1
-        intime1=intime1+1
-
-        IF (
-     &       Iftm-Ifprd*(intime0-1) .EQ. 0
-     &      .OR. myIter .EQ. nIter0
-     &     ) THEN
-
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
-         WRITE(*,*)
-     &     'S/R CHEAPAML_FIELDS_LOAD'
-         IF ( SolarFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RL( SolarFile,solar0,intime0,
-     &         myIter,myThid )
-          CALL READ_REC_XY_RL( SolarFile,solar1,intime1,
-     &         myIter,myThid )
-         ENDIF
-         IF ( TrFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RL( TrFile,trair0,intime0,
-     &         myIter,myThid )
-          CALL READ_REC_XY_RL( TrFile,trair1,intime1,
-     &         myIter,myThid )
-         ENDIF
-         IF ( QrFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RL( QrFile,qrair0,intime0,
-     &         myIter,myThid )
-          CALL READ_REC_XY_RL( QrFile,qrair1,intime1,
-     &         myIter,myThid )
-         ENDIF
-         IF ( UWindFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RL( UWindFile,uwind0,intime0,
-     &         myIter,myThid )
-          CALL READ_REC_XY_RL( UWindFile,uwind1,intime1,
-     &         myIter,myThid )
-         ENDIF
-         IF ( VWindFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RL( VWindFile,vwind0,intime0,
-     &         myIter,myThid )
-          CALL READ_REC_XY_RL( VWindFile,vwind1,intime1,
-     &         myIter,myThid )
-         ENDIF
-         IF(useStressOption)THEN
-          IF ( UStressFile .NE. ' '  ) THEN
-           CALL READ_REC_XY_RL( UStressFile,ustress0,intime0,
-     &          myIter,myThid )
-           CALL READ_REC_XY_RL( UStressFile,ustress1,intime1,
-     &          myIter,myThid )
-          ENDIF
-          IF ( VStressFile .NE. ' '  ) THEN
-           CALL READ_REC_XY_RL( VStressFile,vstress0,intime0,
-     &          myIter,myThid )
-           CALL READ_REC_XY_RL( VStressFile,vstress1,intime1,
-     &          myIter,myThid )
-          ENDIF
-         ENDIF
-         IF(useRelativeHumidity)THEN
-          IF ( QrrelFile .NE. ' '  ) THEN
-           CALL READ_REC_XY_RL( QrrelFile,rair0,intime0,
-     &          myIter,myThid )
-           CALL READ_REC_XY_RL( QrrelFile,rair1,intime1,
-     &          myIter,myThid )
-          ENDIF
-C     This subroutine is in cheapaml_init_varia
-          CALL CHEAPAML_CONVERT_HUM(rair0, trair0, qrair0,myThid )
-          CALL CHEAPAML_CONVERT_HUM(rair1, trair1, qrair1,myThid )
-         ENDIF
-         IF ( FluxFormula.EQ.'COARE3') THEN
-          IF ( WaveHFile .NE. ' '  ) THEN
-           CALL READ_REC_XY_RL( WaveHFile,wavesh0,intime0,
-     &          myIter,myThid )
-           CALL READ_REC_XY_RL( WaveHFile,wavesh1,intime1,
-     &          myIter,myThid )
-          ENDIF
-          IF ( WavePFile .NE. ' '  ) THEN
-           CALL READ_REC_XY_RL( WavePFile,wavesp0,intime0,
-     &          myIter,myThid )
-           CALL READ_REC_XY_RL( WavePFile,wavesp1,intime1,
-     &          myIter,myThid )
-          ENDIF
-         ENDIF
-
-         _EXCH_XY_RL( trair0 , myThid )
-         _EXCH_XY_RL( qrair0 , myThid )
-         _EXCH_XY_RL( solar0 , myThid )
-         _EXCH_XY_RL( uwind0 , myThid )
-         _EXCH_XY_RL( vwind0 , myThid )
-         _EXCH_XY_RL( trair1 , myThid )
-         _EXCH_XY_RL( qrair1 , myThid )
-         _EXCH_XY_RL( solar1 , myThid )
-         _EXCH_XY_RL( uwind1 , myThid )
-         _EXCH_XY_RL( vwind1 , myThid )
-         IF(useStressOption)THEN
-          _EXCH_XY_RL( ustress0 , myThid )
-          _EXCH_XY_RL( vstress0 , myThid )
-          _EXCH_XY_RL( ustress1 , myThid )
-          _EXCH_XY_RL( vstress1 , myThid )
-         ENDIF
-         IF(FluxFormula.EQ.'COARE3') THEN
-          _EXCH_XY_RL( wavesp0 , myThid )
-          _EXCH_XY_RL( wavesp1 , myThid )
-          _EXCH_XY_RL( wavesh0 , myThid )
-          _EXCH_XY_RL( wavesh1 , myThid )
-         ENDIF
-
-C       end of loading new fields block
-        ENDIF
-
-C--   Interpolate Tr, Qr, Solar
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            Tr(i,j,bi,bj)   = bWght*trair0(i,j,bi,bj)
-     &                       +aWght*trair1(i,j,bi,bj)   !+273.15
-            qr(i,j,bi,bj)   = bWght*qrair0(i,j,bi,bj)
-     &                       +aWght*qrair1(i,j,bi,bj)
-            uwind(i,j,bi,bj)= bWght*uwind0(i,j,bi,bj)
-     &                       +aWght*uwind1(i,j,bi,bj)
-            vwind(i,j,bi,bj)= bWght*vwind0(i,j,bi,bj)
-     &                       +aWght*vwind1(i,j,bi,bj)
-            solar(i,j,bi,bj)= bWght*solar0(i,j,bi,bj)
-     &                       +aWght*solar1(i,j,bi,bj)
-            IF(useStressOption)THEN
-             ustress(i,j,bi,bj)= bWght*ustress0(i,j,bi,bj)
-     &                          +aWght*ustress1(i,j,bi,bj)
-             vstress(i,j,bi,bj)= bWght*vstress0(i,j,bi,bj)
-     &                          +aWght*vstress1(i,j,bi,bj)
-            ENDIF
-            IF(FluxFormula.EQ.'COARE3')THEN
-             IF(WaveHFile.NE.' ')THEN
-              wavesh(i,j,bi,bj) = bWght*wavesh0(i,j,bi,bj)
-     &                           +aWght*wavesh1(i,j,bi,bj)
-             ENDIF
-             IF(WavePFile.NE.' ')THEN
-              wavesp(i,j,bi,bj) = bWght*wavesp0(i,j,bi,bj)
-     &                           +aWght*wavesp1(i,j,bi,bj)
-             ENDIF
-            ELSE
-             u=uwind(i,j,bi,bj)**2+vwind(i,j,bi,bj)**2
-             u=dsqrt(u)
-             wavesp(i,j,bi,bj)=0.729 _d 0 * u
-             wavesh(i,j,bi,bj)=0.018 _d 0 * u*u*(1. _d 0 + .015 _d 0 *u)
-            ENDIF
+         _EXCH_XY_RS(solar, mythid)
+c relaxation temperature in radiative equilibrium
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+          jG = myYGlobalLo-1+(bj-1)*sNy+j
+          local=solar(i,j,bi,bj)
+          local=(2.d0*local/stefan)**(0.25d0)-Celsius2K
+          TR(i,j,bi,bj) = local
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
+         _EXCH_XY_RS(TR, mythid)
+c default specific humidity profile to 80% relative humidity
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+                  local = Tr(i,j,bi,bj)+Celsius2K
+              ssqa = ssq0*exp( lath*(ssq1-ssq2/local)) / p0
+                  qr(i,j,bi,bj) = 0.8d0*ssqa
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         _EXCH_XY_RS(qr, mythid)
+c u wind field
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+                  local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1))) 
+                  uwind(i,j,bi,bj) = local
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         _EXCH_XY_RS(uwind, mythid)
+c v wind field
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+                  vwind(i,j,bi,bj) = 0.d0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         _EXCH_XY_RS(vwind, mythid)
+      ELSE
 
-C end if solarFile is empty
+c here for usual interpolative forcings
+C First call requires that we initialize everything to zero for safety
+      IF ( myIter .EQ. nIter0 ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+           trair0  (i,j,bi,bj) = 0.
+           trair1  (i,j,bi,bj) = 0.
+           qrair0  (i,j,bi,bj) = 0.
+           qrair1  (i,j,bi,bj) = 0.
+           solar0  (i,j,bi,bj) = 0.
+           solar1  (i,j,bi,bj) = 0.
+           uwind0  (i,j,bi,bj) = 0.
+           uwind1  (i,j,bi,bj) = 0.
+           vwind0  (i,j,bi,bj) = 0.
+           vwind1  (i,j,bi,bj) = 0.
+           ustress0(i,j,bi,bj) = 0.
+           ustress1(i,j,bi,bj) = 0.
+           vstress0(i,j,bi,bj) = 0.
+           vstress1(i,j,bi,bj) = 0.
+           wavesh0 (i,j,bi,bj) = 0.
+           wavesh1 (i,j,bi,bj) = 0.
+           wavesp0 (i,j,bi,bj) = 0.
+           wavesp1 (i,j,bi,bj) = 0.
+           rair0   (i,j,bi,bj) = 0.
+           rair1   (i,j,bi,bj) = 0.
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO      
+      ENDIF
+
+C Now calculate whether it is time to update the forcing arrays
+      rdt=1. _d 0 / deltaTclock
+      nForcingPeriods=
+     &  int(externForcingCycle_cheap/externForcingPeriod_cheap+0.5)
+      Imytm=int(myTime*rdt+0.5)
+      Ifprd=int(externForcingPeriod_cheap*rdt+0.5)
+      Ifcyc=int(externForcingCycle_cheap*rdt+0.5)
+      Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+
+      intime0=int(Iftm/Ifprd)
+      intime1=mod(intime0+1,nForcingPeriods)
+c     aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
+      aWght=dfloat( Iftm-Ifprd*intime0 )/dfloat( Ifprd )
+      bWght=1.-aWght
+
+      intime0=intime0+1
+      intime1=intime1+1
+
+      IF (
+     &  Iftm-Ifprd*(intime0-1) .EQ. 0
+     &  .OR. myIter .EQ. nIter0
+     & ) THEN
+
+C      If the above condition is met then we need to read in
+C      data for the period ahead and the period behind myTime.
+       WRITE(*,*)
+     &  'S/R CHEAPAML_FIELDS_LOAD'
+      IF ( SolarFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( SolarFile,solar0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( SolarFile,solar1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF ( TrFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( TRFile,trair0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( TRFile,trair1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF ( QrFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( QrFile,qrair0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( QrFile,qrair1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF ( UWindFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( UWindFile,uwind0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( UWindFile,uwind1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF ( VWindFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( VWindFile,vwind0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( VWindFile,vwind1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF(useStressOption)THEN
+      IF ( UStressFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( UStressFile,ustress0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( UStressFile,ustress1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF ( VStressFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( VStressFile,vstress0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( VStressFile,vstress1,intime1,
+     &       myIter,myThid )
+        ENDIF
+      ENDIF
+      IF ( FluxFormula.eq.'COARE3') THEN
+      IF ( WaveHFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( WaveHFile,wavesh0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( WaveHFile,wavesh1,intime1,
+     &       myIter,myThid )
+      ENDIF
+      IF ( WavePFile .NE. ' '  ) THEN
+       CALL READ_REC_XY_RL( WavePFile,wavesp0,intime0,
+     &       myIter,myThid )
+       CALL READ_REC_XY_RL( WavePFile,wavesp1,intime1,
+     &       myIter,myThid )
+      ENDIF
+        ENDIF
+
+       _EXCH_XY_RL(trair0 , myThid )
+       _EXCH_XY_RL(qrair0 , myThid )
+       _EXCH_XY_RL(solar0 , myThid )
+       _EXCH_XY_RL(uwind0 , myThid )
+       _EXCH_XY_RL(vwind0 , myThid )
+       _EXCH_XY_RL(trair1 , myThid )
+       _EXCH_XY_RL(qrair1 , myThid )
+       _EXCH_XY_RL(solar1 , myThid )
+       _EXCH_XY_RL(uwind1 , myThid )
+       _EXCH_XY_RL(vwind1 , myThid )
+       IF(useStressOption)THEN
+       _EXCH_XY_RL(uwind0 , myThid )
+       _EXCH_XY_RL(vwind0 , myThid )
+       _EXCH_XY_RL(uwind1 , myThid )
+       _EXCH_XY_RL(vwind1 , myThid )
+        ENDIF
+        IF(FluxFormula.EQ.'COARE3') THEN
+       _EXCH_XY_RS(wavesp0 , myThid )
+       _EXCH_XY_RS(wavesp1 , myThid )
+       _EXCH_XY_RS(wavesh0 , myThid )
+       _EXCH_XY_RS(wavesh1 , myThid )
+        ENDIF
+
+C     end of loading new fields block
+      ENDIF
+
+C--   Interpolate TR, QR, SOLAR
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          TR(i,j,bi,bj)      = bWght*trair0(i,j,bi,bj)
+     &                        +aWght*trair1(i,j,bi,bj)   !+273.15
+          qr(i,j,bi,bj)      = bWght*qrair0(i,j,bi,bj)
+     &                        +aWght*qrair1(i,j,bi,bj)
+          uwind(i,j,bi,bj)   = bWght*uwind0(i,j,bi,bj)
+     &                        +aWght*uwind1(i,j,bi,bj)
+          vwind(i,j,bi,bj)   = bWght*vwind0(i,j,bi,bj)
+     &                        +aWght*vwind1(i,j,bi,bj)
+          solar(i,j,bi,bj)   = bWght*solar0(i,j,bi,bj)
+     &                        +aWght*solar1(i,j,bi,bj)
+       IF(useStressOption)THEN
+          ustress(i,j,bi,bj)   = bWght*ustress0(i,j,bi,bj)
+     &                          +aWght*ustress1(i,j,bi,bj)
+          vstress(i,j,bi,bj)   = bWght*vstress0(i,j,bi,bj)
+     &                          +aWght*vstress1(i,j,bi,bj)
        ENDIF
+        IF(FluxFormula.eq.'COARE3')THEN
+        IF(WaveHFile.ne.' ')THEN
+          wavesh(i,j,bi,bj)   = bWght*wavesh0(i,j,bi,bj)
+     &                         +aWght*wavesh1(i,j,bi,bj)
+        ENDIF
+        IF(WavePFile.ne.' ')THEN
+          wavesp(i,j,bi,bj)   = bWght*wavesp0(i,j,bi,bj)
+     &                         +aWght*wavesp1(i,j,bi,bj)
+        ENDIF
+        ELSE
+          u=uwind(i,j,bi,bj)**2+vwind(i,j,bi,bj)**2
+          u=dsqrt(u)
+          wavesp(i,j,bi,bj)=0.729 _d 0 * u  
+          wavesh(i,j,bi,bj)=0.018 _d 0 * u*u*(1. _d 0 + .015 _d 0 *u)
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
-C end of periodic forcing options, on to steady option
+c end if solarFile is empty      
+      ENDIF
+
+c end of periodic forcing options, on to steady option
+
       ELSE
 
        IF ( myIter .EQ. nIter0 ) THEN
         IF ( SolarFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RL( SolarFile,' ',solar,0,myThid )
+         CALL READ_FLD_XY_RS( SolarFile,' ',solar,0,myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -407,7 +398,7 @@ C end of periodic forcing options, on to steady option
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RL(solar, myThid)
+        _EXCH_XY_RS(solar, mythid)
         IF ( TrFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RL( TrFile,' ',tr,0,myThid )
         ELSE
@@ -418,23 +409,19 @@ C end of periodic forcing options, on to steady option
             jG = myYGlobalLo-1+(bj-1)*sNy+j
             local=solar(i,j,bi,bj)
             local=(2.d0*local/stefan)**(0.25d0)-273.16
-            Tr(i,j,bi,bj) = local
+            TR(i,j,bi,bj) = local
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RL(Tr, myThid)
-
-C do specific humidity
-        IF ( QrFile .NE. ' '.AND..NOT. useRelativeHumidity  ) THEN
-         CALL READ_FLD_XY_RL( QrFile,' ',qr,0,myThid )
-        ELSEIF ( QrrelFile .NE. ' '.AND.useRelativeHumidity) THEN
-         CALL READ_FLD_XY_RL( QrrelFile,' ',rref,0,myThid )
-         CALL CHEAPAML_CONVERT_HUM(rref, Tr, qr,myThid )
-
+        
+        _EXCH_XY_RL(TR, mythid)
+c do specific humidity
+        IF ( QrFile .NE. ' ') THEN
+         CALL READ_FLD_XY_RL( QrFile,' ',qr,0,myThid )      
         ELSE
-C default specific humidity profile to 80% relative humidity
+c default specific humidity profile to 80% relative humidity
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
@@ -448,7 +435,7 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RL(qr, myThid)
+        _EXCH_XY_RL(qr, mythid)
         IF ( UWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RL( UWindFile,' ',uwind,0,myThid )
         ELSE
@@ -456,19 +443,19 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
 c mod for debug
 c to return to original code, uncomment following line
 c comment out 2nd line
-              local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
-c             local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
-              uwind(i,j,bi,bj) = local
+                  local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
+c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
+                  uwind(i,j,bi,bj) = local
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDIF
-         _EXCH_XY_RL(uwind, myThid)
+         _EXCH_XY_RL(uwind, mythid)
         IF ( VWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RL( VWindFile,' ',vwind,0,myThid )
         ELSE
@@ -476,128 +463,139 @@ c             local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              vwind(i,j,bi,bj) = 0.d0
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+                  vwind(i,j,bi,bj) = 0.d0
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDIF
-        _EXCH_XY_RL(vwind, myThid)
-        IF(useStressOption)THEN
-         IF ( UStressFile .NE. ' '  ) THEN
-          CALL READ_FLD_XY_RL( UStressFile,' ',ustress,0,myThid )
-         ELSE
-          write(*,*)' U Stress File absent with stress option'
-          STOP 'ABNORMAL END: S/R CHEAPAML_FIELDS_LOAD'
-         ENDIF
-         IF ( VStressFile .NE. ' '  ) THEN
-          CALL READ_FLD_XY_RL( VStressFile,' ',vstress,0,myThid )
-         ELSE
-          write(*,*)' V Stress File absent with stress option'
-          STOP 'ABNORMAL END: S/R CHEAPAML_FIELDS_LOAD'
-         ENDIF
-         _EXCH_XY_RL(ustress, myThid)
-         _EXCH_XY_RL(vstress, myThid)
+         _EXCH_XY_RL(vwind, mythid)
+       IF(useStressOption)THEN
+        IF ( UStressFile .NE. ' '  ) THEN
+         CALL READ_FLD_XY_RL( UStressFile,' ',ustress,0,myThid )
+        ELSE
+        write(*,*)' U Stress File absent with stress option'
+        stop
         ENDIF
-        IF (FluxFormula.EQ.'COARE3')THEN
-         IF (WaveHFile.NE.' ')THEN
-          CALL READ_FLD_XY_RL( WaveHFile,' ',wavesh,0,myThid )
-         ENDIF
-         IF (WavePFile.NE.' ')THEN
-          CALL READ_FLD_XY_RL( WavePFile,' ',wavesp,0,myThid )
-         ELSE
-          DO bj = myByLo(myThid), myByHi(myThid)
-           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=1,sNy
-             DO i=1,sNx
-              u=uwind(i,j,bi,bj)**2+vwind(i,j,bi,bj)**2
-              u=dsqrt(u)
-              wavesp(i,j,bi,bj)=0.729 _d 0*u
-              wavesh(i,j,bi,bj)=0.018 _d 0*u*u*(1. _d 0 + .015 _d 0 *u)
-             ENDDO
+        IF ( VStressFile .NE. ' '  ) THEN
+         CALL READ_FLD_XY_RS( VStressFile,' ',vstress,0,myThid )
+        ELSE
+        write(*,*)' V Stress File absent with stress option'
+        stop
+        ENDIF
+         _EXCH_XY_RL(ustress, mythid)
+         _EXCH_XY_RL(vstress, mythid)
+        ENDIF
+        IF (FluxFormula.eq.'COARE3')THEN
+                IF (WaveHFile.NE.' ')THEN
+         CALL READ_FLD_XY_RL( WaveHFile,' ',wavesh,0,myThid )
+        ENDIF
+                IF (WavePFile.NE.' ')THEN
+         CALL READ_FLD_XY_RL( WavePFile,' ',wavesp,0,myThid )
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+                u=uwind(i,j,bi,bj)**2+vwind(i,j,bi,bj)**2
+                u=dsqrt(u)
+          wavesp(i,j,bi,bj)=0.729 _d 0 * u  
+          wavesh(i,j,bi,bj)=0.018 _d 0 * u*u*(1. _d 0 + .015 _d 0 *u)
             ENDDO
            ENDDO
           ENDDO
-         ENDIF
-         _EXCH_XY_RL(wavesp, myThid)
-         _EXCH_XY_RL(wavesh, myThid)
-        ENDIF
-
-C end if myIter = nIter0
+         ENDDO
        ENDIF
+        _EXCH_XY_RL(wavesp, mythid)
+        _EXCH_XY_RL(wavesh, mythid)
+      ENDIF 
+       ENDIF
+
 
 C endif for Steady Option
       ENDIF
 
 C fill in outer edges
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-oly,sny+oly
-            jG = myYGlobalLo-1+(bj-1)*sNy+j
-            DO i=1-olx,snx+olx
-              iG=myXGlobalLo-1+(bi-1)*sNx+i
-              if(iG.lt.1)then
-                Tr(i,j,bi,bj)=Tr(1,j,bi,bj)
-                qr(i,j,bi,bj)=qr(1,j,bi,bj)
-                uwind(i,j,bi,bj)=uwind(1,j,bi,bj)
-                vwind(i,j,bi,bj)=vwind(1,j,bi,bj)
-                Solar(i,j,bi,bj)=Solar(1,j,bi,bj)
-                if(UseStressOption)then
-                  ustress(i,j,bi,bj)=ustress(1,j,bi,bj)
-                  vstress(i,j,bi,bj)=vstress(1,j,bi,bj)
-                endif
-                if(FluxFormula.EQ.'COARE3')then
-                  wavesp(i,j,bi,bj)=wavesp(1,j,bi,bj)
-                  wavesh(i,j,bi,bj)=wavesh(1,j,bi,bj)
-                endif
-              elseif(iG.gt.Nx)then
-                Tr(i,j,bi,bj)=Tr(sNx,j,bi,bj)
-                qr(i,j,bi,bj)=qr(sNx,j,bi,bj)
-                uwind(i,j,bi,bj)=uwind(sNx,j,bi,bj)
-                vwind(i,j,bi,bj)=vwind(sNx,j,bi,bj)
-                Solar(i,j,bi,bj)=Solar(sNx,j,bi,bj)
-                if(UseStressOption)then
-                  ustress(i,j,bi,bj)=ustress(sNx,j,bi,bj)
-                  vstress(i,j,bi,bj)=vstress(sNx,j,bi,bj)
-                endif
-                if(FluxFormula.EQ.'COARE3')then
-                  wavesp(i,j,bi,bj)=wavesp(sNx,j,bi,bj)
-                  wavesh(i,j,bi,bj)=wavesh(sNx,j,bi,bj)
-                endif
-              elseif(jG.lt.1)then
-                Tr(i,j,bi,bj)=Tr(i,1,bi,bj)
-                qr(i,j,bi,bj)=qr(i,1,bi,bj)
-                uwind(i,j,bi,bj)=uwind(i,1,bi,bj)
-                vwind(i,j,bi,bj)=vwind(i,1,bi,bj)
-                Solar(i,j,bi,bj)=Solar(i,1,bi,bj)
-                if(UseStressOption)then
-                  ustress(i,j,bi,bj)=ustress(i,1,bi,bj)
-                  vstress(i,j,bi,bj)=vstress(i,1,bi,bj)
-                endif
-                if(FluxFormula.EQ.'COARE3')then
-                  wavesp(i,j,bi,bj)=wavesp(i,1,bi,bj)
-                  wavesh(i,j,bi,bj)=wavesh(i,1,bi,bj)
-                endif
-              elseif(jG.gt.sNy)then
-                Tr(i,j,bi,bj)=Tr(i,sNy,bi,bj)
-                qr(i,j,bi,bj)=qr(i,sNy,bi,bj)
-                uwind(i,j,bi,bj)=uwind(i,sNy,bi,bj)
-                vwind(i,j,bi,bj)=vwind(i,sNy,bi,bj)
-                Solar(i,j,bi,bj)=Solar(i,sNy,bi,bj)
-                if(UseStressOption)then
-                  ustress(i,j,bi,bj)=ustress(i,sNy,bi,bj)
-                  vstress(i,j,bi,bj)=vstress(i,sNy,bi,bj)
-                endif
-                if(FluxFormula.EQ.'COARE3')then
-                  wavesp(i,j,bi,bj)=wavesp(i,sNy,bi,bj)
-                  wavesh(i,j,bi,bj)=wavesh(i,sNy,bi,bj)
-                endif
-              endif
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
 
-      RETURN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+                do j=1-oly,sny+oly
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+                do i=1-olx,snx+olx
+                  iG=myXGlobalLo-1+(bi-1)*sNx+i
+            if(iG.lt.1)then
+            Tr(i,j,bi,bj)=Tr(1,j,bi,bj)
+            qr(i,j,bi,bj)=qr(1,j,bi,bj)
+            uwind(i,j,bi,bj)=uwind(1,j,bi,bj)
+            vwind(i,j,bi,bj)=vwind(1,j,bi,bj)
+            Solar(i,j,bi,bj)=Solar(1,j,bi,bj)
+            
+                if(UseStressOption)then
+                ustress(i,j,bi,bj)=ustress(1,j,bi,bj)
+                vstress(i,j,bi,bj)=vstress(1,j,bi,bj)
+                endif
+
+                if(FluxFormula.eq.'COARE3')then
+                wavesp(i,j,bi,bj)=wavesp(1,j,bi,bj)
+                wavesh(i,j,bi,bj)=wavesh(1,j,bi,bj)
+                endif
+
+            elseif(iG.gt.Nx)then
+            Tr(i,j,bi,bj)=Tr(sNx,j,bi,bj)
+            qr(i,j,bi,bj)=qr(sNx,j,bi,bj)
+            uwind(i,j,bi,bj)=uwind(sNx,j,bi,bj)
+            vwind(i,j,bi,bj)=vwind(sNx,j,bi,bj)
+            Solar(i,j,bi,bj)=Solar(sNx,j,bi,bj)
+
+                if(UseStressOption)then
+                ustress(i,j,bi,bj)=ustress(sNx,j,bi,bj)
+                vstress(i,j,bi,bj)=vstress(sNx,j,bi,bj)
+                endif
+
+                if(FluxFormula.eq.'COARE3')then
+                wavesp(i,j,bi,bj)=wavesp(sNx,j,bi,bj)
+                wavesh(i,j,bi,bj)=wavesh(sNx,j,bi,bj)
+                endif
+
+            elseif(jG.lt.1)then
+            Tr(i,j,bi,bj)=Tr(i,1,bi,bj)
+            qr(i,j,bi,bj)=qr(i,1,bi,bj)
+            uwind(i,j,bi,bj)=uwind(i,1,bi,bj)
+            vwind(i,j,bi,bj)=vwind(i,1,bi,bj)
+            Solar(i,j,bi,bj)=Solar(i,1,bi,bj)
+
+                if(UseStressOption)then
+                ustress(i,j,bi,bj)=ustress(i,1,bi,bj)
+                vstress(i,j,bi,bj)=vstress(i,1,bi,bj)
+                endif
+
+                if(FluxFormula.eq.'COARE3')then
+                wavesp(i,j,bi,bj)=wavesp(i,1,bi,bj)
+                wavesh(i,j,bi,bj)=wavesh(i,1,bi,bj)
+                endif
+
+            elseif(jG.gt.Ny)then
+            Tr(i,j,bi,bj)=Tr(i,sNy,bi,bj)
+            qr(i,j,bi,bj)=qr(i,sNy,bi,bj)
+            uwind(i,j,bi,bj)=uwind(i,sNy,bi,bj)
+            vwind(i,j,bi,bj)=vwind(i,sNy,bi,bj)
+            Solar(i,j,bi,bj)=Solar(i,sNy,bi,bj)
+
+                if(UseStressOption)then
+                ustress(i,j,bi,bj)=ustress(i,sNy,bi,bj)
+                vstress(i,j,bi,bj)=vstress(i,sNy,bi,bj)
+                endif
+
+                if(FluxFormula.eq.'COARE3')then
+                wavesp(i,j,bi,bj)=wavesp(i,sNy,bi,bj)
+                wavesh(i,j,bi,bj)=wavesh(i,sNy,bi,bj)
+                endif
+
+            endif
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+       RETURN
       END

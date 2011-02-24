@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_c2_adv_r.F,v 1.1 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_c2_adv_r.F,v 1.2 2011/02/24 16:11:41 wienders Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: CHEAPAML_GAD_C2_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE CHEAPAML_GAD_C2_ADV_R(
+      SUBROUTINE CHEAPAML_GAD_C2_ADV_R( 
      I           bi,bj,
      I           rTrans,
      I           tracer,

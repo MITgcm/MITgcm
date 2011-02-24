@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.5 2011/02/07 13:42:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.6 2011/02/24 16:11:41 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
-c#undef ALLOW_THSICE
+#undef ALLOW_THSICE
 
       subroutine cheapaml(
      I                           myTime, myIter, mythid )
@@ -24,8 +24,8 @@ c
 c       Input:
 c       ------
 c       uwind, vwind  - mean wind speed (m/s)
-C        Tr - Relaxation profile for Tair on boundaries (C)
-c        qr - Relaxation profile for specific humidity (kg/kg)
+c     Tr - Relaxation profile for Tair on boundaries (C)
+c     qr - Relaxation profile for specific humidity (kg/kg)
 c     ==================================================================
 c     SUBROUTINE cheapaml
 c     ==================================================================
@@ -40,9 +40,9 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-c#ifdef ALLOW_THSICE
-c#include "THSICE_VARS.h"
-c#endif
+#ifdef ALLOW_THSICE
+#include "THSICE_VARS.h"
+#endif
 #include "CHEAPAML.h"
 
 c     == routine arguments ==
@@ -82,8 +82,8 @@ C atmospheric timestep
 c initialize net heat flux and fresh water flux arrays
           DO j = 1-oly,sny+oly
            DO i = 1-olx,snx+olx
-                  Qnet(i,j,bi,bj)=0. _d 0
-                  EmPmR(i,j,bi,bj)=0. _d 0
+              Qnet(i,j,bi,bj)=0. _d 0
+              EmPmR(i,j,bi,bj)=0. _d 0
            ENDDO
           ENDDO
 
@@ -100,7 +100,7 @@ c cycle through atmospheric advective/diffusive
 c surface temperature evolution
 
         do nt=1,cheapaml_ntim
-
+                
            DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -157,9 +157,11 @@ c do water
           do j=1-oly,sny+oly
           do i=1-olx,snx+olx
           gqair(i,j,bi,bj)=0. _d 0
+         uTrans(i,j)=uwind(i,j,bi,bj)
+         vTrans(i,j)=vwind(i,j,bi,bj)
           enddo
           enddo
-
+        
          call GAD_2d_CALC_RHS(
      I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
      I           uTrans,vTrans,
@@ -180,7 +182,7 @@ c do water
      I                   bi, bj,
      U                   qair, gqair,nt,
      I                   myTime, myIter, myThid )
-
+                                       
 c close bi, bj loops
         enddo
         enddo
@@ -191,27 +193,27 @@ c update edges
 
 c reset boundaries to open boundary profile
 
-           DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-                do j=1-oly,sny+oly
-                  jG = myYGlobalLo-1+(bj-1)*sNy+j
-                do i=1-olx,snx+olx
-                  iG=myXGlobalLo-1+(bi-1)*sNx+i
-                  if(iG.eq.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(iG.eq.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(jG.eq.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(jG.eq.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(useFreshWaterFlux)then
-                  if(iG.eq.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(iG.eq.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(jG.eq.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(jG.eq.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  endif
-                enddo
-                enddo
-           ENDDO
-           ENDDO
-
+        DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+            do j=1-oly,sny+oly
+              jG = myYGlobalLo-1+(bj-1)*sNy+j
+              do i=1-olx,snx+olx
+                iG=myXGlobalLo-1+(bi-1)*sNx+i
+                if(iG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                if(iG.ge.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                if(jG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                if(jG.ge.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                if(useFreshWaterFlux)then
+                  if(iG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(iG.ge.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(jG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(jG.ge.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                endif
+              enddo
+            enddo
+          ENDDO
+        ENDDO
+        
         enddo
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
@@ -234,23 +236,23 @@ c now continue with diabatic forcing
 
 c atmospheric upwelled long wave
         ttt=Tair(i,j,bi,bj)-gamma_blk*(cheapaml_h-zt)
-        xalwu=stefan*(ttt+Celcius2K)**4*0.5 _d 0
+        xalwu=stefan*(ttt+Celsius2K)**4*0.5 _d 0
 c atmospheric downwelled long wave
-        xalwd=stefan*(Tair(i,j,bi,bj)+Celcius2K)**4*0.5 _d 0
+        xalwd=stefan*(Tair(i,j,bi,bj)+Celsius2K)**4*0.5 _d 0
 c total flux at upper atmospheric layer interface
         xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*hfacC(i,j,1,bi,bj)
-c lower flux calculation.
+c lower flux calculation. 
         xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
-     &*xef*hfacC(i,j,1,bi,bj)
+     .*xef*hfacC(i,j,1,bi,bj)
 c add flux divergences into atmospheric temperature tendency
         gTair(i,j,bi,bj)=(xfld-xflu)*hm
         Qnet(i,j,bi,bj)=(
-     &     -solar(i,j,bi,bj)
-     &     -xalwd
-     &     +xolw
-     &     +fsha
-     &     +flha
-     &     )*hfacC(i,j,1,bi,bj)
+     $     -solar(i,j,bi,bj)
+     $     -xalwd
+     $     +xolw
+     $     +fsha
+     $     +flha
+     $     )*hfacC(i,j,1,bi,bj)
 
 c need to precip?
         if(useFreshwaterFlux)then
@@ -259,7 +261,7 @@ c compute saturation specific humidity at atmospheric
 c layer top
 c first, what is the pressure there?
 c ts is surface atmospheric temperature
-        ts=Tair(i,j,bi,bj)+gamma_blk*zt+Celcius2K
+        ts=Tair(i,j,bi,bj)+gamma_blk*zt+Celsius2K
         pt=p0*(1-gamma_blk*cheapaml_h/ts)**(gravity/gamma_blk/gasR)
         if(q.gt.ssqt)then
 c factor to compute rainfall from specific humidity
@@ -277,7 +279,7 @@ c       CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
         enddo
 
 c it is not necessary to use the Adams2d subroutine as
-c the forcing is always computed at the current time step.
+c the forcing is always computed at the current time step. 
 
         call timestep_2d_tracer(
      I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
@@ -296,7 +298,7 @@ c       do implicit time stepping over land
         do i=1-olx,snx+olx
         dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)
         Tair(i,j,bi,bj)=Tair(i,j,bi,bj)+xgs*deltaT*dtemp
-     &  *xrelf*(1. _d 0-hFacC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
+     .  *xrelf*(1. _d 0-hFacC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
         enddo
         enddo
 
@@ -308,7 +310,7 @@ c do water
      I                     qair,gqair,
      I                     myIter, myThid )
         call cycle_2d_tracer(
-     I                       bi, bj,
+     I                       bi, bj, 
      U                       qair,gqair,nt,
      I                       myTime,myIter,myThid )
 c       do implicit time stepping over land and or buffer
@@ -316,7 +318,8 @@ c       do implicit time stepping over land and or buffer
         do i=1-olx,snx+olx
         dq=qr(i,j,bi,bj)-qair(i,j,bi,bj)
         qair(i,j,bi,bj)=qair(i,j,bi,bj)+xgs*deltaT*dq
-     &  *xrelf*(1. _d 0-hFacC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
+     .  *xrelf*(1. _d 0-hFacC(i,j,1,bi,bj)+Cheapmask(i,j,bi,bj))
+        if (qair(i,j,bi,bj).lt.0.0) qair(i,j,bi,bj) = 0.0 _d 0
         enddo
         enddo
         endif
@@ -343,15 +346,15 @@ c reset edges to open boundary profiles
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
                 do i=1-olx,snx+olx
                   iG=myXGlobalLo-1+(bi-1)*sNx+i
-                  if(iG.eq.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(iG.eq.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(jG.eq.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                  if(jG.eq.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                  if(iG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                  if(iG.ge.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                  if(jG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+                  if(jG.ge.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
                   if(useFreshWaterFlux)then
-                  if(iG.eq.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(iG.eq.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(jG.eq.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(jG.eq.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(iG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(iG.ge.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(jG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+                  if(jG.ge.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
                   endif
                 enddo
                 enddo
@@ -383,6 +386,18 @@ c     &    CALL BULKF_AVE(bi,bj,mythid)
 C--   end bi,bj loops
        ENDDO
       ENDDO
+      
+#ifdef ALLOW_DIAGNOSTICS
+      CALL DIAGNOSTICS_FILL(uwind,'CH_Uwind',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(vwind,'CH_Vwind',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(tair,'CH_TAIR ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(Qnet,'CH_QNET ',0,1,0,1,1,myThid)
+      if(useFreshwaterFlux)then
+        CALL DIAGNOSTICS_FILL(Qair,'CH_QAIR ',0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(EmPmR,'CH_EmP  ',0,1,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+      
 
       RETURN
       END

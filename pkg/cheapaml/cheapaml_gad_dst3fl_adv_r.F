@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_dst3fl_adv_r.F,v 1.1 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_dst3fl_adv_r.F,v 1.2 2011/02/24 16:11:41 wienders Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: GAD_DST3FL_ADV_R
 C !INTERFACE: ==========================================================
       SUBROUTINE cheapaml_GAD_DST3FL_ADV_R(
      I           bi,bj,dTarg,
-     I           rTrans,
+     I           rTrans, 
      I           tracer,
      O           wT,
      I           myThid )

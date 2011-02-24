@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.1 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.2 2011/02/24 16:11:41 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -28,8 +28,8 @@ c       Tair  - mean air temperature (K)  at height ht (m)
 c       theta(k=1) - sea surface temperature (C)
 c       Qair - Specific humidity kg/kg
 c       Solar - short wave net solar flux at surface (W/m^2)
-c        Tr - relaxation profile for temperature on boundaries (C)
-c        qr - relaxation profile for specific humidity (kg/kg)
+c	Tr - relaxation profile for temperature on boundaries (C)
+c	qr - relaxation profile for specific humidity (kg/kg)
 c       i,j,bi,bj - indices of data
 c     ==================================================================
 c     SUBROUTINE cheapaml_LANL_flux
@@ -57,7 +57,7 @@ c variables to include seaice effect
 #ifdef ALLOW_THSICE
       _RL     tmp
       _RL     albedo
-#endif
+#endif      
       integer iceornot
 
 C     == Local variables ==
@@ -91,11 +91,11 @@ c factor to compute rainfall from specific humidity
 c inverse of time step
         deltaTm=1. _d 0/deltaT
 c reference values to compute turbulent flux
-                ht=zt
-                hq=zq
-                hu=zu
+		ht=zt
+		hq=zq
+		hu=zu
               zref = zt
-                   zice=.0005 _d 0
+     	      zice=.0005 _d 0
               aln = log(ht/zref)
 c for iterating on turbulence
               niter_bulk = 5
@@ -132,17 +132,17 @@ c     determine wind stress
                usm=0. _d 0
                ustress(i,j,bi,bj) = 0. _d 0
                vstress(i,j,bi,bj) = 0. _d 0
-             endif
+                endif
 c wind stress computed
                 ENDIF
 c diabatic and freshwater flux forcing
         to=theta(i,j,1,bi,bj)
         t=Tair(i,j,bi,bj)
-        toa=to+Celcius2K
-        tta=t+Celcius2K
-        ttas=tta+gamma_blk*zref
+        toa=to+Celsius2K
+        tta=t+Celsius2K
+	    ttas=tta+gamma_blk*zref
         ttt=tta-(cheapaml_h - zref)*gamma_blk
-        pt=p0*(1-gamma_blk*cheapaml_h/ttas)**(gravity/gamma_blk/gasR)
+	    pt=p0*(1-gamma_blk*cheapaml_h/ttas)**(gravity/gamma_blk/gasR)
 
 c specific humidities
               ssq = ssq0*exp( lath*(ssq1-ssq2/toa) ) / p0
@@ -223,7 +223,7 @@ c compute specific humidity at 100m
                  x      = sqrt(xsq)
                  psx100  = -5. _d 0*z100ol*stable + (1. _d 0-stable)*
      &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))
-        q100=ssq+qstar*(dlog(100. _d 0/zice)-psx100)
+	             q100=ssq+qstar*(dlog(100. _d 0/zice)-psx100)
 
       RETURN
       END

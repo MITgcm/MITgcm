@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_x.F,v 1.2 2011/02/06 00:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_x.F,v 1.3 2011/02/24 16:11:41 wienders Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,13 +7,13 @@ CBOP
 C !ROUTINE: GAD_DIFF_2d_X
 
 C     !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DIFF_2d_X(
+      SUBROUTINE GAD_DIFF_2d_X( 
      I   bi,bj,
      I   diffKh,
      I   tracer,
      O   dfx,
      I   myThid )
-
+      
 C !DESCRIPTION:
 C Calculates the area integrated zonal flux due to down-gradient diffusion
 C of a tracer:
@@ -28,10 +28,11 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
+C  k                    :: vertical level
 C  diffKh               :: horizontal diffusivity
 C  tracer               :: tracer field
 C  myThid               :: thread number
-      INTEGER bi,bj
+      INTEGER bi,bj,k
       _RL diffKh
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -54,7 +55,7 @@ CEOP
      &       *CosFacU(j,bi,bj)
         ENDDO
       ENDDO
-
+      
       RETURN
       END
-
+      
