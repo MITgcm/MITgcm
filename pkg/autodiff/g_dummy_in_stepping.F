@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.12 2008/04/08 03:11:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.13 2011/02/24 07:30:42 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -99,6 +99,13 @@ c
      &       'G_Jwvel.',suff, g_wvel, myIter, myThid)
         CALL WRITE_FLD_XY_RL(
      &       'G_Jetan.',suff, g_etan, myIter, myThid)
+
+#ifdef ALLOW_AUTODIFF_MONITOR_DIAG
+        CALL WRITE_FLD_XYZ_RL(
+     &       'G_Jrhoinsitu.',suff, g_rhoinsitu, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL(
+     &       'G_Jtotphihyd.',suff, g_totphihyd, myIter, myThid)
+#endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr,

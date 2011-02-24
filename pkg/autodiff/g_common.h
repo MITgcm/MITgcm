@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.21 2010/08/09 16:05:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.22 2011/02/24 07:30:42 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -55,6 +55,13 @@ C--   heimbach@mit.edu 11-Jan-2001
       common /g_dynvars_r_2/
      &                     g_etah
       _RL g_etah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#ifdef ALLOW_AUTODIFF_MONITOR_DIAG
+      common /g_dynvars_diag/ 
+     &                     g_totphihyd, g_rhoinsitu
+      _RL g_rhoinsitu(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL g_totphihyd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
 #ifdef ALLOW_CD_CODE
       common /g_dynvars_cd/

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.25 2010/11/10 22:11:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.26 2011/02/24 07:30:42 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -56,6 +56,13 @@ C--   heimbach@mit.edu 11-Jan-2001
       common /addynvars_r_2/
      &                     adetah
       _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#ifdef ALLOW_AUTODIFF_MONITOR_DIAG
+      common /addynvars_diag/ 
+     &                     adtotphihyd, adrhoinsitu
+      _RL adrhoinsitu(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adtotphihyd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
 #ifdef ALLOW_CD_CODE
       common /addynvars_cd/
