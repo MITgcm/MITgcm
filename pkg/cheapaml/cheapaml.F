@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.7 2011/02/24 18:06:30 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.8 2011/02/24 20:01:33 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -240,10 +240,10 @@ c atmospheric upwelled long wave
 c atmospheric downwelled long wave
         xalwd=stefan*(Tair(i,j,bi,bj)+Celsius2K)**4*0.5 _d 0
 c total flux at upper atmospheric layer interface
-        xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*hfacC(i,j,1,bi,bj)
+        xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*maskC(i,j,1,bi,bj)
 c lower flux calculation. 
         xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
-     .*xef*hfacC(i,j,1,bi,bj)
+     .*xef*maskC(i,j,1,bi,bj)
 c add flux divergences into atmospheric temperature tendency
         gTair(i,j,bi,bj)=(xfld-xflu)*hm
         Qnet(i,j,bi,bj)=(
@@ -252,7 +252,7 @@ c add flux divergences into atmospheric temperature tendency
      $     +xolw
      $     +fsha
      $     +flha
-     $     )*hfacC(i,j,1,bi,bj)
+     $     )*maskC(i,j,1,bi,bj)
 
 c need to precip?
         if(useFreshwaterFlux)then
