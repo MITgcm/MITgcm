@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.113 2011/02/23 21:12:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.114 2011/02/24 19:55:07 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -130,15 +130,16 @@ c     sea ice dyhnamics
 c     The change of mean ice thickness due to turbulent ocean-sea ice heat fluxes
       _RL d_HEFFbyOCNonICE    (1:sNx,1:sNy)
 
-c     The change of mean ice thickness due to atmospheric fluxes over the open water 
-c     fraction of the grid cell
+c     The sum of mean ice thickness increments due to atmospheric fluxes over the open water 
+c     fraction and ice-covered fractions of the grid cell
       _RL d_HEFFbyATMonOCN    (1:sNx,1:sNy)
-
-c     The change of mean ice thickness due to atmospheric fluxes over the ice
-      _RL d_HEFFbyATMonICE    (1:sNx,1:sNy)
-
 c     The change of mean ice thickness due to flooding by snow
       _RL d_HEFFbyFLOODING    (1:sNx,1:sNy)
+
+c     The mean ice thickness increments due to atmospheric fluxes over the open water 
+c     fraction and ice-covered fractions of the grid cell, respectively
+      _RL d_HEFFbyATMonOCN_open(1:sNx,1:sNy)
+      _RL d_HEFFbyATMonOCN_cover(1:sNx,1:sNy)
 
       _RL d_HSNWbyNEG         (1:sNx,1:sNy)
       _RL d_HSNWbyATMonSNW    (1:sNx,1:sNy)
@@ -254,7 +255,6 @@ C     Cutoff for iceload
 C     FREEZING TEMP. OF SEA WATER (deg C)
       TBC          = SEAICE_freeze
 
-
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
 
@@ -317,11 +317,11 @@ C =====================
 #endif
 
           d_HEFFbyOCNonICE(I,J)      = 0.0 _d 0
-cif delta HEFF by atmospheric fluxes over the open ocean (ice-free)
           d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
-cif delta HEFF by atmospheric fluxes over the ice (not to the ocean)
-          d_HEFFbyATMonICE(I,J)      = 0.0 _d 0
           d_HEFFbyFLOODING(I,J)      = 0.0 _d 0
+
+          d_HEFFbyATMonOCN_open(I,J) = 0.0 _d 0
+          d_HEFFbyATMonOCN_cover(I,J) = 0.0 _d 0
 
           d_HSNWbyATMonSNW(I,J)      = 0.0 _d 0
           d_HSNWbyOCNonSNW(I,J)      = 0.0 _d 0
@@ -764,8 +764,6 @@ C ======================================================
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #endif
 
-
-
         DO J=1,sNy
          DO I=1,sNx
 
@@ -1008,12 +1006,13 @@ c         Limit ice growth by potential melt by ocean
 
 #endif /*FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */
 
-          d_HEFFbyATMonICE(I,J)=d_HEFFbyATMonICE(I,J)+tmpscal2
+          d_HEFFbyATMonOCN_cover(I,J)=tmpscal2
+          d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal2
           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)-tmpscal2
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
 
 #ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayA(I,J) = d_HEFFbyATMonICE(I,J)
+          DIAGarrayA(I,J) = d_HEFFbyATMonOCN_cover(I,J)
 #endif
          ENDDO
         ENDDO
@@ -1144,10 +1143,15 @@ c           Convergent open water heat fluxes warm the ocean
 c           leading to an indirect ice melt.
             tmpscal3 = MAX(0.0 _d 0, tmpscal1-tmpscal2)
 #endif /* FENTY_OPEN_WATER_FLUXES_MELT_ICE */
+    
+            d_HEFFbyATMonOCN_open(I,J)=MAX(tmpscal3, -HEFF(I,J,bi,bj))
+            d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J) + 
+     &                            d_HEFFbyATMonOCN_open(I,J)
 
-            d_HEFFbyATMonOCN(I,J)=MAX(tmpscal3, -HEFF(I,J,bi,bj))
-            r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-d_HEFFbyATMonOCN(I,J)
-            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + d_HEFFbyATMonOCN(I,J)
+            r_QbyATM_open(I,J) = r_QbyATM_open(I,J) - 
+     &           d_HEFFbyATMonOCN_open(I,J)
+            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + 
+     &           d_HEFFbyATMonOCN_open(I,J)
 
 #else /* FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */
 
@@ -1165,6 +1169,7 @@ C           allow not only growth but also melt by open ocean heat flux
 #else
             tmpscal3=MAX(tmpscal1-tmpscal2, 0. _d 0)
 #endif /* SEAICE_DO_OPEN_WATER_MELT */
+          d_HEFFbyATMonOCN_open(I,J)=tmpscal3
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal3
           r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal3
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3
@@ -1174,7 +1179,7 @@ C           allow not only growth but also melt by open ocean heat flux
 
 #ifdef ALLOW_DIAGNOSTICS
             DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
-     &           * d_HEFFbyATMonOCN(I,J)
+     &           * d_HEFFbyATMonOCN_open(I,J)
 #endif
          ENDDO
         ENDDO
@@ -1223,7 +1228,8 @@ C ===================================================================
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE d_HEFFbyATMonICE = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN_cover = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE a_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE heffActual = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1251,8 +1257,8 @@ c         parameterization.
           heff_star = sqrt(HEFFpreTH(I,J)*HEFFPreTH(I,J) + 0.01 _d 0)
 
 c         the various thickness tendency terms
-          tmpscal1 = d_HEFFbyATMOnOCN(I,J)
-          tmpscal2 = d_HEFFbyATMOnICE(I,J)
+          tmpscal1 = d_HEFFbyATMOnOCN_open(I,J)
+          tmpscal2 = d_HEFFbyATMOnOCN_cover(I,J)
           tmpscal3 = d_HEFFbyOCNonICE(I,J)
 
 c         Part 1: Treat expansion/contraction of ice cover in open-water areas
@@ -1306,8 +1312,6 @@ c         reduces concentrations
 C compute heff after ice melt by ocn:
           tmpscal0=HEFF(I,J,bi,bj)
      &            - d_HEFFbyATMonOCN(I,J) - d_HEFFbyFLOODING(I,J)
-     &            - d_HEFFbyATMonICE(I,J)
-
 C compute available heat left after snow melt by atm:
           tmpscal1= a_QbyATM_open(I,J)+a_QbyATM_cover(I,J)
      &            - d_HSNWbyATMonSNW(I,J)/ICE2SNOW
@@ -1325,18 +1329,16 @@ C gain of new ice over open water
 # ifdef SEAICE_OCN_MELT_ACT_ON_AREA
 C ice cover reduction by joint OCN+ATM melt
           tmpscal3 = MIN( 0. _d 0 ,
-     &              d_HEFFbyATMonOCN(I,J)+d_HEFFbyOCNonICE(I,J) 
-     &              + d_HEFFbyATMonICE(I,J)                     )
+     &              d_HEFFbyATMonOCN(I,J)+d_HEFFbyOCNonICE(I,J) )
 # else
 C ice cover reduction by ATM melt only -- as in legacy code
-          tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN(I,J) 
-     &                            + d_HEFFbyATMonICE(I,J) )
+          tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN(I,J) )
 # endif
 C gain of new ice over open water
 
 # ifdef SEAICE_DO_OPEN_WATER_GROWTH
 C the one effectively used to increment HEFF
-          tmpscal4 = d_HEFFbyATMonOCN(I,J)
+          tmpscal4 = d_HEFFbyATMonOCN_open(I,J)
 # else
 C the virtual one -- as in legcy code
           tmpscal4 = MAX(ZERO,a_QbyATM_open(I,J))
@@ -1431,7 +1433,8 @@ C ===================================================================
 CADJ STORE d_HEFFbyNEG = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE d_HEFFbyATMonICE = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyFLOODING = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
@@ -1441,7 +1444,6 @@ CADJ &                       key = iicekey, byte = isbyte
          DO I=1,sNx
 Cgf note: flooding does count negatively
           tmpscal1 = d_HEFFbyNEG(I,J) + d_HEFFbyOCNonICE(I,J) + 
-     &               d_HEFFbyATMonICE(I,J) + 
      &               d_HEFFbyATMonOCN(I,J) - d_HEFFbyFLOODING(I,J)
           tmpscal2 = tmpscal1 * SIsal0 * HEFFM(I,J,bi,bj)
      &            /SEAICE_deltaTtherm * ICE2WATR * rhoConstFresh
@@ -1481,8 +1483,7 @@ CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
         DO J=1,sNy
          DO I=1,sNx
 C sum up the terms that affect the salt content of the ice pack
-         tmpscal1=d_HEFFbyOCNonICE(I,J)+d_HEFFbyATMonOCN(I,J)+
-     &       d_HEFFbyATMonICE(I,J)
+         tmpscal1=d_HEFFbyOCNonICE(I,J)+d_HEFFbyATMonOCN(I,J)
 
 C recompute HEFF before thermodyncamic updates (which is not AREApreTH in legacy code)
          tmpscal2=HEFF(I,J,bi,bj)-tmpscal1-d_HEFFbyFLOODING(I,J)
@@ -1765,7 +1766,6 @@ C ==================================================
      &             +d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
      &             +d_HEFFbyOCNonICE(I,J)
      &             +d_HEFFbyATMonOCN(I,J)
-     &             +d_HEFFbyATMonICE(I,J)     
      &             +d_HEFFbyNEG(I,J)
      &             +d_HSNWbyNEG(I,J)/ICE2SNOW
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
