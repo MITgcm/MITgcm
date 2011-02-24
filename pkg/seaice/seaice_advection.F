@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.21 2011/01/12 00:06:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.22 2011/02/24 06:37:35 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,6 +53,9 @@ C !USES: ===============================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+# endif
 #endif
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
