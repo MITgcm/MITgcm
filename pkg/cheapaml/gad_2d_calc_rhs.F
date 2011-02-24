@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.5 2011/02/24 16:11:41 wienders Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.6 2011/02/24 20:11:44 wienders Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -152,7 +152,9 @@ C     -    Advective flux in X
 c     make local copy of west land mask
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            MaskLocW(i,j)=MaskW(i,j,1,bi,bj)
+c            MaskLocW(i,j)=MaskW(i,j,1,bi,bj)
+c     change to allow advection on land
+             MaskLocW(i,j)=1. _d 0
           ENDDO
         ENDDO
         call GAD_DST3FL_ADV_X(
@@ -245,7 +247,9 @@ c     prepare boundary tracer values
 c     make local copy of south land mask
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            MaskLocS(i,j)=MaskS(i,j,1,bi,bj)
+c            MaskLocS(i,j)=MaskS(i,j,1,bi,bj)
+c Change to allow advection on land 
+            MaskLocS(i,j)= 1. _d 0
           ENDDO
         ENDDO
         call GAD_DST3FL_ADV_Y(
