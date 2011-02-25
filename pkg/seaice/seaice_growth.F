@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.114 2011/02/24 19:55:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.115 2011/02/25 02:31:54 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -444,7 +444,7 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
          ENDDO
         ENDDO
 
-C 2.5) treat case of excessive ice cover:
+C 2.5) treat case of excessive ice cover, e.g., due to ridging:
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
@@ -1659,7 +1659,8 @@ C                 b) melting: ice fraction vanishes with current age
          DO I=1,sNx
           IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
            IF ( AREA(i,j,bi,bj) .LT. AREApreTH(i,j) ) THEN
-C--   scale effective ice-age to account for ice-age sink associated with melting
+C--   scale effective ice-age to account for ice-age sink associated
+C     with melting or ridging
             IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
      &         *AREA(i,j,bi,bj)/AREApreTH(i,j)
            ENDIF
