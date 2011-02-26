@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.153 2010/11/18 00:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.154 2011/02/26 00:42:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -262,6 +262,10 @@ C   Eliassen-Palm-flux-forced U-tendency,
 C   if desired:
 #ifdef INCLUDE_EP_FORCING_CODE
       CALL CALC_EP_FORCING(myThid)
+#endif
+
+#ifdef ALLOW_AUTODIFF_MONITOR_DIAG
+      CALL DUMMY_IN_DYNAMICS( mytime, myiter, myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC

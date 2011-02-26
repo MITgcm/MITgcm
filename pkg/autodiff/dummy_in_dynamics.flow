@@ -1,0 +1,15 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_dynamics.flow,v 1.1 2011/02/26 00:41:20 heimbach Exp $
+C $Name:  $
+
+C     /==========================================================\
+C     | SUBROUTINE DUMMY_IN_STEPPING                             |
+C     \==========================================================/
+cadj SUBROUTINE dummy_in_dynamics INPUT   = 1, 2, 3
+cadj SUBROUTINE dummy_in_dynamics OUTPUT  =
+cadj SUBROUTINE dummy_in_dynamics ACTIVE  =
+cadj SUBROUTINE dummy_in_dynamics DEPEND  = 1, 2, 3
+cadj SUBROUTINE dummy_in_dynamics REQUIRED
+cadj SUBROUTINE dummy_in_dynamics INFLUENCED
+cadj SUBROUTINE dummy_in_dynamics ADNAME  = addummy_in_dynamics
+cadj SUBROUTINE dummy_in_dynamics FTLNAME = g_dummy_in_dynamics
+

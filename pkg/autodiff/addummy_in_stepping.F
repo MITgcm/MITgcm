@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.48 2011/02/24 07:30:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.49 2011/02/26 00:41:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,10 +115,6 @@ c
        call adexch_xyz_rl( adsalt, mythid )
        call adexch_xyz_rl( adwvel, mythid )
        call adexch_uv_xyz_rl( aduvel,advvel, .true. ,mythid )
-#   ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-       call adexch_xyz_rl( adrhoinsitu, mythid )
-       call adexch_xyz_rl( adtotphihyd, mythid )
-#   endif
 #  endif 
 c
        call adexch_xy_rl( adfu, mythid )
@@ -168,13 +164,6 @@ C--     Read IO error counter
      &       'ADJwvel.',suff, adwvel, myIter, myThid)
         CALL WRITE_FLD_XY_RL(
      &       'ADJetan.',suff, adetan, myIter, myThid)
-
-#ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJrhoinsitu.',suff, adrhoinsitu, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJtotphihyd.',suff, adtotphihyd, myIter, myThid)
-#endif
 
         if ( .NOT. useSEAICE .AND. .NOT. useEXF ) then
         CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
