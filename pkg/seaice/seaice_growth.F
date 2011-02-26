@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.115 2011/02/25 02:31:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.116 2011/02/26 00:10:51 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1679,8 +1679,8 @@ C                 b) melting: ice volume vanishes with current age
         DO J=1,sNy
          DO I=1,sNx
 C--   compute actual age from effective age:
-          IF (AREApreTH(i,j).GT.0. _d 0) THEN
-           tmpscal1=IceAge(i,j,bi,bj)/AREApreTH(i,j)
+          IF (HEFFpreTH(i,j).GT.0. _d 0) THEN
+           tmpscal1=IceAge(i,j,bi,bj)/HEFFpreTH(i,j)
           ELSE
            tmpscal1=0. _d 0
           ENDIF
@@ -1694,7 +1694,7 @@ C--   compute actual age from effective age:
            tmpscal2=tmpscal1+SEAICE_deltaTtherm
           ENDIF
 C--   re-scale to effective age:
-          IceAge(i,j,bi,bj) = tmpscal2*AREA(i,j,bi,bj)
+          IceAge(i,j,bi,bj) = tmpscal2*HEFF(i,j,bi,bj)
          ENDDO
         ENDDO
 # endif /* SEAICE_AGE_VOL */

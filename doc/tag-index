@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1381 2011/02/23 21:12:45 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1382 2011/02/26 00:10:51 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - redefined actual sea ice age to be ICEAGE/HEFF ifdef SEAICE_AGE_VOL
 o pkg/seaice (seaice_growth v 1.113):
  - reverting seaice_growth to v 1.111 in order to have code with exact bit
    compatibility with MITgcm_contrib/ifenty/Fenty_seaice_thermo_code_merge

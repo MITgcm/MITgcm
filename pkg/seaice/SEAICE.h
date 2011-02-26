@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.54 2010/11/25 16:43:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.55 2011/02/26 00:10:51 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -34,10 +34,14 @@ C             note: for non-zero AREA, actual snow
 C                thickness is HSNOW / AREA
 C     HSALT - effective sea ice salinity in g/m^2
 C             at center of grid, i.e., tracer point
-C     ICEAGE- effective sea ice age in s
+C     ICEAGE- effective sea ice age
 C             at center of grid, i.e., tracer point
-C             note: for non-zero AREA, actual ice
-C                age is ICEAGE / AREA
+C             ==> ifndef SEAICE_AGE_VOL and for non-zero AREA,
+C                 units of ICEAGE are seconds
+C                 and actual ice age is ICEAGE / AREA seconds
+C             ==> ifdef SEAICE_AGE_VOL and for non-zero HEFF,
+C                 units of ICEAGE are seconds * meters
+C                 and actual ice age is ICEAGE / HEFF seconds
 C \ev
 CEOP
 
