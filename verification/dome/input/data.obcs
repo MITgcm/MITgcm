@@ -8,6 +8,10 @@
  useOrlanskiWest=.TRUE.,
  useOrlanskiNorth=.FALSE.,
 # useOrlanskiSouth=.TRUE.,
+ useOBCSbalance=.TRUE.,
+ OBCS_balanceFacW= 1.,
+ OBCS_balanceFacN= 0.,
+ OBCS_monitorFreq=3000.,
  &
 
  &OBCS_PARM02
