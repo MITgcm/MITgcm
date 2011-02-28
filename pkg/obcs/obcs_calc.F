@@ -1,18 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.29 2010/12/06 14:25:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.30 2011/02/28 15:30:00 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_CALC
+
+C     !INTERFACE:
       SUBROUTINE OBCS_CALC( futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
+
+C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE OBCS_CALC                                     |
-C     | o Calculate future boundary data at open boundaries      |
-C     |   at time = futureTime                                   |
+C     | SUBROUTINE OBCS_CALC
+C     | o Calculate future boundary data at open boundaries
+C     |   at time = futureTime
 C     *==========================================================*
-C     |                                                          |
-C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -31,6 +37,7 @@ C     === Global variables ===
 # include "NEST_CHILD.h"
 #endif /* ALLOW_NEST_CHILD */
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER futureIter
       _RL futureTime
@@ -43,16 +50,13 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_OBCS
 
-C     == Local variables ==
+C     !LOCAL VARIABLES:
 C     bi, bj       :: tile indices
 C     I,J,K        :: loop indices
 C     I_obc, J_obc :: local index of open boundary
 C     msgBuf       :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER I, J, K, I_obc, J_obc
-#ifdef ALLOW_OBCS_BALANCE
-      _RL Tr_T, Ar_T, Ar
-#endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_PTRACERS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iTracer
@@ -426,166 +430,11 @@ C     Orlanski and prescribed boundary conditions
 #endif /* ALLOW_OBCS_STEVENS */
 #endif /* ndef ALLOW_AUTODIFF_TAMC */
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 #ifdef ALLOW_OBCS_BALANCE
-      IF ( useOBCSbalance) THEN
-#ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_MSG('useOBCSbalance=.TRUE.',myThid)
-#endif
-
-#ifdef ALLOW_OBCS_EAST
-       Tr_T = 0. _d 0
-       Ar_T = 0. _d 0
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
-          DO J=1,sNy
-           I_obc=OB_Ie(J,bi,bj)
-           IF (I_obc.ne.0) THEN
-            Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-            Ar_T = Ar_T + Ar
-            Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_SUM_RL( Ar_T , myThid )
-       IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. _d 0 - Tr_T)/Ar_T
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
-           DO J=1-Oly,sNy+Oly
-            I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-             OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
-c            OBEv(J,K,bi,bj) = 0.
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
-
-#ifdef ALLOW_OBCS_WEST
-       Tr_T = 0. _d 0
-       Ar_T = 0. _d 0
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
-          DO J=1,sNy
-           I_obc=OB_Iw(J,bi,bj)
-           IF (I_obc.ne.0) THEN
-            Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-            Ar_T = Ar_T + Ar
-            Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_SUM_RL( Ar_T , myThid )
-       IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. _d 0 - Tr_T)/Ar_T
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
-           DO J=1-Oly,sNy+Oly
-            I_obc=OB_Iw(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-             OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
-c            OBWv(J,K,bi,bj) = 0.
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
-
-#ifdef ALLOW_OBCS_NORTH
-       Tr_T = 0. _d 0
-       Ar_T = 0. _d 0
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
-          DO I=1,sNx
-           J_obc=OB_Jn(I,bi,bj)
-           IF (J_obc.ne.0) THEN
-            Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-            Ar_T = Ar_T + Ar
-            Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_SUM_RL( Ar_T , myThid )
-       IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. _d 0 - Tr_T)/Ar_T
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
-           DO I=1-Olx,sNx+Olx
-            J_obc=OB_Jn(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-c            OBNu(I,K,bi,bj) = 0.
-             OBNv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
-
-#ifdef ALLOW_OBCS_SOUTH
-       Tr_T = 0. _d 0
-       Ar_T = 0. _d 0
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
-          DO I=1,sNx
-           J_obc=OB_Js(I,bi,bj)
-           IF (J_obc.ne.0) THEN
-            Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-            Ar_T = Ar_T + Ar
-            Tr_T = Tr_T + Ar * OBSv(I,K,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_SUM_RL( Ar_T , myThid )
-       IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_RL( Tr_T , myThid )
-        Tr_T = (0. _d 0 - Tr_T)/Ar_T
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
-           DO I=1-Olx,sNx+Olx
-            J_obc=OB_Js(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-c            OBSu(I,K,bi,bj) = 0.
-             OBSv(I,K,bi,bj) = OBSv(I,K,bi,bj) + Tr_T
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
-
+      IF ( useOBCSbalance ) THEN
+        CALL OBCS_BALANCE_FLOW( futureTime, futureIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
