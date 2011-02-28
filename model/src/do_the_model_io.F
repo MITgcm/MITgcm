@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.63 2010/01/08 19:42:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.64 2011/02/28 15:37:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,7 +97,7 @@ C     Do LAND output
 #endif
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS .AND. myIter.NE.nIter0 )
+      IF (useOBCS )
      &     CALL OBCS_OUTPUT( myTime, myIter, myThid )
 #endif
 
