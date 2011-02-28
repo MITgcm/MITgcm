@@ -1,26 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.6 2009/12/15 17:03:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.7 2011/02/28 16:31:36 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_CALC( futureTime, futureIter,
-     &                      uVel, vVel, wVel, theta, salt, 
+     &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_CALC                                     |
-C     | o Calculate future boundary data at open boundaries      |
-C     |   at time = futureTime                                   |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE OBCS_CALC
+C     | o Calculate future boundary data at open boundaries
+C     |   at time = futureTime
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "EOS.h"
+#include "GRID.h"
 #include "OBCS.h"
+#include "EOS.h"
 
 C     == Routine arguments ==
       INTEGER futureIter
@@ -37,12 +36,16 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER bi, bj
       INTEGER I, J ,K
-
-#include "GRID.h"
       _RL obTimeScale,Uinflow,rampTime2
       _RL vertStructWst(Nr)
       _RL mz,strat,kx
       _RL tmpsum
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('OBCS_CALC',myThid)
+#endif
 
 C Vertical mode number
       mz=1.0 _d 0
@@ -77,8 +80,8 @@ C for smoother looking solutions.
 C     Eastern OB
       IF (useOrlanskiEast) THEN
         CALL ORLANSKI_EAST(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
@@ -97,8 +100,8 @@ C     Eastern OB
 C     Western OB
       IF (useOrlanskiWest) THEN
         CALL ORLANSKI_WEST(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
@@ -150,8 +153,8 @@ c    &  + exp(-futureTime/rampTime2))
 C         Northern OB, template for forcing
       IF (useOrlanskiNorth) THEN
         CALL ORLANSKI_NORTH(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
@@ -168,10 +171,10 @@ C         Northern OB, template for forcing
       ENDIF
 
 C         Southern OB, template for forcing
-      IF (useOrlanskiSouth) THEN   
+      IF (useOrlanskiSouth) THEN
         CALL ORLANSKI_SOUTH(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
@@ -188,9 +191,19 @@ C         Southern OB, template for forcing
       ENDIF
 
 C--   end bi,bj loops.
-      ENDDO 
+      ENDDO
       ENDDO
 
+#ifdef ALLOW_OBCS_BALANCE
+      IF ( useOBCSbalance ) THEN
+        CALL OBCS_BALANCE_FLOW( futureTime, futureIter, myThid )
+      ENDIF
+#endif /* ALLOW_OBCS_BALANCE */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
+#endif
 #endif /* ALLOW_OBCS */
+
       RETURN
       END
