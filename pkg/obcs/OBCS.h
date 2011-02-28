@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.25 2010/11/11 09:42:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.26 2011/02/28 15:22:09 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -10,7 +10,7 @@ C useStevensNorth/South/East/West
 C                  :: use open boundary computations following Stevens (1990)
 C T/SrelaxStevens  :: relaxation time scale (in seconds) for T/S-points
 C                     for Stevens boundary conditions
-C useStevensPhaseVel 
+C useStevensPhaseVel
 C                  :: use phase velocity contribution for open boundary
 C                     computations following Stevens (1990), default = true
 C useStevensAdvection
@@ -32,8 +32,8 @@ C                     climatology (def=false)
 C OBCSfixTopo      :: check and adjust topography for problematic gradients
 C                     across boundaries (def=true)
 C tileHasOB[N,S,E,W] :: this tile has OB at Northern/Southern/Eastern/Western edge
-C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary
-C                     conditons, the letter combinations mean:
+C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary conditions,
+C                                                 the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
 C                     u/v/t/s   :: ocean u/v velocities, temperature/salinity
 C                     a/h       :: sea ice concentration/effective thickness
@@ -41,15 +41,17 @@ C                     sn/sl     :: effective snow thickness/sea ice salinity
 C                     uice/vice :: sea ice u/v drift velocities
 
       COMMON /PARM_IL_OB/
+     & OBCS_monSelect,
      & spongeThickness,
      & useOrlanskiNorth,useOrlanskiSouth,
      & useOrlanskiEast,useOrlanskiWest,
      & useStevensNorth,useStevensSouth,
-     & useStevensEast,useStevensWest, 
+     & useStevensEast,useStevensWest,
      & useStevensPhaseVel, useStevensAdvection,
      & useOBCSsponge, useOBCSbalance, useOBCSprescribe,
      & OBCSprintDiags, useOBCSYearlyFields,
      & OBCSfixTopo
+      INTEGER OBCS_monSelect
       INTEGER spongeThickness
       LOGICAL useOrlanskiNorth
       LOGICAL useOrlanskiSouth
@@ -68,10 +70,19 @@ C                     uice/vice :: sea ice u/v drift velocities
       LOGICAL useOBCSYearlyFields
       LOGICAL OBCSfixTopo
 
+C OBCS_balanceFacN/S/E/W :: weighting factor for balancing OB normal flow
+C OBCS_monitorFreq       :: monitor output frequency (s) for OB statistics
+C OBCS_monSelect         :: select group of variables to monitor
       COMMON /PARM_R_OB/
+     &     OBCS_balanceFacN, OBCS_balanceFacS,
+     &     OBCS_balanceFacE, OBCS_balanceFacW,
+     &     OBCS_monitorFreq,
      & Urelaxobcsinner,Urelaxobcsbound,
      & Vrelaxobcsinner,Vrelaxobcsbound,
      & TrelaxStevens, SrelaxStevens
+      _RL OBCS_balanceFacN, OBCS_balanceFacS
+      _RL OBCS_balanceFacE, OBCS_balanceFacW
+      _RL OBCS_monitorFreq
       _RS Urelaxobcsinner
       _RS Urelaxobcsbound
       _RS Vrelaxobcsinner
@@ -116,7 +127,7 @@ C                     uice/vice :: sea ice u/v drift velocities
      &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
      &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
 
-C--   COMMON /GRID_OB/ Open boudary related stuff
+C--   COMMON /GRID_OB/ Open boundary related stuff
 C     OBNu is the U value imposed at the Northern OB
 C     OBNv is the V value imposed at the Northern OB
 C     OBNt is the T value imposed at the Northern OB

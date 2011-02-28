@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.29 2010/11/18 22:37:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.30 2011/02/28 15:22:09 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -138,7 +138,10 @@ CEOP
      &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
 #endif
      &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
-     &          OBCSprintDiags, useOBCSYearlyFields, OBCSfixTopo
+     &          OBCS_balanceFacN, OBCS_balanceFacS,
+     &          OBCS_balanceFacE, OBCS_balanceFacW,
+     &          useOBCSYearlyFields, OBCSfixTopo,
+     &          OBCS_monitorFreq, OBCS_monSelect, OBCSprintDiags
 
 #ifdef ALLOW_ORLANSKI
       NAMELIST /OBCS_PARM02/
@@ -192,10 +195,16 @@ C--   Default flags and values for OBCS
       useStevensAdvection=.TRUE.
       useOBCSsponge      =.FALSE.
       useOBCSbalance     =.FALSE.
+      OBCS_balanceFacN   = 1. _d 0
+      OBCS_balanceFacS   = 1. _d 0
+      OBCS_balanceFacE   = 1. _d 0
+      OBCS_balanceFacW   = 1. _d 0
       useOBCSprescribe   =.FALSE.
-      OBCSprintDiags     = debugLevel.GE.debLevB
       useOBCSYearlyFields=.FALSE.
       OBCSfixTopo        =.TRUE.
+      OBCS_monitorFreq   = monitorFreq
+      OBCS_monSelect     = 0
+      OBCSprintDiags     = debugLevel.GE.debLevB
 
       OBNuFile = ' '
       OBNvFile = ' '
