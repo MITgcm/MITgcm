@@ -3,6 +3,7 @@
  OB_Ieast=1*-1,
  useOrlanskiEast=.TRUE.,
  useOBCSbalance=.TRUE.,
+ OBCS_monitorFreq=400.,
  &
 
 # Orlanski parameters
