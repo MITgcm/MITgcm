@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.9 2010/11/11 09:42:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.10 2011/02/28 15:31:29 jmc Exp $
 C $Name:  $
- 
+
 C CPP options file for OBCS package
 C
 C Use this file for selecting options within the OBCS package
@@ -25,7 +25,7 @@ C This include hooks to the Orlanski Open Boundary Radiation code
 
 C Enable OB values to be prescribed via external fields that are read
 C from a file
-#undef ALLOW_OBCS_PRESCRIBE
+#define ALLOW_OBCS_PRESCRIBE
 
 C Enable OB conditions following Stevens (1990)
 #undef ALLOW_OBCS_STEVENS
@@ -34,7 +34,7 @@ C This includes hooks to sponge layer treatment of uvel, vvel
 #undef ALLOW_OBCS_SPONGE
 
 C balance barotropic velocity
-#undef ALLOW_OBCS_BALANCE
+#define ALLOW_OBCS_BALANCE
 
 C     The following five CPP options are experimental and aim to deal
 C     with artifacts due to the low-frequency specification of sea-ice
