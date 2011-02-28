@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_output.F,v 1.2 2009/10/04 22:01:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_output.F,v 1.3 2011/02/28 15:34:28 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -49,6 +49,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (
      &  DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &  .AND. OBCSprintDiags
+     &  .AND. myIter.NE.nIter0
      & ) THEN
 
 C--   Generaly only thread 1 does IO here. It can not start until
@@ -90,6 +91,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Write OB aray to binary files (mainly for debugging => use "diagFreq")
       IF (
      &     DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
+     &  .AND. myIter.NE.nIter0
      &   ) THEN
 
        _BARRIER
@@ -154,6 +156,9 @@ C     Write Western OB arrays
        _BARRIER
 
       ENDIF
+
+C--   Compute and print staicstics of dynamic fields at OB:
+      CALL OBCS_MONITOR( myTime, myIter, myThid )
 
 #endif /* ALLOW_OBCS */
 
