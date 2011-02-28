@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1382 2011/02/26 00:10:51 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1383 2011/02/28 18:36:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+ - add code to monitor statistics of dynamical fields at OB.
+ - take OBCS_BALANCE code out of obcs_calc.F into new S/R OBCS_BALANCE_FLOW :
+   - fix to OBCS_BALANCE code (right hFac ; deal with simple OB intersection).
+   - change default: balance the Net inflow through all OB (instead of balancing
+     each OB separately); keep the old method if setting OBC_balanceFacX < 0.
+ - switch on useOBCSbalance in dome experiment: only correct Western OB outflow
+   to match Nortern OB inflow (OBCS_balanceFacN=0).
 o pkg/seaice:
  - redefined actual sea ice age to be ICEAGE/HEFF ifdef SEAICE_AGE_VOL
 o pkg/seaice (seaice_growth v 1.113):
