@@ -19,6 +19,7 @@
  OBEuFile = 'OBzonalU.bin',
  OBWsFile = 'OBzonalS.bin',
  OBWptrFile(1) = 'OBzonalS.bin',
+ OBCS_monitorFreq = 10800.,
  &
 
 # Orlanski parameters
