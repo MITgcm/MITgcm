@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1383 2011/02/28 18:36:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1384 2011/03/01 19:19:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+ - obcs_apply_uv.F: change to a 2 steps method, first tangential component;
+   then normal component. This ensures that the normal component is set
+   correctly even when it conficts with tangential setting from an other OB.
+   Affects results of test-experiment seaice_obcs: update the output.txt
 o pkg/obcs:
  - add code to monitor statistics of dynamical fields at OB.
  - take OBCS_BALANCE code out of obcs_calc.F into new S/R OBCS_BALANCE_FLOW :
