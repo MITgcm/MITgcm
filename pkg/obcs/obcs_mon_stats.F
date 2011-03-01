@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_mon_stats.F,v 1.1 2011/02/28 15:34:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_mon_stats.F,v 1.2 2011/03/01 23:39:37 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -14,9 +14,9 @@ C     !ROUTINE: OBCS_MON_STATS_EW_RL
 
 C     !INTERFACE:
       SUBROUTINE OBCS_MON_STATS_EW_RL(
-     I     tHasOBE, tHasOBW, iEb, iWb, jNb, jSb,
-     I     gPos, kSize, mSize,
-     I     arr, arrhFac, arrDy, arrDr,
+     I     tHasOBE, tHasOBW, iEb, iWb,
+     I     kSize, mSize, gPos,
+     I     arr, arrhFac, arrDy, arrDr, mskInC,
      O     arrStats,
      I     myThid )
 
@@ -38,29 +38,27 @@ C     tHasOBE  :: list of OBE active tiles
 C     tHasOBW  :: list of OBW active tiles
 C     iEb      :: index of Eastern OB
 C     iWb      :: index of Western OB
-C     jNb      :: index of Northern OB
-C     jSb      :: index of Southern OB
-C     gPos     :: field position on C-grid ( 0=center , 1=U , 2=V , 3=Corner)
 C     kSize    :: field-array 3rd dimension
 C     mSize    :: hFac-array  3rd dimension
+C     gPos     :: field position on C-grid ( 0=center , 1=U , 2=V , 3=Corner)
 C     arr      :: field-array
 C     arrhFac  :: hFac factor
 C     arrDy    :: grid-cell length along OB
 C     arrDr    :: grid-level thickness
+C     mskInC   :: 2-d mask defining the interior region (cell centered)
 C     myThid   :: my Thread Id number
       LOGICAL tHasOBE(nSx,nSy)
       LOGICAL tHasOBW(nSx,nSy)
       INTEGER iEb(1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iWb(1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER jNb(1-OLx:sNx+OLx,nSx,nSy)
-      INTEGER jSb(1-OLx:sNx+OLx,nSx,nSy)
-      INTEGER gPos
       INTEGER kSize
       INTEGER mSize
+      INTEGER gPos
       _RL arr    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,mSize,nSx,nSy)
       _RS arrDy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS arrDr(kSize)
+      _RS arrDr  (kSize)
+      _RS mskInC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
 C     !OUTPUT PARAMETERS:
@@ -113,9 +111,8 @@ c     IF ( usingEast_OB ) THEN
              ii = iEb(j,bi,bj)
              IF ( ii.NE.0 ) THEN
               iB = ii
-              IF ( j.GT.jSb(ii,bi,bj) .AND.
-     &            (j.LT.jNb(ii,bi,bj).OR.jNb(ii,bi,bj).EQ.0)
-     &           ) tmpMask = arrhFac(iB,j,km,bi,bj)
+              tmpMask = arrhFac(iB,j,km,bi,bj)
+     &                *( mskInC(ii-1,j,bi,bj)-mskInC(ii,j,bi,bj) )
              ENDIF
              IF ( tmpMask.GT.0. _d 0 ) THEN
               tmpV = arr(ii,j,k,bi,bj)
@@ -184,9 +181,8 @@ c     IF ( usingWest_OB ) THEN
              ii = iWb(j,bi,bj)
              IF ( ii.NE.0 ) THEN
               iB = ii+1
-              IF ( j.GT.jSb(ii,bi,bj) .AND.
-     &            (j.LT.jNb(ii,bi,bj).OR.jNb(ii,bi,bj).EQ.0)
-     &           ) tmpMask = arrhFac(iB,j,km,bi,bj)
+              tmpMask = arrhFac(iB,j,km,bi,bj)
+     &                *( mskInC(ii+1,j,bi,bj)-mskInC(ii,j,bi,bj) )
              ENDIF
              IF ( tmpMask.GT.0. _d 0 ) THEN
               IF ( gPos.EQ.1 .OR. gPos.EQ.3 ) ii = iB
@@ -244,9 +240,9 @@ C     !ROUTINE: OBCS_MON_STATS_NS_RL
 
 C     !INTERFACE:
       SUBROUTINE OBCS_MON_STATS_NS_RL(
-     I     tHasOBN, tHasOBS, iEb, iWb, jNb, jSb,
-     I     gPos, kSize, mSize,
-     I     arr, arrhFac, arrDx, arrDr,
+     I     tHasOBN, tHasOBS, jNb, jSb,
+     I     kSize, mSize, gPos,
+     I     arr, arrhFac, arrDx, arrDr, mskInC,
      O     arrStats,
      I     myThid )
 
@@ -266,31 +262,29 @@ C     === Global variables ===
 C     !INPUT PARAMETERS:
 C     tHasOBN  :: list of OBN active tiles
 C     tHasOBS  :: list of OBS active tiles
-C     iEb      :: index of Eastern OB
-C     iWb      :: index of Western OB
 C     jNb      :: index of Northern OB
 C     jSb      :: index of Southern OB
-C     gPos     :: field position on C-grid ( 0=center , 1=U , 2=V , 3=Corner)
 C     kSize    :: field-array 3rd dimension
-C     mSize    :: hFac & mask 3rd dimension
+C     mSize    :: hFac-array  3rd dimension
+C     gPos     :: field position on C-grid ( 0=center , 1=U , 2=V , 3=Corner)
 C     arr      :: field-array
 C     arrhFac  :: hFac factor
 C     arrDx    :: grid-cell length along OB
 C     arrDr    :: grid-level thickness
+C     mskInC   :: 2-d mask defining the interior region (cell centered)
 C     myThid   :: my Thread Id number
       LOGICAL tHasOBN(nSx,nSy)
       LOGICAL tHasOBS(nSx,nSy)
-      INTEGER iEb(1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER iWb(1-OLy:sNy+OLy,nSx,nSy)
       INTEGER jNb(1-OLx:sNx+OLx,nSx,nSy)
       INTEGER jSb(1-OLx:sNx+OLx,nSx,nSy)
-      INTEGER gPos
       INTEGER kSize
       INTEGER mSize
+      INTEGER gPos
       _RL arr    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,mSize,nSx,nSy)
       _RS arrDx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS arrDr(kSize)
+      _RS arrDr  (kSize)
+      _RS mskInC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
 C     !OUTPUT PARAMETERS:
@@ -343,9 +337,8 @@ c     IF ( usingNorth_OB ) THEN
              jj = jNb(i,bi,bj)
              IF ( jj.NE.0 ) THEN
               jB = jj
-              IF ( i.GT.iWb(jj,bi,bj) .AND.
-     &            (i.LT.iEb(jj,bi,bj).OR.iEb(jj,bi,bj).EQ.0)
-     &           ) tmpMask = arrhFac(i,jB,km,bi,bj)
+              tmpMask = arrhFac(i,jB,km,bi,bj)
+     &                *( mskInC(i,jj-1,bi,bj)-mskInC(i,jj,bi,bj) )
              ENDIF
              IF ( tmpMask.GT.0. _d 0 ) THEN
               tmpV = arr(i,jj,k,bi,bj)
@@ -414,9 +407,8 @@ c     IF ( usingSouth_OB ) THEN
              jj = jSb(i,bi,bj)
              IF ( jj.NE.0 ) THEN
               jB = jj+1
-              IF ( i.GT.iWb(jj,bi,bj) .AND.
-     &            (i.LT.iEb(jj,bi,bj).OR.iEb(jj,bi,bj).EQ.0)
-     &           ) tmpMask = arrhFac(i,jB,km,bi,bj)
+              tmpMask = arrhFac(i,jB,km,bi,bj)
+     &                *( mskInC(i,jj+1,bi,bj)-mskInC(i,jj,bi,bj) )
              ENDIF
              IF ( tmpMask.GT.0. _d 0 ) THEN
               IF ( gPos.EQ.2 .OR. gPos.EQ.3 ) jj = jB
