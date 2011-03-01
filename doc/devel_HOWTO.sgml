@@ -1,6 +1,6 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <!--
- $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.14 2010/05/28 01:47:32 jmc Exp $
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.15 2011/03/01 01:33:19 jmc Exp $
  $Name:  $
 -->
 
@@ -699,7 +699,7 @@ checkpoint50d_pre
       <title>The Verification Suite</title>
 
       <para>The MITgcm CVS tree (within the <filename>$ROOTDIR/verification/</>
-	directory) includes more than a dozen examples intended for regression
+	directory) includes many (> 90) examples intended for regression
 	testing.  Each one of these example directories contains "known-good"
 	output files along with all the input (including both code and data
 	files) required for their re-calculation.  These example directories are
@@ -711,7 +711,7 @@ checkpoint50d_pre
 	<title>The <filename>testreport</> Utility</title>
 
 	<para>Also included in <filename>$ROOTDIR/verification/</> are shell
-	  scripts for automated testing.  The newest script (which was written
+	  scripts for automated testing.  The script (which was written
 	  to work with <filename>genmake2</>) is called <filename>testreport</>.
 	  This script can be used to build different versions of the MITgcm
 	  code, run the various examples, compare the output, and (if specified)
@@ -723,15 +723,15 @@ checkpoint50d_pre
 
 <screen>
   $ cd verification
-  $ ./testreport -ieee
+  $ ./testreport
 </screen>
 
 	<para>However, some systems (those lacking or wiht a broken "/bin/sh")
 	  may require an explicit shell invocation such as:</para>
 
 <screen>
-  $ sh ./testreport -ieee -t 'exp0 exp4'
-  $ /some/path/to/bash ./testreport -ieee -t 'ideal_2D_oce lab_sea natl_box'
+  $ sh ./testreport -t 'exp2 exp4'
+  $ /some/path/to/bash ./testreport -t 'ideal_2D_oce lab_sea natl_box'
 </screen>
 
 	<para>The <filename>testreport</> script accepts a number of
@@ -741,26 +741,12 @@ checkpoint50d_pre
 	<variablelist>
 
 	  <varlistentry>
-	    <term><filename>-ieee</></term>
+	    <term><filename>-ieee</> (default) / <filename>-noieee</></term>
 	    <listitem>
 	      <para>If allowed by the compiler (as defined in the "optfile"),
-		use IEEE arithmetic.  This option, along with the GCC compiler,
-		is how the standard results were produced.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry>
-	    <term><filename>-tdir TESTDIR</></term>
-	    <term><filename>-tdir 'TDIR1 TDIR2 [...]'</></term>
-	    <listitem>
-	      <para>This option specifies the test directory or list of test
-		directories that should be used.  Each of these entries should
-		exactly (note: they are case sensitive!) match the names of
-		directries in <filename>$ROOTDIR/verification/</>.  If this
-		option is omitted, then all directories that are properly
-		formatted (that is, containing an <filename>input</>
-		sub-directory and a <filename>results/output.txt</> file) will
-		be used.</para>
+		use IEEE arithmetic (<filename>genmake2 -ieee</>). 
+                This option, along with the gfortran / gcc compiler,
+		is how the standard results are produced.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -773,6 +759,21 @@ checkpoint50d_pre
 		(say, to test different compilers or different sets of options
 		for the same compiler), then each options file will be used with
 		each of the test directories.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-tdir TESTDIR</></term>
+	    <term><filename>-tdir 'TDIR1 TDIR2 [...]'</></term>
+	    <listitem>
+	      <para>This option specifies the test directory or list of test
+		directories that should be used.  Each of these entries should
+		exactly (note: they are case sensitive!) match the names of
+		directories in <filename>$ROOTDIR/verification/</>.  If this
+		option is omitted, then all directories that are properly
+		formatted (that is, containing an <filename>input</>
+		sub-directory and a <filename>results/output.txt</> file) will
+		be used.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -790,29 +791,36 @@ checkpoint50d_pre
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><filename>-MPI NUMBER_OF_PROCS</></term>
 	    <term><filename>-mpi</></term>
 	    <listitem>
-	      <para>If the necessary files
-	      (<filename>TESTDIR/code/CPP_EEOPTIONS.h_mpi</> and
-	      <filename>TESTDIR/code/SIZE.h_mpi</>) exist, then use them for an
-	      MPI--enabled run.  Note that the use of MPI typically requires a
+	      <para>If the necessary file (<filename>TESTDIR/code/SIZE.h_mpi</>) 
+	      exists, then use it (and all <filename>TESTDIR/code/*_mpi</> files)
+	      for an MPI--enabled run.  The new option (<filename>-MPI</> followed 
+	      by the maximum number of processors) enable to build and run each 
+	      test-experiment using variable number of MPI processors (multiple
+	      of <filename>nPx*nPy</> from <filename>TESTDIR/code/SIZE.h_mpi</> 
+	      and not larger than <filename>NUMBER_OF_PROCS</>). 
+	      The short option ("-mpi") can only be used to build and run on 2 MPI 
+	      processors (equivalent to "<filename>-MPI 2</>").</para> 
+	      <para>Note that the use of MPI typically requires a
 	      special command option (see "-command" below) to invoke the MPI
-	      executable.  Examples of PBS scripts using MPI with testreport can be
+	      executable.  Examples of PBS scripts using testreport with MPI can be
 	      found in the <ulink
-	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/test_scripts/">
-	      MITgcm-contrib area</ulink></para>
+	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/tools/example_scripts/">
+	      tools/example_scripts directory</ulink>.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
 	    <term><filename>-command='some command to run'</></term>
 	    <listitem>
-	      <para>For some tests, particularly MPI runs, the default "make
-	      output.txt" is not sufficient.  This option allows a more general
+	      <para>For some tests, particularly MPI runs, a specific command
+              might be needed to run the executable. This option allows a more general
 	      command (or shell script) to be invoked.  Examples of PBS scripts
-	      using MPI with testreport can be found in the <ulink
-	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/test_scripts/">
-	      MITgcm-contrib area</ulink></para>
+	      using testreport with MPI can be found in the <ulink
+	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/tools/example_scripts/">
+	      tools/example_scripts directory</ulink>.</para>
 	    </listitem>
 	  </varlistentry>
 
