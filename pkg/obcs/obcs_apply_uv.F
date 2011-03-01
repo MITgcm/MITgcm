@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.4 2010/10/25 22:55:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.5 2011/03/01 18:55:46 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -49,6 +49,11 @@ c     INTEGER bi, bj, itLo, itHi, jtLo, jtHi
       INTEGER i, j
       INTEGER Iobc, Jobc
 
+C--   Set model variables to OB values on North/South Boundaries:
+C     2 steps: 1) set tangential component ; 2) set normal component.
+C     This ensures that the normal component is set correctly even
+C     when it conficts with tangential setting from an other OB.
+
 c     IF ( biArg.EQ.0 .OR. bjArg.EQ.0 ) THEN
 c       itLo = myBxLo(myThid)
 c       itHi = myBxHi(myThid)
@@ -71,7 +76,8 @@ c     ENDIF
 c     DO bj = jtLo,jtHi
 c      DO bi = itLo,itHi
 
-C     Set model variables to OB values on North/South Boundaries
+C--   Set Tangential component first:
+
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
@@ -79,10 +85,69 @@ C Northern boundary
           Jobc = OB_Jn(i,bi,bj)
           IF ( Jobc.NE.0 ) THEN
            DO k = kLo,kHi
-             vFld(i,Jobc,k,bi,bj) = OBNv(i,k,bi,bj)
-     &                              *_maskS(i,Jobc,k,bi,bj)
              uFld(i,Jobc,k,bi,bj) = OBNu(i,k,bi,bj)
-     &                              *_maskW(i,Jobc,k,bi,bj)
+     &                            *_maskW(i,Jobc,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+        IF ( tileHasOBS(bi,bj) ) THEN
+C Southern boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           DO k = kLo,kHi
+             uFld(i,Jobc,k,bi,bj) = OBSu(i,k,bi,bj)
+     &                            *_maskW(i,Jobc,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif
+
+C     Set model variables to OB values on East/West Boundaries
+#ifdef ALLOW_OBCS_EAST
+        IF ( tileHasOBE(bi,bj) ) THEN
+C Eastern boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           DO k = kLo,kHi
+             vFld(Iobc,j,k,bi,bj) = OBEv(j,k,bi,bj)
+     &                            *_maskS(Iobc,j,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif
+#ifdef ALLOW_OBCS_WEST
+        IF ( tileHasOBW(bi,bj) ) THEN
+C Western boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Iw(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           DO k = kLo,kHi
+             vFld(Iobc,j,k,bi,bj) = OBWv(j,k,bi,bj)
+     &                            *_maskS(Iobc,j,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif
+
+C--   Then set Normal component:
+
+#ifdef ALLOW_OBCS_NORTH
+        IF ( tileHasOBN(bi,bj) ) THEN
+C Northern boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           DO k = kLo,kHi
+             vFld(i,Jobc,k,bi,bj)   = OBNv(i,k,bi,bj)
+     &                              *_maskS(i,Jobc,k,bi,bj)
              vFld(i,Jobc+1,k,bi,bj) = OBNv(i,k,bi,bj)
      &                              *_maskS(i,Jobc,k,bi,bj)
            ENDDO
@@ -99,9 +164,7 @@ C Southern boundary
            DO k = kLo,kHi
              vFld(i,Jobc+1,k,bi,bj) = OBSv(i,k,bi,bj)
      &                              *_maskS(i,Jobc+1,k,bi,bj)
-             uFld(i,Jobc,k,bi,bj) = OBSu(i,k,bi,bj)
-     &                              *_maskW(i,Jobc,k,bi,bj)
-             vFld(i,Jobc,k,bi,bj) = OBSv(i,k,bi,bj)
+             vFld(i,Jobc,k,bi,bj)   = OBSv(i,k,bi,bj)
      &                              *_maskS(i,Jobc+1,k,bi,bj)
            ENDDO
           ENDIF
@@ -117,10 +180,8 @@ C Eastern boundary
           Iobc = OB_Ie(j,bi,bj)
           IF ( Iobc.NE.0 ) THEN
            DO k = kLo,kHi
-             uFld(Iobc,j,k,bi,bj) = OBEu(j,k,bi,bj)
+             uFld(Iobc,j,k,bi,bj)   = OBEu(j,k,bi,bj)
      &                              *_maskW(Iobc,j,k,bi,bj)
-             vFld(Iobc,j,k,bi,bj) = OBEv(j,k,bi,bj)
-     &                              *_maskS(Iobc,j,k,bi,bj)
              uFld(Iobc+1,j,k,bi,bj) = OBEu(j,K,bi,bj)
      &                              *_maskW(Iobc,j,k,bi,bj)
            ENDDO
@@ -137,9 +198,7 @@ C Western boundary
            DO k = kLo,kHi
              uFld(Iobc+1,j,k,bi,bj) = OBWu(j,k,bi,bj)
      &                              *_maskW(Iobc+1,j,k,bi,bj)
-             vFld(Iobc,j,k,bi,bj) = OBWv(j,k,bi,bj)
-     &                              *_maskS(Iobc,j,k,bi,bj)
-             uFld(Iobc,j,k,bi,bj) = OBWu(j,k,bi,bj)
+             uFld(Iobc,j,k,bi,bj)   = OBWu(j,k,bi,bj)
      &                              *_maskW(Iobc+1,j,k,bi,bj)
            ENDDO
           ENDIF
