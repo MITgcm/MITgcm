@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.30 2011/02/28 15:30:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.31 2011/03/03 16:51:59 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -414,8 +414,6 @@ C--     Calculate future values on open boundaries
 
 C ------------------------------------------------------------------------------
 
-#ifndef ALLOW_AUTODIFF_TAMC
-C     I do not think that we want this to be differentiated for now
 #ifdef ALLOW_OBCS_STEVENS
 C     The Stevens (1990) boundary conditions come after reading data from
 C     files, because they use the data to compute a mix of simplified
@@ -428,7 +426,6 @@ C     Orlanski and prescribed boundary conditions
        CALL OBCS_CALC_STEVENS( futureTime, futureIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
-#endif /* ndef ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance ) THEN

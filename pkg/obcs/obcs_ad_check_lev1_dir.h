@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.7 2010/03/02 23:07:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.8 2011/03/03 16:51:59 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
-#
+
 #ifdef ALLOW_OBCS_NORTH
 CADJ STORE OBNt    = comlev1, key = ikey_dynamics
 CADJ STORE OBNs    = comlev1, key = ikey_dynamics
@@ -17,6 +17,7 @@ CADJ STORE obneta0,obneta1 = comlev1, key = ikey_dynamics
 CADJ STORE xx_obcsn0,xx_obcsn1 = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_OBCS_NORTH */
+
 #ifdef ALLOW_OBCS_SOUTH
 CADJ STORE OBSt    = comlev1, key = ikey_dynamics
 CADJ STORE OBSs    = comlev1, key = ikey_dynamics
@@ -31,6 +32,7 @@ CADJ STORE obseta0,obseta1 = comlev1, key = ikey_dynamics
 CADJ STORE xx_obcss0,xx_obcss1 = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_OBCS_SOUTH */
+
 #ifdef ALLOW_OBCS_EAST
 CADJ STORE OBEt    = comlev1, key = ikey_dynamics
 CADJ STORE OBEs    = comlev1, key = ikey_dynamics
@@ -45,6 +47,7 @@ CADJ STORE obeeta0,obeeta1 = comlev1, key = ikey_dynamics
 CADJ STORE xx_obcse0,xx_obcse1 = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_OBCS_EAST */
+
 #ifdef ALLOW_OBCS_WEST
 CADJ STORE OBWt    = comlev1, key = ikey_dynamics
 CADJ STORE OBWs    = comlev1, key = ikey_dynamics
@@ -59,9 +62,9 @@ CADJ STORE obweta0,obweta1 = comlev1, key = ikey_dynamics
 CADJ STORE xx_obcsw0,xx_obcsw1 = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_OBCS_WEST */
-#
+
 # ifdef ALLOW_PTRACERS
-#
+
 #ifdef ALLOW_OBCS_NORTH
 CADJ STORE OBNptr  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_NORTH */
@@ -74,11 +77,11 @@ CADJ STORE OBEptr  = comlev1, key = ikey_dynamics
 #ifdef ALLOW_OBCS_WEST
 CADJ STORE OBWptr  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_WEST */
-#
+
 # endif  /* ALLOW_PTRACERS */
-#
+
 # ifdef ALLOW_SEAICE
-#
+
 #ifdef ALLOW_OBCS_NORTH
 CADJ STORE OBNh  = comlev1, key = ikey_dynamics
 CADJ STORE OBNa  = comlev1, key = ikey_dynamics
@@ -119,7 +122,7 @@ CADJ STORE OBWa0,OBWa1  = comlev1, key = ikey_dynamics
 CADJ STORE OBWsn0,OBWsn1  = comlev1, key = ikey_dynamics
 # endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* ALLOW_OBCS_WEST */
-#
+
 # endif /* ALLOW_SEAICE */
-#
+
 #endif  /* ALLOW_OBCS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.191 2011/01/27 04:08:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.192 2011/03/03 16:53:45 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -380,7 +380,7 @@ CADJ STORE uvel               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE vvel               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-# endif
+# endif /* ALLOW_KPP */
 # ifdef EXACT_CONSERV
 CADJ STORE empmr              = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE pmepr              = comlev1, key=ikey_dynamics, kind=isbyte
@@ -388,11 +388,15 @@ CADJ STORE pmepr              = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_OBCS
 CADJ STORE salt               = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE totphihyd          = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
+#  ifdef ALLOW_OBCS_STEVENS
+CADJ STORE gsnm1              = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE gtnm1              = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+# endif /* ALLOW_OBCS */
 # ifdef ALLOW_PTRACERS
 CADJ STORE ptracer               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-# endif
+# endif /* ALLOW_PTRACERS */
 # if (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifndef DISABLE_RSTAR_CODE

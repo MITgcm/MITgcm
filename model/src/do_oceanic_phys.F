@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.99 2011/01/27 20:34:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.100 2011/03/03 16:53:45 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,9 +137,13 @@ C--   dummy statement to end declaration part
       IF (useOBCS) THEN
 C--   Calculate future values on open boundaries
 C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
-#endif
+# endif
        CALL OBCS_CALC( myTime+deltaTclock, myIter+1,
      I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF

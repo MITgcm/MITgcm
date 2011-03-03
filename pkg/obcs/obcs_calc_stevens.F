@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.2 2010/11/18 19:48:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.3 2011/03/03 16:51:59 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -61,6 +61,10 @@ C     === Global variables ===
 #include "PTRACERS_FIELDS.h"
 #include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -90,7 +94,9 @@ C     pFac         :: switch that turns on/off phase velocity contribution
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL uPhase
 c     _RL vPhase
-      _RL cfl, dtracSpace
+      _RL dtracSpace
+      _RL cflMer(1-OLy:sNy+OLy,Nr)
+      _RL cflZon(1-OLx:sNx+OLx,Nr)
       _RL uMerPri(1-OLy:sNy+OLy,Nr)
 c     _RL vZonPri(1-OLx:sNx+OLx,Nr)
       _RL uMerBar(1-OLy:sNy+OLy)
@@ -122,7 +128,25 @@ CEOP
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef ALLOW_OBCS_EAST
+
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE OBEt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBEs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+# endif
         IF ( useStevensEast ) THEN
 C     Eastern OB
 #ifdef ALLOW_DEBUG
@@ -201,17 +225,18 @@ C     tracer! Theta first:
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Ie(J,bi,bj)
+           cflMer(J,K) = 0. _d 0
            IF (I.NE.0) THEN
             dTracSpace = (theta(I-1,J,K,bi,bj)-theta(I-2,J,K,bi,bj))
      &           * _maskW(I-1,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cfl = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
-             uPhase = MIN( cfl,
+             cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
+             uPhase = MIN( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
-     &            MAX( 0.D0, -cfl*gtNm(I-1,J,K,bi,bj,1)/dTracSpace )
+     &        MAX( 0.D0, -cflMer(J,K)*gtNm(I-1,J,K,bi,bj,1)/dTracSpace )
 #else
-     &            MAX( 0.D0, -cfl*gtNm1(I-1,J,K,bi,bj)/dTracSpace )
+     &        MAX( 0.D0, -cflMer(J,K)*gtNm1(I-1,J,K,bi,bj)/dTracSpace )
 #endif
      &            ) * pFac
             ENDIF
@@ -234,17 +259,18 @@ C     Now salinity:
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Ie(J,bi,bj)
+           cflMer(J,K) = 0. _d 0
            IF (I.NE.0) THEN
             dTracSpace = (salt(I-1,J,K,bi,bj)-salt(I-2,J,K,bi,bj))
      &          * _maskW(I-1,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cfl = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
-             uPhase = MIN( cfl,
+             cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
+             uPhase = MIN( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
-     &           MAX( 0.D0, -cfl*gsNm(I-1,J,K,bi,bj,1)/dTracSpace )
+     &        MAX( 0.D0, -cflMer(J,K)*gsNm(I-1,J,K,bi,bj,1)/dTracSpace )
 #else
-     &           MAX( 0.D0, -cfl*gsNm1(I-1,J,K,bi,bj)/dTracSpace )
+     &        MAX( 0.D0, -cflMer(J,K)*gsNm1(I-1,J,K,bi,bj)/dTracSpace )
 #endif
      &           ) * pFac
             ENDIF
@@ -270,6 +296,11 @@ C     IF ( useStevensEast ) THEN
 C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_WEST
+
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE OBWt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBWs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+# endif
         IF ( useStevensWest ) THEN
 C     Western OB
 #ifdef ALLOW_DEBUG
@@ -348,17 +379,18 @@ C     tracer! Theta first:
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Iw(J,bi,bj)
+           cflMer(J,K) = 0. _d 0
            IF (I.NE.0) THEN
             dTracSpace = (theta(I+2,J,K,bi,bj)-theta(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cfl = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
-             uPhase = MAX( cfl,
+             cflMer(J,K) = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
+             uPhase = MAX( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
-     &         MIN( 0.D0, -cfl*gtNm(I+1,J,K,bi,bj,1)/dTracSpace )
+     &       MIN( 0.D0, -cflMer(J,K)*gtNm(I+1,J,K,bi,bj,1)/dTracSpace )
 #else
-     &         MIN( 0.D0, -cfl*gtNm1(I+1,J,K,bi,bj)/dTracSpace )
+     &       MIN( 0.D0, -cflMer(J,K)*gtNm1(I+1,J,K,bi,bj)/dTracSpace )
 #endif
      &         ) * pFac
             ENDIF
@@ -381,17 +413,18 @@ C     Now salinity:
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Iw(J,bi,bj)
+           cflMer(J,K) = 0. _d 0
            IF (I.NE.0) THEN
             dTracSpace = (salt(I+2,J,K,bi,bj)-salt(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cfl = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
-             uPhase = MAX( cfl,
+             cflMer(J,K) = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
+             uPhase = MAX( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
-     &         MIN( 0.D0, -cfl*gsNm(I+1,J,K,bi,bj,1)/dTracSpace )
+     &       MIN( 0.D0, -cflMer(J,K)*gsNm(I+1,J,K,bi,bj,1)/dTracSpace )
 #else
-     &         MIN( 0.D0, -cfl*gsNm1(I+1,J,K,bi,bj)/dTracSpace )
+     &       MIN( 0.D0, -cflMer(J,K)*gsNm1(I+1,J,K,bi,bj)/dTracSpace )
 #endif
      &         ) * pFac
             ENDIF
