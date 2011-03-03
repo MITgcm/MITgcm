@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1384 2011/03/01 19:19:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1385 2011/03/03 16:57:14 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -28,6 +28,11 @@ o model/src:
  - add new param to scale curvilinear grid distance and area when using
    a different sphere radius from the grid-files.
  - test/check multi-threads EXCH applied to local variable (cg2d_x)
+o adjoint:
+ - enable adjoint of Stevens OB
+ - add dummy_in_dynamics to enable extraction of ADJrhoinsitu
+   (a bit delicate because of potentially modified adj. common block structure;
+   current switch is ALLOW_AUTODIFF_MONITOR_DIAG, could be changed later)
 
 checkpoint62s (2011/02/15)
 o pkg/seaice (seaice_growth v 1.112):
