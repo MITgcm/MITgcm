@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.5 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.6 2011/03/03 17:52:10 wienders Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,6 +44,7 @@ C--   Bulk Formula parameter
      &         AirQFile,
      &         UStressFile, VStressFile,
      &         WaveHFile,WavePFile,
+     &         TracerFile,TracerRfile, 
      &         periodicExternalForcing_cheap,
      &         externForcingPeriod_cheap,
      &         externForcingCycle_cheap  
@@ -51,7 +52,8 @@ C--   Bulk Formula parameter
      &         useFreshwaterFlux,
      &         useFluxLimit,
      &         FluxFormula,WaveModel,
-     &         useStressOption
+     &         useStressOption,
+     &         useCheapTracer 
 
 
       _BEGIN_MASTER(myThid)
@@ -117,17 +119,22 @@ C-    Input data files names :
       QrFile=' '
       WaveHFile=' '
       WavePFile=' '
+      TracerFile=' '
+      TracerRFile=' '
       FluxFormula='LANL'
       WaveModel='Smith'
 
 C-    e-p option turned off by default
         useFreshwaterFlux=.FALSE.
 
-c-    turn off flux limiting advection by default
+C-    turn off flux limiting advection by default
         useFluxLimit=.FALSE.
 
-c -   turn off stress option by default
+C-    turn off stress option by default
         useStressOption=.FALSE.
+
+C-    turn off passive tracer option by default
+        useCheapTracer=.FALSE.        
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)
@@ -174,6 +181,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       Write(iUnit,*) 'Caml: useFreshwaterFlux  =',useFreshwaterFlux
       Write(iUnit,*) 'Caml: useFluxLimit       =',useFluxLimit
       Write(iUnit,*) 'Caml: useStressOption    =',useStressOption
+      Write(iUnit,*) 'Caml: useCheapTracer     =',useCheapTracer
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)

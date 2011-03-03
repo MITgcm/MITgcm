@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.5 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.6 2011/03/03 17:52:10 wienders Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -17,6 +17,9 @@ C     uwind :: zonal wind
 C     vwind :: meridional wind
 C     solar :: short wave insolation
 C     Cheapmask :: open boundary condition relaxation mask
+C     Cheaptracer :: passive tracer
+C     CheaptracerR :: Relaxation profile for passive tracer
+C     gCheaptracerm :: passive tracer tendency
 
       COMMON /CHEAPAML_VARS/
      &       Tr, qr,
@@ -24,7 +27,8 @@ C     Cheapmask :: open boundary condition relaxation mask
      &       qair, gqairm,
      &       uwind, vwind, solar,
      &       ustress, vstress,
-     &       wavesh, wavesp, Cheapmask
+     &       wavesh, wavesp, Cheapmask,
+     &       Cheaptracer, CheaptracerR, gCheaptracerm
 
       _RL    Tr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    qr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -40,6 +44,10 @@ C     Cheapmask :: open boundary condition relaxation mask
       _RL    wavesh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    wavesp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    Cheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    CheaptracerR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    gCheaptracerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 
       COMMON /CHEAPAML_PARMS_R/
      &       cheapaml_h,
@@ -78,18 +86,21 @@ C     Cheapmask :: open boundary condition relaxation mask
      &       useFluxLimit,
      &       useStressOption,
      &       useRelativeHumidity,
-     &       periodicExternalForcing_cheap
+     &       periodicExternalForcing_cheap,
+     &       useCheapTracer
       LOGICAL useFreshwaterFlux
       LOGICAL useFluxLimit
       LOGICAL useStressOption
       LOGICAL useRelativeHumidity
       LOGICAL periodicExternalForcing_cheap
+      LOGICAL useCheapTracer
 
       COMMON /CHEAPAML_PARMS_C/
      &       AirTempFile, AirQFile, SolarFile,
      &       UWindFile, VWindFile, UStressFile, VStressFile,
      &       TrFile, QrFile,
-     &       WaveHFile, WavePFile, FluxFormula, WaveModel
+     &       WaveHFile, WavePFile, FluxFormula, WaveModel,
+     &       TracerFile, TracerRFile
 
       CHARACTER*(MAX_LEN_FNAM) AirTempFile
       CHARACTER*(MAX_LEN_FNAM) AirQFile
@@ -104,5 +115,7 @@ C     Cheapmask :: open boundary condition relaxation mask
       CHARACTER*(MAX_LEN_FNAM) WavePFile
       CHARACTER*(MAX_LEN_FNAM) FluxFormula
       CHARACTER*(MAX_LEN_FNAM) WaveModel
+      CHARACTER*(MAX_LEN_FNAM) TracerFile
+      CHARACTER*(MAX_LEN_FNAM) TracerRFile
 
 c #endif /* ALLOW_CHEAPAML */

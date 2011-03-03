@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.4 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.5 2011/03/03 17:52:10 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -108,6 +108,17 @@ C-    switch to 2-D fields:
          IF (j.LE.listDim) wrFldList(j) = 'EmPmR'
 
         endif 
+
+
+        if (useCheapTracer) then
+
+            j = j + 1
+            nj = nj-1
+            CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                        Cheaptracer, nj, myIter, myThid )
+         IF (j.LE.listDim) wrFldList(j) = 'CheapTracer'
+
+         endif 
 
 C--------------------------
         nWrFlds = j

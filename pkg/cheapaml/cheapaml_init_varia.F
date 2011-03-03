@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.6 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.7 2011/03/03 17:52:10 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -94,6 +94,30 @@ c     default to 80% relative humidity
        ENDIF
        _EXCH_XY_RL(qair, mythid)
 
+
+C do passive tracer
+
+       IF ( TracerFile .NE. ' ') THEN
+        write(*,*)'Tracer initialized from  ->',TracerFile
+        CALL READ_FLD_XY_RL( TracerFile,' ',Cheaptracer,0,myThid )
+       ELSE       
+C default value at 290 (!)
+        write(*,*)'Tracer initialized using standard profile'           
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+             Cheaptracer(i,j,bi,bj)=290.0 _d 0
+           ENDDO
+          ENDDO 
+         ENDDO 
+        ENDDO
+       ENDIF 
+       _EXCH_XY_RL(Cheaptracer, mythid)
+
+       
+C Generating mask
+
         write(*,*)' Generate Cheapaml mask'
         xmw=Cheapaml_mask_width
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -136,6 +160,8 @@ c     default to 80% relative humidity
            ENDDO
         ENDDO
         _EXCH_XY_RL(Cheapmask, mythid)
+
+
 c fill in outer edges
 
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -148,18 +174,22 @@ c fill in outer edges
             if(iG.lt.1)then
                  Tair(i,j,bi,bj)=Tair(1,j,bi,bj)
                  qair(i,j,bi,bj)=qair(1,j,bi,bj)
+                 Cheaptracer(i,j,bi,bj)=Cheaptracer(1,j,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(1,j,bi,bj)
             elseif(iG.gt.Nx)then
                  Tair(i,j,bi,bj)=Tair(sNx,j,bi,bj)
                  qair(i,j,bi,bj)=qair(sNx,j,bi,bj)
+                 Cheaptracer(i,j,bi,bj)=Cheaptracer(sNx,j,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(sNx,j,bi,bj)
             elseif(jG.lt.1)then
                  Tair(i,j,bi,bj)=Tair(i,1,bi,bj)
                  qair(i,j,bi,bj)=qair(i,1,bi,bj)
+                 Cheaptracer(i,j,bi,bj)=Cheaptracer(i,1,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(i,1,bi,bj)
             elseif(jG.gt.Ny)then
                  Tair(i,j,bi,bj)=Tair(i,sNy,bi,bj)
                  qair(i,j,bi,bj)=qair(i,sNy,bi,bj)
+                 Cheaptracer(i,j,bi,bj)=Cheaptracer(i,sNy,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(i,sNy,bi,bj)
             endif
             ENDDO

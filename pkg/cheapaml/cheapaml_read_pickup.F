@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.1 2008/08/08 21:40:17 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.2 2011/03/03 17:52:10 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -129,6 +129,14 @@ C---    read CHEAPAML 2-D fields for restart
 #ifdef CHEAPAML_2D_STATE
         CALL READ_MFLDS_3D_RL( 'Tair', Tair,
      &                                 nj, fp, 1 , myIter, myThid )
+        IF(useFreshWaterFlux)THEN
+        CALL READ_MFLDS_3D_RL( 'Qair', qair,
+     &                                 nj, fp, 1 , myIter, myThid )        
+        ENDIF
+        IF(useCheaptracer)THEN
+        CALL READ_MFLDS_3D_RL( 'CheapTracer', Cheaptracer,
+     &                                 nj, fp, 1 ,myIter, myThid )        
+        ENDIF
 #endif /* CHEAPAML_2D_STATE */
 
 C--    end: new way to read pickup file

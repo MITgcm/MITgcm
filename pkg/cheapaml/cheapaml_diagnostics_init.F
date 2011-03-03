@@ -68,14 +68,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'CH_EmP  '
-      diagTitle = 'cheapAML Evap-Precip'
+      diagTitle = 'cheapAML Evap-Precip     '
       diagUnits = 'Kg/m2/s         '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'CH_Trace'
+      diagTitle = 'cheapAML Passive Tracer  '
+      diagUnits = 'Depend on Tracer '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'CH_Uwind'
-      diagTitle = 'cheapAML Zonal Wind'
+      diagTitle = 'cheapAML Zonal Wind      '
       diagUnits = 'm/s           '
       diagCode  = 'UU      L1      '
       diagmate  = diagNum + 2 
