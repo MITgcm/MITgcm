@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.17 2011/01/14 01:28:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.18 2011/03/03 19:55:56 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -18,7 +18,7 @@ C     \ev
 CEOP
 
 C--   COMMON /SURF_FIXED/  fixed surface arrays (Real)
-C     Bo_surf  :: Boyancy|1/rho [ocean|atmos] at surface level [=g|alpha(p_o)]
+C     Bo_surf  :: Buoyancy|1/rho [ocean|atmos] at surface level [=g|alpha(p_o)]
 C     recip_Bo :: 1/Bo_surf
 C     topoZ    :: topographic height [m] (used mainly for atmosphere)
 C     phi0surf :: starting point for integrating phi_Hyd
