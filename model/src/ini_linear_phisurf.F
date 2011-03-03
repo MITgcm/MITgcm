@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.17 2009/12/17 23:47:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.18 2011/03/03 19:56:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -15,7 +15,7 @@ C     | SUBROUTINE INI_LINEAR_PHISURF
 C     | o Initialise the Linear Relation Phi_surf(eta)
 C     *==========================================================*
 C     | Compute global domain Area ;
-C     | Initialise -Boyancy at surface level (Bo_surf)
+C     | Initialise -Buoyancy at surface level (Bo_surf)
 C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta
 C     | Initialise phi0surf = starting point for integrating
 C     |                       phiHyd (= phiHyd at r=RoSurf)
@@ -88,7 +88,6 @@ C-      Compute the domain Area:
          DO i=1,sNx
           tileArea(bi,bj) = tileArea(bi,bj)
      &                    + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
-c    &                    + rA(i,j,bi,bj)*maskH(i,j,bi,bj)
          ENDDO
         ENDDO
 c       threadArea = threadArea + tileArea(bi,bj)
@@ -127,12 +126,12 @@ C-    list empty tiles:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-- Initialise -Boyancy at surface level : Bo_surf
+C-- Initialise -Buoyancy at surface level : Bo_surf
 C   Bo_surf is defined as d/dr(Phi_surf) and set to g/z2rUnit with
 C     z2rUnit = conversion factor from z-unit to r-unit: [z] * z2rUnit = [r]
 C   an accurate formulation includes P_surf and T,S_ref effects on rho_surf:
 C    (setting uniformLin_PhiSurf=.FALSE.):
-C    z-coord (z2rUnit=1): Bo_surf = - Boyancy
+C    z-coord (z2rUnit=1): Bo_surf = - Buoyancy
 C                                 = g * rho_surf(Tref,Sref,pSurf_0)/rho_0
 C    p-coord (z2rUnit=rho*g): Bo_surf = 1/rho(Tref(ksurf),pSurf_0)
 C   Note: on Phi_surf splitting : Non-linear Time-dependent effects on B_surf
