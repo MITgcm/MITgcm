@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.26 2011/02/28 15:22:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.27 2011/03/04 04:52:28 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -32,6 +32,7 @@ C                     climatology (def=false)
 C OBCSfixTopo      :: check and adjust topography for problematic gradients
 C                     across boundaries (def=true)
 C tileHasOB[N,S,E,W] :: this tile has OB at Northern/Southern/Eastern/Western edge
+C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB).
 C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary conditions,
 C                                                 the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
@@ -105,6 +106,7 @@ C OBCS_monSelect         :: select group of variables to monitor
       INTEGER OB_Iw(1-Oly:sNy+Oly,nSx,nSy)
 
       COMMON /OB_FILES/
+     &      insideOBmaskFile,
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
@@ -116,6 +118,7 @@ C OBCS_monSelect         :: select group of variables to monitor
      &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
      &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
       CHARACTER*(MAX_LEN_FNAM)
+     &      insideOBmaskFile,
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNwFile, OBSwFile, OBEwFile, OBWwFile,
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
@@ -343,12 +346,6 @@ C     etc
 #endif /* ALLOW_NONHYDROSTATIC */
 
 #ifdef NONLIN_FRSURF
-      COMMON /GRID_OB_NLFS/
-     &  OBNhfac0,OBShfac0,OBEhfac0,OBWhfac0
-      _RS OBNhfac0(1-Olx:sNx+Olx,nSx,nSy)
-      _RS OBShfac0(1-Olx:sNx+Olx,nSx,nSy)
-      _RS OBEhfac0(1-Oly:sNy+Oly,nSx,nSy)
-      _RS OBWhfac0(1-Oly:sNy+Oly,nSx,nSy)
       COMMON /OB_NLFS/
      &  OBNeta,  OBSeta,  OBEeta,  OBWeta
       _RL OBNeta (1-Olx:sNx+Olx,nSx,nSy)
