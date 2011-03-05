@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.23 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.24 2011/03/05 19:09:28 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -476,14 +476,14 @@ C--   Diffusive flux:
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'SIdHbATO'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual delta HEFF from atm fluxes over open water'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdHbATC'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual delta HEFF from atm fluxes over sea ice'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -491,56 +491,56 @@ C--   Diffusive flux:
 
 
       diagName  = 'SIdHbOCN'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual delta HEFF from turbulent ocean-ice fluxes'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName  = 'SIdA'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual AREA increment (total)'
       diagUnits = '1/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName  = 'SIdAbATO'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual delta AREA from atm fluxes over open water'
       diagUnits = '                '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName  = 'SIdAbATC'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual delta AREA from atm fluxes over sea ice'
       diagUnits = '                '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdAbOCN'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Actual delta AREA from turbulent ocean-ice fluxes'
       diagUnits = '                '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbATO'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Potential delta HEFF from atm fluxes over open water'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbATC'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Potential delta HEFF from atm fluxes over ice'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbOCN'
-      diagTitle = 'call MITgcm helpline at JPL'
+      diagTitle = 'Potential delta HEFF from turbulent ocean-ice fluxes'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
