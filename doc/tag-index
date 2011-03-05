@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1385 2011/03/03 16:57:14 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1386 2011/03/05 17:58:22 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62t (2011/03/05)
 o pkg/obcs:
  - obcs_apply_uv.F: change to a 2 steps method, first tangential component;
    then normal component. This ensures that the normal component is set
