@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1386 2011/03/05 17:58:22 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1387 2011/03/05 22:56:22 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice
+ - beginning code for a seaice tracer package,
+   but currently only used for seaice age: SEAICE_AGE
+   SEAICE_num = 4
+   iTracer = 1: area-weighted ice age
+           = 2: volume-weighted ice age
+           = 3, 4: template for one-year vs. multi-year ice
+   data.seaice has new namelist SEAICE_PARM03 for arrays related to
+   SEAICE_num
 
 checkpoint62t (2011/03/05)
 o pkg/obcs:
