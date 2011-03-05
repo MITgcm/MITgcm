@@ -82,6 +82,7 @@
 #   tauSaltClimRelax  - Relaxation to climatology time scale     (s)
 #
  &PARM03
+ pickupStrictlyMatch=.FALSE.,
  tauCD=172800.,
  startTime=3600.0,
  endTime=36000.,
