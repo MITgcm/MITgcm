@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.55 2011/02/26 00:10:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.56 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -34,14 +34,6 @@ C             note: for non-zero AREA, actual snow
 C                thickness is HSNOW / AREA
 C     HSALT - effective sea ice salinity in g/m^2
 C             at center of grid, i.e., tracer point
-C     ICEAGE- effective sea ice age
-C             at center of grid, i.e., tracer point
-C             ==> ifndef SEAICE_AGE_VOL and for non-zero AREA,
-C                 units of ICEAGE are seconds
-C                 and actual ice age is ICEAGE / AREA seconds
-C             ==> ifdef SEAICE_AGE_VOL and for non-zero HEFF,
-C                 units of ICEAGE are seconds * meters
-C                 and actual ice age is ICEAGE / HEFF seconds
 C \ev
 CEOP
 
@@ -121,11 +113,6 @@ C
 #ifdef SEAICE_SALINITY
       COMMON/SEAICE_SALINITY_R/HSALT
       _RL HSALT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
-#ifdef SEAICE_AGE
-      COMMON/SEAICE_AGE_R/ICEAGE
-      _RL ICEAGE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
       COMMON/OFL/YNEG
@@ -221,14 +208,6 @@ cif(
      &       SWFRACB
 #endif
 cif)
-
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER iicekey
-      INTEGER nEVPstepMax
-      PARAMETER ( nEVPstepMax=60 )
-      INTEGER NMAX_TICE
-      PARAMETER ( NMAX_TICE=10 )
-#endif
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

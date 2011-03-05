@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.70 2011/02/14 23:51:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.71 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -121,7 +121,6 @@ C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     AreaFile        - File containing initial sea-ice concentration
 C     HsnowFile       - File containing initial snow thickness
 C     HsaltFile       - File containing initial sea ice salt content
-C     IceAgeFile      - File containing initial sea ice age
 C     HeffFile        - File containing initial sea-ice thickness
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
@@ -131,10 +130,9 @@ C
       CHARACTER*(MAX_LEN_FNAM) AreaFile
       CHARACTER*(MAX_LEN_FNAM) HsnowFile
       CHARACTER*(MAX_LEN_FNAM) HsaltFile
-      CHARACTER*(MAX_LEN_FNAM) IceAgeFile
       CHARACTER*(MAX_LEN_FNAM) HeffFile
       COMMON /SEAICE_PARM_C/
-     &     AreaFile, HsnowFile, HsaltFile, IceAgeFile, HeffFile
+     &   AreaFile, HsnowFile, HsaltFile, HeffFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)
@@ -284,14 +282,14 @@ C--   Constants used by sea-ice model
 
 C--   identifiers for advected properties
       INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW
-      INTEGER GAD_SALT,GAD_AGE
+      INTEGER GAD_SALT,GAD_ICEAGETR
       PARAMETER ( GAD_HEFF  = 1, 
      &            GAD_AREA  = 2,
      &            GAD_SNOW  = 3,
      &            GAD_SALT  = 4,
-     &            GAD_AGE   = 5,
-     &            GAD_QICE1 = 6,
-     &            GAD_QICE2 = 7)
+     &            GAD_QICE1 = 5,
+     &            GAD_QICE2 = 6,
+     &            GAD_ICEAGETR = 7 )
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

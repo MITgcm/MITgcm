@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.3 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.4 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -23,8 +23,10 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -55,8 +57,8 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 20 )
-      CHARACTER*(8) wrFldList(listDim)
-      INTEGER j, nj
+      CHARACTER*(8) fldName, wrFldList(listDim)
+      INTEGER j, nj, iTracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -108,10 +110,15 @@ C---  continue to write 2-D fields:
         IF (j.LE.listDim) wrFldList(j) = 'siHSALT '
 #endif
 #ifdef SEAICE_AGE
-        j = j + 1
-        nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp,  1, ICEAGE, nj, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'siAGE   '
+         DO iTracer = 1, SEAICE_num
+          WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTracer
+          j = j + 1
+          nj = nj-1
+          CALL WRITE_REC_3D_RL( fn, fp,  1,
+     &         IceAgeTr(1-Olx,1-Oly,1,1,iTracer),
+     &         nj, myIter, myThid )
+          IF (j.LE.listDim) wrFldList(j) = fldName
+         ENDDO
 #endif
        ENDIF
 

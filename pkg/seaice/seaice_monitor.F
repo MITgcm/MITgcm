@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.21 2010/10/07 15:16:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.22 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,8 +20,10 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 #ifdef ALLOW_MONITOR
 # include "MONITOR.h"
 #endif
@@ -41,9 +43,11 @@ C     === Functions ====
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) suff
 #ifdef ALLOW_MNC
       INTEGER i
 #endif /* ALLOW_MNC */
+      INTEGER iTracer
       _RL dummyRL(6)
 
       IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
@@ -123,8 +127,12 @@ C       Print some statistics about input forcing fields
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* SEAICE_SALINITY */
 #ifdef SEAICE_AGE
-        CALL MON_WRITESTATS_RL( 1,ICEAGE,'_iceage',
-     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        DO iTracer = 1, SEAICE_num
+         WRITE(suff,'(A7,I2.2)') '_iceage', iTracer
+         CALL MON_WRITESTATS_RL( 
+     &          1,IceAgeTr(1-OLx,1-OLy,1,1,iTracer),suff,
+     &          maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDDO
 #endif /* SEAICE_AGE */
 
         IF ( MASTER_CPU_IO(myThid) ) THEN

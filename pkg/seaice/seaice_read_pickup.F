@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.6 2009/10/09 08:00:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.7 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,8 +22,10 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -49,9 +51,10 @@ C     bi,bj       :: tile indices
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
       PARAMETER( missFldDim = 20 )
-      CHARACTER*(8) missFldList(missFldDim)
+      CHARACTER*(8) fldName, missFldList(missFldDim)
       INTEGER nj, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iTracer
 CEOP
 
 C--
@@ -162,7 +165,9 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         nj = nj + 1
 #endif
 #ifdef SEAICE_AGE
-        CALL READ_REC_3D_RL( fn, fp, 1, ICEAGE   , nj, nIter0, myThid )
+        CALL READ_REC_3D_RL( fn, fp, 1, 
+     &    IceAgeTr(1-Olx,1-Oly,1,1,1), 
+     &    nj, nIter0, myThid )
 #endif
 
        ELSE
@@ -198,9 +203,22 @@ C--    continue with 2-D fields:
      &                                      nj, fp, 1, nIter0, myThid )
 #endif
 #ifdef SEAICE_AGE
-         CALL READ_MFLDS_3D_RL( 'siAGE   ', ICEAGE,
-     &                                      nj, fp, 1, nIter0, myThid )
-#endif
+C--   Either old ice age field iceAge or new ice age field iceAgeTr
+C
+         WRITE(fldName,'(A8)') 'siAGE   '
+         CALL READ_MFLDS_3D_RL( fldName, 
+     &         IceAgeTr(1-Olx,1-Oly,1,1,1),
+     &         nj, fp, 1, nIter0, myThid )
+         _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,1),myThid)
+C
+         DO iTracer = 1, SEAICE_num
+          WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTracer
+          CALL READ_MFLDS_3D_RL( fldName, 
+     &         IceAgeTr(1-Olx,1-Oly,1,1,iTracer),
+     &         nj, fp, 1, nIter0, myThid )
+          _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTracer),myThid)
+         ENDDO
+#endif /* SEAICE_AGE */
         ENDIF
 
 C--    read Sea-Ice Dynamics variables (all 2-D fields):
@@ -264,9 +282,6 @@ c      _EXCH_XY_RL(YNEG , myThid )
 #endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
 #ifdef SEAICE_SALINITY
        _EXCH_XY_RL(HSALT, myThid )
-#endif
-#ifdef SEAICE_AGE
-       _EXCH_XY_RL(ICEAGE, myThid )
 #endif
 
       RETURN

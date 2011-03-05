@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.1 2007/11/25 21:39:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.2 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,8 +24,10 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     missFldList :: List of missing fields   (attempted to read but not found)
@@ -51,13 +53,14 @@ C     ioUnit      :: temp for writing msg unit
 C     msgBuf      :: Informational/error message buffer
 C     i,j,k       :: loop indices
 C     bi,bj       :: tile indices
-      INTEGER nj, ioUnit
+      INTEGER nj, ioUnit, iTracer
       INTEGER tIceFlag, warnCnts
       LOGICAL stopFlag
+      LOGICAL oldIceAge
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef SEAICE_MULTICATEGORY
+      CHARACTER*(8) fldName
+      CHARACTER*(2) fldNum
       INTEGER i,j,k,bi,bj
-#endif
 CEOP
 
 c     IF ( seaice_pickup_read_mdsio ) THEN
@@ -65,21 +68,25 @@ c     IF ( seaice_pickup_read_mdsio ) THEN
        IF ( nMissing.GE.1 ) THEN
         ioUnit = errorMessageUnit
         tIceFlag = 0
+        oldIceAge = .TRUE.
         DO nj=1,nMissing
          IF ( missFldList(nj).EQ.'siTICES ' ) tIceFlag = tIceFlag + 2
          IF ( missFldList(nj).EQ.'siTICE  ' ) tIceFlag = tIceFlag + 1
+         IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
         ENDDO
         stopFlag = .FALSE.
         warnCnts = nMissing
+
         DO nj=1,nMissing
-         IF     ( missFldList(nj).EQ.'siTICE  '
+         fldName = missFldList(nj)
+         IF     ( fldName.EQ.'siTICE  '
      &                      .AND. tIceFlag.LE.1 ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
      &      'restart with Tice from 1rst category'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
-         ELSEIF ( missFldList(nj).EQ.'siTICES '
+         ELSEIF ( fldName.EQ.'siTICES '
      &                      .AND. tIceFlag.LE.2 ) THEN
 #ifdef SEAICE_MULTICATEGORY
           IF ( .NOT.pickupStrictlyMatch ) THEN
@@ -100,34 +107,67 @@ C      copy TICE -> TICES
            ENDDO
           ENDIF
 #endif
-         ELSEIF ( missFldList(nj).EQ.'siSigm1 ' .OR.
-     &            missFldList(nj).EQ.'siSigm2 ' .OR.
-     &            missFldList(nj).EQ.'siSigm12' ) THEN
+         ELSEIF ( fldName(1:6).EQ.'siSigm' ) THEN
 C- Note: try to restart without Sigma1,2,12 (as if SEAICEuseEVPpickup=F)
 C        An alternative would be to restart only if SEAICEuseEVPpickup=F:
 C        if SEAICEuseEVPpickup then stop / else warning / endif
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
-     &      'restart without "',missFldList(nj),'" (set to zero)'
+     &      'restart without "',fldName,'" (set to zero)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
-         ELSEIF ( missFldList(nj).EQ.'siTICES ' .OR.
-     &            missFldList(nj).EQ.'siTICE  ' .OR.
-     &            missFldList(nj).EQ.'siUICE  ' .OR.
-     &            missFldList(nj).EQ.'siVICE  ' .OR.
-     &            missFldList(nj).EQ.'siAREA  ' .OR.
-     &            missFldList(nj).EQ.'siHEFF  ' .OR.
-     &            missFldList(nj).EQ.'siHSNOW ' .OR.
-     &            missFldList(nj).EQ.'siHSALT ' ) THEN
+         ELSEIF ( fldName.EQ.'siTICES ' .OR.
+     &            fldName.EQ.'siTICE  ' .OR.
+     &            fldName.EQ.'siUICE  ' .OR.
+     &            fldName.EQ.'siVICE  ' .OR.
+     &            fldName.EQ.'siAREA  ' .OR.
+     &            fldName.EQ.'siHEFF  ' .OR.
+     &            fldName.EQ.'siHSNOW ' .OR.
+     &            fldName.EQ.'siHSALT ' ) THEN
            stopFlag = .TRUE.
            WRITE(msgBuf,'(4A)') 'SEAICE_CHECK_PICKUP: ',
-     &       'cannot restart without field "',missFldList(nj),'"'
+     &       'cannot restart without field "',fldName,'"'
            CALL PRINT_ERROR( msgBuf, myThid )
+#ifdef SEAICE_AGE
+         ELSEIF ( fldName(1:6).EQ.'siAGEt' ) THEN
+          IF ( oldIceAge ) THEN
+           IF ( .NOT.pickupStrictlyMatch ) THEN
+            WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
+     &       'restart from single IceAge iTracer=1 (copied to IceAgeTr)'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+C      copy IceAgeTr(...,1) -> IceAgeTr(...,iTracer)
+            DO iTracer = 2, SEAICE_num
+             DO bj=myByLo(myThid),myByHi(myThid)
+              DO bi=myBxLo(myThid),myBxHi(myThid)
+               DO j=1-OLy,sNy+OLy
+                DO i=1-OLx,sNx+OLx
+                 IceAgeTr(i,j,bi,bj,iTracer) = IceAgeTr(i,j,bi,bj,1)
+                ENDDO
+               ENDDO
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDIF
+          ELSE
+           DO iTracer = 1, SEAICE_num
+            WRITE(fldNum,'(I2.2)') iTracer
+            IF ( fldName(7:8).EQ.fldNum ) THEN
+             IF ( .NOT.pickupStrictlyMatch ) THEN
+              WRITE(msgBuf,'(4A)') 
+     &         '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
+     &         'restart without "',fldName,'" (set to zero)'
+              CALL PRINT_MESSAGE( 
+     &         msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+             ENDIF
+            ENDIF
+           ENDDO
+          ENDIF
+#endif
          ELSE
 C-    not recognized fields:
            stopFlag = .TRUE.
            WRITE(msgBuf,'(4A)') 'SEAICE_CHECK_PICKUP: ',
-     &       'missing field "',missFldList(nj),'" not recognized'
+     &       'missing field "',fldName,'" not recognized'
            CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
 C-    end nj loop

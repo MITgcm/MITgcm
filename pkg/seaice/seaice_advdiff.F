@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.43 2010/12/17 04:02:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.44 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,8 +31,10 @@ C     HEFFM     :: mask for scalar field
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GAD.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -60,7 +62,7 @@ C     afx       :: horizontal advective flux, x direction
 C     afy       :: horizontal advective flux, y direction
 C     gFld      :: tendency of seaice field
 C     xA,yA     :: "areas" of X and Y face of tracer cells
-      INTEGER i, j, bi, bj
+      INTEGER i, j, bi, bj, iTracer
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
 
@@ -292,27 +294,33 @@ C     now do the "explicit" time step
 #ifdef SEAICE_AGE
 C--   Sea Ice Age
         IF ( SEAICEadvAge ) THEN
-         CALL SEAICE_ADVECTION(
-     I        GAD_AGE, SEAICEadvSchAge,
-     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, IceAge(1-OLx,1-OLy,bi,bj), recip_heff,
-     O        gFld, afx, afy,
-     I        bi, bj, myTime, myIter, myThid )
-         IF ( diff1 .GT. 0. _d 0 ) THEN
+         DO iTracer = 1, SEAICE_num
+C--
+          CALL SEAICE_ADVECTION(
+     I       GAD_ICEAGETR+iTracer-1, SEAICEadvSchAge,
+     I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I       uTrans, vTrans, IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer), 
+     I       recip_heff,
+     O       gFld, afx, afy,
+     I       bi, bj, myTime, myIter, myThid )
+          IF ( diff1 .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
-          CALL SEAICE_DIFFUSION(
-     I         GAD_AGE,
-     I         IceAge(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
-     U         gFld,
-     I         bi, bj, myTime, myIter, myThid )
-         ENDIF
+           CALL SEAICE_DIFFUSION(
+     I        GAD_ICEAGETR+iTracer-1,
+     I        IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer), HEFFM, xA, yA,
+     U        gFld,
+     I        bi, bj, myTime, myIter, myThid )
+          ENDIF
 C     now do the "explicit" time step
-         DO j=1,sNy
-          DO i=1,sNx
-           IceAge(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          IceAge(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+          DO j=1,sNy
+           DO i=1,sNx
+            IceAgeTr(i,j,bi,bj,iTracer) = HEFFM(i,j,bi,bj) * (
+     &          IceAgeTr(i,j,bi,bj,iTracer) 
+     &          + SEAICE_deltaTtherm * gFld(i,j)
      &          )
+           ENDDO
           ENDDO
+C--
          ENDDO
         ENDIF
 #endif /* SEAICE_AGE */
@@ -347,7 +355,10 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 
 #ifdef SEAICE_AGE
        IF ( SEAICEadvAge ) THEN
-        CALL ADVECT( uc, vc, iceAge, fldNm1, HEFFM, myThid )
+        DO iTracer = 1, SEAICE_num
+         CALL ADVECT( uc, vc, iceAgeTr(1-Olx,1-Oly,1,1,iTracer), 
+     &    fldNm1, HEFFM, myThid )
+        ENDDO
        ENDIF
 #endif /* SEAICE_AGE */
 
@@ -367,8 +378,10 @@ C     somewhere after doing the advection)
           DO i=1-Olx,sNx+Olx
 #ifdef SEAICE_AGE
 C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
-           IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj)
+           DO iTracer = 1, SEAICE_num
+            IceAgeTr(I,J,bi,bj,iTracer) = IceAgeTr(I,J,bi,bj,iTracer)
      &          / MAX(ONE,AREA(I,J,bi,bj))
+           ENDDO
 #endif /* SEAICE_AGE */
            AREA(I,J,bi,bj) = MIN(ONE,AREA(I,J,bi,bj))
           ENDDO
@@ -378,20 +391,26 @@ C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
 #ifdef SEAICE_AGE
 C     Sources and sinks for sea ice age (otherwise added in seaice_growth)
        IF ( .TRUE. ) THEN
+       DO iTracer = 1, SEAICE_num
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1,sNy
            DO I=1,sNx
+cph(
+cph-- why is this code still here?
+cph-- probably wrong for thickness-weighted age(?)
             IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
-             IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) +
-     &            AREA(I,J,bi,bj) * SEAICE_deltaTtherm
+             IceAgeTr(i,j,bi,bj,iTracer) = IceAgeTr(i,j,bi,bj,iTracer)
+     &            + AREA(I,J,bi,bj) * SEAICE_deltaTtherm
             ELSE
-             IceAge(i,j,bi,bj) = ZERO
+             IceAgeTr(i,j,bi,bj,iTracer) = ZERO
             ENDIF
+cph)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
+       ENDDO
        ENDIF
 #endif /* SEAICE_AGE */
       ENDIF

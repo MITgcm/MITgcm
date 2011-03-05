@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.22 2011/02/23 21:12:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.23 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,7 +26,10 @@ C     !USES:
 
 C     === Global variables ===
 #include "EEPARAMS.h"
+#include "SIZE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_TRACER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -51,6 +54,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 
+      INTEGER       iTracer
       INTEGER       numArea
       CHARACTER*9   flxUnits
       CHARACTER*15  locName
@@ -112,12 +116,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIage   '
-      diagTitle = 'SEAICE age'
-      diagUnits = 's               '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+#ifdef SEAICE_AGE
+      DO iTracer = 1, SEAICE_num
+       WRITE(diagName,'(A5,I2.2,A1)') 'SIage',iTracer,' '
+       WRITE(diagTitle,'(A,I2.2)') 'SEAICE age of tracer no. ', iTracer
+       diagUnits = 's               '
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDDO
+#endif
 
       diagName  = 'SItices '
       diagTitle = 'Surface Temperature over Sea-Ice (area weighted)'
@@ -468,14 +476,14 @@ C--   Diffusive flux:
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'SIdHbATO'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdHbATC'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -483,56 +491,56 @@ C--   Diffusive flux:
 
 
       diagName  = 'SIdHbOCN'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName  = 'SIdA'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = '1/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName  = 'SIdAbATO'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = '                '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName  = 'SIdAbATC'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = '                '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdAbOCN'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = '                '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbATO'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbATC'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbOCN'
-      diagTitle = ''
+      diagTitle = 'call MITgcm helpline at JPL'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

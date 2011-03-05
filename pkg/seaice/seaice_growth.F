@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.116 2011/02/26 00:10:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.117 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -23,8 +23,10 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
@@ -1651,7 +1653,6 @@ C ===============PART 6: determine ice age increments================
 C ===================================================================
 
 #ifdef SEAICE_AGE
-# ifndef SEAICE_AGE_VOL
 C     Sources and sinks for sea ice age:
 C     assume that a) freezing: new ice fraction forms with zero age
 C                 b) melting: ice fraction vanishes with current age
@@ -1661,18 +1662,18 @@ C                 b) melting: ice fraction vanishes with current age
            IF ( AREA(i,j,bi,bj) .LT. AREApreTH(i,j) ) THEN
 C--   scale effective ice-age to account for ice-age sink associated
 C     with melting or ridging
-            IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
+            IceAgeTr(i,j,bi,bj,1) = IceAgeTr(i,j,bi,bj,1)
      &         *AREA(i,j,bi,bj)/AREApreTH(i,j)
            ENDIF
 C--   account for aging:
-           IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj)
+           IceAgeTr(i,j,bi,bj,1) = IceAgeTr(i,j,bi,bj,1)
      &        + AREA(i,j,bi,bj) * SEAICE_deltaTtherm
           ELSE
-           IceAge(i,j,bi,bj) = ZERO
+           IceAgeTr(i,j,bi,bj,1) = ZERO
           ENDIF
          ENDDO
         ENDDO
-# else /* ifdef SEAICE_AGE_VOL */
+
 C     Sources and sinks for sea ice age:
 C     assume that a) freezing: new ice volume forms with zero age
 C                 b) melting: ice volume vanishes with current age
@@ -1680,7 +1681,7 @@ C                 b) melting: ice volume vanishes with current age
          DO I=1,sNx
 C--   compute actual age from effective age:
           IF (HEFFpreTH(i,j).GT.0. _d 0) THEN
-           tmpscal1=IceAge(i,j,bi,bj)/HEFFpreTH(i,j)
+           tmpscal1=IceAgeTr(i,j,bi,bj,2)/HEFFpreTH(i,j)
           ELSE
            tmpscal1=0. _d 0
           ENDIF
@@ -1694,10 +1695,9 @@ C--   compute actual age from effective age:
            tmpscal2=tmpscal1+SEAICE_deltaTtherm
           ENDIF
 C--   re-scale to effective age:
-          IceAge(i,j,bi,bj) = tmpscal2*HEFF(i,j,bi,bj)
+          IceAgeTr(i,j,bi,bj,2) = tmpscal2*HEFF(i,j,bi,bj)
          ENDDO
         ENDDO
-# endif /* SEAICE_AGE_VOL */
 #endif /* SEAICE_AGE */
 
 

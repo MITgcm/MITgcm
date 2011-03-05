@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.53 2010/11/08 21:50:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.54 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,8 +19,10 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "SEAICE_TRACER.h"
 #include "SEAICE_TAVE.h"
 #ifdef ALLOW_EXCH2
 # include "W2_EXCH2_SIZE.h"
@@ -39,7 +41,7 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
-      INTEGER i, j, bi, bj
+      INTEGER i, j, bi, bj, iTracer
       _RL PSTAR
       _RS  mask_uice
       INTEGER myIter, kSurface
@@ -126,7 +128,9 @@ C
           HSALT(i,j,bi,bj)  = 0. _d 0
 #endif
 #ifdef SEAICE_AGE
-          ICEAGE(i,j,bi,bj) = 0. _d 0
+          DO iTracer = 1, SEAICE_num
+           IceAgeTr(i,j,bi,bj,iTracer) = 0. _d 0
+          ENDDO
 #endif
           YNEG (i,j,bi,bj)  = 0. _d 0
           RIVER(i,j,bi,bj)  = 0. _d 0
@@ -408,10 +412,13 @@ C--   Read initial sea ice salinity from file if available.
 
 #ifdef SEAICE_AGE
 C--   Read initial sea ice age from file if available.
-       IF ( IceAgeFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( IceAgeFile, ' ', ICEAGE, 0, myThid )
-        _EXCH_XY_RL(ICEAGE,myThid)
-       ENDIF
+       DO iTracer = 1, SEAICE_num
+        IF ( IceAgeTrFile(iTracer) .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( IceAgeTrFile(iTracer), ' ', 
+     &   IceAgeTr(1-Olx,1-Oly,1,1,iTracer), 0, myThid )
+        _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTracer),myThid)
+        ENDIF
+       ENDDO
 #endif /* SEAICE_AGE */
 
       ENDIF
@@ -432,8 +439,10 @@ C--   In case we use scheme with a large stencil that extends into overlap:
      I                            1, bi, bj, myThid )
 #endif
 #ifdef SEAICE_AGE
-           CALL OBCS_COPY_TRACER( ICEAGE(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
+           DO iTracer = 1, SEAICE_num
+            CALL OBCS_COPY_TRACER( IceAgeTr(1-Olx,1-Oly,bi,bj,iTracer),
+     I                             1, bi, bj, myThid )
+           ENDDO
 #endif
          ENDDO
         ENDDO

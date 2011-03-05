@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.89 2011/02/14 23:51:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.90 2011/03/05 18:06:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -15,7 +15,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_TRACER.h"
 #ifdef ALLOW_COST
 # include "SEAICE_COST.h"
 #endif
@@ -39,10 +41,12 @@ C     iUnit  :: Work variable for IO unit number
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      INTEGER iTracer
 
 C     retired parameters
       INTEGER nRetired
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
+      CHARACTER*(MAX_LEN_MBUF) IceAgeFile
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -77,7 +81,7 @@ C--   SEAICE parameters
      & SEAICE_salinity, SIsal0, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     & AreaFile, HeffFile, HsnowFile, HsaltFile, IceAgeFile,
+     & AreaFile, HeffFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, DIFF1, A22, SEAICEuseFREEDRIFT,
      & areaMin, hiceMin, areaMax,
@@ -99,6 +103,12 @@ C--   SEAICE parameters
      &          wsmrarea0, wmean_smrarea, smrarea_errfile,
      &          smrareastartdate1, smrareastartdate2, smrareaperiod
 #endif
+
+#ifdef SEAICE_AGE
+      NAMELIST /SEAICE_PARM03/
+     &          IceAgeTrFile
+#endif
+
 
       _BEGIN_MASTER(myThid)
 
@@ -242,7 +252,6 @@ C     to be consistent
       AreaFile   = ' '
       HsnowFile  = ' '
       HsaltFile  = ' '
-      IceAgeFile = ' '
       HeffFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
@@ -277,6 +286,7 @@ C     SEAICE_latentWater = 5.6875 _d +03
 C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
 C     SEAICE_latentIce   = 6.4474 _d +03
       SEAICE_latentIce   = UNSET_RL
+      IceAgeFile         = ' '
 C     end retired parameters
 
 #ifdef ALLOW_COST
@@ -311,6 +321,14 @@ C--   Read settings from model parameter file "data.seaice".
 
 #ifdef ALLOW_COST
       READ(UNIT=iUnit,NML=SEAICE_PARM02)
+#endif
+
+#ifdef SEAICE_AGE
+      DO iTracer = 1, SEAICE_num
+       IceAgeTrFile(iTracer) = ' '
+      ENDDO
+C--
+      READ(UNIT=iUnit,NML=SEAICE_PARM03)
 #endif
 
       CLOSE(iUnit)
@@ -487,6 +505,17 @@ C     retired parameter
        WRITE(msgBuf,'(A,A)') 
      &  'S/R SEAICE_READPARMS: set "SEAICE_lhFusion", ',
      &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( IceAgeFile .NE. ' ' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: "IceAgeFile" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 
+     &  'S/R SEAICE_READPARMS: replaced by ',
+     &  '"IceAgeTrFile(SEAICE_num)" array '
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
