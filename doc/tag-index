@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1387 2011/03/05 22:56:22 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1388 2011/03/06 23:47:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+ - Refine Interior mask definition to work with more complex OB (e.g.
+   if OB_Ie < OB_Iw); In case default setting is not sufficient, allows to
+   read in Interior mask from file. Check if Interior mask is consistent
+   with OB list of indices.
 o pkg/seaice
  - beginning code for a seaice tracer package,
    but currently only used for seaice age: SEAICE_AGE
