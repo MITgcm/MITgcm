@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.19 2011/02/28 15:22:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.20 2011/03/06 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -20,6 +20,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "OBCS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -30,12 +31,20 @@ CEOP
 
 #ifdef ALLOW_OBCS
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
-C     === Local variables ===
-C     msgBuf   :: Informational/error message buffer
+C     msgBuf  :: Informational/error message buffer
+C     bi,bj   :: tile indices
+C     i, j    :: Loop counters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER bi,bj
+      INTEGER bi, bj
+      INTEGER i, j
+      INTEGER ln
       INTEGER ioUnit
+      LOGICAL flag
 
       ioUnit = standardMessageUnit
 
@@ -69,6 +78,12 @@ C--   Print OBCS set-up summary:
      &   'OBCS_monitorFreq =', ' /* monitor output frequency [s] */')
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',
      &                  ' /* select group of variables to monitor */')
+      ln = ILNBLNK(insideOBmaskFile)
+      IF ( ln.GT.0 ) THEN
+        CALL WRITE_0D_C( insideOBmaskFile, ln, INDEX_NONE,
+     &   'insideOBmaskFile =',
+     &   ' /* used to specify Inside OB region mask */')
+      ENDIF
 
       IF ( debugLevel.GE.debLevA ) THEN
        DO bj = 1,nSy
@@ -365,8 +380,113 @@ CML       ENDIF
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 
-      WRITE(msgBuf,'(A)') 'OBCS_CHECK: OK'
+      WRITE(msgBuf,'(A)') 'OBCS_CHECK: set-up OK'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check if Interior mask is consistent with OB list of indices
+c     IF ( insideOBmaskFile.NE.' ' ) THEN
+       flag = .TRUE.
+       WRITE(msgBuf,'(2A)') 'S/R OBCS_CHECK: ',
+     &              'Inside Mask and OB locations disagree :'
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+
+         DO j=1,sNy
+C-    Eastern boundary
+          i = OB_Ie(j,bi,bj)
+          IF ( i.NE.0 .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from OB_Ie (bi,bj=', bi, ',', bj,
+     &        ') expects Mask=0 @ i,j=', i, ',', j
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+          ENDIF
+          DO i=1,sNx+1
+           IF ( maskInC(i-1,j,bi,bj).GT.maskInC(i,j,bi,bj)
+     &          .AND.ksurfW(i,j,bi,bj).LE.Nr
+     &          .AND. i.NE.OB_Ie(j,bi,bj) ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from insideMask (bi,bj=', bi, ',', bj,
+     &        ') expects OBE=', i, ' @ j=', j
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+           ENDIF
+          ENDDO
+C-    Western boundary
+          i = OB_Iw(j,bi,bj)
+          IF ( i.NE.0 .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from OB_Iw (bi,bj=', bi, ',', bj,
+     &        ') expects Mask=0 @ i,j=', i, ',', j
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+          ENDIF
+          DO i=1,sNx+1
+           IF ( maskInC(i-1,j,bi,bj).LT.maskInC(i,j,bi,bj)
+     &          .AND.ksurfW(i,j,bi,bj).LE.Nr
+     &          .AND. i.NE.OB_Iw(j,bi,bj)+1 ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from insideMask (bi,bj=', bi, ',', bj,
+     &        ') expects OBW=', i-1, ' @ j=', j
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+           ENDIF
+          ENDDO
+         ENDDO
+
+         DO i=1,sNx
+C-    Northern boundary
+          j = OB_Jn(i,bi,bj)
+          IF ( j.NE.0 .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from OB_Jn (bi,bj=', bi, ',', bj,
+     &        ') expects Mask=0 @ i,j=', i, ',', j
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+          ENDIF
+          DO j=1,sNy+1
+           IF ( maskInC(i,j-1,bi,bj).GT.maskInC(i,j,bi,bj)
+     &          .AND.ksurfS(i,j,bi,bj).LE.Nr
+     &          .AND. j.NE.OB_Jn(i,bi,bj) ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from insideMask (bi,bj=', bi, ',', bj,
+     &        ') expects OBN=', j, ' @ i=', i
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+           ENDIF
+          ENDDO
+C-    Southern boundary
+          DO j=1,sNy+1
+           IF ( maskInC(i,j-1,bi,bj).LT.maskInC(i,j,bi,bj)
+     &          .AND.ksurfS(i,j,bi,bj).LE.Nr
+     &          .AND. j.NE.OB_Js(i,bi,bj)+1 ) THEN
+            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(2(A,I3),2(A,I5))')
+     &        ' from insideMask (bi,bj=', bi, ',', bj,
+     &        ') expects OBS=', j-1, ' @ i=', i
+            CALL PRINT_ERROR( msgBuf, myThid )
+            flag = .FALSE.
+           ENDIF
+          ENDDO
+         ENDDO
+
+        ENDDO
+       ENDDO
+       IF ( flag ) THEN
+         WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &              'check Inside Mask and OB locations: OK'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       ELSE
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ENDIF
+c     ENDIF
 
 #endif /* ALLOW_OBCS */
       RETURN
