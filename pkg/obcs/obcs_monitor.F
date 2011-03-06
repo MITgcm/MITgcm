@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_monitor.F,v 1.2 2011/03/01 23:39:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_monitor.F,v 1.3 2011/03/06 23:34:15 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -52,11 +52,8 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     msgBuf       :: Informational/error message buffer
-      INTEGER j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(10) fldName
       _RL fldStats(0:4,4)
-      _RL theMin, theMax, theMean, theSD
 
       IF ( DIFFERENT_MULTIPLE( OBCS_monitorFreq,myTime,deltaTClock )
      &   ) THEN
