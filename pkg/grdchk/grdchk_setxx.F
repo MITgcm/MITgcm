@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.25 2009/10/16 19:12:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.26 2011/03/07 09:24:28 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -62,6 +62,13 @@ c     == local variables ==
 
       logical doglobalread
       logical ladinit
+
+#if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
+      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+#endif 
+#if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
+      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       character*(80) fname
 

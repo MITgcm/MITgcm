@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcsw.F,v 1.9 2011/01/19 08:42:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcsw.F,v 1.10 2011/03/07 09:24:10 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -69,6 +69,7 @@ c     == local variables ==
       integer obcswcount1
 
 cgg      _RL maskyz   (1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 
       logical doglobalread
       logical ladinit
@@ -120,6 +121,8 @@ c--   Get the counters, flags, and the interpolation factor.
      O                   obcswcount0,obcswcount1,
      I                   mytime, myiter, mythid )
 
+CML      print *,'ml-getobcs: ',myIter,obcswfirst,obcswchanged,
+CML     &     obcswcount0,obcswcount1,obcswfac
       do iobcs = 1,nobcs
         if ( obcswfirst ) then
           call active_read_yz( fnameobcsw, tmpfldyz,
@@ -147,7 +150,7 @@ cgg         The barotropic velocity is stored in the level 1.
                     do k = 1,Nr
 cgg    If cells are not full, this should be modified with hFac.
 cgg
-cgg    The xx field (tmpfldxz) does not contain the velocity at the
+cgg    The xx field (tmpfldyz) does not contain the velocity at the
 cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure..
@@ -182,7 +185,7 @@ cgg         The barotropic velocity is stored in the level 1.
                     do k = 1,Nr
 cgg    If cells are not full, this should be modified with hFac.
 cgg
-cgg    The xx field (tmpfldxz) does not contain the velocity at the
+cgg    The xx field (tmpfldyz) does not contain the velocity at the
 cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure..
@@ -254,7 +257,7 @@ cgg         The barotropic velocity is stored in the level 1.
                     do k = 1,Nr
 cgg    If cells are not full, this should be modified with hFac.
 cgg
-cgg    The xx field (tmpfldxz) does not contain the velocity at the
+cgg    The xx field (tmpfldyz) does not contain the velocity at the
 cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure..
@@ -289,7 +292,7 @@ cgg         The barotropic velocity is stored in the level 1.
                     do k = 1,Nr
 cgg    If cells are not full, this should be modified with hFac.
 cgg
-cgg    The xx field (tmpfldxz) does not contain the velocity at the
+cgg    The xx field (tmpfldyz) does not contain the velocity at the
 cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure..
@@ -323,41 +326,41 @@ cgg     &                                        *   maskyz (j,k,bi,bj)
           enddo
         endif
 
-c--     Add control to model variable.
+c--   Add control to model variable.
         do bj = jtlo, jthi
-           do bi = itlo, ithi
-c--        Calculate mask for tracer cells (0 => land, 1 => water).
-              do k = 1,nr
-                 do j = 1,sny
-                    i = OB_Iw(j,bi,bj)
-                    if (iobcs .EQ. 1) then
-                       OBWt(j,k,bi,bj) = OBWt (j,k,bi,bj)
-     &                 + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
-                       OBWt(j,k,bi,bj) = OBWt(j,k,bi,bj)
-     &                      *maskW(i+ip1,j,k,bi,bj)
-                    else if (iobcs .EQ. 2) then
-                       OBWs(j,k,bi,bj) = OBWs (j,k,bi,bj)
-     &                 + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
-                       OBWs(j,k,bi,bj) = OBWs(j,k,bi,bj)
-     &                      *maskW(i+ip1,j,k,bi,bj)
-                    else if (iobcs .EQ. 3) then
-                       OBWu(j,k,bi,bj) = OBWu (j,k,bi,bj)
-     &                 + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
-                       OBWu(j,k,bi,bj) = OBWu(j,k,bi,bj)
-     &                      *maskW(i+ip1,j,k,bi,bj)
-                    else if (iobcs .EQ. 4) then
-                       OBWv(j,k,bi,bj) = OBWv (j,k,bi,bj)
-     &                 + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
-                       OBWv(j,k,bi,bj) = OBWv(j,k,bi,bj)
-     &                      *maskS(i,j,k,bi,bj)
-                    endif
-                 enddo
-              enddo
+         do bi = itlo, ithi
+c--   Calculate mask for tracer cells (0 => land, 1 => water).
+          do k = 1,nr
+           do j = 1,sny
+            i = OB_Iw(j,bi,bj)
+            if (iobcs .EQ. 1) then
+             OBWt(j,k,bi,bj) = OBWt (j,k,bi,bj)
+     &            + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
+             OBWt(j,k,bi,bj) = OBWt(j,k,bi,bj)
+     &            *maskW(i+ip1,j,k,bi,bj)
+            else if (iobcs .EQ. 2) then
+             OBWs(j,k,bi,bj) = OBWs (j,k,bi,bj)
+     &            + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
+             OBWs(j,k,bi,bj) = OBWs(j,k,bi,bj)
+     &            *maskW(i+ip1,j,k,bi,bj)
+            else if (iobcs .EQ. 3) then
+             OBWu(j,k,bi,bj) = OBWu (j,k,bi,bj)
+     &            + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
+             OBWu(j,k,bi,bj) = OBWu(j,k,bi,bj)
+     &            *maskW(i+ip1,j,k,bi,bj)
+            else if (iobcs .EQ. 4) then
+             OBWv(j,k,bi,bj) = OBWv (j,k,bi,bj)
+     &            + obcswfac            *xx_obcsw0(j,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcswfac)*xx_obcsw1(j,k,bi,bj,iobcs)
+             OBWv(j,k,bi,bj) = OBWv(j,k,bi,bj)
+     &            *maskS(i,j,k,bi,bj)
+            endif
            enddo
+          enddo
+         enddo
         enddo
 
 C--   End over iobcs loop

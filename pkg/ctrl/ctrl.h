@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.50 2010/11/11 00:44:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.51 2011/03/07 09:24:10 mlosch Exp $
 C $Name:  $
 
 
@@ -305,21 +305,6 @@ c     TAMC sees xx_..._dummy
 # ifdef ALLOW_KAPGM_CONTROL
       _RL xx_kapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 # endif
-#endif
-
-
-cgg  This caused a lot of confusion.
-#ifdef ALLOW_OBCS_CONTROL
-      common /controlvars_r_obcs/
-     &                        tmpfldxz
-     &                      , tmpfldxz2
-     &                      , tmpfldyz
-     &                      , tmpfldyz2
-
-      _RL tmpfldxz  (1-olx:snx+olx,nr,nsx,nsy)
-      _RL tmpfldxz2 (1-olx:snx+olx,nr,nsx,nsy)
-      _RL tmpfldyz  (1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpfldyz2 (1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
 c     Auxiliary storage arrays for the control variables:

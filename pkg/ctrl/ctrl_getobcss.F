@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.8 2011/01/19 08:42:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.9 2011/03/07 09:24:10 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -70,6 +70,7 @@ c     == local variables ==
       integer jp1
 
 cgg      _RL maskxz   (1-olx:snx+olx,nr,nsx,nsy)
+      _RL tmpfldxz (1-oly:sny+oly,nr,nsx,nsy)
 
       logical doglobalread
       logical ladinit
@@ -326,41 +327,41 @@ cgg     &                                        *   maskxz (i,k,bi,bj)
           enddo
         endif
 
-c--     Add control to model variable.
+c--   Add control to model variable.
         do bj = jtlo,jthi
-           do bi = itlo,ithi
-c--        Calculate mask for tracer cells (0 => land, 1 => water).
-              do k = 1,nr
-                 do i = 1,snx
-                    j = OB_Js(I,bi,bj)
-                    if (iobcs .EQ. 1) then
-                       OBSt(i,k,bi,bj) = OBSt (i,k,bi,bj)
-     &                 + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
-                       OBSt(i,k,bi,bj) = OBSt(i,k,bi,bj)
-     &                      *maskS(i,j+jp1,k,bi,bj)
-                    else if (iobcs .EQ. 2) then
-                       OBSs(i,k,bi,bj) = OBSs (i,k,bi,bj)
-     &                 + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
-                       OBSs(i,k,bi,bj) = OBSs(i,k,bi,bj)
-     &                      *maskS(i,j+jp1,k,bi,bj)
-                    else if (iobcs .EQ. 4) then
-                       OBSu(i,k,bi,bj) = OBSu (i,k,bi,bj)
-     &                 + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
-                       OBSu(i,k,bi,bj) = OBSu(i,k,bi,bj)
-     &                      *maskW(i,j,k,bi,bj)
-                    else if (iobcs .EQ. 3) then
-                       OBSv(i,k,bi,bj) = OBSv (i,k,bi,bj)
-     &                 + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
-     &                 + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
-                       OBSv(i,k,bi,bj) = OBSv(i,k,bi,bj)
-     &                      *maskS(i,j+jp1,k,bi,bj)
-                    endif
-                 enddo
-              enddo
+         do bi = itlo,ithi
+c--   Calculate mask for tracer cells (0 => land, 1 => water).
+          do k = 1,nr
+           do i = 1,snx
+            j = OB_Js(I,bi,bj)
+            if (iobcs .EQ. 1) then
+             OBSt(i,k,bi,bj) = OBSt (i,k,bi,bj)
+     &            + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
+             OBSt(i,k,bi,bj) = OBSt(i,k,bi,bj)
+     &            *maskS(i,j+jp1,k,bi,bj)
+            else if (iobcs .EQ. 2) then
+             OBSs(i,k,bi,bj) = OBSs (i,k,bi,bj)
+     &            + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
+             OBSs(i,k,bi,bj) = OBSs(i,k,bi,bj)
+     &            *maskS(i,j+jp1,k,bi,bj)
+            else if (iobcs .EQ. 4) then
+             OBSu(i,k,bi,bj) = OBSu (i,k,bi,bj)
+     &            + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
+             OBSu(i,k,bi,bj) = OBSu(i,k,bi,bj)
+     &            *maskW(i,j,k,bi,bj)
+            else if (iobcs .EQ. 3) then
+             OBSv(i,k,bi,bj) = OBSv (i,k,bi,bj)
+     &            + obcssfac            *xx_obcss0(i,k,bi,bj,iobcs)
+     &            + (1. _d 0 - obcssfac)*xx_obcss1(i,k,bi,bj,iobcs)
+             OBSv(i,k,bi,bj) = OBSv(i,k,bi,bj)
+     &            *maskS(i,j+jp1,k,bi,bj)
+            endif
            enddo
+          enddo
+         enddo
         enddo
 
 C--   End over iobcs loop
