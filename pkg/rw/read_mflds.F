@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.5 2009/09/01 19:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.6 2011/03/07 03:07:21 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -10,6 +10,7 @@ C--   o READ_MFLDS_SET
 C--   o READ_MFLDS_3D_RL
 C--   o READ_MFLDS_LEV_RL
 C--   o READ_MFLDS_CHECK
+C--   o READ_MFLDS_RENAME
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -610,6 +611,75 @@ C--   Reset MFLDS file name:
       _END_MASTER( myThid )
       _BARRIER
 #endif /* RW_SAFE_MFLDS */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: READ_MFLDS_RENAME
+C     !INTERFACE:
+      SUBROUTINE READ_MFLDS_RENAME(
+     I                              fldName, newName,
+     O                              errCode,
+     I                              myThid )
+
+C     !DESCRIPTION:
+C     Rename one field in fldList
+
+C     !USES:
+      IMPLICIT NONE
+c#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "RW_MFLDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     fldName  :: field name to rename
+C     newName  :: new name to replace fldName
+C     errCode  :: returned error code:
+C                 0 = succesful ; 1 = fldName not found ; > 1 : error
+C     myThid   :: my Thread Id. number
+      CHARACTER*(8) fldName
+      CHARACTER*(8) newName
+      INTEGER errCode
+      INTEGER myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+C     i , j    :: loop counter
+      INTEGER i , j
+C-    for debug print:
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      errCode = 1
+
+C-    search for fldName in fldList:
+      j = 0
+      DO i=1,nFlds
+        IF ( fldList(i) .EQ. fldName ) THEN
+          IF ( j.EQ.0 ) THEN
+            errCode = 0
+            j = i
+          ELSE
+C--    fldName appears more than once in fldList (errCode=3):
+            errCode = 3
+          ENDIF
+        ENDIF
+      ENDDO
+
+      IF ( errCode.EQ.0 ) THEN
+C--   Do not replace if newName is already in the list (errCode=2):
+        DO i=1,nFlds
+          IF ( fldList(i).EQ.newName ) errCode = 2
+        ENDDO
+      ENDIF
+
+      IF ( errCode.EQ.0 ) THEN
+        _BEGIN_MASTER( myThid )
+        fldList(j) = newName
+        _END_MASTER( myThid )
+        _BARRIER
+      ENDIF
 
       RETURN
       END
