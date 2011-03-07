@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1388 2011/03/06 23:47:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1389 2011/03/07 08:23:57 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco: remove an obsolete initialization from ecco_cost_init_barfiles.F
 o pkg/obcs:
  - Refine Interior mask definition to work with more complex OB (e.g.
    if OB_Ie < OB_Iw); In case default setting is not sufficient, allows to
