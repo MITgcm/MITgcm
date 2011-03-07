@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.7 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.8 2011/03/07 03:12:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,7 +54,7 @@ C     bi,bj       :: tile indices
       CHARACTER*(8) fldName, missFldList(missFldDim)
       INTEGER nj, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iTracer
+      INTEGER iTracer, kerr
 CEOP
 
 C--
@@ -124,6 +124,19 @@ C-      Old meta-file without List of Fields
         ENDIF
        ENDIF
 
+#ifdef SEAICE_AGE
+       IF ( nbFields.GT.0 ) THEN
+C--    ice age field has been re-named:
+         CALL READ_MFLDS_RENAME( 'siAGE   ', 'siAGEt01', kerr, myThid )
+         IF ( kerr.GE.2 ) THEN
+          WRITE(msgBuf,'(2A,I4)') 'SEAICE_READ_PICKUP: ',
+     &      'renaming siAGE -> siAGEt01 return error:', kerr
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R SEAICE_READ_PICKUP'
+         ENDIF
+       ENDIF
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---   Old way to read seaice fields:
@@ -165,8 +178,8 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         nj = nj + 1
 #endif
 #ifdef SEAICE_AGE
-        CALL READ_REC_3D_RL( fn, fp, 1, 
-     &    IceAgeTr(1-Olx,1-Oly,1,1,1), 
+        CALL READ_REC_3D_RL( fn, fp, 1,
+     &    IceAgeTr(1-Olx,1-Oly,1,1,1),
      &    nj, nIter0, myThid )
 #endif
 
@@ -203,17 +216,9 @@ C--    continue with 2-D fields:
      &                                      nj, fp, 1, nIter0, myThid )
 #endif
 #ifdef SEAICE_AGE
-C--   Either old ice age field iceAge or new ice age field iceAgeTr
-C
-         WRITE(fldName,'(A8)') 'siAGE   '
-         CALL READ_MFLDS_3D_RL( fldName, 
-     &         IceAgeTr(1-Olx,1-Oly,1,1,1),
-     &         nj, fp, 1, nIter0, myThid )
-         _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,1),myThid)
-C
          DO iTracer = 1, SEAICE_num
           WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTracer
-          CALL READ_MFLDS_3D_RL( fldName, 
+          CALL READ_MFLDS_3D_RL( fldName,
      &         IceAgeTr(1-Olx,1-Oly,1,1,iTracer),
      &         nj, fp, 1, nIter0, myThid )
           _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTracer),myThid)

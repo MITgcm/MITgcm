@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.2 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.3 2011/03/07 03:12:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,14 +53,20 @@ C     ioUnit      :: temp for writing msg unit
 C     msgBuf      :: Informational/error message buffer
 C     i,j,k       :: loop indices
 C     bi,bj       :: tile indices
-      INTEGER nj, ioUnit, iTracer
+      INTEGER nj, ioUnit
       INTEGER tIceFlag, warnCnts
       LOGICAL stopFlag
-      LOGICAL oldIceAge
+c     LOGICAL oldIceAge
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(8) fldName
+      INTEGER i,j,bi,bj
+#ifdef SEAICE_MULTICATEGORY
+      INTEGER k
+#endif
+#ifdef SEAICE_AGE
+      INTEGER siTrac
       CHARACTER*(2) fldNum
-      INTEGER i,j,k,bi,bj
+#endif
 CEOP
 
 c     IF ( seaice_pickup_read_mdsio ) THEN
@@ -68,11 +74,11 @@ c     IF ( seaice_pickup_read_mdsio ) THEN
        IF ( nMissing.GE.1 ) THEN
         ioUnit = errorMessageUnit
         tIceFlag = 0
-        oldIceAge = .TRUE.
+c       oldIceAge = .TRUE.
         DO nj=1,nMissing
          IF ( missFldList(nj).EQ.'siTICES ' ) tIceFlag = tIceFlag + 2
          IF ( missFldList(nj).EQ.'siTICE  ' ) tIceFlag = tIceFlag + 1
-         IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
+c        IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
         ENDDO
         stopFlag = .FALSE.
         warnCnts = nMissing
@@ -82,16 +88,16 @@ c     IF ( seaice_pickup_read_mdsio ) THEN
          IF     ( fldName.EQ.'siTICE  '
      &                      .AND. tIceFlag.LE.1 ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
-     &      'restart with Tice from 1rst category'
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+     &      ' restart with Tice from 1rst category'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
          ELSEIF ( fldName.EQ.'siTICES '
      &                      .AND. tIceFlag.LE.2 ) THEN
 #ifdef SEAICE_MULTICATEGORY
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
-     &      'restart from single category Tice (copied to TICES)'
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+     &      ' restart from single category Tice (copied to TICES)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 C      copy TICE -> TICES
            DO bj=myByLo(myThid),myByHi(myThid)
@@ -112,8 +118,8 @@ C- Note: try to restart without Sigma1,2,12 (as if SEAICEuseEVPpickup=F)
 C        An alternative would be to restart only if SEAICEuseEVPpickup=F:
 C        if SEAICEuseEVPpickup then stop / else warning / endif
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
-     &      'restart without "',fldName,'" (set to zero)'
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+     &      ' restart without "',fldName,'" (set to zero)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
          ELSEIF ( fldName.EQ.'siTICES ' .OR.
@@ -129,40 +135,41 @@ C        if SEAICEuseEVPpickup then stop / else warning / endif
      &       'cannot restart without field "',fldName,'"'
            CALL PRINT_ERROR( msgBuf, myThid )
 #ifdef SEAICE_AGE
+         ELSEIF ( fldName.EQ.'siAGEt01' ) THEN
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+     &                  ' restart without "',fldName,'" (set to zero)'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
          ELSEIF ( fldName(1:6).EQ.'siAGEt' ) THEN
-          IF ( oldIceAge ) THEN
-           IF ( .NOT.pickupStrictlyMatch ) THEN
-            WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
-     &       'restart from single IceAge iTracer=1 (copied to IceAgeTr)'
-            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-C      copy IceAgeTr(...,1) -> IceAgeTr(...,iTracer)
-            DO iTracer = 2, SEAICE_num
+           siTrac = 0
+           DO i = 1, SEAICE_num
+             WRITE(fldNum,'(I2.2)') i
+             IF ( fldName(7:8).EQ.fldNum ) siTrac = i
+           ENDDO
+           IF ( siTrac.EQ.0 ) THEN
+             stopFlag = .TRUE.
+             WRITE(msgBuf,'(4A)') 'SEAICE_CHECK_PICKUP: ',
+     &        'missing field "',fldName,'" not recognized'
+             CALL PRINT_ERROR( msgBuf, myThid )
+           ELSEIF ( .NOT.pickupStrictlyMatch ) THEN
+             WRITE(msgBuf,'(2A,I3,A)')
+     &        '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+     &        ' restart siTr=', siTrac,
+     &        ' from IceAge (siTr=1 copied to IceAgeTr)'
+             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+C      copy IceAgeTr(...,1) -> IceAgeTr(...,siTrac)
              DO bj=myByLo(myThid),myByHi(myThid)
               DO bi=myBxLo(myThid),myBxHi(myThid)
                DO j=1-OLy,sNy+OLy
                 DO i=1-OLx,sNx+OLx
-                 IceAgeTr(i,j,bi,bj,iTracer) = IceAgeTr(i,j,bi,bj,1)
+                 IceAgeTr(i,j,bi,bj,siTrac) = IceAgeTr(i,j,bi,bj,1)
                 ENDDO
                ENDDO
               ENDDO
              ENDDO
-            ENDDO
            ENDIF
-          ELSE
-           DO iTracer = 1, SEAICE_num
-            WRITE(fldNum,'(I2.2)') iTracer
-            IF ( fldName(7:8).EQ.fldNum ) THEN
-             IF ( .NOT.pickupStrictlyMatch ) THEN
-              WRITE(msgBuf,'(4A)') 
-     &         '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
-     &         'restart without "',fldName,'" (set to zero)'
-              CALL PRINT_MESSAGE( 
-     &         msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-             ENDIF
-            ENDIF
-           ENDDO
-          ENDIF
-#endif
+#endif /* SEAICE_AGE */
          ELSE
 C-    not recognized fields:
            stopFlag = .TRUE.
