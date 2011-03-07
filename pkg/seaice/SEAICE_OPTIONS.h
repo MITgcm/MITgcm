@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.47 2011/03/04 19:11:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.48 2011/03/07 03:10:18 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -77,12 +77,7 @@ C--   By default sea ice is fresh.  Set following flag for salty ice.
 #undef SEAICE_SALINITY
 
 C--   Track sea ice age.
-C     By default sea ice age is associated with ice area.
-C     Define SEAICE_AGE_VOL to associate age with volume.
 #undef SEAICE_AGE
-#ifdef SEAICE_AGE
-# undef SEAICE_AGE_VOL
-#endif
 
 C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
