@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.4 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.5 2011/03/07 09:28:46 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -32,7 +32,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+CML#include "DYNVARS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS.h"
 #endif
@@ -60,17 +60,13 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec
-      integer il
       integer iobcs
-      integer ip1
-      integer jp1
       integer nrec
       integer ilfld
       integer igg
 
       _RL fctile
       _RL sumvol
-      _RL dummy
       _RL gg
       _RL tmpx
       _RL tmpy
@@ -79,6 +75,13 @@ c     == local variables ==
       character*(80) fnameflds
       character*(80) fnamefldw
       character*(80) fnameflde
+
+#if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
+      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+#endif 
+#if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
+      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       logical doglobalread
       logical ladinit
@@ -179,8 +182,6 @@ cgg    Need to solve for iobcs. Then only keep iobcs=3.or.4.
 #ifdef ALLOW_OBCSN_CONTROL
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
-        jp1 = 0
-
         if (iobcs.eq.4) then
           call active_read_xz( fnamefldn, tmpfldxz, irec, doglobalread,
      &                         ladinit, optimcycle, mythid
@@ -206,9 +207,10 @@ c--         Determine the weights to be used.
                   j = OB_Jn(I,bi,bj)
 cgg    Barotropic velocity is stored in level 1.
                   tmpx = tmpfldxz(i,1,bi,bj)
-                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+                  if (maskS(i,j,k,bi,bj) .ne. 0.) then
 cgg -- Positive is flux in.
-                    fctile = fctile - tmpx* delZ(k) *dxg(i,j+jp1,bi,bj)
+                    fctile = fctile - tmpx* drF(k) *dxg(i,j,bi,bj)
+     &                  * _hFacS(i,j,k,bi,bj)
                   endif
                 enddo
               enddo
@@ -222,8 +224,6 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSS_CONTROL
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
-        jp1 = 1
-
         if (iobcs.eq.4) then
           call active_read_xz( fnameflds, tmpfldxz, irec, doglobalread,
      &                         ladinit, optimcycle, mythid
@@ -248,9 +248,10 @@ c--         Determine the weights to be used.
                   j = OB_Js(I,bi,bj)
 cgg    Barotropic velocity is stored in level 1.
                   tmpx = tmpfldxz(i,1,bi,bj)
-                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+                  if (maskS(i,j+1,k,bi,bj) .ne. 0.) then
 cgg -- Positive is flux in.
-                    fctile = fctile + tmpx* delZ(k) *dxg(i,j+jp1,bi,bj)
+                    fctile = fctile + tmpx* drF(k) *dxg(i,j+1,bi,bj)
+     &                  * _hFacS(i,j+1,k,bi,bj)
                   endif
                 enddo
               enddo
@@ -265,8 +266,6 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSW_CONTROL
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
-        ip1 = 1
-
         if (iobcs.eq.3) then
           call active_read_yz( fnamefldw, tmpfldyz, irec, doglobalread,
      &                         ladinit, optimcycle, mythid
@@ -291,9 +290,10 @@ c--         Determine the weights to be used.
                   i = OB_Iw(j,bi,bj)
 cgg    Barotropic velocity is stored in the level 1.
                   tmpy = tmpfldyz(j,1,bi,bj)
-                  if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
+                  if (maskW(i+1,j,k,bi,bj) .ne. 0.) then
 cgg -- Positive is flux in.
-                    fctile = fctile + tmpy* delZ(k) *dyg(i+ip1,j,bi,bj)
+                    fctile = fctile + tmpy* drF(k) *dyg(i+1,j,bi,bj)
+     &                  * _hFacW(i+1,j,k,bi,bj)
                   endif
                 enddo
               enddo
@@ -308,8 +308,6 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSE_CONTROL
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
-        ip1 = 0
-
         if (iobcs.eq.3) then
           call active_read_yz( fnameflde, tmpfldyz, irec, doglobalread,
      &                         ladinit, optimcycle, mythid
@@ -334,9 +332,10 @@ c--         Determine the weights to be used.
                   i = OB_Ie(j,bi,bj)
 cgg    Barotropic velocity stored in level 1.
                   tmpy = tmpfldyz(j,1,bi,bj)
-                  if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
+                  if (maskW(i,j,k,bi,bj) .ne. 0.) then
 cgg -- Positive is flux in.
-                    fctile = fctile - tmpy* delZ(k) *dyg(i+ip1,j,bi,bj)
+                    fctile = fctile - tmpy* drF(k) *dyg(i,j,bi,bj)
+     &                  * _hFacW(i,j,k,bi,bj)
                   endif
                 enddo
               enddo
