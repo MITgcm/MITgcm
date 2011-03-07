@@ -1,10 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1389 2011/03/07 08:23:57 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1390 2011/03/07 09:46:50 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ecco: remove an obsolete initialization from ecco_cost_init_barfiles.F
+o pkg/ctrl/ecco/grdchk: 
+  - remove global declaration of tmpfldx/yz and tmpfldx/yz2.
+    Fortunately, we do no have any tests for the numerous cpp-flagged
+    option of "obcs as control parameters" so we will never know
+    if this is an improvement (but at least now things compile).
+  - remove an obsolete initialization from ecco_cost_init_barfiles.F
+  - fix some problems within never used ifdefs to make the code compile 
 o pkg/obcs:
  - Refine Interior mask definition to work with more complex OB (e.g.
    if OB_Ie < OB_Iw); In case default setting is not sufficient, allows to
