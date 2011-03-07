@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.102 2011/03/07 09:43:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.103 2011/03/07 14:59:19 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,6 +149,7 @@ c They provide the fields to be stored.
 #  include "SEAICE_COST.h"
 # endif
 # ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
 #  include "SHELFICE_COST.h"
 # endif /* ALLOW_SHELFICE */
 # ifdef ALLOW_SALT_PLUME
@@ -670,14 +671,18 @@ CADJ STORE surfaceforcingtice = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_OBCS
 CADJ STORE salt               = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE totphihyd          = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef ALLOW_OBCS_STEVENS
+CADJ STORE gsnm1              = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE gtnm1              = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif /* ALLOW_OBCS_STEVENS */
 #  ifdef EXACT_CONSERV
 CADJ STORE empmr              = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE pmepr              = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
-# endif
+#  endif /* EXACT_CONSERV */
+# endif /* ALLOW_OBCS */
 # ifdef ALLOW_PTRACERS
 CADJ STORE ptracer            = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
+# endif /* ALLOW_PTRACERS */
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC              = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
