@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.20 2010/08/28 18:35:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.21 2011/03/07 08:22:53 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,31 +127,6 @@ c     == end of interface ==
           enddo
         enddo
       enddo
-
-cgg(  Also initialize the tmp fields used in ctrl_getobcs and cost_obcs.
-#ifdef OBCS_CONTROL
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              tmpfldyz (j,k,bi,bj) = 0. _d 0
-              tmpfldyz2(j,k,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do i =  imin,imax
-              tmpfldxz (i,k,bi,bj) = 0. _d 0
-              tmpfldxz2(i,k,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
-#endif
-cgg)
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 c--   Save psbar on file.
