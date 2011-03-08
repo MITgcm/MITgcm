@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.6 2011/03/07 03:07:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.7 2011/03/08 16:15:58 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -675,6 +675,7 @@ C--   Do not replace if newName is already in the list (errCode=2):
       ENDIF
 
       IF ( errCode.EQ.0 ) THEN
+        _BARRIER
         _BEGIN_MASTER( myThid )
         fldList(j) = newName
         _END_MASTER( myThid )
