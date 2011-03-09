@@ -15,6 +15,7 @@ obcs_init_variables.f
 obcs_prescribe_exchanges.f
 obcs_prescribe_read.f
 obcs_sponge.f	
+obcs_balance_flow.f
 orlanski_east.f
 orlanski_north.f
 orlanski_south.f
