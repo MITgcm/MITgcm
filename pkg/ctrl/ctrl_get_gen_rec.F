@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.9 2011/01/19 22:04:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.10 2011/03/09 16:16:46 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -112,29 +112,40 @@ c--   Check the field argument.
          stop   ' ... stopped in ctrl_get_gen_rec.'
       endif
 
+      if ( fldperiod .eq. 0. _d 0 ) then
+c     Read field only once in the beginning. Hack: count1=count0 causes
+c     the model to read the first record twice, but since this this is
+c     done only the first time around it is not too much of an overhead.
+       first   = ((mytime - modelstart) .lt. 0.5*modelstep)
+       changed = .false.
+       fac     = 1. _d 0
+       count0  = 1
+       count1  = count0
+      else
+c     fldperiod .ne. 0
 c--   Determine the current date.
-      call cal_GetDate( myiter, mytime, mydate, mythid )
+       call cal_GetDate( myiter, mytime, mydate, mythid )
 
 c     Determine first record:
-      call cal_TimePassed( fldstartdate, modelstartdate,
-     &                     difftime, mythid )
-      call cal_ToSeconds ( difftime, fldsecs, mythid )
-      startrec = int((modelstart + startTime - fldsecs)/
-     &               fldperiod) + 1
+       call cal_TimePassed( fldstartdate, modelstartdate,
+     &                      difftime, mythid )
+       call cal_ToSeconds ( difftime, fldsecs, mythid )
+       startrec = int((modelstart + startTime - fldsecs)/
+     &                fldperiod) + 1
 
 c     Determine the flux record just before mycurrentdate.
-      call cal_TimePassed( fldstartdate, mydate, difftime,
-     &                     mythid )
-      call cal_ToSeconds( difftime, fldsecs, mythid )
-      fldsecs  = int((fldsecs+0.5)/fldperiod)*fldperiod
-      fldcount = int((fldsecs+0.5)/fldperiod) + 1
+       call cal_TimePassed( fldstartdate, mydate, difftime,
+     &                      mythid )
+       call cal_ToSeconds( difftime, fldsecs, mythid )
+       fldsecs  = int((fldsecs+0.5)/fldperiod)*fldperiod
+       fldcount = int((fldsecs+0.5)/fldperiod) + 1
 
 c     Set switches for reading new records.
-      first = ((mytime - modelstart) .lt. 0.5*modelstep)
+       first = ((mytime - modelstart) .lt. 0.5*modelstep)
 
-      if ( first) then
+       if ( first) then
         changed = .false.
-      else
+       else
         call cal_GetDate( myiter-1, mytime-modelstep,
      &                    previousdate, mythid )
 
@@ -145,27 +156,29 @@ c     Set switches for reading new records.
         prevfldcount = int((prevfldsecs+0.5)/fldperiod) + 1
 
         if (fldcount .ne. prevfldcount) then
-          changed = .true.
+         changed = .true.
         else
-          changed = .false.
+         changed = .false.
         endif
-      endif
+       endif
 
 c      count0 = fldcount
 c      count1 = fldcount + 1
-      count0 = fldcount - startrec + 1
-      count1 = fldcount - startrec + 2
+       count0 = fldcount - startrec + 1
+       count1 = fldcount - startrec + 2
 
-      call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
-      call cal_AddTime( fldstartdate, difftime, flddate, mythid )
-      call cal_TimePassed( flddate, mydate, difftime, mythid )
-      call cal_ToSeconds( difftime, fldsecs, mythid )
+       call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
+       call cal_AddTime( fldstartdate, difftime, flddate, mythid )
+       call cal_TimePassed( flddate, mydate, difftime, mythid )
+       call cal_ToSeconds( difftime, fldsecs, mythid )
 
 c     Weight belonging to irec for linear interpolation purposes.
 c     Note: The weight as chosen here is 1. - fac of the "old"
 c           MITgcm estimation program.
-      fac = 1. - fldsecs/fldperiod
+       fac = 1. - fldsecs/fldperiod
 
+c     fldperiod .ne. 0.
+      endif 
 #else /* not ALLOW_CAL */
 C     Code, adapted from external_fields_load, for simplied
 C     default model calendar without exf/cal, but
