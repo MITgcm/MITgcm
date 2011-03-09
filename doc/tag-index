@@ -1,12 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1390 2011/03/07 09:46:50 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1391 2011/03/09 16:18:06 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl/ctrl_get_gen_rec.F: catch the case of xx_genperiod=0.
+o pkg/ecco
+ - enable adjoint of Stevens OB
 o pkg/ctrl/ecco/grdchk: 
   - remove global declaration of tmpfldx/yz and tmpfldx/yz2.
-    Fortunately, we do no have any tests for the numerous cpp-flagged
+    Fortunately, we do not have any tests for the numerous cpp-flagged
     option of "obcs as control parameters" so we will never know
     if this is an improvement (but at least now things compile).
   - remove an obsolete initialization from ecco_cost_init_barfiles.F
