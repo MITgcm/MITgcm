@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.9 2011/03/07 09:24:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.10 2011/03/09 16:17:14 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -70,7 +70,7 @@ c     == local variables ==
       integer jp1
 
 cgg      _RL maskxz   (1-olx:snx+olx,nr,nsx,nsy)
-      _RL tmpfldxz (1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
 
       logical doglobalread
       logical ladinit
