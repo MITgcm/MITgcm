@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsbal.F,v 1.6 2009/04/28 18:09:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsbal.F,v 1.7 2011/03/10 09:14:20 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -53,41 +53,20 @@ c     == routine arguments ==
 #ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
 c     == local variables ==
 
-      integer bi,bj
-      integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer irec
-      integer il
-      integer iobcs
-      integer ip1
-      integer jp1
-      integer nrec
-      integer ilfld
-      integer igg
 
       _RL volflux
       _RL area
-      _RL tmpflux
-      _RL tmparea
-      _RL dummy
-      _RL gg
-      _RL tmpx
-      _RL tmpy
       _RL obcsnfac
-      character*(80) fnamefldn
-      character*(80) fnameflds
-      character*(80) fnamefldw
-      character*(80) fnameflde
 
-      logical doglobalread
-      logical ladinit
       logical obcsnfirst, obcsnchanged
       integer obcsncount0, obcsncount1
 
 #ifdef ECCO_VERBOSE
+      integer nrec
       character*(MAX_LEN_MBUF) msgbuf
 #endif
 
@@ -108,8 +87,6 @@ c     == end of interface ==
       imax = snx
 
 c--   Read tiled data.
-      doglobalread = .false.
-      ladinit      = .false.
 
 cgg   Assume the number of records is the same for
 cgg   all boundaries. Needs to be improved someday.
@@ -117,8 +94,6 @@ cgg   all boundaries. Needs to be improved someday.
 #if   (defined (ALLOW_OBCS_CONTROL) || \
        defined (ALLOW_OBCS_COST_CONTRIBUTION))
 
-      tmpflux= 0. d 0
-      tmparea= 0. d 0
       area= 0. d 0
       volflux = 0. d 0
 
@@ -140,8 +115,17 @@ cgg   all boundaries. Needs to be improved someday.
       _END_MASTER( mythid )
 #endif
 
+CML   I think that this call of ctrl_getrec was forgotten. I also think
+CML   that this code has not been use in ages, so we do not know what it
+CML   actually does, and if it does it correcly.
+CMLc--   Get the counters, flags, and the interpolation factor.
+CML      call ctrl_GetRec( 'xx_obcsn',
+CML     O                   obcsnfac, obcsnfirst, obcsnchanged,
+CML     O                   obcsncount0,obcsncount1,
+CML     I                   mytime, myiter, mythid )
 c--   Get the counters, flags, and the interpolation factor.
-      call ctrl_GetRec( 'xx_obcsn',
+      call ctrl_get_gen_rec(
+     I                   xx_obcsnstartdate, xx_obcsnperiod,
      O                   obcsnfac, obcsnfirst, obcsnchanged,
      O                   obcsncount0,obcsncount1,
      I                   mytime, myiter, mythid )

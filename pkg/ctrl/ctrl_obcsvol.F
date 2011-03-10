@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsvol.F,v 1.13 2011/03/07 09:23:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsvol.F,v 1.14 2011/03/10 09:14:20 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -56,23 +56,13 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer irec
-      integer il
-      integer iobcs
-      integer ip1
-      integer jp1
-      integer nrec
       integer ilfld
-      integer igg
 
+      _RL raxr, rayr
       _RL sumvol
       _RL sumarea
       _RL tmpflux
       _RL tmparea
-      _RL dummy
-      _RL gg
-      _RL tmpx
-      _RL tmpy
       character*(80) fnamefldn
       character*(80) fnameflds
       character*(80) fnamefldw
@@ -92,6 +82,7 @@ c     == local variables ==
 #endif
 
 #ifdef ECCO_VERBOSE
+      integer nrec
       character*(MAX_LEN_MBUF) msgbuf
 #endif
 
@@ -139,10 +130,19 @@ cgg   all boundaries.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       _END_MASTER( mythid )
-#endif
+#endif /* ECCO_VERBOSE */
 
+CML   I think that this call of ctrl_getrec was forgotten. I also think
+CML   that this code has not been use in ages, so we do not know what it
+CML   actually does, and if it does it correcly.
+CMLc--   Get the counters, flags, and the interpolation factor.
+CML      call ctrl_GetRec( 'xx_obcsn',
+CML     O                   obcsnfac, obcsnfirst, obcsnchanged,
+CML     O                   obcsncount0,obcsncount1,
+CML     I                   mytime, myiter, mythid )
 c--   Get the counters, flags, and the interpolation factor.
-      call ctrl_GetRec( 'xx_obcsn',
+      call ctrl_get_gen_rec(
+     I                   xx_obcsnstartdate, xx_obcsnperiod,
      O                   obcsnfac, obcsnfirst, obcsnchanged,
      O                   obcsncount0,obcsncount1,
      I                   mytime, myiter, mythid )
@@ -172,7 +172,6 @@ c--   Loop over records. For north boundary, we only need V velocity.
         shiftvel(2) = 0. d0
 
 #ifdef ALLOW_OBCSN_CONTROL
-        jp1 = 0
 
         call active_read_xz(fnamefldn,tmpfldxz,
      &                         (obcsncount0-1)*nobcs+4, doglobalread,
@@ -181,34 +180,33 @@ c--   Loop over records. For north boundary, we only need V velocity.
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
+         do bi = itlo,ithi
 
-            tmpflux = 0. d0
-            tmparea = 0. d0
+          tmpflux = 0. d0
+          tmparea = 0. d0
 
-            do k = 1, Nr
-              do i = imin,imax
-                j = Ob_Jn(I,bi,bj)
-                if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+          do k = 1, Nr
+           do i = imin,imax
+            j = Ob_Jn(I,bi,bj)
+            if (maskS(i,j,k,bi,bj) .ne. 0.) then
 cgg -- Do not let the corners contribute to the volume flux.
-                  if(ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i) then
-                    tmpx = tmpfldxz(i,k,bi,bj)
+             if(ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i) then
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-
-            sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux
+              raxr = delR(k)*dxg(i,j,bi,bj)
+              tmpflux = tmpflux - tmpfldxz(i,k,bi,bj) * raxr
+              tmparea = tmparea + raxr
+             endif
+            endif
+           enddo
           enddo
+
+          sumarea = sumarea+ tmparea
+          sumvol  = sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSN_CONTROL */
 
 #ifdef ALLOW_OBCSS_CONTROL
-        jp1 = 1
 
         call active_read_xz(fnameflds,tmpfldxz,
      &                         (obcsncount0-1)*nobcs+4, doglobalread,
@@ -217,102 +215,100 @@ cgg -- Positive is flux in.
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-
-            tmpflux = 0. d 0
-            tmparea = 0. d 0
-
-            do k = 1, Nr
-              do i = imin,imax
-                j = Ob_Js(I,bi,bj)
-                if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+         do bi = itlo,ithi
+          
+          tmpflux = 0. d 0
+          tmparea = 0. d 0
+          
+          do k = 1, Nr
+           do i = imin,imax
+            j = Ob_Js(I,bi,bj)
+            if (maskS(i,j+1,k,bi,bj) .ne. 0.) then
 cgg -- Do not let the corners contribute to the volume flux.
-                  if (ob_iw(j,bi,bj).ne.i .and.ob_ie(j,bi,bj).ne.i) then
-                    tmpx = tmpfldxz(i,k,bi,bj)
+             if (ob_iw(j,bi,bj).ne.i .and.ob_ie(j,bi,bj).ne.i) then
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-            sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux
+              raxr = delR(k)*dxg(i,j+1,bi,bj)
+              tmpflux = tmpflux + tmpfldxz(i,k,bi,bj) * raxr
+              tmparea = tmparea + raxr
+             endif
+            endif
+           enddo
           enddo
+          sumarea = sumarea+ tmparea
+          sumvol  = sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSS_CONTROL */
 
 #ifdef ALLOW_OBCSW_CONTROL
-        ip1 = 1
 
         call active_read_yz( fnamefldw, tmpfldyz,
      &      (obcsncount0-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcsw_dummy )
 
-c--     Loop over this thread tiles.
+c--   Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
+         do bi = itlo,ithi
 
-c--         Determine the weights to be used.
-            tmpflux = 0. d 0
-            tmparea = 0. d 0
-
-            do k = 1, Nr
-              do j = jmin,jmax
-                i = ob_iw(j,bi,bj)
-                if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Do not let the corners contribute to the volume flux.
-                  if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
-                    tmpy = tmpfldyz(j,k,bi,bj)
-cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delR(k)*dyg(i+ip1,j,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-            sumarea        =sumarea + tmparea
-            sumvol         = sumvol + tmpflux
+c--   Determine the weights to be used.
+          tmpflux = 0. d 0
+          tmparea = 0. d 0
+          
+          do k = 1, Nr
+           do j = jmin,jmax
+            i = ob_iw(j,bi,bj)
+            if (maskW(i+1,j,k,bi,bj) .ne. 0.) then
+cgg   -- Do not let the corners contribute to the volume flux.
+             if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
+cgg   -- Positive is flux in.
+              rayr = delR(k)*dyg(i+1,j,bi,bj)
+              tmpflux = tmpflux + tmpfldyz(j,k,bi,bj) * rayr
+              tmparea = tmparea + rayr
+             endif
+            endif
+           enddo
           enddo
+          sumarea = sumarea + tmparea
+          sumvol  =  sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSW_CONTROL */
 
 #ifdef ALLOW_OBCSE_CONTROL
-        ip1 = 0
 
         call active_read_yz( fnameflde, tmpfldyz,
      &      (obcsncount0-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcse_dummy )
 
-c--     Loop over this thread tiles.
+c--   Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-
-c--         Determine the weights to be used.
-            tmpflux = 0. d 0
-            tmparea = 0. d 0
-
-            do k = 1, Nr
-              do j = jmin,jmax
-                i = ob_ie(j,bi,bj)
-                if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Do not let the corners contribute to the volume flux.
-                  if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
-                    tmpy = tmpfldyz(j,k,bi,bj)
-cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delR(k) *dyg(i+ip1,j,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-            sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux
+         do bi = itlo,ithi
+          
+c--   Determine the weights to be used.
+          tmpflux = 0. d 0
+          tmparea = 0. d 0
+          
+          do k = 1, Nr
+           do j = jmin,jmax
+            i = ob_ie(j,bi,bj)
+            if (maskW(i,j,k,bi,bj) .ne. 0.) then
+cgg   -- Do not let the corners contribute to the volume flux.
+             if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
+cgg   -- Positive is flux in.
+              rayr = delR(k)*dyg(i,j,bi,bj)
+              tmpflux = tmpflux - tmpfldyz(j,k,bi,bj) * rayr
+              tmparea = tmparea + rayr
+             endif
+            endif
+           enddo
           enddo
+          sumarea = sumarea+ tmparea
+          sumvol  = sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSE_CONTROL */
 
 c--   Do the global summation.
         _GLOBAL_SUM_RL( sumvol, mythid )
@@ -331,7 +327,6 @@ cgg     Swap the value.
         sumarea= 0. d0
 
 #ifdef ALLOW_OBCSN_CONTROL
-        jp1 = 0
 
         call active_read_xz(fnamefldn,tmpfldxz,
      &                         (obcsncount1-1)*nobcs+4, doglobalread,
@@ -339,34 +334,33 @@ cgg     Swap the value.
      &                       , xx_obcsn_dummy )
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
+         do bi = itlo,ithi
 
-            tmpflux = 0. d0
-            tmparea = 0. d0
+          tmpflux = 0. d0
+          tmparea = 0. d0
 
-            do k = 1, Nr
-              do i = imin,imax
-                j = Ob_Jn(I,bi,bj)
-                if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Do not let the corners contribute to the volume flux.
-                  if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
-                    tmpx = tmpfldxz(i,k,bi,bj)
-cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-
-            sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux
+          do k = 1, Nr
+           do i = imin,imax
+            j = Ob_Jn(I,bi,bj)
+            if (maskS(i,j,k,bi,bj) .ne. 0.) then
+cgg   -- Do not let the corners contribute to the volume flux.
+             if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
+cgg   -- Positive is flux in.
+              raxr = delR(k)*dxg(i,j,bi,bj)
+              tmpflux = tmpflux - tmpfldxz(i,k,bi,bj) * raxr
+              tmparea = tmparea + raxr
+             endif
+            endif
+           enddo
           enddo
+
+          sumarea = sumarea+ tmparea
+          sumvol  = sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSN_CONTROL */
 
 #ifdef ALLOW_OBCSS_CONTROL
-        jp1 = 1
 
         call active_read_xz(fnameflds,tmpfldxz,
      &                         (obcsncount1-1)*nobcs+4, doglobalread,
@@ -375,102 +369,100 @@ cgg -- Positive is flux in.
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
+         do bi = itlo,ithi
 
-            tmpflux = 0. d 0
-            tmparea = 0. d 0
+          tmpflux = 0. d 0
+          tmparea = 0. d 0
 
-            do k = 1, Nr
-              do i = imin,imax
-                j = Ob_Js(I,bi,bj)
-                if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Do not let the corners contribute to the volume flux.
-                  if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
-                    tmpx = tmpfldxz(i,k,bi,bj)
-cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-            sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux
+          do k = 1, Nr
+           do i = imin,imax
+            j = Ob_Js(I,bi,bj)
+            if (maskS(i,j+1,k,bi,bj) .ne. 0.) then
+cgg   -- Do not let the corners contribute to the volume flux.
+             if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
+cgg   -- Positive is flux in.
+              raxr = delR(k)*dxg(i,j+1,bi,bj)
+              tmpflux = tmpflux + tmpfldxz(i,k,bi,bj) * raxr
+              tmparea = tmparea + raxr
+             endif
+            endif
+           enddo
           enddo
+          sumarea = sumarea+ tmparea
+          sumvol  = sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSS_CONTROL */
 
 #ifdef ALLOW_OBCSW_CONTROL
-        ip1 = 1
 
         call active_read_yz( fnamefldw, tmpfldyz,
      &      (obcsncount1-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcsw_dummy )
 
-c--     Loop over this thread tiles.
+c--   Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-
-c--         Determine the weights to be used.
-            tmpflux = 0. d 0
-            tmparea = 0. d 0
-
-            do k = 1, Nr
-              do j = jmin,jmax
-                i = ob_iw(j,bi,bj)
-                if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Do not let corners contribute.
-                  if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
-                    tmpy = tmpfldyz(j,k,bi,bj)
-cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delR(k)*dyg(i+ip1,j,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-            sumarea        =sumarea + tmparea
-            sumvol         = sumvol + tmpflux
+         do bi = itlo,ithi
+          
+c--   Determine the weights to be used.
+          tmpflux = 0. d 0
+          tmparea = 0. d 0
+          
+          do k = 1, Nr
+           do j = jmin,jmax
+            i = ob_iw(j,bi,bj)
+            if (maskW(i+1,j,k,bi,bj) .ne. 0.) then
+cgg   -- Do not let corners contribute.
+             if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
+cgg   -- Positive is flux in.
+              rayr = delR(k)*dyg(i+1,j,bi,bj)
+              tmpflux = tmpflux + tmpfldyz(j,k,bi,bj) * rayr
+              tmparea = tmparea + rayr
+             endif
+            endif
+           enddo
           enddo
+          sumarea = sumarea + tmparea
+          sumvol  =  sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSW_CONTROL */
 
 #ifdef ALLOW_OBCSE_CONTROL
-        ip1 = 0
 
         call active_read_yz( fnameflde, tmpfldyz,
      &      (obcsncount1-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcse_dummy )
 
-c--     Loop over this thread tiles.
+c--   Loop over this thread tiles.
         do bj = jtlo,jthi
-          do bi = itlo,ithi
+         do bi = itlo,ithi
 
-c--         Determine the weights to be used.
-            tmpflux = 0. d 0
-            tmparea = 0. d 0
-
-            do k = 1, Nr
-              do j = jmin,jmax
-                i = ob_ie(j,bi,bj)
-                if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Do not let the corners contribute to the volume flux.
-                  if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
-                    tmpy = tmpfldyz(j,k,bi,bj)
-cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delR(k) *dyg(i+ip1,j,bi,bj)
-                  endif
-                endif
-              enddo
-            enddo
-            sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux
+c--   Determine the weights to be used.
+          tmpflux = 0. d 0
+          tmparea = 0. d 0
+          
+          do k = 1, Nr
+           do j = jmin,jmax
+            i = ob_ie(j,bi,bj)
+            if (maskW(i,j,k,bi,bj) .ne. 0.) then
+cgg   -- Do not let the corners contribute to the volume flux.
+             if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
+cgg   -- Positive is flux in.
+              rayr = delR(k)*dyg(i,j,bi,bj)
+              tmpflux = tmpflux - tmpfldyz(j,k,bi,bj) * rayr 
+              tmparea = tmparea + rayr
+             endif
+            endif
+           enddo
           enddo
+          sumarea = sumarea+ tmparea
+          sumvol  = sumvol + tmpflux
+         enddo
         enddo
-#endif
+#endif /* ALLOW_OBCSE_CONTROL */
 
 c--   Do the global summation.
         _GLOBAL_SUM_RL( sumvol, mythid )
