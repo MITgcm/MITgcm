@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.10 2010/03/22 02:16:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.11 2011/03/10 09:34:44 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,11 +82,23 @@ c     == local variables ==
 
       logical lArgErr
 
-#ifdef ECCO_VERBOSE
-      character*(max_len_mbuf) msgbuf
-#endif
+      character*(max_len_mbuf) msgBuf
+CML#ifdef ECCO_VERBOSE
+CML      character*(max_len_mbuf) msgbuf
+CML#endif
 
 c     == end of interface ==
+
+      write(msgBuf,'(A)') 
+     &     'Oops, I thought that this routine is never used.'
+      call print_error( msgBuf , 1)
+      write(msgBuf,'(A)') 
+     &     'To continue, remove the stop statement from ctrl_getrec.F'
+      call print_error( msgBuf , 1)
+      write(msgBuf,'(A)') 
+     &     'or use s/r ctrl_get_gen_rec instead.'
+      call print_error( msgBuf , 1)
+      stop 'ABNORMAL END: S/R CTRL_GETREC'
 
       lArgErr = .true.
       fldperiod = 0.
