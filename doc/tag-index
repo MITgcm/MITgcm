@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1391 2011/03/09 16:18:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1392 2011/03/10 09:35:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ctrl/ctrl_get_gen_rec.F: catch the case of xx_genperiod=0.
+o pkg/ctrl:
+ - ctrl_obcsbal.F, ctrl_obcsvol.F: replace last calls of ctrl_getrec by
+   ctrl_get_gen_rec, put a stop statement into ctrl_getrec. Remove
+   unused and superfluous variables
+ - ctrl_get_gen_rec.F: catch the case of xx_genperiod=0.
 o pkg/ecco
  - enable adjoint of Stevens OB
 o pkg/ctrl/ecco/grdchk: 
