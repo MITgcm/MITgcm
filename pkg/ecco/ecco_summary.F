@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.6 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.7 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -513,6 +513,43 @@ c--   Initial state salinity used as part of the control vector.
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_SALT0_CONTROL:              NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef ALLOW_ETAN0_CONTROL
+c--   Initial state sealevel used as part of the control vector.
+      write(msgbuf,'(a)')
+     &'// ALLOW_ETAN0_CONTROL:                 defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// ALLOW_ETAN0_CONTROL:             NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+#ifdef ALLOW_UVEL0_CONTROL
+c--   Initial state velocity used as part of the control vector.
+      write(msgbuf,'(a)')
+     &'// ALLOW_UVEL0_CONTROL:                 defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// ALLOW_UVEL0_CONTROL:             NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+#ifdef ALLOW_VVEL0_CONTROL
+c--   Initial state velocity used as part of the control vector.
+      write(msgbuf,'(a)')
+     &'// ALLOW_VVEL0_CONTROL:                 defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// ALLOW_VVEL0_CONTROL:             NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif

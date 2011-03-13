@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.41 2010/08/24 14:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.42 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -140,6 +140,7 @@ c--   Initialize variance (weight) fields.
               wtp     (i,j,bi,bj) = 0. _d 0
               wers    (i,j,bi,bj) = 0. _d 0
               wgfo    (i,j,bi,bj) = 0. _d 0
+              wetan   (i,j,bi,bj) = 0. _d 0
               do num_var=1,NSSHV4COST
                 wsshv4  (i,j,num_var,bi,bj) = 0. _d 0
               enddo
@@ -162,6 +163,8 @@ cph)
           do k = 1,Nr
             wtheta (k,bi,bj) = 0. _d 0
             wsalt  (k,bi,bj) = 0. _d 0
+            wuvel  (k,bi,bj) = 0. _d 0
+            wvvel  (k,bi,bj) = 0. _d 0
             wctdt  (k,bi,bj) = 0. _d 0
             wctds  (k,bi,bj) = 0. _d 0
             wdiffkr(k,bi,bj) = wdiffkr0
@@ -185,6 +188,12 @@ cph)
                 wkaprediFld (i,j,k,bi,bj) = wkapredi0
                 wedtauxFld(i,j,k,bi,bj) = wedtau0
                 wedtauyFld(i,j,k,bi,bj) = wedtau0
+#if (defined (ALLOW_UVEL0_COST_CONTRIBUTION) || defined (ALLOW_UVEL0_CONTROL))
+#if (defined (ALLOW_VVEL0_COST_CONTRIBUTION) || defined (ALLOW_VVEL0_CONTROL))
+                wuvel3d(i,j,k,bi,bj) = 0. _d 0
+                wvvel3d(i,j,k,bi,bj) = 0. _d 0
+#endif
+#endif
               enddo
             enddo
           enddo
@@ -1574,6 +1583,82 @@ c--           Test for missing values.
       enddo
 #endif
 
+#if (defined (ALLOW_ETAN0_COST_CONTRIBUTION) || defined (ALLOW_ETAN0_CONTROL))
+      if ( etan0errfile .NE. ' ' ) then
+         call mdsreadfield( etan0errfile, 32, 'RL', 1,
+     &         wetan, 1, mythid)
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if ( wetan(i,j,bi,bj).eq.0 ) then
+                 wetan(i,j,bi,bj) = 0. _d 0
+              else
+                 wetan(i,j,bi,bj)=frame(i,j)*maskC(i,j,1,bi,bj)/
+     $              ( wetan(i,j,bi,bj)*wetan(i,j,bi,bj) )
+              endif
+             enddo
+            enddo
+          enddo
+         enddo
+!      else
+!         do bj = jtlo,jthi
+!          do bi = itlo,ithi
+!            do j = jmin,jmax
+!             do i = imin,imax
+!               wetan(i,j,bi,bj)=
+!     $             wetan(i,j,bi,bj)*frame(i,j)*maskC(i,j,1,bi,bj)
+!             enddo
+!            enddo
+!          enddo
+!         enddo
+      endif
+      call active_write_xy( 'wetan', wetan,
+     &     1, 0, mythid, dummy)
+      _EXCH_XY_RL( wetan, myThid )
+#endif
+
+#if (defined (ALLOW_UVEL0_COST_CONTRIBUTION) || defined (ALLOW_UVEL0_CONTROL))
+#if (defined (ALLOW_VVEL0_COST_CONTRIBUTION) || defined (ALLOW_VVEL0_CONTROL))
+
+      if ( uvel0errfile .NE. ' ' .AND. vvel0errfile .NE. ' ' ) then
+         call mdsreadfield( uvel0errfile, 32, 'RL', Nr,
+     &         wuvel3d, 1, mythid)
+         call mdsreadfield( vvel0errfile, 32, 'RL', Nr,
+     &         wvvel3d, 1, mythid)
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if ( wuvel3d(i,j,k,bi,bj).eq.0 ) then
+                 wuvel3d(i,j,k,bi,bj) = 0. _d 0
+              else
+                 wuvel3d(i,j,k,bi,bj)=frame(i,j)*maskW(i,j,k,bi,bj)/
+     $              ( wuvel3d(i,j,k,bi,bj)*wuvel3d(i,j,k,bi,bj) )
+              endif
+              if ( wvvel3d(i,j,k,bi,bj).eq.0 ) then
+                 wvvel3d(i,j,k,bi,bj) = 0. _d 0
+              else
+                 wvvel3d(i,j,k,bi,bj)=frame(i,j)*maskS(i,j,k,bi,bj)/
+     $              ( wvvel3d(i,j,k,bi,bj)*wvvel3d(i,j,k,bi,bj) )
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+      endif
+      call active_write_xyz( 'wuvel', wuvel3d,
+     &     1, 0, mythid, dummy)
+      call active_write_xyz( 'wvvel', wvvel3d,
+     &     1, 0, mythid, dummy)
+      _EXCH_XYZ_RL( wuvel3d, myThid )
+      _EXCH_XYZ_RL( wvvel3d, myThid )
+#endif
+#endif
 
 c--   Units have to be checked!
       do bj = jtlo,jthi

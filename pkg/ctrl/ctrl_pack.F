@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.36 2010/09/26 02:51:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.37 2011/03/13 22:25:56 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -475,7 +475,7 @@ C     place holder of obsolete variable jG
           write(weighttype(1:80),'(a)') "wuvel"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_uvel(ictrlgrad), "maskCtrlW",
-     &         weighttype, wunit, lxxadxx, mythid)
+     &         weighttype, wuvel, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_VVEL0_CONTROL
@@ -484,7 +484,7 @@ C     place holder of obsolete variable jG
           write(weighttype(1:80),'(a)') "wvvel"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_vvel(ictrlgrad), "maskCtrlS",
-     &         weighttype, wunit, lxxadxx, mythid)
+     &         weighttype, wvvel, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_ETAN0_CONTROL

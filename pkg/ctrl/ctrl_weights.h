@@ -1,19 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.8 2008/02/02 02:34:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.9 2011/03/13 22:25:56 heimbach Exp $
 C $Name:  $
 
 c     Define dummy weights as a placeholder
       common /ctrl_weights_dummy_r/
      &                        wtheta, wsalt,
-     &                        wuvvel, wetan,
+     &                        wuvvel, wetan, wuvel, wvvel,
      &                        wdiffkr, wkapgm, wkapredi,
      &                        wedtaux, wedtauy
 
       _RL wtheta   ( nr,nsx,nsy )
       _RL wsalt    ( nr,nsx,nsy )
       _RL wuvvel   ( nr,nsx,nsy )
+      _RL wuve l   ( nr,nsx,nsy )
+      _RL wvvel    ( nr,nsx,nsy )
       _RL wetan    ( snx,sny,nsx,nsy )
-      _RL wdiffkr ( nr,nsx,nsy )
-      _RL wkapgm ( nr,nsx,nsy )
+      _RL wdiffkr  ( nr,nsx,nsy )
+      _RL wkapgm   ( nr,nsx,nsy )
       _RL wkapredi ( nr,nsx,nsy )
       _RL wedtaux ( nr,nsx,nsy )
       _RL wedtauy ( nr,nsx,nsy )

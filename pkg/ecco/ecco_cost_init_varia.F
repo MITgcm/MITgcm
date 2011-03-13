@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.18 2010/03/13 23:12:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.19 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -93,6 +93,9 @@ c--   Initialize the tiled cost function contributions.
           objf_salt0(bi,bj)    = 0. _d 0
           objf_temp0smoo(bi,bj)  = 0. _d 0
           objf_salt0smoo(bi,bj)  = 0. _d 0
+          objf_etan0(bi,bj)    = 0. _d 0
+          objf_uvel0(bi,bj)    = 0. _d 0
+          objf_vvel0(bi,bj)    = 0. _d 0
           objf_tmi(bi,bj)      = 0. _d 0
           objf_sst(bi,bj)      = 0. _d 0
           objf_sss(bi,bj)      = 0. _d 0
@@ -162,6 +165,9 @@ c
           num_salt(bi,bj)     = 0. _d 0
           num_temp0(bi,bj)    = 0. _d 0
           num_salt0(bi,bj)    = 0. _d 0
+          num_etan0(bi,bj)    = 0. _d 0
+          num_uvel0(bi,bj)    = 0. _d 0
+          num_vvel0(bi,bj)    = 0. _d 0
           num_tmi(bi,bj)      = 0. _d 0
           num_sst(bi,bj)      = 0. _d 0
           num_sss(bi,bj)      = 0. _d 0

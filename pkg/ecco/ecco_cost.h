@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.52 2010/08/28 18:35:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.53 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -402,6 +402,7 @@ c                  function contributions.
      &     objf_temp,      objf_salt,
      &     objf_temp0,     objf_salt0,
      &     objf_temp0smoo, objf_salt0smoo,
+     &     objf_etan0, objf_uvel0, objf_vvel0,
      &     objf_sst, objf_tmi, objf_sss,
      &     objf_bp,
      &     objf_usercost,
@@ -461,6 +462,9 @@ c                  function contributions.
       _RL  objf_salt0(nsx,nsy)
       _RL  objf_temp0smoo(nsx,nsy)
       _RL  objf_salt0smoo(nsx,nsy)
+      _RL  objf_etan0(nsx,nsy)
+      _RL  objf_uvel0(nsx,nsy)
+      _RL  objf_vvel0(nsx,nsy)
       _RL  objf_sst  (nsx,nsy)
       _RL  objf_tmi  (nsx,nsy)
       _RL  objf_sss  (nsx,nsy)
@@ -557,6 +561,9 @@ c                  function contributions.
      &                num_salt,
      &                num_temp0,
      &                num_salt0,
+     &                num_etan0,
+     &                num_uvel0,
+     &                num_vvel0,
      &                num_sst,
      &                num_tmi,
      &                num_sss,
@@ -639,6 +646,9 @@ c                  function contributions.
       _RL  num_salt (nsx,nsy)
       _RL  num_temp0(nsx,nsy)
       _RL  num_salt0(nsx,nsy)
+      _RL  num_etan0(nsx,nsy) 
+      _RL  num_uvel0(nsx,nsy)
+      _RL  num_vvel0(nsx,nsy)
       _RL  num_sst  (nsx,nsy)
       _RL  num_tmi  (nsx,nsy)
       _RL  num_sss  (nsx,nsy)
@@ -718,6 +728,9 @@ c                  function contributions.
      &                    mult_salt,
      &                    mult_temp0,
      &                    mult_salt0,
+     &                    mult_etan0,
+     &                    mult_uvel0,
+     &                    mult_vvel0,
      &                    mult_sst,
      &                    mult_tmi,
      &                    mult_sss,
@@ -781,6 +794,9 @@ c                  function contributions.
       _RL  mult_salt
       _RL  mult_temp0
       _RL  mult_salt0
+      _RL  mult_etan0
+      _RL  mult_uvel0
+      _RL  mult_vvel0
       _RL  mult_sst
       _RL  mult_tmi
       _RL  mult_sss
@@ -904,6 +920,9 @@ c     velerrfile            - representation error
      &                velerrfile,
      &                salt0errfile,
      &                temp0errfile,
+     &                etan0errfile, 
+     &                uvel0errfile,
+     &                vvel0errfile,
      &                vel0errfile,
      &                ssterrfile,
      &                ssserrfile,
@@ -956,6 +975,9 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) velerrfile
       character*(MAX_LEN_FNAM) salt0errfile
       character*(MAX_LEN_FNAM) temp0errfile
+      character*(MAX_LEN_FNAM) etan0errfile
+      character*(MAX_LEN_FNAM) uvel0errfile
+      character*(MAX_LEN_FNAM) vvel0errfile
       character*(MAX_LEN_FNAM) vel0errfile
       character*(MAX_LEN_FNAM) ssterrfile
       character*(MAX_LEN_FNAM) ssserrfile
@@ -1004,6 +1026,7 @@ c     wctdt      - weight for CTD temperature.
 c     wctds      - weight for CTD salinity.
 c     wudrift    - weight for mean zonal velocity from drifters.
 c     wvdrift    - weight for mean meridional velocity from drifters.
+c     wetan      - weight for etan0
 
       common /ecco_cost_weights_r/
      &                      frame,
@@ -1029,7 +1052,8 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      wudrift,wvdrift,
      &                      whfluxmm,wsfluxmm,
      &                      wcurrent,wcurrent2,
-     &                      wcurrentLev,wbaro
+     &                      wcurrentLev,wbaro,wetan,
+     &                      wuvel,wvvel
 
       _RL frame   (1-olx:snx+olx,1-oly:sny+oly           )
       _RL cosphi  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1065,6 +1089,8 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wsalt2  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wthetaLev (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wsaltLev  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wuvel   (                            nr,nsx,nsy)
+      _RL wvvel   (                            nr,nsx,nsy)
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wbp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1096,6 +1122,20 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wedtauy (                            nr,nsx,nsy)
       _RL wedtauy2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wedtauyFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wetan   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+
+#if (defined (ALLOW_UVEL0_COST_CONTRIBUTION) || defined (ALLOW_UVEL0_CONTROL))
+#if (defined (ALLOW_VVEL0_COST_CONTRIBUTION) || defined (ALLOW_VVEL0_CONTROL))
+c     wuvel3d      - weight for uvel0
+c     wvvel3d      - weight for vvel0
+c
+      common /ecco_cost_weights_vel_r/
+     &                      wuvel3d, wvvel3d  
+c
+      _RL wuvel3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wvvel3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+#endif
 
       common /ecco_cost_weights_0_r/
      &        whflux0, wsflux0, wtau0,

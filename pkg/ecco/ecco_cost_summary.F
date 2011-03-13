@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.3 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.4 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -116,6 +116,18 @@ c     == end of interface ==
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,e10.3)')
      &'  Salinity ini.:                ',mult_salt0
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,e10.3)')
+     &'  Sea level ini.:               ',mult_etan0
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,e10.3)')
+     &'  zonal velocity ini.:          ',mult_uvel0
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,e10.3)')
+     &'  merid velocity ini.:          ',mult_vvel0
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,e10.3)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.49 2010/08/30 04:21:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.50 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -55,6 +55,7 @@ c     == local variables ==
       integer num_file,num_var
 
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
+      _RL f_etan0, f_uvel0, f_vvel0
       _RL f_temp, f_salt
       _RL f_uwind, f_vwind
       _RL f_atemp, f_aqh, f_precip
@@ -86,6 +87,7 @@ c     == local variables ==
       _RL f_transp
 
       _RL no_temp0, no_salt0,  no_temp, no_salt
+      _RL no_etan0, no_uvel0, no_vvel0 
       _RL no_uwind, no_vwind
       _RL no_atemp, no_aqh, no_precip, no_swflux, no_swdown
       _RL no_uwindm, no_vwindm
@@ -134,6 +136,9 @@ c     == end of interface ==
       f_salt0 = 0. _d 0
       f_temp0smoo = 0. _d 0
       f_salt0smoo = 0. _d 0
+      f_etan0 = 0. _d 0
+      f_uvel0 = 0. _d 0
+      f_vvel0 = 0. _d 0
       f_tauu = 0. _d 0
       f_tauum = 0. _d 0
       f_tauusmoo = 0. _d 0
@@ -235,6 +240,9 @@ c     == end of interface ==
       no_salt = 0. _d 0
       no_temp0 = 0. _d 0
       no_salt0 = 0. _d 0
+      no_etan0 = 0. _d 0
+      no_uvel0 = 0. _d 0
+      no_vvel0 = 0. _d 0
       no_tauu = 0. _d 0
       no_tauum = 0. _d 0
       no_tauv = 0. _d 0
@@ -330,6 +338,9 @@ c--   Sum up all contributions.
      &                         +mult_smooth_ic*objf_temp0smoo(bi,bj) )
      &         + mult_salt0   * ( objf_salt0(bi,bj)
      &                         +mult_smooth_ic*objf_salt0smoo(bi,bj) )
+     &         + mult_etan0   * objf_etan0(bi,bj)
+     &         + mult_uvel0   * objf_uvel0(bi,bj)
+     &         + mult_vvel0   * objf_vvel0(bi,bj)
      &         + mult_sst     * objf_sst(bi,bj)
      &         + mult_tmi     * objf_tmi(bi,bj)
      &         + mult_sss     * objf_sss(bi,bj)
@@ -424,6 +435,9 @@ c--   Sum up all contributions.
           f_salt0 = f_salt0 + objf_salt0(bi,bj)
           f_temp0smoo = f_temp0smoo + objf_temp0smoo(bi,bj)
           f_salt0smoo = f_salt0smoo + objf_salt0smoo(bi,bj)
+          f_etan0 = f_etan0 + objf_etan0(bi,bj)   
+          f_uvel0 = f_uvel0 + objf_uvel0(bi,bj)
+          f_vvel0 = f_vvel0 + objf_vvel0(bi,bj)
           f_tauu = f_tauu + objf_tauu(bi,bj)
           f_tauum  = f_tauum + objf_tauum(bi,bj)
           f_tauusmoo = f_tauusmoo + objf_tauusmoo(bi,bj)
@@ -522,6 +536,9 @@ c--   Sum up all contributions.
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
           no_salt0 = no_salt0 + num_salt0(bi,bj)
+          no_etan0 = no_etan0 + num_etan0(bi,bj)
+          no_uvel0 = no_uvel0 + num_uvel0(bi,bj)
+          no_vvel0 = no_vvel0 + num_vvel0(bi,bj)
           no_tauu = no_tauu + num_tauu(bi,bj)
           no_tauum  = no_tauum + num_tauum(bi,bj)
           no_tauv = no_tauv + num_tauv(bi,bj)
@@ -618,6 +635,9 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_salt0, myThid )
       _GLOBAL_SUM_RL( f_temp0smoo, myThid )
       _GLOBAL_SUM_RL( f_salt0smoo, myThid )
+      _GLOBAL_SUM_RL( f_etan0, myThid )
+      _GLOBAL_SUM_RL( f_uvel0, myThid )
+      _GLOBAL_SUM_RL( f_vvel0, myThid )
       _GLOBAL_SUM_RL( f_tauu , myThid )
       _GLOBAL_SUM_RL( f_tauum , myThid )
       _GLOBAL_SUM_RL( f_tauusmoo , myThid )
@@ -712,6 +732,9 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
       _GLOBAL_SUM_RL( no_salt0, myThid )
+      _GLOBAL_SUM_RL( no_etan0, myThid )
+      _GLOBAL_SUM_RL( no_uvel0, myThid )
+      _GLOBAL_SUM_RL( no_vvel0, myThid )
       _GLOBAL_SUM_RL( no_tauu , myThid )
       _GLOBAL_SUM_RL( no_tauum , myThid )
       _GLOBAL_SUM_RL( no_tauv , myThid )
@@ -805,6 +828,12 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_temp0smoo =',f_temp0smoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_salt0smoo =',f_salt0smoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_etan0   =',f_etan0
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_uvel0   =',f_uvel0
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_vvel0   =',f_vvel0
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sst     =',f_sst
       write(standardmessageunit,'(A,D22.15)')
@@ -1034,6 +1063,12 @@ C     only master thread of master CPU open and write to file
      &       'f_temp0smoo =', f_temp0smoo, no_temp0
         write(ifc,'(A,2D22.15)')
      &       'f_salt0smoo =', f_salt0smoo, no_salt0
+        write(ifc,'(A,2D22.15)')
+     &       'f_etan0 =', f_etan0, no_etan0
+        write(ifc,'(A,2D22.15)')
+     &       'f_uvel0 =', f_uvel0, no_uvel0
+        write(ifc,'(A,2D22.15)')
+     &       'f_vvel0 =', f_vvel0, no_vvel0
         write(ifc,'(A,2D22.15)')
      &       'f_tauu =', f_tauu, no_tauu
         write(ifc,'(A,2D22.15)')

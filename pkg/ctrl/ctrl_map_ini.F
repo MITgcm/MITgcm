@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.32 2009/04/28 18:09:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.33 2011/03/13 22:25:56 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -506,6 +506,8 @@ c--   initial Eta.
 #else
               etaN(i,j,bi,bj) = etaN(i,j,bi,bj) +
      &                              fac*tmpfld2d(i,j,bi,bj)
+              etaH(i,j,bi,bj) = etaH(i,j,bi,bj) +
+     &                              fac*tmpfld2d(i,j,bi,bj)
 #endif
             enddo
           enddo
@@ -609,6 +611,7 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_ETAN0_CONTROL
       _EXCH_XY_RL( etaN, mythid )
+      _EXCH_XY_RL( etaH, mythid )
 #endif
 
 #ifdef ALLOW_RELAXSST_CONTROL

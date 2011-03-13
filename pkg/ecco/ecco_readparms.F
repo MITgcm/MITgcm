@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.52 2010/08/29 19:28:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.53 2011/03/13 22:24:43 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -77,6 +77,7 @@ c--   Read the namelist input.
      &                   curmtrufile,curmtrvfile,
      &                   salterrfile, temperrfile, velerrfile,
      &                   salt0errfile, temp0errfile, vel0errfile,
+     &                   etan0errfile, uvel0errfile, vvel0errfile,
      &                   ssterrfile, ssserrfile, bperrfile,
      &                   hflux_errfile, sflux_errfile,
      &                   tauu_errfile, tauv_errfile,
@@ -107,6 +108,7 @@ c--   Read the namelist input.
      &                   mult_scatx, mult_scaty,
      &                   mult_sdrift, mult_tdrift, mult_wdrift,
      &                   mult_temp0, mult_salt0,
+     &                   mult_etan0, mult_uvel0, mult_vvel0,
      &                   mult_obcsn, mult_obcss,
      &                   mult_obcsw, mult_obcse, mult_obcsvol,
      &                   mult_curmtr, mult_ageos,
@@ -228,6 +230,9 @@ c--     Set default values.
         velerrfile            =    ' '
         salt0errfile          =    ' '
         temp0errfile          =    ' '
+        etan0errfile          =    ' '
+        uvel0errfile          =    ' '
+        vvel0errfile          =    ' '
         vel0errfile           =    ' '
         ssterrfile            =    ' '
         ssserrfile            =    ' '
@@ -295,6 +300,9 @@ c--     Set default values.
         mult_salt             =      0. _d 0
         mult_temp0            =      0. _d 0
         mult_salt0            =      0. _d 0
+        mult_etan0            =      0. _d 0
+        mult_uvel0            =      0. _d 0
+        mult_vvel0            =      0. _d 0
         mult_tmi              =      0. _d 0
         mult_sst              =      0. _d 0
         mult_sss              =      0. _d 0

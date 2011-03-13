@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.20 2010/02/06 11:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.21 2011/03/13 22:24:42 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -216,6 +216,26 @@ cph      call cost_sss   ( myiter, mytime, mythid )
 
 #if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
        CALL cost_profiles( myiter, mytime, mythid)
+#endif
+
+#ifdef ALLOW_ETAN0_COST_CONTRIBUTION
+      write(msgbuf,'(a)') 'ph-cost call cost_etan0'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      call cost_etan0 ( myiter, mytime, mythid )
+#endif
+
+#ifdef ALLOW_UVEL0_COST_CONTRIBUTION
+      write(msgbuf,'(a)') 'ph-cost call cost_uvel0'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      call cost_uvel0 ( myiter, mytime, mythid )
+#endif
+#ifdef ALLOW_VVEL0_COST_CONTRIBUTION
+      write(msgbuf,'(a)') 'ph-cost call cost_vvel0'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      call cost_vvel0 ( myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA

@@ -12,6 +12,7 @@ cost_ctdt.f
 cost_drift.f                    
 cost_drifter.f                  
 cost_driftw.f                   
+cost_etan0.f
 cost_generic.f
 cost_forcing.f                  
 cost_forcing_gen.f
@@ -49,6 +50,8 @@ cost_bottomdrag.f
 cost_internal_params.f
 cost_theta.f                    
 cost_theta0.f                   
+cost_uvel0.f
+cost_vvel0.f
 cost_xbt.f                      
 cost_obcs.f                     
 cost_obcsn.f                    
