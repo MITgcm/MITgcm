@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mds_check4file.F,v 1.1 2008/09/14 01:47:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_check4file.F,v 1.1 2011/03/13 14:11:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
