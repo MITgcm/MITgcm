@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1392 2011/03/10 09:35:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1393 2011/03/14 02:12:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+   move mds_check4file.F from eesupp/src to mdsio_check4file.F ; add option
+   (new argument) to check for tiled file in mdsioLocalDir : this fix the
+   restart from pickup_som , pickup_dic (& dic_co2atm) with mdsioLocalDir.
 o pkg/ctrl:
  - ctrl_obcsbal.F, ctrl_obcsvol.F: replace last calls of ctrl_getrec by
    ctrl_get_gen_rec, put a stop statement into ctrl_getrec. Remove
@@ -11,13 +15,13 @@ o pkg/ctrl:
  - ctrl_get_gen_rec.F: catch the case of xx_genperiod=0.
 o pkg/ecco
  - enable adjoint of Stevens OB
-o pkg/ctrl/ecco/grdchk: 
+o pkg/ctrl/ecco/grdchk:
   - remove global declaration of tmpfldx/yz and tmpfldx/yz2.
     Fortunately, we do not have any tests for the numerous cpp-flagged
     option of "obcs as control parameters" so we will never know
     if this is an improvement (but at least now things compile).
   - remove an obsolete initialization from ecco_cost_init_barfiles.F
-  - fix some problems within never used ifdefs to make the code compile 
+  - fix some problems within never used ifdefs to make the code compile
 o pkg/obcs:
  - Refine Interior mask definition to work with more complex OB (e.g.
    if OB_Ie < OB_Iw); In case default setting is not sufficient, allows to
