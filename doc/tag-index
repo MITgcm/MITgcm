@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1394 2011/03/14 02:35:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1395 2011/03/14 10:25:11 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco: fix counting cost function contributions for obcs (code
+  by Matt M.) and diffkr for diagnostics
 o pkg/ecco, pkg/ctrl, pkg/grdchk:
   add cost penalty terms for initial uvel, vvel, eta controls
   and I/O for prior error files
