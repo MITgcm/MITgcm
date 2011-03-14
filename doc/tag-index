@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1395 2011/03/14 10:25:11 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1396 2011/03/14 17:35:43 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl/obcs/ecco: 
+  - remove obsolete, unused, and partially broken code:
+    ctrl_obcsvol/ctrl_obcsbal/ctrl_volflux and code within 
+    ALLOW_CTRL_OBCS_BALANCE
+  - put a stop statement into ecco/cost_obcsvol.F, but also add 
+    cost_obcsvol to ecco_ad_diff.list
 o pkg/ecco: fix counting cost function contributions for obcs (code
   by Matt M.) and diffkr for diagnostics
 o pkg/ecco, pkg/ctrl, pkg/grdchk:
