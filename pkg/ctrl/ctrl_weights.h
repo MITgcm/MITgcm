@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.9 2011/03/13 22:25:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.10 2011/03/14 13:24:34 jmc Exp $
 C $Name:  $
 
 c     Define dummy weights as a placeholder
@@ -11,7 +11,7 @@ c     Define dummy weights as a placeholder
       _RL wtheta   ( nr,nsx,nsy )
       _RL wsalt    ( nr,nsx,nsy )
       _RL wuvvel   ( nr,nsx,nsy )
-      _RL wuve l   ( nr,nsx,nsy )
+      _RL wuvel    ( nr,nsx,nsy )
       _RL wvvel    ( nr,nsx,nsy )
       _RL wetan    ( snx,sny,nsx,nsy )
       _RL wdiffkr  ( nr,nsx,nsy )
