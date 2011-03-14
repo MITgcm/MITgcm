@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.5 2011/01/19 13:46:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.6 2011/03/14 17:04:47 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -69,13 +69,11 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec
-      integer il
       integer iobcs
       integer jp1
       integer nrec
       integer ilfld
       integer igg
-      integer ihh
 
       _RL fctile
       _RL fcthread
@@ -84,8 +82,6 @@ c     == local variables ==
       _RL tmpx
       _RL tmpfield (1-olx:snx+olx,nr,nsx,nsy)
       _RL maskxz   (1-olx:snx+olx,nr,nsx,nsy)
-      _RL area
-      _RL volflux
 
       character*(80) fnamefld
 
@@ -152,9 +148,6 @@ c     Number of records to be used.
 c--   Loop over records.
       do irec = 1,nrec
 
-        area    = 0. _d 0
-        volflux = 0. _d 0
-
         call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
      &                       ladinit, optimcycle, mythid
      &        , xx_obcsn_dummy )
@@ -168,31 +161,6 @@ cgg    Need to solve for iobcs would have been.
      &                         iobcs,
      &                         doglobalread, ladinit, 0,
      &                         mythid, dummy )
-
-#ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
-cih -- Balance net transport from the northern boundary.
-c      Compute total net transport.
-          if (iobcs .eq. 3) then
-            ihh = igg+1   
-            call ctrl_volflux( ihh, area, volflux, mythid)
-            _GLOBAL_SUM_RL( volflux, mythid )
-            _GLOBAL_SUM_RL( area,mythid )
-c            print*,'volflux,area',volflux,area
-          endif
-c      Correct barofield if normal velocity at the northern boundary.
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do i = imin,imax
-                  if (iobcs .eq. 3) then
-                     tmpfield(i,1,bi,bj) = (tmpfield(i,1,bi,bj) + 
-     &                    volflux/area)*maskxz(i,1,bi,bj)
-c                     print*,'volflux2,area2',volflux,area
-c                     print*,'barofield',tmpfield(i,1,bi,bj)
-                  endif
-               enddo
-            enddo
-          enddo
-#endif
 
 c--     Loop over this thread's tiles.
         do bj = jtlo,jthi
