@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1393 2011/03/14 02:12:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1394 2011/03/14 02:35:38 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco, pkg/ctrl, pkg/grdchk:
+  add cost penalty terms for initial uvel, vvel, eta controls
+  and I/O for prior error files
 o pkg/mdsio:
    move mds_check4file.F from eesupp/src to mdsio_check4file.F ; add option
    (new argument) to check for tiled file in mdsioLocalDir : this fix the
