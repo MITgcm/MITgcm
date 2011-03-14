@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.3 2008/09/14 18:41:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.4 2011/03/14 01:37:04 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -41,7 +41,7 @@ C     prec    :: precision of pickup files
       CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ioUnit
-      LOGICAL fileExist
+      LOGICAL useCurrentDir, fileExist
 CEOP
 
 C-    Need to synchronize here before doing master-thread IO
@@ -77,10 +77,15 @@ C--   Pot. Temp. 2nd.Order moments
         ENDIF
 
 C-      First check if pickup file exist
+#ifdef ALLOW_MDSIO
+        useCurrentDir = .FALSE.
         CALL MDS_CHECK4FILE(
      I                       fn, '.data', 'GAD_READ_PICKUP',
      O                       filNam, fileExist,
-     I                       myThid )
+     I                       useCurrentDir, myThid )
+#else
+        STOP 'ABNORMAL END: S/R GAD_READ_PICKUP: Needs MDSIO pkg'
+#endif
 
         IF ( fileExist ) THEN
 C-      Read 2nd Order moments as consecutive records
@@ -118,10 +123,15 @@ C--   Salinity 2nd.Order moments
         ENDIF
 
 C-      First check if pickup file exist
+#ifdef ALLOW_MDSIO
+        useCurrentDir = .FALSE.
         CALL MDS_CHECK4FILE(
      I                       fn, '.data', 'GAD_READ_PICKUP',
      O                       filNam, fileExist,
-     I                       myThid )
+     I                       useCurrentDir, myThid )
+#else
+        STOP 'ABNORMAL END: S/R GAD_READ_PICKUP: Needs MDSIO pkg'
+#endif
 
         IF ( fileExist ) THEN
 C-      Read 2nd Order moments as consecutive records

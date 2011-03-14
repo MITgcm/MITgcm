@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_co2_pickup.F,v 1.1 2010/04/11 20:59:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_co2_pickup.F,v 1.2 2011/03/14 01:38:04 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -36,7 +36,7 @@ C     == Local variables ==
       INTEGER fp, ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL fileExist
+      LOGICAL useCurrentDir, fileExist
       REAL*8 tmpFld(2)
       INTEGER length_of_rec
 CEOP
@@ -51,10 +51,15 @@ CEOP
         fp = precFloat64
 
 C--   First check if pickup file exist
+#ifdef ALLOW_MDSIO
+        useCurrentDir = .FALSE.
         CALL MDS_CHECK4FILE(
      I                       fn, '.data', 'DIC_READ_CO2_PICKUP',
      O                       filNam, fileExist,
-     I                       myThid )
+     I                       useCurrentDir, myThid )
+#else
+        STOP 'ABNORMAL END: S/R DIC_READ_CO2_PICKUP: Needs MDSIO pkg'
+#endif
         IF ( .NOT.fileExist ) THEN
           WRITE(msgBuf,'(4A)') 'DIC_READ_CO2_PICKUP: ',
      &      'with dic_int1=3, needs CO2-atmos pickup to restart'
