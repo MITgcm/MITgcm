@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_check4file.F,v 1.1 2011/03/13 14:11:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_check4file.F,v 1.2 2011/03/14 01:34:17 jmc Exp $
 C $Name:  $
 
-#include "CPP_EEOPTIONS.h"
+#include "MDSIO_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -11,6 +11,7 @@ C     !INTERFACE:
       SUBROUTINE MDS_CHECK4FILE(
      I                           filePfx, fileSfx, prtID,
      O                           fileName, fileExist,
+     I                           useCurrentDir,
      I                           myThid )
 
 C     !DESCRIPTION:
@@ -22,16 +23,19 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "PARAMS.h"
+#include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C useCurrentDir :: always search for file in the current directory
+C                  (even if "mdsioLocalDir" is set)
 C     filePfx   :: file name prefix
 C     fileSfx   :: file name suffix
 C     prtID     :: print Identificator (in case file is not found)
 C     fileName  :: file which has been found
 C     fileExist :: True when file has been found
 C     myThid    :: my Thread Id number
+      LOGICAL useCurrentDir
       CHARACTER*(*) filePfx, fileSfx, prtID
       CHARACTER*(*) fileName
       LOGICAL fileExist
@@ -48,21 +52,23 @@ C     == Local variables in common block ==
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf, msgPfx
       INTEGER iG, jG
-      INTEGER ip, is, iL, i, ioUnit
+      INTEGER lp, ip, is, iL, i, ioUnit
 CEOP
 
       ioUnit = errorMessageUnit
       fileName = ' '
 
 C--   First check if fileName is long enough
+      lp = ILNBLNK( mdsioLocalDir )
+      IF ( useCurrentDir ) lp = 0
       ip = ILNBLNK(filePfx)
       is = ILNBLNK(fileSfx)
       IF ( ip.EQ.0 ) is = 0
        i  = LEN(fileName)
-      IF ( i .LT. ip+is+8 ) THEN
+      IF ( i .LT. lp+ip+is+8 ) THEN
         WRITE(msgBuf,'(A,I6,A,I6)')
      &    'MDS_CHECK4FILE: file name length=', i,
-     &    ' too small <', ip+is+8
+     &    ' too small <', lp+ip+is+8
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R MDS_CHECK4FILE'
       ENDIF
@@ -86,13 +92,24 @@ C-    look for file = {filePfx}{fileSfx}
 C-    look for file = {filePfx}'.{iG}.{jG}'{fileSfx}
         iG = 1+(myXGlobalLo-1)/sNx
         jG = 1+(myYGlobalLo-1)/sNy
-        WRITE(fileName,'(2A,I3.3,A,I3.3,A)')
-     &                 filePfx(1:ip), '.', iG, '.', jG, fileSfx(1:is)
+        IF ( lp.EQ.0 ) THEN
+          WRITE(fileName,'(2A,I3.3,A,I3.3,A)')
+     &                  filePfx(1:ip), '.', iG, '.', jG, fileSfx(1:is)
+        ELSE
+          WRITE(fileName,'(3A,I3.3,A,I3.3,A)') mdsioLocalDir(1:lp),
+     &                  filePfx(1:ip), '.', iG, '.', jG, fileSfx(1:is)
+        ENDIF
         INQUIRE( FILE=fileName, EXIST=fileExist )
       ENDIF
       IF ( .NOT.fileExist .AND. is.GE.1 ) THEN
 C-    look for file = {filePfx}'.001.001'{fileSfx}
-        WRITE(fileName,'(3A)') filePfx(1:ip),'.001.001', fileSfx(1:is)
+        IF ( lp.EQ.0 ) THEN
+          WRITE(fileName,'(3A)')
+     &                  filePfx(1:ip), '.001.001', fileSfx(1:is)
+        ELSE
+          WRITE(fileName,'(4A)') mdsioLocalDir(1:lp),
+     &                  filePfx(1:ip), '.001.001', fileSfx(1:is)
+        ENDIF
         INQUIRE( FILE=fileName, EXIST=fileExist )
       ENDIF
 
