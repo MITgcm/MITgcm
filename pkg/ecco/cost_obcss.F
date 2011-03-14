@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.5 2011/01/19 13:46:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.6 2011/03/14 17:05:03 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -69,7 +69,6 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec
-      integer il
       integer iobcs
       integer jp1
       integer nrec
