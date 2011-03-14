@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.27 2011/01/12 09:05:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.28 2011/03/14 17:05:39 mlosch Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -165,12 +165,6 @@ cph#else
 cph       STOP 'PH HAS DISABLED THIS RUNTIME OPTION FOR ALLOW_EXF'
 cph#endif
       ENDIF
-
-# ifdef ALLOW_OBCS_CONTROL
-cgg   WARNING: Assuming North Open Boundary exists and has same
-cgg    calendar information as other boundaries.
-      call ctrl_obcsbal ( mycurrenttime,mycurrentiter,mythid )
-# endif
 
 # ifdef ALLOW_OBCSN_CONTROL
       call ctrl_getobcsn ( mycurrenttime, mycurrentiter, mythid )
