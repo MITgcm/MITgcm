@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.27 2011/03/04 04:52:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.28 2011/03/14 17:31:07 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -366,8 +366,5 @@ C     etc
       _RL OBWeta1(1-Oly:sNy+Oly,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* NONLIN_FRSURF */
-
-       COMMON /GG_VOLFLUX/ shiftvel
-       _RL shiftvel(2)
 
 #endif /* ALLOW_OBCS */

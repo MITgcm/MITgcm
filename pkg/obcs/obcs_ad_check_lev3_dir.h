@@ -1,9 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev3_dir.h,v 1.6 2010/03/02 23:07:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev3_dir.h,v 1.7 2011/03/14 17:31:07 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
-#
-CADJ STORE shiftvel = tapelev3, key = ilev_3
 #
 # ifdef ALLOW_OBCS_NORTH
 CADJ STORE StoreOBCSN     = tapelev3, key = ilev_3
