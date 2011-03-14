@@ -59,6 +59,7 @@ cost_obcss.f
 cost_obcsw.f                    
 cost_obcse.f                    
 cost_obcs_ageos.f               
+cost_obcsvol.f
 cost_readargot.f                
 cost_readargos.f                
 cost_ctdtclim.f                 
