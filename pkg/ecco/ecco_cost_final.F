@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.50 2011/03/13 22:24:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.51 2011/03/14 10:24:34 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -593,6 +593,10 @@ c--   Sum up all contributions.
      &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
           no_eddytau = no_eddytau + num_eddytau(bi,bj)
           no_bottomdrag = no_bottomdrag + num_bottomdrag(bi,bj)
+          no_obcsn = no_obcsn + num_obcsn(bi,bj)
+          no_obcss = no_obcss + num_obcss(bi,bj)
+          no_obcse = no_obcse + num_obcse(bi,bj)
+          no_obcsw = no_obcsw + num_obcsw(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX

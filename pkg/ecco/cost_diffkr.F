@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_diffkr.F,v 1.4 2010/03/22 02:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_diffkr.F,v 1.5 2011/03/14 10:24:34 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -113,6 +113,8 @@ c                  tmpx = (tmpfld3d(i,j,k,bi,bj)-GM_background_K)
 #else
                   fctile = fctile + tmpx*tmpx
 #endif
+                  if (wdiffkrFld(i,j,k,bi,bj).ne.0.)
+     &                 num_diffkr(bi,bj) = num_diffkr(bi,bj) + 1. _d 0
                 endif
               enddo
             enddo
