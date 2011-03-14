@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.6 2011/03/14 15:26:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.7 2011/03/14 17:31:37 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -99,6 +99,8 @@ c     == end of interface ==
 
 #ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
 #ifdef BAROTROPIC_OBVEL_CONTROL
+
+      stop 's/r cost_obcsvol needs to be fixed'
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
