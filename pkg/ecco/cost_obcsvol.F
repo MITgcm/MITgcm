@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.5 2011/03/07 09:28:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.6 2011/03/14 15:26:06 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -97,6 +97,9 @@ c     == external functions ==
 
 c     == end of interface ==
 
+#ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
+#ifdef BAROTROPIC_OBVEL_CONTROL
+
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
@@ -114,9 +117,6 @@ cgg   Assume the number of records is the same for
 cgg   all boundaries.
 c     Number of records to be used.
       nrec = endrec-startrec+1
-
-#ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
-#ifdef BAROTROPIC_OBVEL_CONTROL
 
       sumvol = 0. _d 0
       wobcsvol = .01
@@ -165,10 +165,10 @@ cgg   Added a factor of 1000 because its very important to me.
 #endif
       else
          print*
-         print*,' ctrl_obcsvol: optimcycle has a wrong value.'
+         print*,' obcs_obcsvol: optimcycle has a wrong value.'
          print*,'                 optimcycle = ',optimcycle
          print*
-         stop   '  ... stopped in ctrl_obcsvol.'
+         stop   '  ... stopped in obcs_obcsvol.'
       endif
 
       do irec = 1,nrec
