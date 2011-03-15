@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.35 2011/01/19 08:29:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.36 2011/03/15 16:40:55 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -86,26 +86,16 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
 
-      integer ntmp
       integer ivar
-      integer iobcs
-      integer il
-      integer errio
       integer startrec
       integer endrec
       integer diffrec
-      integer difftime(4)
-      _RL     diffsecs
-
-      character*(max_len_prec) record
-      character*(max_len_mbuf) msgbuf
-      character*2 whichxyz
 
 c     == external ==
 
@@ -125,12 +115,12 @@ c     == end of interface ==
 
 c--     Set default values.
       do ivar = 1,maxcvars
-         ncvarindex(ivar) = -1
-         ncvarrecs(ivar)  =  0
-         ncvarxmax(ivar)  =  0
-         ncvarymax(ivar)  =  0
-         ncvarnrmax(ivar) =  0
-         ncvargrd(ivar)   = '?'
+       ncvarindex(ivar) = -1
+       ncvarrecs(ivar)  =  0
+       ncvarxmax(ivar)  =  0
+       ncvarymax(ivar)  =  0
+       ncvarnrmax(ivar) =  0
+       ncvargrd(ivar)   = '?'
       enddo
 
       _BARRIER
@@ -192,63 +182,29 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_HFLUX_CONTROL))
 c--   Heat flux.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_hfluxstartdate1, xx_hfluxstartdate2,
-     &                     xx_hfluxstartdate , mythid )
-        call cal_TimePassed( xx_hfluxstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_hfluxperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_hfluxperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_hfluxperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_hflux_file, 3, 103, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_hfluxstartdate1, xx_hfluxstartdate2, xx_hfluxperiod, 1, 
+     O     xx_hfluxstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_hflux_file, 3, 103, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_ATEMP_CONTROL))
 c--   Atmos. temperature
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_atempstartdate1, xx_atempstartdate2,
-     &                     xx_atempstartdate , mythid )
-        call cal_TimePassed( xx_atempstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_atempperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_atempperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_atempperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_atemp_file, 7, 107, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
-
+      call ctrl_init_rec ( 
+     I     xx_atempstartdate1, xx_atempstartdate2, xx_atempperiod, 1,
+     O     xx_atempstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_atemp_file, 7, 107, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
+      
 #elif (defined (ALLOW_HFLUX0_CONTROL))
 c--   initial forcing only
-        call ctrl_init_ctrlvar ( 
-     &       xx_hflux_file, 3, 103, 1, 1, 1, 
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_hflux_file, 3, 103, 1, 1, 1, 
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_HFLUX_CONTROL */
 
@@ -256,63 +212,29 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SFLUX_CONTROL))
 c--   Salt flux.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_sfluxstartdate1, xx_sfluxstartdate2,
-     &                     xx_sfluxstartdate , mythid )
-        call cal_TimePassed( xx_sfluxstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_sfluxperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_sfluxperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_sfluxperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_sflux_file, 4, 104, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_sfluxstartdate1, xx_sfluxstartdate2, xx_sfluxperiod, 1,
+     O     xx_sfluxstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_sflux_file, 4, 104, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
  
 #elif (defined (ALLOW_AQH_CONTROL))
 c--   Atmos. humidity
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_aqhstartdate1, xx_aqhstartdate2,
-     &                     xx_aqhstartdate , mythid )
-        call cal_TimePassed( xx_aqhstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_aqhperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_aqhperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_aqhperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_aqh_file, 8, 108, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_aqhstartdate1, xx_aqhstartdate2, xx_aqhperiod, 1,
+     O     xx_aqhstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_aqh_file, 8, 108, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_SFLUX0_CONTROL))
 c--   initial forcing only
-        call ctrl_init_ctrlvar ( 
-     &       xx_sflux_file, 4, 104, 1, 1, 1, 
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_sflux_file, 4, 104, 1, 1, 1, 
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_SFLUX_CONTROL */
 
@@ -320,67 +242,33 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_USTRESS_CONTROL))
 c--   Zonal wind stress.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_tauustartdate1,  xx_tauustartdate2,
-     &                     xx_tauustartdate,   mythid )
-        call cal_TimePassed( xx_tauustartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_tauuperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_tauuperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_tauuperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_tauu_file, 5, 105, diffrec, startrec, endrec,
+      call ctrl_init_rec ( 
+     I     xx_tauustartdate1, xx_tauustartdate2, xx_tauuperiod, 1,
+     O     xx_tauustartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_tauu_file, 5, 105, diffrec, startrec, endrec,
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-     &       snx, sny, 1, 'w', 'xy', mythid )
+     &     snx, sny, 1, 'w', 'xy', mythid )
 #else
-     &       snx, sny, 1, 'c', 'xy', mythid )
+     &     snx, sny, 1, 'c', 'xy', mythid )
 #endif
 
 #elif (defined (ALLOW_UWIND_CONTROL))
 c--   Zonal wind speed.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_uwindstartdate1, xx_uwindstartdate2,
-     &                     xx_uwindstartdate , mythid )
-        call cal_TimePassed( xx_uwindstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_uwindperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_uwindperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_uwindperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_uwind_file, 9, 109, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod, 1,
+     O     xx_uwindstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_uwind_file, 9, 109, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_TAUU0_CONTROL))
 c--   initial forcing only
-        call ctrl_init_ctrlvar ( 
-     &       xx_tauu_file, 5, 105, 1, 1, 1,
-     &       snx, sny, 1, 'w', 'xy', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_tauu_file, 5, 105, 1, 1, 1,
+     &     snx, sny, 1, 'w', 'xy', mythid )
 
 #endif /* ALLOW_USTRESS_CONTROL */
 
@@ -388,67 +276,33 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_VSTRESS_CONTROL))
 c--   Meridional wind stress.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_tauvstartdate1,  xx_tauvstartdate2,
-     &                     xx_tauvstartdate,   mythid )
-        call cal_TimePassed( xx_tauvstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_tauvperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_tauvperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_tauvperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_tauv_file, 6, 106, diffrec, startrec, endrec,
+      call ctrl_init_rec ( 
+     I     xx_tauvstartdate1, xx_tauvstartdate2, xx_tauvperiod, 1,
+     O     xx_tauvstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_tauv_file, 6, 106, diffrec, startrec, endrec,
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-     &       snx, sny, 1, 's', 'xy', mythid )
+     &     snx, sny, 1, 's', 'xy', mythid )
 #else     
-     &       snx, sny, 1, 'c', 'xy', mythid )
+     &     snx, sny, 1, 'c', 'xy', mythid )
 #endif
 
 #elif (defined (ALLOW_VWIND_CONTROL))
 c--   Meridional wind speed.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_vwindstartdate1, xx_vwindstartdate2,
-     &                     xx_vwindstartdate , mythid )
-        call cal_TimePassed( xx_vwindstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_vwindperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_vwindperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_vwindperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_vwind_file, 10, 110, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod, 1,
+     O     xx_vwindstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_vwind_file, 10, 110, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_TAUV0_CONTROL))
 c--   initial forcing only
-        call ctrl_init_ctrlvar ( 
-     &       xx_tauv_file, 6, 106, 1, 1, 1,
-     &       snx, sny, 1, 's', 'xy', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_tauv_file, 6, 106, 1, 1, 1,
+     &     snx, sny, 1, 's', 'xy', mythid )
 
 #endif /* ALLOW_VSTRESS_CONTROL */
 
@@ -460,240 +314,112 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSN_CONTROL
 c--   Northern obc.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_obcsnstartdate1,  xx_obcsnstartdate2,
-     &                     xx_obcsnstartdate,   mythid )
-        call cal_TimePassed( xx_obcsnstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_obcsnperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = 12*nobcs
-        else
-         startrec = int((modelstart - diffsecs)/xx_obcsnperiod) + 1
-         startrec = (startrec - 1)*nobcs + 1
-         endrec   = int((modelend   - diffsecs)/xx_obcsnperiod) + 2
-         endrec   = (endrec - startrec + 1)*nobcs
-        endif
-# else
-        if ( xx_obcsnperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = nobcs
-        else
-         startrec = 1
-         endrec = (int((endTime - startTime)/xx_obcsnperiod) + 1)*nobcs
-        endif
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
-     &       snx, 1, nr, 'm', 'xz', mythid )
-
+      call ctrl_init_rec ( 
+     I     xx_obcsnstartdate1, xx_obcsnstartdate2, xx_obcsnperiod, 4,
+     O     xx_obcsnstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
+     &     snx, 1, nr, 'm', 'xz', mythid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSS_CONTROL
 c--   Southern obc.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_obcssstartdate1,  xx_obcssstartdate2,
-     &                     xx_obcssstartdate,   mythid )
-        call cal_TimePassed( xx_obcssstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_obcssperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = 12*nobcs
-        else
-         startrec = int((modelstart - diffsecs)/xx_obcssperiod) + 1
-         startrec = (startrec - 1)*nobcs + 1
-         endrec   = int((modelend   - diffsecs)/xx_obcssperiod) + 2
-         endrec   = (endrec - startrec + 1)*nobcs
-        endif
-# else
-        if ( xx_obcssperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = nobcs
-        else
-         startrec = 1
-         endrec = (int((endTime - startTime)/xx_obcssperiod) + 1)*nobcs
-        endif
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_obcss_file, 12, 112, diffrec, startrec, endrec,
-     &       snx, 1, nr, 'm', 'xz', mythid )
-
+      call ctrl_init_rec ( 
+     I     xx_obcssstartdate1, xx_obcssstartdate2, xx_obcssperiod, 4,
+     O     xx_obcssstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
+     &     snx, 1, nr, 'm', 'xz', mythid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSW_CONTROL
 c--   Western obc.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_obcswstartdate1,  xx_obcswstartdate2,
-     &                     xx_obcswstartdate,   mythid )
-        call cal_TimePassed( xx_obcswstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_obcswperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = 12*nobcs
-        else
-         startrec = int((modelstart - diffsecs)/xx_obcswperiod) + 1
-         startrec = (startrec - 1)*nobcs + 1
-         endrec   = int((modelend   - diffsecs)/xx_obcswperiod) + 2
-         endrec   = (endrec - startrec + 1)*nobcs
-        endif
-# else
-        if ( xx_obcswperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = nobcs
-        else
-         startrec = 1
-         endrec = (int((endTime - startTime)/xx_obcswperiod) + 1)*nobcs
-        endif
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
-     &       1, sny, nr, 'm', 'yz', mythid )
-
+      call ctrl_init_rec ( 
+     I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
+     O     xx_obcswstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
+     &     1, sny, nr, 'm', 'yz', mythid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSE_CONTROL
 c--   Eastern obc.
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_obcsestartdate1,  xx_obcsestartdate2,
-     &                     xx_obcsestartdate,   mythid )
-        call cal_TimePassed( xx_obcsestartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_obcseperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = 12*nobcs
-        else
-         startrec = int((modelstart - diffsecs)/xx_obcseperiod) + 1
-         startrec = (startrec - 1)*nobcs + 1
-         endrec   = int((modelend   - diffsecs)/xx_obcseperiod) + 2
-         endrec   = (endrec - startrec + 1)*nobcs
-        endif
-# else
-        if ( xx_obcseperiod .EQ. 0 ) then
-         startrec = 1
-         endrec   = nobcs
-        else
-         startrec = 1
-         endrec = (int((endTime - startTime)/xx_obcseperiod) + 1)*nobcs
-        endif
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_obcse_file, 14, 114, diffrec, startrec, endrec,
-     &       1, sny, nr, 'm', 'yz', mythid )
-
+      call ctrl_init_rec ( 
+     I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
+     O     xx_obcsestartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
+     &     1, sny, nr, 'm', 'yz', mythid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_DIFFKR_CONTROL
-        call ctrl_init_ctrlvar ( 
-     &       xx_diffkr_file, 15, 115, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_diffkr_file, 15, 115, 1, 1, 1,
+     &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_DIFFKR_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_KAPGM_CONTROL
-        call ctrl_init_ctrlvar ( 
-     &       xx_kapgm_file, 16, 116, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_kapgm_file, 16, 116, 1, 1, 1,
+     &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_KAPGM_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_TR10_CONTROL
-        call ctrl_init_ctrlvar ( 
-     &       xx_tr1_file, 17, 117, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_tr1_file, 17, 117, 1, 1, 1,
+     &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_TR10_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SST_CONTROL))
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_sststartdate1, xx_sststartdate2,
-     &                     xx_sststartdate , mythid )
-        call cal_TimePassed( xx_sststartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_sstperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_sstperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_sstperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_sst_file, 18, 118, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_sststartdate1, xx_sststartdate2, xx_sstperiod, 1,
+     O     xx_sststartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_sst_file, 18, 118, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_SST0_CONTROL))
-
-        call ctrl_init_ctrlvar ( 
-     &       xx_sst_file, 18, 118, 1, 1, 1,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_sst_file, 18, 118, 1, 1, 1,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_SST_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SSS_CONTROL))
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_sssstartdate1, xx_sssstartdate2,
-     &                     xx_sssstartdate , mythid )
-        call cal_TimePassed( xx_sssstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_sssperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_sssperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_sssperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_sss_file, 19, 119, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod, 1,
+     O     xx_sssstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_sss_file, 19, 119, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_SSS0_CONTROL))
-
-        call ctrl_init_ctrlvar ( 
-     &       xx_sss_file, 19, 119, 1, 1, 1,
-     &       snx, sny, 1, 'c', 'xy', mythid )
-
+      call ctrl_init_ctrlvar ( 
+     &     xx_sss_file, 19, 119, 1, 1, 1,
+     &     snx, sny, 1, 'c', 'xy', mythid )
+      
 #endif /* ALLOW_SSS0_CONTROL */
 
 c----------------------------------------------------------------------
@@ -792,30 +518,13 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_PRECIP_CONTROL
 c--   Atmos. precipitation
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_precipstartdate1, xx_precipstartdate2,
-     &                     xx_precipstartdate , mythid )
-        call cal_TimePassed( xx_precipstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_precipperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_precipperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_precipperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_precip_file, 32, 132, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_precipstartdate1, xx_precipstartdate2, xx_precipperiod,1,
+     O     xx_precipstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_precip_file, 32, 132, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_PRECIP_CONTROL */
 
@@ -823,30 +532,13 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SWFLUX_CONTROL
 c--   Atmos. swflux
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_swfluxstartdate1, xx_swfluxstartdate2,
-     &                     xx_swfluxstartdate , mythid )
-        call cal_TimePassed( xx_swfluxstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_swfluxperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_swfluxperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_swfluxperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_swflux_file, 33, 133, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_swfluxstartdate1, xx_swfluxstartdate2, xx_swfluxperiod, 1,
+     O     xx_swfluxstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_swflux_file, 33, 133, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_SWFLUX_CONTROL */
 
@@ -854,30 +546,13 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SWDOWN_CONTROL
 c--   Atmos. swdown
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_swdownstartdate1, xx_swdownstartdate2,
-     &                     xx_swdownstartdate , mythid )
-        call cal_TimePassed( xx_swdownstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_swdownperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_swdownperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_swdownperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_swdown_file, 34, 134, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_swdownstartdate1, xx_swdownstartdate2, xx_swdownperiod, 1,
+     O     xx_swdownstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_swdown_file, 34, 134, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_SWDOWN_CONTROL */
 
@@ -885,30 +560,13 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_LWFLUX_CONTROL
 c--   Atmos. lwflux
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_lwfluxstartdate1, xx_lwfluxstartdate2,
-     &                     xx_lwfluxstartdate , mythid )
-        call cal_TimePassed( xx_lwfluxstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_lwfluxperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_lwfluxperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_lwfluxperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_lwflux_file, 35, 135, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_lwfluxstartdate1, xx_lwfluxstartdate2, xx_lwfluxperiod, 1,
+     O     xx_lwfluxstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_lwflux_file, 35, 135, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_LWFLUX_CONTROL */
 
@@ -916,30 +574,13 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_LWDOWN_CONTROL
 c--   Atmos. lwdown
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_lwdownstartdate1, xx_lwdownstartdate2,
-     &                     xx_lwdownstartdate , mythid )
-        call cal_TimePassed( xx_lwdownstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_lwdownperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_lwdownperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_lwdownperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_lwdown_file, 36, 136, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_lwdownstartdate1, xx_lwdownstartdate2, xx_lwdownperiod, 1,
+     O     xx_lwdownstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_lwdown_file, 36, 136, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_LWDOWN_CONTROL */
 
@@ -947,30 +588,13 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EVAP_CONTROL
 c--   Atmos. evap
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_evapstartdate1, xx_evapstartdate2,
-     &                     xx_evapstartdate , mythid )
-        call cal_TimePassed( xx_evapstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_evapperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_evapperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_evapperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_evap_file, 37, 137, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_evapstartdate1, xx_evapstartdate2, xx_evapperiod, 1,
+     O     xx_evapstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_evap_file, 37, 137, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_EVAP_CONTROL */
 
@@ -978,30 +602,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SNOWPRECIP_CONTROL
 c--   Atmos. snowprecip
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_snowprecipstartdate1, 
-     &      xx_snowprecipstartdate2, xx_snowprecipstartdate , mythid )
-        call cal_TimePassed( xx_snowprecipstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_snowprecipperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_snowprecipperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_snowprecipperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_snowprecip_file, 38, 138, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_snowprecipstartdate1, xx_snowprecipstartdate2, 
+     I     xx_snowprecipperiod, 1,
+     O     xx_snowprecipstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_snowprecip_file, 38, 138, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_SNOWPRECIP_CONTROL */
 
@@ -1009,30 +617,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_APRESSURE_CONTROL
 c--   Atmos. apressure
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_apressurestartdate1, 
-     &      xx_apressurestartdate2, xx_apressurestartdate , mythid )
-        call cal_TimePassed( xx_apressurestartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        if ( xx_apressureperiod .EQ. 0 ) then
-        startrec=1
-        endrec=12
-        else
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_apressureperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_apressureperiod) + 2
-        endif
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_apressure_file, 39, 139, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_apressurestartdate1, xx_apressurestartdate2, 
+     I     xx_apressureperiod, 1,
+     O     xx_apressurestartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_apressure_file, 39, 139, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_APRESSURE_CONTROL */
 
@@ -1040,104 +632,225 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_RUNOFF_CONTROL
 c--   Atmos. runoff
-        startrec = 1
-        endrec   = 1
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_runoff_file, 40, 140, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+      call ctrl_init_rec ( 
+     I     xx_runoffstartdate1, xx_runoffstartdate2, xx_runoffperiod, 1,
+     O     xx_runoffstartdate, diffrec, startrec, endrec,
+     I     mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_runoff_file, 40, 140, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_RUNOFF_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SIAREA_CONTROL
-        startrec = 1
-        endrec   = 1
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_siarea_file, 41, 141, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+C--   so far there are no xx_siareastartdate1, etc., so we need to fudge it.
+CML      call ctrl_init_rec ( 
+CML     I     xx_siareastartdate1, xx_siareastartdate2, xx_siareaperiod, 1,
+CML     O     xx_siareastartdate, diffrec, startrec, endrec,
+CML     I     mythid )
+      startrec = 1
+      endrec   = 1
+      diffrec  = endrec - startrec + 1
+      call ctrl_init_ctrlvar ( 
+     &     xx_siarea_file, 41, 141, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_siarea_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SIHEFF_CONTROL
-        startrec = 1
-        endrec   = 1
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_siheff_file, 42, 142, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+C--   so far there are no xx_siheffstartdate1, etc., so we need to fudge it.
+CML      call ctrl_init_rec ( 
+CML     I     xx_siheffstartdate1, xx_siheffstartdate2, xx_siheffperiod, 1,
+CML     O     xx_siheffstartdate, diffrec, startrec, endrec,
+CML     I     mythid )
+      startrec = 1
+      endrec   = 1
+      diffrec  = endrec - startrec + 1
+      call ctrl_init_ctrlvar ( 
+     &     xx_siheff_file, 42, 142, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_siheff_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SIHSNOW_CONTROL
-        startrec = 1
-        endrec   = 1
-        diffrec  = endrec - startrec + 1
-        call ctrl_init_ctrlvar ( 
-     &       xx_sihsnow_file, 43, 143, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
+C--   so far there are no xx_sihsnowstartdate1, etc., so we need to fudge it.
+CML      call ctrl_init_rec ( 
+CML     I     xx_sihsnowstartdate1, xx_sihsnowstartdate2, xx_sihsnowperiod, 1,
+CML     O     xx_sihsnowstartdate, diffrec, startrec, endrec,
+CML     I     mythid )
+      startrec = 1
+      endrec   = 1
+      diffrec  = endrec - startrec + 1
+      call ctrl_init_ctrlvar ( 
+     &     xx_sihsnow_file, 43, 143, diffrec, startrec, endrec,
+     &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_sihsnow_CONTROL */
 
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_KAPREDI_CONTROL
-        call ctrl_init_ctrlvar ( 
-     &       xx_kapredi_file, 44, 144, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', mythid )
+      call ctrl_init_ctrlvar ( 
+     &     xx_kapredi_file, 44, 144, 1, 1, 1,
+     &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_KAPREDI_CONTROL */
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
-        call ctrl_init_wet( mythid )
-
+      call ctrl_init_wet( mythid )
+      
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
 #ifdef ALLOW_DIC_CONTROL
-        do i = 1, dic_n_control
-           xx_dic(i) = 0. _d 0
-        enddo
+      do i = 1, dic_n_control
+       xx_dic(i) = 0. _d 0
+      enddo
 #endif
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
       do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-              wareaunit (i,j,bi,bj) = 1.0
+       do bi = itlo,ithi
+        do j = jmin,jmax
+         do i = imin,imax
+          wareaunit (i,j,bi,bj) = 1.0
 #ifndef ALLOW_ECCO
-              whflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wsflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wtauu     (i,j,bi,bj) = maskW(i,j,1,bi,bj)
-              wtauv     (i,j,bi,bj) = maskS(i,j,1,bi,bj)
-              watemp    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              waqh      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wprecip   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wswflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wswdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wuwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wvwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wlwflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wlwdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wevap     (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wsnowprecip(i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wapressure(i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wrunoff   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wsst      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-              wsss      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          whflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wsflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wtauu     (i,j,bi,bj) = maskW(i,j,1,bi,bj)
+          wtauv     (i,j,bi,bj) = maskS(i,j,1,bi,bj)
+          watemp    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          waqh      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wprecip   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wswflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wswdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wuwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wvwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wlwflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wlwdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wevap     (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wsnowprecip(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wapressure(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wrunoff   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wsst      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          wsss      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
 #endif
-            enddo
-          enddo
+         enddo
         enddo
+       enddo
       enddo
  
       return
       end
 
+      subroutine ctrl_init_rec( 
+     I     fldstartdate1, fldstartdate2, fldperiod, nfac, 
+     O     fldstartdate, diffrec, startrec, endrec,
+     I     mythid )
+
+c     ==================================================================
+c     SUBROUTINE ctrl_init_rec
+c     ==================================================================
+c
+c     helper routine to compute the first and last record of a 
+c     time dependent control variable
+c
+c     Martin.Losch@awi.de, 2011-Mar-15
+c
+c     ==================================================================
+c     SUBROUTINE ctrl_init_rec
+c     ==================================================================
+
+      implicit none 
+
+c     == global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+      
+c     == input variables ==
+c     fldstartdate1/2 : start time (date/time) of fld
+c     fldperod        : sampling interval of fld
+c     nfac            : factor for the case that fld is an obcs variable
+c                       in this case nfac = 4, otherwise nfac = 1
+c     mythid          : thread ID of this instance
+      integer fldstartdate1
+      integer fldstartdate2
+      _RL     fldperiod
+      integer nfac
+      integer mythid
+      
+c     == output variables ==
+c     fldstartdate : full date from fldstartdate1 and 2
+c     startrec     : first record of ctrl variable
+c     startrec     : last record of ctrl variable
+c     diffrec      : difference between first and last record of ctrl variable
+      integer fldstartdate(4)
+      integer startrec
+      integer endrec
+      integer diffrec
+
+c     == local variables ==
+      integer i 
+#ifdef ALLOW_CAL
+      integer difftime(4)
+      _RL     diffsecs
+#endif /* ALLOW_CAL */
+
+c     initialise some output
+      do i = 1,4
+       fldstartdate(i) = 0
+      end do
+      startrec = 0
+      endrec   = 0 
+      diffrec  = 0
+# ifdef ALLOW_CAL
+      call cal_FullDate( fldstartdate1, fldstartdate2,
+     &                   fldstartdate , mythid )
+      call cal_TimePassed( fldstartdate, modelstartdate,
+     &                     difftime, mythid )
+      call cal_ToSeconds ( difftime, diffsecs, mythid )
+      if ( fldperiod .EQ. -12. ) then
+       startrec = 1
+       endrec   = 12*nfac
+      elseif ( fldperiod .EQ. 0. ) then
+       startrec = 1
+       endrec   = 1*nfac
+      else
+       startrec = int((modelstart + startTime - diffsecs)/
+     &                fldperiod) + 1
+       endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                fldperiod) + 2
+       if ( nfac .ne. 1 ) then
+c     This is the case of obcs. I am not sure that this is correct, but
+c     it seems to work in most configurations.
+        print * , 'ml-startrec = ', startrec
+        print * , 'ml-endrec = ', endrec
+        endrec   = (endrec - startrec + 1)*nfac
+        startrec = (startrec - 1)*nfac + 1
+        print * , 'ml-startrec2 = ', startrec
+        print * , 'ml-endrec2 = ', endrec
+       endif
+      endif
+# else /* ndef ALLOW_CAL */
+      if ( fldperiod .EQ. 0. ) then
+       startrec = 1
+       endrec   = 1*nfac
+      else
+       startrec = 1
+       endrec   = (int((endTime - startTime)/fldperiod) + 1)*nfac
+      endif
+#endif /* ALLOW_CAL */
+      diffrec  = endrec - startrec + 1
+
+      return
+      end
