@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.51 2011/03/07 09:24:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.52 2011/03/15 16:39:45 mlosch Exp $
 C $Name:  $
 
 
@@ -682,16 +682,32 @@ cHFLUXM_CONTROL
 c     Calendar information for the control variables:
 c     ===============================================
 c
+c     xx_${varname}period - sampling interval for the ${varname} control 
+c                           part in seconds
+c     special cases for ifdef ALLOW_CAL (in anology to pkg/exf):
+c     xx_${varname}period = -12. : control parameter is the seasonal cycle
+c     xx_${varname}period =   0. : control parameter is constant in time
+c     
+c     The naming convention follows mostly that of the exf-pkg. A few
+c     examples follow:
+c     xx_atempperiod - sampling interval for the atmospheric surface 
+c                      temperature control part.
+c     ...
 c     xx_hfluxperiod - sampling interval for the heat flux control part.
 c     xx_sfluxperiod - sampling interval for the salt flux control part.
 c     xx_tauuperiod  - sampling interval for the zonal wind
 c                      stress control part.
 c     xx_tauvperiod  - sampling interval for the meridional wind
 c                      stress control part.
-c     xx_obcsuperiod - sampling interval
-c     xx_obcsvperiod - sampling interval
-c     xx_obcstperiod - sampling interval
-c     xx_obcssperiod - sampling interval
+c     ...
+c     xx_obcsuperiod - sampling interval for open boundary u-velocity
+c                      control part.
+c     xx_obcsvperiod - sampling interval for open boundary v-velocity
+c                      control part.
+c     xx_obcstperiod - sampling interval for open boundary temperature
+c                      control part.
+c     xx_obcssperiod - sampling interval for open boundary salinity
+c                      control part.
 
       common /controltimes_r/
      &                        xx_hfluxperiod
