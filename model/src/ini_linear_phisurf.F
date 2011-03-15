@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.18 2011/03/03 19:56:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.19 2011/03/15 00:21:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,31 +52,46 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     topoHloc  :: Temporary array used to write surface topography
 C     bi,bj  :: tile indices
-C     I,J,K  :: Loop counters
+C     i,j,k  :: Loop counters
       _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER bi, bj
-      INTEGER I, J, K
+      INTEGER i, j, k
       _RL     pLoc, rhoLoc
       _RL     dPIdp
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
+C--   Initialisation
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-           Bo_surf(I,J,bi,bj)  = 0. _d 0
-           recip_Bo(I,J,bi,bj) = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           Bo_surf(i,j,bi,bj)  = 0. _d 0
+           recip_Bo(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef NONLIN_FRSURF
+C--   Save initial geometrical hFac factor into h0Fac (fixed in time):
+C     better here (after packages_init_fixed call) than in ini_mask_etc
+C     in case 1 pkg would need to modify them.
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
+           h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+           h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* NONLIN_FRSURF */
        ENDDO
       ENDDO
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     Calculate global domain area:
+C--   Calculate global domain area:
 C     use to be in ini_masks_etc.F but has been move after packages_init_fixed
 C     in case 1 pkg (e.g., OBCS) modifies the domain size.
       threadArea = 0. _d 0

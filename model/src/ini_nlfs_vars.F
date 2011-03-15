@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.4 2011/01/14 23:23:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.5 2011/03/15 00:21:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,12 +85,13 @@ C-- Initialise arrays (NLFS using r* coordinate):
             PmEpR(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
+C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phisurf)
          DO k=1,Nr
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
-            h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
-            h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
+            _hFacC(i,j,k,bi,bj) = h0FacC(i,j,k,bi,bj)
+            _hFacW(i,j,k,bi,bj) = h0FacW(i,j,k,bi,bj)
+            _hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
