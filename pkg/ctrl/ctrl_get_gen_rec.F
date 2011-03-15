@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.10 2011/03/09 16:16:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.11 2011/03/15 16:41:36 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -112,7 +112,15 @@ c--   Check the field argument.
          stop   ' ... stopped in ctrl_get_gen_rec.'
       endif
 
-      if ( fldperiod .eq. 0. _d 0 ) then
+      if ( xx_genperiod .eq. -12. _d 0 ) then
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+       call cal_GetMonthsRec(
+     O      fac, first, changed,
+     O      count0, count1,
+     I      mytime, myiter, mythid
+     &      )
+      elseif ( fldperiod .eq. 0. _d 0 ) then
 c     Read field only once in the beginning. Hack: count1=count0 causes
 c     the model to read the first record twice, but since this this is
 c     done only the first time around it is not too much of an overhead.

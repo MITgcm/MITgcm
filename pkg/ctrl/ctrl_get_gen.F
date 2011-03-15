@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.14 2010/08/24 14:13:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.15 2011/03/15 16:41:36 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -108,31 +108,12 @@ c--   Now, read the control vector.
      &       xx_gen_file(1:ilgen), '.', optimcycle
       endif
 
-# ifdef ALLOW_CAL
-         if ( xx_genperiod .EQ. 0 ) then
-c     record numbers are assumed 1 to 12 corresponding to
-c     Jan. through Dec.
-            call cal_GetMonthsRec(
-     O           genfac, genfirst, genchanged,
-     O           gencount0, gencount1,
-     I           mytime, myiter, mythid
-     &           )
-         else
 c--   Get the counters, flags, and the interpolation factor.
       call ctrl_get_gen_rec(
-     I                   xx_genstartdate, xx_genperiod,
-     O                   genfac, genfirst, genchanged,
-     O                   gencount0,gencount1,
-     I                   mytime, myiter, mythid )
-        endif
-# else
-c--   Get the counters, flags, and the interpolation factor.
-      call ctrl_get_gen_rec(
-     I                   xx_genstartdate, xx_genperiod,
-     O                   genfac, genfirst, genchanged,
-     O                   gencount0,gencount1,
-     I                   mytime, myiter, mythid )
-# endif
+     I                       xx_genstartdate, xx_genperiod,
+     O                       genfac, genfirst, genchanged,
+     O                       gencount0,gencount1,
+     I                       mytime, myiter, mythid )
 
       if ( genfirst ) then
         call active_read_xy( fnamegen, xx_gen1, gencount0,
