@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.67 2011/01/14 01:28:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.68 2011/03/15 00:23:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,21 +26,22 @@ C     !CALLING SEQUENCE:
 C     INITIALISE_VARIA
 C       |
 C #ifdef ALLOW_AUTODIFF_TAMC
-C       |-- INI_HFAC
+C       |-- INI_HFAC           \
+C       |-- INI_DEPTHS          \
+C       |-- INI_MASKS_ETC        } ALLOW_DEPTH_CONTROL case
+C       |-- INI_LINEAR_PHISURF  /
 C       |
-C       |-- INI_DEPTHS
-C       |
-C       |-- INI_MASKS_ETC
-C       |
-C       |-- INI_LINEAR_PHISURF
+C       |-- INI_NLFS_VARS
 C       |
 C       |-- INI_CG2D
 C       |
-C       |-- CTRL_DEPTH_INI
-C       |-- UPDATE_MASKS_ETC
-C       |-- UPDATE_CG2D
+C       |-- CTRL_DEPTH_INI      \
+C       |-- UPDATE_MASKS_ETC     } ALLOW_DEPTH_CONTROL case
+C       |-- UPDATE_CG2D         /
 C       |
 C       |-- INI_CG3D
+C #else
+C       |-- INI_NLFS_VARS
 C #endif
 C       |-- INI_DYNVARS
 C       |-- INI_NH_VARS
@@ -58,8 +59,6 @@ C       |
 C       |-- PACKAGES_INIT_VARIABLES
 C       |
 C       |-- CONVECTIVE_ADJUSTMENT_INI
-C       |
-C       |-- INI_NLFS_VARS
 C       |
 C       |-- CALC_R_STAR
 C       |-- UPDATE_R_STAR
@@ -92,12 +91,6 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
-c#ifdef ALLOW_SHAP_FILT
-c# include "SHAP_FILT.h"
-c#endif
-c#ifdef ALLOW_ZONAL_FILT
-c# include "ZONAL_FILT.h"
-c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -116,6 +109,7 @@ CEOP
 
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
+# ifdef ALLOW_DEPTH_CONTROL
 C--   Intialize the hFacC for TAF/TAMC
       CALL INI_HFAC( myThid )
       CALL INI_DEPTHS( myThid )
@@ -126,6 +120,12 @@ C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
       IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
 # endif
       CALL INI_LINEAR_PHISURF( myThid )
+# endif /* ALLOW_DEPTH_CONTROL */
+
+# ifdef NONLIN_FRSURF
+C--   Initialise Non-Lin FreeSurf variables:
+      CALL INI_NLFS_VARS( myThid )
+# endif /* NONLIN_FRSURF */
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
 # ifdef ALLOW_DEBUG
@@ -149,6 +149,13 @@ C--   Set laplace operators for use in 3D conjugate gradient solver.
 #  endif
       CALL INI_CG3D( myThid )
 # endif
+
+#else /* ALLOW_AUTODIFF_TAMC */
+
+# ifdef NONLIN_FRSURF
+C--   Initialise Non-Lin FreeSurf variables:
+      CALL INI_NLFS_VARS( myThid )
+# endif /* NONLIN_FRSURF */
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -227,9 +234,6 @@ CADJ loop = parallel
 #endif
 
 #ifdef NONLIN_FRSURF
-C--   Initialise Non-Lin FreeSurf variables:
-      CALL INI_NLFS_VARS( myThid )
-
 C--   Compute the surface level thickness <-- function of etaH(n)
 C     and modify hFac(C,W,S) accordingly :
 # ifndef DISABLE_RSTAR_CODE
