@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1399 2011/03/15 16:42:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1400 2011/03/15 16:51:37 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,6 +10,7 @@ o pkg/ctrl:
     xx_${varname}period = -12., means one-year-periodic monthly control part 
   - introduce helper routine ctrl_init_rec (part of ctrl_init.F) to
     clean up ctrl_init a little, remove unused variables
+  - ctrl_init: fixed the handling of the start/endrec for obcs-variables
   - move "call cal_GetMonthsRec" from s/r ctrl_get_gen to s/r ctrl_get_gen_rec
 
 checkpoint62u (2011/03/15)
