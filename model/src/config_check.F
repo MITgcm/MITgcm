@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.57 2010/11/12 03:17:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.58 2011/03/15 00:15:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -128,6 +128,15 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: supported in adjoint mode'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
+#ifdef ALLOW_DEPTH_CONTROL
+      IF ( useOBCS ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: DEPTH_CONTROL code not compatible with OBCS'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
