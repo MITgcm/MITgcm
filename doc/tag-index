@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1398 2011/03/15 16:12:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1399 2011/03/15 16:42:25 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ctrl:
+  - change behavior of xx_${varname}period to be analogous to exf-conventions:
+    xx_${varname}period =   0.,  means time-independent control part
+    xx_${varname}period = -12., means one-year-periodic monthly control part 
+  - introduce helper routine ctrl_init_rec (part of ctrl_init.F) to
+    clean up ctrl_init a little, remove unused variables
+  - move "call cal_GetMonthsRec" from s/r ctrl_get_gen to s/r ctrl_get_gen_rec
 
 checkpoint62u (2011/03/15)
 o model/src:
