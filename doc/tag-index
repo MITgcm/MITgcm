@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1397 2011/03/15 00:25:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1398 2011/03/15 16:12:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62u (2011/03/15)
 o model/src:
   - for the adjoint, change NonLin-FreeSurf initialisation sequence: fill-in
     h0Fac from INITIALISE_FIXED and reset hFac to h0Fac in INITIALISE_VARIA ;
