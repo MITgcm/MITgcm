@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.23 2011/01/07 12:35:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.24 2011/03/15 16:06:09 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,10 +84,8 @@ c     == end of interface ==
 #ifdef ALLOW_COST_TEMP
       CALL COST_TEMP (myThid)
 #endif
-#ifdef ALLOW_SHELFICE
-# ifdef ALLOW_COST_SHELFICE
+#ifdef ALLOW_COST_SHELFICE
       CALL SHELFICE_COST_FINAL (myThid)
-# endif
 #endif
 
 c--   Sum up all contributions.
