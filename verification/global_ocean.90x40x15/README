@@ -1,28 +1,61 @@
 Example: "4x4 Global Simulation with Seasonal Forcing"
-=======================================
+============================================
+(see also similar set-up in: verification/tutorial_global_oce_latlon/)
+
+From verification/global_ocean.90x40x15 dir:
 
 To apply the changes to the default configuration of MITgcmUV:
 Configure and compile the code:
-  cd verification/global_ocean.90x40x15/input
-  ../../../tools/genmake -mods='../code'
+  cd build
+  ../../../tools/genmake2 -mods='../code'
+ [make Clean]
   make depend
   make
+  cd ..
 To run the code:
-  ./mitgcmuv
+  cd input
+  ./prepare_run
+  ../build/mitgcmuv > output.txt
+  cd ..
 
 There is comparison output in directory:
- ../verification/global_ocean.90x40x15/results
+  (verification/global_ocean.90x40x1/) results
 
 Comments:
 o The input data is real*4.
 o The surface fluxes are derived from monthly means of the NCEP climatology;
-  - a matlab script is provided that created the surface flux data files from 
+  - a matlab script is provided that created the surface flux data files from
     the original NCEP data: ncep2global_ocean.m in the diags_matlab directory,
     needs editing to adjust search paths.
 o matlab scripts that make a simple diagnostic (barotropic stream function,
   overturning stream functions, averaged hydrography etc.) is provided in
-  diags_matlab:
+  verification/tutorial_global_oce_latlon/diags_matlab:
   - mit_loadglobal is the toplevel script that run all other scripts
   - mit_globalmovie animates theta, salinity, and 3D-velocity field for
     a layer "iz", if "meanfields=0"
 
+--------------------------------------------
+Additional example:
+  similar set-up, with the same executable, and using pkg/dwnslp:
+to run this 2nd example:
+  cd input.dwnslp
+  ln -s ../input/* .
+  ../input/prepare_run
+  ../build/mitgcmuv > output.dwnslp.txt
+  cd ..
+
+============================================
+Adjoint set-up example:
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods='../code_ad'
+ [make Clean]
+  make depend
+  make adall
+  cd ..
+To run the code:
+  cd input_ad
+  ./prepare_run
+  ../build/mitgcmuv_ad > output_adm.txt
+  cd ..
