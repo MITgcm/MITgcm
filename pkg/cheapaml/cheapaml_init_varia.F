@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.7 2011/03/03 17:52:10 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.8 2011/03/18 22:37:42 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -50,6 +50,9 @@ c sea level pressure
 c     INTEGER prec
 c     CHARACTER*(MAX_LEN_FNAM) fn
 
+
+      IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &                           .AND. pickupSuff.EQ.' ' ) THEN      
 
          IF ( AirTempFile .NE. ' ' ) THEN
          write(*,*)'Tair initialized from  ->',AirTempFile
@@ -114,6 +117,12 @@ C default value at 290 (!)
         ENDDO
        ENDIF 
        _EXCH_XY_RL(Cheaptracer, mythid)
+
+       ELSE
+C Restart from cheapaml_pickups
+       CALL CHEAPAML_READ_PICKUP( nIter0, myThid ) 
+C End start-from-iter-zero if/else block       
+       ENDIF
 
        
 C Generating mask
