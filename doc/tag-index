@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1400 2011/03/15 16:51:37 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1401 2011/03/18 10:50:53 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/inc/scr and pkg/autodiff: add parameters that allow to turn 
+  of parts of the adjoint code at run time. For now, there are only 
+  useKPPinAdMode, useGMrediInAdMode, and useSEAICEinAdMode. These 
+  parameters are set in data.pkg. 
+  This is the lazy coward's version of doing this, but still useful for 
+  debugging. In order to do it right, everything needs to be moved to 
+  pkg/autodiff.
+o pkg/autodiff: fix global_sum_tile_ad.F by resetting adsumPhi at 
+  the end; this fixes the adjoint balancing code for open boundaries.
 o pkg/ctrl:
   - change behavior of xx_${varname}period to be analogous to exf-conventions:
     xx_${varname}period =   0.,  means time-independent control part
