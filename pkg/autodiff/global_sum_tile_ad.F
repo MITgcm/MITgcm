@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_tile_ad.F,v 1.4 2010/04/27 16:20:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_tile_ad.F,v 1.5 2011/03/18 10:40:37 mlosch Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -64,8 +64,8 @@ C--   each thread takes its tile adjoint sum
          adphiTile(bi,bj) = tmp
        ENDDO
       ENDDO
-C--   reset input to zero (jmc: is it right ? necessary ?)
-c     adsumPhi = 0.
+C--   reset input to zero (jmc: is it right ? necessary ? ml: yes, it is!)
+      adsumPhi = 0.
 
       RETURN
       END
