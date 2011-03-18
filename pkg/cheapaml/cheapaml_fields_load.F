@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.9 2011/03/03 17:52:10 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.10 2011/03/18 22:36:58 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -526,8 +526,6 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
         IF(useCheapTracer)THEN
           IF ( TracerRFile .NE. ' ' ) THEN
           CALL READ_FLD_XY_RL( TracerRFile,' ',CheaptracerR,0,myThid )
-          write(*,*) 'VIANDE'
-          write(*,*) CheaptracerR
            ELSE
            DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -540,8 +538,6 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
            ENDDO
           ENDIF
           _EXCH_XY_RL(CheaptracerR, mythid)
-          write(*,*) 'LEGUMES'
-                    write(*,*) CheaptracerR
         ENDIF     
         IF (FluxFormula.eq.'COARE3')THEN
                 IF (WaveHFile.NE.' ')THEN
