@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.2 2011/03/03 17:52:10 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.3 2011/03/18 22:38:31 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -120,24 +120,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( nbFields.EQ.0 ) THEN
 C---   Old way to read pickup:
-
        ELSE
 C---   New way to read CHEAPAML pickup:
         nj = 0
         nj = nj*Nr
 C---    read CHEAPAML 2-D fields for restart
-#ifdef CHEAPAML_2D_STATE
-        CALL READ_MFLDS_3D_RL( 'Tair', Tair,
+        CALL READ_MFLDS_3D_RL( 'Tair    ', Tair,
      &                                 nj, fp, 1 , myIter, myThid )
+        
         IF(useFreshWaterFlux)THEN
-        CALL READ_MFLDS_3D_RL( 'Qair', qair,
+        CALL READ_MFLDS_3D_RL( 'Qair    ', qair,
      &                                 nj, fp, 1 , myIter, myThid )        
         ENDIF
         IF(useCheaptracer)THEN
-        CALL READ_MFLDS_3D_RL( 'CheapTracer', Cheaptracer,
+        CALL READ_MFLDS_3D_RL( 'cTracer ', Cheaptracer,
      &                                 nj, fp, 1 ,myIter, myThid )        
         ENDIF
-#endif /* CHEAPAML_2D_STATE */
 
 C--    end: new way to read pickup file
        ENDIF
@@ -163,6 +161,13 @@ C--    Check for missing fields:
         ENDDO
         STOP 'ABNORMAL END: S/R CHEAPAML_READ_PICKUP'
        ENDIF
+
+C--    Update overlap regions:
+       CALL EXCH_XY_RL(Tair, myThid )
+       CALL EXCH_XY_RL(qair, myThid )
+       CALL EXCH_XY_RL(Cheaptracer, myThid )
+
+
 
 #endif /* ALLOW_CHEAPAML */
 
