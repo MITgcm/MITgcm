@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.5 2011/03/03 17:52:10 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.6 2011/03/18 22:39:06 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -81,14 +81,14 @@ C-    switch to 2-D fields:
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        Tair, nj, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'Tair'
+        IF (j.LE.listDim) wrFldList(j) = 'Tair    '
      
 
         j = j + 1
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        Qnet, nj, myIter, myThid )
-         IF (j.LE.listDim) wrFldList(j) = 'Qnet'
+         IF (j.LE.listDim) wrFldList(j) = 'Qnet    '
 
 
         if (useFreshWaterFlux) then
@@ -97,7 +97,7 @@ C-    switch to 2-D fields:
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        qair, nj, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'Qair'
+        IF (j.LE.listDim) wrFldList(j) = 'Qair    '
 
 
 
@@ -105,7 +105,7 @@ C-    switch to 2-D fields:
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        EmPmR, nj, myIter, myThid )
-         IF (j.LE.listDim) wrFldList(j) = 'EmPmR'
+         IF (j.LE.listDim) wrFldList(j) = 'EmPmR   '
 
         endif 
 
@@ -116,7 +116,7 @@ C-    switch to 2-D fields:
             nj = nj-1
             CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        Cheaptracer, nj, myIter, myThid )
-         IF (j.LE.listDim) wrFldList(j) = 'CheapTracer'
+         IF (j.LE.listDim) wrFldList(j) = 'cTracer '
 
          endif 
 
