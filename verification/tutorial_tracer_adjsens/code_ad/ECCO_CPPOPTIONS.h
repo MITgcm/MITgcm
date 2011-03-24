@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2010/10/01 01:38:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.4 2011/03/24 12:13:56 heimbach Exp $
 C $Name:  $
 
 C
@@ -26,6 +26,9 @@ C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 #undef ALLOW_DIVIDED_ADJOINT_MPI
+C
+C o write separate tape files for each ptracer
+#define AUTODIFF_PTRACERS_SPLIT_FILES
 
 C ********************************************************************
 C ***                     Calender Package                         ***
