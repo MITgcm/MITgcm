@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1401 2011/03/18 10:50:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1402 2011/03/24 12:19:17 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers (adjoint)
+  New option AUTODIFF_PTRACERS_SPLIT_FILES for writing separate 
+  tape file for each tracer
 o model/inc/scr and pkg/autodiff: add parameters that allow to turn 
   of parts of the adjoint code at run time. For now, there are only 
   useKPPinAdMode, useGMrediInAdMode, and useSEAICEinAdMode. These 
