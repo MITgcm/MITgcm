@@ -1,0 +1,29 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+      SEAICEwriteState   = .TRUE.,
+      SEAICE_initialHEFF = 0.0,
+      SEAICE_deltaTtherm = 3600.,
+      SEAICE_deltaTdyn   = 3600.,
+      SEAICEuseDYNAMICS  =.FALSE.,
+      SEAICEadvSalt      =.FALSE.,
+      SEAICEadvAge       =.FALSE.,
+      LSR_ERROR          = 1.E-6,
+      SEAICE_EPS         = 1.E-8,
+      SEAICEadvSnow      = .TRUE.,
+      SEAICE_salinity = 0.3,
+      SEAICEuseFlooding  = .TRUE.,
+      areaMin = 1e-8,
+      ICE2WATR           = 0.92D0,
+ 
+ &
+ &SEAICE_PARM02
+  mult_ice   = 1.,
+# choose which seaice cost term you want
+  cost_ice_flag = 2,
+# the following timings are obsolete;
+# replaced by lastinterval
+ costIceStart1        = 20000101,
+ costIceStart2        = 00000,
+ costIceEnd1        = 20000201,
+ costIceEnd2        = 00000,
+ &

@@ -1,0 +1,39 @@
+------- START -----
+-------- ./SEAICE_OPTIONS.h ------
+-------- ./packages.conf ------
+4,8c4,9
+< ecco
+< autodiff
+< cost
+< ctrl
+< grdchk
+---
+> #ecco
+> #autodiff
+> #cost
+> #ctrl
+> #grdchk
+> #salt_plume
+9a11,12
+> #cd_code
+> #gmredi
+10a14
+> #down_slope
+12c16
+< sbo
+---
+> #sbo
+14,15c18,19
+< timeave
+< mnc
+---
+> #timeave
+> #mnc
+-------- ./CPP_OPTIONS.h ------
+56c56
+< cif#include "ECCO_CPPOPTIONS.h"
+---
+> c#include "ECCO_CPPOPTIONS.h"
+-------- ./CPP_EEOPTIONS.h ------
+-------- ./SIZE.h ------
+-------- ./DIAGNOSTICS_SIZE.h ------

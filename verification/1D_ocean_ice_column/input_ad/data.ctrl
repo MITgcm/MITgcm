@@ -1,0 +1,99 @@
+#
+#
+# *********************
+# ECCO controlvariables
+# *********************
+ &CTRL_NML
+# doSinglePrecTapelev=.TRUE.,
+ xx_theta_file      ='xx_theta',
+ xx_salt_file       ='xx_salt',
+ xx_siarea_file     ='xx_siarea',
+ xx_siheff_file     ='xx_siheff',
+ xx_sihsnow_file    ='xx_sihsnow',
+#
+ xx_hfluxstartdate1 = 19790101,
+ xx_hfluxstartdate2 = 000000,
+ xx_hfluxperiod     = 864000.0,
+ xx_hflux_file      = 'xx_hfl',
+#
+ xx_sfluxstartdate1 = 19790101,
+ xx_sfluxstartdate2 = 000000,
+ xx_sfluxperiod     = 864000.0,
+ xx_sflux_file      = 'xx_sfl',
+#
+ xx_tauustartdate1 = 19790101,
+ xx_tauustartdate2 = 000000,
+ xx_tauuperiod     = 864000.0,
+ xx_tauu_file      = 'xx_tauu',
+#
+ xx_tauvstartdate1 = 19790101,
+ xx_tauvstartdate2 = 000000,
+ xx_tauvperiod     = 864000.0,
+ xx_tauv_file      = 'xx_tauv',
+#
+ xx_atempstartdate1 = 19790101,
+ xx_atempstartdate2 = 000000,
+ xx_atempperiod     = 864000.0,
+ xx_atemp_file      = 'xx_atemp',
+#
+ xx_aqhstartdate1 = 19790101,
+ xx_aqhstartdate2 = 000000,
+ xx_aqhperiod     = 864000.0,
+ xx_aqh_file      = 'xx_aqh',
+#
+ xx_precipstartdate1 = 19790101,
+ xx_precipstartdate2 = 000000,
+ xx_precipperiod     = 864000.0,
+ xx_precip_file      = 'xx_precip',
+#
+ xx_swfluxstartdate1 = 19790101,
+ xx_swfluxstartdate2 = 000000,
+ xx_swfluxperiod     = 864000.0,
+ xx_swflux_file      = 'xx_swflux',
+#
+ xx_swdownstartdate1 = 19790101,
+ xx_swdownstartdate2 = 000000,
+ xx_swdownperiod     = 864000.0,
+ xx_swdown_file      = 'xx_swdown',
+#
+ xx_lwfluxstartdate1 = 19790101,
+ xx_lwfluxstartdate2 = 000000,
+ xx_lwfluxperiod     = 864000.0,
+ xx_lwflux_file      = 'xx_lwflux',
+#
+ xx_lwdownstartdate1 = 19790101,
+ xx_lwdownstartdate2 = 000000,
+ xx_lwdownperiod     = 864000.0,
+ xx_lwdown_file      = 'xx_lwdown',
+#
+ xx_evapstartdate1 = 19790101,
+ xx_evapstartdate2 = 000000,
+ xx_evapperiod     = 864000.0,
+ xx_evap_file      = 'xx_evap',
+#
+ xx_snowprecipstartdate1 = 19790101,
+ xx_snowprecipstartdate2 = 000000,
+ xx_snowprecipperiod     = 864000.0,
+ xx_snowprecip_file      = 'xx_snowprecip',
+#
+ xx_apressurestartdate1 = 19790101,
+ xx_apressurestartdate2 = 000000,
+ xx_apressureperiod     = 864000.0,
+ xx_apressure_file      = 'xx_apressure',
+#
+ xx_uwindstartdate1 = 19790101,
+ xx_uwindstartdate2 = 000000,
+ xx_uwindperiod     = 864000.0,
+ xx_uwind_file      = 'xx_uwind',
+#
+ xx_vwindstartdate1 = 19790101,
+ xx_vwindstartdate2 = 000000,
+ xx_vwindperiod     = 864000.0,
+ xx_vwind_file      = 'xx_vwind',
+ &
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &CTRL_PACKNAMES
+ &
