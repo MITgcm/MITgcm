@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.55 2010/10/21 03:32:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.56 2011/03/29 15:52:03 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -130,6 +130,8 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
       EXTERNAL    GAD_DIAG_SUFX
 #endif
       INTEGER i,j
+      _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -216,45 +218,58 @@ C--   Initialize net flux in X direction
 C-    Advective flux in X
       IF (calcAdvection) THEN
         IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
-          CALL GAD_C2_ADV_X(bi,bj,k,uTrans,locABT,af,myThid)
+           CALL GAD_C2_ADV_X( bi,bj,k, uTrans, locABT, af, myThid )
         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
-     I            deltaTLev(k), uTrans, uFld, locABT,
-     O            af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
-     I            uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
-     O            af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
-          CALL GAD_U3_ADV_X(bi,bj,k,uTrans,locABT,af,myThid)
-        ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
-          CALL GAD_C4_ADV_X(bi,bj,k,uTrans,locABT,af,myThid)
-        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
-     I            uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
-     O            af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-         IF ( inAdMode ) THEN
+           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
+     I              deltaTLev(k), uTrans, uFld, locABT,
+     O              af, myThid )
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+#ifdef ALLOW_OBCS
+           maskLocW(i,j) = _maskW(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
+#else /* ALLOW_OBCS */
+           maskLocW(i,j) = _maskW(i,j,k,bi,bj)
+#endif /* ALLOW_OBCS */
+          ENDDO
+         ENDDO
+         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
+     I              uTrans, uFld, maskLocW, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+           CALL GAD_U3_ADV_X( bi,bj,k, uTrans, maskLocW, locABT, 
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+           CALL GAD_C4_ADV_X( bi,bj,k, uTrans, maskLocW, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+           CALL GAD_DST3_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
+     I              uTrans, uFld, maskLocW, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          IF ( inAdMode ) THEN
 cph This block is to trick the adjoint:
 cph IF inAdExact=.FALSE., we want to use DST3
 cph with limiters in forward, but without limiters in reverse.
-          CALL GAD_DST3_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
-     I           uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
-     O           af, myThid )
-         ELSE
-          CALL GAD_DST3FL_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
-     I           uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
-     O           af, myThid )
-         ENDIF
+           CALL GAD_DST3_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
+     I              uTrans, uFld, maskLocW, locABT,
+     O              af, myThid )
+          ELSE
+           CALL GAD_DST3FL_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
+     I              uTrans, uFld, maskLocW, locABT,
+     O              af, myThid )
+          ENDIF
 #ifndef ALLOW_AUTODIFF_TAMC
-        ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
-     I            uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
-     O            af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+           CALL GAD_OS7MP_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
+     I              uTrans, uFld, maskLocW, locABT,
+     O              af, myThid )
 #endif
-        ELSE
-         STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
+         ELSE
+          STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
+         ENDIF
         ENDIF
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
@@ -331,45 +346,58 @@ C--   Initialize net flux in Y direction
 C-    Advective flux in Y
       IF (calcAdvection) THEN
         IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
-          CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,locABT,af,myThid)
+           CALL GAD_C2_ADV_Y( bi,bj,k, vTrans, locABT, af, myThid )
         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
-     I            deltaTLev(k), vTrans, vFld, locABT,
-     O            af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
-     I            vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
-     O            af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
-          CALL GAD_U3_ADV_Y(bi,bj,k,vTrans,locABT,af,myThid)
-        ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
-          CALL GAD_C4_ADV_Y(bi,bj,k,vTrans,locABT,af,myThid)
-        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
-     I            vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
-     O            af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-         IF ( inAdMode ) THEN
+           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
+     I              deltaTLev(k), vTrans, vFld, locABT,
+     O              af, myThid )
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+#ifdef ALLOW_OBCS
+           maskLocS(i,j) = _maskS(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
+#else /* ALLOW_OBCS */
+           maskLocS(i,j) = _maskS(i,j,k,bi,bj)
+#endif /* ALLOW_OBCS */
+          ENDDO
+         ENDDO
+         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
+     I              vTrans, vFld, maskLocS, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+           CALL GAD_U3_ADV_Y( bi,bj,k, vTrans, maskLocS, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+           CALL GAD_C4_ADV_Y( bi,bj,k, vTrans, maskLocS, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+           CALL GAD_DST3_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
+     I              vTrans, vFld, maskLocS, locABT,
+     O              af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          IF ( inAdMode ) THEN
 cph This block is to trick the adjoint:
 cph IF inAdExact=.FALSE., we want to use DST3
 cph with limiters in forward, but without limiters in reverse.
-          CALL GAD_DST3_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
-     I           vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
-     O           af, myThid )
-         ELSE
-          CALL GAD_DST3FL_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
-     I           vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
-     O           af, myThid )
-         ENDIF
+           CALL GAD_DST3_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
+     I              vTrans, vFld, maskLocS, locABT,
+     O              af, myThid )
+          ELSE
+           CALL GAD_DST3FL_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
+     I              vTrans, vFld, maskLocS, locABT,
+     O              af, myThid )
+          ENDIF
 #ifndef ALLOW_AUTODIFF_TAMC
-        ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
-     I            vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
-     O            af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+           CALL GAD_OS7MP_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
+     I              vTrans, vFld, maskLocS, locABT,
+     O              af, myThid )
 #endif
-        ELSE
-          STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
+         ELSE
+           STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
+         ENDIF
         ENDIF
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
