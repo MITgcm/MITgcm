@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.6 2010/05/25 19:07:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.7 2011/03/29 02:22:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,7 +47,6 @@ C     ==  Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(2) fType
       INTEGER i,j,k,bi,bj,iG,jG
       INTEGER s1Lo,s1Hi, dUnit, filePrec, length_of_rec, kRec
       CHARACTER*(MAX_LEN_FNAM) fullName
@@ -64,8 +63,12 @@ C--   to Build file name
       s1Hi = ILNBLNK(fnam)
       CALL MDSFINDUNIT( dUnit, myThid )
 
-      fType='RL'
+C--   file precision has to match array type (no copy to buffer)
+#ifdef RL_IS_REAL4
+      filePrec = precFloat32
+#else
       filePrec = precFloat64
+#endif
 
       IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
 C--   Write full global array:
@@ -74,8 +77,13 @@ C--   Write full global array:
          iG=bi+(myXGlobalLo-1)/sNx
          jG=bj+(myYGlobalLo-1)/sNy
 
-         WRITE( fullName, '(2A,I10.10,2(A,I3.3),A)' )
-     &    fnam(s1Lo:s1Hi),'.',myIter,'.',iG,'.',jG,'.data'
+         IF ( myIter.GE.0 ) THEN
+           WRITE( fullName, '(2A,I10.10,2(A,I3.3),A)' )
+     &      fnam(s1Lo:s1Hi),'.',myIter,'.',iG,'.',jG,'.data'
+         ELSE
+           WRITE( fullName, '(A,2(A,I3.3),A)' )
+     &      fnam(s1Lo:s1Hi),'.',iG,'.',jG,'.data'
+         ENDIF
 
 c        OPEN( dUnit, file=fullName, status='unknown',
 c    &         form='unformatted')
@@ -103,8 +111,13 @@ C--   Write local array:
          iG=biArg+(myXGlobalLo-1)/sNx
          jG=bjArg+(myYGlobalLo-1)/sNy
 
-         WRITE( fullName, '(2A,I10.10,2(A,I3.3),A)' )
-     &    fnam(s1Lo:s1Hi),'.',myIter,'.',iG,'.',jG,'.data'
+         IF ( myIter.GE.0 ) THEN
+           WRITE( fullName, '(2A,I10.10,2(A,I3.3),A)' )
+     &      fnam(s1Lo:s1Hi),'.',myIter,'.',iG,'.',jG,'.data'
+         ELSE
+           WRITE( fullName, '(A,2(A,I3.3),A)' )
+     &      fnam(s1Lo:s1Hi),'.',iG,'.',jG,'.data'
+         ENDIF
 
 c        OPEN( dUnit, file=fullName, status='unknown',
 c    &         form='unformatted')
