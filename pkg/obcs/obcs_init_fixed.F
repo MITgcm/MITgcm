@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.11 2011/03/06 23:41:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.12 2011/03/29 02:30:39 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -42,6 +42,7 @@ C     tmpFld   :: Temporary array used to load in Interior Mask
       INTEGER OB_ApplY
       INTEGER bi, bj
       INTEGER  i, j
+      INTEGER im, jm
       INTEGER iB, jB
       LOGICAL flag
       _RS tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -138,14 +139,16 @@ C--   Fill in the overlap:
       _EXCH_XY_RS( maskInC, myThid )
 
 C==   Set interior mask at U & V location (grid-cell Wester & Southern edges)
+C     leave OB edges inside (maskIn=1) (e.g., maskInW(OB_Ie)=1 )
+C     so that velocity normal-component at OB is still in Interior region.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=2-Oly,sNy+Oly
           DO i=2-Olx,sNx+Olx
             maskInW(i,j,bi,bj) = maskInW(i,j,bi,bj)
-     &                         * maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
+     &                   *MAX( maskInC(i-1,j,bi,bj),maskInC(i,j,bi,bj) )
             maskInS(i,j,bi,bj) = maskInS(i,j,bi,bj)
-     &                         * maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
+     &                   *MAX( maskInC(i,j-1,bi,bj),maskInC(i,j,bi,bj) )
           ENDDO
          ENDDO
        ENDDO
@@ -165,52 +168,88 @@ C     (apply_tracer) which overwrites tracer over the same width.
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C--   Set Interior mask to zero beyond OB
-        DO j=1-OLy,sNy+OLy
 C-    Eastern boundary
+        DO j=1-OLy,sNy+OLy
+         jm = MAX( j-1, 1-Oly )
          iB = OB_Ie(j,bi,bj)
          IF ( iB.NE.0 ) THEN
-          DO i=iB,iB+OB_ApplX-1
-            maskInC(i,j,bi,bj) = 0.
-            maskInW(i,j,bi,bj) = 0.
-            maskInS(i,j,bi,bj) = 0.
-            IF (j.LT.sNy+OLy) maskInS(i,j+1,bi,bj) = 0.
-          ENDDO
+           DO i=iB,iB+OB_ApplX-1
+             maskInC(i,j,bi,bj) = 0.
+           ENDDO
+           DO i=iB+1,iB+OB_ApplX-1
+             maskInW(i,j,bi,bj) = 0.
+           ENDDO
+           IF (OB_Ie(jm,bi,bj).NE.0 ) iB = MAX( iB, OB_Ie(jm,bi,bj) )
+         ELSE
+           iB = OB_Ie(jm,bi,bj)
          ENDIF
-C-    Western boundary
-         iB = OB_Iw(j,bi,bj)
          IF ( iB.NE.0 ) THEN
-          DO i=1-OB_ApplX+iB,iB
-            maskInC(i,j,bi,bj) = 0.
-            maskInS(i,j,bi,bj) = 0.
-            IF (j.LT.sNy+OLy) maskInS(i,j+1,bi,bj) = 0.
-          ENDDO
-          DO i=2-OB_ApplX+iB,iB+1
-            maskInW(i,j,bi,bj) = 0.
-          ENDDO
+           DO i=iB,iB+OB_ApplX-1
+             maskInS(i,j,bi,bj) = 0.
+           ENDDO
          ENDIF
         ENDDO
-        DO i=1-OLx,sNx+OLx
+C-    Western boundary
+        DO j=1-OLy,sNy+OLy
+         jm = MAX( j-1, 1-Oly )
+         iB = OB_Iw(j,bi,bj)
+         IF ( iB.NE.0 ) THEN
+           DO i=1-OB_ApplX+iB,iB
+             maskInC(i,j,bi,bj) = 0.
+           ENDDO
+           DO i=2-OB_ApplX+iB,iB
+             maskInW(i,j,bi,bj) = 0.
+           ENDDO
+           IF (OB_Iw(jm,bi,bj).NE.0 ) iB = MIN( iB, OB_Iw(jm,bi,bj) )
+         ELSE
+           iB = OB_Iw(jm,bi,bj)
+         ENDIF
+         IF ( iB.NE.0 ) THEN
+           DO i=1-OB_ApplX+iB,iB
+             maskInS(i,j,bi,bj) = 0.
+           ENDDO
+         ENDIF
+        ENDDO
 C-    Northern boundary
+        DO i=1-OLx,sNx+OLx
+         im = MAX( i-1, 1-Olx )
          jB = OB_Jn(i,bi,bj)
          IF ( jB.NE.0 ) THEN
-          DO j=jB,jB+OB_ApplY-1
-            maskInC(i,j,bi,bj) = 0.
-            maskInW(i,j,bi,bj) = 0.
-            IF (i.LT.sNx+OLx) maskInW(i+1,j,bi,bj) = 0.
-            maskInS(i,j,bi,bj) = 0.
-          ENDDO
+           DO j=jB,jB+OB_ApplY-1
+             maskInC(i,j,bi,bj) = 0.
+           ENDDO
+           DO j=jB+1,jB+OB_ApplY-1
+             maskInS(i,j,bi,bj) = 0.
+           ENDDO
+           IF (OB_Jn(im,bi,bj).NE.0 ) jB = MAX( jB, OB_Jn(im,bi,bj) )
+         ELSE
+           jB = OB_Jn(im,bi,bj)
          ENDIF
+         IF ( jB.NE.0 ) THEN
+           DO j=jB,jB+OB_ApplY-1
+             maskInW(i,j,bi,bj) = 0.
+           ENDDO
+         ENDIF
+        ENDDO
 C-    Southern boundary
+        DO i=1-OLx,sNx+OLx
+         im = MAX( i-1, 1-Olx )
          jB = OB_Js(i,bi,bj)
          IF ( jB.NE.0 ) THEN
-          DO j=1-OB_ApplY+jB,jB
-            maskInC(i,j,bi,bj) = 0.
-            maskInW(i,j,bi,bj) = 0.
-            IF (i.LT.sNx+OLx) maskInW(i+1,j,bi,bj) = 0.
-          ENDDO
-          DO j=2-OB_ApplY+jB,jB+1
-            maskInS(i,j,bi,bj) = 0.
-          ENDDO
+           DO j=1-OB_ApplY+jB,jB
+             maskInC(i,j,bi,bj) = 0.
+           ENDDO
+           DO j=2-OB_ApplY+jB,jB
+             maskInS(i,j,bi,bj) = 0.
+           ENDDO
+           IF (OB_Js(im,bi,bj).NE.0 ) jB = MIN( jB, OB_Js(im,bi,bj) )
+         ELSE
+           jB = OB_Js(im,bi,bj)
+         ENDIF
+         IF ( jB.NE.0 ) THEN
+           DO j=1-OB_ApplY+jB,jB
+             maskInW(i,j,bi,bj) = 0.
+           ENDDO
          ENDIF
         ENDDO
 
