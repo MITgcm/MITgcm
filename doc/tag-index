@@ -1,25 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1402 2011/03/24 12:19:17 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1403 2011/03/29 02:36:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  change definition of maskInW & maskInS: leave OB edges inside (maskIn=1)
+  (e.g., maskInW(OB_Ie)=1 ) so that velocity normal-component at OB is still
+  in Interior region. No impact on solution but affects Velocity monitor stats.
 o pkg/ptracers (adjoint)
-  New option AUTODIFF_PTRACERS_SPLIT_FILES for writing separate 
+  New option AUTODIFF_PTRACERS_SPLIT_FILES for writing separate
   tape file for each tracer
-o model/inc/scr and pkg/autodiff: add parameters that allow to turn 
-  of parts of the adjoint code at run time. For now, there are only 
-  useKPPinAdMode, useGMrediInAdMode, and useSEAICEinAdMode. These 
-  parameters are set in data.pkg. 
-  This is the lazy coward's version of doing this, but still useful for 
-  debugging. In order to do it right, everything needs to be moved to 
+o model/inc/src and pkg/autodiff: add parameters that allow to turn
+  of parts of the adjoint code at run time. For now, there are only
+  useKPPinAdMode, useGMrediInAdMode, and useSEAICEinAdMode. These
+  parameters are set in data.pkg.
+  This is the lazy coward's version of doing this, but still useful for
+  debugging. In order to do it right, everything needs to be moved to
   pkg/autodiff.
-o pkg/autodiff: fix global_sum_tile_ad.F by resetting adsumPhi at 
+o pkg/autodiff: fix global_sum_tile_ad.F by resetting adsumPhi at
   the end; this fixes the adjoint balancing code for open boundaries.
 o pkg/ctrl:
   - change behavior of xx_${varname}period to be analogous to exf-conventions:
     xx_${varname}period =   0.,  means time-independent control part
-    xx_${varname}period = -12., means one-year-periodic monthly control part 
+    xx_${varname}period = -12., means one-year-periodic monthly control part
   - introduce helper routine ctrl_init_rec (part of ctrl_init.F) to
     clean up ctrl_init a little, remove unused variables
   - ctrl_init: fixed the handling of the start/endrec for obcs-variables
