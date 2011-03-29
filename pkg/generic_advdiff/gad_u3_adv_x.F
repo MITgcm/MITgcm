@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3_adv_x.F,v 1.5 2008/02/29 01:31:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3_adv_x.F,v 1.6 2011/03/29 15:50:30 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,9 +7,9 @@ CBOP
 C !ROUTINE: GAD_U3_ADV_X
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_U3_ADV_X( 
+      SUBROUTINE GAD_U3_ADV_X(
      I           bi,bj,k,
-     I           uTrans,
+     I           uTrans, maskLocW,
      I           tracer,
      O           uT,
      I           myThid )
@@ -26,23 +26,25 @@ C Near boundaries, mask all the gradients ==> still 3rd O.
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
+c#include "GRID.h"
 #include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  k                    :: vertical level
-C  uTrans               :: zonal volume transport
-C  tracer               :: tracer field
-C  myThid               :: thread number
+C  bi,bj        :: tile indices
+C  k            :: vertical level
+C  uTrans       :: zonal volume transport
+C  maskLocW     :: mask (either 0 or 1) at grid-cell western edge
+C  tracer       :: tracer field
+C  myThid       :: my thread Id number
       INTEGER bi,bj,k
-      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tracer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  uT                   :: zonal advective flux
-      _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C  uT           :: zonal advective flux
+      _RL uT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
@@ -59,12 +61,12 @@ CEOP
       ENDDO
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx+2,sNx+Olx-1
-        Rjp=(tracer(i+1,j)-tracer(i,j))*maskW(i+1,j,k,bi,bj)
-        Rj =(tracer(i,j)-tracer(i-1,j))*maskW(i,j,k,bi,bj)
-        Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskW(i-1,j,k,bi,bj)
+        Rjp = (tracer(i+1,j)-tracer( i ,j))*maskLocW(i+1,j)
+        Rj  = (tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
+        Rjm = (tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
         Rjjp=Rjp-Rj
         Rjjm=Rj-Rjm
-        uT(i,j) = 
+        uT(i,j) =
      &   uTrans(i,j)*(
      &     Tracer(i,j)+Tracer(i-1,j)-oneSixth*( Rjjp+Rjjm )
      &               )*0.5 _d 0
