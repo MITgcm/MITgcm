@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.32 2010/09/11 21:24:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.33 2011/03/29 02:25:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -104,6 +104,9 @@ C     Write 3D geometry arrays
           CALL WRITE_FLD_XY_RS( 'maskInC',' ', maskInC, -1, myThid )
           CALL WRITE_FLD_XY_RS( 'maskInW',' ', maskInW, -1, myThid )
           CALL WRITE_FLD_XY_RS( 'maskInS',' ', maskInS, -1, myThid )
+c         CALL WRITE_FULLARRAY_RS('maskInC',maskInC,1,0,0,1,-1,myThid)
+c         CALL WRITE_FULLARRAY_RS('maskInW',maskInW,1,0,0,1,-1,myThid)
+c         CALL WRITE_FULLARRAY_RS('maskInS',maskInS,1,0,0,1,-1,myThid)
         ENDIF
 
 C     Write vertical grid arrays
