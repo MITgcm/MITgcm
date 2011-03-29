@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_tile_ad.F,v 1.5 2011/03/18 10:40:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_tile_ad.F,v 1.6 2011/03/29 23:09:39 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,8 +15,8 @@ C     !ROUTINE: GLOBAL_ADSUM_TILE_RL
 
 C     !INTERFACE:
       SUBROUTINE GLOBAL_ADSUM_TILE_RL(
-     O                        adPhiTile,
-     I                        adsumPhi,
+     U                        adPhiTile,
+     U                        adsumPhi,
      I                        myThid )
 
 C     !DESCRIPTION:
@@ -54,17 +54,20 @@ C     bi,bj  :: tile indices
       INTEGER bi,bj
       Real*8  tmp
 
+C note: arithmetic has been checked versus TAF generated adjoint
+C       of a simplified version of global_sum_tile.F code.
+
       tmp = adsumPhi
 
       CALL GLOBAL_SUM_R8( tmp, myThid )
 
-C--   each thread takes its tile adjoint sum
+C--   each thread updates its tile adjoint sum
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         adphiTile(bi,bj) = tmp
+         adphiTile(bi,bj) = adphiTile(bi,bj) + tmp
        ENDDO
       ENDDO
-C--   reset input to zero (jmc: is it right ? necessary ? ml: yes, it is!)
+
       adsumPhi = 0.
 
       RETURN
