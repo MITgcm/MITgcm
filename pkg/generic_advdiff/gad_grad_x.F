@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_x.F,v 1.9 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_x.F,v 1.10 2011/03/29 15:53:45 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -64,6 +64,9 @@ C     o Zonal tracer gradient
      &            *(tracer(i,j)-tracer(i-1,j))
 #ifdef COSINEMETH_III
      &            *sqCosFacU(j,bi,bj)
+#endif
+#ifdef ALLOW_OBCS
+     &            *maskInW(i,j,bi,bj)
 #endif
        ENDDO
       ENDDO

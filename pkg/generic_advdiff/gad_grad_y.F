@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.9 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.10 2011/03/29 15:53:45 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -68,6 +68,9 @@ C     o Meridional tracer gradient
 #ifdef COSINEMETH_III
      &            *sqCosFacV(j,bi,bj)
 #endif
+#endif
+#ifdef ALLOW_OBCS
+     &            *maskInS(i,j,bi,bj)
 #endif
        ENDDO
       ENDDO
