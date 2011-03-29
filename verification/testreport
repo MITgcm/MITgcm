@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.159 2011/03/29 02:20:22 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.160 2011/03/29 11:51:20 jmc Exp $
 #  $Name:  $
 #
 
@@ -424,7 +424,9 @@ run_clean()
 	    find . -name "*.data" -exec rm {} \;
 	    find . -name "fort.*" -exec rm {} \;
 	    find . -type l -exec rm {} \;
-	    rm -f $EXECUTABLE $RUNLOG *.txt STD* *diagnostics.log datetime
+	    #- should remove executable only if sym-link (and above does it)
+	    #rm -f $EXECUTABLE
+	    rm -f $RUNLOG *.txt STD* *diagnostics.log datetime
 	    rm -rf mnc_test_*
  	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
 	    echo successful
