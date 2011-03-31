@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/MOM_VISC.h,v 1.2 2010/02/17 23:39:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/MOM_VISC.h,v 1.3 2011/03/31 20:33:01 jmc Exp $
 C $Name:  $
 
-C- Common file for length scales 
+C- Common file for length scales
 
 #ifdef ALLOW_MOM_COMMON
 
@@ -19,7 +19,7 @@ C- Common file for length scales
 
 #ifdef ALLOW_3D_VISCAH
 C     viscAhDfld, viscAhZfld :: full 3D specification of Laplacian Viscosity
-C               coeff. for mixing of momentum horizontally ( units of r^2/s )
+C               coeff. for mixing of momentum horizontally ( units of m^2/s )
       COMMON /DYNVARS_3D_VISCAH/
      &                  viscAhDfld, viscAhZfld
       _RL  viscAhDfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -28,7 +28,7 @@ C               coeff. for mixing of momentum horizontally ( units of r^2/s )
 
 #ifdef ALLOW_3D_VISCA4
 C     viscA4Dfld, viscA4Zfld :: full 3D specification of Bi-harmonic Viscosity
-C               coeff. for mixing of momentum horizontally ( units of r^2/s )
+C               coeff. for mixing of momentum horizontally ( units of m^4/s )
       COMMON /DYNVARS_3D_VISCA4/
      &                  viscA4Dfld, viscA4Zfld
       _RL  viscA4Dfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
