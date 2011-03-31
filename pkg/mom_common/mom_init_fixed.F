@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.9 2010/02/17 23:39:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.10 2011/03/31 20:36:18 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -22,40 +22,18 @@ C     !USES:
 #include "GRID.h"
 #include "SURFACE.h"
 #include "MOM_VISC.h"
-#if defined (ALLOW_3D_VISCAH) || defined (ALLOW_3D_VISCA4)
-#include "DYNVARS.h"
-#endif
 
 C     !INPUT PARAMETERS:
-C     myThid               :: thread number
+C     myThid               :: my thread Id number
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj  :: loop counter
       INTEGER i,j,bi,bj
-#if (defined (NONLIN_FRSURF) || \
-     defined (ALLOW_3D_VISCAH) || \
-     defined (ALLOW_3D_VISCA4))
+#if defined (ALLOW_3D_VISCAH) || defined (ALLOW_3D_VISCA4)
       INTEGER k
 #endif
-
-#ifdef NONLIN_FRSURF
-C-    used for side-drag:
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
-            h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
-            h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-#endif /* NONLIN_FRSURF */
 
 #if defined (ALLOW_3D_VISCAH) || defined (ALLOW_3D_VISCA4)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -67,10 +45,10 @@ C-    used for side-drag:
            viscAhDfld(i,j,k,bi,bj) = 0. _d 0
            viscAhZfld(i,j,k,bi,bj) = 0. _d 0
 #endif
-#ifdef ALLOW_3D_VISCA4           
+#ifdef ALLOW_3D_VISCA4
            viscA4Dfld(i,j,k,bi,bj) = 0. _d 0
            viscA4Zfld(i,j,k,bi,bj) = 0. _d 0
-#endif          
+#endif
           ENDDO
          ENDDO
         ENDDO
@@ -149,7 +127,7 @@ C-    used for side-drag:
           CALL READ_FLD_XYZ_RL(viscAhZfile,' ',viscAhZfld,0,myThid)
           CALL EXCH_Z_3D_RL( viscAhZfld, Nr, myThid )
        ENDIF
-#endif
+#endif /* ALLOW_3D_VISCAH */
 #ifdef ALLOW_3D_VISCA4
        IF ( viscA4Dfile .NE. ' ' ) THEN
           CALL READ_FLD_XYZ_RL(viscA4Dfile,' ',viscA4Dfld,0,myThid)
@@ -159,7 +137,7 @@ C-    used for side-drag:
           CALL READ_FLD_XYZ_RL(viscA4Zfile,' ',viscA4Zfld,0,myThid)
           CALL EXCH_Z_3D_RL( viscA4Zfld, Nr, myThid )
        ENDIF
-#endif
+#endif /* ALLOW_3D_VISCA4 */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
