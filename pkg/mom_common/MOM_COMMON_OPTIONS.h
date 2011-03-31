@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/MOM_COMMON_OPTIONS.h,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/MOM_COMMON_OPTIONS.h,v 1.2 2011/03/31 20:33:58 jmc Exp $
 C $Name:  $
 
 C CPP options file for mom_common package
@@ -11,6 +11,12 @@ C Use this file for selecting CPP options within the mom_common package
 #ifdef ALLOW_MOM_COMMON
 
 #include "CPP_OPTIONS.h"
+
+C allow full 3D specification of horizontal Laplacian Viscosity
+#undef ALLOW_3D_VISCAH
+
+C allow full 3D specification of horizontal Biharmonic Viscosity
+#undef ALLOW_3D_VISCA4
 
 C CPP macros go here
 
