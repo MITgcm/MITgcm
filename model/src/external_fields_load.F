@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.34 2010/03/29 20:05:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.35 2011/04/14 21:13:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,175 +45,182 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-      INTEGER myThid
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
+      INTEGER myThid
 
 #ifndef EXCLUDE_FFIELDS_LOAD
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     aWght, bWght :: Interpolation weights
-      INTEGER bi,bj,i,j,intime0,intime1
-      _RL aWght,bWght,rdt
-      _RL tmp1Wght, tmp2Wght
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      INTEGER bi, bj, i, j
+      INTEGER intimeP, intime0, intime1
+      _RL aWght, bWght
 CEOP
 
       IF ( periodicExternalForcing ) THEN
 
-C First call requires that we initialize everything to zero for safety
-cph    has been shifted to ini_forcing.F
+C--   First call requires that we initialize everything to zero for safety
+cph   has been shifted to ini_forcing.F
 
-C Now calculate whether it is time to update the forcing arrays
-      rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
-      Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(externForcingPeriod*rdt)
-      Ifcyc = NINT(externForcingCycle*rdt)
-      Imytm = Imytm + Ifcyc*( 1 - NINT(myTime/externForcingCycle) )
-      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
+C--   Now calculate whether it is time to update the forcing arrays
+      CALL GET_PERIODIC_INTERVAL(
+     O                  intimeP, intime0, intime1, bWght, aWght,
+     I                  externForcingCycle, externForcingPeriod,
+     I                  deltaTclock, myTime, myThid )
 
-      intime0 = 1 + INT(Iftm/Ifprd)
-      intime1 = 1 + MOD(intime0,nForcingPeriods)
-C-jmc: with some option of g77, FLOAT results in real*4 evaluation
-C      of aWght; using DFLOAT always force real*8 computation:
-c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-C-ph: however, TAF doesnt recognize DFLOAT,
-C-jmc: so let me try this:
-      tmp1Wght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
-      tmp2Wght = FLOAT( Ifprd )
-      aWght =  tmp1Wght / tmp2Wght
-      bWght = 1. _d 0 - aWght
+      bi = myBxLo(myThid)
+      bj = myByLo(myThid)
+      _BEGIN_MASTER(myThid)
+      WRITE(standardMessageUnit,'(A,I10,4I5,2F16.12)')
+     & 'S/R EXTERNAL_FIELDS_LOAD:', myIter,
+     &  loadedRec(bi,bj), intimeP, intime0, intime1, bWght, aWght
+      _END_MASTER(myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+C-    assuming that we call S/R EXTERNAL_FIELDS_LOAD at each time-step and
+C     with increasing time, this will catch when we need to load new records;
+C     But with Adjoint run, this is not always the case => might end-up using
+C     the wrong time-records
+      IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
+#else /* ALLOW_AUTODIFF_TAMC */
+C-    Make no assumption on sequence of calls to EXTERNAL_FIELDS_LOAD ;
+C     This is the correct formulation (works in Adjoint run).
+C     Unfortunatly, produces many recomputations <== not used until it is fixed
+      IF ( intime0.NE.loadedRec(bi,bj) ) THEN
+#endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF (
-     &  Iftm-Ifprd*(intime0-1) .EQ. 0
-     &  .OR. myIter .EQ. nIter0
-     & ) THEN
+C--   If the above condition is met then we need to read in
+C     data for the period ahead and the period behind myTime.
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
+     &   'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
+     &    intime0, intime1, myIter, myTime
+        _END_MASTER(myThid)
 
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
-       _BEGIN_MASTER(myThid)
-       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
-     &  intime0, intime1, myIter, myTime
-       _END_MASTER(myThid)
-
-      IF ( zonalWindFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( zonalWindFile, taux0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( zonalWindFile, taux1,
-     &                      intime1, myIter, myThid )
-      ENDIF
-      IF ( meridWindFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( meridWindFile, tauy0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( meridWindFile, tauy1,
-     &                      intime1, myIter, myThid )
-      ENDIF
-      IF ( surfQFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQFile, Qnet0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( surfQFile, Qnet1,
-     &                      intime1, myIter, myThid )
-      ELSEIF ( surfQnetFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQnetFile, Qnet0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( surfQnetFile, Qnet1,
-     &                      intime1, myIter, myThid )
-      ENDIF
-      IF ( EmPmRfile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( EmPmRfile, EmPmR0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( EmPmRfile, EmPmR1,
-     &                      intime1, myIter, myThid )
-c      IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
-C-     EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            EmPmR0(i,j,bi,bj) = EmPmR0(i,j,bi,bj)*rhoConstFresh
-            EmPmR1(i,j,bi,bj) = EmPmR1(i,j,bi,bj)*rhoConstFresh
+        IF ( zonalWindFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( zonalWindFile, taux0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( zonalWindFile, taux1,
+     &                        intime1, myIter, myThid )
+        ENDIF
+        IF ( meridWindFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( meridWindFile, tauy0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( meridWindFile, tauy1,
+     &                        intime1, myIter, myThid )
+        ENDIF
+        IF ( surfQFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( surfQFile, Qnet0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( surfQFile, Qnet1,
+     &                        intime1, myIter, myThid )
+        ELSEIF ( surfQnetFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( surfQnetFile, Qnet0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( surfQnetFile, Qnet1,
+     &                        intime1, myIter, myThid )
+        ENDIF
+        IF ( EmPmRfile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( EmPmRfile, EmPmR0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( EmPmRfile, EmPmR1,
+     &                        intime1, myIter, myThid )
+c        IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
+C-    EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j=1-Oly,sNy+Oly
+             DO i=1-Olx,sNx+Olx
+              EmPmR0(i,j,bi,bj) = EmPmR0(i,j,bi,bj)*rhoConstFresh
+              EmPmR1(i,j,bi,bj) = EmPmR1(i,j,bi,bj)*rhoConstFresh
+             ENDDO
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ENDDO
-c      ENDIF
-      ENDIF
-      IF ( saltFluxFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( saltFluxFile, saltFlux0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( saltFluxFile, saltFlux1,
-     &                      intime1, myIter, myThid )
-      ENDIF
-      IF ( thetaClimFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( thetaClimFile, SST0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( thetaClimFile, SST1,
-     &                      intime1, myIter, myThid )
-      ENDIF
-      IF ( saltClimFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( saltClimFile, SSS0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( saltClimFile, SSS1,
-     &                      intime1, myIter, myThid )
-      ENDIF
+c        ENDIF
+        ENDIF
+        IF ( saltFluxFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( saltFluxFile, saltFlux0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( saltFluxFile, saltFlux1,
+     &                        intime1, myIter, myThid )
+        ENDIF
+        IF ( thetaClimFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( thetaClimFile, SST0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( thetaClimFile, SST1,
+     &                        intime1, myIter, myThid )
+        ENDIF
+        IF ( saltClimFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( saltClimFile, SSS0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( saltClimFile, SSS1,
+     &                        intime1, myIter, myThid )
+        ENDIF
 #ifdef SHORTWAVE_HEATING
-      IF ( surfQswFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQswFile, Qsw0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( surfQswFile, Qsw1,
-     &                      intime1, myIter, myThid )
-       IF ( surfQFile .NE. ' '  ) THEN
-C-     Qnet is now (after c54) the net Heat Flux (including SW)
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            Qnet0(i,j,bi,bj) = Qnet0(i,j,bi,bj) + Qsw0(i,j,bi,bj)
-            Qnet1(i,j,bi,bj) = Qnet1(i,j,bi,bj) + Qsw1(i,j,bi,bj)
+        IF ( surfQswFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( surfQswFile, Qsw0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( surfQswFile, Qsw1,
+     &                        intime1, myIter, myThid )
+         IF ( surfQFile .NE. ' '  ) THEN
+C-    Qnet is now (after c54) the net Heat Flux (including SW)
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j=1-Oly,sNy+Oly
+             DO i=1-Olx,sNx+Olx
+              Qnet0(i,j,bi,bj) = Qnet0(i,j,bi,bj) + Qsw0(i,j,bi,bj)
+              Qnet1(i,j,bi,bj) = Qnet1(i,j,bi,bj) + Qsw1(i,j,bi,bj)
+             ENDDO
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-      ENDIF
+         ENDIF
+        ENDIF
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      IF ( pLoadFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( pLoadFile, pLoad0,
-     &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( pLoadFile, pLoad1,
-     &                      intime1, myIter, myThid )
-      ENDIF
+        IF ( pLoadFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( pLoadFile, pLoad0,
+     &                        intime0, myIter, myThid )
+         CALL READ_REC_XY_RS( pLoadFile, pLoad1,
+     &                        intime1, myIter, myThid )
+        ENDIF
 #endif
 
 C-    thread synchronisation (barrier) is part of the EXCH S/R calls
-       _EXCH_XY_RS(SST0  , myThid )
-       _EXCH_XY_RS(SST1  , myThid )
-       _EXCH_XY_RS(SSS0  , myThid )
-       _EXCH_XY_RS(SSS1  , myThid )
-       CALL EXCH_UV_XY_RS(taux0,tauy0,.TRUE.,myThid)
-       CALL EXCH_UV_XY_RS(taux1,tauy1,.TRUE.,myThid)
-       _EXCH_XY_RS(Qnet0, myThid )
-       _EXCH_XY_RS(Qnet1, myThid )
-       _EXCH_XY_RS(EmPmR0, myThid )
-       _EXCH_XY_RS(EmPmR1, myThid )
-       _EXCH_XY_RS(saltFlux0, myThid )
-       _EXCH_XY_RS(saltFlux1, myThid )
+        _EXCH_XY_RS(SST0  , myThid )
+        _EXCH_XY_RS(SST1  , myThid )
+        _EXCH_XY_RS(SSS0  , myThid )
+        _EXCH_XY_RS(SSS1  , myThid )
+        CALL EXCH_UV_XY_RS(taux0,tauy0,.TRUE.,myThid)
+        CALL EXCH_UV_XY_RS(taux1,tauy1,.TRUE.,myThid)
+        _EXCH_XY_RS(Qnet0, myThid )
+        _EXCH_XY_RS(Qnet1, myThid )
+        _EXCH_XY_RS(EmPmR0, myThid )
+        _EXCH_XY_RS(EmPmR1, myThid )
+        _EXCH_XY_RS(saltFlux0, myThid )
+        _EXCH_XY_RS(saltFlux1, myThid )
 #ifdef SHORTWAVE_HEATING
-       _EXCH_XY_RS(Qsw0, myThid )
-       _EXCH_XY_RS(Qsw1, myThid )
+        _EXCH_XY_RS(Qsw0, myThid )
+        _EXCH_XY_RS(Qsw1, myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-       _EXCH_XY_RS(pLoad0, myThid )
-       _EXCH_XY_RS(pLoad1, myThid )
+        _EXCH_XY_RS(pLoad0, myThid )
+        _EXCH_XY_RS(pLoad1, myThid )
 #endif
 
+C-    save newly loaded time-record
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           loadedRec(bi,bj) = intime0
+         ENDDO
+        ENDDO
+
+C--   end if-block for loading new time-records
       ENDIF
 
 C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
