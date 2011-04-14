@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.35 2011/04/14 21:13:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.36 2011/04/14 21:17:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,11 +75,9 @@ C--   Now calculate whether it is time to update the forcing arrays
 
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
-      _BEGIN_MASTER(myThid)
-      WRITE(standardMessageUnit,'(A,I10,4I5,2F16.12)')
-     & 'S/R EXTERNAL_FIELDS_LOAD:', myIter,
-     &  loadedRec(bi,bj), intimeP, intime0, intime1, bWght, aWght
-      _END_MASTER(myThid)
+c     WRITE(standardMessageUnit,'(A,I10,4I5,2F16.12)')
+c    & 'S/R EXTERNAL_FIELDS_LOAD:', myIter,
+c    &  loadedRec(bi,bj), intimeP, intime0, intime1, bWght, aWght
 #ifdef ALLOW_AUTODIFF_TAMC
 C-    assuming that we call S/R EXTERNAL_FIELDS_LOAD at each time-step and
 C     with increasing time, this will catch when we need to load new records;
