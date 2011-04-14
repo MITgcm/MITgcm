@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.50 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.51 2011/04/14 21:11:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,13 +28,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_FORCING
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     i, j
+C     bi,bj  :: Tile indices
+C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  i, j
 CEOP
@@ -85,6 +85,9 @@ C-    Initialise all arrays in common blocks
 #endif /* EXCLUDE_FFIELDS_LOAD */
          ENDDO
         ENDDO
+#ifndef EXCLUDE_FFIELDS_LOAD
+        loadedRec(bi,bj) = 0
+#endif /* EXCLUDE_FFIELDS_LOAD */
        ENDDO
       ENDDO
 
