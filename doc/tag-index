@@ -1,8 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1406 2011/04/06 23:54:46 ifenty Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1407 2011/04/14 22:23:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o external_fields_load:
+  new S/R GET_PERIODIC_INTERVAL to calculate which time-record (and linear
+   interpolation weights) to use in a periodic time-series ; do not divide by
+   time-step to convert to integer:
+   - this fixes case where externForcingPeriod is not multiple of time-step
+      (Thanks to Christopher L. Wolfe)
+   - this fixes case where externForcingPeriod is an odd multiple of time-step
+     (was wrong by half of time-step); update results of tutorial_global_oce_in_p.
+  store index of time-record which is currently loaded:
+   - works without any assumption on sequence of calls to EXTERNAL_FIELDS_LOAD ;
+   - needed for the adjoint but not yet used because of extensive recomputations;
+     (to be fixed soon)
 
 checkpoint62v (2011/04/02)
 o verification/1D_ocean_ice_column added to test Ian Fenty's
