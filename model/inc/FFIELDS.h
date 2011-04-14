@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.39 2010/08/12 21:42:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.40 2011/04/14 21:04:00 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -123,6 +123,7 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
 #endif
 
 #ifndef EXCLUDE_FFIELDS_LOAD
+C     loadedRec     :: time-record currently loaded (in temp arrays [0])
 C     taux[0,1]     :: Temp. for zonal wind stress
 C     tauy[0,1]     :: Temp. for merid. wind stress
 C     Qnet[0,1]     :: Temp. for heat flux
@@ -133,7 +134,9 @@ C     SSS[0,1]      :: Temp. for theta climatalogy
 C     Qsw[0,1]      :: Temp. for short wave component of heat flux
 C     pLoad[0,1]    :: Temp. for atmospheric pressure at z=eta
 C     [0,1]         :: End points for interpolation
-C     Above use static heap storage to allow exchange.
+
+      COMMON /FFIELDS_I/ loadedRec
+      INTEGER loadedRec(nSx,nSy)
 
       COMMON /TDFIELDS/
      &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0,
