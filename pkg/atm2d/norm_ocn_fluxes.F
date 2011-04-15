@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.4 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.5 2011/04/15 20:37:48 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -16,6 +16,7 @@ C     *==========================================================*
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
+#include "FFIELDS.h"  
 
 C     === Global SeaIce Variables ===
 #include "THSICE_VARS.h"
@@ -55,6 +56,8 @@ C     LOCAL VARIABLES:
             flxCndBt(i,j,1,1)= sum_flxCnB(i,j)/nper ! from temp-solve step
             pass_PrcAtm(i,j)= sum_prcIce(i,j)/nper
             icFrwAtm(i,j,1,1)= sum_evapIce(i,j)/nper
+
+            pass_sIceLoad(i,j)=sIceLoad(i,j,1,1)  
 
 C  Load the following directly into the seaice common block
             snowPrc(i,j,1,1)= sum_snowPrc(i,j)/nper
