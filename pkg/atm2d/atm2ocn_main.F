@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2ocn_main.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2ocn_main.F,v 1.3 2011/04/15 18:30:01 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -54,7 +54,7 @@ C     LOCAL VARIABLES:
 
       CALL CALC_1DTO2D( myThid)
 
-      CALL FIXED_FLUX_ADD( wght0,wght1,
+      CALL FIXED_FLUX_ADD( inMonth, wght0,wght1,
      &              intime0,intime1,ifTime,myIter,myThid)
 
       CALL RELAX_ADD( wght0,wght1,

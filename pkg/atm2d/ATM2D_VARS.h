@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.13 2010/08/24 13:52:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.14 2011/04/15 18:30:01 jscott Exp $
 C $Name:  $
 
       INTEGER nForcingPer
@@ -25,7 +25,7 @@ C     Files: mean 2D atmos fields used for wind anomaly coupling
 C     Files: basic state 3D wind fields, and E,P, and qnet prescibed fluxes (if used)
       COMMON /OCEAN_2D_FILES/
      &        tauuFile, tauvFile, windFile,
-     &        qnetFile, evapFile, precipFile
+     &        qnetFile, evapFile, precipFile, new_mon
 
        CHARACTER*(MAX_LEN_FNAM) tauuFile
        CHARACTER*(MAX_LEN_FNAM) tauvFile
@@ -33,7 +33,7 @@ C     Files: basic state 3D wind fields, and E,P, and qnet prescibed fluxes (if 
        CHARACTER*(MAX_LEN_FNAM) qnetFile
        CHARACTER*(MAX_LEN_FNAM) evapFile
        CHARACTER*(MAX_LEN_FNAM) precipFile
-
+       LOGICAL new_mon         ! toggle for loading new calendar month data
 
       COMMON /OCEAN_RELAX_FILES/
      &        thetaRelaxFile, saltRelaxFile,

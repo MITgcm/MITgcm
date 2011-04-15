@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.16 2010/10/22 15:04:20 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.17 2011/04/15 18:30:01 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -143,6 +143,9 @@ C For land use
         DO j=1,jm0
           fluxco2mn(j)=0.0
         ENDDO
+#endif
+#ifdef OCEAN_3D
+        new_mon= .TRUE.
 #endif
       ENDIF  !end block at start of the month
 C
