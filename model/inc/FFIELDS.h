@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.40 2011/04/14 21:04:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.41 2011/04/15 20:15:56 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -123,7 +123,7 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
 #endif
 
 #ifndef EXCLUDE_FFIELDS_LOAD
-C     loadedRec     :: time-record currently loaded (in temp arrays [0])
+C     loadedRec     :: time-record currently loaded (in temp arrays *[1])
 C     taux[0,1]     :: Temp. for zonal wind stress
 C     tauy[0,1]     :: Temp. for merid. wind stress
 C     Qnet[0,1]     :: Temp. for heat flux
