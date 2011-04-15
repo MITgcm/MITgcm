@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.36 2011/04/14 21:17:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.37 2011/04/15 20:17:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,9 +75,16 @@ C--   Now calculate whether it is time to update the forcing arrays
 
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
-c     WRITE(standardMessageUnit,'(A,I10,4I5,2F16.12)')
-c    & 'S/R EXTERNAL_FIELDS_LOAD:', myIter,
-c    &  loadedRec(bi,bj), intimeP, intime0, intime1, bWght, aWght
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel.GE.debLevA ) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
+     &   ' EXTERNAL_FIELDS_LOAD,', myIter,
+     &   ' : iP,iLd,i0,i1=', intimeP,loadedRec(bi,bj), intime0,intime1,
+     &   ' ; Wght=', bWght, aWght
+        _END_MASTER(myThid)
+      ENDIF
+#endif /* ALLOW_DEBUG */
 #ifdef ALLOW_AUTODIFF_TAMC
 C-    assuming that we call S/R EXTERNAL_FIELDS_LOAD at each time-step and
 C     with increasing time, this will catch when we need to load new records;
@@ -88,15 +95,16 @@ C     the wrong time-records
 C-    Make no assumption on sequence of calls to EXTERNAL_FIELDS_LOAD ;
 C     This is the correct formulation (works in Adjoint run).
 C     Unfortunatly, produces many recomputations <== not used until it is fixed
-      IF ( intime0.NE.loadedRec(bi,bj) ) THEN
+      IF ( intime1.NE.loadedRec(bi,bj) ) THEN
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
         _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &   'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
-     &    intime0, intime1, myIter, myTime
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' EXTERNAL_FIELDS_LOAD, it=', myIter,
+     &   ' : Reading new data, i0,i1=', intime0, intime1,
+     &    ' (prev=', intimeP, loadedRec(bi,bj), ' )'
         _END_MASTER(myThid)
 
         IF ( zonalWindFile .NE. ' '  ) THEN
@@ -214,7 +222,7 @@ C-    thread synchronisation (barrier) is part of the EXCH S/R calls
 C-    save newly loaded time-record
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-           loadedRec(bi,bj) = intime0
+           loadedRec(bi,bj) = intime1
          ENDDO
         ENDDO
 
@@ -305,23 +313,21 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       ENDDO
 
 C-- Print for checking:
-c     IF ( debugLevel.GE.debLevA  .AND. myIter.LT.50+nIter0) THEN
-      IF ( debugLevel.GE.debLevA  .AND. myTime.LT.62208000.) THEN
+#ifdef ALLOW_DEBUG
+c     IF ( debugLevel.GE.debLevA  .AND. myTime.LT.62208000.) THEN
+      IF ( debugLevel.GT.debLevA ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(a,1p7e12.4,2i6,2e12.4)')
-     &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
-     &   myTime,
-     &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
-     &   fu(1,sNy,1,1),fv(1,sNy,1,1),
-     &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
-     &   intime0,intime1,aWght,bWght
-        WRITE(standardMessageUnit,'(a,1p4e12.4,2E23.15)')
-     &   'time,fu0,fu1,fu = ',
-     &   myTime,
-     &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
-     &   aWght,bWght
+        WRITE(standardMessageUnit,'(A,1P4E12.4)')
+     &   ' EXTERNAL_FIELDS_LOAD: (fu0,1),fu,fv=',
+     &        taux0(1,sNy,1,1), taux1(1,sNy,1,1),
+     &           fu(1,sNy,1,1),    fv(1,sNy,1,1)
+        WRITE(standardMessageUnit,'(A,1P4E12.4)')
+     &   ' EXTERNAL_FIELDS_LOAD: SST,SSS,Q,E-P=',
+     &          SST(1,sNy,1,1),   SSS(1,sNy,1,1),
+     &         Qnet(1,sNy,1,1), EmPmR(1,sNy,1,1)
         _END_MASTER( myThid )
       ENDIF
+#endif /* ALLOW_DEBUG */
 
 C endif for periodicForcing
       ENDIF
