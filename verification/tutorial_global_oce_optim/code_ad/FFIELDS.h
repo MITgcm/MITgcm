@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/FFIELDS.h,v 1.2 2010/08/24 15:15:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/FFIELDS.h,v 1.3 2011/04/15 13:41:12 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -33,6 +33,9 @@ C              EmPmR = Evaporation - precipitation - runoff
 C              > 0 for increase in salt (ocean salinity)
 C              Typical range: -1e-4 < EmPmR < 1e-4
 C              Southwest C-grid tracer point
+C           NOTE: for backward compatibility EmPmRfile is specified in
+C                 m/s when using external_fields_load.F.  It is converted
+C                 to kg/m2/s by multiplying by rhoConstFresh.
 C
 C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
 C              flux of Salt taken out of the ocean per time unit (second).
@@ -74,8 +77,8 @@ C                Units are           meters (converted)
 C  sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
 C              Note: only used with Sea-Ice & RealFreshWater formulation
-C     EddyTaux -Zonal Eddy stress       in N/m^2 used in external_forcing.F
-C     Eddytauy -Meridional Eddy stress  in N/m^2 used in external_forcing.F
+C     eddyPsiX -Zonal Eddy Streamfunction in m^2/s used in taueddy_external_forcing.F
+C     eddyPsiY -Meridional Streamfunction in m^2/s used in taueddy_external_forcing.F
 C     EfluxY - y-component of Eliassen-Palm flux vector
 C     EfluxP - p-component of Eliassen-Palm flux vector
 
@@ -118,13 +121,14 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-#ifdef ALLOW_TAU_EDDY
-      COMMON /edtauFFIELDS/ EddyTaux,EddyTauy
-      _RS  EddyTaux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS  EddyTauy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifdef ALLOW_EDDYPSI
+      COMMON /eddypsiFFIELDS/ eddyPsiX,eddyPsiY
+      _RS  eddyPsiX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  eddyPsiY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 #ifndef EXCLUDE_FFIELDS_LOAD
+C     loadedRec     :: time-record currently loaded (in temp arrays [0])
 C     taux[0,1]     :: Temp. for zonal wind stress
 C     tauy[0,1]     :: Temp. for merid. wind stress
 C     Qnet[0,1]     :: Temp. for heat flux
@@ -135,7 +139,9 @@ C     SSS[0,1]      :: Temp. for theta climatalogy
 C     Qsw[0,1]      :: Temp. for short wave component of heat flux
 C     pLoad[0,1]    :: Temp. for atmospheric pressure at z=eta
 C     [0,1]         :: End points for interpolation
-C     Above use static heap storage to allow exchange.
+
+      COMMON /FFIELDS_I/ loadedRec
+      INTEGER loadedRec(nSx,nSy)
 
       COMMON /TDFIELDS/
      &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0,
