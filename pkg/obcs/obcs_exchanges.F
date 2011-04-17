@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_prescribe_exchanges.F,v 1.2 2010/11/17 06:07:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exchanges.F,v 1.1 2011/04/17 03:15:24 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_PRESCRIBE_EXCHANGES( myThid )
+      SUBROUTINE OBCS_EXCHANGES( myThid )
 C     *==========================================================*
-C     | S/R OBCS_PRESCRIBE_EXCHANGES
+C     | S/R OBCS_EXCHANGES
 C     *==========================================================*
 C     | Exchanges are needed in case obcs are read from file.
 C     | EXch of xz, yz fields are avoided, so we exchange full

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.154 2011/02/26 00:42:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.155 2011/04/17 03:16:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -664,7 +664,7 @@ C-    end of bi,bj loops
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
-       CALL OBCS_PRESCRIBE_EXCHANGES(myThid)
+        CALL OBCS_EXCHANGES( myThid )
       ENDIF
 #endif
 
