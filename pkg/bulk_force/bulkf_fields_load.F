@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.15 2009/04/28 18:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.16 2011/04/17 20:57:18 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -7,31 +7,34 @@ C $Name:  $
 C     !ROUTINE: BULKF_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE BULKF_FIELDS_LOAD( myTime, myIter, myThid )
+
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE BULKF_FIELDS_LOAD
-C     | o Control reading of fields from external source.         
+C     | o Control reading of fields from external source.
 C     *==========================================================*
 C     | Bulk formula External source field loading routine.
-C     | This routine is called every time we want to              
-C     | load a a set of external fields. The routine decides      
-C     | which fields to load and then reads them in.              
-C     | This routine needs to be customised for particular        
-C     | experiments.                                              
-C     | Notes                                                     
-C     | =====                                                     
-C     | Two-dimensional and three-dimensional I/O are handled in  
-C     | the following way under MITgcmUV. A master thread         
-C     | performs I/O using system calls. This threads reads data  
-C     | into a temporary buffer. At present the buffer is loaded  
-C     | with the entire model domain. This is probably OK for now 
-C     | Each thread then copies data from the buffer to the       
-C     | region of the proper array it is responsible for.         
-C     | =====                                                     
-C     | Conversion of flux fields are described in FFIELDS.h      
+C     | This routine is called every time we want to
+C     | load a a set of external fields. The routine decides
+C     | which fields to load and then reads them in.
+C     | This routine needs to be customised for particular
+C     | experiments.
+C     | Notes
+C     | =====
+C     | Two-dimensional and three-dimensional I/O are handled in
+C     | the following way under MITgcmUV. A master thread
+C     | performs I/O using system calls. This threads reads data
+C     | into a temporary buffer. At present the buffer is loaded
+C     | with the entire model domain. This is probably OK for now
+C     | Each thread then copies data from the buffer to the
+C     | region of the proper array it is responsible for.
+C     | =====
+C     | Conversion of flux fields are described in FFIELDS.h
 C     *==========================================================*
 
 C     !USES:
       IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -54,7 +57,8 @@ C     myThid :: Thread no. that called this routine.
 #ifdef ALLOW_BULK_FORCE
 
 C     !LOCAL VARIABLES:
-C     === Local arrays ===
+C     === Local arrays in common block ===
+C     bulkfRec   :: time-record currently loaded (in temp arrays *[1])
 C     tair[01]   :: Temp. for air temperature
 C     qair[01]   :: Temp. for air specific humidity
 C     solar[01]  :: Temp. for incoming solar radition
@@ -70,9 +74,9 @@ C     thAir[01]  :: Temp for Air potential temp. in the BL [K]
 c     qnetch[01] :: Temp for qnet (cheating)
 C     empch[01]  :: Temp for empmr (cheating)
 C     [01]       :: End points for interpolation
-C     Above use static heap storage to allow exchange.
-C     aWght, bWght :: Interpolation weights
-      COMMON /BULKF_FIELDS_LOCAL/
+
+      COMMON /BULKF_FIELDS_LOAD_I/ bulkfRec
+      COMMON /BULKF_FIELDS_LOAD_RS/
      &                 tair0, tair1, qair0, qair1,
      &                 solar0, solar1, flwdwn0, flwdwn1,
      &                 cloud0, cloud1, wspeed0, wspeed1,
@@ -84,6 +88,7 @@ C     aWght, bWght :: Interpolation weights
 #endif
      &                 qnetch0, qnetch1, empch0, empch1
 
+      INTEGER bulkfRec(nSx,nSy)
       _RS  tair0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  tair1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  qair0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -115,12 +120,12 @@ C     aWght, bWght :: Interpolation weights
       _RS  empch0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  empch1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-
-      INTEGER bi,bj,i,j,intime0,intime1
-      _RL  aWght,bWght,rdt
-      _RL  tmp1Wght, tmp2Wght
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
-
+C     === Local variables ===
+C     aWght, bWght :: Interpolation weights
+      _RL  aWght,bWght
+      INTEGER intimeP, intime0, intime1
+      INTEGER bi, bj, i, j
+CEOP
 
       IF ( periodicExternalForcing ) THEN
 
@@ -128,6 +133,7 @@ C First call requires that we initialize everything to zero for safety
       IF ( myIter .EQ. nIter0 ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+           bulkfRec(bi,bj) = 0
            DO j = 1-Oly,sNy+Oly
             DO i = 1-Olx,sNx+Olx
               tair0(i,j,bi,bj)   = 0. _d 0
@@ -166,36 +172,39 @@ C First call requires that we initialize everything to zero for safety
         ENDDO
       ENDIF
 
-C Now calculate whether it is time to update the forcing arrays
-      rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
-      Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(externForcingPeriod*rdt)
-      Ifcyc = NINT(externForcingCycle*rdt)
-      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
+C--   Now calculate whether it is time to update the forcing arrays
+      CALL GET_PERIODIC_INTERVAL(
+     O                  intimeP, intime0, intime1, bWght, aWght,
+     I                  externForcingCycle, externForcingPeriod,
+     I                  deltaTclock, myTime, myThid )
 
-      intime0= 1 + INT(Iftm/Ifprd)
-      intime1= 1 + MOD(intime0,nForcingPeriods)
-c     aWght=DFLOAT( Iftm-Ifprd*(intime0-1) )/DFLOAT( Ifprd )
-      tmp1Wght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
-      tmp2Wght = FLOAT( Ifprd )
-      aWght =  tmp1Wght / tmp2Wght
-      bWght = 1. _d 0 - aWght
+      bi = myBxLo(myThid)
+      bj = myByLo(myThid)
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel.GE.debLevA ) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
+     &   ' BULKF_FIELDS_LOAD,', myIter,
+     &   ' : iP,iLd,i0,i1=', intimeP,bulkfRec(bi,bj), intime0,intime1,
+     &   ' ; Wght=', bWght, aWght
+        _END_MASTER(myThid)
+      ENDIF
+#endif /* ALLOW_DEBUG */
 
-      IF (
-     &  Iftm-Ifprd*(intime0-1) .EQ. 0
-     &  .OR. myIter .EQ. nIter0
-     & ) THEN
+C-    Make no assumption on sequence of calls to BULKF_FIELDS_LOAD ;
+C     This is the correct formulation (works in Adjoint run).
+      IF ( intime1.NE.bulkfRec(bi,bj) ) THEN
 
        _BARRIER
 
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
-       _BEGIN_MASTER(myThid)
-       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &  'S/R BULKF_FIELDS_LOAD: Reading new data:',
-     &  intime0, intime1, myIter, myTime
-       _END_MASTER(myThid)
+C--   If the above condition is met then we need to read in
+C     data for the period ahead and the period behind myTime.
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' BULKF_FIELDS_LOAD, it=', myIter,
+     &   ' : Reading new data, i0,i1=', intime0, intime1,
+     &    ' (prev=', intimeP, bulkfRec(bi,bj), ' )'
+        _END_MASTER(myThid)
 
       IF ( AirTempFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( AirTempFile,tair0,intime0,
@@ -340,6 +349,14 @@ c      _EXCH_XY_RS(vwind1, myThid )
        _EXCH_XY_RS(empch0, myThid )
        _EXCH_XY_RS(empch1, myThid )
 
+C-    save newly loaded time-record
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           bulkfRec(bi,bj) = intime1
+         ENDDO
+        ENDDO
+
+C--   end if-block for loading new time-records
       ENDIF
 
 C--   Interpolate TAIR, QAIR, RAIN, SOLAR
