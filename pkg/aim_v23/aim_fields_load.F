@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.8 2009/09/24 20:08:06 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.9 2011/04/17 20:50:29 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -19,8 +19,8 @@ C     |   Albedo, Soil moisture, Surface Temperature
 C     | b) time interpolation (useFMsurfBC):
 C     |   Sea & Land surf. Temp, snow, sea-ice, soil-water (2-lev)
 C     | + (1rst.iter) ground albedo, vegetation, land-sea fraction
-C     | Most of the work is done by the master the thread while
-C     | the other threads spin.
+C     | Most of the work is done by the master thread while
+C     | the other threads spin (but all inside MDSIO S/R).
 C     *==========================================================*
       IMPLICIT NONE
 
@@ -58,8 +58,6 @@ C     loadNewData :: true when need to load new data from file
       INTEGER mnthIndex
       INTEGER prevMnthIndex
       COMMON / LOCAL_AIM_FIELDS_LOAD / prevMnthIndex
-c     DATA    prevMnthIndex / 0 /
-c     SAVE    prevMnthIndex
 c     _RL pfact
       LOGICAL loadNewData
 C--   for use with useMMsurfFc:
@@ -108,6 +106,9 @@ C-      switch to a new time record
         ENDIF
       ENDIF
 
+C  note: reading/writing 2-D/3-D field with MDS-IO S/R is thread safe;
+C        => no need for BARRIER call before/after loading fileds
+
       IF (aim_useMMsurfFc) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Use Monthly Mean surface forcing fields:
@@ -115,19 +116,12 @@ C-- Use Monthly Mean surface forcing fields:
        IF ( loadNewData ) THEN
 C-    New month so load in data
 
-C     Prevent loading of new data before everyone has finished with it
-c        CALL BAR2(myThid)
-C  note: already call BARRIER inside MDS-IO S/R when reading/writing 2-D/3-D field
-
-C-      only one thread updates parameter in common block
+C-    Only one thread updates parameter in common block
+C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
+         _BARRIER
          _BEGIN_MASTER( myThid )
          prevMnthIndex = mnthIndex
          _END_MASTER( myThid   )
-
-C     Master thread coordinates loading of AIM datasets
-C  note: with some I/O option (e.g.: SingleCpuIO) READ S/R contains
-C        multi-threaded tasks => let all threads call the READ S/R ;
-C        ( MASTER directives are inside S/R READ to do master-thread I/O)
 
 C        o Albedo ( convert % to fraction )
          WRITE(fNam,'(A,A,A)' ) 'salb.',
@@ -148,9 +142,6 @@ C        o Soil moisture
          WRITE(fNam,'(A,A,A)' ) 'smoist.',
      &         mnthNam(mnthIndex), aim_MMsufx(1:aim_MMsufxLength)
          CALL READ_REC_XY_RS( fNam, aim_sw10, 1, myIter, myThid )
-
-C     Stop anyone leaving until all data is read
-c        CALL BAR2(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -234,23 +225,17 @@ c           aim_landFr(i,j,bi,bj)= 0.
         ENDDO
        ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
        IF ( loadNewData ) THEN
 C-     Load new data:
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Prevent loading of new data before everyone has finished with it
-c       CALL BAR2(myThid)
-C  note: already call BARRIER inside MDS-IO S/R when reading/writing 2-D/3-D field
-
-C-      only one thread updates parameter in common block
+C-    Only one thread updates parameter in common block
+C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
+        _BARRIER
         _BEGIN_MASTER( myThid )
         prevMnthIndex = mnthIndex
         _END_MASTER( myThid )
-
-C     Master thread coordinates loading of AIM datasets
-C     note: with some I/O option (e.g.: SingleCpuIO) READ S/R contains
-C        multi-threaded tasks => let all threads call the READ S/R ;
-C        ( MASTER directives are inside S/R READ to do master-thread I/O)
 
         IF ( myIter.EQ.nIter0 ) THEN
 C-      Load Fixed Forcing only at the 1rst iter:
@@ -297,9 +282,6 @@ C-      endif 1rst iter.
           CALL READ_REC_XY_RS(aim_qfxFile,aim_qfx0,nm0,myIter,myThid)
           CALL READ_REC_XY_RS(aim_qfxFile,aim_qfx1,nm1,myIter,myThid)
         ENDIF
-
-C     Stop anyone leaving until all data is read
-c       CALL BAR2(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
