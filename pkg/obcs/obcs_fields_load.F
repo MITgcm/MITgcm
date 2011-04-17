@@ -1,22 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.18 2010/12/09 03:47:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.1 2011/04/17 03:18:13 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
 C--  File obcs_external_fields_load.F: Routines to read of OBC fields from files
 C--   Contents
-C--   o OBCS_EXTERNAL_FIELDS_LOAD
-C--   o OBCS_EXTERNAL_FIELDS_INTERP_XZ
-C--   o OBCS_EXTERNAL_FIELDS_INTERP_YZ
+C--   o OBCS_FIELDS_LOAD
+C--   o OBCS_TIME_INTERP_XZ
+C--   o OBCS_TIME_INTERP_YZ
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: OBCS_EXTERNAL_FIELDS_LOAD
+C     !ROUTINE: OBCS_FIELDS_LOAD
 C     !INTERFACE:
-      SUBROUTINE OBCS_EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
+      SUBROUTINE OBCS_FIELDS_LOAD( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE OBCS_EXTERNAL_FIELDS_LOAD
+C     | SUBROUTINE OBCS_FIELDS_LOAD
 C     | o Control reading of fields from external source.
 C     *==========================================================*
 C     | External source field loading routine for open boundaries.
@@ -67,7 +67,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
-C     myThid :: Thread no. that called this routine.
+C     myThid :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -119,7 +119,7 @@ c     aWght = DFLOAT( Iftm-Ifprd*(iRec0 - 1) ) / DFLOAT( Ifprd )
      & ) THEN
 
 #ifndef ALLOW_MDSIO
-       STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
+       STOP 'ABNORMAL END: OBCS_FIELDS_LOAD: NEEDS MSDIO PKG'
 #endif /* ALLOW_MDSIO */
 
        _BARRIER
@@ -127,7 +127,7 @@ c     aWght = DFLOAT( Iftm-Ifprd*(iRec0 - 1) ) / DFLOAT( Ifprd )
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
        WRITE(msgBuf,'(1X,A,2I5,I10,1P1E20.12)')
-     &  'OBCS_EXTERNAL_FIELDS_LOAD: Reading new data:',
+     &  'OBCS_FIELDS_LOAD: Reading new data:',
      &  iRec0, iRec1, myIter, myTime
        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid)
@@ -320,12 +320,12 @@ C     if not periodicForcing
 C     read boundary values once and for all
        IF ( myIter .EQ. nIter0 ) THEN
 #ifndef ALLOW_MDSIO
-         STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
+         STOP 'ABNORMAL END: OBCS_FIELDS_LOAD: NEEDS MSDIO PKG'
 #endif /* ALLOW_MDSIO */
         _BARRIER
 C      Read constant boundary conditions only for myIter = nIter0
         WRITE(msgBuf,'(1X,A,I10,1P1E20.12)')
-     &       'OBCS_EXTERNAL_FIELDS_LOAD: Reading initial data:',
+     &       'OBCS_FIELDS_LOAD: Reading initial data:',
      &       myIter, myTime
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &       SQUEEZE_RIGHT,myThid)
@@ -483,16 +483,16 @@ C--   For periodicForcing, aWght = 0. and bWght = 1. so that the
 C--   interpolation boilds down to copying the time-independent
 C--   forcing field OBSu0 to OBSu
 #ifdef ALLOW_OBCS_EAST
-       IF ( OBEuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBEuFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBEu, OBEu0, OBEu1, aWght, bWght, myThid )
-       IF ( OBEvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBEvFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBEv, OBEv0, OBEv1, aWght, bWght, myThid )
-       IF ( OBEtFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBEtFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBEt, OBEt0, OBEt1, aWght, bWght, myThid )
-       IF ( OBEsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBEsFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBEs, OBEs0, OBEs1, aWght, bWght, myThid )
 # ifdef ALLOW_NONHYDROSTATIC
-       IF ( OBEwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBEwFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBEw, OBEw0, OBEw1, aWght, bWght, myThid )
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
@@ -509,16 +509,16 @@ C--   forcing field OBSu0 to OBSu
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
-       IF ( OBWuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBWuFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBWu, OBWu0, OBWu1, aWght, bWght, myThid )
-       IF ( OBWvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBWvFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBWv, OBWv0, OBWv1, aWght, bWght, myThid )
-       IF ( OBWtFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBWtFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBWt, OBWt0, OBWt1, aWght, bWght, myThid )
-       IF ( OBWsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBWsFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBWs, OBWs0, OBWs1, aWght, bWght, myThid )
 # ifdef ALLOW_NONHYDROSTATIC
-       IF ( OBWwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+       IF ( OBWwFile .NE. ' '  ) CALL OBCS_TIME_INTERP_YZ(
      &      OBWw, OBWw0, OBWw1, aWght, bWght, myThid )
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
@@ -535,16 +535,16 @@ C--   forcing field OBSu0 to OBSu
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_NORTH
-       IF ( OBNuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBNuFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBNu, OBNu0, OBNu1, aWght, bWght, myThid )
-       IF ( OBNvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBNvFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBNv, OBNv0, OBNv1, aWght, bWght, myThid )
-       IF ( OBNtFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBNtFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBNt, OBNt0, OBNt1, aWght, bWght, myThid )
-       IF ( OBNsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBNsFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBNs, OBNs0, OBNs1, aWght, bWght, myThid )
 # ifdef ALLOW_NONHYDROSTATIC
-       IF ( OBNwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBNwFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBNw, OBNw0, OBNw1, aWght, bWght, myThid )
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
@@ -561,16 +561,16 @@ C--   forcing field OBSu0 to OBSu
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
-       IF ( OBSuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBSuFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBSu, OBSu0, OBSu1, aWght, bWght, myThid )
-       IF ( OBSvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBSvFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBSv, OBSv0, OBSv1, aWght, bWght, myThid )
-       IF ( OBStFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBStFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBSt, OBSt0, OBSt1, aWght, bWght, myThid )
-       IF ( OBSsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBSsFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBSs, OBSs0, OBSs1, aWght, bWght, myThid )
 # ifdef ALLOW_NONHYDROSTATIC
-       IF ( OBSwFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+       IF ( OBSwFile .NE. ' '  ) CALL OBCS_TIME_INTERP_XZ(
      &      OBSw, OBSw0, OBSw1, aWght, bWght, myThid )
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
@@ -592,28 +592,28 @@ C     "interpolate" passive tracer boundary values
        DO iTr = 1, PTRACERS_numInUse
 # ifdef ALLOW_OBCS_EAST
         IF ( OBEptrFile(iTr) .NE. ' '  )
-     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+     &       CALL OBCS_TIME_INTERP_YZ(
      O       OBEptr (1-Oly,1,1,1,iTr),
      I       OBEptr0(1-Oly,1,1,1,iTr),
      I       OBEptr1(1-Oly,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
         IF ( OBWptrFile(iTr) .NE. ' '  )
-     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+     &       CALL OBCS_TIME_INTERP_YZ(
      O       OBWptr (1-Oly,1,1,1,iTr),
      I       OBWptr0(1-Oly,1,1,1,iTr),
      I       OBWptr1(1-Oly,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
         IF ( OBNptrFile(iTr) .NE. ' '  )
-     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+     &       CALL OBCS_TIME_INTERP_XZ(
      O       OBNptr (1-Olx,1,1,1,iTr),
      I       OBNptr0(1-Olx,1,1,1,iTr),
      I       OBNptr1(1-Olx,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
         IF ( OBSptrFile(iTr) .NE. ' '  )
-     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+     &       CALL OBCS_TIME_INTERP_XZ(
      O       OBSptr (1-Olx,1,1,1,iTr),
      I       OBSptr0(1-Olx,1,1,1,iTr),
      I       OBSptr1(1-Olx,1,1,1,iTr), aWght, bWght, myThid )
@@ -629,14 +629,14 @@ C     end if (usePTRACERS)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: OBCS_EXTERNAL_FIELDS_INTERP_XZ
+C     !ROUTINE: OBCS_TIME_INTERP_XZ
 C     !INTERFACE:
-      SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+      SUBROUTINE OBCS_TIME_INTERP_XZ(
      O     fld,
      I     fld0, fld1, aWght, bWght, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_XZ
+C     | SUBROUTINE OBCS_TIME_INTERP_XZ
 C     | o Interpolate between to records
 C     *==========================================================*
 C     \ev
@@ -650,13 +650,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
 C     aWght, bWght :: Interpolation weights
-      INTEGER myThid
-      _RL aWght,bWght
+C     myThid       :: my Thread Id. number
       _RL fld (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL fld0(1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL fld1(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL aWght,bWght
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -665,7 +665,7 @@ C     bi,bj,i,j :: loop counters
 CEOP
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K = 1, Nr
+         DO k = 1, Nr
           DO i=1-Olx,sNx+Olx
            fld(i,k,bi,bj)   = bWght*fld0(i,k,bi,bj)
      &                       +aWght*fld1(i,k,bi,bj)
@@ -679,14 +679,14 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: OBCS_EXTERNAL_FIELDS_INTERP_YZ
+C     !ROUTINE: OBCS_TIME_INTERP_YZ
 C     !INTERFACE:
-      SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+      SUBROUTINE OBCS_TIME_INTERP_YZ(
      O     fld,
      I     fld0, fld1, aWght, bWght, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_YZ
+C     | SUBROUTINE OBCS_TIME_INTERP_YZ
 C     | o Interpolate between to records
 C     *==========================================================*
 C     \ev
@@ -700,13 +700,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
 C     aWght, bWght :: Interpolation weights
-      INTEGER myThid
-      _RL aWght,bWght
+C     myThid       :: my Thread Id. number
       _RL fld (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL fld0(1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL fld1(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL aWght,bWght
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -715,7 +715,7 @@ C     bi,bj,i,j :: loop counters
 CEOP
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K = 1, Nr
+         DO k = 1, Nr
           DO j=1-Oly,sNy+Oly
            fld(j,k,bi,bj)   = bWght*fld0(j,k,bi,bj)
      &                       +aWght*fld1(j,k,bi,bj)
