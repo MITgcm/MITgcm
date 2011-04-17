@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.28 2011/03/14 17:31:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.29 2011/04/17 21:12:24 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -142,6 +142,12 @@ C     OBNsn is the ice HSNOW value imposed at the Northern OB
 C     OBNuice is the uice value imposed at the Northern OB
 C     OBNvice is the vice value imposed at the Northern OB
 C     etc
+
+#ifdef ALLOW_OBCS_PRESCRIBE
+C     OBCS_ldRec     :: time-record currently loaded (in temp arrays *[1])
+      COMMON /OBCS_LOAD_I/ OBCS_ldRec
+      INTEGER OBCS_ldRec(nSx,nSy)
+#endif /* ALLOW_OBCS_PRESCRIBE */
 
 #ifdef ALLOW_OBCS_NORTH
       COMMON /GRID_N_OB/

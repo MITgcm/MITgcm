@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.1 2011/04/17 03:18:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.2 2011/04/17 21:12:24 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -14,6 +14,7 @@ CBOP
 C     !ROUTINE: OBCS_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE OBCS_FIELDS_LOAD( myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_FIELDS_LOAD
@@ -60,7 +61,6 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "OBCS_PTRACERS.h"
 #include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
 #endif /* ALLOW_PTRACERS */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -81,12 +81,12 @@ C     === Local arrays ===
 C     aWght, bWght :: Interpolation weights
 C     msgBuf       :: Informational/error message buffer
       INTEGER fp
-      INTEGER iRec0, iRec1
-      _RL aWght,bWght,rdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      INTEGER iRecP, iRec0, iRec1
+      _RL aWght, bWght
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER bi, bj
 #ifdef NONLIN_FRSURF
-      INTEGER i,j,bi,bj
+      INTEGER i, j
 #endif /* NONLIN_FRSURF */
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -97,40 +97,52 @@ CEOP
 
       IF ( periodicExternalForcing ) THEN
 
-C Now calculate whether it is time to update the forcing arrays
-      rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
-      Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(externForcingPeriod*rdt)
-      Ifcyc = NINT(externForcingCycle*rdt)
-      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
+C--   Now calculate whether it is time to update the forcing arrays
+      CALL GET_PERIODIC_INTERVAL(
+     O                  iRecP, iRec0, iRec1, bWght, aWght,
+     I                  externForcingCycle, externForcingPeriod,
+     I                  deltaTclock, myTime, myThid )
 
-      iRec0 = 1 + INT(Iftm/Ifprd)
-      iRec1 = 1 + MOD(iRec0,nForcingPeriods)
-c     aWght = DFLOAT( Iftm-Ifprd*(iRec0 - 1) ) / DFLOAT( Ifprd )
-      aWght = FLOAT( Iftm-Ifprd*(iRec0 - 1) )
-      bWght = FLOAT( Ifprd )
-      aWght =  aWght / bWght
-      bWght = 1. _d 0 - aWght
+      bi = myBxLo(myThid)
+      bj = myByLo(myThid)
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel.GE.debLevA ) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
+     &   ' OBCS_FIELDS_LOAD,', myIter,
+     &   ' : iP,iLd,i0,i1=', iRecP,OBCS_ldRec(bi,bj), iRec0,iRec1,
+     &   ' ; Wght=', bWght, aWght
+        _END_MASTER(myThid)
+      ENDIF
+#endif /* ALLOW_DEBUG */
 
-      IF (
-     &  Iftm-Ifprd*(iRec0-1) .EQ. 0
-     &  .OR. myIter .EQ. nIter0
-     & ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C-    assuming that we call S/R OBCS_FIELDS_LOAD at each time-step and
+C     with increasing time, this will catch when we need to load new records;
+C     But with Adjoint run, this is not always the case => might end-up using
+C     the wrong time-records
+      IF ( iRec0.NE.iRecP .OR. myIter.EQ.nIter0 ) THEN
+#else /* ALLOW_AUTODIFF_TAMC */
+C-    Make no assumption on sequence of calls to OBCS_FIELDS_LOAD ;
+C     This is the correct formulation (works in Adjoint run).
+C     Unfortunatly, produces many recomputations <== not used until it is fixed
+      IF ( iRec1.NE.OBCS_ldRec(bi,bj) ) THEN
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   If the above condition is met then we need to read in
+C     data for the period ahead and the period behind myTime.
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' OBCS_FIELDS_LOAD, it=', myIter,
+     &   ' : Reading new data, i0,i1=', iRec0, iRec1,
+     &    ' (prev=', iRecP, OBCS_ldRec(bi,bj), ' )'
+        _END_MASTER(myThid)
 
 #ifndef ALLOW_MDSIO
        STOP 'ABNORMAL END: OBCS_FIELDS_LOAD: NEEDS MSDIO PKG'
 #endif /* ALLOW_MDSIO */
 
        _BARRIER
-
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
-       WRITE(msgBuf,'(1X,A,2I5,I10,1P1E20.12)')
-     &  'OBCS_FIELDS_LOAD: Reading new data:',
-     &  iRec0, iRec1, myIter, myTime
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &                   SQUEEZE_RIGHT,myThid)
 
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
@@ -302,13 +314,19 @@ C     end if (usePTRACERS)
       ENDIF
 #endif /* ALLOW_PTRACERS */
 
-C
 C     At this point in external_fields_load the input fields are exchanged.
 C     However, we do not have exchange routines for vertical
 C     slices and they are not planned, either, so the approriate fields
 C     are exchanged after the open boundary conditions have been
 C     applied. (in DYNAMICS and DO_FIELDS_BLOCKING_EXCHANGES)
        _BARRIER
+
+C-    save newly loaded time-record
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           OBCS_ldRec(bi,bj) = iRec1
+         ENDDO
+        ENDDO
 
 C     end if time to read new data
       ENDIF
@@ -634,6 +652,7 @@ C     !INTERFACE:
       SUBROUTINE OBCS_TIME_INTERP_XZ(
      O     fld,
      I     fld0, fld1, aWght, bWght, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_TIME_INTERP_XZ
@@ -684,6 +703,7 @@ C     !INTERFACE:
       SUBROUTINE OBCS_TIME_INTERP_YZ(
      O     fld,
      I     fld0, fld1, aWght, bWght, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_TIME_INTERP_YZ

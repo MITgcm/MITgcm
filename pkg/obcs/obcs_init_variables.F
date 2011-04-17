@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.36 2010/11/08 17:35:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.37 2011/04/17 21:12:24 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -53,6 +53,9 @@ C     == Local variables ==
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
+#ifdef ALLOW_OBCS_PRESCRIBE
+        OBCS_ldRec(bi,bj) = 0
+#endif
         DO K=1,Nr
          DO I=1-Olx,sNx+Olx
 #ifdef ALLOW_OBCS_NORTH
