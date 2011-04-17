@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/CFC.h,v 1.4 2008/04/09 16:07:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/CFC.h,v 1.5 2011/04/17 21:01:36 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | CFC.h                                                |
-C     |==========================================================|
+C     *==========================================================*
+C     | CFC.h
+C     *==========================================================*
 
        COMMON /CFC_NEEDS/
      &              AtmosCFC11, AtmosCFC12, AtmosP,
@@ -40,8 +40,14 @@ c atmospheric CFC timseries
       _RL ACFC12(100,2)
       INTEGER cfc_yearbeg, cfc_yearend
 
+C--   COMMON /CFC_LOAD/
+C     CFC_ldRec     :: time-record currently loaded (in temp arrays *[1])
+
+      COMMON /CFC_LOAD_I/ CFC_ldRec
       COMMON /CFC_LOAD/
      &    wind0, wind1, ice0, ice1, atmosp0, atmosp1
+
+      INTEGER CFC_ldRec(nSx,nSy)
       _RS wind0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS wind1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS ice0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -66,3 +72,4 @@ C  CFC_forcingCycle  :: periodic forcing parameter specific for cfc (seconds)
       _RL     CFC_forcingPeriod
       _RL     CFC_forcingCycle
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
