@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.29 2010/04/12 20:07:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.30 2011/04/17 21:08:40 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -36,9 +36,8 @@ C  myThid               :: thread number
 
 C !LOCAL VARIABLES: ====================================================
        INTEGER i,j, kLev, it
-       INTEGER intime0,intime1
-       _RL aWght,bWght,rdt
-       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+       INTEGER intimeP, intime0, intime1
+       _RL aWght, bWght
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
 C local variables for carbon chem
@@ -64,30 +63,20 @@ c read in silica field
          CALL LEF_ZERO( silica0,myThid )
          CALL LEF_ZERO( silica1,myThid )
 
-       rdt = 1. _d 0 / deltaTclock
-       nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
-cswd QQ change for placement of chem forcing (ie. after timestep)
-       Imytm = NINT(startTime*rdt)
-       Ifprd = NINT(externForcingPeriod*rdt)
-       Ifcyc = NINT(externForcingCycle*rdt)
-       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
-
-       intime0 = 1 + INT(Iftm/Ifprd)
-       intime1 = 1 + MOD(intime0,nForcingPeriods)
-c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-       aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
-       bWght = FLOAT( Ifprd )
-       aWght =  aWght / bWght
-       bWght = 1. _d 0 - aWght
+C--   Now calculate whether it is time to update the forcing arrays
+       CALL GET_PERIODIC_INTERVAL(
+     O                   intimeP, intime0, intime1, bWght, aWght,
+     I                   externForcingCycle, externForcingPeriod,
+     I                   deltaTclock, startTime, myThid )
 
        _BARRIER
        _BEGIN_MASTER(myThid)
-        WRITE(*,*)
-     &    'S/R DIC_SURFFORCING_INIT: Reading new dic data',
-     &                 intime0, intime1
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' DIC_SURFFORCING_INIT, it=', nIter0,
+     &   ' : Reading new data, i0,i1=', intime0, intime1
        _END_MASTER(myThid)
 
-      IF ( DIC_silicaFile .NE. ' '  ) THEN
+       IF ( DIC_silicaFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_silicaFile,silica0,intime0,
      &        nIter0,myThid )
          CALL READ_REC_XY_RS( DIC_silicaFile,silica1,intime1,

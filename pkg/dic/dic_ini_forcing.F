@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.21 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.22 2011/04/17 21:08:40 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -16,7 +16,6 @@ c (or to reasonable values)
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -29,7 +28,7 @@ C  myThid               :: thread number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j
@@ -38,6 +37,11 @@ c !LOCAL VARIABLES: ===================================================
 #endif
 
 C First call requires that we initialize everything to zero for safety
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DIC_ldRec(bi,bj) = 0
+       ENDDO
+      ENDDO
       CALL LEF_ZERO( dicwind0,myThid )
       CALL LEF_ZERO( dicwind1,myThid )
       CALL LEF_ZERO( atmosp0,myThid )
@@ -53,23 +57,6 @@ C First call requires that we initialize everything to zero for safety
 # ifdef ALLOW_FE
       CALL LEF_ZERO( feinput0,myThid )
       CALL LEF_ZERO( feinput1,myThid )
-# endif
-
-       _EXCH_XY_RS(dicwind0, myThid )
-       _EXCH_XY_RS(dicwind1, myThid )
-       _EXCH_XY_RS(atmosp0, myThid )
-       _EXCH_XY_RS(atmosp1, myThid )
-       _EXCH_XY_RS(silica0, myThid )
-       _EXCH_XY_RS(silica1, myThid )
-       _EXCH_XY_RS(ice0, myThid )
-       _EXCH_XY_RS(ice1, myThid )
-#ifdef READ_PAR
-       _EXCH_XY_RS(par0, myThid )
-       _EXCH_XY_RS(par1, myThid )
-#endif
-# ifdef ALLOW_FE
-       _EXCH_XY_RS(feinput0, myThid )
-       _EXCH_XY_RS(feinput1, myThid )
 # endif
 
 #ifdef READ_PAR
@@ -105,6 +92,6 @@ c set reasonable values to those that need at least something
 
        total_atmos_carbon = 0. _d 0
 
-#endif
+#endif /* ALLOW_DIC */
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.29 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.30 2011/04/17 21:08:40 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -36,12 +36,12 @@ C  myTime               :: current time
       _RL myTime
       INTEGER myThid
 
-#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-       INTEGER bi,bj,i,j,intime0,intime1
-      _RL aWght,bWght,rdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      INTEGER bi, bj, i, j
+      INTEGER intimeP, intime0, intime1
+      _RL aWght,bWght
 #ifdef READ_PAR
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
@@ -49,40 +49,48 @@ CEOP
 
       IF (  DIC_forcingCycle.gt.0. _d 0 ) THEN
 
+C--   Now calculate whether it is time to update the forcing arrays
+       CALL GET_PERIODIC_INTERVAL(
+     O                   intimeP, intime0, intime1, bWght, aWght,
+     I                   DIC_forcingCycle, DIC_forcingPeriod,
+     I                   deltaTclock, myTime, myThid )
 
-C Now calculate whether it is time to update the forcing arrays
-       rdt = 1. _d 0 / deltaTclock
-       nForcingPeriods = NINT(DIC_forcingCycle/DIC_forcingPeriod)
-cswd QQ change for placement of chem forcing (ie. after timestep)
-       Imytm = NINT(myTime*rdt)
-       Ifprd = NINT(DIC_forcingPeriod*rdt)
-       Ifcyc = NINT(DIC_forcingCycle*rdt)
-       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
-
-       intime0 = 1 + INT(Iftm/Ifprd)
-       intime1 = 1 + MOD(intime0,nForcingPeriods)
-c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-       aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
-       bWght = FLOAT( Ifprd )
-       aWght =  aWght / bWght
-       bWght = 1. _d 0 - aWght
-
-       IF (
-     &   Iftm-Ifprd*(intime0-1).EQ. 0
-     &   .OR. myIter .EQ. nIter0
-     &    ) THEN
-C-     this is time to load new fields
-
-        _BARRIER
-
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
+       bi = myBxLo(myThid)
+       bj = myByLo(myThid)
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel.GE.debLevA ) THEN
         _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &  'S/R DIC_FIELDS_LOAD: Reading new dic data:',
-     &  intime0, intime1, myIter, myTime
+        WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
+     &   ' DIC_FIELDS_LOAD,', myIter,
+     &   ' : iP,iLd,i0,i1=', intimeP,DIC_ldRec(bi,bj), intime0,intime1,
+     &   ' ; Wght=', bWght, aWght
+        _END_MASTER(myThid)
+       ENDIF
+#endif /* ALLOW_DEBUG */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C-    assuming that we call S/R DIC_FIELDS_LOAD at each time-step and
+C     with increasing time, this will catch when we need to load new records;
+C     But with Adjoint run, this is not always the case => might end-up using
+C     the wrong time-records
+       IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
+#else /* ALLOW_AUTODIFF_TAMC */
+C-    Make no assumption on sequence of calls to DIC_FIELDS_LOAD ;
+C     This is the correct formulation (works in Adjoint run).
+C     Unfortunatly, produces many recomputations <== not used until it is fixed
+       IF ( intime1.NE.DIC_ldRec(bi,bj) ) THEN
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   If the above condition is met then we need to read in
+C     data for the period ahead and the period behind myTime.
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' DIC_FIELDS_LOAD, it=', myIter,
+     &   ' : Reading new data, i0,i1=', intime0, intime1,
+     &    ' (prev=', intimeP, DIC_ldRec(bi,bj), ' )'
         _END_MASTER(myThid)
 
+        _BARRIER
 
         IF ( DIC_windFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_windFile,dicwind0,intime0,
@@ -124,7 +132,31 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
         ENDIF
 #endif
-        _BARRIER
+
+C--   fill-in overlap after loading temp arrays:
+        _EXCH_XY_RS(dicwind0, myThid )
+        _EXCH_XY_RS(dicwind1, myThid )
+        _EXCH_XY_RS(atmosp0, myThid )
+        _EXCH_XY_RS(atmosp1, myThid )
+        _EXCH_XY_RS(silica0, myThid )
+        _EXCH_XY_RS(silica1, myThid )
+        _EXCH_XY_RS(ice0, myThid )
+        _EXCH_XY_RS(ice1, myThid )
+#ifdef READ_PAR
+        _EXCH_XY_RS(par0, myThid )
+        _EXCH_XY_RS(par1, myThid )
+#endif
+#ifdef ALLOW_FE
+        _EXCH_XY_RS(feinput0, myThid )
+        _EXCH_XY_RS(feinput1, myThid )
+#endif
+
+C-    save newly loaded time-record
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DIC_ldRec(bi,bj) = intime1
+         ENDDO
+        ENDDO
 
 C-     end if-bloc (time to load new fields)
        ENDIF
@@ -225,6 +257,6 @@ C endif for DIC_forcingCycle
        ENDDO
       ENDDO
 
-#endif /* ALLOW_PTRACERS */
+#endif /* ALLOW_DIC */
       RETURN
       END
