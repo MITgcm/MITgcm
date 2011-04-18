@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.37 2011/04/15 20:17:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.38 2011/04/18 18:05:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,7 +90,11 @@ C-    assuming that we call S/R EXTERNAL_FIELDS_LOAD at each time-step and
 C     with increasing time, this will catch when we need to load new records;
 C     But with Adjoint run, this is not always the case => might end-up using
 C     the wrong time-records
+# ifndef STORE_LOADEDREC_TEST
       IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
+# else
+      IF ( intime1.NE.loadedRec(bi,bj) ) THEN
+# endif
 #else /* ALLOW_AUTODIFF_TAMC */
 C-    Make no assumption on sequence of calls to EXTERNAL_FIELDS_LOAD ;
 C     This is the correct formulation (works in Adjoint run).

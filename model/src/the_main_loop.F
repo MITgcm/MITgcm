@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.115 2011/03/05 18:07:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.116 2011/04/18 18:05:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -166,6 +166,9 @@ C     == Local variables ==
       integer ilev_4
       integer theCurrentStep
 # endif
+#ifdef STORE_LOADEDREC_TEST
+      integer bi,bj
+#endif /* STORE_LOADEDREC_TEST */
 #endif
 
 CEOP
@@ -403,6 +406,14 @@ CADJ &     = COMMON,nchklev_1*nthreads_chkpt*numItersMax
 #   endif
 c--
 c**************************************
+
+#ifdef STORE_LOADEDREC_TEST
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            loadedRec(bi,bj) = 0
+           ENDDO
+          ENDDO
+#endif /* STORE_LOADEDREC_TEST */
 
           do ilev_1 = 1,nchklev_1
 

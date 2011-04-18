@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.53 2011/01/18 19:17:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.54 2011/04/18 18:03:59 jmc Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -114,6 +114,10 @@ CADJ &     kind = isbyte
 #ifdef ALLOW_EXF
 # include "exf_ad_check_lev1_dir.h"
 #endif /* ALLOW_EXF undef */
+
+#ifdef STORE_LOADEDREC_TEST
+CADJ STORE loadedRec = comlev1, key = ikey_dynamics, kind = 4
+#endif
 
 CADJ STORE taux0   = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte

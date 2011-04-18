@@ -1,5 +1,4 @@
-C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.15 2010/09/11 21:34:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.16 2011/04/18 18:08:01 jmc Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -41,6 +40,9 @@ C o Execution environment support options
 
 #ifdef ALLOW_AUTODIFF
 # include "ECCO_CPPOPTIONS.h"
+# ifndef EXCLUDE_FFIELDS_LOAD
+#  define STORE_LOADEDREC_TEST
+# endif
 #endif
 
 C o Allow full 3D specification of vertical diffusivity
