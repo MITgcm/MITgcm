@@ -11,7 +11,7 @@ obcs_calc.f
 obcs_calc_stevens.f
 obcs_copy_tracer.f
 obcs_exchanges.f
-obcs_exf_load.F
+obcs_exf_load.f
 obcs_fields_load.f
 obcs_init_variables.f
 obcs_prescribe_read.f
