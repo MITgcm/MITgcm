@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/DIC_OPTIONS.h,v 1.3 2008/05/05 17:45:03 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/DIC_OPTIONS.h,v 1.4 2011/04/19 21:35:48 stephd Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -20,6 +20,8 @@ c atmospheric model
 #undef USE_PLOAD
 
 #undef ALLOW_OLD_VIRTUALFLUX
+
+#define WATERVAP_BUG
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */
