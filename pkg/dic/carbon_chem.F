@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.19 2010/04/12 20:07:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.20 2011/04/19 21:34:32 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -24,6 +24,7 @@ C !INTERFACE: ==========================================================
      I                       k1plocal,k2plocal,k3plocal,
      I                       kslocal,kblocal,kwlocal,
      I                       ksilocal,kflocal,
+     I                       k0local, fugflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,
      I                       i,j,k,bi,bj,myIter,myThid )
@@ -32,6 +33,8 @@ C !DESCRIPTION:
 C  surface ocean inorganic carbon chemistry to OCMIP2
 C  regulations modified from OCMIP2 code;
 C  Mick Follows, MIT, Oct 1999.
+
+C Apr 2011: fix vapour bug (following Bennington)
 
 
 C !USES: ===============================================================
@@ -61,6 +64,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        _RL  k0local, fugflocal
         INTEGER i,j,k,bi,bj,myIter
         INTEGER myThid
 CEOP
@@ -107,6 +111,7 @@ C ---------------------------------------------------------------------
         _RL  htotal2
         _RL  co2star
         _RL  phguess
+        _RL  fco2
         INTEGER inewton
         INTEGER ibrack
         INTEGER hstep
@@ -305,7 +310,13 @@ c ---------------------------------------------------------------
 c Add two output arguments for storing pCO2surf
 c Should we be using K0 or ff for the solubility here?
 c ---------------------------------------------------------------
+#ifdef WATERVAP_BUG
         pCO2surfloc = co2star / fflocal
+#else
+c Corrected by Val Bennington (Nov 2010)
+        fco2 = co2star / k0local
+        pCO2surfloc = fco2/fugflocal
+#endif
 
 C ----------------------------------------------------------------
 C Reconvert units back to original values for input arguments
@@ -481,6 +492,7 @@ C !INTERFACE: ==========================================================
      I                       k1plocal,k2plocal,k3plocal,
      I                       kslocal,kblocal,kwlocal,
      I                       ksilocal,kflocal,
+     I                       k0local, fugflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
      U                       pHlocal,pCO2surfloc,
      I                       i,j,k,bi,bj,myIter,myThid )
@@ -495,6 +507,7 @@ CC                             Taka Ito             CC
 CC                             Stephanie Dutkiewicz CC
 CC  20 April 2003                                   CC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C Apr 2011: fix vapour bug (following Bennington)
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -522,6 +535,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        _RL  k0local, fugflocal
         INTEGER i,j,k,bi,bj,myIter
         INTEGER myThid
 CEOP
@@ -537,6 +551,7 @@ C     == Local variables ==
         _RL  co2s
         _RL  h3po4g, h2po4g, hpo4g, po4g
         _RL  siooh3g
+        _RL  fco2
 c carbonate
 c       _RL  co3local
 
@@ -604,7 +619,14 @@ c    &         (hnew*hnew + k1local*hnew + k1local*k2local)
 
 c ---------------------------------------------------------------
 c surface pCO2 (following Dickson and Goyet, DOE...)
+#ifdef WATERVAP_BUG
         pCO2surfloc = co2s/fflocal
+#else
+c bug fix by Bennington
+        fco2 = co2s/k0local
+        pco2surfloc = fco2/fugflocal
+        print*,'pco2',pco2surfloc, k0local, fugflocal
+#endif
 
 C ----------------------------------------------------------------
 c Reconvert from mol/kg -> mol/m^3
@@ -651,6 +673,8 @@ C     - I have changed things slightly so that input arguments are in mol/m^3,
 C     - Thus, all input concentrations (diclocal, ta, pt, and st) should be
 C       given in mol/m^3; output arguments "co2star" and "dco2star"
 C       are likewise be in mol/m^3.
+C
+C Apr 2011: fix vapour bug (following Bennington)
 C--------------------------------------------------------------------------
 
 C !USES: ===============================================================
@@ -689,6 +713,13 @@ C LOCAL VARIABLES
         _RL  invtk
         _RL  is
         _RL  is2
+c add Bennington
+        _RL  P1atm
+        _RL  Rgas
+        _RL  RT
+        _RL  delta
+        _RL  B1
+        _RL  B
         INTEGER i
         INTEGER j
 
@@ -721,6 +752,18 @@ C terms used more than once
            sqrts=sqrt(s)
            s15=s**1.5 _d 0
            scl=s/1.80655 _d 0
+C -----------------------------------------------------------------------
+C added by Val Bennington Nov 2010
+C Fugacity Factor needed for non-ideality in ocean
+C ff used for atmospheric correction for water vapor and pressure
+C Weiss (1974) Marine Chemistry
+           P1atm = 1.01325 _d 0 ! bars
+           Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
+           RT = Rgas*tk
+           delta = (57.7 _d 0 - 0.118 _d 0*tk)
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
+           B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
+           fugf(i,j,bi,bj) = exp( (B+2 _d 0*delta) * P1atm / RT)
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
 C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
@@ -812,6 +855,8 @@ C Riley (1965)
            ft(i,j,bi,bj) = 0.000067 _d 0 * scl/18.9984 _d 0
 C------------------------------------------------------------------------
          else
+c add Bennington
+            fugf(i,j,bi,bj)=0. _d 0
             ff(i,j,bi,bj)=0. _d 0
             ak0(i,j,bi,bj)= 0. _d 0
             ak1(i,j,bi,bj)= 0. _d 0

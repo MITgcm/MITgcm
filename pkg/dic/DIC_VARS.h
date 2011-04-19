@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.7 2010/01/02 22:59:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.8 2011/04/19 21:34:32 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -23,7 +23,7 @@ C     *==========================================================*
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
-     &                     ak1p,ak2p,ak3p,aksi,
+     &                     ak1p,ak2p,ak3p,aksi, fugf, 
      &                     ff,ft,st,bt, Ksp_TP_Calc
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -37,6 +37,8 @@ C     *==========================================================*
       _RL  ak3p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aksi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C Fugacity Factor added by Val Bennington Nov. 2010
+      _RL  fugf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ft(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  st(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  bt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
