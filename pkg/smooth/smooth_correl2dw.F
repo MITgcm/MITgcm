@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.2 2011/04/19 21:38:08 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -21,7 +21,7 @@ C     *==========================================================*
 c#include "tamc.h"
 #include "SMOOTH.h"
 #include "ctrl.h"
-#include "ecco_cost.h"
+c#include "ecco_cost.h"
 
       _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
