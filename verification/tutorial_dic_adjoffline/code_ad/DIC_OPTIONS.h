@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/DIC_OPTIONS.h,v 1.1 2009/10/16 16:49:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/DIC_OPTIONS.h,v 1.2 2011/04/20 03:29:45 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -20,6 +20,8 @@ c atmospheric model
 #undef USE_PLOAD
 
 #undef ALLOW_OLD_VIRTUALFLUX
+
+#define WATERVAP_BUG
 
 #define AD_SAFE
 
