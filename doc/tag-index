@@ -1,11 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1408 2011/04/20 13:45:13 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1409 2011/04/20 21:37:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new AD-test experiment: obcs_ctrl
+  (From Matt MITgcm_Contrib/SOSE/BoxAdj) to test OBCS as control vector.
+o pkg/dic:
+  fix two bugs in handling water vapour pressure in carbonate chemistry
+  and air-sea fluxes. Found by Val Bennington and Galen McKinley
+  (add DIC Option = WATERVAP_BUG to recover old results)
+  update output of tutorial_global_oce_biogeo (fwd+AD) & tutorial_dic_adjoffline
 o adding allowInteriorFreezing option to check for water below freezing point
   at depth and bring the negative heat anomaly to the surface level
+o pkgs _fields_load:
+  - extend GET_PERIODIC_INTERVAL to deal with non-periodic case (from pkg/rbcs)
+  - use new S/R GET_PERIODIC_INTERVAL in pkgs:
+    bulk_force, cfc, dic, obcs (+ ctrl/ctrl_get_gen_rec), offline & rbcs to get
+    interpolation weights and time reccord number. (left: cheapaml_fields_load).
+  - fix multi-threading in aim_fields_load.F
+  - apply EXCH to temp arrays [0,1] after reading in dic_fields_load.F
 o external_fields_load:
   new S/R GET_PERIODIC_INTERVAL to calculate which time-record (and linear
    interpolation weights) to use in a periodic time-series ; do not divide by
