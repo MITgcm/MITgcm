@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.37 2011/03/15 16:53:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.38 2011/04/20 19:13:40 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -96,6 +96,12 @@ c     == local variables ==
       integer startrec
       integer endrec
       integer diffrec
+
+#ifdef ALLOW_OBCS_CONTROL_MODES
+      INTEGER  k,length_of_rec,dUnit
+      INTEGER  MDS_RECLEN
+      EXTERNAL MDS_RECLEN
+#endif
 
 c     == external ==
 
@@ -361,6 +367,36 @@ c--   Eastern obc.
      &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
      &     1, sny, nr, 'm', 'yz', mythid )
 #endif /* ALLOW_OBCSE_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_OBCS_CONTROL_MODES
+cih  Get matrices for reconstruction from barotropic-barclinic modes
+CMM  To use modes now hardcoded with ECCO_CPPOPTION.  Would be good to have
+c     run-time option and also define filename=baro_invmodes.bin
+        CALL MDSFINDUNIT( dUnit, myThid )
+        length_of_rec = MDS_RECLEN( 64, NR*NR, myThid )
+        open(dUnit, file='baro_invmodes.bin', status='old',
+     &         access='direct', recl=length_of_rec )
+        do j = 1,Nr
+           read(dUnit,rec=j) ((modesv(k,i,j), k=1,Nr), i=1,Nr)
+        end do
+        CLOSE( dUnit )
+CMM  double precision modesv is size [NR,NR,NR]
+c     dim one is z-space    
+c     dim two is mode space 
+c     dim three is the total depth for which this set of modes applies
+c     so for example modesv(:,2,nr) will be the second mode
+c     in z-space for the full model depth
+c    The modes are to be orthogonal when weighted by dz.  
+c     i.e. if f_i(z) = mode i, sum_j(f_i(z_j)*f_j(z_j)*dz_j = delta_ij
+c    first mode should also be constant in depth...barotropic
+c    For a matlab code example how to construct the orthonormal modes, 
+c     which are ideally the solution of planetary vertical mode equation
+c     using model mean dRho/dz, see 
+c     MITgcm/verification/obcs_ctrl/input/gendata.m
+c    This code is compatible with partial cells
+#endif
 
 c----------------------------------------------------------------------
 c--

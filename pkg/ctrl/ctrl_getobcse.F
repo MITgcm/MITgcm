@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.10 2011/03/14 17:08:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.11 2011/04/20 19:14:07 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -75,10 +75,11 @@ cgg      _RL maskyz   (1-oly:sny+oly,nr,nsx,nsy)
 
       character*(80) fnameobcse
 
-cgg(  Variables for splitting barotropic/baroclinic vels.
-      _RL ubaro
-      _RL utop
-cgg)
+#ifdef ALLOW_OBCS_CONTROL_MODES
+      integer nk,nz
+      _RL     tmpz (nr,nsx,nsy)
+      _RL     stmp
+#endif
 
 c     == external functions ==
 
@@ -97,11 +98,6 @@ c     == end of interface ==
       imin = 1-olx
       imax = snx+olx
       ip1  = 0
-
-cgg(  Initialize variables for balancing volume flux.
-      ubaro = 0.d0
-      utop = 0.d0
-cgg)
 
 c--   Now, read the control vector.
       doglobalread = .false.
@@ -130,6 +126,44 @@ c--   Get the counters, flags, and the interpolation factor.
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
+#ifdef ALLOW_OBCS_CONTROL_MODES
+          if (iobcs .gt. 2) then
+           do j = jmin,jmax
+            i = OB_Ie(j,bi,bj)
+cih    Determine number of open vertical layers.
+            nz = 0
+            do k = 1,Nr
+              if (iobcs .eq. 3) then
+                nz = nz + maskW(i+ip1,j,k,bi,bj)
+              else
+                nz = nz + maskS(i,j,k,bi,bj)
+              endif
+            end do
+cih    Compute absolute velocities from the barotropic-baroclinic modes.
+            do k = 1,Nr
+             if (k.le.nz) then
+              stmp = 0.
+              do nk = 1,nz
+               stmp = stmp +
+     &         modesv(k,nk,nz)*tmpfldyz(j,nk,bi,bj)
+              end do
+               tmpz(k,bi,bj) = stmp
+             else
+              tmpz(k,bi,bj) = 0.
+             end if
+            enddo
+            do k = 1,Nr
+              if (iobcs .eq. 3) then
+                tmpfldyz(j,k,bi,bj) = tmpz(k,bi,bj)
+     &            *recip_hFacW(i+ip1,j,k,bi,bj)
+              else
+                tmpfldyz(j,k,bi,bj) = tmpz(k,bi,bj)
+     &            *recip_hFacS(i,j,k,bi,bj)
+              endif
+            end do
+           enddo
+          endif
+#endif
           do k = 1,nr
            do j = jmin,jmax
             xx_obcse1(j,k,bi,bj,iobcs)  = tmpfldyz (j,k,bi,bj)
@@ -160,6 +194,44 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
+#ifdef ALLOW_OBCS_CONTROL_MODES
+          if (iobcs .gt. 2) then
+           do j = jmin,jmax
+            i = OB_Ie(j,bi,bj)
+cih    Determine number of open vertical layers.
+            nz = 0
+            do k = 1,Nr
+              if (iobcs .eq. 3) then
+                nz = nz + maskW(i+ip1,j,k,bi,bj)
+              else
+                nz = nz + maskS(i,j,k,bi,bj)
+              endif
+            end do
+cih    Compute absolute velocities from the barotropic-baroclinic modes.
+            do k = 1,Nr
+             if (k.le.nz) then
+              stmp = 0.
+              do nk = 1,nz
+               stmp = stmp +
+     &         modesv(k,nk,nz)*tmpfldyz(j,nk,bi,bj)
+              end do
+               tmpz(k,bi,bj) = stmp
+             else
+              tmpz(k,bi,bj) = 0.
+             endif
+            enddo
+            do k = 1,Nr
+              if (iobcs .eq. 3) then
+                tmpfldyz(j,k,bi,bj) = tmpz(k,bi,bj)
+     &            *recip_hFacW(i+ip1,j,k,bi,bj)
+              else
+                tmpfldyz(j,k,bi,bj) = tmpz(k,bi,bj)
+     &            *recip_hFacS(i,j,k,bi,bj)
+              endif
+            end do
+           enddo
+          endif
+#endif
           do k = 1,nr
            do j = jmin,jmax
             xx_obcse1 (j,k,bi,bj,iobcs) = tmpfldyz (j,k,bi,bj)
