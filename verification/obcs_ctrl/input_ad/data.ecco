@@ -1,0 +1,24 @@
+#
+#
+# ******************
+# ECCO cost function
+# ******************
+ &ECCO_COST_NML
+ data_errfile    = 'data.err',
+ tbarfile        = 'tbar',
+#
+ temp0errfile    = 'errorTtot.err',
+#  temperrfile     = 'errorTtot.err',
+ tdatfile        = 'FinalThetaObs.bin',
+#
+#
+ mult_temp0  = 1.0,
+ mult_temp   = 1.0,
+ mult_obcsn  = 1.0,
+ mult_obcss  = 1.0,
+ mult_obcsw  = 1.0,
+ mult_obcse  = 1.0,
+#
+ cost_iprec  = 32,
+ cost_yftype = 'RL',
+ /

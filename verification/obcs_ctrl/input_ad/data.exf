@@ -1,0 +1,46 @@
+# $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/input_ad/data.exf,v 1.1 2011/04/20 19:18:25 mmazloff Exp $
+#
+# *********************
+# External Forcing Data
+# *********************
+ &EXF_NML_01
+#
+ useExfCheckRange = .FALSE.,
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ /
+#
+ &EXF_NML_02
+#
+#
+ /
+#
+ &EXF_NML_03
+#
+#
+ /
+#
+ &EXF_NML_04
+#
+#
+ /
+#
+ &EXF_NML_OBCS
+#
+ obcsNstartdate1     = 20061231,
+ obcsNstartdate2     = 00000,
+ obcsNperiod         = 00.0,
+#
+ obcsSstartdate1     = 20061231,
+ obcsSstartdate2     = 00000,
+ obcsSperiod         = 00.0,
+#
+ obcsWstartdate1     = 20061231,
+ obcsWstartdate2     = 00000,
+ obcsWperiod         = 00.0,
+#
+ obcsEstartdate1     = 20061231,
+ obcsEstartdate2     = 00000,
+ obcsEperiod         = 00.0,
+#
+ /

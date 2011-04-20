@@ -1,0 +1,8 @@
+# Packages
+ &PACKAGES
+ useECCO=.TRUE.,
+ useOBCS=.TRUE.,
+ useEXF=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useGrdchk = .TRUE.,
+ /

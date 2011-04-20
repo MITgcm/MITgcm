@@ -1,0 +1,68 @@
+# Model parameters
+# Continuous equation parameters
+ &PARM01
+ tRef=20.,16.,12.,10., 9., 8., 7., 6.,
+ sRef=35.,35.,35.,35.,35.,35.,35.,35.,
+ viscAz=1.E-4,
+ viscAh=1.E1,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ diffKhT=0.E0,
+ diffKzT=0.E-5,
+ rotationPeriod=86400.,
+ beta=1.E-11,
+ tAlpha=2.E-4,
+ sBeta =0.,
+ gravity=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ eosType='LINEAR',
+ readBinaryPrec=32,
+# extras...
+ implicitDiffusion=.true.,
+ implicitViscosity=.true.,
+ useCDscheme=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ multiDimAdvection=.FALSE.,
+ tempAdvScheme=30,
+ saltAdvScheme=30,
+ useNHMTerms=.FALSE.,
+ writeBinaryPrec=32,
+ debugLevel=0,
+ /
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-8,
+ /
+# Time stepping parameters
+ &PARM03
+ startTime=0.,
+ endTime=21600.,
+ deltaTmom=1200.0,
+ deltaTtracer=1200.0,
+ dumpInitAndLast=.TRUE.,
+ abEps=0.1,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=2628000.0,
+ monitorFreq=432000.,
+ /
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ ygOrigin=25.,
+ delX=64*0.25,
+ delY=64*0.25,
+ delZ=500.,500.,500.,500.,500.,500.,500.,500.,
+ /
+ &PARM05
+ bathyFile='topog.box',
+ uVelInitFile=   'Uini.bin',
+ vVelInitFile=   'Vini.bin',
+ hydrogThetaFile=,
+ hydrogSaltFile=,
+ zonalWindFile=,
+ meridWindFile=,
+ /
