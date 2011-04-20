@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.134 2010/12/09 21:35:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.135 2011/04/20 13:45:14 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -723,7 +723,7 @@ CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
-C  freezing at surface level has been moved to FORWARD_STEP
+C  freezing at surface level has been moved to DO_OCEANIC_PHYS
          IF ( useOldFreezing .AND. .NOT. useSEAICE
      &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1407 2011/04/14 22:23:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1408 2011/04/20 13:45:13 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adding allowInteriorFreezing option to check for water below freezing point
+  at depth and bring the negative heat anomaly to the surface level
 o external_fields_load:
   new S/R GET_PERIODIC_INTERVAL to calculate which time-record (and linear
    interpolation weights) to use in a periodic time-series ; do not divide by

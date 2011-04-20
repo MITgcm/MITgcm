@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.249 2011/03/18 10:48:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.250 2011/04/20 13:45:13 dimitri Exp $
 C $Name:  $
 C
 
@@ -336,6 +336,7 @@ C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
 C                        climatology is required.
 C     allowFreezing  :: Allows surface water to freeze and form ice
+C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     periodicExternalForcing :: Set true if forcing is time-dependant
 C- I/O parameters -
@@ -389,7 +390,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & momDissip_In_AB, doAB_onGtGs,
      & balanceEmPmR, balanceQnet, balancePrintMean,
      & doThetaClimRelax, doSaltClimRelax,
-     & allowFreezing, useOldFreezing,
+     & allowFreezing, allowInteriorFreezing, useOldFreezing,
      & periodicExternalForcing,
      & globalFiles,
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
@@ -474,6 +475,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
       LOGICAL allowFreezing
+      LOGICAL allowInteriorFreezing
       LOGICAL useOldFreezing
       LOGICAL periodicExternalForcing
       LOGICAL globalFiles

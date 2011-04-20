@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.101 2011/03/05 17:51:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.102 2011/04/20 13:45:14 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -321,6 +321,11 @@ C     ice-front ocean interface
      &      myThid)
       ENDIF
 #endif /* ALLOW_ICEFRONT */
+
+C--   Freeze water in the ocean interior and let it rise to the surface
+      IF ( allowInteriorFreezing ) THEN
+        CALL FREEZE_INTERIOR(  myTime, myIter, myThid )
+      ENDIF
 
 C--   Freeze water at the surface
 #ifdef ALLOW_AUTODIFF_TAMC
