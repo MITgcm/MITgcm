@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/DIC_OPTIONS.h,v 1.2 2011/04/20 03:29:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/DIC_OPTIONS.h,v 1.3 2011/04/20 20:47:52 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -21,7 +21,8 @@ c atmospheric model
 
 #undef ALLOW_OLD_VIRTUALFLUX
 
-#define WATERVAP_BUG
+C put back bugs related to Water-Vapour in carbonate chemistry & air-sea fluxes
+#undef WATERVAP_BUG
 
 #define AD_SAFE
 

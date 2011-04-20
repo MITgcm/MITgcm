@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/DIC_OPTIONS.h,v 1.4 2011/04/19 21:35:48 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/DIC_OPTIONS.h,v 1.5 2011/04/20 20:44:53 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -21,7 +21,8 @@ c atmospheric model
 
 #undef ALLOW_OLD_VIRTUALFLUX
 
-#define WATERVAP_BUG
+C put back bugs related to Water-Vapour in carbonate chemistry & air-sea fluxes
+#undef WATERVAP_BUG
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */
