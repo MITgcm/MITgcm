@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.52 2011/03/15 16:39:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.53 2011/04/20 19:00:13 mmazloff Exp $
 C $Name:  $
 
 
@@ -380,6 +380,10 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       common /controlaux_obcse_r/
      &                      xx_obcse0,
      &                      xx_obcse1
+#endif
+#ifdef ALLOW_OBCS_CONTROL_MODES 
+       common /ih_modes/ modesv
+       _RL modesv (nr,nr,nr)
 #endif
 #endif
 
