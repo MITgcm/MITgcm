@@ -1,4 +1,3 @@
-#
 # ***************
 # Open boundaries
 # ***************
@@ -34,14 +33,14 @@
  OBEtFile='Tebc.bin',
  OBEsFile='Sebc.bin',
 #
- /
+ &
 
 # *****************************************
 # Orlanski Boundary Condition Parameters.
 # *****************************************
  &OBCS_PARM02
 # cvelTimeScale = 2000.,
- /
+ &
 
 # *****************************************
 # Sponge Layer Parameters.
@@ -52,5 +51,5 @@
  Vrelaxobcsinner=432000.E0,
  Vrelaxobcsbound=43200.E0,
  spongeThickness=08,
- /
+ &
 

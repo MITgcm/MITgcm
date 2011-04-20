@@ -14,11 +14,11 @@
 # diag_mnc     = .FALSE.,
 # do not specify levels => all levels are selected
 #---
-#  frequency(1) = 864000.0, 
+#  frequency(1) = 864000.0,
 #   fields(1,1) = 'DRHODR  ',
 #   filename(1) = 'dRhodz_5',
 #---
-/
+ &
 #
 # Parameter for Diagnostics of per level statistics:
 #-----------------
@@ -37,5 +37,4 @@
 #    stat_fname(1)= 'dynStDiag',
 #     stat_freq(1)= -864000.,
 #    stat_phase(1)= 0.,
- /
-
+ &

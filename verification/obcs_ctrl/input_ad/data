@@ -30,12 +30,12 @@
  useNHMTerms=.FALSE.,
  writeBinaryPrec=32,
  debugLevel=0,
- /
+ &
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=500,
  cg2dTargetResidual=1.E-8,
- /
+ &
 # Time stepping parameters
  &PARM03
  startTime=0.,
@@ -48,7 +48,7 @@
  chkptFreq=0.0,
  dumpFreq=2628000.0,
  monitorFreq=432000.,
- /
+ &
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
@@ -56,13 +56,13 @@
  delX=64*0.25,
  delY=64*0.25,
  delZ=500.,500.,500.,500.,500.,500.,500.,500.,
- /
+ &
  &PARM05
  bathyFile='topog.box',
  uVelInitFile=   'Uini.bin',
  vVelInitFile=   'Vini.bin',
- hydrogThetaFile=,
- hydrogSaltFile=,
- zonalWindFile=,
- meridWindFile=,
- /
+#hydrogThetaFile=,
+#hydrogSaltFile=,
+#zonalWindFile=,
+#meridWindFile=,
+ &

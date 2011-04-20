@@ -1,5 +1,3 @@
-#
-#
 # ******************
 # ECCO cost function
 # ******************
@@ -21,4 +19,4 @@
 #
  cost_iprec  = 32,
  cost_yftype = 'RL',
- /
+ &

@@ -5,4 +5,4 @@
  useEXF=.TRUE.,
  useDiagnostics=.TRUE.,
  useGrdchk = .TRUE.,
- /
+ &

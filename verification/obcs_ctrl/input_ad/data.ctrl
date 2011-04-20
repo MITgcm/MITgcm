@@ -1,5 +1,3 @@
-#
-#
 # *********************
 # ECCO controlvariables
 # *********************
@@ -13,17 +11,17 @@
 # doSinglePrecTapelev = .TRUE.,
 #
  xx_obcsnstartdate1 = 20070101,
- xx_obcsnstartdate2 =    00000, 
+ xx_obcsnstartdate2 =    00000,
  xx_obcsnperiod     =      0.0,
  xx_obcsn_file = 'xx_obcsn',
 #
  xx_obcssstartdate1 = 20070101,
- xx_obcssstartdate2 =    00000, 
+ xx_obcssstartdate2 =    00000,
  xx_obcssperiod     =      0.0,
  xx_obcss_file = 'xx_obcss',
 #
  xx_obcswstartdate1 = 20070101,
- xx_obcswstartdate2 =   00000, 
+ xx_obcswstartdate2 =   00000,
  xx_obcswperiod     =     0.0,
  xx_obcsw_file = 'xx_obcsw',
 #
@@ -31,7 +29,7 @@
  xx_obcsestartdate2 =    00000,
  xx_obcseperiod     =      0.0,
  xx_obcse_file = 'xx_obcse',
- /
+ &
 #
 # *********************
 # names for ctrl_pack/unpack
@@ -39,4 +37,4 @@
  &CTRL_PACKNAMES
  ctrlname = 'ecco_ctrl',
  costname = 'ecco_cost',
- /
+ &
