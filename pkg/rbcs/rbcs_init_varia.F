@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.6 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.7 2011/04/20 01:42:53 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -36,6 +36,7 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
 
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+          rbcsLdRec(bi,bj) = 0
           DO k=1,Nr
             DO j=1-Oly,sNy+OLy
               DO i=1-Olx,sNx+Olx

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.12 2011/03/06 23:33:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.13 2011/04/20 01:42:53 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -6,17 +6,18 @@ C $Name:  $
 C     !ROUTINE: RBCS_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE RBCS_FIELDS_LOAD( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE RBCS_FIELDS_LOAD
 C     | o Control reading of fields from external source.
 C     *==========================================================*
-C     | Offline External source field loading routine.
+C     | RBCS External source field loading routine.
 C     | This routine is called every time we want to
 C     | load a a set of external fields. The routine decides
 C     | which fields to load and then reads them in.
-C     | This routine needs to be customised for particular
-C     | experiments.
 C     *==========================================================*
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -52,108 +53,76 @@ C     [01]      :: End points for interpolation
 C     Above use static heap storage to allow exchange.
 C     aWght, bWght :: Interpolation weights
 
-      INTEGER bi,bj,i,j,k,intime0,intime1
-      _RL aWght,bWght,rhalfdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm,Ifmod
+      INTEGER bi, bj, i, j, k
+      INTEGER intimeP, intime0, intime1
+      _RL aWght, bWght, locTime
+      INTEGER Ifprd
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif
       INTEGER IL, initer0, initer1
       CHARACTER*(MAX_LEN_FNAM) fullName
-
-      INTEGER F90MODULO,arg1,arg2
-C statement function to emulate Fortran 90 MODULO
-C this modulo has the same sign as arg2 (and absolute value < |arg2|)
-      F90MODULO(arg1,arg2) = MOD(MOD(arg1,arg2)+arg2,arg2)
+CEOP
 
 #ifdef ALLOW_RBCS
       CALL TIMER_START('RBCS_FIELDS_LOAD      [I/O]', myThid)
 
-C First call requires that we initialize everything to zero for safety
-      IF ( myIter .EQ. nIter0 ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-             rbct0(i,j,k,bi,bj)=0. _d 0
-             rbcs0(i,j,k,bi,bj)=0. _d 0
-             rbct1(i,j,k,bi,bj)=0. _d 0
-             rbcs1(i,j,k,bi,bj)=0. _d 0
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#ifdef ALLOW_PTRACERS
-       DO iTracer = 1, PTRACERS_numInUse
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO k=1,Nr
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-             rbcptr0(i,j,k,bi,bj,iTracer)=0. _d 0
-             rbcptr1(i,j,k,bi,bj,iTracer)=0. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif
-      ENDIF
+C--   First call requires that we initialize everything to zero for safety
+C      <= already done in RBCS_INIT_VARIA
 
-C Now calculate whether it is time to update the forcing arrays
+C--   Now calculate whether it is time to update the forcing arrays
+      bi = myBxLo(myThid)
+      bj = myByLo(myThid)
       IF (rbcsForcingPeriod.GT.0. _d 0) THEN
-C      this converts times to even integers
-       rhalfdt = 2. _d 0 / deltaTclock
-       nForcingPeriods = NINT(rbcsForcingCycle/rbcsForcingPeriod)
-       Imytm = NINT( (myTime-rbcsForcingOffset)*rhalfdt )
-       Ifprd = NINT(rbcsForcingPeriod*rhalfdt)
-       Ifcyc = NINT(rbcsForcingCycle*rhalfdt)
-       Iftm  = Imytm-Ifprd/2
-       Ifmod = F90MODULO(Iftm,Ifprd)
-
-       intime0 = (Iftm-Ifmod)/Ifprd
-       intime1 = intime0 + 1
-       IF (rbcsForcingCycle.GT.0. _d 0) THEN
-         intime0 = F90MODULO(intime0,nForcingPeriods)
-         intime1 = F90MODULO(intime1,nForcingPeriods)
+       locTime = myTime - rbcsForcingOffset
+       CALL GET_PERIODIC_INTERVAL(
+     O                   intimeP, intime0, intime1, bWght, aWght,
+     I                   rbcsForcingCycle, rbcsForcingPeriod,
+     I                   deltaTclock, locTime, myThid )
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel.GE.debLevA ) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
+     &   ' RBCS_FIELDS_LOAD,', myIter,
+     &   ' : iP,iLd,i0,i1=', intimeP,rbcsLdRec(bi,bj), intime0,intime1,
+     &   ' ; Wght=', bWght, aWght
+        _END_MASTER(myThid)
        ENDIF
-       intime0 = 1 + intime0
-       intime1 = 1 + intime1
-
-c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-       aWght = FLOAT( Ifmod )
-       bWght = FLOAT( Ifprd )
-       aWght =  aWght / bWght
-       bWght = 1. _d 0 - aWght
-
+#endif /* ALLOW_DEBUG */
       ELSE
+       intimeP = 1
        intime1 = 1
        intime0 = 1
-       Ifmod = 1
        aWght = .5 _d 0
        bWght = .5 _d 0
       ENDIF
 
-C     for rbcsSingleTimeFiles=.TRUE.
-      Ifprd = NINT(rbcsForcingPeriod/deltaTrbcs)
-      initer0 = rbcsIter0 + intime0*Ifprd
-      initer1 = rbcsIter0 + intime1*Ifprd
+#ifdef ALLOW_AUTODIFF_TAMC
+C-    assuming that we call S/R RBCS_FIELDS_LOAD at each time-step and
+C     with increasing time, this will catch when we need to load new records;
+C     But with Adjoint run, this is not always the case => might end-up using
+C     the wrong time-records
+      IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
+#else /* ALLOW_AUTODIFF_TAMC */
+C-    Make no assumption on sequence of calls to RBCS_FIELDS_LOAD ;
+C     This is the correct formulation (works in Adjoint run).
+C     Unfortunatly, produces many recomputations <== not used until it is fixed
+      IF ( intime1.NE.rbcsLdRec(bi,bj) ) THEN
+#endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF (
-     &  Ifmod .EQ. 0
-     &  .OR. myIter .EQ. nIter0
-     & ) THEN
-
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
+C--   If the above condition is met then we need to read in
+C     data for the period ahead and the period behind myTime.
        _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &        'S/R RBCS_FIELDS_LOAD: Reading new data:',
-     &         intime0, intime1, myIter, myTime
+       WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' RBCS_FIELDS_LOAD, it=', myIter,
+     &   ' : Reading new data, i0,i1=', intime0, intime1,
+     &    ' (prev=', intimeP, rbcsLdRec(bi,bj), ' )'
        _END_MASTER(myThid)
+
+C     for rbcsSingleTimeFiles=.TRUE.
+       Ifprd = NINT(rbcsForcingPeriod/deltaTrbcs)
+       initer0 = rbcsIter0 + intime0*Ifprd
+       initer1 = rbcsIter0 + intime1*Ifprd
 
        IF ( useRBCtemp .AND. relaxTFile .NE. ' '  ) THEN
         IF ( rbcsSingleTimeFiles ) THEN
@@ -229,6 +198,14 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif /* ALLOW_PTRACERS */
 
+C-    save newly loaded time-record
+       DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           rbcsLdRec(bi,bj) = intime1
+         ENDDO
+       ENDDO
+
+C--   end if-block for loading new time-records
       ENDIF
 
 C--   Interpolate

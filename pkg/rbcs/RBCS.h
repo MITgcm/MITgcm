@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.9 2010/11/10 00:34:21 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.10 2011/04/20 01:42:53 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_RBCS
@@ -80,9 +80,12 @@ C
      &          relaxPtracerFile
 #endif /* ALLOW_PTRACERS */
 
+C     rbcsLdRec     :: time-record currently loaded (in temp arrays *[1])
+      COMMON /RBCS_LOAD_I/ rbcsLdRec
       COMMON /RBCFFIELDS/
      &                 rbct0, rbcs0,
      &                 rbct1, rbcs1
+      INTEGER rbcsLdRec(nSx,nSy)
       _RS  rbct0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  rbct1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  rbcs0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

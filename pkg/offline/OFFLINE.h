@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.9 2010/04/03 22:34:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.10 2011/04/20 01:45:20 jmc Exp $
 C $Name:  $
 
 #ifdef  ALLOW_OFFLINE
@@ -41,8 +41,12 @@ c   Forcing files
       CHARACTER*(MAX_LEN_FNAM) KPP_DiffSFile
       CHARACTER*(MAX_LEN_FNAM) KPP_ghatKFile
 
+C     offlineLdRec :: time-record currently loaded (in temp arrays *[1])
       COMMON /OFFLINE_COMMON_I/
+     &       offlineLdRec,
      &       offlineIter0, offlineOffsetIter
+
+      INTEGER offlineLdRec(nSx,nSy)
       INTEGER offlineIter0
       INTEGER offlineOffsetIter
 

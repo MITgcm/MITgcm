@@ -1,11 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.18 2010/04/03 22:34:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.19 2011/04/20 01:45:20 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
 
+C--  File offline_fields_load.F:
+C--   Contents
+C--   o OFFLINE_FIELDS_LOAD
+C--   o OBCS_EXTERNAL_FIELDS_INTERP_XZ
+C--   o OBCS_EXTERNAL_FIELDS_INTERP_YZ
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: OFFLINE_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE OFFLINE_FIELDS_LOAD( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OFFLINE_FIELDS_LOAD
 C     | o Control reading of fields from external source.
@@ -21,9 +31,11 @@ C     | =====
 C     | currently the file names need to be specific lengths
 C     | would like to make this more flexible QQ
 C     *==========================================================*
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -50,6 +62,7 @@ C     myThid  :: Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_OFFLINE
 C     !FUNCTIONS:
@@ -58,15 +71,18 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     fn      :: Temp. for building file name.
+C     msgBuf  :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec
 
-C     === Local arrays ===
-
-      INTEGER bi,bj,i,j,k,intime0,intime1
-      _RL aWght,bWght,rdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      INTEGER bi,bj,i,j,k
+      INTEGER intimeP, intime0, intime1
+      _RL aWght, bWght, locTime
+      INTEGER Ifprd
       INTEGER I1, I2
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       prec = offlineLoadPrec
 
@@ -75,6 +91,11 @@ c      IF ( offlinePeriodicExternalLoad ) THEN
 
 C First call requires that we initialize everything to zero for safety
       IF ( myIter .EQ. nIter0 ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           offlineLdRec(bi,bj) = 0
+         ENDDO
+       ENDDO
        CALL LEF_ZERO3( uvel0 ,myThid )
        CALL LEF_ZERO3( vvel0 ,myThid )
        CALL LEF_ZERO3( wvel0 ,myThid )
@@ -105,36 +126,57 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( kght1 ,myThid )
       ENDIF
 
-C Now calculate whether it is time to update the forcing arrays
-      rdt = 1. _d 0 / deltaToffline
-      nForcingPeriods = NINT(offlineForcingCycle/offlineForcingPeriod)
-      Imytm = NINT(myTime*rdt-offlineOffsetIter)
-      Ifprd = NINT(offlineForcingPeriod*rdt)
-      Ifcyc = NINT(offlineForcingCycle*rdt)
-      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
+C--   Now calculate whether it is time to update the forcing arrays
+      locTime = myTime -offlineOffsetIter*deltaToffline
+      CALL GET_PERIODIC_INTERVAL(
+     O                  intimeP, intime0, intime1, bWght, aWght,
+     I                  offlineForcingCycle, offlineForcingPeriod,
+     I                  deltaToffline, locTime, myThid )
 
-      intime0= 1 + INT(Iftm/Ifprd)
-      intime1= 1 + MOD(intime0,nForcingPeriods)
-c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-      aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
-      bWght = FLOAT( Ifprd )
-      aWght =  aWght / bWght
-      bWght = 1. _d 0 - aWght
+      bi = myBxLo(myThid)
+      bj = myByLo(myThid)
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel.GE.debLevA ) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
+     &   ' OFFLINE_FIELDS_LOAD,', myIter,
+     &   ' : iP,iLd,i0,i1=', intimeP, offlineLdRec(bi,bj),
+     &    intime0,intime1, ' ; Wght=', bWght, aWght
+        _END_MASTER(myThid)
+      ENDIF
+#endif /* ALLOW_DEBUG */
 
-      IF (
-     &  Iftm-Ifprd*(intime0-1) .EQ. 0
-     &  .OR. myIter .EQ. nIter0
-     & ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C-    assuming that we call S/R OFFLINE_FIELDS_LOAD at each time-step and
+C     with increasing time, this will catch when we need to load new records;
+C     But with Adjoint run, this is not always the case => might end-up using
+C     the wrong time-records
+      IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
+#else /* ALLOW_AUTODIFF_TAMC */
+C-    Make no assumption on sequence of calls to OFFLINE_FIELDS_LOAD ;
+C     This is the correct formulation (works in Adjoint run).
+C     Unfortunatly, produces many recomputations <== not used until it is fixed
+      IF ( intime1.NE.offlineLdRec(bi,bj) ) THEN
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+       Ifprd = NINT(offlineForcingPeriod/deltaToffline)
+       IF ( Ifprd*deltaToffline .NE. offlineForcingPeriod ) THEN
+        WRITE(msgBuf,'(2A,I5,A)') 'OFFLINE_FIELDS_LOAD: ',
+     &     'offlineForcingPeriod not multiple of deltaToffline'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OFFLINE_FIELDS_LOAD'
+       ENDIF
+
+C--   If the above condition is met then we need to read in
+C     data for the period ahead and the period behind myTime.
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &   ' OFFLINE_FIELDS_LOAD, it=', myIter,
+     &   ' : Reading new data, i0,i1=', intime0, intime1,
+     &    ' (prev=', intimeP, offlineLdRec(bi,bj), ' )'
+        _END_MASTER(myThid)
 
        _BARRIER
-
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
-       _BEGIN_MASTER(myThid)
-       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &  'S/R OFFLINE_FIELDS_LOAD: Reading new data:',
-     &  intime0, intime1, myIter, myTime
-       _END_MASTER(myThid)
 
 #ifdef NOT_MODEL_FILES
 C if reading own files setup reading here
@@ -329,6 +371,14 @@ C         even if, for convienience, it will be loaded into array KPPghat
        _EXCH_XYZ_RS(kght0, myThid )
        _EXCH_XYZ_RS(kght1, myThid )
 
+C-    save newly loaded time-record
+       DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           offlineLdRec(bi,bj) = intime1
+         ENDDO
+       ENDDO
+
+C--   end if-block for loading new time-records
       ENDIF
 
 C--   Interpolate uvel, vvel, wvel
@@ -412,22 +462,28 @@ C endif for periodicForcing
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: LEF_ZERO3
 C     !INTERFACE:
       SUBROUTINE LEF_ZERO3( arr ,myThid )
+
 C     !DESCRIPTION: \bv
 C     This routine simply sets the argument array to zero
-C     Used only by EXTERNAL_FIELDS_LOAD
+C     Used only by OFFLINE_FIELDS_LOAD
 C     \ev
+
 C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Arguments ===
       _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
+
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j,bi,bj,k
@@ -448,22 +504,28 @@ CEOP
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: LEF_ZERO2
 C     !INTERFACE:
       SUBROUTINE LEF_ZERO2( arr ,myThid )
+
 C     !DESCRIPTION: \bv
 C     This routine simply sets the argument array to zero
-C     Used only by EXTERNAL_FIELDS_LOAD
+C     Used only by OFFLINE_FIELDS_LOAD
 C     \ev
+
 C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Arguments ===
       _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
+
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j,bi,bj
