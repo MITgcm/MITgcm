@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.20 2011/04/19 21:34:32 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.21 2011/04/20 16:05:22 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -625,7 +625,6 @@ c surface pCO2 (following Dickson and Goyet, DOE...)
 c bug fix by Bennington
         fco2 = co2s/k0local
         pco2surfloc = fco2/fugflocal
-        print*,'pco2',pco2surfloc, k0local, fugflocal
 #endif
 
 C ----------------------------------------------------------------
@@ -763,7 +762,7 @@ C Weiss (1974) Marine Chemistry
            delta = (57.7 _d 0 - 0.118 _d 0*tk)
            B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
            B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
-           fugf(i,j,bi,bj) = exp( (B+2 _d 0*delta) * P1atm / RT)
+           fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) * P1atm / RT)
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
 C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
