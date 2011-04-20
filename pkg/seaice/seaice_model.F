@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.85 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.86 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,9 +58,10 @@ CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
-C     iceFld    :: Copy of seaice field
-      INTEGER i, j, bi, bj, iTracer
-c     _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER i, j, bi, bj
+#ifdef SEAICE_AGE
+      INTEGER iTracer
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG

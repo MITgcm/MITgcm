@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.19 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.20 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,14 +46,18 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
 C     == Local variables ==
       INTEGER i,j,bi,bj
-      INTEGER iTracer
-      CHARACTER*8   diagName
+#ifdef SEAICE_CGRID
       _RL sigI (1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sigII(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sig1, sig2, sig12, sigTmp, recip_prs
+#endif
 #ifdef SEAICE_MULTICATEGORY
       INTEGER k
       _RL recip_multdim
+#endif
+#ifdef SEAICE_AGE
+      INTEGER iTracer
+      CHARACTER*8   diagName
 #endif
 
       LOGICAL  DIAGNOSTICS_IS_ON

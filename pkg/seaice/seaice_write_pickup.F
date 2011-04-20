@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.4 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.5 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,9 +57,13 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 20 )
-      CHARACTER*(8) fldName, wrFldList(listDim)
-      INTEGER j, nj, iTracer
+      CHARACTER*(8) wrFldList(listDim)
+      INTEGER j, nj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef SEAICE_AGE
+      CHARACTER*(8) fldName
+      INTEGER iTracer
+#endif
 CEOP
 
 C--   Write model fields

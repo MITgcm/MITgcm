@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.54 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.55 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,12 +41,17 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
-      INTEGER i, j, bi, bj, iTracer
+      INTEGER i, j, bi, bj
       _RL PSTAR
-      _RS  mask_uice
       INTEGER myIter, kSurface
+#ifdef SEAICE_CGRID
+      _RS  mask_uice
+#endif
 #ifdef SEAICE_MULTICATEGORY
       INTEGER k
+#endif
+#ifdef SEAICE_AGE
+      INTEGER iTracer
 #endif
 #ifdef ALLOW_OBCS
       INTEGER I_obc, J_obc
@@ -414,7 +419,7 @@ C--   Read initial sea ice salinity from file if available.
 C--   Read initial sea ice age from file if available.
        DO iTracer = 1, SEAICE_num
         IF ( IceAgeTrFile(iTracer) .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( IceAgeTrFile(iTracer), ' ', 
+        CALL READ_FLD_XY_RL( IceAgeTrFile(iTracer), ' ',
      &   IceAgeTr(1-Olx,1-Oly,1,1,iTracer), 0, myThid )
         _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTracer),myThid)
         ENDIF

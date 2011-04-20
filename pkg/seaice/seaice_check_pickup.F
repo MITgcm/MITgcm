@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.3 2011/03/07 03:12:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.4 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,7 +59,9 @@ C     bi,bj       :: tile indices
 c     LOGICAL oldIceAge
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(8) fldName
+#if (defined SEAICE_MULTICATEGORY) || (defined SEAICE_AGE )
       INTEGER i,j,bi,bj
+#endif
 #ifdef SEAICE_MULTICATEGORY
       INTEGER k
 #endif

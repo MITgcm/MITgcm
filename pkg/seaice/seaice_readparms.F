@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.90 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.91 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,7 +41,9 @@ C     iUnit  :: Work variable for IO unit number
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+#ifdef SEAICE_AGE
       INTEGER iTracer
+#endif
 
 C     retired parameters
       INTEGER nRetired
@@ -401,7 +403,7 @@ C
      &       'WARNING FROM S/R SEAICE_READPARMS:',
      &       ' switch seaice from LSR or EVP to "free drift"'
       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)       
+     &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif /* SEAICE_ALLOW_FREEDRIFT */
 
@@ -473,47 +475,47 @@ C     in data.seaice
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
 C     retired parameter
-      nRetired = 0 
+      nRetired = 0
       IF ( SEAICE_sensHeat    .NE. UNSET_RL ) THEN
        nRetired = nRetired + 1
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: "SEAICE_sensHeat" ',
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: set "SEAICE_cpAir", ',
      &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( SEAICE_latentWater .NE. UNSET_RL ) THEN
        nRetired = nRetired + 1
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: "SEAICE_latentWater" ',
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: set "SEAICE_lhEvap", ',
      &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( SEAICE_latentIce   .NE. UNSET_RL ) THEN
        nRetired = nRetired + 1
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: "SEAICE_latentIce" ',
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: set "SEAICE_lhFusion", ',
      &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( IceAgeFile .NE. ' ' ) THEN
        nRetired = nRetired + 1
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: "IceAgeFile" ',
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,A)') 
+       WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: replaced by ',
      &  '"IceAgeTrFile(SEAICE_num)" array '
        CALL PRINT_ERROR( msgBuf, myThid )

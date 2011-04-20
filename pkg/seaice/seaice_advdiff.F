@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.44 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.45 2011/04/20 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,9 +62,12 @@ C     afx       :: horizontal advective flux, x direction
 C     afy       :: horizontal advective flux, y direction
 C     gFld      :: tendency of seaice field
 C     xA,yA     :: "areas" of X and Y face of tracer cells
-      INTEGER i, j, bi, bj, iTracer
+      INTEGER i, j, bi, bj
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
+#ifdef SEAICE_AGE
+      INTEGER iTracer
+#endif
 
 C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
       COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc
@@ -299,7 +302,7 @@ C--
           CALL SEAICE_ADVECTION(
      I       GAD_ICEAGETR+iTracer-1, SEAICEadvSchAge,
      I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I       uTrans, vTrans, IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer), 
+     I       uTrans, vTrans, IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer),
      I       recip_heff,
      O       gFld, afx, afy,
      I       bi, bj, myTime, myIter, myThid )
@@ -315,7 +318,7 @@ C     now do the "explicit" time step
           DO j=1,sNy
            DO i=1,sNx
             IceAgeTr(i,j,bi,bj,iTracer) = HEFFM(i,j,bi,bj) * (
-     &          IceAgeTr(i,j,bi,bj,iTracer) 
+     &          IceAgeTr(i,j,bi,bj,iTracer)
      &          + SEAICE_deltaTtherm * gFld(i,j)
      &          )
            ENDDO
@@ -356,7 +359,7 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #ifdef SEAICE_AGE
        IF ( SEAICEadvAge ) THEN
         DO iTracer = 1, SEAICE_num
-         CALL ADVECT( uc, vc, iceAgeTr(1-Olx,1-Oly,1,1,iTracer), 
+         CALL ADVECT( uc, vc, iceAgeTr(1-Olx,1-Oly,1,1,iTracer),
      &    fldNm1, HEFFM, myThid )
         ENDDO
        ENDIF
