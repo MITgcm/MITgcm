@@ -1,15 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.19 2011/04/20 01:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.20 2011/04/20 03:13:54 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
 
-C--  File offline_fields_load.F:
-C--   Contents
-C--   o OFFLINE_FIELDS_LOAD
-C--   o OBCS_EXTERNAL_FIELDS_INTERP_XZ
-C--   o OBCS_EXTERNAL_FIELDS_INTERP_YZ
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: OFFLINE_FIELDS_LOAD
 C     !INTERFACE:
@@ -41,7 +34,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "GRID.h"
+c#include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI.h"
@@ -90,41 +83,8 @@ c      IF ( offlinePeriodicExternalLoad ) THEN
       IF ( .TRUE. ) THEN
 
 C First call requires that we initialize everything to zero for safety
-      IF ( myIter .EQ. nIter0 ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-           offlineLdRec(bi,bj) = 0
-         ENDDO
-       ENDDO
-       CALL LEF_ZERO3( uvel0 ,myThid )
-       CALL LEF_ZERO3( vvel0 ,myThid )
-       CALL LEF_ZERO3( wvel0 ,myThid )
-       CALL LEF_ZERO3( tave0 ,myThid )
-       CALL LEF_ZERO3( save0 ,myThid )
-       CALL LEF_ZERO3( conv0 ,myThid )
-       CALL LEF_ZERO3( gmkx0 ,myThid )
-       CALL LEF_ZERO3( gmky0 ,myThid )
-       CALL LEF_ZERO3( gmkz0 ,myThid )
-       CALL LEF_ZERO2( hflx0 ,myThid )
-       CALL LEF_ZERO2( sflx0 ,myThid )
-       CALL LEF_ZERO2( icem0 ,myThid )
-       CALL LEF_ZERO3( kdfs0 ,myThid )
-       CALL LEF_ZERO3( kght0 ,myThid )
-       CALL LEF_ZERO3( uvel1 ,myThid )
-       CALL LEF_ZERO3( vvel1 ,myThid )
-       CALL LEF_ZERO3( wvel1 ,myThid )
-       CALL LEF_ZERO3( tave1 ,myThid )
-       CALL LEF_ZERO3( save1 ,myThid )
-       CALL LEF_ZERO3( conv1 ,myThid )
-       CALL LEF_ZERO3( gmkx1 ,myThid )
-       CALL LEF_ZERO3( gmky1 ,myThid )
-       CALL LEF_ZERO3( gmkz1 ,myThid )
-       CALL LEF_ZERO2( hflx1 ,myThid )
-       CALL LEF_ZERO2( sflx1 ,myThid )
-       CALL LEF_ZERO2( icem1 ,myThid )
-       CALL LEF_ZERO3( kdfs1 ,myThid )
-       CALL LEF_ZERO3( kght1 ,myThid )
-      ENDIF
+C--   First call requires that we initialize everything to zero for safety
+C      <= already done in OFFLINE_INIT_VARIA
 
 C--   Now calculate whether it is time to update the forcing arrays
       locTime = myTime -offlineOffsetIter*deltaToffline
@@ -387,11 +347,11 @@ C--   Interpolate uvel, vvel, wvel
        DO k=1,Nr
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          Uvel(i,j,k,bi,bj)   = bWght*uvel0(i,j,k,bi,bj)
+          uVel(i,j,k,bi,bj)   = bWght*uvel0(i,j,k,bi,bj)
      &                       +aWght*uvel1(i,j,k,bi,bj)
-          Vvel(i,j,k,bi,bj)    = bWght*vvel0(i,j,k,bi,bj)
+          vVel(i,j,k,bi,bj)    = bWght*vvel0(i,j,k,bi,bj)
      &                       +aWght*vvel1(i,j,k,bi,bj)
-          Wvel(i,j,k,bi,bj)    =  bWght*wvel0(i,j,k,bi,bj)
+          wVel(i,j,k,bi,bj)    =  bWght*wvel0(i,j,k,bi,bj)
      &                       +aWght*wvel1(i,j,k,bi,bj)
           theta(i,j,k,bi,bj)    = bWght*tave0(i,j,k,bi,bj)
      &                       +aWght*tave1(i,j,k,bi,bj)
@@ -458,87 +418,6 @@ C endif for periodicForcing
       ENDIF
 
 #endif /* ALLOW_OFFLINE */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: LEF_ZERO3
-C     !INTERFACE:
-      SUBROUTINE LEF_ZERO3( arr ,myThid )
-
-C     !DESCRIPTION: \bv
-C     This routine simply sets the argument array to zero
-C     Used only by OFFLINE_FIELDS_LOAD
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Arguments ===
-      _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER myThid
-
-C     !LOCAL VARIABLES:
-C     === Local variables ===
-      INTEGER i,j,bi,bj,k
-CEOP
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        do k=1,Nr
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          arr(i,j,k,bi,bj)=0.
-         ENDDO
-        ENDDO
-        enddo
-       ENDDO
-      ENDDO
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: LEF_ZERO2
-C     !INTERFACE:
-      SUBROUTINE LEF_ZERO2( arr ,myThid )
-
-C     !DESCRIPTION: \bv
-C     This routine simply sets the argument array to zero
-C     Used only by OFFLINE_FIELDS_LOAD
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Arguments ===
-      _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER myThid
-
-C     !LOCAL VARIABLES:
-C     === Local variables ===
-      INTEGER i,j,bi,bj
-CEOP
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          arr(i,j,bi,bj)=0.
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
       RETURN
       END

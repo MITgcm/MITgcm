@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_init_varia.F,v 1.2 2009/10/10 21:28:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_init_varia.F,v 1.3 2011/04/20 03:13:54 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+#include "OFFLINE_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
       SUBROUTINE OFFLINE_INIT_VARIA( myThid )
@@ -29,6 +28,7 @@ C     i,j,k,bi,bj  :: loop indices
 
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+          offlineLdRec(bi,bj) = 0
           DO k=1,Nr
             DO j=1-Oly,sNy+OLy
               DO i=1-Olx,sNx+Olx
@@ -41,7 +41,9 @@ C     i,j,k,bi,bj  :: loop indices
                  gmkx0(i,j,k,bi,bj) = 0. _d 0
                  gmky0(i,j,k,bi,bj) = 0. _d 0
                  gmkz0(i,j,k,bi,bj) = 0. _d 0
-c
+                 kdfs0(i,j,k,bi,bj) = 0. _d 0
+                 kght0(i,j,k,bi,bj) = 0. _d 0
+C
                  save1(i,j,k,bi,bj) = 0. _d 0
                  tave1(i,j,k,bi,bj) = 0. _d 0
                  uvel1(i,j,k,bi,bj) = 0. _d 0
@@ -51,6 +53,8 @@ c
                  gmkx1(i,j,k,bi,bj) = 0. _d 0
                  gmky1(i,j,k,bi,bj) = 0. _d 0
                  gmkz1(i,j,k,bi,bj) = 0. _d 0
+                 kdfs1(i,j,k,bi,bj) = 0. _d 0
+                 kght1(i,j,k,bi,bj) = 0. _d 0
               ENDDO
             ENDDO
           ENDDO
@@ -58,8 +62,11 @@ c
             DO i=1-Olx,sNx+Olx
                  hflx0(i,j,bi,bj) = 0. _d 0
                  sflx0(i,j,bi,bj) = 0. _d 0
+                 icem0(i,j,bi,bj) = 0. _d 0
+C
                  hflx1(i,j,bi,bj) = 0. _d 0
                  sflx1(i,j,bi,bj) = 0. _d 0
+                 icem1(i,j,bi,bj) = 0. _d 0
             ENDDO
           ENDDO
         ENDDO
