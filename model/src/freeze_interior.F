@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/freeze_interior.F,v 1.1 2011/04/20 13:45:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/freeze_interior.F,v 1.2 2011/04/21 15:31:04 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,7 +40,7 @@ C     == Local variables ==
 C     Tfreezing :: Freezing threshold temperature.
       INTEGER bi,bj,i,j,k,kTop
       _RL Tfreezing, Tresid, pLoc, sLoc, tLoc
-      _RL a0, a1, a2, b, c0
+      _RL a0, a1, a2, b
       PARAMETER( a0 = -0.0575   _d  0 )
       PARAMETER( a1 = 1.710523  _d -3 )
       PARAMETER( a2 = -2.154996 _d -4 )
