@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1409 2011/04/20 21:37:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1410 2011/04/21 15:18:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -16,8 +16,8 @@ o adding allowInteriorFreezing option to check for water below freezing point
 o pkgs _fields_load:
   - extend GET_PERIODIC_INTERVAL to deal with non-periodic case (from pkg/rbcs)
   - use new S/R GET_PERIODIC_INTERVAL in pkgs:
-    bulk_force, cfc, dic, obcs (+ ctrl/ctrl_get_gen_rec), offline & rbcs to get
-    interpolation weights and time reccord number. (left: cheapaml_fields_load).
+    bulk_force, cheapaml, cfc, dic, obcs (+ ctrl/ctrl_get_gen_rec), offline and
+    rbcs to get interpolation weights and time reccord number.
   - fix multi-threading in aim_fields_load.F
   - apply EXCH to temp arrays [0,1] after reading in dic_fields_load.F
 o external_fields_load:
