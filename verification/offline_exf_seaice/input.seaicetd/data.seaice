@@ -6,7 +6,6 @@
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.FALSE.,
       LSR_ERROR          = 1.E-12,
-      ICE2WATR           = 0.92,
 # does not have an effect here
 # for backward compatibility turn off advection
 # of snow
