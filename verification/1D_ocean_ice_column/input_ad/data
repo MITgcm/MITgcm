@@ -62,6 +62,7 @@
  HeatCapacity_Cp = 3986.D0
  gravity         = 9.8156,
  rhoNil          = 1027.D0
+ rhoConstFresh   = 999.8,
  useCDscheme=.FALSE.,
  inAdExact=.TRUE.,
  staggerTimeStep=.TRUE.,

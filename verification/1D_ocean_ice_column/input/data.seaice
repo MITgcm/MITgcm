@@ -13,7 +13,6 @@
       SEAICE_salinity = 0.3,
       SEAICEuseFlooding  = .TRUE.,
       areaMin = 1e-8,
-      ICE2WATR           = 0.92D0,
  
  &
  &SEAICE_PARM02
