@@ -6,7 +6,6 @@
  SEAICE_deltaTdyn   = 3600.,
  LSR_ERROR          = 1.E-12,
 #SEAICE_deltaTevp   = 30.,
- ICE2WATR           = 0.92D0,
  SEAICE_dryIceAlb   = 0.8756,
  SEAICE_wetIceAlb   = 0.7856,
  SEAICE_drySnowAlb  = 0.9656,

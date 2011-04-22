@@ -7,7 +7,6 @@
  LSR_ERROR          = 1.E-12,
 #SEAICE_deltaTevp   = 30.,
  SEAICEuseFREEDRIFT = .TRUE.,
- ICE2WATR           = 0.92D0,
 # for backward compatibility only:
  SEAICE_cpAir       = 1.0039560439560439e+03,
  SEAICE_lhSublim    = 2.8340219780219775e+06,

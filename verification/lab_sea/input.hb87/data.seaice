@@ -8,7 +8,6 @@
  SEAICE_deltaTevp   = 30.,
  useHB87stressCoupling = .TRUE.,
  SEAICE_no_slip     = .TRUE.,
- ICE2WATR           = 0.92D0,
  AreaFile           = 'AREA.0000008760',
  HsnowFile          = 'HSNOW.0000008760',
  HsaltFile          = 'HSALT.0000008760',
