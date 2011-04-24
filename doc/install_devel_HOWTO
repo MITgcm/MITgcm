@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#  Ed Hill
-#  Wed Nov 19 18:31:21 EST 2003
+# $Header: /u/gcmpack/MITgcm/doc/install_devel_HOWTO,v 1.6 2011/04/24 00:01:05 jmc Exp $
+# $Name:  $
 
 set -x
 scp ./devel_HOWTO.ps mitgcm.org:/u/httpd/html/public/devel_HOWTO

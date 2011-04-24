@@ -1,6 +1,6 @@
 #
-# $ Header:  $
-#
+# $Header: /u/gcmpack/MITgcm/doc/Makefile,v 1.6 2011/04/24 00:01:05 jmc Exp $
+# $Name:  $
 
 ALL = \
   devel_HOWTO.ps \
