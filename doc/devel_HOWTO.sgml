@@ -1,6 +1,6 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <!--
- $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.15 2011/03/01 01:33:19 jmc Exp $
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.16 2011/04/24 00:04:40 jmc Exp $
  $Name:  $
 -->
 
@@ -31,7 +31,7 @@
 	<date>2010-01-21</date>
 	<authorinitials>jmc</authorinitials>
 	<revremark>
-	  update links.
+	  Update links.
         </revremark>
       </revision>
       <revision>
@@ -40,6 +40,14 @@
 	<authorinitials>jmc</authorinitials>
 	<revremark>
 	  Add subsection "Developer settings" (under CVS Repository).
+        </revremark>
+      </revision>
+      <revision>
+	<revnumber>0.04</revnumber>
+	<date>2011-04-24</date>
+	<authorinitials>jmc</authorinitials>
+	<revremark>
+	  Update subsection "The verification suite".
         </revremark>
       </revision>
     </revhistory>
@@ -132,7 +140,7 @@
        doc                      basic developpment documentation
        eesupp                   execution environment support code (wrapper)
        exe                      empty
-       jobs                     runtime shell scripts for 
+       jobs                     runtime shell scripts for
                                   various platforms (not maintained)
        lsopt                    line search
        model                    main dynamics (core)
@@ -151,7 +159,7 @@
   gfd_lab               -?-
   manual                source of MITgcm documentation
   mitgcm.org            build web site
-  old_develop           old and early development source 
+  old_develop           old and early development source
        misc                 -?-
        models               -?-
        packages             -?-
@@ -220,37 +228,37 @@
     <sect2>
       <title> Developer settings </title>
 
-      <para>CVS is a convenient tool to keep up-to-date a personal copy of the 
-      MITgcm code (see: <ulink url="http://mitgcm.org/public/using_cvs.html"> 
-      using CVS </ulink>). The same tool is used by developers to 
+      <para>CVS is a convenient tool to keep up-to-date a personal copy of the
+      MITgcm code (see: <ulink url="http://mitgcm.org/public/using_cvs.html">
+      using CVS </ulink>). The same tool is used by developers to
       incorporate any change into the repository. However, this later
       function requires specific settings, as detailed here after:</para>
       <orderedlist>
 	<listitem>
-	  <para> You will need an account (loggin access) to the server 
+	  <para> You will need an account (loggin access) to the server
            "mitgcm.org" with the proper group setting (e.g.,
             group "gcmctrb" to add/modify code into MITgcm_contrib).
             This kind of account is granted only upon well motivated request.
             The access to the server mitgcm.org is through ssh-key authorization
             which will need to be set properly on both side (on your local machine
             and on your server account). You need to be able to
-            to ssh to mitgcm.org (or <filename>ssh MY_USER_NAME@mitgcm.org</filename> 
+            to ssh to mitgcm.org (or <filename>ssh MY_USER_NAME@mitgcm.org</filename>
             in case of different user-name on both sides) to proceed further.</para>
 	</listitem>
 
 	<listitem>
-	  <para> You need to register to the 
-        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-cvs"> 
+	  <para> You need to register to the
+        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-cvs">
       mitgcm-cvs </ulink> mailing list.
-          This ensures that other developers will receive email notification 
-           when you make changes; you will also receive as well such email 
+          This ensures that other developers will receive email notification
+           when you make changes; you will also receive as well such email
            when others make changes to the repository.
           </para>
 	</listitem>
 
 	<listitem>
-	  <para> It is highly recommended that you register also to the 
-        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-devel"> 
+	  <para> It is highly recommended that you register also to the
+        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-devel">
       mitgcm-devel </ulink> mailing list (expect a short delay for
        this request to be processed).
           This list is intended for developer discussions.
@@ -259,7 +267,7 @@
 
 	<listitem>
 	  <para> The standard anonymous mode (using "cvsanon", as mentionned
-        <ulink url="http://mitgcm.org/public/source_code.html"> 
+        <ulink url="http://mitgcm.org/public/source_code.html">
       here </ulink>) does not allow check-in ("cvs commit") permission.
          Instead, you will need to set our CVS environment as follow:</para>
 <screen>
@@ -272,16 +280,16 @@
 <screen>
   $ cvs co -P -d myCopy MITgcm_contrib/thisPart
 </screen>
-	  <para> the type of CVS environment which has been used 
-	   is stored in the file <filename>myCopy/CVS/Root</filename> 
-           and makes it difficult to re-use, for cvs-commit purpose, 
-           a cvs local copy (<filename>myCopy</filename>) which was obtained 
+	  <para> the type of CVS environment which has been used
+	   is stored in the file <filename>myCopy/CVS/Root</filename>
+           and makes it difficult to re-use, for cvs-commit purpose,
+           a cvs local copy (<filename>myCopy</filename>) which was obtained
            using the CVS anonymous mode.</para>
 	</listitem>
 
 	<listitem>
-	  <para> At this stage, you should be able to send your modified source 
-          file (e.g., <filename>src_file</filename>) from your local copy directory 
+	  <para> At this stage, you should be able to send your modified source
+          file (e.g., <filename>src_file</filename>) from your local copy directory
 	  (<filename>myCopy</filename>) to the CVS repository
           (<filename>MITgcm_contrib/thisPart</filename>) using the command
           "cvs commit":</para>
@@ -291,9 +299,9 @@
   $ cvs diff src_file    (optional; list your changes)
   $ cvs commit src_file
 </screen>
-	  <para> It is essential that you provide a short description of the 
-          changes you made to <filename>src_file</filename> as you check-in 
-          this file (the "cvs commit" command automatically opens your standard 
+	  <para> It is essential that you provide a short description of the
+          changes you made to <filename>src_file</filename> as you check-in
+          this file (the "cvs commit" command automatically opens your standard
           editor for this purpose).</para>
 	</listitem>
 
@@ -357,17 +365,17 @@ checkpoint50e_post
 o make KPP work with PTRACERS
  - fix gad_calc_rhs to call new routine kpp_transport_ptr, which is
    nearly a copy of kpp_transport_s
- - there is no analogue to SurfaceTendencyS, so I have to use 
+ - there is no analogue to SurfaceTendencyS, so I have to use
    gPtr(of the surface layer) instead
 o add a new platform SunFire+mpi (SunFire 15000) to genmake
 checkpoint50e_pre
 
 checkpoint50d_post
-o change kpp output from multiple-record state files to single-record state 
+o change kpp output from multiple-record state files to single-record state
   files analogous to write_state.F
-o reduce the output frequency of cg3d-related stuff to the monitor frequency, 
-  analogous to the cg2d-related output. 
-o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512, 
+o reduce the output frequency of cg3d-related stuff to the monitor frequency,
+  analogous to the cg2d-related output.
+o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512,
   so that writing to internal file fn (with length 512) fails.
 checkpoint50d_pre
 </programlisting>
@@ -401,7 +409,7 @@ checkpoint50d_pre
 
       <para>The following sections describe the individual steps in the build
 	process.</para>
-      
+
       <sect3 id="genmake">
 	<title>The <filename>genmake2</> Utility</title>
 
@@ -554,7 +562,7 @@ checkpoint50d_pre
 		<listitem><para>Packages either explicitly specified or
 		    provided by default (in the order given)</para></listitem>
 		<listitem><para>Packages included due to package dependencies
-		    (in the order that that package dependencies are 
+		    (in the order that that package dependencies are
 		    parsed)</para></listitem>
 		<listitem><para>The "standard dirs" (which may have been
 		    specified by the "-standarddirs" option)</para></listitem>
@@ -638,8 +646,8 @@ checkpoint50d_pre
 	  files, and links.  It is strongly recommended for "un-clean"
 	  directories which may contain the (perhaps partial) results of
 	  previous builds. Such "debris" can interfere with the next stage of
-	  the build. 
-	  A more agressive cleaning option, "make CLEAN", can be used to also 
+	  the build.
+	  A more agressive cleaning option, "make CLEAN", can be used to also
 	  remove the executable and output files from a previous run.</para>
 
 	<para>The "make depend" step will create a large number of symbolic
@@ -673,7 +681,7 @@ checkpoint50d_pre
 	    <listitem>
 	      <para>This target produces an <filename>mitgcmuv_ad</> executable
 		using the <filename>taf</> or <filename>staf</> adjoint
-		compiler.  See the <filename>genmake2</> "-adof" option for 
+		compiler.  See the <filename>genmake2</> "-adof" option for
 		compiler selection.</para>
 	    </listitem>
 	  </varlistentry>
@@ -700,23 +708,237 @@ checkpoint50d_pre
 
       <para>The MITgcm CVS tree (within the <filename>$ROOTDIR/verification/</>
 	directory) includes many (> 90) examples intended for regression
-	testing.  Each one of these example directories contains "known-good"
+	testing.  Each one of these test-experiment directories contains "known-good"
 	output files along with all the input (including both code and data
-	files) required for their re-calculation.  These example directories are
-	further broken down into sets of subdirectories
-	(eg. <filename>/input</>, <filename>/code</>) intended to expedite the
-	testing process.</para>
+	files) required for their re-calculation.
+	Also included in <filename>$ROOTDIR/verification/</> is the shell
+	script <filename>testreport</> to perform regression tests.</para>
+
+      <sect3 id="test-experiment">
+	<title>Test-experiment Directory Content</title>
+
+	  <para> Each test-experiment directory (<filename>TESTDIR</>) contains
+	  several standard subdirectories and files which <filename>testreport</>
+	  recognizes and uses when running a regression test.
+	  The directories/files that <filename>testreport</> uses are different
+	  for a forward test and an adjoint test (<filename>testreport -adm</>)
+	  and some test-experiments are set-up for only one type of regression
+          test whereas others allow both types of tests (forward and adjoint).</para>
+	  <para>Also some test-experiment allows, using the same MITgcm executable,
+	  to perform multiple tests using different parameters and input files,
+	  with a primary input set-up
+	  (<filename>input/ </> or <filename>input_ad/ </>)
+	  and corresponding results (<filename>results/output.txt</> or
+	  <filename>results/output_adm.txt</>) and with one or several secondary
+	  inputs (<filename>input.OTHER/ </> or <filename>input_ad.OTHER/ </>)
+	  and corresponding results (<filename>results/output.OTHER.txt </>
+	  or <filename>results/output_adm.OTHER.txt</>).</para>
+	<variablelist>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/results/</></term>
+	    <listitem>
+	      <para>contains reference standard output used for test comparison.
+		<filename>results/output.txt</> and
+		<filename>results/output_adm.txt</>
+		correspond respectively to primary forward and adjoint test
+		run on the reference platform (currently
+		<filename>baudelaire.csail.mit.edu</>)
+		on one processor (no MPI, single thread)
+		using the reference compiler (curently the GNU fortran
+		compiler <filename>gfortran</>).
+		The presence of these files determines whether or not
+		<filename>testreport</> is testing or skipping
+		this test-experiment.
+		Reference standard output for secondary tests
+		(<filename>results/output.OTHER.txt</>
+		or <filename>results/output_adm.OTHER.txt</>) are
+		also expected here.</para>
+	      <para>The test comparison involves few model variables output, which are,
+		by default and for a forward test, the 2-D solver initial residual
+		(<filename>cg2d_init_res</>) and 3-D state variables (T,S,U,V)
+		monitor output, and, by default and for an adjoint test, the
+		cost-function and gradient-check. However, some test-experiments
+		use some package-specific variable/monitor output according to
+		the file <filename>TESTDIR/input[_ad][.OTHER]/tr_checklist</>
+		specification.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/build/</></term>
+	    <listitem>
+	      <para> initially empty directory where <filename>testreport</>
+		will build the MITgcm executable for forward and adjoint test.
+		It might contains an experiment specific
+		<filename>genmake_local</> file (see <xref linkend="genmake">).
+		</para>
+	      <para> Note that the original <filename>code[_ad]/SIZE.h_mpi</>
+		is not directly used as "SIZE.h" to build an MPI-executable ;
+		instead, a local copy <filename>build/SIZE.h.mpi</> is derived
+		from <filename>code[_ad]/SIZE.h_mpi</>
+		by adjusting the number of processors (nPx,nPy) according to
+		<filename>NUMBER_OF_PROCS</> (see <xref linkend="testreport">,
+		<filename>testreport -MPI</>) ; then it is linked to "SIZE.h"
+		(<filename> ln -s SIZE.h.mpi SIZE.h </>) before building
+		the MPI-executable.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/code/</></term>
+	    <listitem>
+	      <para>contains the test-experiment specific source code
+		used to build the MITgcm executable (<filename>mitgcmuv</>)
+		for forward-test (using <filename>genmake2 -mods=../code</>).
+		</para>
+		<para> It can also contain specific source files with the suffix
+		"<filename>_mpi</>" to be used
+		<!--
+		in the <filename>TESTDIR/build/</> directory
+		-->
+		in place of the corresponding file (without suffix)
+		for an MPI test (see <xref linkend="testreport">).
+		The presence or absence of <filename>SIZE.h_mpi</>
+		determines whether or not an MPI test on this
+		test-experiment is performed or skipped.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/code_ad/</></term>
+	    <listitem>
+	      <para>contains the test-experiment specific source code
+		used to build the MITgcm executable (<filename>mitgcmuv_ad</>)
+		for adjoint-test (using <filename>genmake2 -mods=../code_ad</>).
+		It can also contain specific source files with the suffix
+		"<filename>_mpi</>" (see above).</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/input/</></term>
+	    <listitem>
+	      <para>contains the input and parameter files
+		used to run the primary forward test of this test-experiment.
+		</para>
+	      <para>It can also contain specific parameter files with the suffix
+		"<filename>.mpi</>" to be used
+		<!--
+		in the <filename>TESTDIR/run/</> directory
+		-->
+		in place of the corresponding file (without suffix) for MPI
+		test, or with suffix "<filename>.mth</>" to be used for
+		multi-threaded test (see <xref linkend="testreport">).
+		The presence or absence of <filename>eedata.mth</>
+		determines whether or not a multi-threaded test on this
+		test-experiment is performed or skipped.</para>
+	      <para>To save disk space and reduce downloading time, multiple
+		copies of the same input file is avoided by using a shell
+		script <filename>prepare_run</>.
+		When such a script is found in <filename>TESTDIR/input/ </>,
+		<filename>testreport</> run this script in directory
+		<filename>TESTDIR/run/ </> after linking all the input file
+		from <filename>TESTDIR/input/ </>.
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/input_ad/</></term>
+	    <listitem>
+	      <para>contains the input and parameter files
+		used to run the primary adjoint test of this test-experiment.
+		It can also contain specific parameter files with the suffix
+		"<filename>.mpi</>" and shell script <filename>prepare_run</>
+		as described above.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/input.OTHER/</></term>
+	    <listitem>
+	      <para>contains the input and parameter files
+		used to run the secondary OTHER forward test of this test-experiment.
+		It can also contain specific parameter files with suffix
+		"<filename>.mpi</>" or "<filename>.mth</>" and shell script
+		<filename>prepare_run</> (see above).</para>
+		<para> The presence or absence the file <filename>eedata.mth</>
+		determines whether or not a secondary multi-threaded test on this
+		test-experiment is performed or skipped.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/input_ad.OTHER/</></term>
+	    <listitem>
+	      <para>contains the input and parameter files
+		used to run the secondary OTHER adjoint test of this test-experiment.
+		It can also contain specific parameter files with the suffix
+		"<filename>.mpi</>" and shell script <filename>prepare_run</>
+		(see above).</para>
+	    </listitem>
+	  </varlistentry>
+		<!--
+		-->
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/run/</></term>
+	    <listitem>
+	      <para> initially empty directory where <filename>testreport</>
+		will run the MITgcm executable for primary forward and adjoint
+		test.</para>
+	      <para>Symbolic links (using command "<filename>ln -s</>") are made
+		for input and parameter files (from <filename>../input/ </>
+		or from <filename>../input_ad/ </>) and for MITgcm executable
+		(from <filename>../build/ </>) before the run proceeds.
+		The sequence of links (function <filename>linkdata</> within shell
+		script <filename>testreport</>) for a forward test is:</para>
+<screen>
+* link+rename or remove links
+       to special files with suffix ".mpi" or ".mth" from ../input/
+* link files from ../input/
+* execute ../input/prepare_run (if it exists)
+</screen>
+	      <para>The sequence for an ajoint test is similar, with
+		<filename>../input_ad/ </> replacing <filename>../input/ </>.
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>directory <filename>TESTDIR/tr_run.OTHER/</></term>
+	    <listitem>
+	      <para> directory created by <filename>testreport</>
+		to run the MITgcm executable for secondary "OTHER" forward
+		or adjoint test.</para>
+	      <para> The sequence of links for a forward secondary test is:</para>
+<screen>
+* link+rename or remove links
+       to special files with suffix ".mpi" or ".mth" from ../input.OTHER/
+* link files from ../input.OTHER/
+* execute ../input.OTHER/prepare_run (if it exists)
+* link files from ../input/
+* execute ../input/prepare_run (if it exists)
+</screen>
+	      <para>The sequence for an ajoint test is similar, with
+		<filename>../input_ad.OTHER/ </> and <filename>../input_ad/ </>
+		replacing <filename>../input.OTHER/ </> and <filename>../input/ </>.
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+      </sect3>
 
       <sect3 id="testreport">
 	<title>The <filename>testreport</> Utility</title>
 
-	<para>Also included in <filename>$ROOTDIR/verification/</> are shell
-	  scripts for automated testing.  The script (which was written
-	  to work with <filename>genmake2</>) is called <filename>testreport</>.
-	  This script can be used to build different versions of the MITgcm
-	  code, run the various examples, compare the output, and (if specified)
-	  email the results of each one of these tests to a central
-	  repository.</para>
+	<para> The shell script  <filename>testreport</> (in
+	  <filename>$ROOTDIR/verification/</>), which was written to work with
+	  <filename>genmake2</>, can be used to build different versions
+	  of the MITgcm code, run the various examples, compare the output,
+	  and (if specified) email the results of each one of these tests to a
+	  central repository.</para>
 
 	<para>On some systems, the testreport script can be run with a command
 	line as simple as:</para>
@@ -744,7 +966,7 @@ checkpoint50d_pre
 	    <term><filename>-ieee</> (default) / <filename>-noieee</></term>
 	    <listitem>
 	      <para>If allowed by the compiler (as defined in the "optfile"),
-		use IEEE arithmetic (<filename>genmake2 -ieee</>). 
+		use IEEE arithmetic (<filename>genmake2 -ieee</>).
                 This option, along with the gfortran / gcc compiler,
 		is how the standard results are produced.</para>
 	    </listitem>
@@ -794,15 +1016,15 @@ checkpoint50d_pre
 	    <term><filename>-MPI NUMBER_OF_PROCS</></term>
 	    <term><filename>-mpi</></term>
 	    <listitem>
-	      <para>If the necessary file (<filename>TESTDIR/code/SIZE.h_mpi</>) 
+	      <para>If the necessary file (<filename>TESTDIR/code/SIZE.h_mpi</>)
 	      exists, then use it (and all <filename>TESTDIR/code/*_mpi</> files)
-	      for an MPI--enabled run.  The new option (<filename>-MPI</> followed 
-	      by the maximum number of processors) enable to build and run each 
+	      for an MPI--enabled run.  The new option (<filename>-MPI</> followed
+	      by the maximum number of processors) enable to build and run each
 	      test-experiment using variable number of MPI processors (multiple
-	      of <filename>nPx*nPy</> from <filename>TESTDIR/code/SIZE.h_mpi</> 
-	      and not larger than <filename>NUMBER_OF_PROCS</>). 
-	      The short option ("-mpi") can only be used to build and run on 2 MPI 
-	      processors (equivalent to "<filename>-MPI 2</>").</para> 
+	      of <filename>nPx*nPy</> from <filename>TESTDIR/code/SIZE.h_mpi</>
+	      and not larger than <filename>NUMBER_OF_PROCS</>).
+	      The short option ("-mpi") can only be used to build and run on 2 MPI
+	      processors (equivalent to "<filename>-MPI 2</>").</para>
 	      <para>Note that the use of MPI typically requires a
 	      special command option (see "-command" below) to invoke the MPI
 	      executable.  Examples of PBS scripts using testreport with MPI can be
@@ -821,16 +1043,63 @@ checkpoint50d_pre
 	      using testreport with MPI can be found in the <ulink
 	      url="http://mitgcm.org/viewvc/MITgcm/MITgcm/tools/example_scripts/">
 	      tools/example_scripts directory</ulink>.</para>
+	      <para>
+		For the case where the number of MPI processors varies according
+		to each test-experiment, some key-words within the command-to-run
+		argument will be replaced by their effective value:</para>
+	      <para>
+		<filename>TR_NPROC </> will be replaced by the actual number
+		of MPI processors needed to run the current test-experiment.</para>
+	      <para>
+		<filename>TR_MFILE </> will be replaced by the name of local-file
+		that testreport creates from the full list of machines which
+		"<filename>testreport -mf MACHINE_FILE</>" provides, but truncated
+		to the exact number of machines.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-mf MACHINE_FILE</></term>
+	    <listitem>
+	      <para>
+		To use with <filename>-MPI NUMBER_OF_PROCS</> option, to specify
+		the file containing the full list of <filename>NUMBER_OF_PROCS</>
+		machines to use for the MPI runs.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-mth</></term>
+	    <listitem>
+	      <para>compile (with <filename>genmake2 -omp</>) and run with
+		multiple threads (using eedata.mth).</para>
 	    </listitem>
 	  </varlistentry>
 
 	</variablelist>
 
-	<para>The <filename>testreport</> script will write progress to the
-	  screen (stdout) as it runs.  In addition, it will create a
-	  <filename>tr_out.txt</> file that contains a brief comparison of the
-	  current output with the "known-good" output.</para>
+	<para>The <filename>testreport</> script will create an output directory
+	  <filename>tr_NAME_DATE_N/ </>, with <filename>hostname</> as default
+	  <filename>NAME</>, <filename>DATE</> the current date followed by
+	  a suffix number "N" to distinguish from previous
+	  <filename>testreport</> output directories.
+	  <filename>testreport</> writes progress to the screen (stdout)
+	  and reports into the ouput directory as it runs.
+	  In particular, one can find, in the ouput directory,
+	  the <filename>summary.txt</> file that contains a brief comparison
+	  of the current output with the "known-good" output.
+	  At the end of the testing process, the <filename>tr_out.txt</> file
+	  is generated in <filename>$ROOTDIR/verification/ </>
+	  as a compact version of <filename>summry.txt</> file.</para>
 
+      </sect3>
+
+      <sect3 id="tst_2plus2">
+	<title>The <filename>do_tst_2+2</> Utility</title>
+	<para> The shell script  <filename>do_tst_2+2</> (in
+	  <filename>$ROOTDIR/tools/ </>)
+	  can be used to check the accuracy of the restart procedure.
+        </para>
       </sect3>
 
     </sect2>
@@ -871,7 +1140,7 @@ separated from the generic fluid dynamical engine.
 below using generic package names ${pkg}.
 A concrete examples of a package is the code
 for implementing GM/Redi mixing. This code uses
-the package name 
+the package name
 *   ${PKG} = GMREDI
 *   ${pkg} = gmredi
 *   ${Pkg} = gmRedi
@@ -906,8 +1175,8 @@ o  Each package gets its runtime configuration
    Package runtime config. options are imported
    into a common block held in a header file
    called "${PKG}.h".
-   Note: In some packages, the header file "${PKG}.h" is splitted 
-   into "${PKG}_PARAMS.h" that contains the package parameters and 
+   Note: In some packages, the header file "${PKG}.h" is splitted
+   into "${PKG}_PARAMS.h" that contains the package parameters and
    ${PKG}_VARS.h" for the field arrays.
 
 o  The core driver part of the model can check
@@ -931,7 +1200,7 @@ CPP Flags
     1. Within the core driver code flags of the form
        ALLOW_${PKG} are used to include or exclude
        whole packages. The ALLOW_${PKG} flags are included
-       from a PACKAGES_CONFIG.h file that is automatically 
+       from a PACKAGES_CONFIG.h file that is automatically
        generated by genmake2 (see genmake2 section).
        held in-line in the CPP_OPTIONS.h header file.
        e.g.
@@ -950,7 +1219,7 @@ CPP Flags
 
     2. Within an individual package a header file,
        "${PKG}_OPTIONS.h", is used to set CPP flags
-       specific to that package. It also includes 
+       specific to that package. It also includes
        "PACKAGES_CONFIG.h" and "CPP_OPTIONS.h".
 
 
@@ -964,7 +1233,7 @@ Package Boot Sequence
     1. S/R PACKAGES_BOOT()
             :
         CALL OPEN_COPY_DATA_FILE( 'data.pkg', 'PACKAGES_BOOT', ... )
- 
+
 
     2. S/R PACKAGES_READPARMS()
             :
@@ -1016,20 +1285,20 @@ Package Output
 Description
 ===========
 
-      - ${PKG}_READPARMS() 
+      - ${PKG}_READPARMS()
     is responsible for reading
     in the package parameters file data.${pkg}, and storing
     the package parameters in "${PKG}.h" (or in "${PKG}_PARAMS.h").
     -> called from INITIALISE_FIXED in PACKAGES_READPARMS
 
-     - ${PKG}_INIT_FIXED() 
-    is responsible for completing the internal setup of a package. 
+     - ${PKG}_INIT_FIXED()
+    is responsible for completing the internal setup of a package.
     -> called from INITIALISE_FIXED in PACKAGES_INIT_FIXED
     note: 1) some pkg use instead:
              CALL ${PKG}_INITIALISE  ( or the old form CALL ${PKG}_INIT )
           2) for simple pkg setup, this part is done inside ${PKG}_READPARMS
 
-     - ${PKG}_CHECK() 
+     - ${PKG}_CHECK()
     is responsible for validating
     basic package setup and inter-package dependencies.
     ${PKG}_CHECK can import other package parameters it may
@@ -1038,32 +1307,32 @@ Description
     will not be reset during ${PKG}_CHECK().
     -> called from INITIALISE_FIXED in PACKAGES_CHECK
 
-     - ${PKG}_INIT_VARIA() 
+     - ${PKG}_INIT_VARIA()
     is responsible for fill-in all package variables with an initial value.
     Contains eventually a call to ${PKG}_READ_PICKUP that will read
     from a pickup file the package variables required to restart the model.
-    This routine is called after the core model state has been completely 
+    This routine is called after the core model state has been completely
     initialised but before the core model timestepping starts.
     -> called from INITIALISE_VARIA in PACKAGES_INIT_VARIABLES
-    note: the name ${PKG}_INIT_VARIA is not yet standard and some pkg 
-     use for e.g. ${PKG}_INI_VARS, ${PKG}_INIT_VARIABLES, or the old 
+    note: the name ${PKG}_INIT_VARIA is not yet standard and some pkg
+     use for e.g. ${PKG}_INI_VARS, ${PKG}_INIT_VARIABLES, or the old
      form ${PKG}_INIT
 
      - ${PKG}_OUTPUT( )
      is responsible for writing time-average fields to output files
      (but the cumulating step is done within the package main S/R).
-     Can also contain other diagnostics (.e.g. CALL ${PKG}_MONITOR) 
-     and write snap-shot fields that are hold in common blocks. Other 
+     Can also contain other diagnostics (.e.g. CALL ${PKG}_MONITOR)
+     and write snap-shot fields that are hold in common blocks. Other
      temporary fields are directly dump to file where they are available.
-     NOTE: 1) the S/R old name ${PKG}_DIAGS is used in some packages 
+     NOTE: 1) the S/R old name ${PKG}_DIAGS is used in some packages
               but is beeing replaced by ${PKG}_OUTPUT
               to avoid confusion with pkg/diagnostics functionality.
            2) the output part is not yet in a standard form and might still
               evolve a lot.
     -> called within DO_THE_MODEL_IO
 
-     - ${PKG}_WRITE_PICKUP() 
-     is responsible for writing a package pickup file when necessary for 
+     - ${PKG}_WRITE_PICKUP()
+     is responsible for writing a package pickup file when necessary for
      a restart. (found also the old name: ${PKG}_WRITE_CHECKPOINT )
     -> called from FORWARD_STEP and THE_MODEL_MAIN in PACKAGES_WRITE_PICKUP
 
@@ -1099,7 +1368,7 @@ Summary
   * ${pkg}_output.F       write output to file.
   * ${pkg}_write_pickup.F write a package pickup file to restart the model
 
-  New: Subroutine in one package (pkgA) that only contains code which 
+  New: Subroutine in one package (pkgA) that only contains code which
        is connected to a 2nd package (pkgB) (e.g.: gmredi_diagnostics_init.F)
        will be named: pkgA_pkgB_something.F
 
@@ -1156,7 +1425,7 @@ Summary
       the CVS tree.</para>
 
       <para>The result is a command that resembles either</para>
-      
+
       <orderedlist>
 	<listitem>
 	  <para>a reference to a variable or subroutine name such as
@@ -1175,14 +1444,14 @@ Summary
 	      into a "-")</para>
 	</listitem>
       </orderedlist>
-	  
+	
 
 
     </sect2>
 
     <sect2>
       <title>Building the Documentation</title>
-      
+
       <para>Given the directory structure of <xref
       linkend="documentation_getting">, the entire documentation for the web
       site can be built using:</para>
