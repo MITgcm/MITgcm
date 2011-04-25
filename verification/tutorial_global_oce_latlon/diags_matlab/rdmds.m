@@ -1,4 +1,4 @@
-function [AA,iters] = rdmds(fnamearg,varargin)
+function [AA,itrs,MM] = rdmds(fnamearg,varargin)
 % RDMDS  Read MITgcmUV meta/data files
 %
 % A = RDMDS(FNAME)
@@ -6,12 +6,12 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 % A = RDMDS(FNAME,[ITER1 ITER2 ...])
 % A = RDMDS(FNAME,NaN)
 % A = RDMDS(FNAME,Inf)
-% [A,ITS] = RDMDS(FNAME,[...])
+% [A,ITS,M] = RDMDS(FNAME,[...])
 % A = RDMDS(FNAME,[...],'rec',RECNUM)
 %
 %   A = RDMDS(FNAME) reads data described by meta/data file format.
 %   FNAME is a string containing the "head" of the file names.
-%  
+%
 %   eg. To load the meta-data files
 %       T.0000002880.000.000.meta, T.0000002880.000.000.data
 %       T.0000002880.001.000.meta, T.0000002880.001.000.data
@@ -27,8 +27,8 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %      >> size(A)
 %   ans =
 %      64    32     5    61
-%  
-%  
+%
+%
 %   A = RDMDS(FNAME,ITER) reads data described by meta/data file format.
 %   FNAME is a string containing the "head" of the file name excluding the
 %   10-digit iterartion number.
@@ -50,24 +50,25 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %
 %   A = RDMDS(FNAME,[...],'rec',RECNUM) reads individual records from
 %   multiple record files.
-%  
+%
 %   eg. To read a single record from a multi-record file
 %      >> [A,IT]=rdmds('pickup.ckptA',11);
 %   eg. To read several records from a multi-record file
 %      >> [A,IT]=rdmds('pickup',Inf,'rec',[1:5 8 12]);
 %
-%  
+%
 %   A = RDMDS(FNAME,ITER,MACHINEFORMAT) allows the machine format to be
 %   A = RDMDS(FNAME,MACHINEFORMAT)
 %   specified which MACHINEFORMAT is on of the following strings:
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/rdmds.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/rdmds.m,v 1.4 2011/04/25 18:20:40 jmc Exp $
 % $Name:  $
 
 AA=[];
-iters=[];
+itrs=[];
+MM=[];
 
 % Default options
 ieee='b';
@@ -99,24 +100,24 @@ for ind=1:size(varargin,2);
  else
   if userecords==1
    recnum=arg;
-  elseif isempty(iters)
+  elseif isempty(itrs)
   if isnan(arg)
-   iters=scanforfiles(fname);
-   disp([ sprintf('Reading %i time levels:',size(iters,2)) sprintf(' %i',iters) ]);
+   itrs=scanforfiles(fname);
+   disp([ sprintf('Reading %i time levels:',size(itrs,2)) sprintf(' %i',itrs) ]);
   elseif isinf(arg)
-   iters=scanforfiles(fname);
-   if isempty(iters)
-    AA=[];iters=[];return;
+   itrs=scanforfiles(fname);
+   if isempty(itrs)
+    AA=[];itrs=[];return;
    end
-   disp([ sprintf('Found %i time levels, reading %i',size(iters,2),iters(end)) ]);
-   iters=iters(end);
+   disp([ sprintf('Found %i time levels, reading %i',size(itrs,2),itrs(end)) ]);
+   itrs=itrs(end);
 % elseif prod(double(arg>=0)) & prod(double(round(arg)==arg))
 % elseif prod(arg>=0) & prod(round(arg)==arg)
   elseif min(arg)>=0 & isempty(find(round(arg)~=arg))
    if arg>=9999999999
     error(sprintf('Argument %i > 9999999999',arg))
    end
-   iters=arg;
+   itrs=arg;
   else
    error(sprintf('Argument %i must be a positive integer',arg))
   end
@@ -126,65 +127,160 @@ for ind=1:size(varargin,2);
  end
 end
 
-if isempty(iters)
- iters=-1;
+if isempty(itrs)
+ itrs=-1;
 end
 
 % Loop over each iteration
-for iter=1:size(iters,2);
-if iters(iter)>=0
- fname=sprintf('%s.%10.10i',fnamearg,iters(iter));
-end
+for iter=1:size(itrs,2);
+ if itrs(iter)>=0
+  fname=sprintf('%s.%10.10i',fnamearg,itrs(iter));
+ end
 
 % Figure out if there is a path in the filename
-NS=findstr('/',fname);
-if size(NS)>0
- Dir=fname(1:NS(end));
-else
- Dir='./';
-end
+ NS=findstr('/',fname);
+ if size(NS)>0
+  Dir=fname(1:NS(end));
+ else
+  Dir='./';
+ end
 
 % Match name of all meta-files
-allfiles=dir( sprintf('%s*.meta',fname) );
+ allfiles=dir( sprintf('%s*.meta',fname) );
 
-if size(allfiles,1)==0
- disp(sprintf('No files match the search: %s*.meta',fname));
-%allow partial reads%  error('No files found.')
-end
+ if size(allfiles,1)==0
+  disp(sprintf('No files match the search: %s*.meta',fname));
+ %allow partial reads%  error('No files found.')
+ end
 
 % Loop through allfiles
-for j=1:size(allfiles,1);
+ for j=1:size(allfiles,1);
 
 % Read meta- and data-file
-[A,N] = localrdmds([Dir allfiles(j).name],ieee,recnum);
+  [A,N,M,mG] = localrdmds([Dir allfiles(j).name],ieee,recnum);
 
-bdims=N(1,:);
-r0=N(2,:);
-rN=N(3,:);
-ndims=prod(size(bdims));
-if     (ndims == 1)
- AA(r0(1):rN(1),iter)=A;
-elseif (ndims == 2)
- AA(r0(1):rN(1),r0(2):rN(2),iter)=A;
-elseif (ndims == 3)
- AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),iter)=A;
-elseif (ndims == 4)
- AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),iter)=A;
-elseif (ndims == 5)
- AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),r0(5):rN(5),iter)=A;
-else
- error('Dimension of data set is larger than currently coded. Sorry!')
-end
+%- Merge local Meta file content (M) to MM string:
+  if j > 0, %- to comment out this block: "if j < 0" (since j is always > 0)
+   ii=findstr(M,' timeStepNumber');
+   if isempty(ii), ii1=0; ii2=0;
+   else ii1=ii; ii2=ii+min(findstr(M(1+ii:end),'];')); end
+   ii=findstr(M,' timeInterval');
+   if isempty(ii), jj1=0; jj2=0;
+   else jj1=ii; jj2=ii+min(findstr(M(1+ii:end),'];')); end
+   if iter==1 & j==1,
+    MM=M; ind1=0; ind2=0; is1=ii1; js1=jj1; M3=''; 
+    if ii1*jj1 > 0, 
+     %ind1=min(ii1,jj1); ind2=max(ii2,jj2);
+     %if ii1 < jj1, ii3=ii2+1; jj3=jj1-1;
+     %else  ii3=jj2+1; jj3=ii1-1; end
+      order=sort([ii1 ii2 jj1 jj2]);
+      ind1=order(1); ii3=order(2)+1; jj3=order(3)-1; ind2=order(4);
+      M2=M(ii1:ii2); M4=M(jj1:jj2); M3=M(ii3:jj3);
+    elseif ii1 > 0, 
+      ind1=ii1; ind2=ii2;
+      M2=M(ii1:ii2); M4='';
+    elseif jj1 > 0, 
+      ind1=jj1; ind2=jj2;
+      M4=M(jj1:jj2); M2='';
+    end
+    M5=M(1+ind2:end);
+    %fprintf(' ii1,ii2 = %i %i ; jj1,jj2= %i %i ;', ii1,ii2, jj1,jj2);
+    %fprintf(' ii3,jj3= %i %i ; ind1,ind2= %i %i\n',ii3,jj3,ind1,ind2);
+    %fprintf('M(1:ind1)=%s<\n',M(1:ind1));
+    %fprintf(' M2=%s<\n',M2);
+    %fprintf(' M3=%s<\n',M3);
+    %fprintf(' M4=%s<\n',M4);
+    %fprintf(' M5=%s<\n',M5);
+   else
+    if ii1*jj1 > 0, 
+         order=sort([ii1 ii2 jj1 jj2]);
+         ind=order(1); ii3=order(2)+1; jj3=order(3)-1; ind2=order(4);
+    else ind=max(ii1,jj1); ind2=ii2+jj2; end
+    compar=(ind == ind1);    ii=0;
+    if compar & ind1 == 0,   ii=1; compar=strcmp (MM,M); end
+    if compar & ind1 > 0,    ii=2; compar=strncmp(MM,M,ind1) ; end
+    if compar & ind1 > 0,    ii=3; compar=strcmp(M5,M(1+ind2:end)); end
+    if compar & ii1*jj1 > 0, ii=4; compar=strcmp(M3,M(ii3:jj3)); end
+    if ~compar,
+     fprintf('WARNING: Meta file (%s) is different (%i) from 1rst one:\n', ...
+              allfiles(j).name,ii);
+     fprintf(' it=%i :MM:%s\n',itrs(1),MM);
+     fprintf(' it=%i :M :%s\n\n',itrs(iter),M);
+    elseif ind1 > 0,
+     if ii1 > 0,
+      Mj=M(ii1:ii2); ii=findstr(Mj,'['); Mj=Mj(1+ii:end);
+%   add it-number from Mj to M2 (if different):
+      if isempty(findstr(M2,Mj)), M2=[deblank(M2(1:end-1)),Mj]; end
+     end
+     if jj1 > 0,
+      Mj=M(jj1:jj2); ii=findstr(Mj,'['); Mj=Mj(1+ii:end);
+%   add time interval from Mj to M4 (if different):
+      if isempty(findstr(M4,Mj)), M4=[deblank(M4(1:end-1)),' ;',Mj]; end
+     end
+    end
+   end
+%  save modifications:
+   if ind1>0 & j==size(allfiles,1) & iter==size(itrs,2), 
+     if ii1 < jj1, MM=[MM(1:ind1-1),M2,M3,M4,M5]; 
+     else          MM=[MM(1:ind1-1),M4,M3,M2,M5]; end 
+   end
+  end
 
-end % files
+%- put local data file content in global array AA:
+  bdims=N(1,:);
+  r0=N(2,:);
+  rN=N(3,:);
+  ndims=prod(size(bdims));
+  if j==1 & iter==1, AA=zeros([bdims size(itrs,2)]); end
+  if mG(1)==0 & mG(2)==1,
+    if     (ndims == 1)
+     AA(r0(1):rN(1),iter)=A;
+    elseif (ndims == 2)
+     AA(r0(1):rN(1),r0(2):rN(2),iter)=A;
+    elseif (ndims == 3)
+     AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),iter)=A;
+    elseif (ndims == 4)
+     AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),iter)=A;
+    elseif (ndims == 5)
+     AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),r0(5):rN(5),iter)=A;
+    else
+     error('Dimension of data set is larger than currently coded. Sorry!')
+    end
+  elseif     (ndims == 1)
+     AA(r0(1):rN(1),iter)=A;
+  else
+%- to debug: do simple stransfert (with a loop on 2nd index);
+%  will need to change this later, to improve efficiency:
+   for i=0:rN(2)-r0(2),
+    if (ndims == 2)
+     AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2),iter)=A(:,1+i);
+    elseif (ndims == 3)
+     AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2), ...
+                                    r0(3):rN(3),iter)=A(:,1+i,:);
+    elseif (ndims == 4)
+     AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2), ...
+                        r0(3):rN(3),r0(4):rN(4),iter)=A(:,1+i,:,:);
+    elseif (ndims == 5)
+     AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2), ...
+            r0(3):rN(3),r0(4):rN(4),r0(5):rN(5),iter)=A(:,1+i,:,:,:);
+    else
+     error('Dimension of data set is larger than currently coded. Sorry!')
+    end
+   end
+  end
+
+ end % files
 end % iterations
 
 %-------------------------------------------------------------------------------
 
-function [A,N] = localrdmds(fname,ieee,recnum)
+function [A,N,M,map2glob] = localrdmds(fname,ieee,recnum)
 
 mname=strrep(fname,' ','');
 dname=strrep(mname,'.meta','.data');
+
+%- set default mapping from tile to global file:
+map2glob=[0 1];
 
 % Read and interpret Meta file
 fid = fopen(mname,'r');
@@ -207,9 +303,12 @@ while keepgoing > 0,
     line=line(ind(1)+1:end);
   end
 % Remove comments of form //
-  line=[line ' //']; ind=findstr(line,'//'); line=line(1:ind(1)-1);
-% Add to total string
-  allstr=[allstr line];
+  line=[line,' //']; ind=findstr(line,'//'); line=line(1:ind(1)-1);
+% Add to total string (without starting & ending blanks)
+  while line(1:1) == ' ', line=line(2:end); end
+  if strncmp(line,'map2glob',8), eval(line);
+  else allstr=[allstr,deblank(line),' '];
+  end
  end
 end
 
@@ -222,13 +321,17 @@ if size(ind1) ~= size(ind2)
  error('The /* ... */ comments are not properly paired')
 end
 while size(ind1,2) > 0
- allstr=[allstr(1:ind1(1)-1) allstr(ind2(1)+3:end)];
+ allstr=[deblank(allstr(1:ind1(1)-1)) allstr(ind2(1)+2:end)];
+%allstr=[allstr(1:ind1(1)-1) allstr(ind2(1)+3:end)];
  ind1=findstr(allstr,'/*'); ind2=findstr(allstr,'*/');
 end
 
 % This is a kludge to catch whether the meta-file is of the
 % old or new type. nrecords does not exist in the old type.
 nrecords = NaN;
+
+%- store the full string for output:
+M=strrep(allstr,'format','dataprec');
 
 % Everything in lower case
 allstr=lower(allstr);
@@ -240,10 +343,23 @@ allstr=strrep(allstr,'format','dataprec');
 eval(allstr);
 
 N=reshape( dimlist , 3 , prod(size(dimlist))/3 );
+rep=[' dimList = [ ',sprintf('%i ',N(1,:)),']'];
 if ~isnan(nrecords) & nrecords > 1 & isempty(recnum)
  N=[N,[nrecords 1 nrecords]'];
 elseif ~isempty(recnum) & recnum>nrecords
  error('Requested record number is higher than the number of available records')
+end
+
+%- make "dimList" shorter (& fit output array size) in output "M":
+ pat=' dimList = \[(\s*\d+\,?)*\s*\]';
+ M=regexprep(M,pat,rep);
+%  and remove double space within sq.brakets:
+ind1=findstr(M,'['); ind2=findstr(M,']');
+if length(ind1) == length(ind2),
+ for i=length(ind1):-1:1, if ind1(i) < ind2(i),
+  M=[M(1:ind1(i)),regexprep(M(ind1(i)+1:ind2(i)-1),'(\s+)',' '),M(ind2(i):end)];
+ end; end
+else error('The [ ... ] brakets are not properly paired')
 end
 
 if isempty(recnum)
@@ -395,9 +511,9 @@ st=fclose(fid);
 %arr=reshape(arr,N);
 
 %
-function [iters] = scanforfiles(fname)
+function [itrs] = scanforfiles(fname)
 
-iters=[];
+itrs=[];
 allfiles=dir([fname '.*.001.001.meta']);
 if isempty(allfiles)
  allfiles=dir([fname '.*.meta']);
@@ -407,6 +523,6 @@ else
 end
 for k=1:size(allfiles,1);
  hh=allfiles(k).name;
- iters(k)=str2num( hh(end-14-ioff:end-5-ioff) );
+ itrs(k)=str2num( hh(end-14-ioff:end-5-ioff) );
 end
-iters=sort(iters);
+itrs=sort(itrs);
