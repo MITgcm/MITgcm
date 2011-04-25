@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_del2v.F,v 1.7 2006/12/05 05:30:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_del2v.F,v 1.8 2011/04/25 22:46:41 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -22,6 +22,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -89,21 +90,30 @@ C     del^2 V
 
       IF (no_slip_sides) THEN
 C-- No-slip BCs impose a drag at walls...
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-        hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
-        hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
-        del2v(i,j) = del2v(i,j)
-     &  -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &   *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
-     &   *( hFacZClosedW*dyU( i ,j,bi,bj)
-     &      *_recip_dxV( i ,j,bi,bj)
-     &     +hFacZClosedE*dyU(i+1,j,bi,bj)
-     &      *_recip_dxV(i+1,j,bi,bj)
-     &    )*drF(k)*2.*vFld(i,j)
-     &     *_maskS(i,j,k,bi,bj)
+       DO j=1-Oly+1,sNy+Oly-1
+        DO i=1-Olx+1,sNx+Olx-1
+#ifdef NONLIN_FRSURF
+C-    this will not give any side-drag along thin wall.
+C     (but this might just be what we want ...)
+         hFacZClosedW = h0FacS(i,j,k,bi,bj) - h0FacS(i-1,j,k,bi,bj)
+         hFacZClosedE = h0FacS(i,j,k,bi,bj) - h0FacS(i+1,j,k,bi,bj)
+         hFacZClosedW = MAX( 0. _d 0, hFacZClosedW )
+         hFacZClosedE = MAX( 0. _d 0, hFacZClosedE )
+#else
+         hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
+         hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
+#endif
+         del2v(i,j) = del2v(i,j)
+     &    -_recip_hFacS(i,j,k,bi,bj)
+     &       *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
+     &       *( hFacZClosedW*dyU( i ,j,bi,bj)
+     &                      *_recip_dxV( i ,j,bi,bj)
+     &         +hFacZClosedE*dyU(i+1,j,bi,bj)
+     &                      *_recip_dxV(i+1,j,bi,bj)
+     &        )*vFld(i,j)*sideDragFactor
+     &         *_maskS(i,j,k,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
       ENDIF
 
       RETURN
