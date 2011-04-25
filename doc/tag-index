@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1411 2011/04/25 20:57:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1412 2011/04/25 23:03:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_fluxform:
+  - fix calculation of del2u & del2v (no-slip BC) when using Non-Lin Free-Surf.
+  - use parameter "sideDragFactor" in no-slip BC side-drag part.
+  - update output of exp. global_ocean.90x40x15
 o pkg/mom_vecinv:
   mask del2u & del2v (no effect on results, but cleaner & closer to mom_fluxform)
 o update test-exp global_ocean.90x40x15:
