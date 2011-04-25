@@ -6,10 +6,6 @@
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.FALSE.,
       LSR_ERROR          = 1.E-12,
-# for backward compatibility only:
- SEAICE_cpAir       = 1.0039560439560439e+03,
- SEAICE_lhSublim    = 2.8340219780219775e+06,
- SEAICE_rhoAir      = 1.3E0,
  &
 #
  &SEAICE_PARM02

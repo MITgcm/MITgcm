@@ -52,6 +52,7 @@
  gravity         = 9.8156,
  gBaro           = 9.8156,
  rhoNil          = 1027.0,
+ rhoConstFresh   = 999.8,
  &
 
 # Elliptic solver parameters
