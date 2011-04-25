@@ -1,1 +1,14 @@
+ simulation = { 'global_ocean.90x40x15' };
+ nDims = [   2 ];
+ dimList = [
+    90,    1,   90,
+    40,    1,   40
+ ];
  dataprec = [ 'float64' ];
+ nrecords = [   138 ];
+ timeStepNumber = [      36000 ];
+ timeInterval = [  3.110400000000E+09 ];
+ nFlds = [   12 ];
+ fldList = {
+ 'Uvel    ' 'Vvel    ' 'Theta   ' 'Salt    ' 'GuNm1   ' 'GvNm1   ' 'GtNm1   ' 'GsNm1   ' 'PhiHyd  ' 'EtaN    ' 'dEtaHdt ' 'EtaH    '
+ };
