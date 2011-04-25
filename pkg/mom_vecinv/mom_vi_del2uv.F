@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.14 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.15 2011/04/25 20:14:02 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -91,10 +91,11 @@ c      DO i=1,sNx+1
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
         del2u(i,j) =
-     &   +     ( hDiv(i,j) - hDiv(i-1,j) )*recip_DXC(i,j,bi,bj)
-     &   -_recip_hFacW(i,j,k,bi,bj)*
+     &      (  ( hDiv(i,j) - hDiv(i-1,j) )*recip_dxC(i,j,bi,bj)
+     &        -_recip_hFacW(i,j,k,bi,bj)*
      &         ( hFacZ(i,j+1)*vort3(i,j+1) - hFacZ(i,j)*vort3(i,j) )
-     &                                    *recip_DYG(i,j,bi,bj)
+     &                                    *recip_dyG(i,j,bi,bj)
+     &      )*maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -112,10 +113,11 @@ c      DO i=1,sNx
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
         del2v(i,j) =
-     &   +     ( hDiv(i,j) - hDiv(i,j-1) )*recip_DYC(i,j,bi,bj)
-     &   +_recip_hFacS(i,j,k,bi,bj)*
+     &      (  ( hDiv(i,j) - hDiv(i,j-1) )*recip_dyC(i,j,bi,bj)
+     &        +_recip_hFacS(i,j,k,bi,bj)*
      &         ( hFacZ(i+1,j)*vort3(i+1,j) - hFacZ(i,j)*vort3(i,j) )
-     &                                    *recip_DXG(i,j,bi,bj)
+     &                                    *recip_dxG(i,j,bi,bj)
+     &      )*maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
