@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/Attic/ptracers_forcing.F,v 1.4 2010/08/24 15:15:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/Attic/ptracers_forcing.F,v 1.5 2011/04/25 20:56:16 dfer Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,10 +21,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_RBCS
-#include "PTRACERS_SIZE.h"
-#include "RBCS.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -44,12 +40,12 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gPtracer             :: updates tendency array
+C  gPtracer       :: updates tendency array
 
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
+C  i,j            :: loop indices
       INTEGER i,j
 C     number of surface interface layer
       INTEGER kSurface
@@ -91,7 +87,7 @@ C     because it is needed by KPP_TRANSPORT_PTR.
       ENDIF
 
 #ifdef ALLOW_RBCS
-      IF ( useRBCptracers ) THEN
+      IF ( useRBCS ) THEN
         CALL RBCS_ADD_TENDENCY(
      I                          bi,bj,k,iTracer+2,
      I                          myTime, myThid )
