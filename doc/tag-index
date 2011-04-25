@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1410 2011/04/21 15:18:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1411 2011/04/25 20:57:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_vecinv:
+  mask del2u & del2v (no effect on results, but cleaner & closer to mom_fluxform)
+o update test-exp global_ocean.90x40x15:
+  o use default CD_CODE_OPTIONS file (Adams-Bashforth on CD Mom & Coriolis).
+  o increase Overlap size from 2 to 3 (to allow to test bi-harmonic Visc.)
+  o new pickup-files from a 100.yr run with pkg/down_slope (input.dwnslp params)
+  o turn on zStar & viscA4 in standard set-up (dir input/)
+    and update output files: output.txt & output.dwnslp.txt
 o new AD-test experiment: obcs_ctrl
   (From Matt MITgcm_Contrib/SOSE/BoxAdj) to test OBCS as control vector.
 o pkg/dic:
