@@ -8,6 +8,7 @@
  sRef = 15*35.,
  viscAr=1.E-3,
  viscAh=5.E5,
+ viscA4=3.E14,
  diffKhT=0.,
  diffKrT=3.E-5,
  diffKhS=0.,
@@ -16,10 +17,14 @@
  rhoConstFresh=1000.,
  gravity=9.81,
  eosType='JMD95P',
- ivdc_kappa=100.,
+ ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
  exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
  quasiHydrostatic=.TRUE.,
@@ -29,6 +34,8 @@
  hFacMindr=50.,
 # set precision of data files
  readBinaryPrec=32,
+#writeBinaryPrec=64,
+#debugMode=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -50,8 +57,7 @@
  deltaTClock = 86400.,
  deltaTfreesurf= 86400.,
  abEps = 0.1,
- pickupStrictlyMatch=.FALSE.,
- pChkptFreq= 311040000.,
+ pChkPtFreq= 311040000.,
  dumpFreq=   311040000.,
  dumpFreq=   864000.,
 #monitorFreq=31104000.,
