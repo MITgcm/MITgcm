@@ -6,9 +6,9 @@
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62v
-(PID.TID 0000.0001) // Build user:        ifenty
+(PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Mon Apr 25 12:45:10 EDT 2011
+(PID.TID 0000.0001) // Build date:        Mon Apr 25 02:44:07 EDT 2011
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -3235,27 +3235,11 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.59852054894902E+00
 (PID.TID 0000.0001)                       cg2d_iters =    47
 (PID.TID 0000.0001)                         cg2d_res =    5.76526659272440E-14
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3481,26 +3465,10 @@ efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.36963226818432E-15  1.19364347294372E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    3.33740126999134E-01
 (PID.TID 0000.0001)                       cg2d_iters =    45
 (PID.TID 0000.0001)                         cg2d_res =    6.10039598960739E-14
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3726,26 +3694,10 @@ efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.05436492869870E-14  1.21174958757872E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    1.65901554967315E-01
 (PID.TID 0000.0001)                       cg2d_iters =    44
 (PID.TID 0000.0001)                         cg2d_res =    8.80240273964077E-14
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3971,26 +3923,10 @@ efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   6.10969608239031E-15  1.20655917452796E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    1.23153112414659E-01
 (PID.TID 0000.0001)                       cg2d_iters =    44
 (PID.TID 0000.0001)                         cg2d_res =    8.68549578557633E-14
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4887,75 +4823,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.36963226818432E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.05436492869870E-14  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   6.10969608239031E-15  1.20655917452796E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -5028,83 +4900,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.36963226818432E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.00856822893292E-14  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   4.76355066503231E-15  1.20655917452796E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5173,14 +4973,6 @@ sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =   4.43005007677577E-16  9.03211345098693E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5249,14 +5041,6 @@ sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =  -2.63244287479480E-15  8.01654867605749E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5397,14 +5181,6 @@ sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6225,75 +6001,11 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   3.29944405130789E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.04603825601401E-14  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   4.86069517968701E-15  1.20655917452795E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -6680,75 +6392,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.88311041707345E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   9.58261248129588E-15  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   3.43128303548212E-15  1.20655917452796E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -7145,75 +6793,11 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.66106581214842E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.03632380454854E-14  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   6.42888520197005E-15  1.20655917452795E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -7600,75 +7184,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   3.16066617322974E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.05887520973624E-14  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   4.32640034908616E-15  1.20655917452796E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -8065,75 +7585,11 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.36616282123236E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   9.50975409530486E-15  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   4.26741975090295E-15  1.20655917452794E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -8520,75 +7976,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   3.34107741473133E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.06269160138339E-14  1.21174958757868E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   1.86656246015104E-15  1.20655917452797E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -8985,75 +8377,11 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.62290189567693E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   1.00405794789538E-14  1.21174958757872E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   7.71258057419288E-15  1.20655917452792E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -9440,75 +8768,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   3.20576898360514E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   8.78463968234655E-15  1.21174958757868E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   7.39339145461315E-15  1.20655917460430E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -9905,75 +9169,11 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   2.43208231331948E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   9.55485690568025E-15  1.21174958757871E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   5.57540125178946E-15  1.20655917452790E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -10360,75 +9560,11 @@ efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.002.002.data
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.170E-10     -1.673E+00
-sfs   i j sfs, sflux     3   3       1.629E-03     -1.673E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3      -4.364E-12     -1.242E+00
-sfs   i j sfs, sflux     3   3       1.209E-03     -1.242E+00
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   5.03069808033274E-16  9.91122157852920E-01
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.317E-07     -4.531E-03
-efs   i j gs, sfs    2   3   3      -4.530E-04     -4.531E-03
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -1.024E-07     -3.152E-03
-efs   i j gs, sfs    2   3   3      -3.153E-04     -3.152E-03
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.147E-08     -3.018E-01
-sfs   i j sfs, sflux     3   3       2.939E-04     -3.018E-01
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       1.565E-10     -2.454E-01
-sfs   i j sfs, sflux     3   3       2.389E-04     -2.454E-01
  cg2d: Sum(rhs),rhsMax =   3.44863027024189E-15  1.19364347294372E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.458E-06     -9.393E-04
-efs   i j gs, sfs    2   3   3      -9.247E-05     -9.393E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3      -6.257E-08     -6.369E-04
-efs   i j gs, sfs    2   3   3      -6.375E-05     -6.369E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       3.165E-08     -5.852E-02
-sfs   i j sfs, sflux     3   3       5.702E-05     -5.852E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.141E-10     -4.769E-02
-sfs   i j sfs, sflux     3   3       4.643E-05     -4.769E-02
  cg2d: Sum(rhs),rhsMax =   9.13158437754191E-15  1.21174958757869E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.164E-06     -2.041E-04
-efs   i j gs, sfs    2   3   3      -1.925E-05     -2.041E-04
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.737E-07     -1.287E-04
-efs   i j gs, sfs    2   3   3      -1.270E-05     -1.287E-04
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       5.568E-08     -1.421E-02
-sfs   i j sfs, sflux     3   3       1.389E-05     -1.421E-02
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       0.000E+00      0.000E+00
-sfs   i j sfs, sflux     3   3       8.571E-10     -1.015E-02
-sfs   i j sfs, sflux     3   3       9.885E-06     -1.015E-02
  cg2d: Sum(rhs),rhsMax =   5.47131784323085E-15  1.20655917452795E+00
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       4.223E-07     -5.071E-05
-efs   i j gs, sfs    2   3   3      -4.649E-06     -5.071E-05
-efs   i j gs, sfs    1   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    2   3   3       0.000E+00      0.000E+00
-efs   i j gs, sfs    1   3   3       1.884E-07     -2.762E-05
-efs   i j gs, sfs    2   3   3      -2.574E-06     -2.762E-05
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.002.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.002.data
@@ -10743,99 +9879,99 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   34.520000000000003
-(PID.TID 0000.0001)         System time:  0.39000000000000001
-(PID.TID 0000.0001)     Wall clock time:   70.691169977188110
+(PID.TID 0000.0001)           User time:   34.170000000000002
+(PID.TID 0000.0001)         System time:  0.38000000000000000
+(PID.TID 0000.0001)     Wall clock time:   72.292433977127075
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.50000000000000000
+(PID.TID 0000.0001)           User time:  0.47999999999999998
 (PID.TID 0000.0001)         System time:  5.00000000000000028E-002
-(PID.TID 0000.0001)     Wall clock time:   5.0003690719604492
+(PID.TID 0000.0001)     Wall clock time:   5.6130280494689941
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   16.910000000000000
-(PID.TID 0000.0001)         System time:  0.26000000000000001
-(PID.TID 0000.0001)     Wall clock time:   48.425524950027466
+(PID.TID 0000.0001)           User time:   16.550000000000001
+(PID.TID 0000.0001)         System time:  0.27000000000000002
+(PID.TID 0000.0001)     Wall clock time:   49.419386148452759
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.15999999999998948
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  0.15421295166015625
+(PID.TID 0000.0001)           User time:  0.14999999999999858
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.15489459037780762
 (PID.TID 0000.0001)          No. starts:          52
 (PID.TID 0000.0001)           No. stops:          52
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:  0.50999999999999091
-(PID.TID 0000.0001)         System time:  8.00000000000000711E-002
-(PID.TID 0000.0001)     Wall clock time:   14.860073089599609
+(PID.TID 0000.0001)           User time:  0.35999999999999233
+(PID.TID 0000.0001)         System time:  7.00000000000000067E-002
+(PID.TID 0000.0001)     Wall clock time:   15.403241634368896
 (PID.TID 0000.0001)          No. starts:         264
 (PID.TID 0000.0001)           No. stops:         264
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:   2.3400000000000318
+(PID.TID 0000.0001)           User time:   2.3700000000000045
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   2.3602414131164551
+(PID.TID 0000.0001)     Wall clock time:   2.3407292366027832
 (PID.TID 0000.0001)          No. starts:          52
 (PID.TID 0000.0001)           No. stops:          52
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:   1.9299999999999997
+(PID.TID 0000.0001)           User time:   1.9399999999999977
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.9424741268157959
+(PID.TID 0000.0001)     Wall clock time:   1.9255182743072510
 (PID.TID 0000.0001)          No. starts:          52
 (PID.TID 0000.0001)           No. stops:          52
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:   4.5399999999999849
+(PID.TID 0000.0001)           User time:   4.5499999999999972
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.5540118217468262
+(PID.TID 0000.0001)     Wall clock time:   4.5748882293701172
 (PID.TID 0000.0001)          No. starts:         208
 (PID.TID 0000.0001)           No. stops:         208
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  2.49440670013427734E-002
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.49681472778320313E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.41849422454833984E-002
+(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  2.42538452148437500E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   17.049999999999997
-(PID.TID 0000.0001)         System time:  7.00000000000000067E-002
-(PID.TID 0000.0001)     Wall clock time:   17.211935043334961
+(PID.TID 0000.0001)           User time:   17.080000000000002
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   17.206701993942261
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ECCO SPIN-UP":
-(PID.TID 0000.0001)           User time:  0.36999999999999034
-(PID.TID 0000.0001)         System time:  9.99999999999995337E-003
-(PID.TID 0000.0001)     Wall clock time:  0.36877131462097168
+(PID.TID 0000.0001)           User time:  0.35999999999999943
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.36877918243408203
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.36999999999999034
-(PID.TID 0000.0001)         System time:  9.99999999999995337E-003
-(PID.TID 0000.0001)     Wall clock time:  0.36822366714477539
+(PID.TID 0000.0001)           User time:  0.35999999999999943
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.36821794509887695
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "ECCO MAIN LOOP":
-(PID.TID 0000.0001)           User time:   16.470000000000006
+(PID.TID 0000.0001)           User time:   16.500000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   16.529232740402222
+(PID.TID 0000.0001)     Wall clock time:   16.556211471557617
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS   [ECCO MAIN]":
-(PID.TID 0000.0001)           User time:  3.99999999999920419E-002
+(PID.TID 0000.0001)           User time:  1.99999999999960210E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.39300727844238281E-002
+(PID.TID 0000.0001)     Wall clock time:  2.45809555053710938E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.11999999999999744
+(PID.TID 0000.0001)           User time:  9.99999999999943157E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.11330103874206543
+(PID.TID 0000.0001)     Wall clock time:  0.11371397972106934
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
@@ -10845,129 +9981,129 @@ grad-res -------------------------------
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   6.9799999999999969
+(PID.TID 0000.0001)           User time:   7.0099999999999909
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   7.0143895149230957
+(PID.TID 0000.0001)     Wall clock time:   7.0197863578796387
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.9699999999999918
+(PID.TID 0000.0001)           User time:   3.9899999999999807
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.9697368144989014
+(PID.TID 0000.0001)     Wall clock time:   3.9734740257263184
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.40000000000000568
+(PID.TID 0000.0001)           User time:  0.41000000000001080
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.41258716583251953
+(PID.TID 0000.0001)     Wall clock time:  0.41552352905273438
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.16999999999999460
+(PID.TID 0000.0001)           User time:  0.10999999999999943
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.14723706245422363
+(PID.TID 0000.0001)     Wall clock time:  0.14776444435119629
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.26999999999999602
+(PID.TID 0000.0001)           User time:  0.22999999999998977
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.23422098159790039
+(PID.TID 0000.0001)     Wall clock time:  0.23204636573791504
 (PID.TID 0000.0001)          No. starts:          80
 (PID.TID 0000.0001)           No. stops:          80
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.1199999999999832
+(PID.TID 0000.0001)           User time:   4.1700000000000017
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.1311573982238770
+(PID.TID 0000.0001)     Wall clock time:   4.1287677288055420
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.00000000000031264E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.89168167114257813E-002
+(PID.TID 0000.0001)     Wall clock time:  4.93583679199218750E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.07695770263671875E-004
+(PID.TID 0000.0001)     Wall clock time:  4.07218933105468750E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.03642654418945313E-004
+(PID.TID 0000.0001)     Wall clock time:  4.04119491577148438E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.99999999999960210E-002
+(PID.TID 0000.0001)           User time:  5.99999999999951683E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.39267063140869141E-002
+(PID.TID 0000.0001)     Wall clock time:  5.47809600830078125E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.98635864257812500E-004
+(PID.TID 0000.0001)     Wall clock time:  4.00304794311523438E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "ECCO SPIN-DOWN":
-(PID.TID 0000.0001)           User time:  0.19999999999999574
-(PID.TID 0000.0001)         System time:  5.00000000000000444E-002
-(PID.TID 0000.0001)     Wall clock time:  0.30074906349182129
+(PID.TID 0000.0001)           User time:  0.22000000000000597
+(PID.TID 0000.0001)         System time:  2.99999999999999711E-002
+(PID.TID 0000.0001)     Wall clock time:  0.26889967918395996
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
+(PID.TID 0000.0001)           User time:  6.00000000000022737E-002
 (PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  8.26778411865234375E-002
+(PID.TID 0000.0001)     Wall clock time:  5.85789680480957031E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_FORCING       [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  3.99999999999920419E-002
-(PID.TID 0000.0001)         System time:  3.00000000000000266E-002
-(PID.TID 0000.0001)     Wall clock time:  6.35473728179931641E-002
+(PID.TID 0000.0001)           User time:  2.00000000000031264E-002
+(PID.TID 0000.0001)         System time:  9.99999999999995337E-003
+(PID.TID 0000.0001)     Wall clock time:  5.64641952514648438E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_SSH           [ECCO SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.11765861511230469E-002
+(PID.TID 0000.0001)     Wall clock time:  1.06117725372314453E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_HYD           [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.12000000000001165
+(PID.TID 0000.0001)           User time:  0.11000000000000654
 (PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  0.13492274284362793
+(PID.TID 0000.0001)     Wall clock time:  0.13488888740539551
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "SEAICE_COST_DRIVER [ECCO SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.67230987548828125E-004
+(PID.TID 0000.0001)     Wall clock time:  7.68423080444335938E-004
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_INTERNAL_PARAMS  [ECCO SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.87052917480468750E-005
+(PID.TID 0000.0001)     Wall clock time:  9.89437103271484375E-005
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_GENCOST_ALL    [ECCO SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.63211059570312500E-005
+(PID.TID 0000.0001)     Wall clock time:  1.04904174804687500E-004
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_USERCOST_ALL    [ECCO SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.58442687988281250E-005
+(PID.TID 0000.0001)     Wall clock time:  9.70363616943359375E-005
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  1.00000000000051159E-002
+(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.31022453308105469E-003
+(PID.TID 0000.0001)     Wall clock time:  6.28137588500976563E-003
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001) // ======================================================
