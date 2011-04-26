@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.20 2011/03/06 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.21 2011/04/26 23:35:18 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -74,6 +74,9 @@ C--   Print OBCS set-up summary:
      &   'OBCS_balanceFacW =',
      &   ' /* Western  OB Factor for balancing OB flow [-] */')
       ENDIF
+      CALL WRITE_0D_RL( OBCS_uvApplyFac, INDEX_NONE,
+     &   'OBCS_uvApplyFac =',
+     &   ' /* Factor to apply to U,V 2nd column/row */')
       CALL WRITE_0D_RL( OBCS_monitorFreq, INDEX_NONE,
      &   'OBCS_monitorFreq =', ' /* monitor output frequency [s] */')
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',

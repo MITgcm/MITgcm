@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.31 2011/03/04 04:53:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.32 2011/04/26 23:35:18 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -142,6 +142,7 @@ CEOP
      &          OBCS_balanceFacN, OBCS_balanceFacS,
      &          OBCS_balanceFacE, OBCS_balanceFacW,
      &          useOBCSYearlyFields, OBCSfixTopo,
+     &          OBCS_uvApplyFac,
      &          OBCS_monitorFreq, OBCS_monSelect, OBCSprintDiags
 
 #ifdef ALLOW_ORLANSKI
@@ -204,6 +205,7 @@ C--   Default flags and values for OBCS
       useOBCSprescribe   =.FALSE.
       useOBCSYearlyFields=.FALSE.
       OBCSfixTopo        =.TRUE.
+      OBCS_uvApplyFac    = 1. _d 0
       OBCS_monitorFreq   = monitorFreq
       OBCS_monSelect     = 0
       OBCSprintDiags     = debugLevel.GE.debLevB
