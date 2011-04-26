@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.5 2011/03/01 18:55:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.6 2011/04/26 23:36:25 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -150,6 +150,7 @@ C Northern boundary
      &                              *_maskS(i,Jobc,k,bi,bj)
              vFld(i,Jobc+1,k,bi,bj) = OBNv(i,k,bi,bj)
      &                              *_maskS(i,Jobc,k,bi,bj)
+     &                              *OBCS_uvApplyFac
            ENDDO
           ENDIF
          ENDDO
@@ -166,6 +167,7 @@ C Southern boundary
      &                              *_maskS(i,Jobc+1,k,bi,bj)
              vFld(i,Jobc,k,bi,bj)   = OBSv(i,k,bi,bj)
      &                              *_maskS(i,Jobc+1,k,bi,bj)
+     &                              *OBCS_uvApplyFac
            ENDDO
           ENDIF
          ENDDO
@@ -184,6 +186,7 @@ C Eastern boundary
      &                              *_maskW(Iobc,j,k,bi,bj)
              uFld(Iobc+1,j,k,bi,bj) = OBEu(j,K,bi,bj)
      &                              *_maskW(Iobc,j,k,bi,bj)
+     &                              *OBCS_uvApplyFac
            ENDDO
           ENDIF
          ENDDO
@@ -200,6 +203,7 @@ C Western boundary
      &                              *_maskW(Iobc+1,j,k,bi,bj)
              uFld(Iobc,j,k,bi,bj)   = OBWu(j,k,bi,bj)
      &                              *_maskW(Iobc+1,j,k,bi,bj)
+     &                              *OBCS_uvApplyFac
            ENDDO
           ENDIF
          ENDDO
