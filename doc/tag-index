@@ -1,15 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1414 2011/04/27 00:26:33 ifenty Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1415 2011/04/27 22:26:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
+o model/inc:
+  - change type of PmEpR array (from _RS to _RL) to fix restart (with "-use_r4")
+    of exp. global_ocean.90x40x15 (Suncronous time-stepping + Real-FW + NonLin-FS)
 o pkg/seaice:
   - fix calculation of saltFlux and saltPlumeFlux when using SEAICE_SALINITY
 o verification/lab_sea, 1D_ocean_ice_column, seaice_obcs, global_ocean.cs32x15
   - updated affected output*.txt files due to salt and saltPlumeFlux bug fix
-
 
 checkpoint62w (2011/04/26)
 o pkg/mom_fluxform:
