@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.5 2009/08/28 19:31:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.6 2011/04/27 20:21:42 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
       SUBROUTINE TIMEAVE_SURF_FLUX(
-     I     bi, bj, myTime, myIter, myThid)
+     I     bi, bj, myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE TIMEAVE_SURF_FLUX                             |
 C     | o Time averaging routine for surface (forcing) fluxes    |
@@ -78,8 +78,7 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
         DO j=1,sNy
          DO i=1,sNx
            tmpFld(i,j) = tmpFld(i,j)
-     &      + PmEpR(i,j,bi,bj)*rhoConstFresh
-     &                        *theta(i,j,k,bi,bj)*HeatCapacity_Cp
+     &      + PmEpR(i,j,bi,bj)*theta(i,j,k,bi,bj)*HeatCapacity_Cp
          ENDDO
         ENDDO
        ENDIF
@@ -100,8 +99,7 @@ C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
         DO j=1,sNy
          DO i=1,sNx
            tmpFld(i,j) = tmpFld(i,j)
-     &      + PmEpR(i,j,bi,bj)*rhoConstFresh
-     &                        *salt(i,j,k,bi,bj)
+     &      + PmEpR(i,j,bi,bj)*salt(i,j,k,bi,bj)
          ENDDO
         ENDDO
        ENDIF
