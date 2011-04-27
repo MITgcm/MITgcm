@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.18 2011/03/03 19:55:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.19 2011/04/27 22:14:14 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -44,7 +44,7 @@ C     PmEpR   :: keep the fresh water input (=-EmPmR) of the previous time step
       COMMON /EXACT_ETA_LOCAL/ etaHnm1, dEtaHdt, PmEpR
       _RL etaHnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL dEtaHdt(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RS  PmEpR (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  PmEpR (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef NONLIN_FRSURF
