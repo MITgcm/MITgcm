@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.5 2010/01/12 23:55:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.6 2011/04/27 22:14:55 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -99,7 +99,7 @@ C--   update average inside tile (no overlaps) for all bi,bj
       CALL LONGSTEP_FILL_3D_RS(LS_QswCount, LS_Qsw, Qsw, 1, myThid)
 #endif
       IF ( LS_usePmEpR ) THEN
-       CALL LONGSTEP_FILL_3D_RS(LS_fwFluxCount,LS_fwFlux,PmEpR,1,myThid)
+       CALL LONGSTEP_FILL_3D(   LS_fwFluxCount,LS_fwFlux,PmEpR,1,myThid)
       ELSE
        CALL LONGSTEP_FILL_3D_RS(LS_fwFluxCount,LS_fwFlux,EmPmR,1,myThid)
       ENDIF
