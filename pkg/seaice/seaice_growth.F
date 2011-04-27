@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.117 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.118 2011/04/27 00:17:26 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -792,7 +792,7 @@ c     If ice is present, MixedLayerTurbulenceFactor = 1.0, else 12.50
 c          The turbulent ocean-ice heat flux
            a_QbyOCN(I,J) = -STANTON_NUMBER * USTAR_BASE * rhoConst *
      &       HeatCapacity_Cp  *(surf_theta - TBC)*
-     &       MixedLayerTurbulenceFactor*hFacC(i,j,kSurface,bi,bj)
+     &       MixedLayerTurbulenceFactor*maskC(i,j,kSurface,bi,bj)
 
 c          The turbulent ocean-ice heat flux converted to meters
 c          of potential ice melt
@@ -806,12 +806,12 @@ c reproduces v1.109
            IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
               a_QbyOCN(i,j) = -SEAICE_availHeatFrac
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * hFacC(i,j,kSurface,bi,bj) *
+     &             * maskC(i,j,kSurface,bi,bj) *
      &             (HeatCapacity_Cp*rhoConst/QI)
            ELSE
               a_QbyOCN(i,j) = -SEAICE_availHeatFracFrz
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * hFacC(i,j,kSurface,bi,bj) *
+     &             * maskC(i,j,kSurface,bi,bj) *
      &             (HeatCapacity_Cp*rhoConst/QI)
            ENDIF
           ELSE
@@ -825,7 +825,7 @@ cif reproduces seaice_growth v1.111
              tmpscal1 = SEAICE_availHeatFracFrz
            ENDIF
            tmpscal1 = tmpscal1 
-     &              * dRf(kSurface) * hFacC(i,j,kSurface,bi,bj)
+     &              * dRf(kSurface) * maskC(i,j,kSurface,bi,bj)
 
            a_QbyOCN(i,j) = -tmpscal1 * (HeatCapacity_Cp*rhoConst/QI)
      &                   * (theta(I,J,kSurface,bi,bj)-TBC)
@@ -1118,7 +1118,6 @@ CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
             DIAGarrayA(I,J) = ZERO
 #endif
 
-cif         another mess because the default behavior was changed between v1.109 and v1.111
 #ifdef FENTY_DELTA_HEFF_OPEN_WATER_FLUXES
 c           The sum of ice growth tendencies from open water fluxes 
 c           + any residual ocean-ice fluxes (weighted by the open 
@@ -1448,11 +1447,11 @@ Cgf note: flooding does count negatively
           tmpscal1 = d_HEFFbyNEG(I,J) + d_HEFFbyOCNonICE(I,J) + 
      &               d_HEFFbyATMonOCN(I,J) - d_HEFFbyFLOODING(I,J)
           tmpscal2 = tmpscal1 * SIsal0 * HEFFM(I,J,bi,bj)
-     &            /SEAICE_deltaTtherm * ICE2WATR * rhoConstFresh
+     &            /SEAICE_deltaTtherm * SEAICE_rhoIce
           saltFlux(I,J,bi,bj) = tmpscal2
 #ifdef ALLOW_SALT_PLUME
           tmpscal3 = tmpscal1*salt(I,j,kSurface,bi,bj)*HEFFM(I,J,bi,bj)
-     &            /SEAICE_deltaTtherm * ICE2WATR * rhoConstFresh
+     &            /SEAICE_deltaTtherm * SEAICE_rhoIce
           saltPlumeFlux(I,J,bi,bj) = MAX( tmpscal3-tmpscal2 , 0. _d 0)
 #endif /* ALLOW_SALT_PLUME */
          ENDDO
@@ -1494,13 +1493,13 @@ C tmpscal1 > 0 : m of sea ice that is created
              saltFlux(I,J,bi,bj) =
      &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
      &            *SEAICE_salinity*salt(I,j,kSurface,bi,bj)
-     &            *tmpscal1*ICE2WATR*rhoConstFresh
+     &            *tmpscal1*SEAICE_rhoIce
 #ifdef ALLOW_SALT_PLUME
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
      &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
      &            *(1-SEAICE_salinity)*salt(I,j,kSurface,bi,bj)
-     &            *tmpscal1*ICE2WATR*rhoConstFresh
+     &            *tmpscal1*SEAICE_rhoIce
 C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
              IF ( .NOT. SaltPlumeSouthernOcean ) THEN
               IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
