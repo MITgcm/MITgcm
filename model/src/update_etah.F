@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.10 2010/09/11 21:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.11 2011/04/27 22:20:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,7 +101,7 @@ C- end bi,bj loop.
      &    CALL EXCH_XY_RL( etaH, myThid )
 
 c     IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
-c    &    _EXCH_XY_RS( PmEpR, myThid )
+c    &    _EXCH_XY_RL( PmEpR, myThid )
 
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_SIGMA_CODE
