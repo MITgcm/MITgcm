@@ -10,7 +10,7 @@
       LSR_ERROR          = 1.E-6,
       SEAICE_EPS         = 1.E-8,
       SEAICEadvSnow      = .TRUE.,
-      SEAICE_salinity = 0.3,
+      SIsalFRAC          = 0.3,
       SEAICEuseFlooding  = .TRUE.,
       areaMin = 1e-8,
  

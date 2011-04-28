@@ -14,7 +14,7 @@
  SEAICEadvSalt      = .TRUE.,
  SEAICEuseFlooding  = .TRUE.,
  SEAICE_no_Slip     = .FALSE.,
- SEAICE_salinity    = 0.3,
+ SIsalFRAC          = 0.3,
  SEAICE_gamma_t     = 259200.,
  SEAICE_gamma_t_frz = 10800.,
  SEAICEwriteState   = .TRUE.,

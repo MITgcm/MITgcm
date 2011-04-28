@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SEAICE_OPTIONS.h,v 1.3 2011/03/05 18:17:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SEAICE_OPTIONS.h,v 1.4 2011/04/28 02:09:00 ifenty Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -68,7 +68,7 @@ C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
 #define ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
-#define SEAICE_SALINITY
+#define SEAICE_VARIABLE_SALINITY
 
 C--   Track sea ice age.
 #undef SEAICE_AGE

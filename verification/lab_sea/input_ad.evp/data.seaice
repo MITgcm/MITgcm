@@ -13,7 +13,7 @@
 ###      LSR_ERROR          = 1.E-6,
       SEAICE_deltaTevp   = 60,
       SEAICE_EPS         = 1.E-8,
-      SEAICE_salinity    = 0.3,
+      SIsalFRAC          = 0.3,
       SEAICE_availHeatFrac = 0.8,
       SEAICEadvSnow      = .TRUE.,
       SEAICEuseFlooding  = .TRUE.,
