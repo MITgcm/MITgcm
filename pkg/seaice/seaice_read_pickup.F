@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.9 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.10 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -176,7 +176,7 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
          nj = nj + 1
         ENDIF
 #endif /* SEAICE_ALLOW_EVP */
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
         CALL READ_REC_3D_RL( fn, fp, 1, HSALT    , nj, nIter0, myThid )
         nj = nj + 1
 #endif
@@ -214,7 +214,7 @@ C--    continue with 2-D fields:
      &                                      nj, fp, 1, nIter0, myThid )
          CALL READ_MFLDS_3D_RL( 'siHSNOW ', HSNOW,
      &                                      nj, fp, 1, nIter0, myThid )
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
          CALL READ_MFLDS_3D_RL( 'siHSALT ', HSALT,
      &                                      nj, fp, 1, nIter0, myThid )
 #endif
@@ -288,7 +288,7 @@ c      _EXCH_XY_RL(YNEG , myThid )
           _EXCH_XY_RL(seaice_sigma12, myThid )
        ENDIF
 #endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
        _EXCH_XY_RL(HSALT, myThid )
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.118 2011/04/27 00:17:26 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.119 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -190,7 +190,7 @@ C temporary variables available for the various computations
       _RL hDraft
 #endif /* ALLOW_SEAICE_FLOODING */
 
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
       _RL saltFluxAdjust      (1:sNx,1:sNy)
 #endif
 
@@ -338,7 +338,7 @@ c
 
           tmparr1(I,J)               = 0.0 _d 0
 
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
           saltFluxAdjust(I,J)        = 0.0 _d 0
 #endif
 #ifdef SEAICE_MULTICATEGORY
@@ -473,7 +473,7 @@ C 3) store regularized values of heff, hsnow, area at the onset of thermo.
         ENDDO
 
 C 4) treat sea ice salinity pathological cases
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hsalt(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
@@ -488,7 +488,7 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
           ENDIF
          ENDDO
         ENDDO
-#endif /* SEAICE_SALINITY */
+#endif /* SEAICE_VARIABLE_SALINITY */
 
 C 5) treat sea ice age pathological cases
 C ...
@@ -1428,7 +1428,7 @@ C ===================================================================
 C =============PART 5: determine ice salinity increments=============
 C ===================================================================
 
-#ifndef SEAICE_SALINITY
+#ifndef SEAICE_VARIABLE_SALINITY
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_SALT_PLUME
 CADJ STORE d_HEFFbyNEG = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1459,7 +1459,7 @@ Cgf note: flooding does count negatively
 #endif
 
 #ifdef ALLOW_ATM_TEMP
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
 
 #ifdef SEAICE_GROWTH_LEGACY
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -1492,13 +1492,13 @@ C tmpscal1 > 0 : m of sea ice that is created
           IF ( tmpscal1 .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) =
      &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
-     &            *SEAICE_salinity*salt(I,j,kSurface,bi,bj)
+     &            *SIsalFRAC*salt(I,j,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
 #ifdef ALLOW_SALT_PLUME
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
      &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
-     &            *(1-SEAICE_salinity)*salt(I,j,kSurface,bi,bj)
+     &            *(1-SIsalFRAC)*salt(I,j,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
 C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
              IF ( .NOT. SaltPlumeSouthernOcean ) THEN
@@ -1536,7 +1536,7 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
 #endif /* SEAICE_GROWTH_LEGACY */
          ENDDO
         ENDDO
-#endif /* SEAICE_SALINITY */
+#endif /* SEAICE_VARIABLE_SALINITY */
 #endif /* ALLOW_ATM_TEMP */
 
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.91 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.92 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,6 +48,7 @@ C     iUnit  :: Work variable for IO unit number
 C     retired parameters
       INTEGER nRetired
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
+      _RL SEAICE_salinity
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile
 
 C--   SEAICE parameters
@@ -78,9 +79,10 @@ C--   SEAICE parameters
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      & SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
+     & SEAICE_salinity,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
-     & SEAICE_salinity, SIsal0, SEAICEstressFactor,
+     & SIsalFRAC, SIsal0, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, HsnowFile, HsaltFile,
@@ -146,7 +148,7 @@ C--   set default sea ice parameters
       SEAICEadvHeff      = .TRUE.
       SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .TRUE.
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
       SEAICEadvSalt      = .TRUE.
 #else
       SEAICEadvSalt      = .FALSE.
@@ -244,7 +246,7 @@ C     to be consistent
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
-      SEAICE_salinity    = 0.0    _d 0
+      SIsalFRAC          = 0.0    _d 0
       SIsal0             = 0.0    _d 0
       SEAICE_gamma_t     = UNSET_RL
       SEAICE_gamma_t_frz = UNSET_RL
@@ -288,6 +290,7 @@ C     SEAICE_latentWater = 5.6875 _d +03
 C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
 C     SEAICE_latentIce   = 6.4474 _d +03
       SEAICE_latentIce   = UNSET_RL
+      SEAICE_salinity    = UNSET_RL
       IceAgeFile         = ' '
 C     end retired parameters
 
@@ -507,6 +510,16 @@ C     retired parameter
        WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: set "SEAICE_lhFusion", ',
      &  '"SEAICE_dalton", and "SEAICE_rhoAir" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICE_salinity   .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICE_salinity" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: set "SIsalFRAC instead"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( IceAgeFile .NE. ' ' ) THEN

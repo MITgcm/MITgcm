@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.42 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.43 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -241,6 +241,17 @@ C--   SEAICE_EXTERNAL_FORCING is obsolete: issue warning but continue.
      &        'seaice now always uses exf to read input files.'
          CALL PRINT_ERROR( msgBuf, myThid )
 #endif
+
+C--   SEAICE_SALINITY is obsolete: issue warning and stop.
+#ifdef SEAICE_SALINITY
+         WRITE(msgBuf,'(A)')
+     &     'SEAICE_SALINITY option is obsolete'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &     'use SEAICE_VARIABLE_SALINITY instead.'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_SALINITY */
 
 C--   SEAICE_OLD_AND_BAD_DISCRETIZATION is obsolete: issue warning and stop.
 #ifdef SEAICE_OLD_AND_BAD_DISCRETIZATION

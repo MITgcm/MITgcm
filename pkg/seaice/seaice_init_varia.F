@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.55 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.56 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -129,7 +129,7 @@ C
           ZMAX(i,j,bi,bj)   = 0. _d 0
           ZMIN(i,j,bi,bj)   = 0. _d 0
           HSNOW(i,j,bi,bj)  = 0. _d 0
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
           HSALT(i,j,bi,bj)  = 0. _d 0
 #endif
 #ifdef SEAICE_AGE
@@ -396,13 +396,15 @@ C--   Read initial snow thickness from file if available.
         ENDDO
        ENDIF
 
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)*
-     &            ICE2WATR*rhoConstFresh*SEAICE_salinity
+     &            SEAICE_rhoIce*SIsalFRAC
+cif     &            ICE2WATR*rhoConstFresh*SIsalFRAC
+
           ENDDO
          ENDDO
         ENDDO
@@ -413,7 +415,7 @@ C--   Read initial sea ice salinity from file if available.
         CALL READ_FLD_XY_RL( HsaltFile, ' ', HSALT, 0, myThid )
         _EXCH_XY_RL(HSALT,myThid)
        ENDIF
-#endif /* SEAICE_SALINITY */
+#endif /* SEAICE_VARIABLE_SALINITY */
 
 #ifdef SEAICE_AGE
 C--   Read initial sea ice age from file if available.
@@ -439,7 +441,7 @@ C--   In case we use scheme with a large stencil that extends into overlap:
      I                            1, bi, bj, myThid )
            CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
      I                            1, bi, bj, myThid )
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
            CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
      I                            1, bi, bj, myThid )
 #endif

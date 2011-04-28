@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.16 2010/10/20 22:06:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.17 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -596,7 +596,7 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,17) = 0.0
           StoreSEAICE(I,J,bi,bj,18) = 0.0      
 # endif /* SEAICE_ALLOW_DYNAMICS */
-# ifdef SEAICE_SALINITY
+# ifdef SEAICE_VARIABLE_SALINITY
           StoreSEAICE(I,J,bi,bj,19) = HSALT(I,J,bi,bj)
 # else
           StoreSEAICE(I,J,bi,bj,19) = 0.0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.45 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.46 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -130,7 +130,7 @@ CADJ STORE area   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE heff   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE heffm  = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE hsnow  = comlev1, key = ikey_dynamics, kind=isbyte
-# ifdef SEAICE_SALINITY
+# ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE hsalt   = comlev1, key = ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -266,7 +266,7 @@ C     now do the "explicit" time step
          ENDDO
         ENDIF
 
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
 C--   Effective Sea Ice Salinity (Mass of salt)
         IF ( SEAICEadvSalt ) THEN
          CALL SEAICE_ADVECTION(
@@ -292,7 +292,7 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDIF
-#endif /* SEAICE_SALINITY */
+#endif /* SEAICE_VARIABLE_SALINITY */
 
 #ifdef SEAICE_AGE
 C--   Sea Ice Age
@@ -350,11 +350,11 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
         CALL ADVECT( uc, vc, HSNOW, fldNm1, HEFFM, myThid )
        ENDIF
 
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
        IF ( SEAICEadvSalt ) THEN
         CALL ADVECT( uc, vc, HSALT, fldNm1, HEFFM, myThid )
        ENDIF
-#endif /* SEAICE_SALINITY */
+#endif /* SEAICE_VARIABLE_SALINITY */
 
 #ifdef SEAICE_AGE
        IF ( SEAICEadvAge ) THEN

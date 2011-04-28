@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.6 2010/11/14 23:26:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.7 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -59,7 +59,7 @@ C     Set model variables to OB values on Northern Boundary
               HEFF(i,j,bi,bj)  = OBNh (i,bi,bj)
               AREA(i,j,bi,bj)  = OBNa (i,bi,bj)
               HSNOW(i,j,bi,bj) = OBNsn(i,bi,bj)
-# ifdef SEAICE_SALINITY
+# ifdef SEAICE_VARIABLE_SALINITY
               HSALT(i,j,bi,bj) = OBNsl(i,bi,bj)
 # endif
             ENDDO
@@ -78,7 +78,7 @@ C     Set model variables to OB values on Southern Boundary
               HEFF(i,j,bi,bj)  = OBSh (i,bi,bj)
               AREA(i,j,bi,bj)  = OBSa (i,bi,bj)
               HSNOW(i,j,bi,bj) = OBSsn(i,bi,bj)
-# ifdef SEAICE_SALINITY
+# ifdef SEAICE_VARIABLE_SALINITY
               HSALT(i,j,bi,bj) = OBSsl(i,bi,bj)
 # endif
             ENDDO
@@ -97,7 +97,7 @@ C     Set model variables to OB values on Eastern Boundary
               HEFF(i,j,bi,bj)  = OBEh (j,bi,bj)
               AREA(i,j,bi,bj)  = OBEa (j,bi,bj)
               HSNOW(i,j,bi,bj) = OBEsn(j,bi,bj)
-# ifdef SEAICE_SALINITY
+# ifdef SEAICE_VARIABLE_SALINITY
               HSALT(i,j,bi,bj) = OBEsl(j,bi,bj)
 # endif
             ENDDO
@@ -116,7 +116,7 @@ C     Set model variables to OB values on Western Boundary
               HEFF(i,j,bi,bj)  = OBWh (j,bi,bj)
               AREA(i,j,bi,bj)  = OBWa (j,bi,bj)
               HSNOW(i,j,bi,bj) = OBWsn(j,bi,bj)
-# ifdef SEAICE_SALINITY
+# ifdef SEAICE_VARIABLE_SALINITY
               HSALT(i,j,bi,bj) = OBWsl(j,bi,bj)
 # endif
             ENDDO
@@ -155,7 +155,7 @@ C     Northern Boundary
              HSNOW(i,Jobc-1,bi,bj) = edge_val
              HSNOW(i,Jobc-2,bi,bj) = edge_val
             ENDIF
-#  ifdef SEAICE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
              edge_val = 0.5 _d 0 *
      &           (HSALT(i,Jobc-1,bi,bj)+HSALT(i,Jobc-2,bi,bj))
@@ -194,7 +194,7 @@ C     Southern Boundary
              HSNOW(i,Jobc+1,bi,bj) = edge_val
              HSNOW(i,Jobc+2,bi,bj) = edge_val
             ENDIF
-#  ifdef SEAICE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
              edge_val = 0.5 _d 0 *
      &           (HSALT(i,Jobc+1,bi,bj)+HSALT(i,Jobc+2,bi,bj))
@@ -233,7 +233,7 @@ C     Eastern Boundary
              HSNOW(Iobc-1,j,bi,bj) = edge_val
              HSNOW(Iobc-2,j,bi,bj) = edge_val
             ENDIF
-#  ifdef SEAICE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
              edge_val = 0.5 _d 0 *
      &           (HSALT(Iobc-1,j,bi,bj)+HSALT(Iobc-2,j,bi,bj))
@@ -272,7 +272,7 @@ C     Western Boundary
              HSNOW(Iobc+1,j,bi,bj) = edge_val
              HSNOW(Iobc+2,j,bi,bj) = edge_val
             ENDIF
-#  ifdef SEAICE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             IF ( SEAICEadvSALT .AND. OBNslfile .NE. ' ' ) THEN
              edge_val = 0.5 _d 0 *
      &           (HSALT(Iobc+1,j,bi,bj)+HSALT(Iobc+2,j,bi,bj))

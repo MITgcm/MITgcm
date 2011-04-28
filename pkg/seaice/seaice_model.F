@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.86 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.87 2011/04/28 02:06:31 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,7 +85,7 @@ CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE tice  = comlev1, key=ikey_dynamics, kind=isbyte
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #endif
@@ -100,7 +100,7 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
            AREA(i,j,bi,bj) = 0. _d 0
            HSNOW(i,j,bi,bj) = 0. _d 0
            TICE(i,j,bi,bj) = celsius2K
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
            HSALT(i,j,bi,bj) = 0. _d 0
 #endif
           ENDIF
@@ -231,7 +231,7 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_RL( HEFF,  myThid )
        _EXCH_XY_RL( AREA,  myThid )
        _EXCH_XY_RL( HSNOW, myThid )
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
        _EXCH_XY_RL( HSALT, myThid )
 #endif
 #ifdef SEAICE_AGE
@@ -265,7 +265,7 @@ C--   In case we use scheme with a large stencil that extends into overlap:
      I                            1, bi, bj, myThid )
            CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
      I                            1, bi, bj, myThid )
-#ifdef SEAICE_SALINITY
+#ifdef SEAICE_VARIABLE_SALINITY
            CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
      I                            1, bi, bj, myThid )
 #endif
