@@ -1,10 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1415 2011/04/27 22:26:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1416 2011/04/28 13:59:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
+o fizhi-cs test exp.:
+   switch reference output convention for these 2 non-standard test-exp,
+    from: pgi  6.1-5 on faulks (FC.6, -of linux_ia32_pgf77+authors_fc5) 
+      to: ifort 11.1 on baudelaire (FC.13, -of linux_amd64_ifort11)
+   reason: faulks might get retired soon and pkg/fizhi has still Pb with gfortran
 o model/inc:
   - change type of PmEpR array (from _RS to _RL) to fix restart (with "-use_r4")
     of exp. global_ocean.90x40x15 (Suncronous time-stepping + Real-FW + NonLin-FS)
