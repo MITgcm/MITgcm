@@ -1,17 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1417 2011/04/28 18:44:09 ifenty Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1418 2011/04/28 23:26:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - remove calls to OBCS_COPY_TRACER after EXCH for T,S & pTracer:
+    no longer needed with maskInC,W,S in pkg/generic_advdiff.
 o pkg/seaice:
-  - retired SEAICE_SALINITY and SEAICE_salinity in favor of 
+  - retired SEAICE_SALINITY and SEAICE_salinity in favor of
     SEAICE_VARIABLE_SALINITY and SIsalFRAC, respectively.
-  - fixed bug in the initialization of sea ice salinity variable HSALT 
+  - fixed bug in the initialization of sea ice salinity variable HSALT
     in seaice_init_varia.F  (removed dependence on ICE2WATR)
 o fizhi-cs test exp.:
    switch reference output convention for these 2 non-standard test-exp,
-    from: pgi  6.1-5 on faulks (FC.6, -of linux_ia32_pgf77+authors_fc5) 
+    from: pgi  6.1-5 on faulks (FC.6, -of linux_ia32_pgf77+authors_fc5)
       to: ifort 11.1 on baudelaire (FC.13, -of linux_amd64_ifort11)
    reason: faulks might get retired soon and pkg/fizhi has still Pb with gfortran
 o model/inc:
