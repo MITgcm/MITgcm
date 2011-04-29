@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1418 2011/04/28 23:26:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1419 2011/04/29 21:21:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice_obcs test-exp.:
+  add small diffK4T,S to test biharmonic diffusivity with OBCS ; update output.
 o pkg/obcs:
   - remove calls to OBCS_COPY_TRACER after EXCH for T,S & pTracer:
     no longer needed with maskInC,W,S in pkg/generic_advdiff.
