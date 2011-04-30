@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.160 2011/03/29 11:51:20 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.161 2011/04/30 22:20:17 jmc Exp $
 #  $Name:  $
 #
 
@@ -424,8 +424,7 @@ run_clean()
 	    find . -name "*.data" -exec rm {} \;
 	    find . -name "fort.*" -exec rm {} \;
 	    find . -type l -exec rm {} \;
-	    #- should remove executable only if sym-link (and above does it)
-	    #rm -f $EXECUTABLE
+	    #- should remove executable only if sym-link (alredy done above)
 	    rm -f $RUNLOG *.txt STD* *diagnostics.log datetime
 	    rm -rf mnc_test_*
  	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
@@ -514,7 +513,7 @@ makemodel()
 
 mk_mpi_size()
 {
-    # mk_mpi_size input_file output_file proc_Nb
+    # mk_mpi_size input_file output_file proc_Nb prefer_to_split_X
     #
     # make new SIZE.h (=output_file) from SIZE.h_mpi (=input_file)
     #     for an MPI build with no more than proc_Nb processors ;
@@ -523,6 +522,7 @@ mk_mpi_size()
     inp=$1
     out=$2
     np=$3
+    dirX=$4
     tmp=TTT.$$
 
     px=`grep "^     & *nPx *=" $inp | sed "s/^     & *nPx *= *//" | sed 's/, *$//'`
@@ -540,6 +540,13 @@ mk_mpi_size()
 	  if [ `expr $py % $j` -eq 0 ] ; then
 	    ij=`expr $i \* $j`
 	    if [ $ij -gt $pp ] ; then
+		flag=1
+	    elif [ $ij -eq $pp ] ; then
+		flag=$dirX
+	    else
+		flag=0
+	    fi
+	    if test $flag = 1 ; then
 	      if [ $ij -le $np ] ; then
 		ix=$i ; jy=$j ; pp=$ij
 		#echo "  ix,jy= $ix,$jy"
@@ -864,27 +871,38 @@ scandirs()
 
 check_eedata()
 {
-    # check_eedata size.h eedata
+    # check_eedata eedata size.h
     if [ $# -eq 2 ] ; then
-      if test -f $1 -a -f $2 ; then
-      sx=`grep "^     & *nSx *=" $1 | sed "s/^     & *nSx *=//" | sed 's/, *$//'`
-      nx=`grep "^ *nTx *=" $2 | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
+     if test -f $1 -a -f $2 ; then
+      nx=`grep "^ *nTx *=" $1 | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
+      sx=`grep "^     & *nSx *=" $2 | sed "s/^     & *nSx *=//" | sed 's/, *$//'`
       if test "x$nx" = x ; then
 	rx=10
       else
 	rx=`expr $sx % $nx`
       fi
-      sy=`grep "^     & *nSy *=" $1 | sed "s/^     & *nSy *=//" | sed 's/, *$//'`
-      ny=`grep "^ *nTy *=" $2 | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
+      ny=`grep "^ *nTy *=" $1 | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
+      sy=`grep "^     & *nSy *=" $2 | sed "s/^     & *nSy *=//" | sed 's/, *$//'`
       if test "x$ny" = x ; then
 	ry=20
       else
 	ry=`expr $sy % $ny`
       fi
       echo `expr $rx + $ry`
-    else
+     else
       echo '-1'
-      fi
+     fi
+    elif [ $# -eq 1 ] ; then
+     if test -f $1 ; then
+      nx=`grep "^ *nTx *=" $1 | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
+      if test "x$nx" = x ; then nx=1 ; fi
+      ny=`grep "^ *nTy *=" $1 | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
+      if test "x$ny" = x ; then ny=1 ; fi
+     #echo $nx $ny
+      echo $nx
+     else
+      echo '-1'
+     fi
     else
       echo '-2'
     fi
@@ -1328,26 +1346,35 @@ for dir in $TESTDIRS ; do
 
     # Check for specific files for particular type of run
 
+    if test ! -r $CODE_DIR"/SIZE.h_mpi"  -a "x$MPI" != "x0" ; then
+	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
+	continue
+    fi
+    if test ! -r $dir"/input/eedata.mth" -a "x$MULTI_THREAD" = "xt" ; then
+	echo "can't find \"$dir/input/eedata.mth\" -- skipping $dir"
+	continue
+    fi
+
     if test "x$MPI" != "x0" ; then
-	if test -r $CODE_DIR"/SIZE.h_mpi" ; then
-	    #- create new SIZE.h with no more than '$MPI' Procs
-	    mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI
-	    LOC_NPROC=$?
-	    (   cd $BUILD_DIR
-		if test -r SIZE.h.mpi ; then
-		    cmp tr_size.mpi SIZE.h.mpi > /dev/null 2>&1 ; RETVAL=$?
-		else RETVAL=1
-		fi
-		if test "x$RETVAL" = x0 ; then
-		    rm -f tr_size.mpi
-		else
-		    rm -f SIZE.h.mpi ; mv tr_size.mpi SIZE.h.mpi
-		fi
-	    )
-	else
-	    echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
-	    continue
+	prefer_X=0
+	if test "x$MULTI_THREAD" = "xt" ; then
+	    retv=`check_eedata $dir"/input/eedata.mth"`
+	    if test $retv = 1 ; then prefer_X=1 ; fi
 	fi
+	#- create new SIZE.h with no more than '$MPI' Procs
+	mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI $prefer_X
+	LOC_NPROC=$?
+	(   cd $BUILD_DIR
+	    if test -r SIZE.h.mpi ; then
+		cmp tr_size.mpi SIZE.h.mpi > /dev/null 2>&1 ; RETVAL=$?
+	    else RETVAL=1
+	    fi
+	    if test "x$RETVAL" = x0 ; then
+		rm -f tr_size.mpi
+	    else
+		rm -f SIZE.h.mpi ; mv tr_size.mpi SIZE.h.mpi
+	    fi
+	)
 	if test "x$MPI_MFILE" != x ; then
 	    #- create new MPI machine-file with the right number of Procs
 	    rm -f $LOC_MFILE
@@ -1363,16 +1390,12 @@ for dir in $TESTDIRS ; do
 		echo " new LOC_MFILE=$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
 	    fi
 	fi
-    fi
-    if test ! -r $dir"/input/eedata.mth" -a "x$MULTI_THREAD" = "xt" ; then
-	echo "can't find \"$dir/input/eedata.mth\" -- skipping $dir"
-	continue
-    fi
-    if test "x$MPI" != "x0" -a "x$MULTI_THREAD" = "xt" ; then
-	retv=`check_eedata $BUILD_DIR"/SIZE.h.mpi" $dir"/input/eedata.mth"`
-	if test $retv != 0 ; then
-	    echo "input/eedata.mth tiling misfit -- skipping $dir"
-	    continue
+	if test "x$MULTI_THREAD" = "xt" ; then
+	    retv=`check_eedata $dir"/input/eedata.mth" $BUILD_DIR"/SIZE.h.mpi"`
+	    if test $retv != 0 ; then
+		echo "input/eedata.mth tiling misfit -- skipping $dir"
+		continue
+	    fi
 	fi
     fi
 
@@ -1392,7 +1415,7 @@ for dir in $TESTDIRS ; do
 	      if test "x$MPI" = "x0" ; then
 		extra_runs="$extra_runs $name"
 	      else
-		retv=`check_eedata $BUILD_DIR"/SIZE.h.mpi" $dir"/"$exd"/eedata.mth"`
+		retv=`check_eedata $dir"/"$exd"/eedata.mth" $BUILD_DIR"/SIZE.h.mpi"`
 		if test $retv = 0 ; then
 		    extra_runs="$extra_runs $name"
 		else
