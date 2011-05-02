@@ -1,25 +1,24 @@
 # Open-boundaries
  &OBCS_PARM01
 # This flag turns off checking and fixing problematic topography across 
-# open boundaries. We set it here to override the default because
-# we want to reproduce old results (including their bugs).
+# open boundaries.
  OBCSfixTopo=.FALSE.,
- OB_Jnorth=80*-1,
- OB_Jsouth=80*1,
- OB_Ieast=42*-1,
- OB_Iwest=42*1,
-#useOrlanskiNorth=.TRUE.,
-#useOrlanskiSouth=.TRUE.,
-#useOrlanskiEast=.TRUE.,
-#useOrlanskiWest=.FALSE.,
+ OB_Jnorth= 80*-1,
+ OB_Jsouth= 80*1,
+ OB_Ieast = 42*-1,
+ OB_Iwest = 42*1,
  useOBCSprescribe = .TRUE.,
  OBNuFile = 'OBmeridU.bin',
  OBSuFile = 'OBmeridU.bin',
  OBWuFile = 'OBzonalU.bin',
  OBEuFile = 'OBzonalU.bin',
+#OBWuFile = 'OB_WestU.bin',
+#OBEuFile = 'OB_EastU.bin',
+#OBWwFile = 'OBzonalW.bin',
  OBWsFile = 'OBzonalS.bin',
  OBWptrFile(1) = 'OBzonalS.bin',
  OBCS_monitorFreq = 10800.,
+#OBCS_monitorFreq = 1200.,
  OBCS_monSelect=1,
  &
 

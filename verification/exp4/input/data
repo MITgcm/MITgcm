@@ -6,30 +6,32 @@
  &PARM01
  tRef= 0.696834, 0.497738, 0.298643, 0.0995477, -0.0995477, -0.298643, -0.497738, -0.696834,
  sRef= 8*35.,
- viscAz=1.E-3,
+ viscAr=1.E-3,
  viscAh=1.E3,
+#- put small value (<< stab.limit ~ 3.e10) only to test biharmonic-viscosity
+#viscA4=1.E8,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- viscA4=0.E12,
  diffKhT=1.E3,
- diffKzT=1.E-5,
+ diffKrT=1.E-5,
  diffKhS=1.E3,
- diffKzS=1.E-5,
- f0=1.e-4,
- beta=0.E-11,
+ diffKrS=1.E-5,
+ saltAdvScheme=4,
+ eosType='LINEAR',
  tAlpha=2.E-4,
  sBeta =0.E-4,
  gravity=9.81,
- gBaro=9.81,
+ f0=1.e-4,
+ beta=0.E-11,
+#nonHydrostatic=.TRUE.,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
+#exactConserv=.TRUE.,
  hFacMin=0.2,
- saltAdvScheme=4,
- nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
 #- not safe to use globalFiles in multi-processors runs
 #globalFiles=.TRUE.,
+#useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -42,29 +44,29 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=10,
+#baseTime=10800.,
  deltaT=600.0,
  abEps=0.1,
+#momDissip_In_AB=.FALSE.,
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=10800.0,
  monitorSelect=2,
  monitorFreq=1.,
-# for time dependent open boundary conditions comment 
-# in the following three lines
-# periodicExternalForcing=.TRUE.,
-# externForcingPeriod=600.,
-# externForcingCycle=1200.,
+# for time dependent open boundary conditions, activate the following 3 lines:
+#periodicExternalForcing=.TRUE.,
+#externForcingPeriod=21600.,
+#externForcingCycle =43200.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
  delX=80*5.e3,
  delY=42*5.e3,
- delZ= 8*562.5,
+ delR= 8*562.5,
  &
 
 # Input datasets
