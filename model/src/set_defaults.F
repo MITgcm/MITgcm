@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.153 2011/04/20 13:45:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.154 2011/05/02 13:04:04 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -257,13 +257,13 @@ C--   Time stepping parameters
         dTtracerLev(k)  = 0. _d 0
       ENDDO
       baseTime          = 0. _d 0
-      nIter0            = 0
-      startTime         = deltaT*float(nIter0)
+      nIter0            = -1
+      startTime         = UNSET_RL
       pickupSuff        = ' '
       pickupStrictlyMatch = .TRUE.
       nTimeSteps        = 0
-      nEndIter          = nIter0+nTimeSteps
-      endTime           = deltaT*float(nEndIter)
+      nEndIter          = 0
+      endTime           = 0. _d 0
       momForcingOutAB   = UNSET_I
       tracForcingOutAB  = UNSET_I
       momDissip_In_AB   = .TRUE.

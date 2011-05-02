@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.238 2011/04/20 13:45:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.239 2011/05/02 13:04:04 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -886,15 +886,20 @@ C     o Salinity climatology relaxation time scale
        doSaltClimRelax     = .TRUE.
       ENDIF
 
-C     o Base time
-      IF ( nIter0.NE.0 .AND. startTime.NE.0. .AND. baseTime.EQ.0. )
-     &   baseTime = startTime - deltaTClock*float(nIter0)
-C     o Start time
-      IF ( nIter0 .NE. 0 .AND. startTime .EQ. 0. )
-     &   startTime = baseTime + deltaTClock*float(nIter0)
-C     o nIter0
-      IF ( nIter0 .EQ. 0 .AND. startTime .NE. baseTime )
-     &   nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+      IF ( startTime.EQ.UNSET_RL .AND. nIter0.EQ.-1 ) THEN
+C     o set default value for start time & nIter0
+        startTime = baseTime
+        nIter0 = 0
+      ELSEIF ( startTime.EQ.UNSET_RL ) THEN
+C     o set start time from nIter0
+         startTime = baseTime + deltaTClock*float(nIter0)
+      ELSEIF ( nIter0.EQ.-1 ) THEN
+C     o set nIter0 from start time
+         nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+      ELSEIF ( baseTime.EQ.0. ) THEN
+C     o set base time from the 2 others
+         baseTime = startTime - deltaTClock*float(nIter0)
+      ENDIF
 
 C     o nTimeSteps 1
       IF ( nTimeSteps .EQ. 0 .AND. nEndIter .NE. 0 )
