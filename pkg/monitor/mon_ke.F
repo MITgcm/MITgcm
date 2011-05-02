@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.20 2009/12/21 00:06:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.21 2011/05/02 15:00:51 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
      I     myIter, myThid )
 
 C     !DESCRIPTION:
-C     Calculates stats for Kinetic energy
+C     Calculates stats for Kinetic Energy
 
 C     !USES:
       IMPLICIT NONE
@@ -40,6 +40,8 @@ C     !LOCAL VARIABLES:
       _RL tmpWke
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       numPnts=0.
       theVol=0.
       theMax=0.
@@ -66,6 +68,7 @@ C        Consequently, wVel(k=1) does not contribute to NH KE (msk_1=0).
            tileVol(bi,bj) = tileVol(bi,bj)
      &                    + rA(i,j,bi,bj)*deepFac2C(k)
      &                     *rhoFacC(k)*drF(k)*_hFacC(i,j,k,bi,bj)
+     &                     *maskInC(i,j,bi,bj)
 
 C- Vector Invariant form (like in pkg/mom_vecinv/mom_vi_calc_ke.F)
 c          tmpVal=0.25*( uVel( i , j ,k,bi,bj)*uVel( i , j ,k,bi,bj)
@@ -87,7 +90,7 @@ C    with no assumption on how grid spacing & area are defined.
      &         *dxG(i, j ,bi,bj)*dyC(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)
      &      +vVel(i,j+1,k,bi,bj)*vVel(i,j+1,k,bi,bj)
      &         *dxG(i,j+1,bi,bj)*dyC(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)
-     &        )
+     &        )*maskInC(i,j,bi,bj)
            tileVlAv(bi,bj) = tileVlAv(bi,bj)
      &                     + tmpVal*deepFac2C(k)*rhoFacC(k)*drF(k)
            tmpVal= tmpVal*_recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
@@ -99,7 +102,7 @@ C    with no assumption on how grid spacing & area are defined.
      &                             *deepFac2F( k )*rhoFacF( k )
      &         +wVel(i,j,kp1,bi,bj)*wVel(i,j,kp1,bi,bj)*mskp1
      &                             *deepFac2F(kp1)*rhoFacF(kp1)
-     &        )*maskC(i,j,k,bi,bj)
+     &        )*maskC(i,j,k,bi,bj)*maskInC(i,j,bi,bj)
             tileVlAv(bi,bj) = tileVlAv(bi,bj)
      &             + tmpWke*rA(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
             tmpVal = tmpVal
@@ -166,5 +169,3 @@ c     CALL MON_OUT_RL(mon_string_none,theMean,mon_foot_mean,myThid)
 
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
