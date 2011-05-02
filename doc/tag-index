@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1419 2011/04/29 21:21:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1420 2011/05/02 13:06:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix startTime setting when baseTime<>0 & nIter0=0 are specified ;
+  - initialise startTime & nIter0 with unlikely values: allows to set one
+    from the other without ambiguity.
 o seaice_obcs test-exp.:
   add small diffK4T,S to test biharmonic diffusivity with OBCS ; update output.
 o pkg/obcs:
