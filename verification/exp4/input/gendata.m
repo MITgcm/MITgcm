@@ -1,6 +1,6 @@
 % This is a matlab script that generates the input data
 
-% $Header: /u/gcmpack/MITgcm/verification/exp4/input/gendata.m,v 1.6 2010/04/06 21:04:45 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/exp4/input/gendata.m,v 1.7 2011/05/02 19:35:38 jmc Exp $
 % $Name:  $
 
 % Dimensions of grid
@@ -65,15 +65,28 @@ si = 35;
 % open boundary conditions;
 u0 = .25;
 s0 = si+1;
+w0= 1.e-3;
 
 % create two time slabs for testing
-uMerid = cat(3,u0*ones(nx,nz),zeros(nx,nz));
-uZonal = cat(3,u0*ones(ny,nz),zeros(ny,nz));
+uMerid = cat(3,u0*ones(nx,nz),u0*ones(nx,nz));
+uZonal = cat(3,u0*ones(ny,nz),  zeros(ny,nz));
 sZonal = cat(3,s0*ones(ny,nz),s0*ones(ny,nz));
 
-fid=fopen('OBmeridU.bin','w',ieee); fwrite(fid,uMerid,prec); fclose(fid);
-fid=fopen('OBzonalU.bin','w',ieee); fwrite(fid,uZonal,prec); fclose(fid);
-fid=fopen('OBzonalS.bin','w',ieee); fwrite(fid,sZonal,prec); fclose(fid);
+%- time varying fraction = 1 % of full velocity
+du=u0*0.01;
+uWest = cat(3,(u0+du)*ones(ny,nz),(u0-du)*ones(ny,nz));
+uEast = cat(3,(u0-du)*ones(ny,nz),(u0+du)*ones(ny,nz));
+
+% to test Non-Hydrostatic OBCS:
+w1=[0:nz-1]*pi/nz; w1=-w0*sin(w1);
+wZonal = cat (3, ones(ny,1)*w1, zeros(ny,nz));
+
+ fid=fopen('OBmeridU.bin','w',ieee); fwrite(fid,uMerid,prec); fclose(fid);
+%fid=fopen('OBzonalU.bin','w',ieee); fwrite(fid,uZonal,prec); fclose(fid);
+ fid=fopen('OB_WestU.bin','w',ieee); fwrite(fid,uWest ,prec); fclose(fid);
+ fid=fopen('OB_EastU.bin','w',ieee); fwrite(fid,uEast ,prec); fclose(fid);
+ fid=fopen('OBzonalS.bin','w',ieee); fwrite(fid,sZonal,prec); fclose(fid);
+ fid=fopen('OBzonalW.bin','w',ieee); fwrite(fid,wZonal,prec); fclose(fid);
 
 %- rbcs mask & restauring tracer field:
 msk=ones(nx,ny,nz);
