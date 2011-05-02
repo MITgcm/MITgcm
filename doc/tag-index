@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1420 2011/05/02 13:06:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1421 2011/05/02 21:14:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o exp4 test-exp:
+  - add secondary set-up (.nlfs) using NonLin FreeSurf (z*) + mom_vecinv
+    and biharmonic-viscosity ; prescribe time varying OB but without pkg/exf.
+o pkg/obcs:
+  fix bug in OBWeta,OBWeta indices in obcs_apply_r_star.F
 o model/src:
   - fix startTime setting when baseTime<>0 & nIter0=0 are specified ;
   - initialise startTime & nIter0 with unlikely values: allows to set one
