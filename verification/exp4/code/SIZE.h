@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/SIZE.h,v 1.6 2009/05/17 22:30:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/SIZE.h,v 1.7 2011/05/02 18:29:35 jmc Exp $
 C $Name:  $
 
 C
@@ -46,8 +46,8 @@ C     Nr  :: No. points in Z for full process domain.
       PARAMETER (
      &           sNx =  40,
      &           sNy =  21,
-     &           OLx =   2,
-     &           OLy =   2,
+     &           OLx =   3,
+     &           OLy =   3,
      &           nSx =   2,
      &           nSy =   2,
      &           nPx =   1,
