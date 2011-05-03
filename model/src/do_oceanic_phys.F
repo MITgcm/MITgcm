@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.103 2011/04/20 16:20:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.104 2011/05/03 18:05:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -220,10 +220,10 @@ CADJ STORE seaice_sigma12      = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #   endif
 #  endif
-#  ifdef SEAICE_SALINITY
+cph#  ifdef SEAICE_SALINITY
 CADJ STORE salt                = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-#  endif
+cph#  endif
 #  ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -323,20 +323,22 @@ C     ice-front ocean interface
 #endif /* ALLOW_ICEFRONT */
 
 C--   Freeze water in the ocean interior and let it rise to the surface
-#ifndef ALLOW_AUTODIFF_TAMC
 C     temporarily exclude from adjoint computations until
 C     impact has been vetted in forward integrations
       IF ( allowInteriorFreezing ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta, salt = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#endif
         CALL FREEZE_INTERIOR(  myTime, myIter, myThid )
       ENDIF
-#endif
 
 C--   Freeze water at the surface
+      IF ( allowFreezing ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
-      IF ( allowFreezing ) THEN
         CALL FREEZE_SURFACE(  myTime, myIter, myThid )
       ENDIF
 
