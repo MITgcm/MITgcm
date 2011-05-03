@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.37 2011/04/17 21:12:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.38 2011/05/03 18:15:05 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -380,14 +380,8 @@ C    cannot be changed because of OBCS_CALC(startTime,nIter0) call above.
         CALL OBCS_PRESCRIBE_READ( startTime, nIter0, myThid )
 #endif
       ENDIF
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL OBCS_COPY_TRACER( theta(1-Olx,1-Oly,1,bi,bj),
-     I                          Nr, bi, bj, myThid )
-         CALL OBCS_COPY_TRACER( salt (1-Olx,1-Oly,1,bi,bj),
-     I                          Nr, bi, bj, myThid )
-       ENDDO
-      ENDDO
+C--   calls to S/R OBCS_COPY_TRACER on theta & salt are no longer needed
+C     with maskInC,W,S in pkg/generic_advdiff: removed
 
 #ifdef ALLOW_PTRACERS
 C     repeat everything for passive tracers
@@ -422,16 +416,10 @@ C     from a file.
      &        'PTRACERS EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
          CALL PTRACERS_FIELDS_BLOCKING_EXCH( myThid )
-       ELSE
-C-     This call is part of ptracers exchange S/R but is needed in all cases
-        DO iTracer=1,PTRACERS_numInUse
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           CALL OBCS_COPY_TRACER( pTracer(1-Olx,1-Oly,1,bi,bj,iTracer),
-     I                            Nr, bi, bj, myThid )
-          ENDDO
-         ENDDO
-        ENDDO
+c      ELSE
+C-    This call is part of ptracers exchange S/R but is needed in all cases
+C--   calls to S/R OBCS_COPY_TRACER on pTracers are no longer needed
+C     with maskInC,W,S in pkg/generic_advdiff: removed
        ENDIF
 C     endif usePTRACERS
       ENDIF
