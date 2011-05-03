@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1422 2011/05/03 17:20:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1423 2011/05/03 20:43:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OBC implementation in momentum:
+   use interior masks (maskInC,W & S) in momentum S/R:
+   - multiply divergence, tension and some del^i.u or del^j.v by maskInC
+   - multiply del2u,del2v by maskInW/S (biharmonic viscosity)
+   - multiply horiz. grad of vorticity by maskInW/S (in Leith scheme)
+   - multiply gradient of wVel by maskInW/S in del2w calculation (NonHyd)
+   Motivation: fix/clean implementation of OBC with biharmonic-viscosity
+    (and also with Leith/Smagorinsky harmonic-viscosity).
+   Update output of experiment dome and exp4 (+nlfs).
 o exp4 test-exp:
   - turn on: nonHydrostatic, exactConserv, viscA4 (with momDissip_In_AB=F)
     and prescribe time-varying OB (without pkg/exf) for zonal-velocity
