@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.43 2010/02/17 00:21:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.44 2011/05/03 19:32:35 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -102,7 +102,7 @@ C     == Routine arguments ==
       LOGICAL harmonic,biharmonic,useVariableViscosity
 
 C     == Local variables ==
-      INTEGER I,J
+      INTEGER i,j
 #ifdef ALLOW_NONHYDROSTATIC
       INTEGER kp1
 #endif
@@ -306,7 +306,7 @@ C        to compute d/dx(hDiv), fill corners with appropriate values:
 cph-exch2#endif
          DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
-            divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj)
+            divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))*recip_dxC(i,j,bi,bj)
           ENDDO
          ENDDO
 
@@ -320,7 +320,7 @@ C        to compute d/dy(hDiv), fill corners with appropriate values:
 cph-exch2#endif
          DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
-            divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)
+            divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
 
@@ -329,16 +329,22 @@ C-       gradient in x direction:
          DO j=2-Oly,sNy+Oly
           DO i=2-Olx,sNx+Olx-1
             vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
-     &                  *recip_DXG(i,j,bi,bj)
+     &                  *recip_dxG(i,j,bi,bj)
      &                  *maskS(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                  *maskInS(i,j,bi,bj)
+#endif
           ENDDO
          ENDDO
 C-       gradient in y direction:
          DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx
             vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
-     &                  *recip_DYG(i,j,bi,bj)
+     &                  *recip_dyG(i,j,bi,bj)
      &                  *maskW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                  *maskInW(i,j,bi,bj)
+#endif
           ENDDO
          ENDDO
 
@@ -352,9 +358,9 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 # ifndef AUTODIFF_DISABLE_LEITH
            lockey_2 = i+olx + (sNx+2*olx)*(j+oly-1)
      &                      + (sNx+2*olx)*(sNy+2*oly)*(lockey_1-1)
-CADJ STORE viscA4_ZSmg(i,j) 
+CADJ STORE viscA4_ZSmg(i,j)
 CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
-CADJ STORE viscAh_ZSmg(i,j) 
+CADJ STORE viscAh_ZSmg(i,j)
 CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 # endif
 #endif    /* ALLOW_AUTODIFF_TAMC */
@@ -456,7 +462,7 @@ C  BiHarmonic on Div.u points
      &          +viscA4_DLth(i,j)+viscA4_DSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
      &          +viscA4Dfld(i,j,k,bi,bj)
-#endif   
+#endif
          viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
          viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
@@ -575,9 +581,9 @@ C but this approximation will work on cube (and differs by 4X)
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
      &           +viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
-#ifdef ALLOW_3D_VISCAH         
+#ifdef ALLOW_3D_VISCAH
      &          +viscAhZfld(i,j,k,bi,bj)
-#endif         
+#endif
          viscAh_ZMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_Z(i,j)=MAX(viscAh_ZMin(i,j),Alin)
          viscAh_ZMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
@@ -588,7 +594,7 @@ C  BiHarmonic on Zeta points
      &           +viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
      &          +viscA4Zfld(i,j,k,bi,bj)
-#endif   
+#endif
          viscA4_ZMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)
          viscA4_ZMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
