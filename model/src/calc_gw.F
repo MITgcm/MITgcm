@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.44 2010/05/11 20:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.45 2011/05/03 19:26:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -289,6 +289,9 @@ C     to compute d/dx(W), fill corners with appropriate values:
 #ifdef COSINEMETH_III
      &              *sqCosFacU(j,bi,bj)
 #endif
+#ifdef ALLOW_OBCS
+     &              *maskInW(i,j,bi,bj)
+#endif
            ENDDO
           ENDDO
 
@@ -310,6 +313,9 @@ C     to compute d/dy(W), fill corners with appropriate values:
 #ifdef COSINEMETH_III
      &              *sqCosFacV(j,bi,bj)
 #endif
+#endif
+#ifdef ALLOW_OBCS
+     &              *maskInS(i,j,bi,bj)
 #endif
            ENDDO
           ENDDO
