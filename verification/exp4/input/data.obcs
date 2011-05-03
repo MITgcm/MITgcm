@@ -10,16 +10,15 @@
  useOBCSprescribe = .TRUE.,
  OBNuFile = 'OBmeridU.bin',
  OBSuFile = 'OBmeridU.bin',
- OBWuFile = 'OBzonalU.bin',
- OBEuFile = 'OBzonalU.bin',
-#OBWuFile = 'OB_WestU.bin',
-#OBEuFile = 'OB_EastU.bin',
-#OBWwFile = 'OBzonalW.bin',
+#OBWuFile = 'OBzonalU.bin',
+#OBEuFile = 'OBzonalU.bin',
+ OBWuFile = 'OB_WestU.bin',
+ OBEuFile = 'OB_EastU.bin',
+ OBWwFile = 'OBzonalW.bin',
  OBWsFile = 'OBzonalS.bin',
  OBWptrFile(1) = 'OBzonalS.bin',
- OBCS_monitorFreq = 10800.,
-#OBCS_monitorFreq = 1200.,
- OBCS_monSelect=1,
+ OBCS_monitorFreq= 1200.,
+ OBCS_monSelect = 1,
  &
 
 # Orlanski parameters
