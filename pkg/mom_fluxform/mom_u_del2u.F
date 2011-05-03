@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.8 2011/04/25 22:46:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.9 2011/05/03 19:49:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -57,6 +57,9 @@ C     Zonal flux d/dx U
 #ifdef COSINEMETH_III
      &   *sqCosFacU(J,bi,bj)
 #endif
+#ifdef ALLOW_OBCS
+     &   *maskInC(i,j,bi,bj)
+#endif
 c    &   *deepFacC(k)        ! dyF scaling factor
 c    &   *recip_deepFacC(k)  ! recip_dxF scaling factor
        ENDDO
@@ -86,6 +89,9 @@ C     del^2 U
      &  *( fZon(i,j  )    - fZon(i-1,j)
      &    +fMer(i,j+1)    - fMer(i  ,j)
      &   )*_maskW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &    *maskInW(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 
