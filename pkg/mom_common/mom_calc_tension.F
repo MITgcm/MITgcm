@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_tension.F,v 1.3 2004/07/07 14:10:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_tension.F,v 1.4 2011/05/03 19:27:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: MOM_CALC_TENSION
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE MOM_CALC_TENSION( 
+      SUBROUTINE MOM_CALC_TENSION(
      I        bi,bj,k,
      I        uFld, vFld,
      O        tension,
@@ -51,20 +51,24 @@ CEOP
 
 C Calculate tension of horizontal flow (ignoring lopping factors)
 C *NOTE* that masking is implicit in the contents of the (u,v) fields.
-        tension(i,j)= 
-     &    ( dyg(i+1, j ,bi,bj)*uFld(i+1, j )
-     &     -dyg( i , j ,bi,bj)*uFld( i , j )
-     &     -dxg( i ,j+1,bi,bj)*vFld( i ,j+1)
-     &     +dxg( i , j ,bi,bj)*vFld( i , j ) )*recip_rA(i,j,bi,bj)
-c    &    (dyf(i,j,bi,bj)*recip_dxf(i,j,bi,bj))
-c    &   *( uFld(i+1, j )*recip_dyg(i+1, j ,bi,bj)
-c    &     -uFld( i , j )*recip_dyg( i , j ,bi,bj) )
-c    &   -(dxf(i,j,bi,bj)*recip_dyf(i,j,bi,bj))
-c    &   *( vFld( i ,j+1)*recip_dxg( i ,j+1,bi,bj)
-c    &     -vFld( i , j )*recip_dxg( i , j ,bi,bj) )
+        tension(i,j)=
+     &    ( dyG(i+1, j ,bi,bj)*uFld(i+1, j )
+     &     -dyG( i , j ,bi,bj)*uFld( i , j )
+     &     -dxG( i ,j+1,bi,bj)*vFld( i ,j+1)
+     &     +dxG( i , j ,bi,bj)*vFld( i , j )
+     &    )*recip_rA(i,j,bi,bj)
+#ifdef ALLOW_OBCS
+     &     *maskInC(i,j,bi,bj)
+#endif
+c    &    (dyF(i,j,bi,bj)*recip_dxF(i,j,bi,bj))
+c    &   *( uFld(i+1, j )*recip_dyG(i+1, j ,bi,bj)
+c    &     -uFld( i , j )*recip_dyG( i , j ,bi,bj) )
+c    &   -(dxF(i,j,bi,bj)*recip_dyF(i,j,bi,bj))
+c    &   *( vFld( i ,j+1)*recip_dxG( i ,j+1,bi,bj)
+c    &     -vFld( i , j )*recip_dxG( i , j ,bi,bj) )
 
        ENDDO
       ENDDO
-        
+
       RETURN
       END
