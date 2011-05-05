@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.2 2011/03/01 23:39:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.3 2011/05/05 02:24:31 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -96,9 +96,8 @@ C--   Integrate the transport through each OB
           DO j=1,sNy
            iB = OB_Ie(j,bi,bj)
            IF ( iB.NE.0 ) THEN
-            tmpA = MAX( zeroRS,
-     &                  maskInC(iB-1,j,bi,bj)-maskInC(iB,j,bi,bj) )
-            tmpA = tmpA*drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
+            tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
+     &                   *maskInW(iB,j,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
             tileFlow(bi,bj) = tileFlow(bi,bj) + tmpA*OBEu(j,k,bi,bj)
            ENDIF
@@ -144,9 +143,8 @@ c    &   'OBCS_balance it,areaE,flowE=', myIter, areaE, flowE
           DO j=1,sNy
            iB = OB_Iw(j,bi,bj)
            IF ( iB.NE.0 ) THEN
-            tmpA = MAX( zeroRS,
-     &                  maskInC(iB+1,j,bi,bj)-maskInC(iB,j,bi,bj) )
-            tmpA = tmpA*drF(k)*hFacW(1+iB,j,k,bi,bj)*dyG(1+iB,j,bi,bj)
+            tmpA = drF(k)*hFacW(1+iB,j,k,bi,bj)*dyG(1+iB,j,bi,bj)
+     &                   *maskInW(1+iB,j,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
             tileFlow(bi,bj) = tileFlow(bi,bj) + tmpA*OBWu(j,k,bi,bj)
            ENDIF
@@ -192,9 +190,8 @@ c    &   'OBCS_balance it,areaW,flowW=', myIter, areaW, flowW
           DO i=1,sNx
            jB = OB_Jn(i,bi,bj)
            IF ( jB.NE.0 ) THEN
-            tmpA = MAX( zeroRS,
-     &                  maskInC(i,jB-1,bi,bj)-maskInC(i,jB,bi,bj) )
-            tmpA = tmpA*drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
+            tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
+     &                   *maskInS(i,jB,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
             tileFlow(bi,bj) = tileFlow(bi,bj) + tmpA*OBNv(i,k,bi,bj)
            ENDIF
@@ -240,9 +237,8 @@ c    &   'OBCS_balance it,areaN,flowN=', myIter, areaN, flowN
           DO i=1,sNx
            jB = OB_Js(i,bi,bj)
            IF ( jB.NE.0 ) THEN
-            tmpA = MAX( zeroRS,
-     &                  maskInC(i,jB+1,bi,bj)-maskInC(i,jB,bi,bj) )
-            tmpA = tmpA*drF(k)*hFacS(i,1+jB,k,bi,bj)*dxG(i,1+jB,bi,bj)
+            tmpA = drF(k)*hFacS(i,1+jB,k,bi,bj)*dxG(i,1+jB,bi,bj)
+     &                   *maskInS(i,1+jB,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
             tileFlow(bi,bj) = tileFlow(bi,bj) + tmpA*OBSv(i,k,bi,bj)
            ENDIF
