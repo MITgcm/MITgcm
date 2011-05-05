@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.21 2011/04/20 16:05:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.22 2011/05/05 22:23:27 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -691,8 +691,8 @@ C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
 C common block in DYNVARS.h, but this way keeps subroutine more
 C general
-        _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-        _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+        _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         INTEGER bi,bj,iMin,iMax,jMin,jMax
         INTEGER myThid
 CEOP
@@ -736,8 +736,8 @@ C....................................................................
         do i=imin,imax
          do j=jmin,jmax
           if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
-           t = ttemp(i,j,1,bi,bj)
-           s = stemp(i,j,1,bi,bj)
+           t = ttemp(i,j)
+           s = stemp(i,j)
 C terms used more than once
            tk = 273.15 _d 0 + t
            tk100 = tk/100. _d 0
@@ -939,8 +939,8 @@ C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
 C common block in DYNVARS.h, but this way keeps subroutine more
 C general
-        _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-        _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+        _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         INTEGER bi,bj,iMin,iMax,jMin,jMax
 C K is depth index
         INTEGER Klevel
@@ -1016,8 +1016,8 @@ cmick....................................................
         do i=imin,imax
          do j=jmin,jmax
           if (hFacC(i,j,Klevel,bi,bj).gt.0.d0) then
-           t = ttemp(i,j,Klevel,bi,bj)
-           s = stemp(i,j,Klevel,bi,bj)
+           t = ttemp(i,j)
+           s = stemp(i,j)
 C terms used more than once
            tk = 273.15 + t
            tk100 = tk/100.0

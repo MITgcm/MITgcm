@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.31 2011/04/19 21:34:32 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.32 2011/05/05 22:23:27 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -46,6 +46,9 @@ C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surftemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfdic(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iprt,jprt
       LOGICAL pH_isLoaded
 CEOP
@@ -167,10 +170,19 @@ C determine inorganic carbon chem coefficients
          DO i=iMin,iMax
 
 #ifdef DIC_BIOTIC
+#ifdef DIC_BOUNDS
+             surfalk(i,j) = max(0.4 _d 0,
+     &                          min(10. _d 0,PTRACER(i,j,klev,bi,bj,2)))
+     &                          * maskC(i,j,kLev,bi,bj)
+             surfphos(i,j)  = max(1.0 _d -11,
+     &                          min(1._d -1, PTRACER(i,j,klev,bi,bj,3)))
+     &                          * maskC(i,j,kLev,bi,bj)
+#else
              surfalk(i,j) = PTRACER(i,j,klev,bi,bj,2)
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)= PTRACER(i,j,klev,bi,bj,3)
      &                          * maskC(i,j,kLev,bi,bj)
+#endif
 #else
              surfalk(i,j) = 2.366595 _d 0 *salt(i,j,kLev,bi,bj)/35. _d 0
      &                          * maskC(i,j,kLev,bi,bj)
@@ -180,11 +192,23 @@ C FOR NON-INTERACTIVE Si
              surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
              PTR_CO2(i,j,kLev) = PTRACER(i,j,klev,bi,bj,1)
      &                          * maskC(i,j,kLev,bi,bj)
+#ifdef DIC_BOUNDS
+            surftemp(i,j) = max(-4. _d 0,
+     &                          min(50. _d 0, theta(i,j,kLev,bi,bj)))
+            surfsalt(i,j) = max(4. _d 0,
+     &                          min(50. _d 0, salt(i,j,kLev,bi,bj)))
+            surfdic(i,j)  = max(0.4 _d 0,
+     &                         min(10. _d 0, PTRACER(i,j,klev,bi,bj,1)))
+#else
+            surftemp(i,j) = theta(i,j,kLev,bi,bj)
+            surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+            surfdic(i,j)  = PTR_CO2(i,j,kLev)
+#endif
          ENDDO
         ENDDO
 
         CALL CARBON_COEFFS(
-     I                       theta,salt,
+     I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C====================================================================
@@ -204,8 +228,8 @@ C$TAF init dic_surf = static, 10
 C$TAF STORE pH(i,j,bi,bj), PTR_CO2(i,j,kLev)           = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
               CALL CALC_PCO2_APPROX(
-     I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
-     I        PTR_CO2(i,j,kLev), surfphos(i,j),
+     I        surftemp(i,j),surfsalt(i,j),
+     I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),

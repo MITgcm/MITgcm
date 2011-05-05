@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.26 2011/05/05 21:31:58 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.27 2011/05/05 22:23:27 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -56,6 +56,9 @@ C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surftemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfdic(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_OLD_VIRTUALFLUX
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
@@ -84,10 +87,19 @@ C determine inorganic carbon chem coefficients
 
 #ifdef DIC_BIOTIC
 cQQQQ check ptracer numbers
+#ifdef DIC_BOUNDS
+             surfalk(i,j) = max(0.4 _d 0, 
+     &                          min(10. _d 0,PTR_ALK(i,j,klev)))
+     &                          * maskC(i,j,kLev,bi,bj)
+             surfphos(i,j)  = max(1.0 _d -11, 
+     &                          min(1._d -1, PTR_PO4(i,j,klev)))
+     &                          * maskC(i,j,kLev,bi,bj)
+#else
              surfalk(i,j) = PTR_ALK(i,j,klev)
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)  = PTR_PO4(i,j,klev)
      &                          * maskC(i,j,kLev,bi,bj)
+#endif
 #else
              surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
      &                          * maskC(i,j,kLev,bi,bj)
@@ -95,11 +107,23 @@ cQQQQ check ptracer numbers
 #endif
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   = SILICA(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
+#ifdef DIC_BOUNDS
+            surftemp(i,j) = max(-4. _d 0, 
+     &                          min(50. _d 0, theta(i,j,kLev,bi,bj)))
+            surfsalt(i,j) = max(4. _d 0, 
+     &                          min(50. _d 0, salt(i,j,kLev,bi,bj)))
+            surfdic(i,j)  = max(0.4 _d 0, 
+     &                          min(10. _d 0, PTR_CO2(i,j,kLev)))
+#else
+            surftemp(i,j) = theta(i,j,kLev,bi,bj)
+            surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+            surfdic(i,j)  = PTR_CO2(i,j,kLev)
+#endif
           ENDDO
          ENDDO
 
          CALL CARBON_COEFFS(
-     I                       theta,salt,
+     I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 C====================================================================
 
@@ -133,8 +157,8 @@ C$TAF LOOP = parallel
 
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
             CALL CALC_PCO2_APPROX(
-     I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
-     I        PTR_CO2(i,j,kLev), surfphos(i,j),
+     I        surftemp(i,j),surfsalt(i,j),
+     I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
