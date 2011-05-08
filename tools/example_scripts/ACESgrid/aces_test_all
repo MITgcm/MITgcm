@@ -1,14 +1,188 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.21 2010/08/03 04:02:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.22 2011/05/08 11:27:20 jmc Exp $
 # $Name:  $
 
-# action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
+#  submit list of jobs or get list of submitted jobs
+sub_list_jobs()
+{
+   # sub_list_jobs
+   # input : JOB_LIST
+   # output: NB_SUB_JOBS (+ status of jobs: M_{sfx}=submitted or skipped )
+
+   NB_SUB_JOBS=0
+   for i in $JOB_LIST
+   do
+     case $i in
+       'mth') sfx='ifc_'${i}  ;;
+       'tuv') sfx='op64_'${i} ;;
+       'mp2') sfx=${i}'_mth'  ;;
+       'g77') sfx=${i}'_adm'  ;;
+           *) sfx=${i}'_mpi'  ;;
+     esac
+     if test -f $SUB_DIR/aces_test_$sfx ; then
+       JOB="tst_"$i
+       job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
+       if [ $action -eq 2 ] ; then
+       #-- to get outp back:
+         if test "x_$job_exist" = x_0 ; then
+           echo "did not find any job: $JOB" | tee -a $LOG_FIL
+           eval M_$i='skipped'
+         else
+           echo -n "found a job: $JOB" | tee -a $LOG_FIL
+           $QSTAT -a | grep $USER | grep $JOB | tee -a $LOG_FIL
+           eval M_$i='submitted'
+           NB_SUB_JOBS=`expr $NB_SUB_JOBS + 1`
+         fi
+       else
+       #-- to submit job
+         if test "x_$job_exist" = x_0 ; then
+           echo -n " $JOB : " | tee -a $LOG_FIL
+           $QSUB $SUB_DIR/aces_test_$sfx | tee -a $LOG_FIL
+           eval M_$i='submitted'
+           NB_SUB_JOBS=`expr $NB_SUB_JOBS + 1`
+         else
+           echo $JOB | tee -a $LOG_FIL
+           $QSTAT -a | grep $USER | grep $JOB | tee -a $LOG_FIL
+           echo 'job already exist => skip this test' | tee -a $LOG_FIL
+           eval M_$i='skipped'
+         fi
+       fi
+     else
+       echo 'no file:' aces_test_$sfx 'to submit' | tee -a $LOG_FIL
+       eval M_$i='skipped'
+     fi
+   done
+   echo " info-sub-list: NB_SUB_JOBS='$NB_SUB_JOBS'" >> $LOG_FIL
+}
+
+#  retrieve output when job is finished
+get_outp_back()
+{
+   # get_outp_back number_of_jobs
+   # input : JOB_LIST (+ status of jobs: M_{sfx}=submitted )
+   # output: REJECTED (= list of fast-to-fail jobs)
+   #        (+ change status of jobs to: M_{sfx}=done )
+
+   nbJobs=$1
+   REJECTED=
+   minutes=0 ; freq=10
+   fsec=`expr $freq \* 60`
+   echo "Check every $freq mn for $nbJobs test(s) to finish" | tee -a $LOG_FIL
+   echo "- start at :" `date` | tee -a $LOG_FIL
+   while test $nbJobs != 0 ; do
+
+     sleep $fsec
+     minutes=$(( $minutes + $freq ))
+
+     for i in $JOB_LIST ; do
+
+       eval comm=\$M_$i
+       if test $comm = 'submitted' ; then
+         JOB="tst_"$i
+         $QSTAT -a > $TMP_FIL
+         RETVAL=$?
+         ready_to_send=`grep $USER $TMP_FIL | grep $JOB | wc -l`
+         rm -f $TMP_FIL
+         if test "x$RETVAL" != x0 ; then
+           echo " $QSTAT returned with error code: $RETVAL" | tee -a $LOG_FIL
+           continue
+         fi
+
+         if test "x_$ready_to_send" = x_0 ; then
+           run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
+#-      results output:
+           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
+           if test "x$tdir" != x ; then
+             #- check this is the right output
+             chk=`echo $tdir | grep -c $today`
+             if test $chk = '0' ; then
+               curday=`date +%Y%m%d`
+               chk=`echo $tdir | grep -c $curday`
+             fi
+             if test $chk = '0' ; then
+               echo "tdir='$tdir'" | tee -a $LOG_FIL
+               echo "Output do not match, no email sent for $i" | tee -a $LOG_FIL
+               if [ $minutes -eq $freq ] ; then
+#-         add to rejected list if it fails in less than "freq" minutes
+                 REJECTED="$REJECTED $i"
+               fi
+             else
+               rm -f "/tmp/tr_aces-"$i".tar.gz"
+               ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
+               if test "x$HAVE_MPACK" = xt ; then
+                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
+                 echo "Email sent for $i at:     " `date` | tee -a $LOG_FIL
+               else
+                 echo " no email sent for $i (no mpack)" | tee -a $LOG_FIL
+               fi
+             fi
+           else
+               echo " no output found for $i" | tee -a $LOG_FIL
+               if [ $minutes -eq $freq ] ; then
+#-         add to rejected list if it fails in less than "freq" minutes
+                 REJECTED="$REJECTED $i"
+               fi
+           fi
+#-      restart output:
+           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^rs_aces' | head -1`
+           if test "x$tdir" != x ; then
+             #- check this is the right output
+             chk=`echo $tdir | grep -c $today`
+             if test $chk = '0' ; then
+               curday=`date +%Y%m%d`
+               chk=`echo $tdir | grep -c $curday`
+             fi
+             if test $chk = '0' ; then
+               echo "tdir='$tdir'" | tee -a $LOG_FIL
+               echo "Restart output do not match, no email sent for $i" | tee -a $LOG_FIL
+             else
+               rm -f "/tmp/rs_aces-"$i".tar.gz"
+               ( cd $run_dir ; tar -czf "/tmp/rs_aces-"$i".tar.gz" ./$tdir )
+               if test "x$HAVE_MPACK" = xt ; then
+                 $MPACK -s MITgcm-test -m 3555000 "/tmp/rs_aces-"$i".tar.gz" jmc@mitgcm.org
+                 echo "Email sent for $i restart:" `date` | tee -a $LOG_FIL
+               else
+                 echo " no email sent for $i restart (no mpack)" | tee -a $LOG_FIL
+               fi
+             fi
+           else
+              echo " no restart output for $i" | tee -a $LOG_FIL
+           fi
+#-      record successful sending
+           eval M_$i=done
+           nbJobs=`expr $nbJobs - 1`
+           chmod 644 output/tst_$i.std*
+         fi
+       fi
+     done
+
+     #  "long" queue is 24hrs = 24*60min = 1440min
+     if test $minutes -gt 2160 ; then
+        hrs=$(( $minutes / 60 ));
+        echo "Time expired after $minutes minutes ($hrs hours)" | tee -a $LOG_FIL
+        echo ' ' $nbJobs '/' $NB_SUB_JOBS 'tests not yet finished' | tee -a $LOG_FIL
+        exit 1
+     fi
+
+   done
+
+   echo "Retrieving $NB_SUB_JOBS tests finish :" `date` | tee -a $LOG_FIL
+   echo " info-get-outp: REJECTED='$REJECTED'" >> $LOG_FIL
+
+}
+
+#---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#-- Sequential part of the script starts here:
+#---------------------------------------------
+
+# action =1 : submit test jobs ; =2 : get jobs output ; =3 : do both
 case $1 in
- '-subOnly') action=2 ; shift ;;
- '-getOnly') action=1 ; shift ;;
+ '-subOnly') action=1 ; shift ;;
+ '-getOnly') action=2 ; shift ;;
  '-sub+get') action=3 ; shift ;;
-          *) action=3 ;;
+ '-double' ) action=4 ; shift ;;
+          *) action=4 ;;
 esac
 #echo "action= $action , Arg= $# "
 
@@ -16,9 +190,9 @@ today=`date +%Y%m%d`
 
 if test $# = 0
 then
-  tst_list='g77 gnu ifc pgi adm mp2 mth tuv'
+  TEST_LIST='g77 gnu ifc pgi adm mp2 mth tuv'
 else
-  tst_list=$*
+  TEST_LIST=$*
 fi
 
 # QSUB="/usr/local/bin/qsub"
@@ -53,57 +227,17 @@ module list >> $LOG_FIL 2>&1
 #-- now really do something:
 cd $TST_DIR
 
-nbtst=0
-for i in $tst_list
-do
-  case $i in
-    'mth') sfx='ifc_'${i}  ;;
-    'tuv') sfx='op64_'${i} ;;
-    'mp2') sfx=${i}'_mth'  ;;
-    'g77') sfx=${i}'_adm'  ;;
-        *) sfx=${i}'_mpi'  ;;
-  esac
-  if test -f $SUB_DIR/aces_test_$sfx ; then
-    JOB="tst_"$i
-    job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
-    if [ $action -ge 2 ] ; then
-    #-- to submit job
-      if test "x_$job_exist" = x_0 ; then
-        echo -n " $JOB : " | tee -a $LOG_FIL
-        $QSUB $SUB_DIR/aces_test_$sfx | tee -a $LOG_FIL
-        eval M_$i='submitted'
-        nbtst=`expr $nbtst + 1`
-      else
-        echo $JOB | tee -a $LOG_FIL
-        $QSTAT -a | grep $USER | grep $JOB | tee -a $LOG_FIL
-        echo 'job already exist => skip this test' | tee -a $LOG_FIL
-        eval M_$i='skipped'
-      fi
-    else
-    #-- to get outp back:
-      if test "x_$job_exist" = x_0 ; then
-        echo "did not find any job: $JOB" | tee -a $LOG_FIL
-        eval M_$i='skipped'
-      else
-        echo -n "found a job: $JOB" | tee -a $LOG_FIL
-        $QSTAT -a | grep $USER | grep $JOB | tee -a $LOG_FIL
-        eval M_$i='submitted'
-        nbtst=`expr $nbtst + 1`
-      fi
-    fi
-  else
-    echo 'no file:' aces_test_$sfx 'to submit' | tee -a $LOG_FIL
-    eval M_$i='skipped'
-  fi
-done
+  JOB_LIST=$TEST_LIST
+  sub_list_jobs
+ #echo " info-main:     NB_SUB_JOBS='$NB_SUB_JOBS'" >> $LOG_FIL
 
-if test $action = 2 ; then
-  count=0
+if test $action = 1 ; then
+  NB_JOBS2GET=0
 else
 #date_str=`date +%Y%m%d`"_0"
 
-  MPACKDIR=`dirname $MPACK`
 #- build the mpack utility (from build_mpack in testreport):
+  MPACKDIR=`dirname $MPACK`
   ( cd $MPACKDIR && ./configure && make ) > TTT.build_mpack.$$ 2>&1
   RETVAL=$?
   if test "x$RETVAL" != x0 ; then
@@ -128,103 +262,24 @@ else
   fi
   echo
 
-  count=$nbtst
+  NB_JOBS2GET=$NB_SUB_JOBS
 fi
 
 #- when it's done, retrieve output and send e-mail
-minutes=0 ; freq=10
-fsec=`expr $freq \* 60`
-echo "Check every $freq mn for $count test(s) to finish" | tee -a $LOG_FIL
-echo "- start at :" `date` | tee -a $LOG_FIL
-while test $count != 0 ; do
+  get_outp_back $NB_JOBS2GET
+ #echo " info-main:     REJECTED='$REJECTED'" >> $LOG_FIL
 
-    sleep $fsec
-    minutes=$(( $minutes + $freq ))
+if test $action = 4 -a "x$REJECTED" != x ; then
 
-    for i in $tst_list ; do
+  echo "Try 2nd round for fast-failed jobs: '$REJECTED'" | tee -a $LOG_FIL
+  JOB_LIST=$REJECTED
+  sub_list_jobs
+ #echo " info-main:     NB_SUB_JOBS='$NB_SUB_JOBS'" >> $LOG_FIL
 
-      eval comm=\$M_$i
-      if test $comm = 'submitted' ; then
-        JOB="tst_"$i
-        $QSTAT -a > $TMP_FIL
-        RETVAL=$?
-        ready_to_send=`grep $USER $TMP_FIL | grep $JOB | wc -l`
-        rm -f $TMP_FIL
-        if test "x$RETVAL" != x0 ; then
-           echo " $QSTAT returned with error code: $RETVAL" | tee -a $LOG_FIL
-           continue
-        fi
+  get_outp_back $NB_SUB_JOBS
+ #echo " info-main:     REJECTED='$REJECTED'" >> $LOG_FIL
 
-        if test "x_$ready_to_send" = x_0 ; then
-          run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
-#-      results output:
-          tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
-          if test "x$tdir" != x ; then
-            #- check this is the right output
-            chk=`echo $tdir | grep -c $today`
-            if test $chk = '0' ; then
-              curday=`date +%Y%m%d`
-              chk=`echo $tdir | grep -c $curday`
-            fi
-            if test $chk = '0' ; then
-              echo "tdir='$tdir'" | tee -a $LOG_FIL
-              echo "Output do not match, no email sent for $i" | tee -a $LOG_FIL
-            else
-              rm -f "/tmp/tr_aces-"$i".tar.gz"
-              ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
-              if test "x$HAVE_MPACK" = xt ; then
-                $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
-                echo "Email sent for $i at:     " `date` | tee -a $LOG_FIL
-              else
-                echo " no email sent for $i (no mpack)" | tee -a $LOG_FIL
-              fi
-            fi
-          else
-              echo " no output found for $i" | tee -a $LOG_FIL
-          fi
-#-      restart output:
-          tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^rs_aces' | head -1`
-          if test "x$tdir" != x ; then
-            #- check this is the right output
-            chk=`echo $tdir | grep -c $today`
-            if test $chk = '0' ; then
-              curday=`date +%Y%m%d`
-              chk=`echo $tdir | grep -c $curday`
-            fi
-            if test $chk = '0' ; then
-              echo "tdir='$tdir'" | tee -a $LOG_FIL
-              echo "Restart output do not match, no email sent for $i" | tee -a $LOG_FIL
-            else
-              rm -f "/tmp/rs_aces-"$i".tar.gz"
-              ( cd $run_dir ; tar -czf "/tmp/rs_aces-"$i".tar.gz" ./$tdir )
-              if test "x$HAVE_MPACK" = xt ; then
-                $MPACK -s MITgcm-test -m 3555000 "/tmp/rs_aces-"$i".tar.gz" jmc@mitgcm.org
-                echo "Email sent for $i restart:" `date` | tee -a $LOG_FIL
-              else
-                echo " no email sent for $i restart (no mpack)" | tee -a $LOG_FIL
-              fi
-            fi
-          else
-              echo " no restart output for $i" | tee -a $LOG_FIL
-          fi
-#-      record successful sending
-          eval M_$i=done
-          count=`expr $count - 1`
-          chmod 644 output/tst_$i.std*
-        fi
-      fi
-    done
+fi
 
-    #  "long" queue is 24hrs = 24*60min = 1440min
-    if test $minutes -gt 2160 ; then
-        hrs=$(( $minutes / 60 ));
-        echo "Time expired after $minutes minutes ($hrs hours)" | tee -a $LOG_FIL
-        echo ' ' $count '/' $nbtst 'tests not yet finished' | tee -a $LOG_FIL
-        exit 1
-    fi
-
-done
-
-echo "Retrieving $nbtst tests finish :" `date` | tee -a $LOG_FIL
+#------------------------
 exit 0
-
