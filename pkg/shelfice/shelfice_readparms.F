@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.9 2010/08/24 15:09:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.10 2011/05/09 15:17:12 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -16,8 +16,9 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "SHELFICE.h"
 #include "PARAMS.h"
+#include "SHELFICE.h"
+#include "SHELFICE_COST.h"
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
@@ -53,6 +54,9 @@ CEOP
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
      &     SHELFICEtopoFile, SHELFICEloadAnomalyFile
+#ifdef ALLOW_COST
+     &     , mult_shelfice
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -80,6 +84,9 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEwriteState       = .FALSE.
       SHELFICE_dumpFreq        = dumpFreq
       SHELFICE_taveFreq        = taveFreq
+#ifdef ALLOW_COST
+      mult_shelfice            = 0. _d 0
+#endif
 #ifdef ALLOW_MNC
       SHELFICE_tave_mnc = timeave_mnc
       SHELFICE_dump_mnc = snapshot_mnc

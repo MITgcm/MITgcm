@@ -1,0 +1,8 @@
+shelfice_cost_accumulate.f
+shelfice_cost_final.f
+shelfice_forcing.f
+shelfice_init_varia.f
+shelfice_thermodynamics.f
+shelfice_u_drag.f
+shelfice_update_masks.f
+shelfice_v_drag.f

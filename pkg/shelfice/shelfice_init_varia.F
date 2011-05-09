@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.3 2009/04/28 18:21:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.4 2011/05/09 15:17:12 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -20,6 +20,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHELFICE.h"
+#include "SHELFICE_COST.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SHELFICE_INIT_VARIA
@@ -29,7 +30,7 @@ CEndOfInterface
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
 C     I,J,bi,bj - Loop counters
-      INTEGER I, J, bi, bj
+      INTEGER I, J, K, bi, bj
 CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -45,6 +46,28 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_COST
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+ccc        DO K = 1, Nr
+         DO J = 1-OLy, sNy+OLy
+          DO I = 1-OLx, sNx+OLx
+           cMeanSHIforT (i,j,bi,bj) = 0. _d 0
+           cMeanSHIforS (i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+ccc        ENDDO
+       ENDDO
+      ENDDO
+c--
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        objf_shelfice(bi,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+#endif
+
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
 C-    must wait for initialisation to be finished before master loads from file
        _BARRIER
