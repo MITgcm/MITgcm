@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.24 2011/03/15 16:06:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.25 2011/05/09 09:02:54 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,7 +43,6 @@ c     == routine arguments ==
 #ifdef ALLOW_COST
 c     == local variables ==
 
-      integer i,j,k
       integer bi,bj
       integer itlo,ithi
       integer jtlo,jthi
@@ -57,6 +56,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_SEAICE
       CALL SEAICE_COST_FINAL (myThid)
+#endif
+
+#ifdef ALLOW_SHELFICE
+      CALL SHELFICE_COST_FINAL (myThid)
 #endif
 
 #if (defined (ALLOW_ECCO))
@@ -84,9 +87,6 @@ c     == end of interface ==
 #ifdef ALLOW_COST_TEMP
       CALL COST_TEMP (myThid)
 #endif
-#ifdef ALLOW_COST_SHELFICE
-      CALL SHELFICE_COST_FINAL (myThid)
-#endif
 
 c--   Sum up all contributions.
       do bj = jtlo,jthi
@@ -110,10 +110,6 @@ c--   Sum up all contributions.
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
-#ifdef ALLOW_COST_SHELFICE
-          write(standardmessageunit,'(A,D22.15)')
-     &         ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
-#endif
 
           fc = fc
      &            + mult_test   * objf_test(bi,bj)
@@ -127,9 +123,6 @@ c--   Sum up all contributions.
 #endif
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
-#endif
-#ifdef ALLOW_COST_SHELFICE
-     &            + mult_shelfice * objf_shelfice(bi,bj)
 #endif
         enddo
       enddo
