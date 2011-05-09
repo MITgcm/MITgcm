@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xy.F,v 1.12 2010/03/22 02:16:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xy.F,v 1.13 2011/05/09 08:55:48 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -100,10 +100,7 @@ c--   Only the master thread will do I/O.
      &        irec,   optimcycle,  mythid)
       enddo
 
-CMM( add one for good measure
-CMM      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)
-      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)+1
-CMM)
+      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)
          call MDSWRITEFIELD( fname, ctrlprec, .FALSE., 'RL',
      &        1, globfld2d,
      &        irec,   optimcycle,  mythid)
