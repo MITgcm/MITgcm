@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1424 2011/05/05 09:24:44 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1425 2011/05/09 08:56:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/ctrl: 
+  - remove extra 2D field "for good measure" when initializing in
+    ctrl_set_globfld_[xy/xz/yz].F
   - replace hard coded precision 32 (a bug) in ctrl_map_ini_gen by ctrlprec
   - improve error messages in ctrl_set_unpack_*
 o OBC implementation in momentum:
