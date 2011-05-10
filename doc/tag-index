@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1426 2011/05/09 15:25:11 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1427 2011/05/10 07:50:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl and shelfice: 
+  - add new control variable xx_shifwflx (fresh water flux underneath ice 
+    shelves). This is almost as tedious as obcs-ctrl, because the 
+    variables needs its own mask.
+  - add a cost function term that penalizes the deviation of xx_shifwflx 
+    from the first guess (zero) in analogy to other control variables
 o pkg/shelfice:
   - start basic adjoint
 o pkg/ctrl: 
