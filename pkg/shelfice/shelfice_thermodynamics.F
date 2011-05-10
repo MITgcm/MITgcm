@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.19 2010/01/03 00:31:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.20 2011/05/10 07:46:35 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -30,6 +30,10 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
+#ifdef ALLOW_AUTODIFF
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -74,6 +78,9 @@ C     drKp1, recip_drLoc
       _RL SW_TEMP
       EXTERNAL SW_TEMP
 
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     are we doing the conservative form of Jenkins et al. (2001)?
@@ -113,6 +120,27 @@ C     where this value is part of the protocol
           shelficeForcingS      (I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J = 1-Oly,sNy+Oly
+         DO I = 1-Olx,sNx+Olx
+          xx_shifwflx_loc(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL CTRL_GET_GEN ( 
+     &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
+     &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1, 
+     &     xx_shifwflx_dummy,
+     &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
+     &     mytime, myiter, mythid )
+#endif /* ALLOW_SHIFWFLX_CONTROL */
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J = 1, sNy
          DO I = 1, sNx
 C--   make local copies of temperature, salinity and depth (pressure)
@@ -169,6 +197,9 @@ C--   Calculate the upward heat and  fresh water fluxes
             shelfIceHeatFlux(I,J,bi,bj) = maskC(I,J,K,bi,bj) *
      &           SHELFICEheatTransCoeff * ( tLoc(I,J) - thetaFreeze )
      &           *HeatCapacity_Cp*rUnit2mass
+#ifdef ALLOW_SHIFWFLX_CONTROL
+     &           - xx_shifwflx_loc(I,J,bi,bj)*SHELFICElatentHeat
+#endif /*  ALLOW_SHIFWFLX_CONTROL */
 C     upward heat flux into the shelf-ice implies basal melting,
 C     thus a downward (negative upward) fresh water flux (as a mass flux),
 C     and vice versa
@@ -266,6 +297,9 @@ C     only make sense in connection with my notes on this (M.Losch)
 C--   upward fresh water flux due to melting (in kg/m^2/s)
             freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
      &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
+#ifdef ALLOW_SHIFWFLX_CONTROL
+     &           + xx_shifwflx_loc(I,J,bi,bj)
+#endif /*  ALLOW_SHIFWFLX_CONTROL */
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
