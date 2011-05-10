@@ -154,6 +154,10 @@ c--   Read the header.
 #ifdef ALLOW_CTRL_WETV
       read( funit ) (nWetvGlobal(k), k=1,nr)
 #endif
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      read(funit) (nWetiGlobal(k), k=1,nr)
+c     read(funit) nWetiGlobal(1)
+#endif
 
 cgg(    Add OBCS Mask information into the header section for optimization.
 #ifdef ALLOW_OBCSN_CONTROL
@@ -197,6 +201,10 @@ cph      if (lheaderonly) then
      &        (nWetwGlobal(k),  k=1,nr)
          print *, 'pathei: nWetvGlobal ',
      &        (nWetvGlobal(k),  k=1,nr)
+#ifdef ALLOW_SHIFWFLX_CONTROL
+         print *, 'pathei: nWetiGlobal ',
+     &        (nWetiGlobal(k), k=1,nr)
+#endif
          print *, 'pathei: ncvarindex ', 
      &        (ncvarindex(i), i=1,maxcvars)
          print *, 'pathei: ncvarrecs ', 
@@ -269,6 +277,10 @@ c--   Read the data.
                               cbuffindex = nWetwGlobal(k)
                            else if (ncvargrd(icvar) .eq. 'v') then
                               cbuffindex = nWetvGlobal(k)
+#ifdef ALLOW_SHIFWFLX_CONTROL
+                           else if (ncvargrd(icvar) .eq. 'i') then
+                              cbuffindex = nWetiGlobal(k)
+#endif
 cgg(   O.B. points have the grid mask "m".
                            else if (ncvargrd(icvar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.

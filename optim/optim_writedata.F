@@ -151,6 +151,10 @@ c--   Write the header.
 #ifdef ALLOW_CTRL_WETV
       write( funit ) (nWetvGlobal(k), k=1,nr)
 #endif
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      write(funit) (nWetiGlobal(k),   k=1,nr)
+c     write(funit) nWetiGlobal(1)
+#endif
 
 cgg(    Add OBCS Mask information into the header section for optimization.
 #ifdef ALLOW_OBCSN_CONTROL
@@ -195,7 +199,10 @@ c--         Write the data.
                            cbuffindex = nWetwGlobal(k)
                         else if (ncvargrd(icvar) .eq. 'v') then
                            cbuffindex = nWetvGlobal(k)
-
+#ifdef ALLOW_SHIFWFLX_CONTROL
+                        else if (ncvargrd(icvar) .eq. 'i') then
+                           cbuffindex = nWetiGlobal(k)
+#endif
 cgg(   O.B. points have the grid mask "m".
                         else if (ncvargrd(icvar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.

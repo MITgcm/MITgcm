@@ -160,6 +160,9 @@ c     == end of interface ==
      &  xx_depth_file, xx_efluxy_file, xx_efluxp_file,
      &  xx_bottomdrag_file, xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
+     &  xx_shifwflx_file, 
+     &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope, 
+     &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
      &  doInitXX, doPackDiag, doZscaleUnpack, doZscalePack,
      &  doMainUnpack, doMainPack, doAdmtlmBypassAD, delZexp
 cdfer
