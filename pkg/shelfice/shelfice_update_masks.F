@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.4 2009/04/28 18:21:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.5 2011/05/10 07:46:14 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -106,6 +106,30 @@ C      o Impose minimum fraction and/or size (dimensional)
           ENDDO
          ENDDO
         ENDDO
+#ifdef ALLOW_SHIFWFLX_CONTROL
+C     maskSHI is a hack to play along with the general ctrl-package
+C     infrastructure, where only the k=1 layer of a 3D mask is used 
+C     for 2D fields. We cannot use maskInC instead, because routines
+C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
+        DO K=1,Nr
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx        
+           maskSHI(I,J,K,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+        DO K=1,Nr
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx        
+           IF ( ABS(R_shelfice(I,J,bi,bj)) .GT. 0. _d 0 
+     &          .AND. hFacC(I,J,K,bi,bj) .NE. 0. _d 0 ) THEN
+            maskSHI(I,J,K,bi,bj) = 1. _d 0
+            maskSHI(I,J,1,bi,bj) = 1. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+#endif
 C - end bi,bj loops.
        ENDDO
       ENDDO
