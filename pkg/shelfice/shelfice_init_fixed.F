@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.5 2010/01/12 21:34:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.6 2011/05/10 07:49:19 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -18,6 +18,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHELFICE.h"
+#ifdef ALLOW_COST
+# include "cost.h"
+# include "SHELFICE_COST.h"
+#endif /* ALLOW_COST */
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SHELFICE_INIT_FIXED
@@ -35,6 +39,9 @@ C     I,J,K,bi,bj - Loop counters
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_COST
+      _RL dummy
+#endif
 
 #ifdef ALLOW_MNC
 C     Initialize MNC variable information for SHELFICE
@@ -63,6 +70,37 @@ C-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_COST
+#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) || \
+      defined (ALLOW_SHIFWFLX_CONTROL))
+      IF ( shifwflx_errfile .NE. ' ' ) THEN
+       CALL READ_REC_XY_RL( shifwflx_errfile, wshifwflx, 1, 0, myThid )
+      ENDIF
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J = 1-OLy, sNy+OLy
+         DO I = 1-OLx, sNx+OLx
+c--   Test for missing values.
+          IF (wshifwflx(i,j,bi,bj) .LT. -9900.) THEN
+           wshifwflx(i,j,bi,bj) = 0. _d 0
+          ENDIF
+c--   use weight as mask
+          wshifwflx(i,j,bi,bj) =
+     &         max(wshifwflx(i,j,bi,bj),wshifwflx0)
+     &         *maskSHI(I,J,1,bi,bj)
+          IF (wshifwflx(i,j,bi,bj) .NE. 0.) THEN
+           wshifwflx(i,j,bi,bj) =
+     &          1./wshifwflx(i,j,bi,bj)/wshifwflx(i,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL ACTIVE_WRITE_XY_LOC( 'wshifwflx', wshifwflx,
+     &    1, 0, mythid, dummy)
+#endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION or ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_COST */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

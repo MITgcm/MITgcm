@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.4 2011/05/09 15:17:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.5 2011/05/10 07:49:19 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -20,7 +20,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHELFICE.h"
-#include "SHELFICE_COST.h"
+#ifdef ALLOW_COST
+# include "SHELFICE_COST.h"
+#endif /* ALLOW_COST */
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SHELFICE_INIT_VARIA
@@ -64,9 +66,10 @@ c--
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         objf_shelfice(bi,bj) = 0. _d 0
+        objf_shifwflx(bi,bj) = 0. _d 0
        ENDDO
       ENDDO
-#endif
+#endif /* ALLOW_COST */
 
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
 C-    must wait for initialisation to be finished before master loads from file
