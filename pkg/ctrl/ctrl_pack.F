@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.37 2011/03/13 22:25:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.38 2011/05/10 07:30:15 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,7 @@ c--   Assign file names.
 cHFLUXM_CONTROL
       call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
 cHFLUXM_CONTROL
+      call ctrl_set_fname(xx_shifwflx_file, fname_shifwflx, mythid)
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
@@ -201,6 +202,10 @@ C     place holder of obsolete variable jG
           write(cunit) (nWetwGlobal(k), k=1,nr)
 #ifdef ALLOW_CTRL_WETV
           write(cunit) (nWetvGlobal(k), k=1,nr)
+#endif
+#ifdef ALLOW_SHIFWFLX_CONTROL
+          write(cunit) (nWetiGlobal(k), k=1,nr)
+c          write(cunit) nWetiGlobal(1)
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL
@@ -629,6 +634,15 @@ C     place holder of obsolete variable jG
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_kapredi(ictrlgrad), "maskCtrlC",
      &         weighttype, wkapredi, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SHIFWFLX_CONTROL
+          ivartype = 45
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wshifwflx"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_shifwflx(ictrlgrad),
+     &         "maskCtrlI", weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_PACKUNPACK_METHOD2

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.15 2011/03/15 16:41:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.16 2011/05/10 07:30:14 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -179,6 +179,31 @@ cph      doCtrlUpdate = .TRUE.
 c
       if ( doCtrlUpdate ) then
 cph)
+CMLCML(
+CMLCML   hack until if find something better for the masks
+CML      if ( xx_gen_file(1:11) .eq. 'xx_shifwflx' ) then
+CML      do bj = jtlo,jthi
+CML        do bi = itlo,ithi
+CMLc--       Calculate mask for tracer cells (0 => land, 1 => water).
+CML          do j = 1,sny
+CML            do i = 1,snx
+CML              genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
+CML     &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
+CML     &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
+CML              if ( ksurfc(i,j,bi,bj) .ne. nr+1 ) then
+CML               genfld(i,j,bi,bj) =
+CML     &             ( genfld (i,j,bi,bj) -
+CML     &             ( xx_gen_remo_intercept +
+CML     &               xx_gen_remo_slope*(mytime-starttime) ) )
+CML              else
+CML               genfld(i,j,bi,bj) = 0. _d 0
+CML              endif
+CML            enddo
+CML          enddo
+CML        enddo
+CML      enddo
+CML      else
+CMLCML)
       do bj = jtlo,jthi
         do bi = itlo,ithi
 c--       Calculate mask for tracer cells (0 => land, 1 => water).
@@ -196,6 +221,9 @@ c--       Calculate mask for tracer cells (0 => land, 1 => water).
           enddo
         enddo
       enddo
+CMLCML)
+CML      endif
+CMLCML)
 cph(
       endif
 cph)

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.9 2010/03/22 02:16:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.10 2011/05/10 07:30:15 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -23,7 +23,10 @@ c     == global variables ==
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
 #endif
-
+#ifdef ALLOW_SHIFWFLX_CONTROL      
+# include "SHELFICE.h"
+#endif /* ALLOW_SHIFWFLX_CONTROL */
+      
 c     == routine arguments ==
 
       integer mythid
@@ -36,11 +39,13 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer ntmp
       integer ntmp2(4)
       integer iobcs
       integer nwetc3d
       integer nwettmp
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      integer ntmpshi
+#endif
 #ifdef ALLOW_OBCS_CONTROL
       integer ntmpob(nobcs)
 #endif
@@ -70,6 +75,9 @@ c--   Initialise the counters.
             nwetstile(bi,bj,k) = 0
             nwetwtile(bi,bj,k) = 0
             nwetvtile(bi,bj,k) = 0
+#ifdef ALLOW_SHIFWFLX_CONTROL
+            nwetitile(bi,bj,k) = 0
+#endif 
           enddo
         enddo
       enddo
@@ -122,6 +130,12 @@ c--             Vertical mask.
                   nwetvtile(bi,bj,k) = nwetvtile(bi,bj,k) + 1
                 endif
 #endif
+#ifdef ALLOW_SHIFWFLX_CONTROL
+c--             Ice shelf mask.
+                if (maskSHI(i,j,k,bi,bj) .eq. 1.) then
+                 nwetitile(bi,bj,k) = nwetitile(bi,bj,k) + 1
+                endif
+#endif /* ALLOW_SHIFWFLX_CONTROL */
               enddo
             enddo
           enddo
@@ -179,6 +193,12 @@ c
                      else if ( ncvargrd(i) .eq. 'v' ) then
                         nvarlength = nvarlength + 
      &                       ncvarrecs(i)*nwetvtile(bi,bj,k)
+#ifdef ALLOW_SHIFWFLX_CONTROL
+c--             Ice shelf mask.
+                     else if ( ncvargrd(i) .eq. 'i') then
+                        nvarlength = nvarlength + 
+     &                       ncvarrecs(i)*nwetitile(bi,bj,k)
+#endif /* ALLOW_SHIFWFLX_CONTROL */
                      else if ( ncvargrd(i) .eq. 'm' ) then
 #ifdef ALLOW_OBCS_CONTROL
                         do iobcs = 1, nobcs
@@ -515,6 +535,46 @@ c
       call print_message( msgbuf, standardmessageunit,
      &    SQUEEZE_RIGHT , mythid)
 
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      write(msgbuf,'(a,2x,I10)')
+     &     'ctrl-wet 17a:surface wet I = ', nwetitile(1,1,1)
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+
+      do k = 1, nr
+       ntmpshi=0
+       do bj=1,nSy
+        do bi=1,nSx
+         ntmpshi=ntmpshi+nWetiTile(bi,bj,k)
+        enddo
+       enddo
+       CALL GLOBAL_SUM_INT( ntmpshi,  myThid )
+       if (k.eq.1) then 
+        nWetiGlobal(k)=ntmpshi
+       else
+        nWetiGlobal(k)=0
+       endif
+       write(msgbuf,'(a,2x,I3,2x,I10)')
+     &      'ctrl-wet 17b: global nWet I k=', k, ntmpshi
+       call print_message( msgbuf, standardmessageunit,
+     &      SQUEEZE_RIGHT , mythid)
+      enddo
+
+      ntmpshi=0
+      do k = 1, nr
+       ntmpshi=ntmpshi+nWetiGlobal(k)
+      enddo
+      write(msgbuf,'(a,2x,I10)')
+     &    'ctrl-wet 17c: global SUM(K) shifwflx ', ntmpshi
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+
+      write(msgbuf,'(a)')
+     &    'ctrl-wet -------------------------------------------------'
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+#endif
+
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl_init: no. of control variables: ', nvartype
       call print_message( msgbuf, standardmessageunit,
@@ -552,7 +612,9 @@ c
       call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
       call active_write_xyz( 'wunit', tmpfld3d, 1, 0, mythid, dummy)
-
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
+#endif
 
       return
       end

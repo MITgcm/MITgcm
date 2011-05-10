@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.24 2009/11/20 22:29:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.25 2011/05/10 07:30:14 mlosch Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -92,6 +92,7 @@ c     ==================================================================
 cHFLUXM_CONTROL
      &                  , xx_hfluxm_dummy
 cHFLUXM_CONTROL
+     &                  , xx_shifwflx_dummy
 
       _RL xx_theta_dummy
       _RL xx_salt_dummy
@@ -175,6 +176,7 @@ c
 cHFLUXM_CONTROL
       _RL xx_hfluxm_dummy
 cHFLUXM_CONTROL
+      _RL xx_shifwflx_dummy
 
 c     ==================================================================
 c     END OF HEADER CONTROL DUMMIES

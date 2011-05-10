@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.36 2011/03/13 22:25:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.37 2011/05/10 07:30:15 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -159,6 +159,7 @@ c--   Assign file names.
 cHFLUXM_CONTROL
       call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
 cHFLUXM_CONTROL
+      call ctrl_set_fname(xx_shifwflx_file, fname_shifwflx, mythid)
 
 c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
@@ -211,6 +212,10 @@ c--       Header information.
 #ifdef ALLOW_CTRL_WETV
           read(cunit) (filenWetvGlobal(k),   k=1,nr)
 #endif
+#ifdef ALLOW_SHIFWFLX_CONTROL
+          read(cunit) (filenWetiGlobal(k),   k=1,nr)
+c         read(cunit) filenWetiGlobal(1)
+#endif
 
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
@@ -258,6 +263,14 @@ c
                 STOP
              endif
           end do
+#ifdef ALLOW_SHIFWFLX_CONTROL
+          do k=1,1
+           if ( filenWetiGlobal(k) .NE. nWetiGlobal(k) ) then
+            print *, 'WARNING: wrong nWetiGlobal for k = ', k
+            STOP
+           endif
+          enddo
+#endif /* ALLOW_SHIFWFLX_CONTROL */
 
 cgg(   Lets also check the OBCS mask info in the header.
 
@@ -508,7 +521,6 @@ c----------------------------------------------------------------------
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
      &         fname_depth(ictrlgrad), "maskCtrlC",
      &         weighttype, weighttype, nwetcglobal, mythid)
-CML# endif
 #endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_EFLUXY0_CONTROL
@@ -725,6 +737,14 @@ CML# endif
      &         weighttype, wkapredi, nwetcglobal, mythid)
 #endif
 
+#ifdef ALLOW_SHIFWFLX_CONTROL
+          ivartype    = 45
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wshifwflx"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_shifwflx(ictrlgrad), "maskCtrlI",
+     &         weighttype, nwetiglobal, mythid)
+#endif
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.53 2011/04/20 19:00:13 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.54 2011/05/10 07:30:14 mlosch Exp $
 C $Name:  $
 
 
@@ -120,6 +120,14 @@ cph Need to put this in namelist at some point!
       integer nwetwglobal     ( nr )
       integer nwetvglobal     ( nr )
       integer nbuffglobal
+
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      common /controlvars_i_shifwflx/
+     &     nwetitile, nwetiglobal, filenWetiGlobal
+      integer nwetitile     ( nsx,nsy,nr )
+      integer nwetiglobal     ( nr )
+      integer filenWetiGlobal(nr)
+#endif /* ALLOW_SHIFWFLX_CONTROL */
 
 #ifdef ALLOW_OBCSN_CONTROL
       common /controlvars_i_obcsn/
@@ -452,6 +460,14 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_sss1
 #endif
 
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      common /controlaux_shifwflx_r/
+     &                      xx_shifwflx0,
+     &                      xx_shifwflx1
+      _RL xx_shifwflx0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_shifwflx1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif /* ALLOW_SHIFWFLX_CONTROL */
+
 #if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
       _RL xx_hflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_hflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -611,6 +627,7 @@ c     xx_obcse_file - control vector salin. at boundary
 cHFLUXM_CONTROL
      &                    , xx_hfluxm_file
 cHFLUXM_CONTROL
+     &                    , xx_shifwflx_file
 
       character*(MAX_LEN_FNAM) xx_theta_file
       character*(MAX_LEN_FNAM) xx_salt_file
@@ -662,6 +679,7 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_hfluxm_file
 cHFLUXM_CONTROL
+      character*(MAX_LEN_FNAM) xx_shifwflx_file
 
       common /packnames_c/
      &                      yadmark,
@@ -737,6 +755,7 @@ c                      control part.
      &                      , xx_obcssperiod
      &                      , xx_obcswperiod
      &                      , xx_obcseperiod
+     &                      , xx_shifwflxperiod
       _RL     xx_hfluxperiod
       _RL     xx_sfluxperiod
       _RL     xx_tauuperiod
@@ -760,6 +779,7 @@ c                      control part.
       _RL     xx_obcssperiod
       _RL     xx_obcswperiod
       _RL     xx_obcseperiod
+      _RL     xx_shifwflxperiod
 
       common /ctrl_param_trend_removal/
      &       xx_hflux_remo_intercept, xx_hflux_remo_slope,
@@ -780,7 +800,8 @@ c                      control part.
      &       xx_apressure_remo_slope,
      &       xx_runoff_remo_intercept, xx_runoff_remo_slope,
      &       xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &       xx_vwind_remo_intercept, xx_vwind_remo_slope
+     &       xx_vwind_remo_intercept, xx_vwind_remo_slope,
+     &       xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope
 
       _RL xx_hflux_remo_intercept, xx_hflux_remo_slope
       _RL xx_sflux_remo_intercept, xx_sflux_remo_slope
@@ -801,6 +822,7 @@ c                      control part.
       _RL xx_runoff_remo_intercept, xx_runoff_remo_slope
       _RL xx_uwind_remo_intercept, xx_uwind_remo_slope
       _RL xx_vwind_remo_intercept, xx_vwind_remo_slope
+      _RL xx_shifwflx_remo_intercept,xx_shifwflx_remo_slope
 
 
 c     xx_hfluxstartdate - start date for the heat flux control part.
@@ -880,6 +902,9 @@ c                         control part.
      &                      , xx_obcssstartdate
      &                      , xx_obcswstartdate
      &                      , xx_obcsestartdate
+     &                      , xx_shifwflxstartdate1
+     &                      , xx_shifwflxstartdate2
+     &                      , xx_shifwflxstartdate
       integer xx_hfluxstartdate1
       integer xx_hfluxstartdate2
       integer xx_sfluxstartdate1
@@ -926,6 +951,8 @@ c                         control part.
       integer xx_obcswstartdate2
       integer xx_obcsestartdate1
       integer xx_obcsestartdate2
+      integer xx_shifwflxstartdate1
+      integer xx_shifwflxstartdate2
 
       integer xx_hfluxstartdate(4)
       integer xx_sfluxstartdate(4)
@@ -950,6 +977,7 @@ c                         control part.
       integer xx_obcssstartdate(4)
       integer xx_obcswstartdate(4)
       integer xx_obcsestartdate(4)
+      integer xx_shifwflxstartdate(4)
 
       character*( 80)   fname_theta(2)
       character*( 80)   fname_salt(2)
@@ -1000,6 +1028,7 @@ c                         control part.
 cHFLUXM_CONTROL
       character*( 80)   fname_hfluxm(2)
 cHFLUXM_CONTROL
+      character*( 80)   fname_shifwflx(2)
 
 #ifdef ALLOW_ADMTLM
       integer          maxm, maxn

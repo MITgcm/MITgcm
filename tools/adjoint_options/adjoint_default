@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.23 2010/10/04 01:30:13 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.24 2011/05/10 07:31:42 mlosch Exp $
 #  $Name:  $
 #
 
@@ -52,7 +52,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_depth_dummy       \
                     xx_diffkr_dummy      \
                     xx_kapgm_dummy       \
-                    xx_kapredi_dummy       \
+                    xx_kapredi_dummy     \
                     xx_bottomdrag_dummy  \
                     xx_efluxy_dummy      \
                     xx_efluxp_dummy      \
@@ -61,9 +61,10 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_uvel_dummy        \
                     xx_vvel_dummy        \
                     xx_etan_dummy        \
-                    xx_siarea_dummy        \
-                    xx_siheff_dummy        \
-                    xx_sihsnow_dummy        \
+                    xx_siarea_dummy      \
+                    xx_siheff_dummy      \
+                    xx_sihsnow_dummy     \
+                    xx_shifwflx_dummy    \
                     xx_relaxsst_dummy    \
                     xx_relaxsss_dummy'   \
             -output 'fc'"

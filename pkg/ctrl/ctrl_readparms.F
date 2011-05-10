@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.32 2009/10/14 20:09:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.33 2011/05/10 07:30:15 mlosch Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -125,6 +125,9 @@ c--   Read the namelist input.
      &  xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
      &  xx_siarea_file, xx_siheff_file, xx_sihsnow_file,
+     &  xx_shifwflx_file, 
+     &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope, 
+     &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
      &  doInitXX,
      &  doPackDiag,
      &  doZscaleUnpack, doZscalePack,
@@ -314,6 +317,13 @@ c
         xx_sssstartdate2    =   0
         xx_sssperiod        =   0. _d 0
         xx_sss_file         = 'xx_sss'
+c
+        xx_shifwflxstartdate1  =   0
+        xx_shifwflxstartdate2  =   0
+        xx_shifwflxperiod      =   0. _d 0
+        xx_shifwflx_file       = 'xx_shifwflx'
+        xx_shifwflx_remo_intercept=0. _d 0
+        xx_shifwflx_remo_slope =   0. _d 0   
 c
         xx_diffkr_file      = 'xx_diffkr'
         xx_kapgm_file       = 'xx_kapgm'

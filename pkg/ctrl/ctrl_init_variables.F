@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.9 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.10 2011/05/10 07:30:14 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -295,6 +295,19 @@ c     == end of interface ==
             do i = imin,imax
               xx_sss0(i,j,bi,bj) = 0. _d 0
               xx_sss1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_shifwflx0(i,j,bi,bj) = 0. _d 0
+              xx_shifwflx1(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
         enddo
