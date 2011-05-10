@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.7 2010/01/29 01:05:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.8 2011/05/10 07:33:14 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -91,6 +91,11 @@ CEOP
       _RS shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef ALLOW_SHIFWFLX_CONTROL      
+      COMMON /SHELFICE_MASKS_CTRL/ maskSHI
+      _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_SHIFWFLX_CONTROL */
       
       LOGICAL SHELFICEisOn
       LOGICAL useISOMIPTD
