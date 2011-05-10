@@ -1,10 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1427 2011/05/10 07:50:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1428 2011/05/10 07:54:48 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ctrl and shelfice: 
+o pkg/ctrl, pkg/shelfice, and optim: 
   - add new control variable xx_shifwflx (fresh water flux underneath ice 
     shelves). This is almost as tedious as obcs-ctrl, because the 
     variables needs its own mask.
