@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.161 2011/04/30 22:20:17 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.162 2011/05/11 01:51:07 jmc Exp $
 #  $Name:  $
 #
 
@@ -726,7 +726,7 @@ runmodel()
 	else
           if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
             # output do not exist or is older than executable:
-	    rm -f $RUNLOG ; touch $RUNLOG
+	    rm -f $OUTPUTFILE $RUNLOG ; touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
 	    ( eval $COMMAND ) >> $RUNLOG 2>&1
 	    RETVAL=$?
