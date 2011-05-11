@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.1 2011/05/10 07:49:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.2 2011/05/11 08:33:49 mlosch Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
+#include "SHELFICE_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: SHELFICE_COST_SHIFWFLX
