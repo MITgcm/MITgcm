@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1428 2011/05/10 07:54:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1429 2011/05/12 21:36:01 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  fix bug in OBeta for YZ sections in obcs_exf_load.F
 o pkg/ctrl, pkg/shelfice, and optim: 
   - add new control variable xx_shifwflx (fresh water flux underneath ice 
     shelves). This is almost as tedious as obcs-ctrl, because the 
