@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.1 2011/04/17 03:20:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.2 2011/05/12 21:35:51 jahn Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -470,9 +470,9 @@ c     == routine arguments ==
       _RL OBs1    (1-Oly:sNy+Oly,Nr,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) OBuFile,OBvFile,OBtFile,OBsFile
 #ifdef NONLIN_FRSURF
-      _RL OBeta   (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBeta0  (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBeta1  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBeta   (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBeta0  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBeta1  (1-Oly:sNy+Oly,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) OBetaFile
 #endif
 #ifdef ALLOW_SEAICE
