@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.7 2010/12/16 00:56:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.8 2011/05/12 15:09:54 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -238,12 +238,12 @@ C ------ Augment the bin values
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.
-           delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
-     &            - GM_PsiX(i,j, kci, bi,bj)
-           layers_UFlux(i,j,kgu(i,j),bi,bj) =
-     &      layers_UFlux(i,j,kgu(i,j),bi,bj)
-     &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
-     &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
+           delPsi = GM_PsiY(i,j,kcip1,bi,bj)*maskp1
+     &            - GM_PsiY(i,j, kci, bi,bj)
+           layers_VFlux(i,j,kgv(i,j),bi,bj) =
+     &      layers_VFlux(i,j,kgv(i,j),bi,bj)
+     &      + delPsi*recip_drF(kci)*_recip_hFacS(i,j,kci,bi,bj)
+     &      * dZZf(kk)*hFacS(i,j,kci,bi,bj)
          ENDIF
 #endif
 
