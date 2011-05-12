@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.128 2011/03/03 19:56:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.129 2011/05/12 22:32:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -357,14 +357,17 @@ c------------
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
       CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
      & 'useCDscheme =', '  /* CD scheme on/off flag */')
+      CALL WRITE_0D_L( useEnergyConservingCoriolis,  INDEX_NONE,
+     & 'useEnergyConservingCoriolis=',
+     & ' /* Flx-Form Coriolis scheme flag */')
       CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
      & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
       CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
-     & 'useJamartMomAdv=',' /* V.I. Non-linear terms Jamart flag */')
+     & 'useJamartMomAdv=',' /* V.I Non-linear terms Jamart flag */')
       CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
-     & 'useAbsVorticity=',' /* Work with f+zeta in Coriolis */')
-      WRITE(msgBuf,'(2A)')
-     & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */'
+     & 'useAbsVorticity=',' /* V.I Works with f+zeta in Coriolis */')
+      WRITE(msgBuf,'(2A)') 'selectVortScheme=',
+     &              ' /* V.I Scheme selector for Vorticity-Term */'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       buffI(1) = selectVortScheme
       CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
@@ -390,13 +393,13 @@ c     WRITE(msgBuf,'(2A)') '         from Arakawa & Lamb, 77'
 c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
-     & 'upwindVorticity=',' /* Upwind bias vorticity flag */')
+     & 'upwindVorticity=',' /* V.I Upwind bias vorticity flag */')
       CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
-     & 'highOrderVorticity=',' /* High order interp. of vort. flag */')
+     & 'highOrderVorticity=',' /* V.I High order vort. advect. flag */')
       CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
-     & 'upwindShear=', ' /* Upwind vertical Shear advection flag */')
+     & 'upwindShear=',' /* V.I Upwind vertical Shear advection flag */')
       CALL WRITE_0D_I( selectKEscheme, INDEX_NONE,
-     & 'selectKEscheme=', ' /* Kinetic Energy scheme selector */')
+     & 'selectKEscheme=',' /* V.I Kinetic Energy scheme selector */')
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
