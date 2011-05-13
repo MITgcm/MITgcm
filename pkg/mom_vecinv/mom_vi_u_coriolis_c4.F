@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.12 2009/06/28 01:08:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.13 2011/05/13 00:56:30 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -48,7 +48,7 @@ C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j
       _RL vort3r(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vBarXY,vort3u,Rjp,Rjm
+      _RL vBarXY,vort3u,Rjp,Rjm,Rj
       _RL vBarXm,vBarXp
 
       LOGICAL northWestCorner, northEastCorner,
@@ -59,6 +59,7 @@ C     msgBuf :: Informational/error meesage buffer
 #endif /* ALLOW_EXCH2 */
       _RL oneSixth, oneTwelve
       LOGICAL fourthVort3
+C jmc: not sure about these 1/6 & 1/12 factors (should use the same)
       PARAMETER(oneSixth=1.D0/6.D0 , oneTwelve=1.D0/12.D0)
       PARAMETER(fourthVort3=.TRUE. )
 
@@ -138,10 +139,15 @@ c       DO i=2-Olx,sNx+Olx
            vort3u=vort3r(i,j+1)
           ENDIF
          ELSEIF (fourthVort3) THEN
-          Rjp = vort3r(i,j+2) - vort3r(i,j+1)
-          Rjm = vort3r(i, j ) - vort3r(i,j-1)
-          vort3u=0.5*( vort3r(i,j) + vort3r(i,j+1)
-     &                -oneTwelve*(Rjp-Rjm)
+#ifdef ALLOW_OBCS
+          Rjp = ( vort3r(i,j+2) - vort3r(i,j+1) )*maskInW(i,j+1,bi,bj)
+          Rjm = ( vort3r(i, j ) - vort3r(i,j-1) )*maskInW(i,j-1,bi,bj)
+#else
+          Rjp =   vort3r(i,j+2) - vort3r(i,j+1)
+          Rjm =   vort3r(i, j ) - vort3r(i,j-1)
+#endif
+          vort3u=0.5*( (vort3r(i,j) + vort3r(i,j+1))
+     &                 -oneTwelve*(Rjp-Rjm)
      &               )
          ELSE
           vort3u=0.5*( vort3r(i,j) + vort3r(i,j+1) )
@@ -174,8 +180,18 @@ c       DO i=2-Olx,sNx+Olx
            vort3u=vBarXp*vort3r(i,j+1)
           ENDIF
          ELSEIF (fourthVort3) THEN
-          Rjp = vort3r(i,j+1) -oneSixth*( vort3r(i,j+2)-vort3r(i, j ) )
-          Rjm = vort3r(i, j ) +oneSixth*( vort3r(i,j+1)-vort3r(i,j-1) )
+#ifdef ALLOW_OBCS
+          Rjp = ( vort3r(i,j+2) - vort3r(i,j+1) )*maskInW(i,j+1,bi,bj)
+          Rjm = ( vort3r(i, j ) - vort3r(i,j-1) )*maskInW(i,j-1,bi,bj)
+#else
+          Rjp =   vort3r(i,j+2) - vort3r(i,j+1)
+          Rjm =   vort3r(i, j ) - vort3r(i,j-1)
+#endif
+          Rj  =   vort3r(i,j+1) - vort3r(i, j )
+          Rjp = vort3r(i,j+1) -oneSixth*( Rjp+Rj )
+          Rjm = vort3r(i, j ) +oneSixth*( Rj+Rjm )
+c         Rjp = vort3r(i,j+1) -oneSixth*( vort3r(i,j+2)-vort3r(i, j ) )
+c         Rjm = vort3r(i, j ) +oneSixth*( vort3r(i,j+1)-vort3r(i,j-1) )
           vort3u=0.5*( vBarXm*Rjm + vBarXp*Rjp )
          ELSE
           vort3u=0.5*( vBarXm*vort3r(i, j ) + vBarXp*vort3r(i,j+1) )
