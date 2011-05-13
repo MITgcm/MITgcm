@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.6 2011/05/10 07:49:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.7 2011/05/13 19:41:03 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -39,7 +39,8 @@ C     I,J,K,bi,bj - Loop counters
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_COST
+#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
+      defined (ALLOW_SHIFWFLX_CONTROL))
       _RL dummy
 #endif
 
@@ -71,7 +72,7 @@ C-----------------------------------------------------------------------
        ENDDO
       ENDDO
 #ifdef ALLOW_COST
-#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) || \
+#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
       defined (ALLOW_SHIFWFLX_CONTROL))
       IF ( shifwflx_errfile .NE. ' ' ) THEN
        CALL READ_REC_XY_RL( shifwflx_errfile, wshifwflx, 1, 0, myThid )
