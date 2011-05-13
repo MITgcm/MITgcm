@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_rho.F,v 1.3 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_rho.F,v 1.4 2011/05/13 14:57:22 jahn Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -109,7 +109,8 @@ C     COMPUTE COMPRESSION TERMS
      &     S + ((-5.77905E-7*T+1.16092E-4)*T+1.43713E-3)*T-0.1194975) 
      &     *P + (((-5.3009E-4*T+1.6483E-2)*T+7.944E-2) * SR + 
      &     ((-6.1670E-5*T+1.09987E-2)*T-0.603459)*T+54.6746) * S + 
-     &     (((-5.155288E-5*T+1.360477E-2)*T-2.327105)*T+148.4206)*T-1930.06
+     &     (((-5.155288E-5*T+1.360477E-2)*T-2.327105)*T+148.4206)*T -
+     &     1930.06
       
 C     EVALUATE PRESSURE POLYNOMIAL
       B  = (5.03217E-5*P+3.359406)*P+21582.27
