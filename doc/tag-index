@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1430 2011/05/12 23:12:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1431 2011/05/13 14:18:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62x (2011/05/13)
+o pkg/mom_vecinv:
+   high-order vorticity scheme: use interior masks (maskInW & S) 
+   to zero-out (outside OB) gradient of vorticity.
 o verification exp.:
    turn on "useEnergyConservingCoriolis" (better discretisation) in exp.
    hs94.128x64x5 and seaice_obcs ; update results.
