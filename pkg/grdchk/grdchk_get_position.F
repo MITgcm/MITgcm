@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.5 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.6 2011/05/13 19:41:49 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -26,6 +26,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif 
 #include "ctrl.h"
 #include "grdchk.h"
 
@@ -144,6 +147,14 @@ cph)
                         icomptest = icomptest + 1
                      endif
                      wetlocal = _maskW(i,j,k,bi,bj)
+#ifdef ALLOW_SHIFWFLX_CONTROL
+c--             Ice shelf mask.
+                  else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
+                     if ( maskSHI(i,j,k,bi,bj) .gt. 0.) then
+                        icomptest = icomptest + 1
+                     endif
+                     wetlocal = maskSHI(i,j,k,bi,bj)
+#endif /* ALLOW_SHIFWFLX_CONTROL */
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
                      if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL

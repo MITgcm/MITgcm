@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.10 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.11 2011/05/13 19:41:50 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -106,6 +106,16 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,ncvarnrmax(grdchkvarindex)
+                  nwettile(bi,bj,k,1) = nwetitile(bi,bj,k)
+               enddo
+            enddo
+         enddo
+#endif /* ALLOW_SHIFWFLX_CONTROL */
       else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi

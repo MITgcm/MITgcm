@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.26 2011/03/13 21:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.27 2011/05/13 19:41:49 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -601,6 +601,18 @@ c--   == end of interface ==
      &                        mythid, dummy)
          xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 #endif /* ALLOW_SIHSNOW_CONTROL */
+
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      else if ( grdchkvarindex .eq. 45 ) then
+         il=ilnblnk( xx_shifwflx_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_shifwflx_file(1:il),'.',optimcycle
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+#endif /* ALLOW_SHIFWFLX_CONTROL */
 
 #ifdef ALLOW_ETAN0_CONTROL
       else if ( grdchkvarindex .eq. 29 ) then

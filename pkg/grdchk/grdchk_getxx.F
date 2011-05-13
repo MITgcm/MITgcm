@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.26 2011/03/13 21:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.27 2011/05/13 19:41:50 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -976,6 +976,27 @@ c--   == end of interface ==
      &                         optimcycle,
      &                         mythid, dummy)
 #endif /* ALLOW_SIHSNOW_CONTROL */
+
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      else if ( grdchkvarindex .eq. 45 ) then
+         il=ilnblnk( xx_shifwflx_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_shifwflx_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_shifwflx_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_SHIFWFLX_CONTROL */
 
 #ifdef ALLOW_ETAN0_CONTROL
       else if ( grdchkvarindex .eq. 29 ) then

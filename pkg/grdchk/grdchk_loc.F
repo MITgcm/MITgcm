@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.12 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.13 2011/05/13 19:41:50 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,6 +50,9 @@ c     == global variables ==
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif /* ALLOW_SHELFICE */
 
 c     == routine arguments ==
 
@@ -209,6 +212,14 @@ cpj)
                         itmp = i
                         jtmp = j
                      endif
+#ifdef ALLOW_SHIFWFLX_CONTROL
+                  else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
+                     if ( maskSHI(i,j,k,bi,bj) .gt. 0.) then
+                        icomptest = icomptest + 1
+                        itmp = i
+                        jtmp = j
+                     endif
+#endif /* ALLOW_SHIFWFLX_CONTROL */
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
                      if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
