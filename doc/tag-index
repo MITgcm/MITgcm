@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1431 2011/05/13 14:18:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1432 2011/05/13 19:46:48 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/grdchk: add gradient check for control variable xx_shifwflx
+o pkg/shelfice/shelfice_init_fixed.F
+  fix CPP-flag combinations
 
 checkpoint62x (2011/05/13)
 o pkg/mom_vecinv:
