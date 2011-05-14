@@ -1,16 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1432 2011/05/13 19:46:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1433 2011/05/14 20:04:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg rbcs:
+  - split RBCS.h into 3 files: RBCS_SIZE.h, RBCS_PARAMS.h & RBCS_FIELDS.h
+  - add capability to apply relaxation to horizontal velocity uVel & vVel.
 o pkg/grdchk: add gradient check for control variable xx_shifwflx
 o pkg/shelfice/shelfice_init_fixed.F
   fix CPP-flag combinations
 
 checkpoint62x (2011/05/13)
 o pkg/mom_vecinv:
-   high-order vorticity scheme: use interior masks (maskInW & S) 
+   high-order vorticity scheme: use interior masks (maskInW & S)
    to zero-out (outside OB) gradient of vorticity.
 o verification exp.:
    turn on "useEnergyConservingCoriolis" (better discretisation) in exp.
