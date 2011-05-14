@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.192 2011/03/03 16:53:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.193 2011/05/14 19:55:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,7 +142,8 @@ C     == Global variables ==
 #  include "GMREDI.h"
 # endif
 # ifdef ALLOW_RBCS
-#  include "RBCS.h"
+#  include "RBCS_SIZE.h"
+#  include "RBCS_FIELDS.h"
 # endif
 # ifdef ALLOW_OFFLINE
 #  include "OFFLINE.h"
@@ -153,7 +154,6 @@ C     == Global variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
 #endif
-
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -221,7 +221,7 @@ C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rstarFacC, rstarFacS, rstarFacW = 
+CADJ STORE rstarFacC, rstarFacS, rstarFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
         CALL TIMER_START('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
@@ -433,7 +433,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 c
-CADJ STORE surfaceforcingu, surfaceforcingv = 
+CADJ STORE surfaceforcingu, surfaceforcingv =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -615,7 +615,7 @@ CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 c
 #  ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarFacC, rstarFacS, rstarFacW = 
+CADJ STORE rstarFacC, rstarFacS, rstarFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 c
 CADJ STORE h0facc,h0facs,h0facw
@@ -682,7 +682,7 @@ C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rstarFacC, rstarFacS, rstarFacW = 
+CADJ STORE rstarFacC, rstarFacS, rstarFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
         CALL TIMER_START('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
@@ -703,9 +703,9 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
        ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hFacC, hFacS, hFacW = 
+CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  = 
+CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 C-    update also CG2D matrix (and preconditioner)
@@ -799,7 +799,7 @@ C--   Update etaH(n+1) :
       IF ( select_rStar.NE.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 #  ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rstarfacc,rstarfacs,rstarfacw = 
+CADJ STORE rstarfacc,rstarfacs,rstarfacw =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 C--   r* : compute the future level thickness according to etaH(n+1)
