@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.103 2011/03/07 14:59:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.104 2011/05/14 19:52:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -170,7 +170,8 @@ c They provide the fields to be stored.
 #  include "GMREDI.h"
 # endif
 # ifdef ALLOW_RBCS
-#  include "RBCS.h"
+#  include "RBCS_SIZE.h"
+#  include "RBCS_FIELDS.h"
 # endif
 # ifdef ALLOW_PROFILES
 #  include "profiles.h"
