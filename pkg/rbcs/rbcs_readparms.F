@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.7 2010/11/10 00:34:21 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.8 2011/05/14 19:52:12 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -20,10 +20,11 @@ C !USES: ===============================================================
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #endif
-#include "RBCS.h"
+#include "RBCS_SIZE.h"
+#include "RBCS_PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid         :: thread number
+C  myThid         :: my thread Id. number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -44,13 +45,19 @@ C--   useRBCptracers is no longer used
       LOGICAL useRBCptracers
 CEOP
 
-C--   RBCS parameter
+C--   RBCS parameters:
       NAMELIST /RBCS_PARM01/
+     &          tauRelaxU,
+     &          tauRelaxV,
      &          tauRelaxT,
      &          tauRelaxS,
+     &          relaxMaskUFile,
+     &          relaxMaskVFile,
      &          relaxMaskFile,
      &          relaxTFile,
      &          relaxSFile,
+     &          useRBCuVel,
+     &          useRBCvVel,
      &          useRBCtemp,
      &          useRBCsalt,
      &          useRBCptracers,
@@ -73,13 +80,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _BEGIN_MASTER(myThid)
 
 C--   Default values
+      useRBCuVel =.FALSE.
+      useRBCvVel =.FALSE.
       useRBCtemp =.FALSE.
       useRBCsalt =.FALSE.
+      tauRelaxU = 0.
+      tauRelaxV = 0.
       tauRelaxT = 0.
       tauRelaxS = 0.
+      relaxMaskUFile = ' '
+      relaxMaskVFile = ' '
       DO irbc=1,maskLEN
         relaxMaskFile(irbc) = ' '
       ENDDO
+      relaxUFile = ' '
+      relaxVFile = ' '
       relaxTFile = ' '
       relaxSFile = ' '
       rbcsIniter = 0
@@ -98,7 +113,7 @@ C--   Default values
 #endif
       useRBCptracers=.FALSE.
 
-C Open and read the data.rbcs file
+C--   Open and read the data.rbcs file
 
       WRITE(msgBuf,'(A)') ' RBCS_READPARMS: opening data.rbcs'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
@@ -116,9 +131,22 @@ C Open and read the data.rbcs file
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT , 1)
 
-C Close the open data file
+C--   Close the open data file
       CLOSE(iUnit)
 
+C---  Check RBCS config and params:
+#ifdef DISABLE_RBCS_MOM
+      IF ( useRBCuVel .OR. useRBCvVel ) THEN
+        WRITE(msgBuf,'(2A,2(L2,A))') 'RBCS_READPARMS: ',
+     &    'cannot use RBC for U,V (useRBCuVel=',useRBCuVel,
+     &    ', useRBCvVel=',useRBCvVel,')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
+     &    'when DISABLE_RBCS_MOM is defined (in RBCS_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+      ENDIF
+#endif /* DISABLE_RBCS_MOM */
       IF (rbcsIniter.NE.0) THEN
         WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
      &  'rbcsIniter has been replaced by rbcsForcingOffset '
@@ -146,6 +174,18 @@ C Close the open data file
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R RBCS_READPARAMS'
        ENDIF
+      ENDIF
+      IF ( useRBCuVel .AND. tauRelaxU.LE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
+     &    'tauRelaxU cannot be zero with useRBCuVel'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+      ENDIF
+      IF ( useRBCvVel .AND. tauRelaxV.LE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
+     &    'tauRelaxV cannot be zero with useRBCvVel'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
       ENDIF
       IF ( useRBCtemp .AND. tauRelaxT.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',

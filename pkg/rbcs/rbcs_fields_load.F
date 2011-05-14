@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.13 2011/04/20 01:42:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.14 2011/05/14 19:52:12 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -25,14 +25,13 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #endif
-#include "RBCS.h"
+#include "RBCS_SIZE.h"
+#include "RBCS_PARAMS.h"
+#include "RBCS_FIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -124,6 +123,37 @@ C     for rbcsSingleTimeFiles=.TRUE.
        initer0 = rbcsIter0 + intime0*Ifprd
        initer1 = rbcsIter0 + intime1*Ifprd
 
+#ifndef DISABLE_RBCS_MOM
+       IF ( useRBCuVel .AND. relaxUFile.NE.' '  ) THEN
+        IF ( rbcsSingleTimeFiles ) THEN
+         IL=ILNBLNK( relaxUFile )
+         WRITE(fullName,'(2A,I10.10)') relaxUFile(1:IL),'.',initer0
+         CALL READ_REC_XYZ_RS(fullName, rbcu0, 1, myIter, myThid)
+         WRITE(fullName,'(2A,I10.10)') relaxUFile(1:IL),'.',initer1
+         CALL READ_REC_XYZ_RS(fullName, rbcu1, 1, myIter, myThid)
+        ELSE
+         CALL READ_REC_XYZ_RS(relaxUFile,rbcu0,intime0,myIter,myThid)
+         CALL READ_REC_XYZ_RS(relaxUFile,rbcu1,intime1,myIter,myThid)
+        ENDIF
+       ENDIF
+       IF ( useRBCvVel .AND. relaxVFile.NE.' '  ) THEN
+        IF ( rbcsSingleTimeFiles ) THEN
+         IL=ILNBLNK( relaxVFile )
+         WRITE(fullName,'(2A,I10.10)') relaxVFile(1:IL),'.',initer0
+         CALL READ_REC_XYZ_RS(fullName, rbcv0, 1, myIter, myThid)
+         WRITE(fullName,'(2A,I10.10)') relaxVFile(1:IL),'.',initer1
+         CALL READ_REC_XYZ_RS(fullName, rbcv1, 1, myIter, myThid)
+        ELSE
+         CALL READ_REC_XYZ_RS(relaxVFile,rbcv0,intime0,myIter,myThid)
+         CALL READ_REC_XYZ_RS(relaxVFile,rbcv1,intime1,myIter,myThid)
+        ENDIF
+       ENDIF
+       IF ( (useRBCuVel .AND. relaxUFile.NE.' ') .OR.
+     &      (useRBCvVel .AND. relaxVFile.NE.' ') ) THEN
+        CALL EXCH_UV_XYZ_RS( rbcu0, rbcv0, .TRUE., myThid )
+        CALL EXCH_UV_XYZ_RS( rbcu1, rbcv1, .TRUE., myThid )
+       ENDIF
+#endif /* DISABLE_RBCS_MOM */
        IF ( useRBCtemp .AND. relaxTFile .NE. ' '  ) THEN
         IF ( rbcsSingleTimeFiles ) THEN
          IL=ILNBLNK( relaxTFile )
@@ -135,6 +165,8 @@ C     for rbcsSingleTimeFiles=.TRUE.
          CALL READ_REC_XYZ_RS(relaxTFile,rbct0,intime0,myIter,myThid)
          CALL READ_REC_XYZ_RS(relaxTFile,rbct1,intime1,myIter,myThid)
         ENDIF
+        CALL EXCH_XYZ_RS( rbct0 , myThid )
+        CALL EXCH_XYZ_RS( rbct1 , myThid )
        ENDIF
        IF ( useRBCsalt .AND. relaxSFile .NE. ' '  ) THEN
         IF ( rbcsSingleTimeFiles ) THEN
@@ -147,6 +179,8 @@ C     for rbcsSingleTimeFiles=.TRUE.
          CALL READ_REC_XYZ_RS(relaxSFile,rbcs0,intime0,myIter,myThid)
          CALL READ_REC_XYZ_RS(relaxSFile,rbcs1,intime1,myIter,myThid)
         ENDIF
+        CALL EXCH_XYZ_RS( rbcs0 , myThid )
+        CALL EXCH_XYZ_RS( rbcs1 , myThid )
        ENDIF
 
 #ifdef ALLOW_PTRACERS
@@ -174,23 +208,6 @@ C     for rbcsSingleTimeFiles=.TRUE.
      &                           rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),
      &                           intime1, myIter, myThid )
           ENDIF
-         ENDIF
-        ENDDO
-       ENDIF
-#endif
-
-       IF ( useRBCtemp .AND. relaxTFile .NE. ' '  ) THEN
-         CALL EXCH_XYZ_RS( rbct0 , myThid )
-         CALL EXCH_XYZ_RS( rbct1 , myThid )
-       ENDIF
-       IF ( useRBCsalt .AND. relaxSFile .NE. ' '  ) THEN
-         CALL EXCH_XYZ_RS( rbcs0 , myThid )
-         CALL EXCH_XYZ_RS( rbcs1 , myThid )
-       ENDIF
-#ifdef ALLOW_PTRACERS
-       IF (usePTRACERS) THEN
-        DO iTracer = 1, PTRACERS_numInUse
-         IF ( useRBCptrnum(iTracer) ) THEN
           CALL EXCH_XYZ_RS( rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),myThid )
           CALL EXCH_XYZ_RS( rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),myThid )
          ENDIF
@@ -211,16 +228,30 @@ C--   end if-block for loading new time-records
 C--   Interpolate
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           RBCtemp(i,j,k,bi,bj) = bWght*rbct0(i,j,k,bi,bj)
-     &                           +aWght*rbct1(i,j,k,bi,bj)
-           RBCsalt(i,j,k,bi,bj) = bWght*rbcs0(i,j,k,bi,bj)
-     &                           +aWght*rbcs1(i,j,k,bi,bj)
+#ifndef DISABLE_RBCS_MOM
+        IF ( useRBCuVel .OR. useRBCvVel ) THEN
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            RBCuVel(i,j,k,bi,bj) = bWght*rbcu0(i,j,k,bi,bj)
+     &                            +aWght*rbcu1(i,j,k,bi,bj)
+            RBCvVel(i,j,k,bi,bj) = bWght*rbcv0(i,j,k,bi,bj)
+     &                            +aWght*rbcv1(i,j,k,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
+        ENDIF
+#endif /* DISABLE_RBCS_MOM */
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            RBCtemp(i,j,k,bi,bj) = bWght*rbct0(i,j,k,bi,bj)
+     &                            +aWght*rbct1(i,j,k,bi,bj)
+            RBCsalt(i,j,k,bi,bj) = bWght*rbcs0(i,j,k,bi,bj)
+     &                            +aWght*rbcs1(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.5 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.6 2011/05/14 19:52:12 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -17,15 +17,17 @@ C     Will update tendencies with terms to relax to 3-D field
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+c#include "GRID.h"
+#include "DYNVARS.h"
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
 #endif
-#include "RBCS.h"
+#include "RBCS_SIZE.h"
+#include "RBCS_PARAMS.h"
+#include "RBCS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj          :: tile indices
@@ -51,13 +53,36 @@ CEOP
 
 #ifdef ALLOW_RBCS
 
+#ifndef DISABLE_RBCS_MOM
+      IF ( tracerNum.EQ.-1 .AND. useRBCuVel ) THEN
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+     &       - RBC_maskU(i,j,k,bi,bj)/tauRelaxU
+     &        *( uVel(i,j,k,bi,bj)- RBCuVel(i,j,k,bi,bj) )
+c    &        *maskW(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
+      IF ( tracerNum.EQ.-2 .AND. useRBCvVel ) THEN
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+     &       - RBC_maskV(i,j,k,bi,bj)/tauRelaxV
+     &        *( vVel(i,j,k,bi,bj)- RBCvVel(i,j,k,bi,bj) )
+c    &        *maskS(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* DISABLE_RBCS_MOM */
+
       IF ( tracerNum.EQ.1 .AND. useRBCtemp ) THEN
         DO j=1,sNy
          DO i=1,sNx
           gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
-     &       - maskC(i,j,k,bi,bj)
-     &        *RBC_mask(i,j,k,bi,bj,1)/tauRelaxT
+     &       - RBC_mask(i,j,k,bi,bj,1)/tauRelaxT
      &        *( theta(i,j,k,bi,bj)- RBCtemp(i,j,k,bi,bj) )
+c    &        *maskC(i,j,k,bi,bj)
          ENDDO
         ENDDO
       ENDIF
@@ -66,9 +91,9 @@ CEOP
         DO j=1,sNy
          DO i=1,sNx
           gS(i,j,k,bi,bj) = gS(i,j,k,bi,bj)
-     &       - maskC(i,j,k,bi,bj)
-     &        *RBC_mask(i,j,k,bi,bj,2)/tauRelaxS
+     &       - RBC_mask(i,j,k,bi,bj,2)/tauRelaxS
      &        *( salt(i,j,k,bi,bj)- RBCsalt(i,j,k,bi,bj) )
+c    &        *maskC(i,j,k,bi,bj)
          ENDDO
         ENDDO
       ENDIF
@@ -81,10 +106,10 @@ CEOP
         DO j=1,sNy
          DO i=1,sNx
           gPtr(i,j,k,bi,bj,iTracer) = gPtr(i,j,k,bi,bj,iTracer)
-     &       - maskC(i,j,k,bi,bj)
-     &        *RBC_mask(i,j,k,bi,bj,irbc)/tauRelaxPTR(iTracer)
+     &       - RBC_mask(i,j,k,bi,bj,irbc)/tauRelaxPTR(iTracer)
      &        *( pTracer(i,j,k,bi,bj,iTracer)
      &           - RBC_ptracers(i,j,k,bi,bj,iTracer) )
+c    &        *maskC(i,j,k,bi,bj)
          ENDDO
         ENDDO
        ENDIF

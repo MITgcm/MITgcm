@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.5 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.6 2011/05/14 19:52:12 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -7,7 +7,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE RBCS_INIT_FIXED( myThid )
 
 C !DESCRIPTION:
-C calls subroutines that initialized fixed variables for relaxed
+C calls subroutines that initializes fixed variables for relaxed
 c boundary conditions
 
 C !USES: ===============================================================
@@ -15,11 +15,13 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "GRID.h"
+#include "GRID.h"
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #endif
-#include "RBCS.h"
+#include "RBCS_SIZE.h"
+#include "RBCS_PARAMS.h"
+#include "RBCS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: my Thread Id number
@@ -28,9 +30,31 @@ CEOP
 
 #ifdef ALLOW_RBCS
 C     !LOCAL VARIABLES:
-C     i,j,k,bi,bj,iTracer  :: loop indices
+C     i,j,k,bi,bj,irbc  :: loop indices
+C     msgBuf      :: Informational/error message buffer
       INTEGER i,j,k,bi,bj
       INTEGER irbc
+#ifndef DISABLE_RBCS_MOM
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifndef DISABLE_RBCS_MOM
+C     Loop over tiles
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,Nr
+          DO j=1-Oly,sNy+OLy
+           DO i=1-Olx,sNx+Olx
+             RBC_maskU(i,j,k,bi,bj) = 0. _d 0
+             RBC_maskV(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+#endif /* DISABLE_RBCS_MOM */
 
 C     Loop over mask index
       DO irbc=1,maskLEN
@@ -60,8 +84,21 @@ C read in mask for relaxing
          CALL READ_FLD_XYZ_RS(relaxMaskFile(irbc),' ',
      &                RBC_mask(1-Olx,1-Oly,1,1,1,irbc), 0, myThid)
          CALL EXCH_XYZ_RS( RBC_mask(1-Olx,1-Oly,1,1,1,irbc), myThid )
-c        IF ( debugMode ) THEN
+C--   Apply mask:
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-Oly,sNy+OLy
+             DO i=1-Olx,sNx+Olx
+               RBC_mask(i,j,k,bi,bj,irbc) = RBC_mask(i,j,k,bi,bj,irbc)
+     &                                    * maskC(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
          IF ( debugLevel .GE. debLevB ) THEN
+           _BARRIER
            _BEGIN_MASTER( myThid )
            CALL PLOT_FIELD_XYRS( RBC_mask(1-Olx,1-Oly,1,1,1,irbc),
      &                          'Boundary Relaxing' ,1, myThid )
@@ -69,6 +106,78 @@ c        IF ( debugMode ) THEN
         ENDIF
        ENDIF
       ENDDO
+
+#ifndef DISABLE_RBCS_MOM
+      IF ( useRBCuVel .AND. relaxMaskUFile.NE. ' ' ) THEN
+        CALL READ_FLD_XYZ_RS(relaxMaskUFile,' ',RBC_maskU, 0, myThid)
+      ELSEIF( useRBCuVel ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED: ',
+     &     'no relaxMaskUFile => use Temp mask instead'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-Oly,sNy+OLy
+             DO i=2-Olx,sNx+Olx
+               RBC_maskU(i,j,k,bi,bj) =
+     &                  ( RBC_mask(i-1,j,k,bi,bj,1)
+     &                  + RBC_mask( i ,j,k,bi,bj,1) )*0.5 _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+      IF ( useRBCvVel .AND. relaxMaskVFile.NE. ' ' ) THEN
+        CALL READ_FLD_XYZ_RS(relaxMaskVFile,' ',RBC_maskV, 0, myThid)
+      ELSEIF( useRBCvVel ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED: ',
+     &     'no relaxMaskVFile => use Temp mask instead'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO k=1,Nr
+            DO j=2-Oly,sNy+OLy
+             DO i=1-Olx,sNx+Olx
+               RBC_maskV(i,j,k,bi,bj) =
+     &                  ( RBC_mask(i,j-1,k,bi,bj,1)
+     &                  + RBC_mask(i, j ,k,bi,bj,1) )*0.5 _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+      IF( useRBCuVel .OR. useRBCvVel ) THEN
+         CALL EXCH_UV_XYZ_RS( RBC_maskU, RBC_maskV, .FALSE., myThid )
+C--   Apply mask:
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-Oly,sNy+OLy
+             DO i=1-Olx,sNx+Olx
+               RBC_maskU(i,j,k,bi,bj) = RBC_maskU(i,j,k,bi,bj)
+     &                                * maskW(i,j,k,bi,bj)
+               RBC_maskV(i,j,k,bi,bj) = RBC_maskV(i,j,k,bi,bj)
+     &                                * maskS(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         IF ( debugLevel .GE. debLevB ) THEN
+           _BARRIER
+           _BEGIN_MASTER( myThid )
+           CALL PLOT_FIELD_XYRS( RBC_maskU,
+     &                          'Boundary Relaxing U' ,1, myThid )
+           CALL PLOT_FIELD_XYRS( RBC_maskV,
+     &                          'Boundary Relaxing V' ,1, myThid )
+           _END_MASTER(myThid)
+        ENDIF
+      ENDIF
+#endif /* DISABLE_RBCS_MOM */
 
 #endif /* ALLOW_RBCS */
 

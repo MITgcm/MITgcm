@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.7 2011/04/20 01:42:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.8 2011/05/14 19:52:12 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -18,7 +18,9 @@ C !USES: ===============================================================
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #endif
-#include "RBCS.h"
+#include "RBCS_SIZE.h"
+c#include "RBCS_PARAMS.h"
+#include "RBCS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -40,6 +42,14 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
           DO k=1,Nr
             DO j=1-Oly,sNy+OLy
               DO i=1-Olx,sNx+Olx
+#ifndef DISABLE_RBCS_MOM
+                rbcu0(i,j,k,bi,bj) = 0. _d 0
+                rbcv0(i,j,k,bi,bj) = 0. _d 0
+                rbcu1(i,j,k,bi,bj) = 0. _d 0
+                rbcv1(i,j,k,bi,bj) = 0. _d 0
+                RBCuVel(i,j,k,bi,bj) = 0. _d 0
+                RBCvVel(i,j,k,bi,bj) = 0. _d 0
+#endif
                 rbct0(i,j,k,bi,bj) = 0. _d 0
                 rbcs0(i,j,k,bi,bj) = 0. _d 0
                 rbct1(i,j,k,bi,bj) = 0. _d 0

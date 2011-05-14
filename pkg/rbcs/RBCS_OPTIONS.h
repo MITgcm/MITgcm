@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_OPTIONS.h,v 1.1 2010/04/06 20:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_OPTIONS.h,v 1.2 2011/05/14 19:52:12 jmc Exp $
 C $Name:  $
 
 C CPP options file for pkg RBCS
@@ -13,6 +13,9 @@ C Use this file for selecting options within package "RBCS"
 #include "CPP_OPTIONS.h"
 
 C Place CPP define/undef flag here
+
+C o disable relaxation conditions on momemtum
+#undef DISABLE_RBCS_MOM
 
 #endif /* ALLOW_RBCS */
 #endif /* RBCS_OPTIONS_H */
