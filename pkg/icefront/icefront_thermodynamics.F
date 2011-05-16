@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.8 2010/04/22 18:24:44 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.9 2011/05/16 22:41:03 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -64,6 +64,8 @@ C     aqe, bqe, cqe, discrim, recip_aqe
       _RL thetaFreeze, saltFreeze
       _RS FreshWaterFlux( 1:sNx, 1:sNy )
       _RS HeatFlux      ( 1:sNx, 1:sNy )
+      _RS ICEFRONTheatTransCoeff ( 1:sNx, 1:sNy )
+      _RS ICEFRONTsaltTransCoeff ( 1:sNx, 1:sNy )
       _RL a0, b, c0
       _RL eps1, eps2, eps3, eps4, eps5, eps6, eps7
       _RL aqe, bqe, cqe, discrim, recip_aqe
@@ -85,13 +87,6 @@ C     Linear dependence of freezing point on salinity.
       c0 =  0.0901   _d  0
       b  =  -7.61    _d -4
 
-C     A few abbreviations.
-      eps1 = rUnit2mass*HeatCapacity_Cp*ICEFRONTheatTransCoeff
-      eps2 = rUnit2mass*ICEFRONTlatentHeat*ICEFRONTsaltTransCoeff
-      eps3 = rUnit2mass*ICEFRONTheatCapacity_Cp*ICEFRONTsaltTransCoeff
-      eps5 = mass2rUnit/HeatCapacity_Cp
-      aqe  = a0  *(-eps1+eps3)
-      recip_aqe = 0.5 _d 0/aqe
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -99,8 +94,25 @@ C     A few abbreviations.
          DO J = 1, sNy
           DO I = 1, sNx
 
+C     Calculate ICEFRONTheatTransCoeff & ICEFRONTsaltTransCoeff
            IF( ICEFRONTlength(I,J,bi,bj) .GT. 0. _d 0
      &          .AND. K .LE. K_icefront(I,J,bi,bj) ) THEN
+            ICEFRONTheatTransCoeff(I,J) = 1.0 _d -02
+     &                                  *abs(wVEL(I,J,K,bi,bj))
+     &                                  *sqrt(1.5 _d -03)
+            ICEFRONTheatTransCoeff(I,J) = max
+     &                          (ICEFRONTheatTransCoeff(I,J),1. _d -04)
+            ICEFRONTsaltTransCoeff(I,J) = 5.05 _d -3
+     &                                  *ICEFRONTheatTransCoeff(I,J)
+
+C     A few abbreviations.
+      eps1 = rUnit2mass*HeatCapacity_Cp*ICEFRONTheatTransCoeff(I,J)
+      eps2 = rUnit2mass*ICEFRONTlatentHeat*ICEFRONTsaltTransCoeff(I,J)
+      eps3 = rUnit2mass*ICEFRONTheatCapacity_Cp
+     &       *ICEFRONTsaltTransCoeff(I,J)
+      eps5 = mass2rUnit/HeatCapacity_Cp
+      aqe  = a0  *(-eps1+eps3)
+      recip_aqe = 0.5 _d 0/aqe
 
 C     Make local copies of temperature, salinity and depth (pressure).
             pLoc = ABS(rC(k))
@@ -142,7 +154,7 @@ C     melting due to outward (positive) heat flux.
      &           (ICEFRONTlatentHeat + ICEFRONTheatCapacity_cp*
      &           (thetaFreeze - thetaIce))
             HeatFlux(I,J) = maskC(I,J,K,bi,bj) * HeatCapacity_Cp *
-     &           ( -rUnit2mass*ICEFRONTheatTransCoeff +
+     &           ( -rUnit2mass*ICEFRONTheatTransCoeff(I,J) +
      &           FreshWaterFlux(I,J) ) * ( thetaFreeze - tLoc )
 
 C     Compute tendencies.

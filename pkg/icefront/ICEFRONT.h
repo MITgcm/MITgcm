@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.10 2010/05/12 01:08:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.11 2011/05/16 22:41:03 yunx Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -55,13 +55,10 @@ CEOP
       INTEGER K_icefront (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /ICEFRONT_PARMS_R/ 
-     &     ICEFRONTheatTransCoeff, ICEFRONTsaltTransCoeff,
      &     rhoIcefront, ICEFRONTkappa,
      &     ICEFRONTlatentHeat, recip_ICEFRONTlatentHeat,
      &     ICEFRONTheatCapacity_Cp,
      &     ICEFRONTthetaSurface
-      _RL ICEFRONTheatTransCoeff
-      _RL ICEFRONTsaltTransCoeff
       _RL ICEFRONTlatentHeat
       _RL ICEFRONTheatCapacity_Cp
       _RL rhoIcefront

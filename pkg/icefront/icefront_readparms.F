@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.8 2010/08/24 14:43:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.9 2011/05/16 22:41:03 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -39,8 +39,6 @@ C  msgBuf               :: message buffer
 CEOP
 
       NAMELIST /ICEFRONT_PARM01/
-     &     ICEFRONTheatTransCoeff,
-     &     ICEFRONTsaltTransCoeff,
      &     rhoIcefront, ICEFRONTkappa,
      &     ICEFRONTlatentHeat, ICEFRONTHeatCapacity_Cp,
      &     ICEFRONTthetaSurface,
@@ -63,7 +61,6 @@ C Use the same values as in SHELFICE
        ICEFRONTlatentHeat       = SHELFICElatentHeat
        ICEFRONTHeatCapacity_Cp  = SHELFICEHeatCapacity_Cp
        rhoIcefront              = rhoShelfice
-       ICEFRONTheatTransCoeff   = SHELFICEheatTransCoeff
        ICEFRONTkappa            = SHELFICEkappa
        ICEFRONTthetaSurface     = SHELFICEthetaSurface
       ELSE
@@ -74,13 +71,11 @@ C Default values when SHELFICE is not used
        ICEFRONTlatentHeat       =  334.0 _d 3
        ICEFRONTHeatCapacity_Cp  = 2000.0 _d 0
        rhoIcefront              =  917.0 _d 0
-       ICEFRONTheatTransCoeff   =    1.0 _d -04
        ICEFRONTkappa            =   1.54 _d -06
        ICEFRONTthetaSurface     = - 20.0 _d 0
       ENDIF
 
       recip_ICEFRONTlatentHeat =    0.0 _d 0
-      ICEFRONTsaltTransCoeff   = UNSET_RL
       ICEFRONTlengthFile       = ' '
       ICEFRONTdepthFile        = ' '
       applyIcefrontTendS       = .TRUE.
@@ -109,9 +104,6 @@ C Close the open data file
 C Now set-up any remaining parameters that result from the input parameters
       IF ( ICEFRONTlatentHeat .NE. 0. _d 0 )
      &     recip_ICEFRONTlatentHeat = 1. _d 0/ICEFRONTlatentHeat
-      IF ( ICEFRONTsaltTransCoeff .EQ. UNSET_RL )
-     &     ICEFRONTsaltTransCoeff =
-     &     5.05 _d -3 *ICEFRONTheatTransCoeff
       _END_MASTER(myThid)
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
