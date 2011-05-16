@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.7 2010/12/15 17:08:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.8 2011/05/16 19:03:37 jmc Exp $
 #  $Name:  $
 #
 # Build options for Suse 9 Opteron
@@ -9,6 +9,7 @@
 #
 
 FC=g77
+CC=gcc34
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
@@ -44,10 +45,12 @@ if test -d /usr/include/netcdf-3 ; then
             LIBS='-L/usr/lib/netcdf-3'
         fi
     fi
-elif test -d /usr/include/netcdf ; then
+elif test -d /usr/include/netcdf -o -f /usr/include/netcdf.h ; then
 #-- allows a "compat"(gcc 3.4) 2nd version of libs for g77 , next to the
 #   standard one (for gfortran, gcc 4.x). But uses same include files.
-    INCLUDES='-I/usr/include/netcdf'
+    if test -d /usr/include/netcdf ; then
+       INCLUDES='-I/usr/include/netcdf'
+    fi
     if test -d /usr/lib64/netcdf34 ; then
         if test -f /usr/lib64/netcdf34/libnetcdf_g77.a ; then
             LIBS='-L/usr/lib64/netcdf34 -lnetcdf_g77'
