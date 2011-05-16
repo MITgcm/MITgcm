@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.13 2009/04/28 18:16:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.14 2011/05/16 22:04:15 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: MON_SURFCOR
 
 C     !INTERFACE:
       SUBROUTINE MON_SURFCOR(
-     I     myThid )
+     I                        myThid )
 
 C     !DESCRIPTION:
 C     Compute and write area-mean surface expansion term (also called
@@ -46,6 +46,7 @@ C     !USES:
 #include "MONITOR.h"
 
 C     !INPUT PARAMETERS:
+C     myThid    :: my Thread Id. number
       INTEGER myThid
 CEOP
 
@@ -65,6 +66,7 @@ C     !LOCAL VARIABLES:
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
        theArea = 0.
        wT_Mean = 0.
        wS_Mean = 0.
@@ -82,12 +84,14 @@ C-- Compute surface "expansion" term & do the integral
            DO i=1,sNx
             ks = ksurfC(i,j,bi,bj)
             IF (ks.LE.Nr) THEN
-             tileArea(bi,bj) = tileArea(bi,bj) + rA(i,j,bi,bj)
-             tmpVal =
-     &          rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)*theta(i,j,ks,bi,bj)
+             tileArea(bi,bj) = tileArea(bi,bj)
+     &                       + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+             tmpVal = rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &               *wVel(i,j,ks,bi,bj)*theta(i,j,ks,bi,bj)
              tile_wT(bi,bj) = tile_wT(bi,bj) + tmpVal
              tile_wS(bi,bj) = tile_wS(bi,bj)
-     &        + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)* salt(i,j,ks,bi,bj)
+     &                      + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &                       *wVel(i,j,ks,bi,bj)*salt(i,j,ks,bi,bj)
 C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
              IF ( fluidIsAir ) THEN
                tileWHeat(bi,bj) = tileWHeat(bi,bj)
@@ -107,7 +111,8 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
      &               + salt(i,j,Nr,bi,bj)*drF(Nr)*recip_drF(ks)
      &                *hFacC(i,j,Nr,bi,bj)*_recip_hFacC(i,j,ks,bi,bj)
               tile_wS(bi,bj) = tile_wS(bi,bj)
-     &         + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)*tmpVal
+     &                       + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &                        *wVel(i,j,ks,bi,bj)*tmpVal
              ENDIF
             ENDDO
            ENDDO
@@ -127,6 +132,7 @@ C    = Omega*Theta*DeltaPI
      &         - ddPI*rA(i,j,bi,bj)*wVel(i,j,k,bi,bj)
      &           *(theta(i,j,k,bi,bj)+theta(i,j,k-1,bi,bj))*0.5 _d 0
      &           *maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
+     &           *maskInC(i,j,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -146,6 +152,7 @@ C-- Compute Volume expansion term & do the integral
            DO j=1,sNy
             DO i=1,sNx
               tmpVol  = rA(i,j,bi,bj)*h0FacC(i,j,k,bi,bj)*drF(k)
+     &                 *maskInC(i,j,bi,bj)
               tmpVal  = rStarDhCDt(i,j,bi,bj)*theta(i,j,k,bi,bj)
               vT_Mean = vT_Mean + tmpVol*tmpVal
               vS_Mean = vS_Mean
@@ -163,26 +170,16 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* NONLIN_FRSURF */
 
-c         theArea = theArea   + tileArea(bi,bj)
-c         wT_Mean = wT_Mean   + tile_wT(bi,bj)
-c         wS_Mean = wS_Mean   + tile_wS(bi,bj)
-c         wT_Heat = wT_Heat   + tileWHeat(bi,bj)
-c         theta2PE = theta2PE + tileTh2pe(bi,bj)
 C--    end bi,bj loop
         ENDDO
        ENDDO
 
-c      _GLOBAL_SUM_RL(theArea,myThid)
-c      _GLOBAL_SUM_RL(wT_Mean,myThid)
-c      _GLOBAL_SUM_RL(wS_Mean,myThid)
        CALL GLOBAL_SUM_TILE_RL( tileArea, theArea, myThid )
        CALL GLOBAL_SUM_TILE_RL( tile_wT , wT_Mean, myThid )
        CALL GLOBAL_SUM_TILE_RL( tile_wS , wS_Mean, myThid )
        IF ( fluidIsAir ) THEN
         CALL GLOBAL_SUM_TILE_RL( tileWHeat , wT_Heat , myThid )
         CALL GLOBAL_SUM_TILE_RL( tileTh2pe , theta2PE, myThid )
-c       _GLOBAL_SUM_RL(wT_Heat,myThid)
-c       _GLOBAL_SUM_RL(theta2PE,myThid)
        ENDIF
        IF (theArea.GT.0.) THEN
          wT_Mean = wT_Mean / theArea
