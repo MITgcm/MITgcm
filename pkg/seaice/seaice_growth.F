@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.119 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.120 2011/05/17 19:50:26 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -410,6 +410,9 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
             TICE(I,J,bi,bj)=celsius2K
+#ifdef SEAICE_AGE
+            IceAgeTr(i,j,bi,bj,2)=0. _d 0
+#endif /* SEAICE_AGE */
           else
             tmpscal2=0. _d 0
             tmpscal3=0. _d 0
@@ -441,8 +444,16 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-          IF ((HEFF(i,j,bi,bj).GT.0).OR.(HSNOW(i,j,bi,bj).GT.0))
-     &     AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),areaMin)
+          IF ((HEFF(i,j,bi,bj).GT.0).OR.(HSNOW(i,j,bi,bj).GT.0)) THEN
+#ifdef SEAICE_AGE
+           IF (AREA(I,J,bi,bj).LT.areaMin) THEN
+            IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
+     &       + IceAgeTr(i,j,bi,bj,1)
+     &       *(areaMin-AREA(I,J,bi,bj)) / areaMin
+           ENDIF
+#endif /* SEAICE_AGE */
+           AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),areaMin)
+          ENDIF
          ENDDO
         ENDDO
 
@@ -453,7 +464,14 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-           AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),areaMax)
+#ifdef SEAICE_AGE
+          IF (AREA(I,J,bi,bj).GT.areaMax) THEN
+           IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
+     &      - IceAgeTr(i,j,bi,bj,1)
+     &      *(AREA(I,J,bi,bj)-areaMax) / areaMax
+          ENDIF
+#endif /* SEAICE_AGE */
+          AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),areaMax)
          ENDDO
         ENDDO
 
@@ -492,6 +510,29 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 
 C 5) treat sea ice age pathological cases
 C ...
+
+#ifdef SEAICE_AGE
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE IceAgeTr(:,:,bi,bj,1)  = comlev1_bibj, 
+CADJ &     key = iicekey,byte=isbyte
+CADJ STORE IceAgeTr(:,:,bi,bj,2)  = comlev1_bibj, 
+CADJ &     key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &     key = iicekey,byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
+          IF (HEFF(i,j,bi,bj).EQ.0.) THEN
+            IceAgeTr(i,j,bi,bj,1)=0. _d 0
+            IceAgeTr(i,j,bi,bj,2)=0. _d 0
+          ENDIF
+          IF (IceAgeTr(i,j,bi,bj,1).LT.0.) IceAgeTr(i,j,bi,bj,1)=0. _d 0
+          IF (IceAgeTr(i,j,bi,bj,2).LT.0.) IceAgeTr(i,j,bi,bj,2)=0. _d 0
+         ENDDO
+        ENDDO
+#endif /* SEAICE_AGE */
+
 #endif /* SEAICE_GROWTH_LEGACY */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1657,46 +1698,44 @@ C     assume that a) freezing: new ice fraction forms with zero age
 C                 b) melting: ice fraction vanishes with current age
         DO J=1,sNy
          DO I=1,sNx
-          IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
-           IF ( AREA(i,j,bi,bj) .LT. AREApreTH(i,j) ) THEN
-C--   scale effective ice-age to account for ice-age sink associated
-C     with melting or ridging
-            IceAgeTr(i,j,bi,bj,1) = IceAgeTr(i,j,bi,bj,1)
-     &         *AREA(i,j,bi,bj)/AREApreTH(i,j)
-           ENDIF
-C--   account for aging:
-           IceAgeTr(i,j,bi,bj,1) = IceAgeTr(i,j,bi,bj,1)
-     &        + AREA(i,j,bi,bj) * SEAICE_deltaTtherm
-          ELSE
-           IceAgeTr(i,j,bi,bj,1) = ZERO
-          ENDIF
+C--   increase age as time passes
+                IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
+     &            +SEAICE_deltaTtherm*AREApreTH(i,j)
+                IceAgeTr(i,j,bi,bj,2)=IceAgeTr(i,j,bi,bj,2)
+     &            +SEAICE_deltaTtherm*HEFFpreTH(i,j)
+C--   account for ice melt
+               IF (AREApreTH(i,j).GT.AREA(i,j,bi,bj)) THEN
+                    IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
+     &              *AREA(i,j,bi,bj)/AREApreTH(i,j)
+               ENDIF
+               IF (HEFFpreTH(i,j).GT.HEFF(i,j,bi,bj)) THEN
+                    IceAgeTr(i,j,bi,bj,2)=IceAgeTr(i,j,bi,bj,2)
+     &              *HEFF(i,j,bi,bj)/HEFFpreTH(i,j)
+               ENDIF
          ENDDO
         ENDDO
 
-C     Sources and sinks for sea ice age:
-C     assume that a) freezing: new ice volume forms with zero age
-C                 b) melting: ice volume vanishes with current age
-        DO J=1,sNy
-         DO I=1,sNx
-C--   compute actual age from effective age:
-          IF (HEFFpreTH(i,j).GT.0. _d 0) THEN
-           tmpscal1=IceAgeTr(i,j,bi,bj,2)/HEFFpreTH(i,j)
-          ELSE
-           tmpscal1=0. _d 0
-          ENDIF
-          IF ( (HEFFpreTH(i,j).LT.HEFF(i,j,bi,bj)).AND.
-     &         (AREA(i,j,bi,bj).GT.0.15) ) THEN
-           tmpscal2=tmpscal1*HEFFpreTH(i,j)/
-     &          HEFF(i,j,bi,bj)+SEAICE_deltaTtherm
-          ELSEIF (AREA(i,j,bi,bj).LE.0.15) THEN
-           tmpscal2=0. _d 0
-          ELSE
-           tmpscal2=tmpscal1+SEAICE_deltaTtherm
-          ENDIF
-C--   re-scale to effective age:
-          IceAgeTr(i,j,bi,bj,2) = tmpscal2*HEFF(i,j,bi,bj)
-         ENDDO
-        ENDDO
+C #ifdef ALLOW_DIAGNOSTICS
+C        IF ( useDiagnostics ) THEN
+C         IF ( DIAGNOSTICS_IS_ON('SIage03 ',myThid) ) THEN
+C          DO J=1,sNy
+C           DO I=1,sNx
+C            DIAGarray(I,J) = IceAgeTr(i,j,bi,bj,1)/AREA(i,j,bi,bj) 
+C           ENDDO
+C          ENDDO
+C          CALL DIAGNOSTICS_FILL(DIAGarray,'SIage03 ',0,1,3,bi,bj,myThid)
+C         ENDIF
+C         IF ( DIAGNOSTICS_IS_ON('SIage04 ',myThid) ) THEN
+C          DO J=1,sNy
+C           DO I=1,sNx
+C            DIAGarray(I,J) = IceAgeTr(i,j,bi,bj,2)/HEFF(i,j,bi,bj) 
+C           ENDDO
+C          ENDDO
+C          CALL DIAGNOSTICS_FILL(DIAGarray,'SIage04 ',0,1,3,bi,bj,myThid)
+C         ENDIF
+C        ENDIF
+C #endif /* ALLOW_DIAGNOSTICS */
+
 #endif /* SEAICE_AGE */
 
 
