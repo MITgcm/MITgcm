@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.4 2010/12/24 21:51:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.5 2011/05/17 22:14:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,6 +32,9 @@ c#endif
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
+#ifdef ALLOW_OBCS
+# include "OBCS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     seqFlag :: flag that indicates where this S/R is called from:
@@ -54,6 +57,7 @@ C--   Set output freq. to zero to avoid re-write of
 C     averaged fields in reverse checkpointing loops
       monitorFreq  = 0.
       dumpFreq     = 0.
+      diagFreq     = 0.
       taveFreq     = 0.
       chkPtFreq    = 0.
       pChkPtFreq   = 0.
@@ -73,6 +77,11 @@ c     timeave_mnc  = .FALSE.
 #ifdef ALLOW_EXF
 C-    should call a S/R EXF_TURNOFF_IO (like SEAICE) to reset this flag
       IF ( useEXF ) exf_monFreq = 0.
+#endif
+
+#ifdef ALLOW_OBCS
+C-    should call a S/R OBCS_TURNOFF_IO (like SEAICE) to reset this flag
+      IF ( useOBCS ) OBCS_monitorFreq = 0.
 #endif
 
 C--   Disable SBO output
