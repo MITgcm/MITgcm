@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1433 2011/05/14 20:04:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1434 2011/05/17 19:51:28 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,6 +10,10 @@ o pkg rbcs:
 o pkg/grdchk: add gradient check for control variable xx_shifwflx
 o pkg/shelfice/shelfice_init_fixed.F
   fix CPP-flag combinations
+o pkg/seaice: Merge iceage code of Pierre Rampal
+  * update/change/correct ice age calculations
+  * add age updates for pathological cases 
+  Probably needs more testing...
 
 checkpoint62x (2011/05/13)
 o pkg/mom_vecinv:
