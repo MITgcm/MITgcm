@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.31 2010/08/28 18:35:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.32 2011/05/18 03:14:54 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -103,6 +103,8 @@ c     == local variables ==
       character*(128) fnametauxbar
       character*(128) fnametauybar
 
+      _RL  etanLeads (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -154,9 +156,23 @@ c--   Get the time flags and record numbers for the time averaging.
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('cost_averagesgeneric psbar',myThid)
 #endif
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i =  imin,imax
+                etanLeads(i,j,bi,bj)=etan(i,j,bi,bj)
+#ifdef ALLOW_SEAICE
+     &                +sIceLoad(i,j,bi,bj)*recip_rhoConst
+#endif
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
       call cost_averagesgeneric(
      &     psbarfile,
-     &     psbar, etan, xx_psbar_mean_dummy,
+     &     psbar, etanLeads, xx_psbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
 #endif
