@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.2 2010/10/25 20:42:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.3 2011/05/18 03:15:38 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -359,6 +359,11 @@ cgf =======================================================
      &                       ladinit, optimcycle, mythid,
      &                       xx_psbar_mean_dummy )
 
+#ifndef ALLOW_PSBAR_MEAN
+        CALL REMOVE_MEAN_RL( 1, psbar, maskInC, maskInC, rA, drF,
+     &        'psbar', myTime, myThid )
+#endif
+
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
       call cost_sla_read( topexfile, topexstartdate, topexperiod,
      &                topexintercept, topexslope,
@@ -433,7 +438,8 @@ c--   END loop over records for the first time.
             do j = jmin,jmax
               do i = imin,imax
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-               if ( mean_psMtpobs_NUM(i,j,bi,bj) .NE. 0. ) then
+               if ( ( mean_psMtpobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
      &                 mean_psMtpobs(i,j,bi,bj)
@@ -447,7 +453,8 @@ c--   END loop over records for the first time.
                endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-               if ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. ) then
+               if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. ).AND. 
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
      &                 mean_psMersobs(i,j,bi,bj)
@@ -461,7 +468,8 @@ c--   END loop over records for the first time.
                endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-               if ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. ) then
+               if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. ).AND. 
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
      &                 mean_psMgfoobs(i,j,bi,bj)
@@ -663,6 +671,11 @@ c ------------------------------------------------------
      &                       ladinit, optimcycle, mythid,
      &                       xx_psbar_mean_dummy )
 
+#ifndef ALLOW_PSBAR_MEAN
+        CALL REMOVE_MEAN_RL( 1, psbar, maskInC, maskInC, rA, drF,
+     &        'psbar', myTime, myThid )
+#endif
+
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
       call cost_sla_read( topexfile, topexstartdate, topexperiod,
      &                topexintercept, topexslope,
@@ -770,7 +783,8 @@ c ------------------------------------------------------
                endif
 #endif
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ) then
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
                   anom_psMslaobs(i,j,bi,bj) =
      &                 anom_psMslaobs(i,j,bi,bj) /
      &                 anom_psMslaobs_NUM(i,j,bi,bj)
@@ -853,6 +867,11 @@ cgf =======================================================
         call active_read_xy( fname, psbar, irec, doglobalread,
      &                       ladinit, optimcycle, mythid,
      &                       xx_psbar_mean_dummy )
+
+#ifndef ALLOW_PSBAR_MEAN
+        CALL REMOVE_MEAN_RL( 1, psbar, maskInC, maskInC, rA, drF,
+     &        'psbar', myTime, myThid )
+#endif
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
         call cost_readtopex( irec, mythid )
