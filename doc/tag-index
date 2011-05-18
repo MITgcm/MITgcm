@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1434 2011/05/17 19:51:28 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1435 2011/05/18 02:21:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o obcs and 2d/3d solver norm:
+   use interior masks (maskInC) to cancel out cg2d & cg3d matrix coeff at OB 
+   and outside OB interior region (will allow to place OB further inside the 
+   domain). Depending on the domain, can affects cg2d-Norm (previous 
+   cancelation outside OB was only partial), e.g. in exp4 & obcs_ctrl,
+   and cg3d-Norm (previous Norm was computed before canceling OB terms),
+   e.g. in tutorial_plume_on_slope.
+  - update output of exp.: exp4 (x2), obcs_ctrl and tutorial_plume_on_slope.
 o pkg rbcs:
   - split RBCS.h into 3 files: RBCS_SIZE.h, RBCS_PARAMS.h & RBCS_FIELDS.h
   - add capability to apply relaxation to horizontal velocity uVel & vVel.
