@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.162 2011/05/11 01:51:07 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.163 2011/05/18 22:03:57 jmc Exp $
 #  $Name:  $
 #
 
@@ -489,7 +489,8 @@ makemodel()
 	    if test "x$RETVAL" != x0 ; then
 		tail make.tr_log
 		echo failed
-		cp make.tr_log genmake.log genmake.tr_log $CDIR
+		cp genmake.log genmake.tr_log $CDIR
+		tail -$NBLINES_MKLOG make.tr_log > $CDIR"/make.tr_log_tail"
 		rm -f $EXECUTABLE
 		mk_fail=1
 	    else
@@ -915,6 +916,7 @@ check_eedata()
 #  Default properties
 debug=0
 verbose=1
+NBLINES_MKLOG=16000
 
 IEEE=true
 if test "x$MITGCM_IEEE" != x ; then
