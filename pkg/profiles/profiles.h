@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.7 2007/06/15 05:04:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.8 2011/05/18 03:16:52 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -7,13 +7,13 @@ C============================================================
       INTEGER  NOBSGLOB
       PARAMETER ( NOBSGLOB = 200000  )
       INTEGER NFILESPROFMAX
-      PARAMETER ( NFILESPROFMAX=10 )
+      PARAMETER ( NFILESPROFMAX=20 )
       INTEGER NVARMAX
       PARAMETER ( NVARMAX=6 )
       INTEGER NLEVELMAX
       PARAMETER ( NLEVELMAX=100 )
       INTEGER NUM_INTERP_POINTS
-      PARAMETER (NUM_INTERP_POINTS = 4)
+      PARAMETER (NUM_INTERP_POINTS = 1)
 
 C===========================================================
 C variables
