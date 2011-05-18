@@ -5,6 +5,7 @@
 #
  useExfCheckRange = .FALSE.,
  exf_iprec         = 32,
+ exf_monFreq=0.,
  &
 #
  &EXF_NML_02

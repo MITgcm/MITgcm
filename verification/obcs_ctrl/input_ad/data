@@ -11,23 +11,21 @@
  diffKzT=0.E-5,
  rotationPeriod=86400.,
  beta=1.E-11,
+ eosType='LINEAR',
  tAlpha=2.E-4,
  sBeta =0.,
  gravity=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
  readBinaryPrec=32,
 # extras...
  implicitDiffusion=.true.,
  implicitViscosity=.true.,
- useCDscheme=.FALSE.,
  vectorInvariantMomentum=.TRUE.,
  staggerTimeStep=.TRUE.,
  multiDimAdvection=.FALSE.,
  tempAdvScheme=30,
  saltAdvScheme=30,
- useNHMTerms=.FALSE.,
  writeBinaryPrec=32,
  debugLevel=0,
  &
@@ -47,7 +45,9 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=2628000.0,
- monitorFreq=432000.,
+#monitorFreq=432000.,
+ monitorFreq=3600.,
+ monitorSelect=1,
  &
 # Gridding parameters
  &PARM04
