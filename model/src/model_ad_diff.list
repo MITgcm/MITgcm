@@ -76,6 +76,7 @@ momentum_correction_step.f
 packages_init_variables.f
 pressure_for_eos.f
 read_pickup.f
+remove_mean.f
 rotate_uv2en.f
 seawater.f
 solve_for_pressure.f
