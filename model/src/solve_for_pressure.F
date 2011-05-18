@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.75 2010/12/06 14:22:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.76 2011/05/18 23:41:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,9 +34,6 @@ C     == Global variables
 #endif
 #ifdef ALLOW_CD_CODE
 #include "CD_CODE_VARS.h"
-#endif
-#ifdef ALLOW_OBCS
-#include "OBCS.h"
 #endif
 
 C     === Functions ====
@@ -229,33 +226,22 @@ C--   Add source term arising from w=d/dt (p_s)
         ENDIF
 
 #ifdef ALLOW_OBCS
+C- Note: solver matrix is trivial outside OB region (main diagonal only)
+C     => no real need to reset RHS (=cg2d_b) & cg2d_x, except that:
+C    a) normalisation is fct of Max(RHS), which can be large ouside OB region
+C      (would be different if we were solving for increment of eta/g
+C       instead of directly for eta/g).
+C       => need to reset RHS to ensure that interior solution does not depend
+C       on ouside OB region.
+C    b) provide directly the trivial solution cg2d_x == 0 for outside OB region
+C      (=> no residual => no effect on solver convergence and interior solution)
         IF (useOBCS) THEN
-         DO i=1,sNx
-C Northern boundary
-          IF (OB_Jn(i,bi,bj).NE.0) THEN
-           cg2d_b(i,OB_Jn(i,bi,bj),bi,bj)=0.
-           cg2d_x(i,OB_Jn(i,bi,bj),bi,bj)=0.
-          ENDIF
-C Southern boundary
-          IF (OB_Js(i,bi,bj).NE.0) THEN
-           cg2d_b(i,OB_Js(i,bi,bj),bi,bj)=0.
-           cg2d_x(i,OB_Js(i,bi,bj),bi,bj)=0.
-          ENDIF
-         ENDDO
-#ifndef ALLOW_NEST_CHILD
          DO j=1,sNy
-C Eastern boundary
-          IF (OB_Ie(j,bi,bj).NE.0) THEN
-           cg2d_b(OB_Ie(j,bi,bj),j,bi,bj)=0.
-           cg2d_x(OB_Ie(j,bi,bj),j,bi,bj)=0.
-          ENDIF
-C Western boundary
-          IF (OB_Iw(j,bi,bj).NE.0) THEN
-           cg2d_b(OB_Iw(j,bi,bj),j,bi,bj)=0.
-           cg2d_x(OB_Iw(j,bi,bj),j,bi,bj)=0.
-          ENDIF
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*maskInC(i,j,bi,bj)
+           cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*maskInC(i,j,bi,bj)
          ENDDO
-#endif /* ALLOW_NEST_CHILD */
+         ENDDO
         ENDIF
 #endif /* ALLOW_OBCS */
 C-    end bi,bj loops

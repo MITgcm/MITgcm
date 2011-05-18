@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.2 2010/01/23 00:04:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.3 2011/05/18 23:41:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,9 +29,6 @@ C     == Global variables
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "NH_VARS.h"
-#endif
-#ifdef ALLOW_OBCS
-#include "OBCS.h"
 #endif
 
 C     === Functions ====
@@ -169,32 +166,17 @@ C                             2) add vertical velocity contribution.
            uf(i,j) = -_recip_dxC(i,j,bi,bj)
      &             * implicSurfPress*implicDiv2DFlow
      &             *(cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj))
+#ifdef ALLOW_OBCS
+     &             *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+#endif
            vf(i,j) = -_recip_dyC(i,j,bi,bj)
      &             * implicSurfPress*implicDiv2DFlow
      &             *(cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj))
+#ifdef ALLOW_OBCS
+     &             *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+#endif
           ENDDO
          ENDDO
-
-#ifdef ALLOW_OBCS
-         IF (useOBCS) THEN
-          DO i=1,sNx+1
-C Northern boundary
-           IF (OB_Jn(i,bi,bj).NE.0)
-     &      vf(i,OB_Jn(i,bi,bj)) = 0.
-C Southern boundary
-           IF (OB_Js(i,bi,bj).NE.0)
-     &      vf(i,OB_Js(i,bi,bj)+1) = 0.
-          ENDDO
-          DO j=1,sNy+1
-C Eastern boundary
-           IF (OB_Ie(j,bi,bj).NE.0)
-     &      uf(OB_Ie(j,bi,bj),j) = 0.
-C Western boundary
-           IF (OB_Iw(j,bi,bj).NE.0)
-     &      uf(OB_Iw(j,bi,bj)+1,j) = 0.
-          ENDDO
-         ENDIF
-#endif /* ALLOW_OBCS */
 
 C Note: with implicDiv2DFlow < 1, wVel contribution to cg3d_b is similar to
 C       uVel,vVel contribution to cg2d_b when exactConserv=T, since wVel is
@@ -232,29 +214,29 @@ C        both appear in wVel term, but at 2 different levels
      &       +( wVel(i,j, k ,bi,bj)*wFacKm*maskC(i,j,k-1,bi,bj)
      &         -wVel(i,j,kp1,bi,bj)*wFacKp
      &        )*_rA(i,j,bi,bj)/deltaTmom
-
            ENDDO
           ENDDO
          ENDDO
 
 #ifdef ALLOW_OBCS
+C- Note: solver matrix is trivial outside OB region (main diagonal only)
+C     => no real need to reset RHS (=cg3d_b) & cg3d_x, except that:
+C    a) normalisation is fct of Max(RHS), which can be large ouside OB region
+C      (would be different if we were solving for increment of phi_nh
+C       instead of directly for phi_nh).
+C       => need to reset RHS to ensure that interior solution does not depend
+C       on ouside OB region.
+C    b) provide directly the trivial solution cg3d_x == 0 for outside OB region
+C      (=> no residual => no effect on solver convergence and interior solution)
          IF (useOBCS) THEN
           DO k=1,Nr
-           DO i=1,sNx
-C Northern boundary
-            IF (OB_Jn(i,bi,bj).NE.0)
-     &       cg3d_b(i,OB_Jn(i,bi,bj),k,bi,bj) = 0.
-C Southern boundary
-            IF (OB_Js(i,bi,bj).NE.0)
-     &       cg3d_b(i,OB_Js(i,bi,bj),k,bi,bj) = 0.
-           ENDDO
            DO j=1,sNy
-C Eastern boundary
-            IF (OB_Ie(j,bi,bj).NE.0)
-     &       cg3d_b(OB_Ie(j,bi,bj),j,k,bi,bj) = 0.
-C Western boundary
-            IF (OB_Iw(j,bi,bj).NE.0)
-     &       cg3d_b(OB_Iw(j,bi,bj),j,k,bi,bj) = 0.
+            DO i=1,sNx
+              cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
+     &                            *maskInC(i,j,bi,bj)
+              phi_nh(i,j,k,bi,bj) = phi_nh(i,j,k,bi,bj)
+     &                            *maskInC(i,j,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
          ENDIF
