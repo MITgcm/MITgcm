@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.53 2011/03/13 22:24:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.54 2011/05/18 03:16:05 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -51,7 +51,7 @@ c     17 years: 6210
 c     Number of Generic Cost terms:
 c     =============================
       INTEGER NGENCOST
-      PARAMETER ( NGENCOST=1 )
+      PARAMETER ( NGENCOST=20 )
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     objf_gencost - gencost user defined contribution
