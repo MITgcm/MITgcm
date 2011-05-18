@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.26 2010/01/23 00:04:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.27 2011/05/18 01:20:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,9 +28,6 @@ C     === Global variables ===
 #include "SURFACE.h"
 #include "CG3D.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
-#ifdef ALLOW_OBCS
-#include "OBCS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -112,7 +109,10 @@ C     aV3d: Ar/dR
          DO j=1,sNy
           DO i=1,sNx+1
            faceArea = _dyG(i,j,bi,bj)*drF(k)
-     &                *_hFacW(i,j,k,bi,bj)
+     &               *_hFacW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &               *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+#endif
            aW3d(i,j,k,bi,bj) = faceArea*recip_dxC(i,j,bi,bj)
      &                        *implicitNHPress*implicDiv2DFlow
            myNorm = MAX(ABS(aW3d(i,j,k,bi,bj)),myNorm)
@@ -122,7 +122,10 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
          DO j=1,sNy+1
           DO i=1,sNx
            faceArea = _dxG(i,j,bi,bj)*drF(K)
-     &                *_hFacS(i,j,k,bi,bj)
+     &               *_hFacS(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &               *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+#endif
            aS3d(i,j,k,bi,bj) = faceArea*recip_dyC(i,j,bi,bj)
      &                        *implicitNHPress*implicDiv2DFlow
            myNorm = MAX(ABS(aS3d(i,j,k,bi,bj)),myNorm)
@@ -145,6 +148,9 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
            faceArea = _rA(i,j,bi,bj)*maskC(i,j, k ,bi,bj)
      &                              *maskC(i,j,k-1,bi,bj)
      &                              *deepFac2F(k)
+#ifdef ALLOW_OBCS
+     &                              *maskInC(i,j,bi,bj)
+#endif
            theRecip_Dr = recip_drC(k)
 c          theRecip_Dr =
 caja &      drF(k  )*_hFacC(i,j,k  ,bi,bj)*0.5
@@ -157,44 +163,6 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
           ENDDO
          ENDDO
         ENDDO
-#ifdef ALLOW_OBCS
-        IF ( useOBCS ) THEN
-         DO k=1,Nr
-          DO i=1,sNx
-           IF (OB_Jn(i,bi,bj).NE.0) THEN
-            aS3d( i, OB_Jn(i,bi,bj), k,bi,bj) = 0.
-            aS3d( i,OB_Jn(i,bi,bj)+1,k,bi,bj) = 0.
-            aW3d( i, OB_Jn(i,bi,bj), k,bi,bj) = 0.
-            aW3d(i+1,OB_Jn(i,bi,bj), k,bi,bj) = 0.
-            aV3d( i, OB_Jn(i,bi,bj), k,bi,bj) = 0.
-           ENDIF
-           IF (OB_Js(i,bi,bj).NE.0) THEN
-            aS3d( i,OB_Js(i,bi,bj)+1,k,bi,bj) = 0.
-            aS3d( i, OB_Js(i,bi,bj), k,bi,bj) = 0.
-            aW3d( i, OB_Js(i,bi,bj), k,bi,bj) = 0.
-            aW3d(i+1,OB_Js(i,bi,bj), k,bi,bj) = 0.
-            aV3d( i, OB_Js(i,bi,bj), k,bi,bj) = 0.
-           ENDIF
-          ENDDO
-          DO j=1,sNy
-           IF (OB_Ie(j,bi,bj).NE.0) THEN
-            aW3d( OB_Ie(j,bi,bj), j, k,bi,bj) = 0.
-            aW3d(OB_Ie(j,bi,bj)+1,j, k,bi,bj) = 0.
-            aS3d( OB_Ie(j,bi,bj), j, k,bi,bj) = 0.
-            aS3d( OB_Ie(j,bi,bj),j+1,k,bi,bj) = 0.
-            aV3d( OB_Ie(j,bi,bj), j, k,bi,bj) = 0.
-           ENDIF
-           IF (OB_Iw(j,bi,bj).NE.0) THEN
-            aW3d(OB_Iw(j,bi,bj)+1,j, k,bi,bj) = 0.
-            aW3d( OB_Iw(j,bi,bj), j, k,bi,bj) = 0.
-            aS3d( OB_Iw(j,bi,bj), j, k,bi,bj) = 0.
-            aS3d( OB_Iw(j,bi,bj),j+1,k,bi,bj) = 0.
-            aV3d( OB_Iw(j,bi,bj), j, k,bi,bj) = 0.
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDIF
-#endif
        ENDDO
       ENDDO
       _GLOBAL_MAX_RS( myNorm, myThid )
