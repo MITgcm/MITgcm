@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.7 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.8 2011/05/18 23:37:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,15 +29,12 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #include "CG2D.h"
-#ifdef ALLOW_OBCS
-#include "OBCS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -48,10 +45,10 @@ C-- Note : compared to "INI_CG2D", no needs to compute again
 C   the solver norn=malisation factor of the solver tolerance
 C     === Local variables ===
 C     bi,bj  :: tile indices
-C     I,J,K  :: Loop counters
+C     i,j,k  :: Loop counters
 C     faceArea :: Temporary used to hold cell face areas.
       INTEGER bi, bj
-      INTEGER I, J, K, ks
+      INTEGER i, j, k, ks
       _RL     faceArea
       _RL     pW_tmp, pS_tmp
       LOGICAL updatePreCond
@@ -70,75 +67,62 @@ C     aW2d: integral in Z Ax/dX
 C     aS2d: integral in Z Ay/dY
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy+1
-         DO I=1,sNx+1
-          aW2d(I,J,bi,bj) = 0. _d 0
-          aS2d(I,J,bi,bj) = 0. _d 0
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          aW2d(i,j,bi,bj) = 0. _d 0
+          aS2d(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO K=1,Nr
-         DO J=1,sNy+1
-          DO I=1,sNx+1
+        DO k=1,Nr
+         DO j=1,sNy+1
+          DO i=1,sNx+1
 C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
-           faceArea = _dyG(I,J,bi,bj)*drF(K)
-     &               *_hFacW(I,J,K,bi,bj)
-           aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)
-     &              + faceArea*recip_dxC(I,J,bi,bj)
-           faceArea = _dxG(I,J,bi,bj)*drF(K)
-     &               *_hFacS(I,J,K,bi,bj)
-           aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)
-     &              + faceArea*recip_dyC(I,J,bi,bj)
+           faceArea = _dyG(i,j,bi,bj)*drF(k)
+     &               *_hFacW(i,j,k,bi,bj)
+           aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
+     &              + faceArea*recip_dxC(i,j,bi,bj)
+           faceArea = _dxG(i,j,bi,bj)*drF(k)
+     &               *_hFacS(i,j,k,bi,bj)
+           aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
+     &              + faceArea*recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)*cg2dNorm
+     &                     *implicSurfPress*implicDiv2DFlow
 #ifdef ALLOW_OBCS
-        IF (useOBCS) THEN
-C  Note: would need loop from 1 to sNx+1 (and below, from 1 to sNy+1)
-C    to get the same solver-matrix as from INI_CG2D,
-C    since aS2d & aW2d are not exchanged here (but in INI_CG2D, they are).
-         DO I=1,sNx
-          IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj),bi,bj)=0.
-          IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj)+1,bi,bj)=0.
-          IF (OB_Js(I,bi,bj).NE.0) aS2d(I,OB_Js(I,bi,bj)+1,bi,bj)=0.
-          IF (OB_Js(I,bi,bj).NE.0) aS2d(I,OB_Js(I,bi,bj),bi,bj)=0.
-         ENDDO
-         DO J=1,sNy
-          IF (OB_Ie(J,bi,bj).NE.0) aW2d(OB_Ie(J,bi,bj),J,bi,bj)=0.
-          IF (OB_Ie(J,bi,bj).NE.0) aW2d(OB_Ie(J,bi,bj)+1,J,bi,bj)=0.
-          IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj)+1,J,bi,bj)=0.
-          IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj),J,bi,bj)=0.
-         ENDDO
-        ENDIF
+     &                  *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
 #endif
-        DO J=1,sNy+1
-         DO I=1,sNx+1
-          aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)*cg2dNorm
+          aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)*cg2dNorm
      &                     *implicSurfPress*implicDiv2DFlow
-          aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)*cg2dNorm
-     &                     *implicSurfPress*implicDiv2DFlow
+#ifdef ALLOW_OBCS
+     &                  *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+#endif
          ENDDO
         ENDDO
 C--   compute matrix main diagonal :
         IF ( deepAtmosphere ) THEN
-         DO J=1,sNy
-          DO I=1,sNx
-           ks = ksurfC(I,J,bi,bj)
-           aC2d(I,J,bi,bj) = -(
-     &       aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
-     &      +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
-     &      +freeSurfFac*cg2dNorm*recip_Bo(I,J,bi,bj)*deepFac2F(ks)
-     &                  *rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
+         DO j=1,sNy
+          DO i=1,sNx
+           ks = ksurfC(i,j,bi,bj)
+           aC2d(i,j,bi,bj) = -(
+     &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
+     &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
+     &      +freeSurfFac*cg2dNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
+     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
      &                        )
           ENDDO
          ENDDO
         ELSE
-         DO J=1,sNy
-          DO I=1,sNx
-           aC2d(I,J,bi,bj) = -(
-     &       aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
-     &      +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
-     &      +freeSurfFac*cg2dNorm*recip_Bo(I,J,bi,bj)
-     &                  *rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
+         DO j=1,sNy
+          DO i=1,sNx
+           aC2d(i,j,bi,bj) = -(
+     &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
+     &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
+     &      +freeSurfFac*cg2dNorm*recip_Bo(i,j,bi,bj)
+     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
      &                        )
           ENDDO
          ENDDO
@@ -154,26 +138,26 @@ C--   Update overlap regions
 C--   Initialise preconditioner
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy+1
-         DO I=1,sNx+1
-          IF ( aC2d(I,J,bi,bj) .EQ. 0. ) THEN
-            pC(I,J,bi,bj) = 1. _d 0
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          IF ( aC2d(i,j,bi,bj) .EQ. 0. ) THEN
+            pC(i,j,bi,bj) = 1. _d 0
           ELSE
-           pC(I,J,bi,bj) =  1. _d 0 / aC2d(I,J,bi,bj)
+           pC(i,j,bi,bj) =  1. _d 0 / aC2d(i,j,bi,bj)
           ENDIF
-          pW_tmp = aC2d(I,J,bi,bj)+aC2d(I-1,J,bi,bj)
+          pW_tmp = aC2d(i,j,bi,bj)+aC2d(i-1,j,bi,bj)
           IF ( pW_tmp .EQ. 0. ) THEN
-           pW(I,J,bi,bj) = 0.
+           pW(i,j,bi,bj) = 0.
           ELSE
-           pW(I,J,bi,bj) =
-     &     -aW2d(I,J,bi,bj)/((cg2dpcOffDFac *pW_tmp)**2 )
+           pW(i,j,bi,bj) =
+     &     -aW2d(i,j,bi,bj)/((cg2dpcOffDFac *pW_tmp)**2 )
           ENDIF
-          pS_tmp = aC2d(I,J,bi,bj)+aC2d(I,J-1,bi,bj)
+          pS_tmp = aC2d(i,j,bi,bj)+aC2d(i,j-1,bi,bj)
           IF ( pS_tmp .EQ. 0. ) THEN
-           pS(I,J,bi,bj) = 0.
+           pS(i,j,bi,bj) = 0.
           ELSE
-           pS(I,J,bi,bj) =
-     &     -aS2d(I,J,bi,bj)/((cg2dpcOffDFac *pS_tmp)**2 )
+           pS(i,j,bi,bj) =
+     &     -aS2d(i,j,bi,bj)/((cg2dpcOffDFac *pS_tmp)**2 )
           ENDIF
          ENDDO
         ENDDO
