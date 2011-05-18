@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.11 2011/01/21 19:41:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.12 2011/05/18 14:23:57 jmc Exp $
 # $Name:  $
 
 usage()
@@ -28,6 +28,7 @@ CLEAN=0
 TESTDIRS=
 SKIPDIRS=
 SCRIPT='../tools/tst_2+2'
+LOGFILE='tst_2+2_outp.log'
 scrArg='All'
 COMMAND=
 mpi=0
@@ -98,9 +99,9 @@ if test $CLEAN = 1 ; then
     if test -r $xx/$yy/data.tst ; then
       echo "clean dir:" $xx/$yy
       cd $xx/$yy
-      echo ' ' >> outp.tst_2+2.log
-      echo $SCRIPT 4 >> outp.tst_2+2.log
-      $SCRIPT 4 >> outp.tst_2+2.log 2>&1
+      echo ' ' >> $LOGFILE
+      echo $SCRIPT 4 >> $LOGFILE
+      $SCRIPT 4 >> $LOGFILE 2>&1
       cd $here
     fi
   done
@@ -207,15 +208,15 @@ do
       else nam=$xx`echo $yy | sed 's/tr_run//'` ; fi
       echo -n "Entering $xx/$yy :"
       cd $xx/$yy
-      pwd > outp.tst_2+2.log
+      pwd > $LOGFILE
       if test "x$COMMAND" = x ; then
-        echo $SCRIPT $scrArg >> outp.tst_2+2.log ; echo ' ' >> outp.tst_2+2.log
-        $SCRIPT $scrArg >> outp.tst_2+2.log 2>&1
+        echo $SCRIPT $scrArg >> $LOGFILE ; echo ' ' >> $LOGFILE
+        $SCRIPT $scrArg >> $LOGFILE 2>&1
         out=$?
       else
-        echo "$SCRIPT $scrArg -command \"$rCommand\"" >> outp.tst_2+2.log
-        echo ' ' >> outp.tst_2+2.log
-        $SCRIPT $scrArg -command "$rCommand" >> outp.tst_2+2.log 2>&1
+        echo "$SCRIPT $scrArg -command \"$rCommand\"" >> $LOGFILE
+        echo ' ' >> $LOGFILE
+        $SCRIPT $scrArg -command "$rCommand" >> $LOGFILE 2>&1
         out=$?
       fi
       case $out in
@@ -230,11 +231,11 @@ do
       if test $out != '0' ; then
         echo " test 2+2=4 FAIL (exit $out)"
         echo " "
-        tail -5 outp.tst_2+2.log
+        tail -5 $LOGFILE
         echo " "
-        cp -p outp.tst_2+2.log ../../$DRESULTS/$nam.log
+        cp -p $LOGFILE ../../$DRESULTS/$nam.log
       elif test $SAVELOG = 1 ; then
-        cp -p outp.tst_2+2.log ../../$DRESULTS/$nam.log
+        cp -p $LOGFILE ../../$DRESULTS/$nam.log
       fi
       cd $here
     fi
