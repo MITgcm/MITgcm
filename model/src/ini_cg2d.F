@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.49 2009/12/08 00:10:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.50 2011/05/18 01:15:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,9 +28,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #include "CG2D.h"
-#ifdef ALLOW_OBCS
-#include "OBCS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -41,9 +38,8 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     bi,bj  :: tile indices
 C     i,j,k  :: Loop counters
-C     faceArea - Temporary used to hold cell face areas.
-C     myNorm - Work variable used in calculating normalisation factor
-C     sumArea - Work variable used to compute the total Domain Area
+C     faceArea :: Temporary used to hold cell face areas.
+C     myNorm   :: Work variable used in calculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
@@ -112,26 +108,16 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
           ENDDO
          ENDDO
         ENDDO
-#ifdef ALLOW_OBCS
-        IF (useOBCS) THEN
-         DO i=1,sNx
-          IF (OB_Jn(i,bi,bj).NE.0) aS2d(i, OB_Jn(i,bi,bj), bi,bj)=0.
-          IF (OB_Jn(i,bi,bj).NE.0) aS2d(i,OB_Jn(i,bi,bj)+1,bi,bj)=0.
-          IF (OB_Js(i,bi,bj).NE.0) aS2d(i,OB_Js(i,bi,bj)+1,bi,bj)=0.
-          IF (OB_Js(i,bi,bj).NE.0) aS2d(i, OB_Js(i,bi,bj), bi,bj)=0.
-         ENDDO
-         DO j=1,sNy
-          IF (OB_Ie(j,bi,bj).NE.0) aW2d(OB_Ie(j,bi,bj), j, bi,bj)=0.
-          IF (OB_Ie(j,bi,bj).NE.0) aW2d(OB_Ie(j,bi,bj)+1,j,bi,bj)=0.
-          IF (OB_Iw(j,bi,bj).NE.0) aW2d(OB_Iw(j,bi,bj)+1,j,bi,bj)=0.
-          IF (OB_Iw(j,bi,bj).NE.0) aW2d(OB_Iw(j,bi,bj), j, bi,bj)=0.
-         ENDDO
-        ENDIF
-#endif
         DO j=1,sNy
          DO i=1,sNx
-          myNorm = MAX(ABS(aW2d(i,j,bi,bj)),myNorm)
-          myNorm = MAX(ABS(aS2d(i,j,bi,bj)),myNorm)
+#ifdef ALLOW_OBCS
+           aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
+     &                   *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+           aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
+     &                   *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+#endif /* ALLOW_OBCS */
+           myNorm = MAX(ABS(aW2d(i,j,bi,bj)),myNorm)
+           myNorm = MAX(ABS(aS2d(i,j,bi,bj)),myNorm)
          ENDDO
         ENDDO
        ENDDO
