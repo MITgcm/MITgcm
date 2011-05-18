@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.6 2007/10/03 19:41:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.7 2011/05/18 03:18:16 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -95,7 +95,11 @@ C--   say, diffKhT
      &        - iceMask(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &        *( (fZon(i+1,j)-fZon(i,j))
      &         + (fMer(i,j+1)-fMer(i,j)) )
+#ifndef SEAICE_RM_STRANGE_DIFF_FAC
+c removing this term is necessary for conservation
+c and so that DIFF1 scaled as a standard diffusion
      &        *MIN( _dxF(I,J,bi,bj), _dyF(I,J,bi,bj))
+#endif
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
