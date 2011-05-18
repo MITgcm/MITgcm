@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.14 2010/08/24 15:03:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.15 2011/05/18 03:17:27 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -118,12 +118,12 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
      &           prof_weights1D,bi,bj,myThid)
 
              do K=1,ProfDepthNo(num_file,bi,bj)
-               objf_profiles(num_file,num_var,bi,bj)=
+               if (prof_weights1D(K).GT.0.) then
+                 objf_profiles(num_file,num_var,bi,bj)=
      &             objf_profiles(num_file,num_var,bi,bj)
      &             +prof_weights1D(K)*prof_mask1D_cur(K,bi,bj)
      &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
      &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
-               if (prof_weights1D(K).GT.0.) then
                  num_profiles(num_file,num_var,bi,bj)=
      &               num_profiles(num_file,num_var,bi,bj)
      &               +prof_mask1D_cur(K,bi,bj)
