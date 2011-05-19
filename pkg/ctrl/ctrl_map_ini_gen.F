@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.10 2011/05/19 02:31:30 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.11 2011/05/19 05:57:24 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -107,7 +107,8 @@ c--   only do interior, and exchange outside
       call active_read_xyz( fnamegeneric, xxFld3d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
-#ifdef NONDIMENSIONALIZE_CONTROL
+#ifdef NONDIMENSIONALIZE_CONTROL3D
+CMM preparing for ALLOW_SMOOTH_CORREL3D
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
@@ -298,7 +299,8 @@ c--   only do interior, and exchange outside
       call active_read_xy( fnamegeneric, xxFld2d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
-#ifdef NONDIMENSIONALIZE_CONTROL
+#ifdef NONDIMENSIONALIZE_CONTROL2D
+CMM preparing for ALLOW_SMOOTH_CORREL2D
       do bj = jtlo,jthi
         do bi = itlo,ithi
             do j = jmin,jmax
