@@ -1,13 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1435 2011/05/18 02:21:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1436 2011/05/19 00:28:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o exp4 (nlfs) test-exp:
+   use OBC for Eta at Western & Eastern OB (to test prescribing Eta
+   with NonLin-FreeSurf); update output.nlfs.txt
 o obcs and 2d/3d solver norm:
-   use interior masks (maskInC) to cancel out cg2d & cg3d matrix coeff at OB 
-   and outside OB interior region (will allow to place OB further inside the 
-   domain). Depending on the domain, can affects cg2d-Norm (previous 
+   use interior masks (maskInC) to cancel out cg2d & cg3d matrix coeff at OB
+   and outside OB interior region (will allow to place OB further inside the
+   domain). Depending on the domain, can affects cg2d-Norm (previous
    cancelation outside OB was only partial), e.g. in exp4 & obcs_ctrl,
    and cg3d-Norm (previous Norm was computed before canceling OB terms),
    e.g. in tutorial_plume_on_slope.
@@ -20,7 +23,7 @@ o pkg/shelfice/shelfice_init_fixed.F
   fix CPP-flag combinations
 o pkg/seaice: Merge iceage code of Pierre Rampal
   * update/change/correct ice age calculations
-  * add age updates for pathological cases 
+  * add age updates for pathological cases
   Probably needs more testing...
 
 checkpoint62x (2011/05/13)
