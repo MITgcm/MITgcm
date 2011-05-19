@@ -13,6 +13,8 @@
  OBWuFile = 'OB_WestU.bin',
  OBEuFile = 'OB_EastU.bin',
  OBWsFile = 'OBzonalS.bin',
+ OBWetaFile='OB_WestH.bin',
+ OBEetaFile='OB_EastH.bin',
  OBCS_monitorFreq= 1200.,
  OBCS_monSelect = 1,
  &
