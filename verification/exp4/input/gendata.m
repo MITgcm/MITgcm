@@ -1,6 +1,6 @@
 % This is a matlab script that generates the input data
 
-% $Header: /u/gcmpack/MITgcm/verification/exp4/input/gendata.m,v 1.7 2011/05/02 19:35:38 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/exp4/input/gendata.m,v 1.8 2011/05/19 00:03:06 jmc Exp $
 % $Name:  $
 
 % Dimensions of grid
@@ -81,12 +81,19 @@ uEast = cat(3,(u0-du)*ones(ny,nz),(u0+du)*ones(ny,nz));
 w1=[0:nz-1]*pi/nz; w1=-w0*sin(w1);
 wZonal = cat (3, ones(ny,1)*w1, zeros(ny,nz));
 
+% to test prescribing Eta in NonLin-FreeSurf formulation:
+et1=0.1;
+etWest = cat(2,+et1*ones(ny,1),-et1*ones(ny,1));
+etEast = cat(2,-et1*ones(ny,1),+et1*ones(ny,1));
+
  fid=fopen('OBmeridU.bin','w',ieee); fwrite(fid,uMerid,prec); fclose(fid);
 %fid=fopen('OBzonalU.bin','w',ieee); fwrite(fid,uZonal,prec); fclose(fid);
  fid=fopen('OB_WestU.bin','w',ieee); fwrite(fid,uWest ,prec); fclose(fid);
  fid=fopen('OB_EastU.bin','w',ieee); fwrite(fid,uEast ,prec); fclose(fid);
  fid=fopen('OBzonalS.bin','w',ieee); fwrite(fid,sZonal,prec); fclose(fid);
  fid=fopen('OBzonalW.bin','w',ieee); fwrite(fid,wZonal,prec); fclose(fid);
+ fid=fopen('OB_WestH.bin','w',ieee); fwrite(fid,etWest,prec); fclose(fid);
+ fid=fopen('OB_EastH.bin','w',ieee); fwrite(fid,etEast,prec); fclose(fid);
 
 %- rbcs mask & restauring tracer field:
 msk=ones(nx,ny,nz);
