@@ -1,13 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.15 2011/01/14 01:28:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.16 2011/05/20 01:11:59 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CALC_SURF_DR
 C     !INTERFACE:
-      SUBROUTINE CALC_SURF_DR(etaFld,
-     I                        myTime, myIter, myThid )
+      SUBROUTINE CALC_SURF_DR( etaFld,
+     I                         myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CALC_SURF_DR
@@ -28,14 +29,14 @@ C     == Global variables
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime :: Current time in simulation
-C     myIter :: Current iteration number in simulation
-C     myThid :: Thread number for this instance of the routine.
-C     etaFld :: current eta field used to update the hFactor
+C     etaFld    :: current eta field used to update the hFactor
+C     myTime    :: current time in simulation
+C     myIter    :: current iteration number in simulation
+C     myThid    :: thread number for this instance of the routine.
+      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
 #ifdef NONLIN_FRSURF
 
@@ -64,7 +65,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-       
+
 C--   before updating hFac_surfC/S/W save current fields
          DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
@@ -75,12 +76,12 @@ C--   before updating hFac_surfC/S/W save current fields
          ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- Compute the new fractional thickness of surface level (ksurfC):
+C-- Compute the new fractional thickness of surface level (kSurfC):
 
         DO j=0,sNy+1
          DO i=0,sNx+1
           rSurftmp(i,j) = Ro_surf(i,j,bi,bj)+etaFld(i,j,bi,bj)
-          ks = ksurfC(i,j,bi,bj)
+          ks = kSurfC(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            IF (rSurftmp(i,j) .LT. Rmin_surf(i,j,bi,bj)) THEN
 C-- Needs to do something :
@@ -145,12 +146,12 @@ C-- Compute fractional thickness of surface level, for U & V point:
 
         DO j=1,sNy
          DO i=1,sNx+1
-          ks = ksurfW(i,j,bi,bj)
+          ks = kSurfW(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
             hhm = rF(ks)
-            IF(ks.EQ.ksurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
+            IF(ks.EQ.kSurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
             hhp = rF(ks)
-            IF(ks.EQ.ksurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
+            IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
             hFac_surfW(i,j,bi,bj) =
      &         ( MIN(hhm,hhp)
      &          - MAX(rF(ks+1),R_low(i-1,j,bi,bj),R_low(i,j,bi,bj))
@@ -161,12 +162,12 @@ C-- Compute fractional thickness of surface level, for U & V point:
 
         DO j=1,sNy+1
          DO i=1,sNx
-          ks = ksurfS(i,j,bi,bj)
+          ks = kSurfS(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
             hhm = rF(ks)
-            IF(ks.EQ.ksurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
+            IF(ks.EQ.kSurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
             hhp = rF(ks)
-            IF(ks.EQ.ksurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
+            IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
             hFac_surfS(i,j,bi,bj) =
      &         ( MIN(hhm,hhp)
      &          - MAX(rF(ks+1),R_low(i,j-1,bi,bj),R_low(i,j,bi,bj))
@@ -174,6 +175,16 @@ C-- Compute fractional thickness of surface level, for U & V point:
           ENDIF
          ENDDO
         ENDDO
+
+#ifdef ALLOW_OBCS
+C-- Apply OBC to hFac_surfW,S before the EXCH calls
+        IF ( useOBCS ) THEN
+          CALL OBCS_APPLY_SURF_DR(
+     I                    bi, bj, etaFld,
+     U                    hFac_surfC, hFac_surfW, hFac_surfS,
+     I                    myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -196,7 +207,7 @@ C-- Global diagnostic :
       CALL EXCH_UV_XY_RS(hFac_surfW,hFac_surfS,.FALSE.,myThid)
 
 C-----
-C Note: testing ksurfW,S is equivalent to a full height mask
+C Note: testing kSurfW,S is equivalent to a full height mask
 C   ==> no need for applying the mask here.
 C and with "partial thin wall" ==> mask could be applied in S/R UPDATE_SURF_DR
 C-----

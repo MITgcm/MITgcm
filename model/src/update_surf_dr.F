@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.9 2011/01/14 23:23:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.10 2011/05/20 01:11:59 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: UPDATE_SURF_DR
 C     !INTERFACE:
       SUBROUTINE UPDATE_SURF_DR( useLatest, myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE UPDATE_SURF_DR                                 
-C     | o Update the surface-level thickness fraction (hFacC,W,S) 
-C     |   according to the surface r-position = Non-Linear FrSurf 
+C     | SUBROUTINE UPDATE_SURF_DR
+C     | o Update the surface-level thickness fraction (hFacC,W,S)
+C     |   according to the surface r-position = Non-Linear FrSurf
 C     *==========================================================*
 C     \ev
 
@@ -22,20 +22,15 @@ C     == Global variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     useLatest - if true use hFac_surfC, else use hFac_surfNm1C
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     useLatest :: if true use hFac_surfC, else use hFac_surfNm1C
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number in simulation
+C     myThid    :: Thread number for this instance of the routine.
       LOGICAL useLatest
       _RL myTime
       INTEGER myIter
@@ -50,60 +45,16 @@ C     i,j,bi,bj - loop counter
 CEOP
 
       DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)  
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          idynkey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
+       DO bi=myBxLo(myThid), myBxHi(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_OBCS
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hFac_surfC(:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE hFac_surfS(:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE hFac_surfW(:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE hFac_surfNm1C(:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE hFac_surfNm1S(:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE hFac_surfNm1W(:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
-C-- Apply OBC to hFac_surfW,S before updating hFacW,S
-        IF (useOBCS.AND.(nonlinFreeSurf.GT.0)) THEN
-         IF (useLatest) then
-         CALL OBCS_APPLY_SURF_DR(
-     I                    bi, bj,
-     U                    hFac_surfC, hFac_surfW, hFac_surfS,
-     I                    myThid )
-         ELSE
-         CALL OBCS_APPLY_SURF_DR(
-     I                    bi, bj,
-     U                    hFac_surfNm1C, hFac_surfNm1W, hFac_surfNm1S,
-     I                    myThid )
-         ENDIF
-        ENDIF
-#endif /* ALLOW_OBCS */
-
        IF (useLatest.AND.(nonlinFreeSurf.GT.0)) then
 
-C-- Update the fractional thickness "hFacC" of the surface level ksurfC :
+C-- Update the fractional thickness "hFacC" of the surface level kSurfC :
         DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx 
-          ks = ksurfC(i,j,bi,bj)
+         DO i=1-Olx,sNx+Olx
+          ks = kSurfC(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            hFacC(i,j,ks,bi,bj) = hFac_surfC(i,j,bi,bj)
            recip_hFacC(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfC(i,j,bi,bj)
@@ -112,11 +63,11 @@ C-- Update the fractional thickness "hFacC" of the surface level ksurfC :
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points) 
+C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
 
         DO j=1-Oly,sNy+Oly
-         DO i=2-Olx,sNx+Olx 
-          ks = ksurfW(i,j,bi,bj)
+         DO i=2-Olx,sNx+Olx
+          ks = kSurfW(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            hFacW(i,j,ks,bi,bj) = hFac_surfW(i,j,bi,bj)
            recip_hFacW(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfW(i,j,bi,bj)
@@ -124,8 +75,8 @@ C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
          ENDDO
         ENDDO
         DO j=2-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx 
-          ks = ksurfS(i,j,bi,bj)
+         DO i=1-Olx,sNx+Olx
+          ks = kSurfS(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            hFacS(i,j,ks,bi,bj) = hFac_surfS(i,j,bi,bj)
            recip_hFacS(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfS(i,j,bi,bj)
@@ -135,11 +86,11 @@ C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
 
        ELSEIF (nonlinFreeSurf.GT.0) THEN
 
-C-- Update the fractional thickness "hFacC" of the surface level ksurfC
+C-- Update the fractional thickness "hFacC" of the surface level kSurfC
 C:
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          ks = ksurfC(i,j,bi,bj)
+          ks = kSurfC(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            hFacC(i,j,ks,bi,bj) = hFac_surfNm1C(i,j,bi,bj)
            recip_hFacC(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfNm1C(i,j,bi,bj)
@@ -148,11 +99,11 @@ C:
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points) 
+C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
 
         DO j=1-Oly,sNy+Oly
          DO i=2-Olx,sNx+Olx
-          ks = ksurfW(i,j,bi,bj)
+          ks = kSurfW(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            hFacW(i,j,ks,bi,bj) = hFac_surfNm1W(i,j,bi,bj)
            recip_hFacW(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfNm1W(i,j,bi,bj)
@@ -161,7 +112,7 @@ C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
         ENDDO
         DO j=2-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          ks = ksurfS(i,j,bi,bj)
+          ks = kSurfS(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
            hFacS(i,j,ks,bi,bj) = hFac_surfNm1S(i,j,bi,bj)
            recip_hFacS(i,j,ks,bi,bj)= 1. _d 0 / hFac_surfNm1S(i,j,bi,bj)
