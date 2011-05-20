@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1436 2011/05/19 00:28:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1437 2011/05/20 01:31:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o obcs and non-lin free-surf:
+   move call to OBCS_APPLY_R_STAR from update_r_star.F to calc_r_star.F
+   and call to OBCS_APPLY_SURF_DR from update_surf_dr.F to calc_surf_dr.F
+   + add argument "etaFld" to OBCS_APPLY_R_STAR & OBCS_APPLY_SURF_DR:
+   this fixes missing EXCH + get consistent eta OB value (+ fix restart).
+   update results of test-exp. exp4(nlfs).
 o exp4 (nlfs) test-exp:
    use OBC for Eta at Western & Eastern OB (to test prescribing Eta
    with NonLin-FreeSurf); update output.nlfs.txt
