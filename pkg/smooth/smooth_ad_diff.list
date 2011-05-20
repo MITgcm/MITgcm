@@ -1,3 +1,5 @@
+smooth3d.f
+smooth2d.f
 smooth_basic2d.f
 smooth_diff3d.f
 smooth_diff2d.f
