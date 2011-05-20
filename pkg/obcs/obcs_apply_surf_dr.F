@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.4 2011/05/20 01:09:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.5 2011/05/20 01:23:28 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
       SUBROUTINE OBCS_APPLY_SURF_DR(
      I                bi, bj, etaFld,
      U                hFac_FldC, hFac_FldW, hFac_FldS,
-     I                myThid )
+     I                myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -35,13 +35,16 @@ C     etaFld    :: current eta field used to update the hFactor
 C     hFac_FldC :: surface-level new thickness factor (grid-cell center)
 C     hFac_FldW ::  idem, West  interface (U point)
 C     hFac_FldS ::  idem, South interface (V point)
+C     myTime    :: current time in simlation
+C     myIter    :: current time-step number
 C     myThid    :: my Thread Id number
       INTEGER bi,bj
       _RL etaFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RS hFac_FldC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER myThid
+      _RL myTime
+      INTEGER myIter, myThid
 CEOP
 
 #ifdef NONLIN_FRSURF

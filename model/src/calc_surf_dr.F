@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.16 2011/05/20 01:11:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.17 2011/05/20 01:23:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -182,7 +182,7 @@ C-- Apply OBC to hFac_surfW,S before the EXCH calls
           CALL OBCS_APPLY_SURF_DR(
      I                    bi, bj, etaFld,
      U                    hFac_surfC, hFac_surfW, hFac_surfS,
-     I                    myThid )
+     I                    myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_OBCS */
 
