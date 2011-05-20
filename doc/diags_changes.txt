@@ -153,11 +153,18 @@ And with the default value: salt_EvPrRn=0. & temp_EvPrRn=UNSET_RL
  surForcS = oceSflux + SRELAX - [PmEpR*SSS]
 
 Notes:
-1) here PmEpR is assumed to be the fresh-water mass flux
- per surface area [units: kg/m^2/s] whereas the model variable
- EmPmR is still a volume flux per surface area [units: m/s].
-2) with Linear Free surface (nonlinFreeSurf=0), the term
-corresponding to w_surface*SST,SSS is missing in TFLUX,SFLUX
-[might be added later ?] to match exactly the Heat and Salt
-budget evolution.
---------------------------------------------------------------------------
+1) Here PmEpR is assumed to be the fresh-water mass flux
+   per surface area [units: kg/m^2/s] whereas the model variable
+   EmPmR is still a volume flux per surface area [units: m/s].
+2) With Linear FreeSurf, there is a small loss of heat/salt/tracer at the
+   surface (d/dt(Eta) inconsistent with fixed surf grid cell thickness:
+   a) if linFSConserveTr is set to true (file "data"), then the model 
+      corrects for this (see S/R calc_wsurf_tr.F).
+   b) if linFSConserveTr=False (=the default), the term corresponding
+      to w_surface*SST,SSS is missing in TFLUX,SFLUX to match exactly the
+      Heat and Salt budget evolution so need to account for this term in
+      the budget, which can be obtained from the 1rst level
+      of WTHMASS / WSLTMASS diagnostics (diagnostics ADVr_TH / ADVr_SLT
+      is not the right one for this purpose, it's just zero at k=1).
+3) There is just one more undocumented/hidden case
+   (nonlinFreeSurf=0 & select_rStar=-1) which is not covered.
