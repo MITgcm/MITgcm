@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.6 2007/10/09 00:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.7 2011/05/20 22:23:53 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -42,12 +42,15 @@ c     == end of interface ==
 
 c--   Read the namelist input.
       namelist /profiles_nml/
+     &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles
 
       _BEGIN_MASTER( myThid )
 
 c--     Set default values.
+        profilesDir=' '
+
         do num_file=1,NFILESPROFMAX
           profilesfiles(num_file)      =    ' '
         enddo

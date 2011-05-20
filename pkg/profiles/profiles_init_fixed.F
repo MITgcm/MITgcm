@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.15 2010/08/24 02:49:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.16 2011/05/20 22:23:53 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -39,7 +39,7 @@ C ==================== Routine Variables ==========================
       integer vec_start(2), vec_count(2), profno_div1000, kk
       character*(80) profilesfile, fnamedatanc
       character*(80) fnameequinc, adfnameequinc
-      integer IL, err
+      integer IL, JL, err
       logical  exst
 
 #ifdef ALLOW_PROFILES
@@ -489,11 +489,14 @@ C===========================================================
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 
+      JL  = ILNBLNK( profilesDir )
+
       if (profilesfile_equi_type.EQ.1) then
 
-      write(fnameequinc(1:80),'(2a,i3.3,a,i3.3,a)')
-     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-      write(adfnameequinc(1:80),'(3a,i3.3,a,i3.3,a)') 'ad',
+      write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+     & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
+      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)') 
+     & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 
       inquire( file=fnameequinc, exist=exst )
@@ -513,9 +516,10 @@ C===========================================================
 
       else
 
-      write(fnameequinc(1:80),'(2a,i3.3,a,i3.3,a)')
-     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
-      write(adfnameequinc(1:80),'(3a,i3.3,a,i3.3,a)') 'ad',
+      write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+     & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
+      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)') 
+     & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
       inquire( file=fnameequinc, exist=exst )
