@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth2d.F,v 1.1 2011/05/20 00:52:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth2d.F,v 1.2 2011/05/20 18:41:08 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -45,7 +45,7 @@ c read smoothing [i.e diffusion] operator:
       _EXCH_XY_RL ( smooth2D_Kvy, myThid )
 
 c do the smoothing:
-      nbt_in=smooth2Dnbt(smoothOpNb)/2
+      nbt_in=smooth2Dnbt(smoothOpNb)
       call smooth_diff2D(fld_in,mask_in,nbt_in,mythid)
 
       end

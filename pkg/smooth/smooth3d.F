@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth3d.F,v 1.1 2011/05/20 00:52:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth3d.F,v 1.2 2011/05/20 18:41:08 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -70,7 +70,7 @@ c read smoothing [i.e diffusion] operator:
       _EXCH_XYZ_RL ( smooth3D_kappaR, myThid )
 
 c do the smoothing:
-      nbt_in=smooth3Dnbt(smoothOpNb)/2
+      nbt_in=smooth3Dnbt(smoothOpNb)
       call smooth_diff3D(fld_in,nbt_in,mythid)
 
       end
