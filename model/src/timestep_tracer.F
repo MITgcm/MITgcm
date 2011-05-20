@@ -1,20 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.14 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.15 2011/05/20 16:34:19 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: TIMESTEP_TRACER
 C     !INTERFACE:
       SUBROUTINE TIMESTEP_TRACER(
-     I                     bi, bj, iMin, iMax, jMin, jMax, K,
+     I                     bi, bj, iMin, iMax, jMin, jMax, k,
      I                     advection_scheme, deltaTloc,
      I                     tracer, gTracer,
      I                     myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R TIMESTEP_TRACER                                       
-C     | o Step model tracer field forward in time                 
+C     | S/R TIMESTEP_TRACER
+C     | o Step model tracer field forward in time
 C     *==========================================================*
 C     \ev
 
@@ -24,10 +25,11 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,K
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
       INTEGER advection_scheme
       _RL     deltaTloc
       _RL  tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -41,11 +43,16 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-    Extrapolate tendencies to mid-time level (n+1/2)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+C-    Step tracer forward in time and store provisional value in gTracer array
+c     DO j=jMin,jMax
+c      DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
          gTracer(i,j,k,bi,bj)=tracer(i,j,k,bi,bj)
      &            +deltaTloc*gTracer(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                      *maskInC(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 
