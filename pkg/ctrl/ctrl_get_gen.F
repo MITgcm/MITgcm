@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.19 2011/05/19 05:57:24 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.20 2011/05/20 00:55:45 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -138,6 +138,8 @@ CMM Requires smoothing package...should be made independant
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xx_gen1, gencount0, optimcycle, mythid)
+#elif (defined (ALLOW_SMOOTH_CTRL2D))
+      call smooth2D(xx_gen1,genmask,1,mythid)
 #endif
       endif
 
@@ -166,6 +168,8 @@ CMM Requires smoothing package...should be made independant
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xx_gen1, gencount1, optimcycle, mythid)
+#elif (defined (ALLOW_SMOOTH_CTRL2D))
+      call smooth2D(xx_gen1,genmask,1,mythid)
 #endif
       endif
 

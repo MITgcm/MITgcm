@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.11 2011/05/19 05:57:24 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.12 2011/05/20 00:55:45 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -151,6 +151,9 @@ c avoid xx larger than boundsVec(5) X uncertainty
        enddo
       enddo
       endif
+# ifdef ALLOW_SMOOTH_CTRL3D
+      call smooth3D(xxFld3d,paramSmooth,mythid)
+# endif
 #else
 c apply Weaver And Courtier correlation operator
       if (paramSmooth.NE.0) then
@@ -339,6 +342,9 @@ c avoid xx larger than boundsVec(5) X uncertainty
        enddo
       enddo
       endif
+# ifdef ALLOW_SMOOTH_CTRL3D
+      call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
+# endif
 #else
 c apply Weaver And Courtier correlation operator
       if (paramSmooth.NE.0) then
