@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.25 2009/11/29 03:12:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.26 2011/05/20 16:35:57 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -73,6 +74,9 @@ C     Step forward zonal velocity
      &         *(phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
 #endif
      &                    )*_maskW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                     *maskInW(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 
@@ -86,6 +90,9 @@ C     Step forward meridional velocity
      &         *(phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
 #endif
      &                    )*_maskS(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                     *maskInS(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 
