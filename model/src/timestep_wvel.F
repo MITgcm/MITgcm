@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.6 2010/01/23 00:04:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.7 2011/05/20 16:20:13 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -29,6 +28,10 @@ c #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+C     bi, bj    :: Tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number in simulation
+C     myThid    :: my Thread Id. number
       INTEGER bi,bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -36,16 +39,17 @@ C     == Routine Arguments ==
 #ifdef ALLOW_NONHYDROSTATIC
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     iMin,iMax :: 1rst loop counter range
+C     jMin,jMax :: 2nd  loop counter range
+C     i,j,k     :: Loop counters
+C     gWtmp     :: temporary array for vertical momentum tendency
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k, km1
       _RL     gWtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tmpFac, nh_Fac, igwFac
+      PARAMETER( iMin = 1 , iMax = sNx )
+      PARAMETER( jMin = 1 , jMax = sNy )
 CEOP
-
-      iMin = 1
-      iMax = sNx
-      jMin = 1
-      jMax = sNy
 
       igwFac = 0. _d 0
       IF ( implicitIntGravWave ) igwFac = 1. _d 0
@@ -104,17 +108,6 @@ C-    End of k loop
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_OBCS
-C--   This call is aesthetic: it makes the W field
-C     consistent with the OBs but this has no algorithmic
-C     impact. This is purely for diagnostic purposes.
-        IF (useOBCS) THEN
-         DO k=1,Nr
-          CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
-         ENDDO
-        ENDIF
-#endif /* ALLOW_OBCS */
 
       ELSEIF ( implicitIntGravWave ) THEN
 C     keep a copy of wVel in gW:
