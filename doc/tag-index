@@ -1,9 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1437 2011/05/20 01:31:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1438 2011/05/20 21:48:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - do not mask tracer when applying OB (tracer == 0 could generate problems)
+  - apply tracer OB values to tracer field only at OB location (instead of
+    over a band of OLx width)
+  - clean-up obcs_apply_w.F & obcs_apply_eta.F (since less calls to these S/R)
+  - remove OBCS_MULTIDIM_OLD_VERSION code in gad_advection.F and remove
+    obcs_apply_tloc.F & obcs_apply_sloc.F
+o obcs in model/src:
+  - call OBCS_APPLY_W only if NonHydrostatic.
+  - call OBCS_APPLY_ETA only if NonLinFreeSurf.
+  - reset dEtaHdt and wVel to zero outside OB interior region ;
+  - leave tracer unchanged outside OB interior region: This has no effect
+    on the solution but just to prevent unrealistic tracer value outside OB.
+  - zero out velocity outside OB interior region: This has no effect on
+    the solution but just to prevent unrealistic velocity outside OB.
 o obcs and non-lin free-surf:
    move call to OBCS_APPLY_R_STAR from update_r_star.F to calc_r_star.F
    and call to OBCS_APPLY_SURF_DR from update_surf_dr.F to calc_surf_dr.F
@@ -17,7 +32,7 @@ o obcs and 2d/3d solver norm:
    use interior masks (maskInC) to cancel out cg2d & cg3d matrix coeff at OB
    and outside OB interior region (will allow to place OB further inside the
    domain). Depending on the domain, can affects cg2d-Norm (previous
-   cancelation outside OB was only partial), e.g. in exp4 & obcs_ctrl,
+   cancellation outside OB was only partial), e.g. in exp4 & obcs_ctrl,
    and cg3d-Norm (previous Norm was computed before canceling OB terms),
    e.g. in tutorial_plume_on_slope.
   - update output of exp.: exp4 (x2), obcs_ctrl and tutorial_plume_on_slope.
