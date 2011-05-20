@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.22 2009/11/28 20:59:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.23 2011/05/20 16:26:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -145,7 +145,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
        ELSEIF ( myTime.EQ.startTime ) THEN
          DO j=1,sNy
           DO i=1,sNx
-            ks = ksurfC(I,J,bi,bj)
+            ks = kSurfC(I,J,bi,bj)
             PmEpR(i,j,bi,bj) = 0. _d 0
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                                         *recip_deepFac2F(ks)
@@ -161,7 +161,7 @@ C       (e.g., if using KPP) => set over full index range
          ENDDO
          DO j=1,sNy
           DO i=1,sNx
-            ks = ksurfC(i,j,bi,bj)
+            ks = kSurfC(i,j,bi,bj)
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                                         *recip_deepFac2F(ks)
      &                           -facEmP*EmPmR(i,j,bi,bj)
@@ -170,6 +170,18 @@ C       (e.g., if using KPP) => set over full index range
        ENDIF
 C------------------------------------
 
+#ifdef ALLOW_OBCS
+C--    reset dEtaHdt to zero outside the OB interior region
+       IF ( useOBCS ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            dEtaHdt(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)*maskInC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+       ENDIF
+#endif /* ALLOW_OBCS */
+
+C-- end if exactConserv block
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -194,8 +206,11 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
        ENDIF
 
 #ifdef ALLOW_OBCS
-C--    Apply OBC to etaN if NonLin-FreeSurf, reset to zero otherwise:
-       IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
+C--    Was added on Dec 30, 2004 (to fix unrealistic etaN ?), but no longer
+C      needed with proper masking in solver (matrix+cg2d_b,x) and masking
+C      of dEtaHdt above. etaN next to OB does not enter present algorithm but
+C      leave it commented out in case we would implement an aternative scheme.
+c      IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
 #endif /* ALLOW_OBCS */
 
       ENDIF
@@ -209,7 +224,7 @@ C-- note: final value of rStarDhCDt from S/R CALC_R_STAR
 C         will be different (no deep-factor, no rho factor)
         DO j=1,sNy
          DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            rStarDhCDt(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
      &                            *deepFac2F(ks)*rhoFacF(ks)
      &                            *recip_Rcol(i,j,bi,bj)
@@ -235,19 +250,28 @@ C--    Integrate continuity vertically for vertical velocity
        IF ( k.EQ.Nr .AND. myTime.NE.baseTime .AND. usingPCoords
      &       .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
-          DO j=1,sNy
-           DO i=1,sNx
-             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
+         DO j=1,sNy
+          DO i=1,sNx
+            wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
      &               +mass2rUnit*PmEpR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
-           ENDDO
           ENDDO
+         ENDDO
 
        ENDIF
 #endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_OBCS
-C--    Apply OBC to W if in N-H mode, reset to zero otherwise:
-       IF ( useOBCS ) CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
+C--    reset W to zero outside the OB interior region
+       IF ( useOBCS ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*maskInC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+       ENDIF
+C--    Apply OBC to W (non-hydrostatic):
+       IF ( useOBCS.AND.nonHydrostatic )
+     &                CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
 #endif /* ALLOW_OBCS */
 
 C-    End DO k=Nr,1,-1
