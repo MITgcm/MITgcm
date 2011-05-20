@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.41 2011/01/21 01:19:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.42 2011/05/20 22:25:57 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,15 +151,6 @@ C-    now we make local directories with myProcessStr appended
         WRITE(mdsioLocalDir,'(3A)') namBuf(1:iL),myProcessStr(1:4),'/'
       ENDIF
 
-C     append "/", if necessay
-      IF ( adTapeDir .NE. ' ' ) THEN
-       iL = ILNBLNK( adTapeDir )
-       IF ( iL .LT. MAX_LEN_FNAM .AND. adTapeDir(iL:iL) .NE. '/' ) THEN
-        namBuf(1:iL) = adTapeDir(1:iL)
-        WRITE(adTapeDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
-       ENDIF
-      ENDIF
-
 C-    Initialise MFLDS variables in common block
       CALL READ_MFLDS_INIT( myThid )
 
@@ -216,6 +207,10 @@ C       belonging to the core dynamical model
 
 #ifdef ALLOW_AUTODIFF
         CALL AUTODIFF_INI_MODEL_IO( myThid )
+#endif
+
+#ifdef ALLOW_PROFILES
+        CALL PROFILES_INI_IO( myThid )
 #endif
 
 #ifdef ALLOW_MONITOR
