@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.64 2011/03/29 15:52:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.65 2011/05/20 21:08:56 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
-#undef OBCS_MULTIDIM_OLD_VERSION
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -464,24 +463,6 @@ C-      keep advective flux (for diagnostics)
          ENDDO
         ENDDO
 
-#ifdef ALLOW_OBCS
-#ifdef OBCS_MULTIDIM_OLD_VERSION
-C-     Apply open boundary conditions
-        IF ( useOBCS ) THEN
-         IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-          CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
-         ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
-          CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
-#ifdef ALLOW_PTRACERS
-         ELSEIF (tracerIdentity.GE.GAD_TR1) THEN
-          CALL OBCS_APPLY_PTRACER( bi, bj, k,
-     &         tracerIdentity-GAD_TR1+1, localTij, myThid )
-#endif /* ALLOW_PTRACERS */
-         ENDIF
-        ENDIF
-#endif /* OBCS_MULTIDIM_OLD_VERSION */
-#endif /* ALLOW_OBCS */
-
 C-     end if/else update overlap-Only
        ENDIF
 
@@ -632,24 +613,6 @@ C-      keep advective flux (for diagnostics)
           afy(i,j) = af(i,j)
          ENDDO
         ENDDO
-
-#ifdef ALLOW_OBCS
-#ifdef OBCS_MULTIDIM_OLD_VERSION
-C-     Apply open boundary conditions
-        IF (useOBCS) THEN
-         IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-          CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
-         ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
-          CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
-#ifdef ALLOW_PTRACERS
-         ELSEIF (tracerIdentity.GE.GAD_TR1) THEN
-          CALL OBCS_APPLY_PTRACER( bi, bj, k,
-     &         tracerIdentity-GAD_TR1+1, localTij, myThid )
-#endif /* ALLOW_PTRACERS */
-         ENDIF
-        ENDIF
-#endif /* OBCS_MULTIDIM_OLD_VERSION */
-#endif /* ALLOW_OBCS */
 
 C      end if/else update overlap-Only
        ENDIF
