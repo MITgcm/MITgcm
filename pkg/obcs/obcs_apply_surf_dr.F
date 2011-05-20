@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.3 2011/03/02 20:51:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.4 2011/05/20 01:09:07 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: OBCS_APPLY_SURF_DR
 
 C     !INTERFACE:
       SUBROUTINE OBCS_APPLY_SURF_DR(
-     I                bi, bj,
+     I                bi, bj, etaFld,
      U                hFac_FldC, hFac_FldW, hFac_FldS,
      I                myThid )
 
@@ -31,27 +31,34 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     bi, bj    :: tile indices
-C     hFac_FldC ::  surface-level new thickness factor (grid-cell center)
+C     etaFld    :: current eta field used to update the hFactor
+C     hFac_FldC :: surface-level new thickness factor (grid-cell center)
 C     hFac_FldW ::  idem, West  interface (U point)
 C     hFac_FldS ::  idem, South interface (V point)
 C     myThid    :: my Thread Id number
       INTEGER bi,bj
+      _RL etaFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RS hFac_FldC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_OBCS
 #ifdef NONLIN_FRSURF
 
 C     !LOCAL VARIABLES:
       INTEGER i,j,ks
+      LOGICAL useOBeta
       _RS hFacInfMOM, hFactmp
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       hFacInfMOM = hFacInf
+
+C-- Eta OB values corresponding to previous iteration are not available when
+C   calc_surf_dr is called for the 1rst time (myIter=-1) form initialise_varia.
+C   Use current "etaFld" values instead, only for this 1rst call (myIter=-1).
+      useOBeta = myIter.NE.-1
 
 C- Set model surface h_Factor to OB values on North/South Boundaries
       IF ( tileHasOBN(bi,bj) ) THEN
@@ -59,9 +66,15 @@ C  Northern boundary
        DO i=1-Olx,sNx+Olx
         j = OB_Jn(i,bi,bj)
         IF (j.NE.0) THEN
-         ks = ksurfS(i,j,bi,bj)
+         ks = kSurfS(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
-          hFactmp = h0FacS(i,j,ks,bi,bj) + OBNeta(i,bi,bj)*recip_drF(ks)
+          IF ( useOBeta ) THEN
+           hFactmp = h0FacS(i,j,ks,bi,bj)
+     &             + OBNeta(i,bi,bj)*recip_drF(ks)
+          ELSE
+           hFactmp = h0FacS(i,j,ks,bi,bj)
+     &             + etaFld(i,j,bi,bj)*recip_drF(ks)
+          ENDIF
           hFac_FldS(i,j,bi,bj) = MAX( hFacInfMOM, hFactmp )
          ENDIF
         ENDIF
@@ -72,9 +85,15 @@ C  Southern boundary
        DO i=1-Olx,sNx+Olx
         j = 1+OB_Js(i,bi,bj)
         IF (j.NE.1) THEN
-         ks = ksurfS(i,j,bi,bj)
+         ks = kSurfS(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
-          hFactmp = h0FacS(i,j,ks,bi,bj) + OBSeta(i,bi,bj)*recip_drF(ks)
+          IF ( useOBeta ) THEN
+           hFactmp = h0FacS(i,j,ks,bi,bj)
+     &             + OBSeta(i,bi,bj)*recip_drF(ks)
+          ELSE
+           hFactmp = h0FacS(i,j,ks,bi,bj)
+     &             + etaFld(i,j-1,bi,bj)*recip_drF(ks)
+          ENDIF
           hFac_FldS(i,j,bi,bj) = MAX( hFacInfMOM, hFactmp )
          ENDIF
         ENDIF
@@ -87,9 +106,15 @@ C  Eastern boundary
        DO j=1-Oly,sNy+Oly
         i = OB_Ie(J,bi,bj)
         IF (i.NE.0) THEN
-         ks = ksurfW(i,j,bi,bj)
+         ks = kSurfW(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
-          hFactmp = h0FacW(i,j,ks,bi,bj) + OBEeta(j,bi,bj)*recip_drF(ks)
+          IF ( useOBeta ) THEN
+           hFactmp = h0FacW(i,j,ks,bi,bj)
+     &             + OBEeta(j,bi,bj)*recip_drF(ks)
+          ELSE
+           hFactmp = h0FacW(i,j,ks,bi,bj)
+     &             + etaFld(i,j,bi,bj)*recip_drF(ks)
+          ENDIF
           hFac_FldW(i,j,bi,bj) = MAX( hFacInfMOM, hFactmp )
          ENDIF
         ENDIF
@@ -100,9 +125,15 @@ C  Western boundary
        DO j=1-Oly,sNy+Oly
         i = 1+OB_Iw(j,bi,bj)
         IF (i.NE.1) THEN
-         ks = ksurfW(i,j,bi,bj)
+         ks = kSurfW(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
-          hFactmp = h0FacW(i,j,ks,bi,bj) + OBWeta(j,bi,bj)*recip_drF(ks)
+          IF ( useOBeta ) THEN
+           hFactmp = h0FacW(i,j,ks,bi,bj)
+     &             + OBWeta(j,bi,bj)*recip_drF(ks)
+          ELSE
+           hFactmp = h0FacW(i,j,ks,bi,bj)
+     &             + etaFld(i-1,j,bi,bj)*recip_drF(ks)
+          ENDIF
           hFac_FldW(i,j,bi,bj) = MAX( hFacInfMOM, hFactmp )
          ENDIF
         ENDIF
@@ -112,6 +143,6 @@ C  Western boundary
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* NONLIN_FRSURF */
-#endif /* ALLOW_OBCS */
+
       RETURN
       END
