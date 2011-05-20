@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.53 2011/03/13 22:24:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.54 2011/05/20 22:22:54 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -479,6 +479,9 @@ cgf     &        'genbar', k
 C--   Check parameters:
 #ifndef ALLOW_GENCOST_FREEFORM
       do k=1,NGENCOST
+
+         if ( gencost_name(k) .EQ. 'gencost' )
+     &        gencost_name(k) = gencost_datafile(k)
 
          if ( gencost_avgperiod(k) .NE. 'day  ' .AND.
      &        gencost_avgperiod(k) .NE. 'DAY  ' .AND.

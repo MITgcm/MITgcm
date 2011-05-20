@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.42 2011/03/13 22:24:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.43 2011/05/20 22:22:54 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -345,7 +345,9 @@ c--
         enddo
       enddo
 
-#if (defined (ALLOW_SALT0_COST_CONTRIBUTION) || defined (ALLOW_SALT0_CONTROL))
+#if (defined (ALLOW_SALT0_COST_CONTRIBUTION) || \
+      defined (ALLOW_SALT0_CONTROL) || \
+      defined (ALLOW_WSALTLEV))
       lwsaltLevInUse = .true.
       if ( salt0errfile .NE. ' ' ) then
          call mdsreadfield( salt0errfile, 32, 'RL', Nr,
@@ -386,7 +388,9 @@ c--           Test for missing values.
       _EXCH_XYZ_RL( wsaltLev, myThid )
 #endif
 
-#if (defined (ALLOW_THETA0_COST_CONTRIBUTION) || defined (ALLOW_THETA0_CONTROL))
+#if (defined (ALLOW_THETA0_COST_CONTRIBUTION) || \ 
+     defined (ALLOW_THETA0_CONTROL) || \
+     defined (ALLOW_WTHETALEV))
       lwthetaLevInUse = .true.
       if ( temp0errfile .NE. ' ' ) then
          call mdsreadfield( temp0errfile, 32, 'RL', Nr,
