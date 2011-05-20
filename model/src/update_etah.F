@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.11 2011/04/27 22:20:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.12 2011/05/20 16:29:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,8 +11,10 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE UPDATE_ETAH
-C     | o Update etaH at the begining of the time step.
+C     | o Update etaH after mom-correction-step/integr_continuity
 C     |  (required with NLFS to derive surface layer thickness)
+C     | o Also derive SSH tendency at grid-cell Western and
+C     |   Southern edges (for hybrid sigma-coordinate)
 C     *==========================================================*
 C     \ev
 
@@ -79,16 +81,10 @@ C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
         ENDIF
 
 #ifdef ALLOW_OBCS
-C- note (with Non-Lin Free-Surface):
-C        1) needs to apply OBC to etaH since viscous terms depend on hFacZ.
-C           that is not only function of boundaries hFac values.
-C        2) has to be done before calc_surf_dr; but since obcs_calc is
-C           called later, hFacZ will lag 1 time step behind OBC update.
-C        3) avoid also unrealistic value of etaH in OB regions that
-C           might produce many "WARNING" message from calc_surf_dr.
-C-------
-C--    Apply OBC to etaH if NonLin-FreeSurf, reset to zero otherwise:
-       IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaH, myThid )
+C--    Apply OBC to etaH (NonLin-FreeSurf): needed since viscous terms
+C       depend on hFacZ which is not only function of boundary hFac values.
+       IF ( useOBCS.AND.nonlinFreeSurf.GT.0 )
+     &    CALL OBCS_APPLY_ETA( bi, bj, etaH, myThid )
 #endif /* ALLOW_OBCS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -97,7 +93,8 @@ C- end bi,bj loop.
        ENDDO
       ENDDO
 
-      IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
+      IF ( implicDiv2Dflow .NE. 1. _d 0 .OR.
+     &    ( useOBCS.AND.nonlinFreeSurf.GT.0 ) )
      &    CALL EXCH_XY_RL( etaH, myThid )
 
 c     IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
