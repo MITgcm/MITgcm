@@ -1,14 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.6 2009/10/01 21:04:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.7 2011/05/20 21:45:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_APPLY_W( bi, bj, K,
+CBOP
+C     !ROUTINE: OBCS_APPLY_W
+C     !INTERFACE:
+      SUBROUTINE OBCS_APPLY_W( bi, bj, kArg,
      U                         wFld,
      I                         myThid )
-C     /==========================================================\
-C     | S/R OBCS_APPLY_W                                         |
-C     \==========================================================/
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | S/R OBCS_APPLY_W
+C     |   Apply vertical velocity OB values
+C     |   to corresponding field array
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
@@ -17,91 +26,118 @@ C     == Global variables ==
 #include "GRID.h"
 #include "OBCS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      INTEGER bi,bj,K
+C    bi, bj   :: indices of current tile
+C    kArg     :: index of current level which OBC apply to
+C                or if zero, apply to all levels
+C    wFld     :: vertical velocity field
+C    myThid   :: my Thread Id number
+      INTEGER bi, bj
+      INTEGER kArg
       _RL wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
+CEOP
 
-#ifdef ALLOW_OBCS
-
+#ifdef ALLOW_NONHYDROSTATIC
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER I,J,I_obc,J_obc
-#ifdef ALLOW_NONHYDROSTATIC
+      INTEGER kLo, kHi
+      INTEGER k, km1
+      INTEGER i, j
+      INTEGER Iobc, Jobc
       _RL obc_mask
-#endif
 
-#ifdef ALLOW_NONHYDROSTATIC
       IF ( nonHydrostatic ) THEN
+
+        IF ( kArg.EQ.0 ) THEN
+          kLo = 1
+          kHi = Nr
+        ELSE
+          k   = kArg
+          km1 = MAX( k-1, 1 )
+        ENDIF
 
 C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
-      DO I=1-Olx,sNx+Olx
+        IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-       J_obc=OB_Jn(I,bi,bj)
-       IF (J_obc.NE.0) THEN
-        obc_mask = _maskS(I,J_obc,K,bi,bj)
-        wFld(I,J_obc,K,bi,bj)=OBNw(I,K,bi,bj) * obc_mask
-       ENDIF
-      ENDDO
-#endif
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(i,bi,bj)
+          IF ( Jobc.NE.0 .AND. kArg.EQ.0 ) THEN
+           DO k = kLo,kHi
+            km1 = MAX( k-1, 1 )
+            obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
+            wFld(i,Jobc,k,bi,bj) = OBNw(i,k,bi,bj)*obc_mask
+           ENDDO
+          ELSEIF ( Jobc.NE.0 ) THEN
+            obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
+            wFld(i,Jobc,k,bi,bj) = OBNw(i,k,bi,bj)*obc_mask
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+
 #ifdef ALLOW_OBCS_SOUTH
-      DO I=1-Olx,sNx+Olx
+        IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-       J_obc=OB_Js(I,bi,bj)
-       IF (J_obc.NE.0) THEN
-        obc_mask = _maskS(I,J_obc+1,K,bi,bj)
-        wFld(I,J_obc,K,bi,bj)=OBSw(I,K,bi,bj) * obc_mask
-       ENDIF
-      ENDDO
-#endif
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(i,bi,bj)
+          IF ( Jobc.NE.0 .AND. kArg.EQ.0 ) THEN
+           DO k = kLo,kHi
+            km1 = MAX( k-1, 1 )
+            obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
+            wFld(i,Jobc,k,bi,bj) = OBSw(i,k,bi,bj)*obc_mask
+           ENDDO
+          ELSEIF ( Jobc.NE.0 ) THEN
+            obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
+            wFld(i,Jobc,k,bi,bj) = OBSw(i,k,bi,bj)*obc_mask
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
 
 C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
-      DO J=1-Oly,sNy+Oly
+        IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-       I_obc=OB_Ie(J,bi,bj)
-       IF (I_obc.NE.0) THEN
-        obc_mask = _maskW(I_obc,J,K,bi,bj)
-        wFld(I_obc,J,K,bi,bj)=OBEw(J,K,bi,bj) * obc_mask
-       ENDIF
-      ENDDO
-#endif
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(j,bi,bj)
+          IF ( Iobc.NE.0 .AND. kArg.EQ.0 ) THEN
+           DO k = kLo,kHi
+            km1 = MAX( k-1, 1 )
+            obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
+            wFld(Iobc,j,k,bi,bj) = OBEw(j,k,bi,bj)*obc_mask
+           ENDDO
+          ELSEIF ( Iobc.NE.0 ) THEN
+            obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
+            wFld(Iobc,j,k,bi,bj) = OBEw(j,k,bi,bj)*obc_mask
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_EAST */
+
 #ifdef ALLOW_OBCS_WEST
-      DO J=1-Oly,sNy+Oly
+        IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-       I_obc=OB_Iw(J,bi,bj)
-       IF (I_obc.NE.0) THEN
-        obc_mask = _maskW(I_obc+1,J,K,bi,bj)
-        wFld(I_obc,J,K,bi,bj)=OBWw(J,K,bi,bj) * obc_mask
-       ENDIF
-      ENDDO
-#endif
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Iw(j,bi,bj)
+          IF ( Iobc.NE.0 .AND. kArg.EQ.0 ) THEN
+           DO k = kLo,kHi
+            km1 = MAX( k-1, 1 )
+            obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
+            wFld(Iobc,j,k,bi,bj) = OBWw(j,k,bi,bj)*obc_mask
+           ENDDO
+          ELSEIF ( Iobc.NE.0 ) THEN
+            obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
+            wFld(Iobc,j,k,bi,bj) = OBWw(j,k,bi,bj)*obc_mask
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_WEST */
 
-      ELSE
-#endif /* ALLOW_NONHYDROSTATIC */
-
-C     Set model variable to zero at the Open Boundaries
-      DO I=1-Olx,sNx+Olx
-C Northern boundary
-        J_obc = OB_Jn(I,bi,bj)
-        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
-C Southern boundary
-        J_obc = OB_Js(I,bi,bj)
-        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
-      ENDDO
-      DO J=1-Oly,sNy+Oly
-C Eastern boundary
-        I_obc = OB_Ie(J,bi,bj)
-        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
-C Western boundary
-        I_obc = OB_Iw(J,bi,bj)
-        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
-      ENDDO
-
-#ifdef ALLOW_NONHYDROSTATIC
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
-#endif /* ALLOW_OBCS */
       RETURN
       END
