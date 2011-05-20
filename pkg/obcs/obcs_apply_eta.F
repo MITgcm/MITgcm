@@ -1,14 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.5 2006/02/09 17:38:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.6 2011/05/20 21:45:53 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_APPLY_ETA
+C     !INTERFACE:
       SUBROUTINE OBCS_APPLY_ETA( bi, bj,
-     U                          etaFld,
-     I                          myThid )
-C     /==========================================================\
-C     | S/R OBCS_APPLY_ETA                                       |
-C     \==========================================================/
+     U                           etaFld,
+     I                           myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | S/R OBCS_APPLY_ETA
+C     |   Apply surface position anomaly (Eta) OB values
+C     |   to corresponding field array
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
@@ -18,71 +27,70 @@ C     == Global variables ==
 #include "SURFACE.h"
 #include "OBCS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      INTEGER bi,bj
+C    bi, bj   :: indices of current tile
+C    etaFld   :: surface r-position anomaly field
+C    myThid   :: my Thread Id number
+      INTEGER bi, bj
       _RL etaFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
-
-#ifdef ALLOW_OBCS
-C     == Local variables ==
-      INTEGER i,j,i_obc,j_obc
-
-C     Set model variable to zero at the Open Boundaries
-      DO i=1-Olx,sNx+Olx
-C Northern boundary
-        j_obc = OB_Jn(i,bi,bj)
-        IF (j_obc.NE.0) etaFld(i,j_obc,bi,bj) = 0. _d 0
-C Southern boundary
-        j_obc = OB_Js(i,bi,bj)
-        IF (j_obc.NE.0) etaFld(i,j_obc,bi,bj) = 0. _d 0
-      ENDDO
-      DO j=1-Oly,sNy+Oly
-C Eastern boundary
-        i_obc = OB_Ie(j,bi,bj)
-        IF (i_obc.NE.0) etaFld(i_obc,j,bi,bj) = 0. _d 0
-C Western boundary
-        i_obc = OB_Iw(j,bi,bj)
-        IF (i_obc.NE.0) etaFld(i_obc,j,bi,bj) = 0. _d 0
-      ENDDO
+CEOP
 
 #ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GT.0 ) THEN
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER i, j
+      INTEGER Iobc, Jobc
+
+c     IF ( nonlinFreeSurf.GT.0 ) THEN
 
 C     Set model variable to OB values on North/South Boundaries
-        DO i=1-Olx,sNx+Olx
+        IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-          j_obc = OB_Jn(i,bi,bj)
-          IF (j_obc.NE.0) THEN
-            IF ( ksurfS(i,j_obc,bi,bj).LE.Nr )
-     &        etaFld(i,j_obc,bi,bj) = OBNeta(i,bi,bj)
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+            IF ( kSurfS(i,Jobc,bi,bj).LE.Nr )
+     &        etaFld(i,Jobc,bi,bj) = OBNeta(i,bi,bj)
           ENDIF
+         ENDDO
+        ENDIF
+        IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-          j_obc = OB_Js(i,bi,bj)
-          IF (j_obc.NE.0) THEN
-            IF ( ksurfS(i,j_obc+1,bi,bj).LE.Nr )
-     &        etaFld(i,j_obc,bi,bj) = OBSeta(i,bi,bj)
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+            IF ( kSurfS(i,Jobc+1,bi,bj).LE.Nr )
+     &        etaFld(i,Jobc,bi,bj) = OBSeta(i,bi,bj)
           ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 
 C     Set model variables to OB values on East/West Boundaries
-        DO j=1-Oly,sNy+Oly
+        IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-          i_obc = OB_Ie(j,bi,bj)
-          IF (i_obc.NE.0) THEN
-            IF ( ksurfW(i_obc,j,bi,bj).LE.Nr )
-     &        etaFld(i_obc,j,bi,bj) = OBEeta(j,bi,bj)
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+            IF ( kSurfW(Iobc,j,bi,bj).LE.Nr )
+     &        etaFld(Iobc,j,bi,bj) = OBEeta(j,bi,bj)
           ENDIF
+         ENDDO
+        ENDIF
+        IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-          i_obc=OB_Iw(j,bi,bj)
-          IF (i_obc.NE.0) THEN
-            IF ( ksurfW(i_obc+1,j,bi,bj).LE.Nr )
-     &        etaFld(i_obc,j,bi,bj) = OBWeta(j,bi,bj)
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Iw(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+            IF ( kSurfW(Iobc+1,j,bi,bj).LE.Nr )
+     &        etaFld(Iobc,j,bi,bj) = OBWeta(j,bi,bj)
           ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 
-      ENDIF
+c     ENDIF
 #endif /* NONLIN_FRSURF */
 
-#endif /* ALLOW_OBCS */
       RETURN
       END
