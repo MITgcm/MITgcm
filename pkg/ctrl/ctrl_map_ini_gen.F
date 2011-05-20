@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.13 2011/05/20 03:47:13 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.14 2011/05/20 18:17:46 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -133,6 +133,10 @@ c avoid xx larger than boundsVec(5) X uncertainty
       endif
 # ifdef ALLOW_SMOOTH_CTRL3D
       call smooth3D(xxFld3d,paramSmooth,mythid)
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xxFileCur(1:il),'.smooth.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, paramFld3d, 1, optimcycle, mythid)
 # endif
 #else
 c apply Weaver And Courtier correlation operator
@@ -304,9 +308,12 @@ c avoid xx larger than boundsVec(5) X uncertainty
        enddo
       enddo
       endif
-# ifdef ALLOW_SMOOTH_CTRL3D
+# ifdef ALLOW_SMOOTH_CTRL2D
       call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
-# endif
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xxFileCur(1:il),'.smooth.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & 1, paramFld2d, 1, optimcycle, mythid# endif
 #else
 c apply Weaver And Courtier correlation operator
       if (paramSmooth.NE.0) then

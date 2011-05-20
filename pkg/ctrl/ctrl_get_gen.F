@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.21 2011/05/20 03:47:13 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.22 2011/05/20 18:17:46 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -134,6 +134,10 @@ c--   Get the counters, flags, and the interpolation factor.
      & 1, xx_gen1, gencount0, optimcycle, mythid)
 #elif (defined (ALLOW_SMOOTH_CTRL2D))
       call smooth2D(xx_gen1,genmask,1,mythid)
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_gen_file(1:ilgen),'.smooth.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & 1, xx_gen1, gencount1, optimcycle, mythid)
 #endif
       endif
 
@@ -158,6 +162,10 @@ c--   Get the counters, flags, and the interpolation factor.
      & 1, xx_gen1, gencount1, optimcycle, mythid)
 #elif (defined (ALLOW_SMOOTH_CTRL2D))
       call smooth2D(xx_gen1,genmask,1,mythid)
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_gen_file(1:ilgen),'.smooth.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & 1, xx_gen1, gencount1, optimcycle, mythid)
 #endif
       endif
 
