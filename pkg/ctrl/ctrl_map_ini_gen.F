@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.12 2011/05/20 00:55:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.13 2011/05/20 03:47:13 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -107,26 +107,6 @@ c--   only do interior, and exchange outside
       call active_read_xyz( fnamegeneric, xxFld3d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
-#ifdef NONDIMENSIONALIZE_CONTROL3D
-CMM preparing for ALLOW_SMOOTH_CORREL3D
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-      if ( (maskFld3d(i,j,k,bi,bj).NE.0.)
-     & .AND. (wFld3d(i,j,k,bi,bj).GT.0.) ) then
-      xxFld3d(i,j,k,bi,bj)=xxFld3d(i,j,k,bi,bj)
-     & *sqrt( wFld3d(i,j,k,bi,bj) )
-      else
-      xxFld3d(i,j,k,bi,bj)=0.
-      endif
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#endif
 
 #ifndef ALLOW_SMOOTH_CORREL3D
 c avoid xx larger than boundsVec(5) X uncertainty
@@ -302,24 +282,6 @@ c--   only do interior, and exchange outside
       call active_read_xy( fnamegeneric, xxFld2d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
-#ifdef NONDIMENSIONALIZE_CONTROL2D
-CMM preparing for ALLOW_SMOOTH_CORREL2D
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-      if ( (maskFld3d(i,j,1,bi,bj).NE.0.)
-     & .AND. (wFld2d(i,j,bi,bj).GT.0.) ) then
-      xxFld2d(i,j,bi,bj)=xxFld2d(i,j,bi,bj)
-     & *sqrt( wFld2d(i,j,bi,bj) )
-      else
-      xxFld2d(i,j,bi,bj)=0.
-      endif
-              enddo
-            enddo
-       enddo
-      enddo
-#endif
 
 #ifndef ALLOW_SMOOTH_CORREL2D
 c avoid xx larger than boundsVec(5) X uncertainty

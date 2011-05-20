@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.5 2011/05/18 04:47:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.6 2011/05/20 03:43:50 mmazloff Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
 
       subroutine smooth_correl2Dw (
-     U     fld_in,mask_in,xx_gen_file,mmdim,mythid)
+     U     fld_in,mask_in,xx_gen_file,mythid)
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_correl2Dw
@@ -29,7 +29,6 @@ C     *==========================================================*
       _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       character*(MAX_LEN_FNAM) xx_gen_file
-      integer mmdim
       integer myThid
 
 # if (defined ALLOW_CTRL) || (defined ALLOW_ECCO)
@@ -93,11 +92,7 @@ C     *==========================================================*
         endif
 
       if ((mask_in(i,j,1,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
-        if (mmdim.eq.1) then
-          fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)*sqrt(tmpW)
-        elseif (mmdim.eq.2) then
-          fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)/sqrt(tmpW)
-        endif
+      fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)/sqrt(tmpW)
       else
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)*0.
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.20 2011/05/20 00:55:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.21 2011/05/20 03:47:13 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -125,15 +125,9 @@ c--   Get the counters, flags, and the interpolation factor.
      &     call ctrl_smooth(xx_gen1,genmask)
 #endif
 
-#ifdef NONDIMENSIONALIZE_CONTROL2D
-CMM  Preparing for ALLOW_SMOOTH_CORREL2D
-CMM Requires smoothing package...should be made independant
-      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,1,mythid)
-#endif
-
 #ifdef ALLOW_SMOOTH_CORREL2D
       call smooth_correl2D(xx_gen1,genmask,1,mythid)
-      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,2,mythid)
+      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
@@ -155,15 +149,9 @@ CMM Requires smoothing package...should be made independant
      &     call ctrl_smooth(xx_gen1,genmask)
 #endif
 
-#ifdef NONDIMENSIONALIZE_CONTROL2D
-CMM  Preparing for ALLOW_SMOOTH_CORREL2D
-CMM Requires smoothing package...should be made independant
-      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,1,mythid)
-#endif
-
 #ifdef ALLOW_SMOOTH_CORREL2D
       call smooth_correl2D(xx_gen1,genmask,1,mythid)
-      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,2,mythid)
+      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
