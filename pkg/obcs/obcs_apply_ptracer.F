@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.4 2010/11/14 23:28:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.5 2011/05/20 16:57:03 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -24,7 +24,6 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "OBCS.h"
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
@@ -35,7 +34,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C    bi, bj   :: indices of current tile
 C    kArg     :: index of current level which OBC apply to
-C                or if zeros, apply to all levels
+C                or, if zero, apply to all levels
 C    iTracer  :: index of current passive tracer
 C    pFld     :: passive tracer field
 C    myThid   :: my Thread Id number
@@ -46,7 +45,7 @@ C    myThid   :: my Thread Id number
       INTEGER myThid
 CEOP
 
-#if ( defined ALLOW_OBCS && defined ALLOW_PTRACERS )
+#ifdef ALLOW_PTRACERS
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -54,7 +53,6 @@ C     == Local variables ==
       INTEGER kl, kMx
       INTEGER i, j
       INTEGER Iobc, Jobc
-      _RL obc_mask
 
       IF ( kArg.EQ.0 ) THEN
         kLo = 1
@@ -75,10 +73,7 @@ C Northern boundary
         IF (Jobc.NE.0) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
-          obc_mask = _maskS(i,Jobc,k,bi,bj)
-          DO j = Jobc, Jobc+Oly
-           pFld(i,j,kl) = OBNptr(i,k,bi,bj,iTracer)*obc_mask
-          ENDDO
+          pFld(i,Jobc,kl) = OBNptr(i,k,bi,bj,iTracer)
          ENDDO
         ENDIF
        ENDDO
@@ -93,10 +88,7 @@ C Southern boundary
         IF (Jobc.NE.0) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
-          obc_mask = _maskS(i,Jobc+1,K,bi,bj)
-          DO j = Jobc-Oly, Jobc
-           pFld(i,j,kl) = OBSptr(i,k,bi,bj,iTracer)*obc_mask
-          ENDDO
+          pFld(i,Jobc,kl) = OBSptr(i,k,bi,bj,iTracer)
          ENDDO
         ENDIF
        ENDDO
@@ -112,10 +104,7 @@ C Eastern boundary
         IF (Iobc.NE.0) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
-          obc_mask = _maskW(Iobc,j,k,bi,bj)
-          DO I = Iobc, Iobc+Olx
-           pFld(i,j,kl) = OBEptr(j,k,bi,bj,iTracer)*obc_mask
-          ENDDO
+          pFld(Iobc,j,kl) = OBEptr(j,k,bi,bj,iTracer)
          ENDDO
         ENDIF
        ENDDO
@@ -130,16 +119,14 @@ C Western boundary
         IF (Iobc.NE.0) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
-          obc_mask = _maskW(Iobc+1,j,k,bi,bj)
-          DO i = Iobc-Olx, Iobc
-           pFld(i,j,kl) = OBWptr(j,k,bi,bj,iTracer)*obc_mask
-          ENDDO
+          pFld(Iobc,j,kl) = OBWptr(j,k,bi,bj,iTracer)
          ENDDO
         ENDIF
        ENDDO
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
-#endif /* ALLOW_OBCS and ALLOW_PTRACERS */
+#endif /* ALLOW_PTRACERS */
+
       RETURN
       END
