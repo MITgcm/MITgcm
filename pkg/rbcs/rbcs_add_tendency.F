@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.7 2011/05/20 22:26:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.8 2011/05/21 00:44:53 gforget Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -84,8 +84,7 @@ c    &        *maskS(i,j,k,bi,bj)
      &        *( theta(i,j,k,bi,bj)- RBCtemp(i,j,k,bi,bj) )
 c    &        *maskC(i,j,k,bi,bj)
 #ifdef ALLOW_RBCS_SPIN
-cgf decrease relaxation time scale linearly over 3 years
-     &        *mytime/( 94608000. _d 0 )
+     &        *MAX( 0. _d 0 , 1. _d 0 - mytime/( 94608000. _d 0 ) )
 #endif
          ENDDO
         ENDDO
@@ -99,8 +98,7 @@ cgf decrease relaxation time scale linearly over 3 years
      &        *( salt(i,j,k,bi,bj)- RBCsalt(i,j,k,bi,bj) )
 c    &        *maskC(i,j,k,bi,bj)
 #ifdef ALLOW_RBCS_SPIN
-cgf decrease relaxation time scale linearly over 3 years
-     &        *mytime/( 94608000. _d 0 )
+     &        *MAX( 0. _d 0 , 1. _d 0 - mytime/( 94608000. _d 0 ) )
 #endif
          ENDDO
         ENDDO
