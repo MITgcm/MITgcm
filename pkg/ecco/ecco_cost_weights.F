@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.43 2011/05/20 22:22:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.44 2011/05/21 02:17:46 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -388,7 +388,7 @@ c--           Test for missing values.
       _EXCH_XYZ_RL( wsaltLev, myThid )
 #endif
 
-#if (defined (ALLOW_THETA0_COST_CONTRIBUTION) || \ 
+#if (defined (ALLOW_THETA0_COST_CONTRIBUTION) || \
      defined (ALLOW_THETA0_CONTROL) || \
      defined (ALLOW_WTHETALEV))
       lwthetaLevInUse = .true.
