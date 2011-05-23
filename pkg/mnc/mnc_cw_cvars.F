@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.15 2009/06/28 01:08:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.16 2011/05/23 01:08:22 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -24,7 +24,6 @@ C     !USES:
 #include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXCH2

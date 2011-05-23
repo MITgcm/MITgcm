@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.13 2009/11/24 14:53:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.14 2011/05/23 01:08:22 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -22,7 +22,6 @@ C     !USES:
 #include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
@@ -160,7 +159,7 @@ C     Write the GRID.h variables
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-CBOP 
+CBOP
 C !ROUTINE: MNC_CW_WRITE_GRID_COORD
 
 C !INTERFACE:
@@ -190,7 +189,7 @@ C     Write coordinates to file "fname"
       CALL MNC_CW_RS_W('R',fname,0,0,'XG',xG, myThid)
       CALL MNC_CW_RS_W('R',fname,0,0,'YG',yG, myThid)
 C--   Here we can add as much grid information as we like, but this
-C--   will increase the size of each of the affected files. It is 
+C--   will increase the size of each of the affected files. It is
 C--   a matter of taste, but here are some candidates:
 C--   Probably it is enough to write the coordinates of the
 C--   center points and the corners.
@@ -199,7 +198,7 @@ C     CALL MNC_CW_RS_W('R',fname,0,0,'YU',yC, myThid)
 C     CALL MNC_CW_RS_W('R',fname,0,0,'XV',xC, myThid)
 C     CALL MNC_CW_RS_W('R',fname,0,0,'YV',yG, myThid)
 C--   Only required for diagnostics files, but unclear what the vertical
-C--   coordinate means in this case, so do not write anything for now 
+C--   coordinate means in this case, so do not write anything for now
 C     CALL MNC_CW_RS_W('R',fname,0,0,'RC',rC, myThid)
 C     CALL MNC_CW_RS_W('R',fname,0,0,'RF',rF, myThid)
 C--   If required write mask information.
