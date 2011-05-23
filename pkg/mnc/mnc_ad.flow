@@ -1,5 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.5 2009/08/29 02:56:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.6 2011/05/23 00:27:24 jmc Exp $
 C $Name:  $
+
+C----------------------------------------
+C subroutine mnc_update_time
+C----------------------------------------
+CADJ SUBROUTINE mnc_update_time  INPUT  = 1,2,3
+CADJ SUBROUTINE mnc_update_time  OUTPUT =
 
 C----------------------------------------
 C subroutine mnc_cw_i_w_s
