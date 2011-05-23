@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.15 2011/05/20 16:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.16 2011/05/23 00:33:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,9 +8,9 @@ CBOP
 C     !ROUTINE: TIMESTEP_TRACER
 C     !INTERFACE:
       SUBROUTINE TIMESTEP_TRACER(
-     I                     bi, bj, iMin, iMax, jMin, jMax, k,
-     I                     advection_scheme, deltaTloc,
-     I                     tracer, gTracer,
+     I                     bi, bj, k, deltaTloc,
+     I                     tracer,
+     U                     gTracer,
      I                     myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -29,8 +29,7 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
-      INTEGER advection_scheme
+      INTEGER bi, bj, k
       _RL     deltaTloc
       _RL  tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -44,8 +43,6 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Step tracer forward in time and store provisional value in gTracer array
-c     DO j=jMin,jMax
-c      DO i=iMin,iMax
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
          gTracer(i,j,k,bi,bj)=tracer(i,j,k,bi,bj)

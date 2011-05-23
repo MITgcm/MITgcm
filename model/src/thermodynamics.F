@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.135 2011/04/20 13:45:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.136 2011/05/23 00:33:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -631,17 +631,17 @@ CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_ADAMSBASHFORTH_3
           IF ( AdamsBashforth_T ) THEN
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,dTtracerLev(k),
+     I         bi, bj, k, dTtracerLev(k),
      I         gtNm(1-Olx,1-Oly,1,1,1,m2),
      U         gT,
-     I         myIter, myThid)
+     I         myIter, myThid )
           ELSE
 #endif
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,dTtracerLev(k),
+     I         bi, bj, k, dTtracerLev(k),
      I         theta,
      U         gT,
-     I         myIter, myThid)
+     I         myIter, myThid )
 #ifdef ALLOW_ADAMSBASHFORTH_3
           ENDIF
 #endif
@@ -681,17 +681,17 @@ CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_ADAMSBASHFORTH_3
           IF ( AdamsBashforth_S ) THEN
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,dTtracerLev(k),
+     I         bi, bj, k, dTtracerLev(k),
      I         gsNm(1-Olx,1-Oly,1,1,1,m2),
      U         gS,
-     I         myIter, myThid)
+     I         myIter, myThid )
           ELSE
 #endif
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,dTtracerLev(k),
+     I         bi, bj, k, dTtracerLev(k),
      I         salt,
      U         gS,
-     I         myIter, myThid)
+     I         myIter, myThid )
 #ifdef ALLOW_ADAMSBASHFORTH_3
           ENDIF
 #endif
