@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.8 2010/10/25 23:02:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.9 2011/05/23 00:41:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,13 +103,6 @@ C-        Update velocity fields:  V(n) = V** - dt * grad Eta
             CALL CORRECTION_STEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         phiSurfX,phiSurfY,myTime,myThid )
-
-#ifdef    ALLOW_OBCS
-c         IF (useOBCS) THEN
-c           CALL OBCS_APPLY_UV(bi,bj,k,uVel,vVel,myThid)
-c         ENDIF
-#endif    /* ALLOW_OBCS */
-C--       End DO k=1,Nr
           ENDDO
         ENDIF
 
@@ -166,14 +159,11 @@ CADJ STORE uvel, vvel  = comlev1, key = ikey_dynamics, byte = isbyte
      &                      + act4*max1*max2*max3
 # ifdef NONLIN_FRSURF
 #  ifndef DISABLE_RSTAR_CODE
-cph-test
 CADJ STORE detahdt(:,:,bi,bj)    = comlev1_bibj, key = idynkey, byte = isbyte
 CADJ STORE etan(:,:,bi,bj)       = comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE rstardhcdt(:,:,bi,bj) = comlev1_bibj, key = idynkey, byte = isbyte
 #  endif
 # endif
-#endif
-
+#endif /* ALLOW_AUTODIFF_TAMC */
 C--     Integrate continuity vertically
 C--     for vertical velocity and "etaN" (exact volume conservation) :
         CALL INTEGR_CONTINUITY( bi, bj, uVel, vVel,
