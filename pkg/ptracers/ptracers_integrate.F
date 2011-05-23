@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.42 2011/01/18 22:58:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.43 2011/05/23 00:34:36 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -219,12 +219,10 @@ C Account for change in level thickness
 
 C Integrate forward in time, storing in gPtr:  G=T+dt*G
          CALL TIMESTEP_TRACER(
-     I                        bi,bj,iMin,iMax,jMin,jMax,k,
-     I                        PTRACERS_advScheme(iTracer),
-     I                        PTRACERS_dTLev(k),
+     I                        bi, bj, k, PTRACERS_dTLev(k),
      I                        pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     I                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                        myIter,myThid )
+     U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I                        myIter, myThid )
 
 C end of tracer loop
       ENDDO
