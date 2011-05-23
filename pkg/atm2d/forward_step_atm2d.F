@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.17 2011/04/15 18:30:01 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.18 2011/05/23 18:51:30 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -341,13 +341,13 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
 
 #  if (defined CPL_TEM && defined CPL_OCEANCO2)
-        PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
+        PRINT '(a6,i6,2(a5,f10.4))','Year=',iyr,
      &         ' NEP=',nepan,' OCU=',ocuptp
         WRITE(333,*)iyr,nepan,ocuptp
 #  else
 
 #     ifdef CPL_TEM
-        PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
+        PRINT '(a6,i6,2(a5,f10.4))','Year=',iyr,
      &         ' NEP=',nepan
         WRITE(333,*)iyr,nepan,nepan
 #      ifdef CPL_NEM
@@ -356,7 +356,7 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
 #     endif
 
 #     ifdef CPL_OCEANCO2
-        PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
+        PRINT '(a6,i6,2(a5,f10.4))','Year=',iyr,
      &         ' OCU=',ocuptp
         WRITE(333,*)iyr,ocuptp,ocuptp
 #     endif
@@ -372,7 +372,7 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
 #endif
 
 #ifdef IPCC_EMI
-        PRINT 'a6,i6,(a5,f10.4)','Year=',iyr,
+        PRINT '(a6,i6,(a5,f10.4))','Year=',iyr,
      &         ' CO2AN=',xco2ann/12.
         CALL emissipcc_yr
 #endif
@@ -386,7 +386,7 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
 #  endif
         ENDDO
         PRINT *,' CO2 for ocean model',' ncallatm=',ncall_atm
-        PRINT '12f7.1,/,2(11f7.1,/),12f7.1',co24ocnan
+        PRINT '(12f7.1,/,2(11f7.1,/),12f7.1)',co24ocnan
 #endif
 
 #ifdef CPL_CHEM
