@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.193 2011/05/14 19:55:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.194 2011/05/23 00:29:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,10 +45,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 #ifdef HAVE_SIGREG
 #include "SIGREG.h"
@@ -149,11 +145,6 @@ C     == Global variables ==
 #  include "OFFLINE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_MNC
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -656,23 +647,9 @@ C--   Update time-counter
       myTime = startTime + deltaTClock * float(iLoop)
 
 #ifdef ALLOW_MNC
-C     Update the default next iter for MNC
+C     Update MNC time information
       IF ( useMNC ) THEN
-         CALL MNC_CW_CITER_SETG( 1, 1, -1, myIter , myThid )
-
-C        TODO: Logic should be added here so that users can specify, on
-C        a per-citer-group basis, when it is time to update the
-C        "current" (and not just the "next") iteration
-
-C        TODO: the following is just a temporary band-aid (mostly, for
-C        Baylor) until someone writes a routine that better handles time
-C        boundaries such as weeks, months, years, etc.
-         IF ( mnc_filefreq .GT. 0 ) THEN
-           IF (DIFFERENT_MULTIPLE(mnc_filefreq,myTime,deltaTClock))
-     &          THEN
-             CALL MNC_CW_CITER_SETG( 1, 1, myIter, -1 , myThid )
-           ENDIF
-         ENDIF
+         CALL MNC_UPDATE_TIME( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MNC */
 
