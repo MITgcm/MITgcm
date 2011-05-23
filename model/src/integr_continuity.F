@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.24 2011/05/20 18:52:17 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.25 2011/05/23 00:39:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,6 +64,11 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
 #ifndef ALLOW_ADDFLUID
       _RL addMass(1)
 #endif /* ndef ALLOW_ADDFLUID */
+#if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
+      _RL rStarDhDt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#else
+      _RL rStarDhDt(1)
+#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -220,14 +225,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef NONLIN_FRSURF
       IF (select_rStar .NE. 0) THEN
 #  ifndef DISABLE_RSTAR_CODE
-C-- note: final value of rStarDhCDt from S/R CALC_R_STAR
-C         will be different (no deep-factor, no rho factor)
+C-- note: rStarDhDt is similar to rStarDhCDt from S/R CALC_R_STAR
+C         except for deep-factor and rho factor.
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
-           rStarDhCDt(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
-     &                            *deepFac2F(ks)*rhoFacF(ks)
-     &                            *recip_Rcol(i,j,bi,bj)
+           rStarDhDt(i,j) = dEtaHdt(i,j,bi,bj)
+     &                     *deepFac2F(ks)*rhoFacF(ks)
+     &                     *recip_Rcol(i,j,bi,bj)
          ENDDO
         ENDDO
 #  endif /* DISABLE_RSTAR_CODE */
@@ -242,7 +247,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    Integrate continuity vertically for vertical velocity
 
        CALL INTEGRATE_FOR_W(
-     I                       bi, bj, k, uFld, vFld, addMass,
+     I                       bi, bj, k, uFld, vFld,
+     I                       addMass, rStarDhDt,
      O                       wVel,
      I                       myThid )
 

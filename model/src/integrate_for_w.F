@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.15 2010/09/11 21:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.16 2011/05/23 00:39:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: INTEGRATE_FOR_W
 C     !INTERFACE:
       SUBROUTINE INTEGRATE_FOR_W(
-     I                     bi, bj, k, uFld, vFld, mFld,
+     I                     bi, bj, k, uFld, vFld, mFld, rStarDhDt,
      O                     wFld,
      I                     myThid )
 
@@ -31,6 +31,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     uFld, vFld :: Zonal and meridional flow
 C     mFld       :: added mass
+C     rStarDhDt  :: relative time derivative of column thickness = d.eta/dt / H
 C     wFld       :: Vertical flow
       INTEGER bi,bj,k
       _RL  uFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -39,6 +40,11 @@ C     wFld       :: Vertical flow
       _RL  mFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #else
       _RL  mFld (1)
+#endif
+#if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
+      _RL rStarDhDt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#else
+      _RL rStarDhDt(1)
 #endif
       _RL  wFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
@@ -122,7 +128,7 @@ C     can be non-zero at surface (useRealFreshWaterFlux).
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
      &        ( conv2d(i,j)*recip_rA(i,j,bi,bj)
-     &         -rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
+     &         -rStarDhDt(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
      &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
@@ -133,7 +139,7 @@ C     can be non-zero at surface (useRealFreshWaterFlux).
              wFld(i,j,k,bi,bj) =
      &        ( wFld(i,j,k+1,bi,bj)*deepFac2F(k+1)*rhoFacF(k+1)
      &         +conv2d(i,j)*recip_rA(i,j,bi,bj)
-     &         -rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
+     &         -rStarDhDt(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
      &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
