@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.56 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.57 2011/05/24 20:27:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -29,8 +29,7 @@ C     === Global variables ===
 # include "W2_EXCH2_TOPOLOGY.h"
 #endif
 #ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-# include "OBCS.h"
+# include "OBCS_GRID.h"
 #endif
 
 C     === Routine arguments ===
@@ -202,7 +201,6 @@ C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
 #ifdef ALLOW_OBCS
         IF (useOBCS) THEN
 C--   If OBCS is turned on, close southern and western boundaries
-#ifdef ALLOW_OBCS_SOUTH
          DO i=1-Olx,sNx+Olx
 C Southern boundary
           J_obc = OB_Js(i,bi,bj)
@@ -215,8 +213,6 @@ C Southern boundary
 #endif /* SEAICE_CGRID */
           ENDIF
          ENDDO
-#endif /* ALLOW_OBCS_SOUTH */
-#ifdef ALLOW_OBCS_WEST
          DO j=1-Oly,sNy+Oly
 C Western boundary
           I_obc=OB_Iw(j,bi,bj)
@@ -229,7 +225,6 @@ C Western boundary
 #endif /* SEAICE_CGRID */
           ENDIF
          ENDDO
-#endif /* ALLOW_OBCS_WEST */
         ENDIF
 #endif /* ALLOW_OBCS */
 

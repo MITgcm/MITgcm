@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.15 2010/05/12 01:08:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.16 2011/05/24 20:29:19 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: EXF_INIT_FIXED
@@ -33,7 +30,7 @@ C     === Global variables ===
 # include "ICEFRONT.h"
 #endif
 #ifdef ALLOW_OBCS
-# include "OBCS.h"
+# include "OBCS_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -404,7 +401,6 @@ c     from the beginning of the year.
 #endif /* ALLOW_ICE_AREAMASK */
 
 #ifdef ALLOW_OBCS
-# ifdef ALLOW_OBCS_NORTH
       IF ( obcsNperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsNstartdate1, obcsNstartdate2,
      &      date_array, myThid )
@@ -421,8 +417,6 @@ c     from the beginning of the year.
         obcsNstartdate   =  modelstart + obcsNstartdate
        ENDIF
       ENDIF
-# endif /* ALLOW_OBCS_NORTH */
-# ifdef ALLOW_OBCS_SOUTH
       IF ( obcsSperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsSstartdate1, obcsSstartdate2,
      &      date_array, myThid )
@@ -439,8 +433,6 @@ c     from the beginning of the year.
         obcsSstartdate   =  modelstart + obcsSstartdate
        ENDIF
       ENDIF
-# endif /* ALLOW_OBCS_SOUTH */
-# ifdef ALLOW_OBCS_EAST
       IF ( obcsEperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsEstartdate1, obcsEstartdate2,
      &      date_array, myThid )
@@ -457,8 +449,6 @@ c     from the beginning of the year.
         obcsEstartdate   =  modelstart + obcsEstartdate
        ENDIF
       ENDIF
-# endif /* ALLOW_OBCS_EAST */
-# ifdef ALLOW_OBCS_WEST
       IF ( obcsWperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsWstartdate1, obcsWstartdate2,
      &      date_array, myThid )
@@ -475,9 +465,7 @@ c     from the beginning of the year.
         obcsWstartdate   =  modelstart + obcsWstartdate
        ENDIF
       ENDIF
-# endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_SEAICE
-#  ifdef ALLOW_OBCS_NORTH
       IF ( siobNperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( siobNstartdate1, siobNstartdate2,
      &      date_array, myThid )
@@ -494,8 +482,6 @@ c     from the beginning of the year.
         siobNstartdate   =  modelstart + siobNstartdate
        ENDIF
       ENDIF
-#  endif /* ALLOW_OBCS_NORTH */
-#  ifdef ALLOW_OBCS_SOUTH
       IF ( siobSperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( siobSstartdate1, siobSstartdate2,
      &      date_array, myThid )
@@ -512,8 +498,6 @@ c     from the beginning of the year.
         siobSstartdate   =  modelstart + siobSstartdate
        ENDIF
       ENDIF
-#  endif /* ALLOW_OBCS_SOUTH */
-#  ifdef ALLOW_OBCS_EAST
       IF ( siobEperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( siobEstartdate1, siobEstartdate2,
      &      date_array, myThid )
@@ -530,8 +514,6 @@ c     from the beginning of the year.
         siobEstartdate   =  modelstart + siobEstartdate
        ENDIF
       ENDIF
-#  endif /* ALLOW_OBCS_EAST */
-#  ifdef ALLOW_OBCS_WEST
       IF ( siobWperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( siobWstartdate1, siobWstartdate2,
      &      date_array, myThid )
@@ -548,7 +530,6 @@ c     from the beginning of the year.
         siobWstartdate   =  modelstart + siobWstartdate
        ENDIF
       ENDIF
-#  endif /* ALLOW_OBCS_WEST */
 # endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS */
 

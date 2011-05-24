@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_obcs_output.F,v 1.1 2009/10/04 22:30:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_obcs_output.F,v 1.2 2011/05/24 20:27:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,7 +26,8 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_OBCS
-#include "OBCS.h"
+# include "OBCS_PARAMS.h"
+# include "OBCS_SEAICE.h"
 #endif
 
 C     !INPUT PARAMETERS:
