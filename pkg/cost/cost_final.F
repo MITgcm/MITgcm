@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.25 2011/05/09 09:02:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.26 2011/05/24 22:14:36 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
       subroutine cost_final( mythid )
