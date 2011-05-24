@@ -1,8 +1,6 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.8 2010/10/25 21:44:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.9 2011/05/24 21:13:53 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_EXF
