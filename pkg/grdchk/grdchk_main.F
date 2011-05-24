@@ -1,9 +1,7 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.30 2010/08/24 14:42:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.31 2011/05/24 22:40:30 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "GRDCHK_OPTIONS.h"
 
 CBOI
 C
@@ -33,7 +31,7 @@ c         |-- grdchk_loc      - determine location of icomp on grid
 c         |
 c         |-- grdchk_getxx    - get control vector component from file
 c         |                     perturb it and write back to file
-c         |-- grdchk_getadxx  - get gradient component calculated 
+c         |-- grdchk_getadxx  - get gradient component calculated
 c         |                     via adjoint
 c         |-- the_main_loop   - forward run and cost evaluation
 c         |                     with perturbed control vector element
@@ -66,7 +64,7 @@ c              heimbach@mit.edu 24-Feb-2003
 c              - added tangent linear gradient checks
 c              - fixes for multiproc. gradient checks
 c              - added more control variables
-c     
+c
 c     ==================================================================
 c     SUBROUTINE grdchk_main
 c     ==================================================================
@@ -88,13 +86,13 @@ c     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-      integer mythid 
+      integer mythid
 
 #ifdef ALLOW_GRDCHK
 C     !LOCAL VARIABLES:
 c     == local variables ==
       integer myiter
-      _RL     mytime 
+      _RL     mytime
       integer bi, itlo, ithi
       integer bj, jtlo, jthi
       integer i,  imin, imax
@@ -207,7 +205,7 @@ c--   Compute the finite difference approximations.
 c--   Cycle through all processes doing NINT(nend-nbeg+1)/nstep
 c--   gradient checks.
 
-      if ( nbeg .EQ. 0 ) 
+      if ( nbeg .EQ. 0 )
      &     call grdchk_get_position( mythid )
 
       do icomp = nbeg, nend, nstep
@@ -215,14 +213,14 @@ c--   gradient checks.
          ichknum = (icomp - nbeg)/nstep + 1
 
 cph(
-cph-print         print *, 'ph-grd _main: nbeg, icomp, ichknum ', 
+cph-print         print *, 'ph-grd _main: nbeg, icomp, ichknum ',
 cph-print     &        nbeg, icomp, ichknum
 cph)
          if (ichknum .le. maxgrdchecks ) then
 
 c--         Determine the location of icomp on the grid.
             if ( myProcId .EQ. grdchkwhichproc ) then
-               call grdchk_loc( icomp, ichknum, 
+               call grdchk_loc( icomp, ichknum,
      &              icvrec, itile, jtile, layer, obcspos,
      &              itilepos, jtilepos, icglo, itest, ierr,
      &              mythid )
@@ -232,7 +230,7 @@ cph-print     &             icvrec, itilepos, jtilepos, layer, obcspos
 cph)
             endif
             _BARRIER
-              
+
 c******************************************************
 c--   (A): get gradient component calculated via adjoint
 c******************************************************
@@ -320,7 +318,7 @@ c--   positive perturbation
      &              mythid )
             endif
             _BARRIER
-                     
+
 c--   forward run with perturbed control vector
             mytime = starttime
             myiter = niter0
@@ -332,7 +330,7 @@ c--   forward run with perturbed control vector
 #endif
             print *, 'ph-check fcpertplus = ', fcpertplus
             _BARRIER
-                  
+
 c--   Reset control vector.
             if ( myProcId .EQ. grdchkwhichproc .AND.
      &           ierr .EQ. 0 ) then
@@ -361,7 +359,7 @@ c--   repeat the proceedure for a negative perturbation
      &                 mythid )
                endif
                _BARRIER
-                     
+
 c--   forward run with perturbed control vector
                mytime = starttime
                myiter = niter0
@@ -372,7 +370,7 @@ c--   forward run with perturbed control vector
 #else
                fcpertminus = fc
 #endif
-                  
+
 c--   Reset control vector.
                if ( myProcId .EQ. grdchkwhichproc .AND.
      &           ierr .EQ. 0 ) then
@@ -399,7 +397,7 @@ c******************************************************
                   gfd = (fcpertplus-fcpertminus)
      &                 /(grdchk_epsfac*grdchk_eps)
                endif
-                     
+
                if ( adxxmemo .eq. 0. ) then
                   ratio_ad = abs( adxxmemo - gfd )
                else
@@ -411,7 +409,7 @@ c******************************************************
                else
                   ratio_ftl = 1. - gfd/ftlxxmemo
                endif
-                  
+
                tmpplot1(itilepos,jtilepos,layer,itile,jtile)
      &              = gfd
                tmpplot2(itilepos,jtilepos,layer,itile,jtile)
@@ -455,16 +453,16 @@ c******************************************************
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),iobcsmem(ichknum),
      &              ftlxxmemo, gfd, ratio_ftl
-               WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
+               WRITE(msgBuf,'(A34,2(1PE24.14,X))')
      &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-c 
-               WRITE(msgBuf,'(A34,1PE24.14)') 
+c
+               WRITE(msgBuf,'(A34,1PE24.14)')
      &              ' TLM  precision_derivative_cost =', fcref
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-               WRITE(msgBuf,'(A34,1PE24.14)') 
+               WRITE(msgBuf,'(A34,1PE24.14)')
      &              ' TLM  precision_derivative_grad =', ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -474,15 +472,15 @@ c
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),obcspos,
      &              adxxmemo, gfd, ratio_ad
-c              WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
+c              WRITE(msgBuf,'(A34,2(1PE24.14,X))')
 c    &              'precision_grdchk_result ADM ', fcref, adxxmemo
 c              CALL PRINT_MESSAGE
 c    &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-               WRITE(msgBuf,'(A34,1PE24.14)') 
+               WRITE(msgBuf,'(A34,1PE24.14)')
      &              ' ADM  precision_derivative_cost =', fcref
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-               WRITE(msgBuf,'(A34,1PE24.14)') 
+               WRITE(msgBuf,'(A34,1PE24.14)')
      &              ' ADM  precision_derivative_grad =', adxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -500,18 +498,18 @@ c-- else of if ( ichknum ...
          else
             ierr_grdchk = -1
 
-c-- end of if ( ichknum ... 
+c-- end of if ( ichknum ...
          endif
 
-c-- end of do icomp = ... 
+c-- end of do icomp = ...
       enddo
 
       if ( myProcId .EQ. grdchkwhichproc ) then
-         CALL WRITE_REC_XYZ_RL( 
+         CALL WRITE_REC_XYZ_RL(
      &        'grd_findiff'   , tmpplot1, 1, 0, myThid)
-         CALL WRITE_REC_XYZ_RL( 
+         CALL WRITE_REC_XYZ_RL(
      &        'grd_ratio_ad'  , tmpplot2, 1, 0, myThid)
-         CALL WRITE_REC_XYZ_RL( 
+         CALL WRITE_REC_XYZ_RL(
      &        'grd_ratio_ftl' , tmpplot3, 1, 0, myThid)
       endif
 
@@ -523,4 +521,5 @@ c--   Print the results of the gradient check.
 
 #endif /* ALLOW_GRDCHK */
 
+      return
       end

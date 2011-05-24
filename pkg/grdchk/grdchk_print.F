@@ -1,9 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.11 2010/04/30 18:41:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.12 2011/05/24 22:40:30 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
-#include "CPP_OPTIONS.h"
-
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_print(
      I                         ichknum,
