@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.6 2011/05/13 19:41:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.7 2011/05/24 22:41:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_get_position( mythid )
 
@@ -28,7 +28,7 @@ c     == global variables ==
 #include "GRID.h"
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
-#endif 
+#endif
 #include "ctrl.h"
 #include "grdchk.h"
 
@@ -257,5 +257,5 @@ c--   End of if myProcId statement
 
 #endif /* ALLOW_GRDCHK */
 
+      return
       end
-

@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.11 2011/05/13 19:41:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.12 2011/05/24 22:41:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
-
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_init( mythid )
 
@@ -192,5 +191,5 @@ c--   components of the given control variable.
 
 #endif /* ALLOW_GRDCHK */
 
+      return
       end
-

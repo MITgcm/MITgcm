@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.28 2011/05/13 19:41:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.29 2011/05/24 22:41:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
-
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_setxx(
      I                       icvrec,
@@ -65,7 +64,7 @@ c     == local variables ==
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
-#endif 
+#endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 #endif
@@ -919,7 +918,7 @@ c--   == end of interface ==
      &                        mythid, dummy)
          tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_ref
          print*,"fname etc.",fname,itilepos,jtilepos,itile,jtile,
-     &   tmpfld2d( itilepos,jtilepos,itile,jtile ) 
+     &   tmpfld2d( itilepos,jtilepos,itile,jtile )
          call active_write_xy( fname, tmpfld2d, 1,
      &                        optimcycle,
      &                        mythid, dummy)
@@ -931,5 +930,5 @@ ce      --> this index does not exist yet.
 
 #endif /* ALLOW_GRDCHK */
 
+      return
       end
-
