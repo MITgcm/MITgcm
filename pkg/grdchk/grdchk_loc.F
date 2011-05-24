@@ -1,12 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.13 2011/05/13 19:41:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.14 2011/05/24 20:41:43 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CTRL_CPPOPTIONS.h"
-#ifdef ALLOW_OBCS
-#include "OBCS_OPTIONS.h"
-#endif
-
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_loc(
      I                     icomp,
@@ -48,7 +43,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "grdchk.h"
 #ifdef ALLOW_OBCS
-#include "OBCS.h"
+# include "OBCS_GRID.h"
 #endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
@@ -361,5 +356,5 @@ c--         Component zero.
 
 #endif /* ALLOW_GRDCHK */
 
+      return
       end
-
