@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.12 2010/10/27 00:55:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.13 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -15,7 +15,9 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_SEAICE.h"
 
 C     == Routine Arguments ==
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

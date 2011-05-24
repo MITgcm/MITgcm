@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exchanges.F,v 1.1 2011/04/17 03:15:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exchanges.F,v 1.2 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -24,7 +24,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
 
 C     == Routine Arguments ==
       INTEGER myThid

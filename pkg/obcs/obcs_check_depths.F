@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.1 2009/04/24 01:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.2 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -18,7 +18,8 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instances

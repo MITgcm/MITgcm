@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.5 2011/05/20 01:23:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.6 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -27,7 +27,8 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#include "OBCS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     bi, bj    :: tile indices

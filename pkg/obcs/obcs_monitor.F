@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_monitor.F,v 1.3 2011/03/06 23:34:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_monitor.F,v 1.4 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -30,7 +30,8 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
 #endif

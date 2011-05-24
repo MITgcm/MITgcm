@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_copy_tracer.F,v 1.1 2010/11/08 17:26:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_copy_tracer.F,v 1.2 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -31,8 +31,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "GRID.h"
-#include "OBCS.h"
+#include "OBCS_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==

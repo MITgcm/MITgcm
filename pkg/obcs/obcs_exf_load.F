@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.2 2011/05/12 21:35:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.3 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -32,7 +32,10 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
+c#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
+#include "OBCS_SEAICE.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif

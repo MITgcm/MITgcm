@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.7 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.8 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: OBCS_APPLY_SEAICE
@@ -21,9 +24,10 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+c#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_SEAICE.h"
 #ifdef ALLOW_SEAICE
-# include "SEAICE_OPTIONS.h"
 # include "SEAICE.h"
 # include "SEAICE_PARAMS.h"
 #endif

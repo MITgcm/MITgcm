@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.11 2010/03/16 00:21:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.12 2011/05/24 14:31:14 jmc Exp $
 C $Name:  $
 cc
 
@@ -22,7 +22,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
 #include "ORLANSKI.h"
 
 C SPK 6/2/00: Added radiative OBCs for salinity.
