@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.11 2011/04/20 19:14:07 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.12 2011/05/24 20:48:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
-
 
       subroutine ctrl_getobcse(
      I                             mytime,
@@ -28,26 +27,27 @@ c     ==================================================================
 
       implicit none
 
-#ifdef ALLOW_OBCSE_CONTROL
-
 c     == global variables ==
-
+#ifdef ALLOW_OBCSE_CONTROL
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+c#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif /* ALLOW_OBCSE_CONTROL */
 
 c     == routine arguments ==
-
       _RL     mytime
       integer myiter
       integer mythid
 
+#ifdef ALLOW_OBCSE_CONTROL
 c     == local variables ==
 
       integer bi,bj
@@ -173,9 +173,9 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
          enddo
         enddo
        endif
-       
+
        if ( (obcsefirst) .or. (obcsechanged)) then
-        
+
         do bj = jtlo,jthi
          do bi = itlo,ithi
           do j = jmin,jmax
@@ -186,7 +186,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
           enddo
          enddo
         enddo
-        
+
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
@@ -241,7 +241,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
          enddo
         enddo
        endif
-       
+
 c--   Add control to model variable.
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -278,21 +278,11 @@ c--   Calculate mask for tracer cells (0 => land, 1 => water).
          enddo
         enddo
        enddo
-        
+
 C--   End over iobcs loop
       enddo
 
-#else /* ALLOW_OBCSE_CONTROL undefined */
-
-c     == routine arguments ==
-
-      _RL     mytime
-      integer myiter
-      integer mythid
-
-c--   CPP flag ALLOW_OBCSE_CONTROL undefined.
-
 #endif /* ALLOW_OBCSE_CONTROL */
 
+      return
       end
-

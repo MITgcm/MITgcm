@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.105 2011/05/23 00:28:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.106 2011/05/24 20:45:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,7 +125,8 @@ c They provide the fields to be stored.
 #  include "CG3D.h"
 # endif
 # ifdef ALLOW_OBCS
-#  include "OBCS.h"
+#  include "OBCS_FIELDS.h"
+#  include "OBCS_SEAICE.h"
 #   ifdef ALLOW_PTRACERS
 #    include "OBCS_PTRACERS.h"
 #   endif

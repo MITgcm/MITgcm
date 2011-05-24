@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.12 2011/04/20 19:14:07 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.13 2011/05/24 20:48:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
-
 
       subroutine ctrl_getobcss(
      I                             mytime,
@@ -30,26 +29,27 @@ c     ==================================================================
 
       implicit none
 
-#ifdef ALLOW_OBCSS_CONTROL
-
 c     == global variables ==
-
+#ifdef ALLOW_OBCSS_CONTROL
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+c#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif /* ALLOW_OBCSS_CONTROL */
 
 c     == routine arguments ==
-
       _RL     mytime
       integer myiter
       integer mythid
 
+#ifdef ALLOW_OBCSS_CONTROL
 c     == local variables ==
 
       integer bi,bj
@@ -174,7 +174,7 @@ cgg   &                                        *   maskxz (i,k,bi,bj)
          enddo
         enddo
        endif
-       
+
        if ( (obcssfirst) .or. (obcsschanged)) then
 
         do bj = jtlo,jthi
@@ -283,17 +283,7 @@ c--   Calculate mask for tracer cells (0 => land, 1 => water).
 C--   End over iobcs loop
       enddo
 
-#else /* ALLOW_OBCSS_CONTROL undefined */
-
-c     == routine arguments ==
-
-      _RL     mytime
-      integer myiter
-      integer mythid
-
-c--   CPP flag ALLOW_OBCSS_CONTROL undefined.
-
 #endif /* ALLOW_OBCSS_CONTROL */
 
+      return
       end
-

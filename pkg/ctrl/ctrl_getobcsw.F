@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcsw.F,v 1.12 2011/04/20 19:14:07 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcsw.F,v 1.13 2011/05/24 20:48:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
-
 
       subroutine ctrl_getobcsw(
      I                             mytime,
@@ -29,26 +28,27 @@ c     ==================================================================
 
       implicit none
 
-#ifdef ALLOW_OBCSW_CONTROL
-
 c     == global variables ==
-
+#ifdef ALLOW_OBCSW_CONTROL
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+c#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif /* ALLOW_OBCSW_CONTROL */
 
 c     == routine arguments ==
-
       _RL     mytime
       integer myiter
       integer mythid
 
+#ifdef ALLOW_OBCSW_CONTROL
 c     == local variables ==
 
       integer bi,bj
@@ -278,21 +278,11 @@ c--   Calculate mask for tracer cells (0 => land, 1 => water).
          enddo
         enddo
        enddo
-       
+
 C--   End over iobcs loop
       enddo
 
-#else /* ALLOW_OBCSW_CONTROL undefined */
-
-c     == routine arguments ==
-
-      _RL     mytime
-      integer myiter
-      integer mythid
-
-c--   CPP flag ALLOW_OBCSW_CONTROL undefined.
-
 #endif /* ALLOW_OBCSW_CONTROL */
 
+      return
       end
-

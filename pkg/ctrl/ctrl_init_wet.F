@@ -1,5 +1,4 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.10 2011/05/10 07:30:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.11 2011/05/24 20:48:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -21,12 +20,12 @@ c     == global variables ==
 #include "ctrl.h"
 
 #ifdef ALLOW_OBCS_CONTROL
-# include "OBCS.h"
+# include "OBCS_GRID.h"
 #endif
-#ifdef ALLOW_SHIFWFLX_CONTROL      
+#ifdef ALLOW_SHIFWFLX_CONTROL
 # include "SHELFICE.h"
 #endif /* ALLOW_SHIFWFLX_CONTROL */
-      
+
 c     == routine arguments ==
 
       integer mythid
@@ -77,7 +76,7 @@ c--   Initialise the counters.
             nwetvtile(bi,bj,k) = 0
 #ifdef ALLOW_SHIFWFLX_CONTROL
             nwetitile(bi,bj,k) = 0
-#endif 
+#endif
           enddo
         enddo
       enddo
@@ -182,21 +181,21 @@ c
                do bi = itlo,ithi
                   do k = 1,ncvarnrmax(i)
                      if ( ncvargrd(i) .eq. 'c' ) then
-                        nvarlength = nvarlength + 
+                        nvarlength = nvarlength +
      &                       ncvarrecs(i)*nwetctile(bi,bj,k)
                      else if ( ncvargrd(i) .eq. 's' ) then
-                        nvarlength = nvarlength + 
+                        nvarlength = nvarlength +
      &                       ncvarrecs(i)*nwetstile(bi,bj,k)
                      else if ( ncvargrd(i) .eq. 'w' ) then
-                        nvarlength = nvarlength + 
+                        nvarlength = nvarlength +
      &                       ncvarrecs(i)*nwetwtile(bi,bj,k)
                      else if ( ncvargrd(i) .eq. 'v' ) then
-                        nvarlength = nvarlength + 
+                        nvarlength = nvarlength +
      &                       ncvarrecs(i)*nwetvtile(bi,bj,k)
 #ifdef ALLOW_SHIFWFLX_CONTROL
 c--             Ice shelf mask.
                      else if ( ncvargrd(i) .eq. 'i') then
-                        nvarlength = nvarlength + 
+                        nvarlength = nvarlength +
      &                       ncvarrecs(i)*nwetitile(bi,bj,k)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
                      else if ( ncvargrd(i) .eq. 'm' ) then
@@ -206,25 +205,25 @@ cgg   This overcounts the number of o.b. control points by a factor of "nobcs".
 cgg   As an ad-hoc solution I have divided by nobcs everywhere.
                            if ( i .eq. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
-                              nvarlength = nvarlength + 
+                              nvarlength = nvarlength +
      &                             (ncvarrecs(i)/nobcs)
      &                             *nwetobcsn(bi,bj,k,iobcs)
 #endif
                            else if ( i .eq. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-                              nvarlength = nvarlength + 
+                              nvarlength = nvarlength +
      &                             (ncvarrecs(i)/nobcs)
      &                             *nwetobcss(bi,bj,k,iobcs)
 #endif
                            else if ( i .eq. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-                              nvarlength = nvarlength + 
+                              nvarlength = nvarlength +
      &                             (ncvarrecs(i)/nobcs)
      &                             *nwetobcsw(bi,bj,k,iobcs)
 #endif
                            else if ( i .eq. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-                              nvarlength = nvarlength + 
+                              nvarlength = nvarlength +
      &                             (ncvarrecs(i)/nobcs)
      &                             *nwetobcse(bi,bj,k,iobcs)
 #endif
@@ -282,7 +281,7 @@ cph(
       end do
 
       nwettmp =
-     &     2*nwetc3d + 
+     &     2*nwetc3d +
      &     ncvarrecs(3)*nwetctile(1,1,1) +
      &     ncvarrecs(4)*nwetctile(1,1,1) +
      &     ncvarrecs(5)*nwetwtile(1,1,1) +
@@ -293,7 +292,7 @@ cph(
      &     SQUEEZE_RIGHT , mythid)
 
       nwettmp =
-     &     2*nwetc3d + 
+     &     2*nwetc3d +
      &     ncvarrecs(7)*nwetctile(1,1,1) +
      &     ncvarrecs(8)*nwetctile(1,1,1) +
      &     ncvarrecs(9)*nwetwtile(1,1,1) +
@@ -336,7 +335,7 @@ cph(
      &     SQUEEZE_RIGHT , mythid)
 #endif
 cph)
-      
+
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
       call print_message( msgbuf, standardmessageunit,
@@ -355,7 +354,7 @@ cph)
      &    SQUEEZE_RIGHT , mythid)
 
 c
-c     Summation of wet point counters 
+c     Summation of wet point counters
 c
       do k = 1, nr
 
@@ -549,7 +548,7 @@ c
         enddo
        enddo
        CALL GLOBAL_SUM_INT( ntmpshi,  myThid )
-       if (k.eq.1) then 
+       if (k.eq.1) then
         nWetiGlobal(k)=ntmpshi
        else
         nWetiGlobal(k)=0

@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.5 2011/05/24 20:45:48 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
 
       subroutine cost_obcs_ageos( myiter, mytime, mythid )
 
@@ -33,7 +30,7 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_OBCS
-# include "OBCS.h"
+# include "OBCS_GRID.h"
 #endif
 
 #include "cal.h"
@@ -236,11 +233,11 @@ cgg    All these points need to be wet.
             do k = 1,nr
 
 C-- jmc: both calls below are wrong if more than 1 tile => stop here
-       IF ( bi.NE.1 .OR. bj.NE.1 ) 
+       IF ( bi.NE.1 .OR. bj.NE.1 )
      &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
-     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         tbar(1-OLx,1-OLy,k,bi,bj),
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
@@ -302,9 +299,12 @@ cgg    All these points need to be wet.
 
             do k = 1,nr
 
+C-- jmc: both calls below are wrong if more than 1 tile => stop here
+       IF ( bi.NE.1 .OR. bj.NE.1 )
+     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
-     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         tbar(1-OLx,1-OLy,k,bi,bj),
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
@@ -366,9 +366,11 @@ cgg    All these points need to be wet.
 
             do k = 1,nr
 
+       IF ( bi.NE.1 .OR. bj.NE.1 )
+     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
-     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         tbar(1-OLx,1-OLy,k,bi,bj),
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
@@ -429,9 +431,11 @@ cgg    All these points need to be wet.
 
             do k = 1,nr
 
+       IF ( bi.NE.1 .OR. bj.NE.1 )
+     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
-     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         tbar(1-OLx,1-OLy,k,bi,bj),
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
@@ -523,6 +527,3 @@ c--   End of loop over records.
 
       return
       end
-
-
-

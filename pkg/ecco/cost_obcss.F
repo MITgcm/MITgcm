@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.6 2011/03/14 17:05:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.7 2011/05/24 20:45:48 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: COST_OBCSS
@@ -39,9 +36,10 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #ifdef ALLOW_OBCS
-# include "OBCS.h"
+c# include "OBCS_PARAMS.h"
+# include "OBCS_GRID.h"
 #endif
 
 #include "cal.h"
@@ -141,7 +139,7 @@ c     Number of records to be used.
 
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_obcss_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
+        write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_obcss_file(1:ilfld), '.', optimcycle
       endif
 
@@ -158,7 +156,7 @@ cgg    Need to solve for iobcs would have been.
           iobcs = irec - igg*nobcs
 cgg          print*,'S IREC, IOBCS',irec, iobcs
 
-          call active_read_xz( 'maskobcss', maskxz, 
+          call active_read_xz( 'maskobcss', maskxz,
      &                         iobcs,
      &                         doglobalread, ladinit, 0,
      &                         mythid, dummy )
@@ -219,10 +217,3 @@ c--   End of loop over records.
 
       return
       end
-
-
-
-
-
-
-
