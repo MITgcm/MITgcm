@@ -1,5 +1,4 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.39 2011/05/10 07:30:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.40 2011/05/24 20:56:54 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -71,9 +70,6 @@ c     == global variables ==
 
 #ifdef ALLOW_CAL
 # include "cal.h"
-#endif
-#ifdef ALLOW_OBCS_CONTROL
-# include "OBCS.h"
 #endif
 #ifdef ALLOW_DIC_CONTROL
 # include "DIC_CTRL.h"
@@ -168,8 +164,8 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_THETA0_CONTROL
 c--   Initial state temperature contribution.
-      call ctrl_init_ctrlvar ( 
-     &     xx_theta_file, 1, 101, 1, 1, 1, 
+      call ctrl_init_ctrlvar (
+     &     xx_theta_file, 1, 101, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_THETA0_CONTROL */
 
@@ -177,7 +173,7 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SALT0_CONTROL
 c--   Initial state salinity contribution.
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_salt_file, 2, 102, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_SALT0_CONTROL */
@@ -190,28 +186,28 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_HFLUX_CONTROL))
 c--   Heat flux.
-      call ctrl_init_rec ( 
-     I     xx_hfluxstartdate1, xx_hfluxstartdate2, xx_hfluxperiod, 1, 
+      call ctrl_init_rec (
+     I     xx_hfluxstartdate1, xx_hfluxstartdate2, xx_hfluxperiod, 1,
      O     xx_hfluxstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_hflux_file, 3, 103, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_ATEMP_CONTROL))
 c--   Atmos. temperature
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_atempstartdate1, xx_atempstartdate2, xx_atempperiod, 1,
      O     xx_atempstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_atemp_file, 7, 107, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
-      
+
 #elif (defined (ALLOW_HFLUX0_CONTROL))
 c--   initial forcing only
-      call ctrl_init_ctrlvar ( 
-     &     xx_hflux_file, 3, 103, 1, 1, 1, 
+      call ctrl_init_ctrlvar (
+     &     xx_hflux_file, 3, 103, 1, 1, 1,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_HFLUX_CONTROL */
@@ -220,28 +216,28 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SFLUX_CONTROL))
 c--   Salt flux.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_sfluxstartdate1, xx_sfluxstartdate2, xx_sfluxperiod, 1,
      O     xx_sfluxstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_sflux_file, 4, 104, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
- 
+
 #elif (defined (ALLOW_AQH_CONTROL))
 c--   Atmos. humidity
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_aqhstartdate1, xx_aqhstartdate2, xx_aqhperiod, 1,
      O     xx_aqhstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_aqh_file, 8, 108, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_SFLUX0_CONTROL))
 c--   initial forcing only
-      call ctrl_init_ctrlvar ( 
-     &     xx_sflux_file, 4, 104, 1, 1, 1, 
+      call ctrl_init_ctrlvar (
+     &     xx_sflux_file, 4, 104, 1, 1, 1,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #endif /* ALLOW_SFLUX_CONTROL */
@@ -250,11 +246,11 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_USTRESS_CONTROL))
 c--   Zonal wind stress.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_tauustartdate1, xx_tauustartdate2, xx_tauuperiod, 1,
      O     xx_tauustartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_tauu_file, 5, 105, diffrec, startrec, endrec,
 #ifndef ALLOW_ROTATE_UV_CONTROLS
      &     snx, sny, 1, 'w', 'xy', mythid )
@@ -264,17 +260,17 @@ c--   Zonal wind stress.
 
 #elif (defined (ALLOW_UWIND_CONTROL))
 c--   Zonal wind speed.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod, 1,
      O     xx_uwindstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_uwind_file, 9, 109, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_TAUU0_CONTROL))
 c--   initial forcing only
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_tauu_file, 5, 105, 1, 1, 1,
      &     snx, sny, 1, 'w', 'xy', mythid )
 
@@ -284,31 +280,31 @@ c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_VSTRESS_CONTROL))
 c--   Meridional wind stress.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_tauvstartdate1, xx_tauvstartdate2, xx_tauvperiod, 1,
      O     xx_tauvstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_tauv_file, 6, 106, diffrec, startrec, endrec,
 #ifndef ALLOW_ROTATE_UV_CONTROLS
      &     snx, sny, 1, 's', 'xy', mythid )
-#else     
+#else
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif
 
 #elif (defined (ALLOW_VWIND_CONTROL))
 c--   Meridional wind speed.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod, 1,
      O     xx_vwindstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_vwind_file, 10, 110, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_TAUV0_CONTROL))
 c--   initial forcing only
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_tauv_file, 6, 106, 1, 1, 1,
      &     snx, sny, 1, 's', 'xy', mythid )
 
@@ -322,11 +318,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSN_CONTROL
 c--   Northern obc.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_obcsnstartdate1, xx_obcsnstartdate2, xx_obcsnperiod, 4,
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
      &     snx, 1, nr, 'm', 'xz', mythid )
 #endif /* ALLOW_OBCSN_CONTROL */
@@ -335,11 +331,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSS_CONTROL
 c--   Southern obc.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_obcssstartdate1, xx_obcssstartdate2, xx_obcssperiod, 4,
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
      &     snx, 1, nr, 'm', 'xz', mythid )
 #endif /* ALLOW_OBCSS_CONTROL */
@@ -348,11 +344,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSW_CONTROL
 c--   Western obc.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
      O     xx_obcswstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
      &     1, sny, nr, 'm', 'yz', mythid )
 #endif  /* ALLOW_OBCSW_CONTROL */
@@ -361,11 +357,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSE_CONTROL
 c--   Eastern obc.
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
      O     xx_obcsestartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
      &     1, sny, nr, 'm', 'yz', mythid )
 #endif /* ALLOW_OBCSE_CONTROL */
@@ -385,17 +381,17 @@ c     run-time option and also define filename=baro_invmodes.bin
         end do
         CLOSE( dUnit )
 CMM  double precision modesv is size [NR,NR,NR]
-c     dim one is z-space    
-c     dim two is mode space 
+c     dim one is z-space
+c     dim two is mode space
 c     dim three is the total depth for which this set of modes applies
 c     so for example modesv(:,2,nr) will be the second mode
 c     in z-space for the full model depth
-c    The modes are to be orthogonal when weighted by dz.  
+c    The modes are to be orthogonal when weighted by dz.
 c     i.e. if f_i(z) = mode i, sum_j(f_i(z_j)*f_j(z_j)*dz_j = delta_ij
 c    first mode should also be constant in depth...barotropic
-c    For a matlab code example how to construct the orthonormal modes, 
+c    For a matlab code example how to construct the orthonormal modes,
 c     which are ideally the solution of planetary vertical mode equation
-c     using model mean dRho/dz, see 
+c     using model mean dRho/dz, see
 c     MITgcm/verification/obcs_ctrl/input/gendata.m
 c    This code is compatible with partial cells
 #endif
@@ -403,7 +399,7 @@ c    This code is compatible with partial cells
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_DIFFKR_CONTROL
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_diffkr_file, 15, 115, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_DIFFKR_CONTROL */
@@ -411,7 +407,7 @@ c--
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_KAPGM_CONTROL
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_kapgm_file, 16, 116, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_KAPGM_CONTROL */
@@ -419,7 +415,7 @@ c--
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_TR10_CONTROL
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_tr1_file, 17, 117, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_TR10_CONTROL */
@@ -427,16 +423,16 @@ c--
 c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SST_CONTROL))
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_sststartdate1, xx_sststartdate2, xx_sstperiod, 1,
      O     xx_sststartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_sst_file, 18, 118, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_SST0_CONTROL))
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_sst_file, 18, 118, 1, 1, 1,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -445,25 +441,25 @@ c--
 c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SSS_CONTROL))
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod, 1,
      O     xx_sssstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_sss_file, 19, 119, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_SSS0_CONTROL))
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_sss_file, 19, 119, 1, 1, 1,
      &     snx, sny, 1, 'c', 'xy', mythid )
-      
+
 #endif /* ALLOW_SSS0_CONTROL */
 
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_DEPTH_CONTROL
-        call ctrl_init_ctrlvar ( 
+        call ctrl_init_ctrlvar (
      &       xx_depth_file, 20, 120, 1, 1, 1,
      &       snx, sny,  1, 'c', 'xy', mythid )
 #endif /* ALLOW_DEPTH_CONTROL */
@@ -471,7 +467,7 @@ c--
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EFLUXY0_CONTROL
-        call ctrl_init_ctrlvar ( 
+        call ctrl_init_ctrlvar (
      &       xx_efluxy_file, 21, 121, 1, 1, 1,
      &       snx, sny, nr, 's', '3d', mythid )
 #endif /* ALLOW_EFLUXY0_CONTROL */
@@ -479,7 +475,7 @@ c--
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EFLUXP0_CONTROL
-        call ctrl_init_ctrlvar ( 
+        call ctrl_init_ctrlvar (
      &       xx_efluxp_file, 22, 122, 1, 1, 1,
      &       snx, sny, nr, 'v', '3d', mythid )
 #endif /* ALLOW_EFLUXP0_CONTROL */
@@ -487,7 +483,7 @@ c--
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-        call ctrl_init_ctrlvar ( 
+        call ctrl_init_ctrlvar (
      &       xx_bottomdrag_file, 23, 123, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_BOTTOMDRAG_CONTROL */
@@ -556,11 +552,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_PRECIP_CONTROL
 c--   Atmos. precipitation
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_precipstartdate1, xx_precipstartdate2, xx_precipperiod,1,
      O     xx_precipstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_precip_file, 32, 132, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -570,11 +566,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SWFLUX_CONTROL
 c--   Atmos. swflux
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_swfluxstartdate1, xx_swfluxstartdate2, xx_swfluxperiod, 1,
      O     xx_swfluxstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_swflux_file, 33, 133, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -584,11 +580,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SWDOWN_CONTROL
 c--   Atmos. swdown
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_swdownstartdate1, xx_swdownstartdate2, xx_swdownperiod, 1,
      O     xx_swdownstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_swdown_file, 34, 134, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -598,11 +594,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_LWFLUX_CONTROL
 c--   Atmos. lwflux
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_lwfluxstartdate1, xx_lwfluxstartdate2, xx_lwfluxperiod, 1,
      O     xx_lwfluxstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_lwflux_file, 35, 135, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -612,11 +608,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_LWDOWN_CONTROL
 c--   Atmos. lwdown
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_lwdownstartdate1, xx_lwdownstartdate2, xx_lwdownperiod, 1,
      O     xx_lwdownstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_lwdown_file, 36, 136, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -626,11 +622,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EVAP_CONTROL
 c--   Atmos. evap
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_evapstartdate1, xx_evapstartdate2, xx_evapperiod, 1,
      O     xx_evapstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_evap_file, 37, 137, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -640,12 +636,12 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SNOWPRECIP_CONTROL
 c--   Atmos. snowprecip
-      call ctrl_init_rec ( 
-     I     xx_snowprecipstartdate1, xx_snowprecipstartdate2, 
+      call ctrl_init_rec (
+     I     xx_snowprecipstartdate1, xx_snowprecipstartdate2,
      I     xx_snowprecipperiod, 1,
      O     xx_snowprecipstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_snowprecip_file, 38, 138, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -655,12 +651,12 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_APRESSURE_CONTROL
 c--   Atmos. apressure
-      call ctrl_init_rec ( 
-     I     xx_apressurestartdate1, xx_apressurestartdate2, 
+      call ctrl_init_rec (
+     I     xx_apressurestartdate1, xx_apressurestartdate2,
      I     xx_apressureperiod, 1,
      O     xx_apressurestartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_apressure_file, 39, 139, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 
@@ -670,11 +666,11 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_RUNOFF_CONTROL
 c--   Atmos. runoff
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_runoffstartdate1, xx_runoffstartdate2, xx_runoffperiod, 1,
      O     xx_runoffstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_runoff_file, 40, 140, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_RUNOFF_CONTROL */
@@ -683,14 +679,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SIAREA_CONTROL
 C--   so far there are no xx_siareastartdate1, etc., so we need to fudge it.
-CML      call ctrl_init_rec ( 
+CML      call ctrl_init_rec (
 CML     I     xx_siareastartdate1, xx_siareastartdate2, xx_siareaperiod, 1,
 CML     O     xx_siareastartdate, diffrec, startrec, endrec,
 CML     I     mythid )
       startrec = 1
       endrec   = 1
       diffrec  = endrec - startrec + 1
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_siarea_file, 41, 141, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_siarea_CONTROL */
@@ -699,14 +695,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SIHEFF_CONTROL
 C--   so far there are no xx_siheffstartdate1, etc., so we need to fudge it.
-CML      call ctrl_init_rec ( 
+CML      call ctrl_init_rec (
 CML     I     xx_siheffstartdate1, xx_siheffstartdate2, xx_siheffperiod, 1,
 CML     O     xx_siheffstartdate, diffrec, startrec, endrec,
 CML     I     mythid )
       startrec = 1
       endrec   = 1
       diffrec  = endrec - startrec + 1
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_siheff_file, 42, 142, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_siheff_CONTROL */
@@ -715,14 +711,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SIHSNOW_CONTROL
 C--   so far there are no xx_sihsnowstartdate1, etc., so we need to fudge it.
-CML      call ctrl_init_rec ( 
+CML      call ctrl_init_rec (
 CML     I     xx_sihsnowstartdate1, xx_sihsnowstartdate2, xx_sihsnowperiod, 1,
 CML     O     xx_sihsnowstartdate, diffrec, startrec, endrec,
 CML     I     mythid )
       startrec = 1
       endrec   = 1
       diffrec  = endrec - startrec + 1
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_sihsnow_file, 43, 143, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_sihsnow_CONTROL */
@@ -731,7 +727,7 @@ CML     I     mythid )
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_KAPREDI_CONTROL
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_kapredi_file, 44, 144, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_KAPREDI_CONTROL */
@@ -741,12 +737,12 @@ c----------------------------------------------------------------------
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
 c--   freshwater flux underneath ice-shelves
-      call ctrl_init_rec ( 
+      call ctrl_init_rec (
      I     xx_shifwflxstartdate1, xx_shifwflxstartdate2,
      I     xx_shifwflxperiod, 1,
      O     xx_shifwflxstartdate, diffrec, startrec, endrec,
      I     mythid )
-      call ctrl_init_ctrlvar ( 
+      call ctrl_init_ctrlvar (
      &     xx_shifwflx_file, 45, 145, diffrec, startrec, endrec,
      &     snx, sny, 1, 'i', 'xy', mythid )
 #endif /* ALLOW_SHIFWFLX_CONTROL */
@@ -755,7 +751,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
       call ctrl_init_wet( mythid )
-      
+
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
@@ -798,12 +794,12 @@ c----------------------------------------------------------------------
         enddo
        enddo
       enddo
- 
+
       return
       end
 
-      subroutine ctrl_init_rec( 
-     I     fldstartdate1, fldstartdate2, fldperiod, nfac, 
+      subroutine ctrl_init_rec(
+     I     fldstartdate1, fldstartdate2, fldperiod, nfac,
      O     fldstartdate, diffrec, startrec, endrec,
      I     mythid )
 
@@ -811,7 +807,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init_rec
 c     ==================================================================
 c
-c     helper routine to compute the first and last record of a 
+c     helper routine to compute the first and last record of a
 c     time dependent control variable
 c
 c     Martin.Losch@awi.de, 2011-Mar-15
@@ -820,7 +816,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init_rec
 c     ==================================================================
 
-      implicit none 
+      implicit none
 
 c     == global variables ==
 #include "SIZE.h"
@@ -829,7 +825,7 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-      
+
 c     == input variables ==
 c     fldstartdate1/2 : start time (date/time) of fld
 c     fldperod        : sampling interval of fld
@@ -841,7 +837,7 @@ c     mythid          : thread ID of this instance
       _RL     fldperiod
       integer nfac
       integer mythid
-      
+
 c     == output variables ==
 c     fldstartdate : full date from fldstartdate1 and 2
 c     startrec     : first record of ctrl variable
@@ -853,7 +849,7 @@ c     diffrec      : difference between first and last record of ctrl variable
       integer diffrec
 
 c     == local variables ==
-      integer i 
+      integer i
 #ifdef ALLOW_CAL
       integer difftime(4)
       _RL     diffsecs
@@ -864,7 +860,7 @@ c     initialise some output
        fldstartdate(i) = 0
       end do
       startrec = 0
-      endrec   = 0 
+      endrec   = 0
       diffrec  = 0
 # ifdef ALLOW_CAL
       call cal_FullDate( fldstartdate1, fldstartdate2,

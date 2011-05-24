@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_xz.F,v 1.6 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_xz.F,v 1.7 2011/05/24 20:56:54 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_mask_set_xz(
      &     jp1, OB_J, nwetobcs, ymaskobcs, mythid )
@@ -27,9 +26,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ctrl.h"
-#ifdef ALLOW_OBCS_CONTROL
-# include "OBCS.h"
-#endif
 
 c     == routine arguments ==
 
@@ -145,7 +141,3 @@ c--               West mask for U
 
       return
       end
-
-
-
-
