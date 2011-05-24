@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.17 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.18 2011/05/24 20:35:54 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -37,8 +36,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 c**************************************
-c These includes are needed for 
-c AD-checkpointing. 
+c These includes are needed for
+c AD-checkpointing.
 c They provide the fields to be stored.
 
 # include "GRID.h"
@@ -48,7 +47,8 @@ c They provide the fields to be stored.
 # include "AUTODIFF.h"
 
 # ifdef ALLOW_OBCS
-#  include "OBCS.h"
+#  include "OBCS_FIELDS.h"
+#  include "OBCS_SEAICE.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
@@ -63,27 +63,27 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 
 c     == routine arguments ==
-c     note: under the multi-threaded model myiter and 
-c           mytime are local variables passed around as routine 
-c           arguments. Although this is fiddly it saves the need to 
-c           impose additional synchronisation points when they are 
+c     note: under the multi-threaded model myiter and
+c           mytime are local variables passed around as routine
+c           arguments. Although this is fiddly it saves the need to
+c           impose additional synchronisation points when they are
 c           updated.
 c     mythid - thread number for this instance of the routine.
-      integer mythid 
+      integer mythid
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c     == local variables ==
 
       integer bi,bj
       integer I,J,K
-       
+
 c--   == end of interface ==
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_ENTER('AUTODIFF_STORE',myThid)
 #endif
-          
+
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -141,22 +141,22 @@ C-      3D arrays
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
        StoreDynVars3D(I,J,K,bi,bj,1) = gs(I,J,K,bi,bj)
-       StoreDynVars3D(I,J,K,bi,bj,2) = gt(I,J,K,bi,bj)             
+       StoreDynVars3D(I,J,K,bi,bj,2) = gt(I,J,K,bi,bj)
 #ifdef ALLOW_ADAMSBASHFORTH_3
-       StoreDynVars3D(I,J,K,bi,bj,3) = gtnm(I,J,K,bi,bj,1)             
-       StoreDynVars3D(I,J,K,bi,bj,4) = gsnm(I,J,K,bi,bj,1)             
-       StoreDynVars3D(I,J,K,bi,bj,5) = gunm(I,J,K,bi,bj,1)             
-       StoreDynVars3D(I,J,K,bi,bj,6) = gvnm(I,J,K,bi,bj,1)             
+       StoreDynVars3D(I,J,K,bi,bj,3) = gtnm(I,J,K,bi,bj,1)
+       StoreDynVars3D(I,J,K,bi,bj,4) = gsnm(I,J,K,bi,bj,1)
+       StoreDynVars3D(I,J,K,bi,bj,5) = gunm(I,J,K,bi,bj,1)
+       StoreDynVars3D(I,J,K,bi,bj,6) = gvnm(I,J,K,bi,bj,1)
 #else
        StoreDynVars3D(I,J,K,bi,bj,3) = gtnm1(I,J,K,bi,bj)
        StoreDynVars3D(I,J,K,bi,bj,4) = gsnm1(I,J,K,bi,bj)
        StoreDynVars3D(I,J,K,bi,bj,5) = gunm1(I,J,K,bi,bj)
        StoreDynVars3D(I,J,K,bi,bj,6) = gvnm1(I,J,K,bi,bj)
 #endif
-       StoreDynVars3D(I,J,K,bi,bj,7) = theta(I,J,K,bi,bj)             
-       StoreDynVars3D(I,J,K,bi,bj,8) = salt(I,J,K,bi,bj)             
-       StoreDynVars3D(I,J,K,bi,bj,9) = uvel(I,J,K,bi,bj)             
-       StoreDynVars3D(I,J,K,bi,bj,10) = vvel(I,J,K,bi,bj)     
+       StoreDynVars3D(I,J,K,bi,bj,7) = theta(I,J,K,bi,bj)
+       StoreDynVars3D(I,J,K,bi,bj,8) = salt(I,J,K,bi,bj)
+       StoreDynVars3D(I,J,K,bi,bj,9) = uvel(I,J,K,bi,bj)
+       StoreDynVars3D(I,J,K,bi,bj,10) = vvel(I,J,K,bi,bj)
        StoreDynVars3D(I,J,K,bi,bj,11) = wvel(I,J,K,bi,bj)
        StoreDynVars3D(I,J,K,bi,bj,12) = totphihyd(I,J,K,bi,bj)
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -172,7 +172,7 @@ C-      3D arrays
 
        ENDDO
       ENDDO
-   
+
 #ifdef ALLOW_EXF
 
 C--   Over all tiles
@@ -232,7 +232,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-       
+
 # if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -296,70 +296,70 @@ C-      2D arrays
 # ifdef ALLOW_UWIND_CONTROL
           StoreCTRLS1(I,J,bi,bj,1) = xx_uwind0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,2) = xx_uwind1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,1) = 0.0
           StoreCTRLS1(I,J,bi,bj,2) = 0.0
 #  endif
 # ifdef ALLOW_VWIND_CONTROL
           StoreCTRLS1(I,J,bi,bj,3) = xx_vwind0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,4) = xx_vwind1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,3) = 0.0
           StoreCTRLS1(I,J,bi,bj,4) = 0.0
 #  endif
 # ifdef ALLOW_ATEMP_CONTROL
           StoreCTRLS1(I,J,bi,bj,5) = xx_atemp0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,6) = xx_atemp1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,5) = 0.0
           StoreCTRLS1(I,J,bi,bj,6) = 0.0
 #  endif
 # ifdef ALLOW_AQH_CONTROL
           StoreCTRLS1(I,J,bi,bj,7) = xx_aqh0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,8) = xx_aqh1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,7) = 0.0
           StoreCTRLS1(I,J,bi,bj,8) = 0.0
 #  endif
 # ifdef ALLOW_PRECIP_CONTROL
           StoreCTRLS1(I,J,bi,bj,9) = xx_precip0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,10) = xx_precip1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,9) = 0.0
           StoreCTRLS1(I,J,bi,bj,10) = 0.0
 #  endif
 # ifdef ALLOW_SNOWPRECIP_CONTROL
           StoreCTRLS1(I,J,bi,bj,11) = xx_snowprecip0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,12) = xx_snowprecip1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,11) = 0.0
           StoreCTRLS1(I,J,bi,bj,12) = 0.0
 #  endif
 # ifdef ALLOW_SWFLUX_CONTROL
           StoreCTRLS1(I,J,bi,bj,13) = xx_swflux0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,14) = xx_swflux1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,13) = 0.0
           StoreCTRLS1(I,J,bi,bj,14) = 0.0
 #  endif
 #  ifdef ALLOW_SWDOWN_CONTROL
           StoreCTRLS1(I,J,bi,bj,15) = xx_swdown0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,16) = xx_swdown1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,15) = 0.0
           StoreCTRLS1(I,J,bi,bj,16) = 0.0
 #  endif
 #  ifdef ALLOW_LWDOWN_CONTROL
           StoreCTRLS1(I,J,bi,bj,17) = xx_lwdown0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,18) = xx_lwdown1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,17) = 0.0
           StoreCTRLS1(I,J,bi,bj,18) = 0.0
 #  endif
 #  ifdef ALLOW_APRESSURE_CONTROL
           StoreCTRLS1(I,J,bi,bj,19) = xx_apressure0(I,J,bi,bj)
           StoreCTRLS1(I,J,bi,bj,20) = xx_apressure1(I,J,bi,bj)
-#  else            
+#  else
           StoreCTRLS1(I,J,bi,bj,19) = 0.0
           StoreCTRLS1(I,J,bi,bj,20) = 0.0
 #  endif
@@ -410,7 +410,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-# endif /* ALLOW_OBCS_NORTH */       
+# endif /* ALLOW_OBCS_NORTH */
 
 # ifdef ALLOW_OBCS_SOUTH
 C--   Over all tiles
@@ -452,7 +452,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-# endif /* ALLOW_OBCS_SOUTH */       
+# endif /* ALLOW_OBCS_SOUTH */
 
 # ifdef ALLOW_OBCS_EAST
 C--   Over all tiles
@@ -494,7 +494,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-# endif /* ALLOW_OBCS_EAST */     
+# endif /* ALLOW_OBCS_EAST */
 
 # ifdef ALLOW_OBCS_WEST
 C--   Over all tiles
@@ -569,8 +569,8 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,12) = seaicemasku(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,13) = seaicemaskv(I,J,bi,bj)
 #  else
-          StoreSEAICE(I,J,bi,bj,11) = 0.0      
-          StoreSEAICE(I,J,bi,bj,12) = 0.0           
+          StoreSEAICE(I,J,bi,bj,11) = 0.0
+          StoreSEAICE(I,J,bi,bj,12) = 0.0
           StoreSEAICE(I,J,bi,bj,15) = 0.0
 #  endif /* SEAICE_CGRID */
 #  ifdef SEAICE_ALLOW_EVP
@@ -578,23 +578,23 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,17) = seaice_sigma2(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,18) = seaice_sigma12(I,J,bi,bj)
 #  else
-          StoreSEAICE(I,J,bi,bj,16) = 0.0      
-          StoreSEAICE(I,J,bi,bj,17) = 0.0           
+          StoreSEAICE(I,J,bi,bj,16) = 0.0
+          StoreSEAICE(I,J,bi,bj,17) = 0.0
           StoreSEAICE(I,J,bi,bj,18) = 0.0
 #  endif /* SEAICE_ALLOW_EVP */
 # else
-          StoreSEAICE(I,J,bi,bj,7) = 0.0      
-          StoreSEAICE(I,J,bi,bj,8) = 0.0           
+          StoreSEAICE(I,J,bi,bj,7) = 0.0
+          StoreSEAICE(I,J,bi,bj,8) = 0.0
           StoreSEAICE(I,J,bi,bj,9) = 0.0
-          StoreSEAICE(I,J,bi,bj,10) = 0.0      
-          StoreSEAICE(I,J,bi,bj,11) = 0.0           
+          StoreSEAICE(I,J,bi,bj,10) = 0.0
+          StoreSEAICE(I,J,bi,bj,11) = 0.0
           StoreSEAICE(I,J,bi,bj,12) = 0.0
-          StoreSEAICE(I,J,bi,bj,13) = 0.0      
-          StoreSEAICE(I,J,bi,bj,14) = 0.0           
-          StoreSEAICE(I,J,bi,bj,15) = 0.0      
-          StoreSEAICE(I,J,bi,bj,16) = 0.0           
+          StoreSEAICE(I,J,bi,bj,13) = 0.0
+          StoreSEAICE(I,J,bi,bj,14) = 0.0
+          StoreSEAICE(I,J,bi,bj,15) = 0.0
+          StoreSEAICE(I,J,bi,bj,16) = 0.0
           StoreSEAICE(I,J,bi,bj,17) = 0.0
-          StoreSEAICE(I,J,bi,bj,18) = 0.0      
+          StoreSEAICE(I,J,bi,bj,18) = 0.0
 # endif /* SEAICE_ALLOW_DYNAMICS */
 # ifdef SEAICE_VARIABLE_SALINITY
           StoreSEAICE(I,J,bi,bj,19) = HSALT(I,J,bi,bj)
@@ -608,7 +608,7 @@ C-      2D arrays
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_LEAVE('AUTODIFF_STORE',myThid)
 #endif
 
@@ -617,4 +617,3 @@ c**************************************
 
       return
       end
-

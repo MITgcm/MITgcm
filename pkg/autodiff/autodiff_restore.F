@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.18 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.19 2011/05/24 20:35:55 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -37,8 +36,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 c**************************************
-c These includes are needed for 
-c AD-checkpointing. 
+c These includes are needed for
+c AD-checkpointing.
 c They provide the fields to be stored.
 
 # include "GRID.h"
@@ -48,7 +47,8 @@ c They provide the fields to be stored.
 # include "AUTODIFF.h"
 
 # ifdef ALLOW_OBCS
-#  include "OBCS.h"
+#  include "OBCS_FIELDS.h"
+#  include "OBCS_SEAICE.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
@@ -63,27 +63,27 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 
 c     == routine arguments ==
-c     note: under the multi-threaded model myiter and 
-c           mytime are local variables passed around as routine 
-c           arguments. Although this is fiddly it saves the need to 
-c           impose additional synchronisation points when they are 
+c     note: under the multi-threaded model myiter and
+c           mytime are local variables passed around as routine
+c           arguments. Although this is fiddly it saves the need to
+c           impose additional synchronisation points when they are
 c           updated.
 c     mythid - thread number for this instance of the routine.
-      integer mythid 
+      integer mythid
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c     == local variables ==
 
       integer bi,bj
       integer I,J,K
-       
+
 c--   == end of interface ==
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_ENTER('AUTODIFF_RESTORE',myThid)
 #endif
-          
+
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -143,10 +143,10 @@ C-      3D arrays
        gunm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,5)
        gvnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,6)
 #endif
-       theta(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,7)        
-       salt(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,8)       
-       uvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,9)    
-       vvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,10)     
+       theta(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,7)
+       salt(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,8)
+       uvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,9)
+       vvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,10)
        wvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,11)
        totphihyd(I,J,K,bi,bj)= StoreDynVars3D(I,J,K,bi,bj,12)
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -162,7 +162,7 @@ C-      3D arrays
 
        ENDDO
       ENDDO
-       
+
 #ifdef ALLOW_EXF
 
 C--   Over all tiles
@@ -206,7 +206,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-       
+
 # if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -221,7 +221,7 @@ C-      2D arrays
           atemp1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,4)
           precip0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,5)
           precip1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,6)
-          lwflux0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,7) 
+          lwflux0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,7)
           lwflux1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,8)
           snowprecip0(I,J,bi,bj)     = StoreEXF2(I,J,bi,bj,9)
           snowprecip1(I,J,bi,bj)     = StoreEXF2(I,J,bi,bj,10)
@@ -334,7 +334,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-# endif /* ALLOW_OBCS_NORTH */       
+# endif /* ALLOW_OBCS_NORTH */
 
 # ifdef ALLOW_OBCS_SOUTH
 C--   Over all tiles
@@ -367,7 +367,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-# endif /* ALLOW_OBCS_SOUTH */       
+# endif /* ALLOW_OBCS_SOUTH */
 
 # ifdef ALLOW_OBCS_EAST
 C--   Over all tiles
@@ -400,7 +400,7 @@ C-      2D arrays
         enddo
        enddo
       enddo
-# endif /* ALLOW_OBCS_EAST */     
+# endif /* ALLOW_OBCS_EAST */
 
 # ifdef ALLOW_OBCS_WEST
 C--   Over all tiles
@@ -445,7 +445,7 @@ C-      2D arrays
          DO I=1-Olx,sNx+Olx
           AREA(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,1)
           HEFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,2)
-          HSNOW(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,3)      
+          HSNOW(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,3)
           TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
           RUNOFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,5)
 # ifdef SEAICE_CGRID
@@ -482,7 +482,7 @@ cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_LEAVE('AUTODIFF_RESTORE',myThid)
 #endif
 
@@ -491,4 +491,3 @@ c**************************************
 
       return
       end
-
