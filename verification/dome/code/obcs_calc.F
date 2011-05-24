@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.8 2011/02/28 16:31:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.9 2011/05/24 20:31:33 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -18,7 +18,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OBCS.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
 #include "EOS.h"
 
 C     == Routine arguments ==
