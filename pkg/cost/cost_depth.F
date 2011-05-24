@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_depth.F,v 1.1 2006/06/07 01:45:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_depth.F,v 1.2 2011/05/24 22:11:29 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_CPPOPTIONS.h"
 
       subroutine cost_depth( myThid )
 C     /==========================================================\

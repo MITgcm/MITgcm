@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.8 2007/11/19 14:00:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.9 2011/05/24 22:11:29 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_CPPOPTIONS.h"
 
       subroutine cost_test( myThid )
 C     /==========================================================\
@@ -89,4 +89,5 @@ cph)
 
 #endif
 
+      RETURN
       END

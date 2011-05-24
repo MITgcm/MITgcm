@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.14 2011/02/03 02:00:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.15 2011/05/24 22:11:29 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_CPPOPTIONS.h"
 
 CBOI
 C

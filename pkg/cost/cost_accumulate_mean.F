@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.6 2008/01/31 16:55:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.7 2011/05/24 22:11:29 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_CPPOPTIONS.h"
 
       subroutine cost_accumulate_mean( myThid )
 C     *==========================================================*
@@ -56,13 +56,13 @@ C--   Calculate cost function on tile of this instance
      &               + vVel(i,j,k,bi,bj)
      &               /lastinterval*deltaTClock
 
-                cMeanThetaUVel(i,j,k,bi,bj) = 
+                cMeanThetaUVel(i,j,k,bi,bj) =
      &               cMeanThetaUVel(i,j,k,bi,bj)
      &               + (theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))
      &                 /2.*uvel(i,j,k,bi,bj)
      &                 *maskW(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
      &                 /lastinterval*deltaTClock
-                cMeanThetaVVel(i,j,k,bi,bj) = 
+                cMeanThetaVVel(i,j,k,bi,bj) =
      &               cMeanThetaVVel(i,j,k,bi,bj)
      &               + (theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))
      &                 /2.*vvel(i,j,k,bi,bj)
@@ -76,4 +76,5 @@ C--   Calculate cost function on tile of this instance
 
 #endif
 
+      RETURN
       END
