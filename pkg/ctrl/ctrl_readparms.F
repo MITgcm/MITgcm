@@ -1,10 +1,7 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.33 2011/05/10 07:30:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.34 2011/05/24 20:52:51 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_readparms( mythid )
 
@@ -28,12 +25,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
+c#include "GRID.h"
 #include "ctrl.h"
-
-#ifdef ALLOW_OBCS_CONTROL
-# include "OBCS.h"
-#endif
 
 c     == routine arguments ==
 
@@ -95,10 +88,10 @@ c--   Read the namelist input.
      &  xx_lwdownstartdate1, xx_lwdownstartdate2, xx_lwdownperiod,
      &  xx_evap_file, xx_evap_remo_intercept, xx_evap_remo_slope,
      &  xx_evapstartdate1, xx_evapstartdate2, xx_evapperiod,
-     &  xx_snowprecip_file, xx_snowprecip_remo_intercept, 
+     &  xx_snowprecip_file, xx_snowprecip_remo_intercept,
      &  xx_snowprecip_remo_slope,  xx_snowprecipperiod,
      &  xx_snowprecipstartdate1, xx_snowprecipstartdate2,
-     &  xx_apressure_file, xx_apressure_remo_intercept, 
+     &  xx_apressure_file, xx_apressure_remo_intercept,
      &  xx_apressure_remo_slope, xx_apressureperiod,
      &  xx_apressurestartdate1, xx_apressurestartdate2,
      &  xx_runoff_file, xx_runoff_remo_intercept, xx_runoff_remo_slope,
@@ -125,8 +118,8 @@ c--   Read the namelist input.
      &  xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
      &  xx_siarea_file, xx_siheff_file, xx_sihsnow_file,
-     &  xx_shifwflx_file, 
-     &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope, 
+     &  xx_shifwflx_file,
+     &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
      &  doInitXX,
      &  doPackDiag,
@@ -323,11 +316,11 @@ c
         xx_shifwflxperiod      =   0. _d 0
         xx_shifwflx_file       = 'xx_shifwflx'
         xx_shifwflx_remo_intercept=0. _d 0
-        xx_shifwflx_remo_slope =   0. _d 0   
+        xx_shifwflx_remo_slope =   0. _d 0
 c
         xx_diffkr_file      = 'xx_diffkr'
         xx_kapgm_file       = 'xx_kapgm'
-        xx_kapredi_file       = 'xx_kapredi'
+        xx_kapredi_file     = 'xx_kapredi'
         xx_tr1_file         = 'xx_ptr'
         xx_depth_file       = 'xx_depth'
         xx_efluxy_file      = 'xx_efluxy'
@@ -338,9 +331,9 @@ c
         xx_uvel_file        = 'xx_uvel'
         xx_vvel_file        = 'xx_vvel'
         xx_etan_file        = 'xx_etan'
-        xx_siarea_file        = 'xx_siarea'
-        xx_siheff_file        = 'xx_siheff'
-        xx_sihsnow_file        = 'xx_sihsnow'
+        xx_siarea_file      = 'xx_siarea'
+        xx_siheff_file      = 'xx_siheff'
+        xx_sihsnow_file     = 'xx_sihsnow'
 cHFLUXM_CONTROL
         xx_hfluxm_file      = 'xx_hfluxm'
 cHFLUXM_CONTROL
@@ -374,7 +367,7 @@ c--     Next, read the cost data file.
         READ(unit = iUnit, nml = ctrl_nml)
         READ(unit = iUnit, nml = ctrl_packnames)
 
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &       'CTRL_READPARMS: finished reading data.ctrl'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
@@ -387,4 +380,3 @@ c--     Next, read the cost data file.
 
       return
       end
-

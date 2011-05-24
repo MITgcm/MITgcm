@@ -1,5 +1,4 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.7 2011/03/14 17:19:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.8 2011/05/24 20:52:51 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -26,12 +25,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
+c#include "GRID.h"
 
 #include "ctrl.h"
-#ifdef ALLOW_OBCS_CONTROL
-# include "OBCS.h"
-#endif
 
 c     == routine arguments ==
 
@@ -122,6 +118,3 @@ c     == end of interface ==
 
       return
       end
-
-
-
