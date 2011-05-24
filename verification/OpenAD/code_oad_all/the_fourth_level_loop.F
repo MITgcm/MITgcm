@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_fourth_level_loop.F,v 1.2 2009/02/24 21:40:24 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_fourth_level_loop.F,v 1.3 2011/05/24 20:59:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,7 +52,10 @@ c They provide the fields to be stored.
 #  include "SURFACE.h"
 # endif
 # ifdef ALLOW_OBCS
-#  include "OBCS.h"
+#  include "OBCS_PARAMS.h"
+#  include "OBCS_GRID.h"
+#  include "OBCS_FIELDS.h"
+#  include "OBCS_SEAICE.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
@@ -157,7 +160,10 @@ c They provide the fields to be stored.
 #  include "SURFACE.h"
 # endif
 # ifdef ALLOW_OBCS
-#  include "OBCS.h"
+#  include "OBCS_PARAMS.h"
+#  include "OBCS_GRID.h"
+#  include "OBCS_FIELDS.h"
+#  include "OBCS_SEAICE.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
