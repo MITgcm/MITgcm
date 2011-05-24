@@ -1,8 +1,6 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.37 2011/05/10 07:30:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.38 2011/05/24 22:02:22 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
       subroutine ctrl_unpack( first, mythid )
@@ -80,7 +78,7 @@ c     == local variables ==
       character*( 80) weighttype
 
       logical lxxadxx
-      
+
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(nr,nobcs)
@@ -171,7 +169,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
           write(cfile(1:128),'(4a,i4.4)')
-     &         ctrlname(1:9),'_',yctrlid(1:10), 
+     &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlposunpack(1:4), optimcycle
           print *, 'ph-pack: unpacking ', ctrlname(1:9)
       else
@@ -277,7 +275,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcsnGlo(k,iobcs) .NE. 
+           if (filenWetobcsnGlo(k,iobcs) .NE.
      &           nWetobcsnGlo(k,iobcs)) then
              print *, 'WARNING: OBCSN wrong nWet?Global for k = ', k
              STOP
@@ -289,7 +287,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcssGlo(k,iobcs) .NE. 
+           if (filenWetobcssGlo(k,iobcs) .NE.
      &           nWetobcssGlo(k,iobcs)) then
              print *, 'WARNING: OBCSS wrong nWet?Global for k = ', k
              STOP
@@ -301,7 +299,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcswGlo(k,iobcs) .NE. 
+           if (filenWetobcswGlo(k,iobcs) .NE.
      &           nWetobcswGlo(k,iobcs)) then
              print *, 'WARNING: OBCSW wrong nWet?Global for k = ', k
              STOP
@@ -313,7 +311,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcseGlo(k,iobcs) .NE. 
+           if (filenWetobcseGlo(k,iobcs) .NE.
      &           nWetobcseGlo(k,iobcs)) then
              print *, 'WARNING: OBCSE wrong nWet?Global for k = ', k
              STOP
@@ -752,11 +750,10 @@ c----------------------------------------------------------------------
 #endif
 
       close ( cunit )
-      ENDIF !IF ( myProcId .eq. 0 ) 
+      ENDIF !IF ( myProcId .eq. 0 )
       _END_MASTER( mythid )
       _BARRIER
 #endif /* EXCLUDE_CTRL_PACK */
 
       return
       end
-

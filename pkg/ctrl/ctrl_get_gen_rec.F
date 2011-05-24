@@ -1,9 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.12 2011/04/17 21:03:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.13 2011/05/24 22:02:22 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_get_gen_rec(
      I                        xx_genstartdate,

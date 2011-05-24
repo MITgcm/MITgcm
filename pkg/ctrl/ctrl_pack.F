@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.38 2011/05/10 07:30:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.39 2011/05/24 22:02:22 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
       subroutine ctrl_pack( first, mythid )
@@ -18,7 +17,7 @@ c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - Transferred some filename declarations
 c                from here to namelist in ctrl_init
-c  
+c
 c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
 c              - single file name convention with or without
 c                ALLOW_ECCO_OPTIMIZATION
@@ -75,7 +74,7 @@ c     == local variables ==
       logical ladinit
       integer cbuffindex
       logical lxxadxx
-      
+
       integer cunit
       integer ictrlgrad
 
@@ -162,7 +161,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           ictrlgrad = 1
           fcloc     = fmin
           write(cfile(1:128),'(4a,i4.4)')
-     &         ctrlname(1:9),'_',yctrlid(1:10), 
+     &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
           print *, 'ph-pack: packing ', ctrlname(1:9)
       else
@@ -171,7 +170,7 @@ c     >>> Write gradient vector <<<
           ictrlgrad = 2
           fcloc     = fc
           write(cfile(1:128),'(4a,i4.4)')
-     &         costname(1:9),'_',yctrlid(1:10), 
+     &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
           print *, 'ph-pack: packing ', costname(1:9)
        endif
@@ -628,7 +627,7 @@ c          write(cunit) nWetiGlobal(1)
 #endif
 
 #ifdef ALLOW_KAPREDI_CONTROL
-          ivartype = 44 
+          ivartype = 44
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wkapredi"
           call ctrl_set_pack_xyz(
@@ -651,11 +650,10 @@ c          write(cunit) nWetiGlobal(1)
 #endif
 
        close ( cunit )
-       ENDIF !IF ( myProcId .eq. 0 ) 
+       ENDIF !IF ( myProcId .eq. 0 )
        _END_MASTER( mythid )
       _BARRIER
 #endif /* EXCLUDE_CTRL_PACK */
 
       return
       end
-
