@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.8 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.9 2011/05/24 22:41:12 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_Summary(
      I                           mythid
@@ -104,4 +103,3 @@ c     == end of interface ==
 
       return
       end
-

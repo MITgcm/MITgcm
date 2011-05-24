@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.13 2010/03/22 02:20:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.14 2011/05/24 22:41:12 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-
+#include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_readparms( mythid )
 
@@ -144,4 +143,5 @@ c--     Summarize the gradient check setup.
 
 #endif /* ALLOW_GRDCHK */
 
+      return
       end
