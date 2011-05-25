@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1439 2011/05/24 22:45:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1440 2011/05/25 00:51:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,7 +8,9 @@ o pkg/obcs:
   - split header file "OBCS.h" into 4 separated files:
     OBCS_PARAMS.h, OBCS_GRID.h, OBCS_FIELDS.h & OBCS_SEAICE.h
    Note: OBCS_PARAMS.h & OBCS_GRID.h can be included without OBCS_OPTIONS.h
-     (contain no conditional statement that depends on OBCS options).
+     (contain no conditional statement which depends on OBCS options).
+  - move "useOBCSYearlyFields" from "data.obcs" (hold in OBCS_PARAMS.h)
+    to parameter file "data.exf", namelist EXF_NML_OBCS (in EXF_PARAM.h).
 o ctrl, cost, grdchk & autodiff pkgs:
   - make options file more standard (like other {PKG}_OPTIONS.h file but
     with AD_CONFIG.h); clean-up some of the included header files.
