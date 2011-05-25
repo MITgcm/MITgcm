@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.22 2010/11/23 18:55:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.23 2011/05/25 00:33:32 jmc Exp $
 C $Name:  $
 c
 c
@@ -381,6 +381,8 @@ C                           to contain all the records that pertain to
 C                           a particular year, including day 1, hour zero
 C     twoDigitYear       :: when set, use 2-digit year extension YR
 C                           instead of _YEAR for useExfYearlyFields
+C    useOBCSYearlyFields :: when reading Open-Boundary values, assume yearly
+C                           climatology (def=false)
 C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid position
 C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
 C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
@@ -400,6 +402,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
       logical exf_verbose
       logical useExfCheckRange
       logical useExfYearlyFields, twoDigitYear
+      logical useOBCSYearlyFields
       logical readStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
@@ -414,6 +417,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
       common /exf_param_l/
      &       exf_verbose, useExfCheckRange,
      &       useExfYearlyFields, twoDigitYear,
+     &       useOBCSYearlyFields,
      &       useExfZenAlbedo, useExfZenIncoming,
      &       readStressOnAgrid, readStressOnCgrid,
      &       stressIsOnCgrid, useStabilityFct_overIce,

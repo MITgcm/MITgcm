@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.64 2011/01/25 22:40:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.65 2011/05/25 00:33:32 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -213,6 +213,7 @@ c     Surface flux data.
      &    sgrunoff_exfremo_slope, exf_inscal_sgrunoff
 
       NAMELIST /EXF_NML_OBCS/
+     &    useOBCSYearlyFields,
      &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
      &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
      &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
@@ -457,6 +458,7 @@ c     Calendar data.
       sgrunoff_exfremo_slope     = 0.0 _d 0
       exf_inscal_sgrunoff        = 1. _d 0
 
+      useOBCSYearlyFields = .FALSE.
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
       obcsNperiod        = 0.0 _d 0
