@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.120 2011/05/17 19:50:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.121 2011/05/25 19:34:24 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -714,6 +714,9 @@ CML So this diagnostic is only good for heat budget calculations within
 CML the ice-ocean system.
             DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj) * (
      &             a_QbyATM_cover(I,J) * AREApreTH(I,J)
+#ifndef SEAICE_GROWTH_LEGACY
+     &           + a_QSWbyATM_cover(I,J) * AREApreTH(I,J)
+#endif /* SEAICE_GROWTH_LEGACY */          
      &           + a_QbyATM_open(I,J) * ( ONE - AREApreTH(I,J) ) )
            ENDDO
           ENDDO
@@ -839,27 +842,10 @@ c          The turbulent ocean-ice heat flux converted to meters
 c          of potential ice melt
            a_QbyOCN(I,J) = a_QbyOCN(I,J) * convertQ2HI
 
+c          by design r_QbyOCN .LE. 0. so that initial ice growth cannot 
+c          be triggered by this term, which Ian says is better for adjoint
 #else 
 
-c reproduces v1.109
-#ifdef Reproduce_v1p109
-          IF ( .NOT. inAdMode ) THEN
-           IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
-              a_QbyOCN(i,j) = -SEAICE_availHeatFrac
-     &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * maskC(i,j,kSurface,bi,bj) *
-     &             (HeatCapacity_Cp*rhoConst/QI)
-           ELSE
-              a_QbyOCN(i,j) = -SEAICE_availHeatFracFrz
-     &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &             * maskC(i,j,kSurface,bi,bj) *
-     &             (HeatCapacity_Cp*rhoConst/QI)
-           ENDIF
-          ELSE
-           a_QbyOCN(i,j) = 0.
-          ENDIF 
-#else  /* Reproduce_v1p109 */       
-cif reproduces seaice_growth v1.111
            IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
              tmpscal1 = SEAICE_availHeatFrac
            ELSE
@@ -870,8 +856,6 @@ cif reproduces seaice_growth v1.111
 
            a_QbyOCN(i,j) = -tmpscal1 * (HeatCapacity_Cp*rhoConst/QI)
      &                   * (theta(I,J,kSurface,bi,bj)-TBC)
-
-#endif /* Reproduce_v1p109 */
 
 #endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */
 
@@ -1027,17 +1011,6 @@ Cgf warming conditions, the lab_sea results were not changed.
 
         DO J=1,sNy
          DO I=1,sNx
-cif This is a real mess because the default behavior of the code was changed between v1.190 
-cif v.1.111.  After #ifdef FENTY_DELTA_HEFF_OPEN_WATER_FLUXES I left the v1.111 code.
-cif It seems that now undef SEAICE_GROWTH_LEGACY = define FENTY_DELTA_HEFF_OPEN_WATER FLUXES 
-#ifdef FENTY_DELTA_HEFF_OPEN_WATER_FLUXES
-c         Thickening of the existing ice pack is limited by the 
-c         residual capability of the ocean to melt (weighted by
-c         the ice-covered area)
-          tmpscal2 = MAX(-HEFF(i,j,bi,bj) , 
-     &       r_QbyATM_cover(I,J) + AREApreTH(I,J) * r_QbyOCN(I,J))
-     
-#else /* FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */
 
 #ifdef SEAICE_GROWTH_LEGACY
           tmpscal2 = MAX(-HEFF(I,J,bi,bj),r_QbyATM_cover(I,J))
@@ -1046,8 +1019,6 @@ c         the ice-covered area)
 c         Limit ice growth by potential melt by ocean 
      &        AREApreTH(I,J) * r_QbyOCN(I,J))
 #endif /* SEAICE_GROWTH_LEGACY */
-
-#endif /*FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */
 
           d_HEFFbyATMonOCN_cover(I,J)=tmpscal2
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal2
@@ -1159,44 +1130,6 @@ CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
             DIAGarrayA(I,J) = ZERO
 #endif
 
-#ifdef FENTY_DELTA_HEFF_OPEN_WATER_FLUXES
-c           The sum of ice growth tendencies from open water fluxes 
-c           + any residual ocean-ice fluxes (weighted by the open 
-c           water fraction). 
-
-c           Using the McPhee parameterization, r_QbyOCN .LE ZERO
-c           Therefore, initial ice growth is triggered by open water
-c           heat flux divergence overcoming the melting tendency of 
-c           the ocean-ice heat fluxes.
-            tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j) * 
-     &            (1.0 _d 0 - AREApreTH(i,J))
-
-c           A fraction (SWFRACB) of the open-water heat flux includes
-c           shortwave radiative convergence at depths below the upper
-c           ocean grid cell.  These must be subtracted out.
-            tmpscal2=SWFRACB * a_QSWbyATM_open(I,J)
-
-#ifdef FENTY_OPEN_WATER_FLUXES_MELT_ICE
-c           Convergent open water heat fluxes melt ice directly,
-c           bypassing the ocean
-            tmpscal3 = tmpscal1-tmpscal2
-#else
-c           Convergent open water heat fluxes warm the ocean
-c           leading to an indirect ice melt.
-            tmpscal3 = MAX(0.0 _d 0, tmpscal1-tmpscal2)
-#endif /* FENTY_OPEN_WATER_FLUXES_MELT_ICE */
-    
-            d_HEFFbyATMonOCN_open(I,J)=MAX(tmpscal3, -HEFF(I,J,bi,bj))
-            d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J) + 
-     &                            d_HEFFbyATMonOCN_open(I,J)
-
-            r_QbyATM_open(I,J) = r_QbyATM_open(I,J) - 
-     &           d_HEFFbyATMonOCN_open(I,J)
-            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + 
-     &           d_HEFFbyATMonOCN_open(I,J)
-
-#else /* FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */
-
 #ifdef SEAICE_DO_OPEN_WATER_GROWTH
          
 c           Initial ice growth is triggered by open water 
@@ -1204,6 +1137,7 @@ c           heat flux overcoming potential melt by ocean
             tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j) * 
      &            (1.0 _d 0 - AREApreTH(i,J))
 c           Penetrative shortwave flux beyond first layer
+c           that is therefore not available to ice growth/melt
             tmpscal2=SWFRACB * a_QSWbyATM_open(I,J)
 #ifdef SEAICE_DO_OPEN_WATER_MELT
 C           allow not only growth but also melt by open ocean heat flux
@@ -1217,7 +1151,6 @@ C           allow not only growth but also melt by open ocean heat flux
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3
           
 #endif /* SEAICE_DO_OPEN_WATER_GROWTH */
-#endif /* FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */
 
 #ifdef ALLOW_DIAGNOSTICS
             DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
@@ -1750,9 +1683,11 @@ C =====================================================
         DO J=1,sNy
          DO I=1,sNx
           QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) + r_QbyATM_open(I,J)
-#ifdef FENTY_DELTA_HEFF_OPEN_WATER_FLUXES 
+#ifndef SEAICE_GROWTH_LEGACY 
+C in principle a_QSWbyATM_cover should always be included here, however 
+C for backward compatibility it is left out of the LEGACY branch
      &         +   a_QSWbyATM_cover(I,J)
-#endif /* FENTY_DELTA_HEFF_OPEN_WATER_FLUXES */          
+#endif /* SEAICE_GROWTH_LEGACY */          
      &         - ( d_HEFFbyOCNonICE(I,J) +
      &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW +
      &             d_HEFFbyNEG(I,J) +

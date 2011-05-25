@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.2 2011/04/28 02:09:00 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.3 2011/05/25 19:36:04 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -46,8 +46,8 @@ c     Use the McPhee Ocean-Ice heat flux
 #define MCPHEE_OCEAN_ICE_HEAT_FLUX
 #define GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR
 
-#define FENTY_DELTA_HEFF_OPEN_WATER_FLUXES
-#define FENTY_OPEN_WATER_FLUXES_MELT_ICE
+#define SEAICE_DO_OPEN_WATER_GROWTH
+#define SEAICE_DO_OPEN_WATER_MELT
 
 #define FENTY_AREA_EXPANSION_CONTRACTION
 

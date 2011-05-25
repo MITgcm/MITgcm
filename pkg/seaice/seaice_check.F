@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.43 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.44 2011/05/25 19:34:24 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -412,6 +412,16 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+#endif
+
+#if defined(FENTY_AREA_EXPANSION_CONTRACTION) && !defined(SEAICE_DO_OPEN_WATER_GROWTH)
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &      'FENTY_AREA_EXPANSION_CONTRACTION requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_DO_OPEN_WATER_GROWTH is defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 
       _END_MASTER(myThid)
