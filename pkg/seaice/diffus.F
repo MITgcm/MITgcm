@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.15 2009/10/22 12:16:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.16 2011/05/25 20:42:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,14 +59,26 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
      &          * _recip_dxF(I,J,bi,bj)
           iceFld(I,J,bi,bj)=DELTXX*(
      &         (fld(I+1,J,bi,bj)-fld(I,  J,bi,bj))
+#ifdef ALLOW_OBCS
+     &         *maskInW(i+1,j,bi,bj)
+#endif
      &         *iceMsk(I+1,J,bi,bj)
      &        -(fld(I,  J,bi,bj)-fld(I-1,J,bi,bj))
+#ifdef ALLOW_OBCS
+     &         *maskInW(i,j,bi,bj)
+#endif
      &         *iceMsk(I-1,J,bi,bj))
      &         +DELTYY*(
      &         (fld(I,J+1,bi,bj)-fld(I,J,  bi,bj))
-     &         * _dxG(I+1,J+1,bi,bj)*iceMsk(I,J+1,bi,bj)
+#ifdef ALLOW_OBCS
+     &         *maskInS(i,j+1,bi,bj)
+#endif
+     &         * _dxG(I,J+1,bi,bj)*iceMsk(I,J+1,bi,bj)
      &        -(fld(I,J,  bi,bj)-fld(I,J-1,bi,bj))
-     &         * _dxG(I+1,J,  bi,bj)*iceMsk(I,J-1,bi,bj))
+#ifdef ALLOW_OBCS
+     &         *maskInS(i,j,bi,bj)
+#endif
+     &         * _dxG(I,J,  bi,bj)*iceMsk(I,J-1,bi,bj))
          ENDDO
         ENDDO
         ELSE
@@ -84,12 +96,18 @@ C--   first compute fluxes across cell faces
      &         * (fld(I,J,bi,bj)-fld(I-1,J,bi,bj))
      &         * cosFacU(J,bi,bj)
      &         * iceMsk(I,J,bi,bj) * iceMsk(I-1,J,bi,bj)
+#ifdef ALLOW_OBCS
+     &         * maskInW(i,j,bi,bj)
+#endif
           dfy(I,J) = _dxG(I,J,bi,bj) * _recip_dyC(I,J,bi,bj)
      &         * (fld(I,J,bi,bj)-fld(I,J-1,bi,bj))
 #ifdef ISOTROPIC_COS_SCALING
      &         * cosFacV(J,bi,bj)
 #endif
      &         * iceMsk(I,J,bi,bj) * iceMsk(I,J-1,bi,bj)
+#ifdef ALLOW_OBCS
+     &         * maskInS(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
         DO J=1,sNy
