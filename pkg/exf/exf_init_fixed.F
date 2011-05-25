@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.16 2011/05/24 20:29:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.17 2011/05/25 00:48:57 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -28,9 +28,6 @@ C     === Global variables ===
 #ifdef ALLOW_ICEFRONT
 # include "ICEFRONT_OPTIONS.h"
 # include "ICEFRONT.h"
-#endif
-#ifdef ALLOW_OBCS
-# include "OBCS_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
