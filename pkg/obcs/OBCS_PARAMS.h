@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.1 2011/05/24 14:22:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.2 2011/05/25 00:34:27 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -44,8 +44,6 @@ C                     at every time step
 C useOBCSprescribe :: read boundary conditions from a file
 C                      (overrides Orlanski and other boundary values)
 C OBCSprintDiags   :: print boundary values to STDOUT (def=true)
-C useOBCSYearlyFields :: when reading boundary values by exf, assume yearly
-C                     climatology (def=false)
 C OBCSfixTopo      :: check and adjust topography for problematic gradients
 C                     across boundaries (def=true)
 C tileHasOB[N,S,E,W] :: this tile has OB at Northern/Southern/Eastern/Western edge
@@ -71,7 +69,7 @@ C                     uice/vice :: sea ice u/v drift velocities
      & useStevensEast,useStevensWest,
      & useStevensPhaseVel, useStevensAdvection,
      & useOBCSsponge, useOBCSbalance, useOBCSprescribe,
-     & OBCSprintDiags, useOBCSYearlyFields,
+     & OBCSprintDiags,
      & OBCSfixTopo
       LOGICAL useOrlanskiNorth
       LOGICAL useOrlanskiSouth
@@ -87,7 +85,6 @@ C                     uice/vice :: sea ice u/v drift velocities
       LOGICAL useOBCSbalance
       LOGICAL useOBCSprescribe
       LOGICAL OBCSprintDiags
-      LOGICAL useOBCSYearlyFields
       LOGICAL OBCSfixTopo
 
 C OBCS_balanceFacN/S/E/W :: weighting factor for balancing OB normal flow

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.33 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.34 2011/05/25 00:34:27 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -120,6 +120,10 @@ C     buf :: used to exchange OB_Jnorth, ...
 #endif
 CEOP
 
+C     retired parameters
+      INTEGER nRetired
+      LOGICAL useOBCSYearlyFields
+
       NAMELIST /OBCS_PARM01/
      &          insideOBmaskFile,
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
@@ -205,7 +209,6 @@ C--   Default flags and values for OBCS
       OBCS_balanceFacE   = 1. _d 0
       OBCS_balanceFacW   = 1. _d 0
       useOBCSprescribe   =.FALSE.
-      useOBCSYearlyFields=.FALSE.
       OBCSfixTopo        =.TRUE.
       OBCS_uvApplyFac    = 1. _d 0
       OBCS_monitorFreq   = monitorFreq
@@ -268,6 +271,9 @@ C--   Default flags and values for OBCS
        OBWptrFile(iTracer) = ' '
       ENDDO
 #endif
+C-    retired parameters
+      nRetired = 0
+      useOBCSYearlyFields = .FALSE.
 
 C     Open and read the data.obcs file
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
@@ -280,6 +286,18 @@ C     Open and read the data.obcs file
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OBCS_PARM01)
+
+C-    retired parameter
+      IF ( useOBCSYearlyFields ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'OBCS_READPARMS: "useOBCSYearlyFields"',
+     &  ' no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was moved to "data.exf", namelist: "EXF_NML_OBCS"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
 
 #ifdef ALLOW_ORLANSKI
 C     Default Orlanski radiation parameters
@@ -326,6 +344,17 @@ CML      Vrelaxobcsbound = 1. _d 0
 
 C--   Close the open data file
       CLOSE(iUnit)
+
+C-    retired parameter
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'OBCS_READPARMS: reading parameter file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'some out of date parameters were found in namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R OBCS_READPARMS'
+      ENDIF
 
 C-    Account for periodicity if negative indices were supplied
       DO J=1,OBEW_Ny
