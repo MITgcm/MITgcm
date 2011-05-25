@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1441 2011/05/25 21:13:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1442 2011/05/25 23:56:29 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - seaice_growth.F : in EVOLUTION branch, always include 
+   a_QSWbyATM_cover in qnet (as it should be).
+ - verification/global_ocean.cs32x15 : update results accordingly
+   (output.seaice.txt output_adm.seaice.txt). 
 o pkg/seaice + obcs:
  - use maskInW & maskInS in multi-dim advection and biharmonic diffusion:
    equivalent of assuming no tracer gradient outside the OB region.
