@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.22 2011/02/24 06:37:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.23 2011/05/25 20:44:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -237,9 +237,14 @@ C--   Get temporary terms used by tendency routines
 C--   Make local copy of sea-ice field and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        localTij(i,j)=iceFld(i,j)
-        maskLocW(i,j)=maskW(i,j,k,bi,bj)
-        maskLocS(i,j)=maskS(i,j,k,bi,bj)
+         localTij(i,j)=iceFld(i,j)
+#ifdef ALLOW_OBCS
+         maskLocW(i,j) = _maskW(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
+         maskLocS(i,j) = _maskS(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
+#else /* ALLOW_OBCS */
+         maskLocW(i,j) = _maskW(i,j,k,bi,bj)
+         maskLocS(i,j) = _maskS(i,j,k,bi,bj)
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
 
