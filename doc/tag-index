@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1440 2011/05/25 00:51:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1441 2011/05/25 21:13:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice + obcs:
+ - use maskInW & maskInS in multi-dim advection and biharmonic diffusion:
+   equivalent of assuming no tracer gradient outside the OB region.
+   update output of seaice_obcs (uses DIFF1 <>0 => biharmonic diffusion)
+ - remove calls to OBCS_COPY_TRACER after EXCH calls (no longer needed
+   after changes above);
+ - obcs+seaice cleaning: apply seaice-tracer OB values to tracer field
+   only at OB location (instead of over a band of OLx width).
+o pkg/seaice:
+ - fix wrong indices in old (non Flux-Form) diffusion default S/R diffus.F
+   (dxG(I+1, ...) changed to dxG(I, ...), no impact on Lat-Lon grid)
 o pkg/obcs:
   - split header file "OBCS.h" into 4 separated files:
     OBCS_PARAMS.h, OBCS_GRID.h, OBCS_FIELDS.h & OBCS_SEAICE.h
