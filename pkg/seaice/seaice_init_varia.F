@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.57 2011/05/24 20:27:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.58 2011/05/25 21:04:47 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -425,30 +425,25 @@ C--   Read initial sea ice age from file if available.
 
       ENDIF
 
-C--   In case we use scheme with a large stencil that extends into overlap:
 #ifdef ALLOW_OBCS
-      IF ( useOBCS ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-           CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
-           CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
-           CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
+C--   In case we use scheme with a large stencil that extends into overlap:
+C     no longer needed with the right masking in advection & diffusion S/R.
+c     IF ( useOBCS ) THEN
+c       DO bj=myByLo(myThid),myByHi(myThid)
+c        DO bi=myBxLo(myThid),myBxHi(myThid)
+c          CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
+c          CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
+c          CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
 #ifdef SEAICE_VARIABLE_SALINITY
-           CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
+c          CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
 #endif
-#ifdef SEAICE_AGE
-           DO iTracer = 1, SEAICE_num
-            CALL OBCS_COPY_TRACER( IceAgeTr(1-Olx,1-Oly,bi,bj,iTracer),
-     I                             1, bi, bj, myThid )
-           ENDDO
-#endif
-         ENDDO
-        ENDDO
-      ENDIF
+c        ENDDO
+c       ENDDO
+c     ENDIF
 #endif /* ALLOW_OBCS */
 
 C---  Complete initialization

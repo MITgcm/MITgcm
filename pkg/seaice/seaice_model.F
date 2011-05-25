@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.87 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.88 2011/05/25 21:04:47 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -254,34 +254,25 @@ C--   Update overlap regions for a bunch of stuff
      &      _EXCH_XY_RS( sIceLoad, myThid )
 #endif
 
-C--   In case we use scheme with a large stencil that extends into overlap:
 #ifdef ALLOW_OBCS
-       IF ( useOBCS ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-           CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
-           CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
-           CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
+C--   In case we use scheme with a large stencil that extends into overlap:
+C     no longer needed with the right masking in advection & diffusion S/R.
+c      IF ( useOBCS ) THEN
+c       DO bj=myByLo(myThid),myByHi(myThid)
+c        DO bi=myBxLo(myThid),myBxHi(myThid)
+c          CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
+c          CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
+c          CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
 #ifdef SEAICE_VARIABLE_SALINITY
-           CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
-     I                            1, bi, bj, myThid )
+c          CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
+c    I                            1, bi, bj, myThid )
 #endif
-         ENDDO
-        ENDDO
-#ifdef SEAICE_AGE
-        DO iTracer = 1, SEAICE_num
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           CALL OBCS_COPY_TRACER( IceAgeTr(1-Olx,1-Oly,bi,bj,iTracer),
-     I                            1, bi, bj, myThid )
-          ENDDO
-         ENDDO
-        ENDDO
-#endif
-       ENDIF
+c        ENDDO
+c       ENDDO
+c      ENDIF
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_DIAGNOSTICS
