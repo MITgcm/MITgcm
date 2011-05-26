@@ -1,7 +1,0 @@
-remove output of surface forcing files
-they are redundant
-
-more consistent integration with saltFlux/EmPmR
-input variables in FFIELDS.h
-
-eventually move all code for reading files into pkg/exf
