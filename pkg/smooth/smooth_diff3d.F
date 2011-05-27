@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.2 2010/10/25 21:45:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.3 2011/05/27 23:39:33 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -140,7 +140,7 @@ c adams bashfort on gT_in:
         DO k=1,Nr
         CALL ADAMS_BASHFORTH2(
      &                        bi, bj, k,
-     &                        gT_in, gTm1_in,
+     &                        gT_in, gTm1_in, .FALSE.,
      &                        myIter(bi,bj) , myThid )
         ENDDO
 c time stepping:
