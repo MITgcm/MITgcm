@@ -1,9 +1,27 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1444 2011/05/27 00:44:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1445 2011/05/27 23:28:39 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F:
+  - use Ian Fenty's capping formulas for actual ice 
+  thickness thoughout EVOLUTION branch.
+  - put treatment pathological case #2) in CPP brackets
+  (ALLOW_AVOID_INFINITESIMAL_AREA, undef by default).
+  - update global_ocean.cs32x15 and 1D_ocean_ice_colum results accordingly.  
+o pkg/seaice:
+  - seaice_diffusion.F : remove the min(DX,DY) factor permanently;
+  pass the Laplacian diffusivity (in m/s2) diffKh as a parameter; 
+  also pass fac as a param, which can be 1. (to update the tendency 
+  field) or the time step (to update the field itself).
+  - seaice_advdiff.F: for multidim, call seaice_diffusion with 
+  e.g. SEAICEdiffKhHeff and with fac=1; for single-dim, call
+  seaice_diffusion with e.g. SEAICEdiffKhHeff and with fac=time step.
+  - SEAICE_PARAMS.h, seaice_readparms.F, seaice_check.F : 
+  hooks to handle SEAICEdiffKhHeff, SEAICEdiffKhArea, etc.
+  - note: if any of SEAICEdiffKhHeff, SEAICEdiffKhArea, etc. 
+  is specified to be >0, then DIFF1 is set to 0.
 o pkg/seaice:
   diffusion with centered advection scheme (diffus.F & advect.F):
   - simplify S/R DIFFUS (put deltaT & DIFF1 factor outside, move EXCH outside)
