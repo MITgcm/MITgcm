@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1443 2011/05/26 13:55:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1444 2011/05/27 00:44:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice:
+  diffusion with centered advection scheme (diffus.F & advect.F):
+  - simplify S/R DIFFUS (put deltaT & DIFF1 factor outside, move EXCH outside)
+    to just compute the laplacian of input-field.
+  - unroll k loop (harmonic,biharmonic diff) in advect.F to save 1 exch call.
+  - fix flux-form version in diffus.F to conserve tracer.
+  update output of lab_sea.fd & lab_sea.hb87 (1rst set of modif affects
+   machine truncation) and lab_sea.salt_plume (conservative flux-form modif)
 
 checkpoint62y (2011/05/26)
 o pkg/seaice:
