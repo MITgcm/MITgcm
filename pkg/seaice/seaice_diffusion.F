@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.7 2011/05/18 03:18:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.8 2011/05/27 21:13:48 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,6 +8,7 @@ C     !ROUTINE: SEAICE_DIFFUSION
 C     !INTERFACE:
       SUBROUTINE SEAICE_DIFFUSION(
      I     tracerIdentity,
+     I     diffKh, fac,
      I     iceFld, iceMask, xA, yA,
      U     gFld,
      I     bi, bj, myTime, myIter, myThid )
@@ -44,6 +45,7 @@ C     myThid     :: my Thread Id number
       _RL iceMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diffKh, fac
       INTEGER tracerIdentity
       INTEGER bi,bj
       _RL     myTime
@@ -63,7 +65,7 @@ C     i,j :: Loop counters
       _RL fZon   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      IF ( diff1 .GT. 0. _d 0 ) THEN
+      IF ( diffKh .GT. 0. _d 0 ) THEN
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostic suffix for the current tracer
        IF ( useDiagnostics ) THEN
@@ -79,33 +81,22 @@ C--   Tendency due to horizontal diffusion
          ENDDO
         ENDDO
 C--   X-direction
-        CALL GAD_DIFF_X(bi,bj,k,xA,diff1,iceFld,fZon,myThid)
+        CALL GAD_DIFF_X(bi,bj,k,xA,diffKh,iceFld,fZon,myThid)
 C--   Y-direction
-        CALL GAD_DIFF_Y(bi,bj,k,yA,diff1,iceFld,fMer,myThid)
+        CALL GAD_DIFF_Y(bi,bj,k,yA,diffKh,iceFld,fMer,myThid)
 C--   Divergence of fluxes: update scalar field
-C--   Ugly:
-C--   Apply factor min(DX,DY) to effectively end up with approximately
-C--   the same diffusion coefficient as in subroutine ADVECT.
-C--   One day, I would like to rewrite the second order central difference
-C--   part, too, so that the value of DIFF1 has the same meaning as,
-C--   say, diffKhT
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
           gFld(i,j)= gFld(i,j)
-     &        - iceMask(i,j,bi,bj)*recip_rA(i,j,bi,bj)
+     &        - fac*iceMask(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &        *( (fZon(i+1,j)-fZon(i,j))
      &         + (fMer(i,j+1)-fMer(i,j)) )
-#ifndef SEAICE_RM_STRANGE_DIFF_FAC
-c removing this term is necessary for conservation
-c and so that DIFF1 scaled as a standard diffusion
-     &        *MIN( _dxF(I,J,bi,bj), _dyF(I,J,bi,bj))
-#endif
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
 C-    Diagnostics of Tracer flux in Y dir (mainly Diffusive terms),
 C     excluding advective terms:
-        IF ( useDiagnostics .AND. diff1.NE.0. ) THEN
+        IF ( useDiagnostics .AND. diffKh.NE.0. ) THEN
          diagName = 'DFxE'//diagSufx
          CALL DIAGNOSTICS_FILL(fZon,diagName, k,1, 2,bi,bj, myThid)
          diagName = 'DFyE'//diagSufx

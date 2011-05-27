@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.72 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.73 2011/05/27 21:13:48 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -210,6 +210,11 @@ C     hiceMin            - minimum value of hice used to regularize
 C                          SEAICE_SOLVE4TEMP and d_AREAbyATM computations
 C     areaMax            - usually set to 1. Seeting areaMax below 1. specifies 
 C                          the minimun amount of leads (1-areaMax) in the ice pack.
+C     SEAICEdiffKhArea - sets the diffusivity for area (m^2/s)
+C     SEAICEdiffKhHeff - sets the diffusivity for effective thickness (m^2/s)
+C     SEAICEdiffKhSnow - sets the diffusivity for snow on sea-ice (m^2/s)
+C     SEAICEdiffKhSalt - sets the diffusivity for sea ice salinity (m^2/s)
+C     SEAICEdiffKhAge  - sets the diffusivity for sea ice age (m^2/s)
 C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
 C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
@@ -236,6 +241,8 @@ C
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
+      _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
+      _RL SEAICEdiffKhSalt, SEAICEdiffKhAge
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -259,6 +266,8 @@ C
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22,
      &    areaMin, hiceMin, areaMax,
+     &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
+     &    SEAICEdiffKhSalt, SEAICEdiffKhAge,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values

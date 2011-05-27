@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.44 2011/05/25 19:34:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.45 2011/05/27 21:13:48 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -187,6 +187,21 @@ C    for an other ice-field. In this case, stop here.
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
       ENDIF
+
+C     Make sure that diffusivities are GE 0
+      DIFF1=max(0. _d 0,DIFF1)
+      SEAICEdiffKhHeff=max(0. _d 0,SEAICEdiffKhHeff)
+      SEAICEdiffKhArea=max(0. _d 0,SEAICEdiffKhArea)
+      SEAICEdiffKhSnow=max(0. _d 0,SEAICEdiffKhSnow)
+      SEAICEdiffKhSalt=max(0. _d 0,SEAICEdiffKhSalt)
+      SEAICEdiffKhAge=max(0. _d 0,SEAICEdiffKhAge)
+
+C     Set DIFF1 to 0. if any other diffusion is selected
+      IF ( ( SEAICEdiffKhHeff .GT. 0. _d 0 )
+     & .OR.( SEAICEdiffKhArea .GT. 0. _d 0 )
+     & .OR.( SEAICEdiffKhSnow .GT. 0. _d 0 )
+     & .OR.( SEAICEdiffKhSalt .GT. 0. _d 0 )
+     & .OR.( SEAICEdiffKhAge  .GT. 0. _d 0 ) ) DIFF1=0. _d 0
 
 C--
 #ifdef ALLOW_AUTODIFF_TAMC

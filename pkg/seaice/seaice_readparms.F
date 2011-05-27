@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.92 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.93 2011/05/27 21:13:48 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,6 +64,8 @@ C--   SEAICE parameters
      & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea,
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICEadvSchSalt, SEAICEadvSchAge,
+     & SEAICEdiffKhHeff, SEAICEdiffKhSnow, SEAICEdiffKhArea,
+     & SEAICEdiffKhSalt, SEAICEdiffKhAge,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
@@ -172,6 +174,11 @@ C--   set default sea ice parameters
       SEAICEadvSchSnow   = UNSET_I
       SEAICEadvSchSalt   = UNSET_I
       SEAICEadvSchAge    = UNSET_I
+      SEAICEdiffKhArea   = 0. _d 0
+      SEAICEdiffKhHeff   = 0. _d 0
+      SEAICEdiffKhSnow   = 0. _d 0
+      SEAICEdiffKhSalt   = 0. _d 0
+      SEAICEdiffKhAge    = 0. _d 0
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.46 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.47 2011/05/27 21:13:48 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -196,10 +196,10 @@ C--   Effective Thickness (Volume)
      I        uTrans, vTrans, HEFF(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
-         IF ( diff1 .GT. 0. _d 0 ) THEN
+         IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_HEFF,
+     I         GAD_HEFF, SEAICEdiffKhHeff, 1. _d 0,
      I         HEFF(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -222,10 +222,10 @@ C--   Fractional area
      I        uTrans, vTrans, AREA(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
-         IF ( diff1 .GT. 0. _d 0 ) THEN
+         IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_AREA,
+     I         GAD_AREA, SEAICEdiffKhArea, 1. _d 0,
      I         AREA(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -248,10 +248,10 @@ C--   Effective Snow Thickness (Volume)
      I        uTrans, vTrans, HSNOW(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
-         IF ( diff1 .GT. 0. _d 0 ) THEN
+         IF ( SEAICEdiffKhSnow .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_SNOW,
+     I         GAD_SNOW, SEAICEdiffKhSnow, 1. _d 0,
      I         HSNOW(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -275,10 +275,10 @@ C--   Effective Sea Ice Salinity (Mass of salt)
      I        uTrans, vTrans, HSALT(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
-         IF ( diff1 .GT. 0. _d 0 ) THEN
+         IF ( SEAICEdiffKhSalt .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_SALT,
+     I         GAD_SALT, SEAICEdiffKhSalt, 1. _d 0,
      I         HSALT(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -306,10 +306,10 @@ C--
      I       recip_heff,
      O       gFld, afx, afy,
      I       bi, bj, myTime, myIter, myThid )
-          IF ( diff1 .GT. 0. _d 0 ) THEN
+          IF ( SEAICEdiffKhAge .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
            CALL SEAICE_DIFFUSION(
-     I        GAD_ICEAGETR+iTracer-1,
+     I        GAD_ICEAGETR+iTracer-1, SEAICEdiffKhAge, 1. _d 0,
      I        IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer), HEFFM, xA, yA,
      U        gFld,
      I        bi, bj, myTime, myIter, myThid )
@@ -342,17 +342,49 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 
        IF ( SEAICEadvHEff ) THEN
         CALL ADVECT( uc, vc, hEff, hEffNm1, HEFFM, myThid )
+        IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_HEFF, SEAICEdiffKhHeff, SEAICE_deltaTtherm,
+     I         hEffNm1(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         HEFF(1-OLx,1-OLy,bi,bj),
+     I         bi, bj, myTime, myIter, myThid )
+        ENDIF
        ENDIF
        IF ( SEAICEadvArea ) THEN
         CALL ADVECT( uc, vc, area, areaNm1, HEFFM, myThid )
+        IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_AREA, SEAICEdiffKhArea, SEAICE_deltaTtherm,
+     I         AreaNm1(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         Area(1-OLx,1-OLy,bi,bj),
+     I         bi, bj, myTime, myIter, myThid )
+        ENDIF
        ENDIF
        IF ( SEAICEadvSnow ) THEN
         CALL ADVECT( uc, vc, HSNOW, fldNm1, HEFFM, myThid )
+        IF ( SEAICEdiffKhSnow .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_SNOW, SEAICEdiffKhSnow, SEAICE_deltaTtherm,
+     I         fldNm1(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         HSNOW(1-OLx,1-OLy,bi,bj),
+     I         bi, bj, myTime, myIter, myThid )
+        ENDIF
        ENDIF
 
 #ifdef SEAICE_VARIABLE_SALINITY
        IF ( SEAICEadvSalt ) THEN
         CALL ADVECT( uc, vc, HSALT, fldNm1, HEFFM, myThid )
+        IF ( SEAICEdiffKhSalt .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_SALT, SEAICEdiffKhSalt, SEAICE_deltaTtherm,
+     I         fldNm1(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         HSALT(1-OLx,1-OLy,bi,bj),
+     I         bi, bj, myTime, myIter, myThid )
+        ENDIF
        ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
 
@@ -361,6 +393,14 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
         DO iTracer = 1, SEAICE_num
          CALL ADVECT( uc, vc, iceAgeTr(1-Olx,1-Oly,1,1,iTracer),
      &    fldNm1, HEFFM, myThid )
+          IF ( SEAICEdiffKhAge .GT. 0. _d 0 ) THEN
+C--   Add tendency due to diffusion
+           CALL SEAICE_DIFFUSION( GAD_ICEAGETR+iTracer-1,
+     I        SEAICEdiffKhAge, SEAICE_deltaTtherm,
+     I        fldNm1(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U        iceAgeTr(1-Olx,1-Oly,1,1,iTracer),
+     I        bi, bj, myTime, myIter, myThid )
+          ENDIF
         ENDDO
        ENDIF
 #endif /* SEAICE_AGE */
