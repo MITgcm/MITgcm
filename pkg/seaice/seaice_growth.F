@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.121 2011/05/25 19:34:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.122 2011/05/27 23:27:15 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -160,10 +160,12 @@ C                     as EVAP (positive upward)
       _RL rodt, rrodt
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
 
-C     actual ice thickness with upper and lower limit
+C     actual ice thickness (with upper and lower limit)
       _RL heffActual          (1:sNx,1:sNy)
 C     actual snow thickness
       _RL hsnowActual         (1:sNx,1:sNy)
+C     actual ice thickness (with lower limit only) Reciprocal
+      _RL recip_heffActual    (1:sNx,1:sNy)
 
 C     AREA_PRE :: hold sea-ice fraction field before any seaice-thermo update
       _RL AREApreTH           (1:sNx,1:sNy)
@@ -207,10 +209,6 @@ C temporary variables available for the various computations
 #else
       PARAMETER ( nDim = 1 )
 #endif /* SEAICE_MULTICATEGORY */
-
-#ifdef FENTY_AREA_EXPANSION_CONTRACTION
-      _RL heff_star
-#endif
 
 #ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
 C     Factor by which we increase the upper ocean friction velocity (u*) when 
@@ -439,6 +437,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 
 C 2) treat the case of very small area:
 
+#ifdef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -456,6 +455,7 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
           ENDIF
          ENDDO
         ENDDO
+#endif
 
 C 2.5) treat case of excessive ice cover, e.g., due to ridging:
 
@@ -563,14 +563,14 @@ CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
           tmpscal1         = MAX(areaMin,AREApreTH(I,J))
           hsnowActual(I,J) = HSNWpreTH(I,J)/tmpscal1
           tmpscal2         = HEFFpreTH(I,J)/tmpscal1
+#ifdef SEAICE_GROWTH_LEGACY
           heffActual(I,J)  = MAX(tmpscal2,hiceMin)
-Cgf do we need to keep this comment?
-C     Capping the actual ice thickness effectively enforces a
-C     minimum of heat flux through the ice and helps getting rid of
-C     very thick ice.
-Cdm actually, this does exactly the opposite, i.e., ice is thicker
-Cdm when heffActual is capped, so I am commenting out
-Cdm          heffActual(I,J)    = MIN(heffActual(I,J),9.0 _d +00)
+#else
+          heffActual(I,J)  = sqrt(tmpscal2*tmpscal2 + hiceMin*hiceMin)
+c here we dont impose the area minimum          
+          recip_heffActual(I,J)  = AREApreTH(I,J) / 
+     &           sqrt(HEFFpreTH(I,J)*HEFFpreTH(I,J) + hiceMin*hiceMin)
+#endif
          ENDDO
         ENDDO
 
@@ -578,6 +578,7 @@ Cdm          heffActual(I,J)    = MIN(heffActual(I,J),9.0 _d +00)
 #ifdef SEAICE_SIMPLIFY_GROWTH_ADJ
       CALL ZERO_ADJ_1D( sNx*sNy, heffActual, myThid)
       CALL ZERO_ADJ_1D( sNx*sNy, hsnowActual, myThid)
+      CALL ZERO_ADJ_1D( sNx*sNy, recip_heffActual, myThid)
 #endif
 #endif
 
@@ -1227,10 +1228,6 @@ C         compute ice melt due to ATM (and OCN) heat stocks
           DIAGarray(I,J) = ZERO
 #endif
 
-c         The minimum effective thickness used in the ice contraction 
-c         parameterization.
-          heff_star = sqrt(HEFFpreTH(I,J)*HEFFPreTH(I,J) + 0.01 _d 0)
-
 c         the various thickness tendency terms
           tmpscal1 = d_HEFFbyATMOnOCN_open(I,J)
           tmpscal2 = d_HEFFbyATMOnOCN_cover(I,J)
@@ -1251,7 +1248,7 @@ c         for ice to form.
 c         If there are convergent air-sea heat fluxes and convergent air-sea 
 c         heat fluxes are permitted to melt ice, tmpscal1 < 0.
           ELSEIF (AREApreTH(I,J) .GT. ZERO) THEN
-             d_AREAbyATM(i,J) = HALF*tmpscal1*AREApreTH(I,J)/heff_star
+             d_AREAbyATM(i,J) = HALF*tmpscal1*recip_heffActual(I,J)
           ENDIF
 
 c         Part 2: Reduce ice concentration from ice thinning from above
@@ -1259,8 +1256,7 @@ c         Part 2: Reduce ice concentration from ice thinning from above
 c         Ice concentrations are reduced whenever existing ice thins from surface 
 c         heat flux convergence.
           if (tmpscal2 .LE. ZERO) then
-             d_AREAbyICE(I,J) = 
-     &            HALF * tmpscal2 * AREApreTH(I,J)/heff_star
+             d_AREAbyICE(I,J) = HALF * tmpscal2 *recip_heffActual(I,J)
           endif
 
 c         Part 3: Reduce ice concentration from ice thinning from below
@@ -1268,8 +1264,7 @@ c         Part 3: Reduce ice concentration from ice thinning from below
 c         Sensible heat transfer from the ocean to the sea ice thins it and
 c         reduces concentrations
           if (tmpscal3 .LE.ZERO) then
-             d_AREAbyOCN(I,J) =
-     &         HALF * tmpscal3 * AREApreTH(I,J)/heff_star
+             d_AREAbyOCN(I,J) = HALF * tmpscal3 *recip_heffActual(I,J)
           endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -1331,7 +1326,7 @@ C compute cover fraction tendency
      &         +HALF*tmpscal3*AREApreTH(I,J)
      &         /(tmpscal0+.00001 _d 0)
 #else
-     &         +HALF*tmpscal3/heffActual(I,J)
+     &         +HALF*tmpscal3*recip_heffActual(I,J)
 #endif
 
 #endif /* FENTY_AREA_EXPANSION_CONTRACTION */
@@ -1684,7 +1679,7 @@ C =====================================================
          DO I=1,sNx
           QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) + r_QbyATM_open(I,J)
 #ifndef SEAICE_GROWTH_LEGACY 
-C in principle a_QSWbyATM_cover should always be included here, however 
+C in principle a_QSWbyATM_cover should always be included here, however    
 C for backward compatibility it is left out of the LEGACY branch
      &         +   a_QSWbyATM_cover(I,J)
 #endif /* SEAICE_GROWTH_LEGACY */          
