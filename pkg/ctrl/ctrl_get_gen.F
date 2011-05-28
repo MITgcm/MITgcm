@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.22 2011/05/20 18:17:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.23 2011/05/28 18:24:48 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -165,7 +165,7 @@ c--   Get the counters, flags, and the interpolation factor.
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.smooth.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, xx_gen1, gencount1, optimcycle, mythid)
+     & 1, xx_gen1, gencount0, optimcycle, mythid)
 #endif
       endif
 
