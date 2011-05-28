@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.47 2011/05/27 21:13:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.48 2011/05/28 14:57:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -199,7 +199,7 @@ C--   Effective Thickness (Volume)
          IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_HEFF, SEAICEdiffKhHeff, 1. _d 0,
+     I         GAD_HEFF, SEAICEdiffKhHeff, ONE,
      I         HEFF(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -225,7 +225,7 @@ C--   Fractional area
          IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_AREA, SEAICEdiffKhArea, 1. _d 0,
+     I         GAD_AREA, SEAICEdiffKhArea, ONE,
      I         AREA(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -251,7 +251,7 @@ C--   Effective Snow Thickness (Volume)
          IF ( SEAICEdiffKhSnow .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_SNOW, SEAICEdiffKhSnow, 1. _d 0,
+     I         GAD_SNOW, SEAICEdiffKhSnow, ONE,
      I         HSNOW(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -278,7 +278,7 @@ C--   Effective Sea Ice Salinity (Mass of salt)
          IF ( SEAICEdiffKhSalt .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_SALT, SEAICEdiffKhSalt, 1. _d 0,
+     I         GAD_SALT, SEAICEdiffKhSalt, ONE,
      I         HSALT(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -309,7 +309,7 @@ C--
           IF ( SEAICEdiffKhAge .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
            CALL SEAICE_DIFFUSION(
-     I        GAD_ICEAGETR+iTracer-1, SEAICEdiffKhAge, 1. _d 0,
+     I        GAD_ICEAGETR+iTracer-1, SEAICEdiffKhAge, ONE,
      I        IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer), HEFFM, xA, yA,
      U        gFld,
      I        bi, bj, myTime, myIter, myThid )
