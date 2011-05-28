@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.32 2011/05/27 21:13:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.33 2011/05/28 14:32:44 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,15 +134,15 @@ C     == end of interface ==
       IF ( SEAICEadvAge )
      &CALL WRITE_0D_I ( SEAICEadvSchAge,   INDEX_NONE,
      & 'SEAICEadvSchAge   =', ' /* advection scheme for age */')
-      CALL WRITE_0D_I ( SEAICEdiffKhArea,   INDEX_NONE,
+      CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
      & 'SEAICEdiffKhArea   =', ' /* diffusivity (m^2/s) for area */')
-      CALL WRITE_0D_I ( SEAICEdiffKhHeff,   INDEX_NONE,
+      CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
      & 'SEAICEdiffKhHeff   =', ' /* diffusivity (m^2/s) for heff */')
-      CALL WRITE_0D_I ( SEAICEdiffKhSnow,   INDEX_NONE,
+      CALL WRITE_0D_RL( SEAICEdiffKhSnow,   INDEX_NONE,
      & 'SEAICEdiffKhSnow   =', ' /* diffusivity (m^2/s) for snow */')
-      CALL WRITE_0D_I ( SEAICEdiffKhSalt,   INDEX_NONE,
+      CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
      & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
-      CALL WRITE_0D_I ( SEAICEdiffKhAge,   INDEX_NONE,
+      CALL WRITE_0D_RL( SEAICEdiffKhAge,   INDEX_NONE,
      & 'SEAICEdiffKhAge   =', ' /* diffusivity (m^2/s) for age */')
       CALL WRITE_0D_RL( SEAICE_deltaTtherm,INDEX_NONE,
      & 'SEAICE_deltaTtherm=', ' /* thermodynamic timestep */')
