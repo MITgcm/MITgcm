@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.45 2011/05/27 21:13:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.46 2011/05/28 14:55:15 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -188,20 +188,22 @@ C    for an other ice-field. In this case, stop here.
        ENDIF
       ENDIF
 
-C     Make sure that diffusivities are GE 0
-      DIFF1=max(0. _d 0,DIFF1)
-      SEAICEdiffKhHeff=max(0. _d 0,SEAICEdiffKhHeff)
-      SEAICEdiffKhArea=max(0. _d 0,SEAICEdiffKhArea)
-      SEAICEdiffKhSnow=max(0. _d 0,SEAICEdiffKhSnow)
-      SEAICEdiffKhSalt=max(0. _d 0,SEAICEdiffKhSalt)
-      SEAICEdiffKhAge=max(0. _d 0,SEAICEdiffKhAge)
-
-C     Set DIFF1 to 0. if any other diffusion is selected
-      IF ( ( SEAICEdiffKhHeff .GT. 0. _d 0 )
-     & .OR.( SEAICEdiffKhArea .GT. 0. _d 0 )
-     & .OR.( SEAICEdiffKhSnow .GT. 0. _d 0 )
-     & .OR.( SEAICEdiffKhSalt .GT. 0. _d 0 )
-     & .OR.( SEAICEdiffKhAge  .GT. 0. _d 0 ) ) DIFF1=0. _d 0
+C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
+      IF ( DIFF1 .NE. 0. _d 0 .AND. (
+     &     ( SEAICEdiffKhHeff .NE. 0. _d 0 ) .OR.
+     &     ( SEAICEdiffKhArea .NE. 0. _d 0 ) .OR.
+     &     ( SEAICEdiffKhSnow .NE. 0. _d 0 ) .OR.
+     &     ( SEAICEdiffKhSalt .NE. 0. _d 0 ) .OR.
+     &     ( SEAICEdiffKhAge  .NE. 0. _d 0 )
+     &                              ) ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' DIFF1 > 0 and one of the SEAICEdiffKh[] > 0'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' => Cannot use both type of diffusion'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
