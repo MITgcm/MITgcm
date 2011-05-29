@@ -1,14 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.46 2011/05/28 14:55:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.47 2011/05/29 22:44:51 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: SEAICE_CHECK
+C     !INTERFACE:
       SUBROUTINE SEAICE_CHECK( myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SEAICE_CHECK
+C     | S/R SEAICE_CHECK
 C     | o Validate basic package setup and inter-package
-C     | dependencies.
+C     |   dependencies.
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -24,15 +32,20 @@ C     === Global variables ===
 # include "EXF_OPTIONS.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid ::  Number of this instance of SEAICE_CHECK
+C     myThid     :: my Thread Id. number
       INTEGER myThid
+CEOP
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf :: Informational/error message buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
       LOGICAL checkAdvSchSalt, checkAdvSchAge
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
@@ -186,6 +199,16 @@ C    for an other ice-field. In this case, stop here.
         ENDIF
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
+      ELSEIF ( DIFF1 .NE. 0. _d 0 ) THEN
+C-- for now, the code does not allow to use DIFF1 without the default
+C   advection scheme (Centered 2nd order). In this case, stop here.
+        WRITE(msgBuf,'(2A,1PE16.8)') 'SEAICE_CHECK: ',
+     &        'harmonic+biharmonic DIFF1=',  DIFF1
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK: ',
+     &        'not available with SEAICEadvScheme=', SEAICEadvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
 C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
@@ -430,6 +453,30 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
+
+#ifndef SEAICE_VARIABLE_SALINITY
+      IF ( SEAICEadvSalt ) THEN
+        WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: SEAICEadvSalt = .TRUE. but cpp-flag'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
+     &   'SEAICE_VARIABLE_SALINITY is undef in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_VARIABLE_SALINITY */
+
+#ifndef SEAICE_AGE
+      IF ( SEAICEadvAge ) THEN
+        WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: SEAICEadvAge = .TRUE. but cpp-flag'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
+     &       'SEAICE_AGE is undef in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_AGE */
 
 #if defined(FENTY_AREA_EXPANSION_CONTRACTION) && !defined(SEAICE_DO_OPEN_WATER_GROWTH)
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
