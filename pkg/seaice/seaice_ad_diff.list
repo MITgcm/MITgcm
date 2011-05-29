@@ -6,7 +6,6 @@ seaice_advection.f
 seaice_advdiff.f
 seaice_solve4temp.f
 seaice_budget_ocean.f
-seaice_check.f
 seaice_output.f
 seaice_diagnostics_state.f
 seaice_diffusion.f
@@ -17,7 +16,6 @@ seaice_model.f
 seaice_read_pickup.f
 seaice_check_pickup.f
 seaice_write_pickup.f
-seaice_readparms.f
 lsr.f
 seaice_cost_accumulate_mean.f
 seaice_cost_areasst.f
