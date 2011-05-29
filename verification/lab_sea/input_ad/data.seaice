@@ -1,6 +1,8 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      SEAICEwriteState   = .TRUE.,
+#- old default for useFluxForm and DIFF1:
+      SEAICEuseFluxForm  = .FALSE.,
+      DIFF1 = 4.E-3,
       SEAICE_initialHEFF = 1.0,
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
@@ -17,10 +19,12 @@
       SEAICE_availHeatFrac = 0.8,
       SEAICEadvSnow      = .TRUE.,
       SEAICEuseFlooding  = .TRUE.,
+      SEAICEwriteState   = .TRUE.,
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
  &
+
  &SEAICE_PARM02
   mult_ice   = 1.,
 # choose which seaice cost term you want
@@ -31,4 +35,7 @@
  costIceStart2        = 00000,
  costIceEnd1        = 20000201,
  costIceEnd2        = 00000,
+ &
+
+ &SEAICE_PARM03
  &
