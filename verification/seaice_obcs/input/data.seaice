@@ -1,5 +1,7 @@
 # SEAICE parameters
-&SEAICE_PARM01
+ &SEAICE_PARM01
+#- old DIFF1 default:
+ DIFF1 = 4.E-3,
  SEAICE_dryIceAlb   = 0.8756,
  SEAICE_wetIceAlb   = 0.7856,
  SEAICE_drySnowAlb  = 0.9656,
@@ -17,9 +19,12 @@
  SIsalFRAC          = 0.3,
  SEAICE_gamma_t     = 259200.,
  SEAICE_gamma_t_frz = 10800.,
- SEAICEwriteState   = .TRUE.,
  AreaFile           = 'AREA.seaice_obcs',
  HsnowFile          = 'HSNOW.seaice_obcs',
  HsaltFile          = 'HSALT.seaice_obcs',
  HeffFile           = 'HEFF.seaice_obcs',
+ SEAICEwriteState   = .TRUE.,
+ &
+
+ &SEAICE_PARM03
  &
