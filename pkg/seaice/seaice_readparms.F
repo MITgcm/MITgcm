@@ -1,13 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.93 2011/05/27 21:13:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.94 2011/05/29 19:22:18 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: SEAICE_READPARMS
+C     !INTERFACE:
+
       SUBROUTINE SEAICE_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_READPARMS                              |
-C     | o Routine to read in file data.seaice                    |
-C     \==========================================================/
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SEAICE_READPARMS
+C     | o Routine to read in file data.seaice
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -31,14 +39,16 @@ C     === Global variables ===
 # include "cal.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid :: Number of this instance of SEAICE_READPARMS
+C     myThid     :: my Thread Id. number
       INTEGER myThid
+CEOP
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf :: Informational/error message buffer
-C     iUnit  :: Work variable for IO unit number
-
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 #ifdef SEAICE_AGE
@@ -115,6 +125,7 @@ C--   SEAICE parameters
      &          IceAgeTrFile
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
@@ -143,7 +154,9 @@ C--   set default sea ice parameters
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
-      SEAICEuseFluxForm  = .FALSE.
+      SEAICEuseFluxForm  = .TRUE.
+C--   old default:
+c     SEAICEuseFluxForm  = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
@@ -174,11 +187,11 @@ C--   set default sea ice parameters
       SEAICEadvSchSnow   = UNSET_I
       SEAICEadvSchSalt   = UNSET_I
       SEAICEadvSchAge    = UNSET_I
-      SEAICEdiffKhArea   = 0. _d 0
-      SEAICEdiffKhHeff   = 0. _d 0
-      SEAICEdiffKhSnow   = 0. _d 0
-      SEAICEdiffKhSalt   = 0. _d 0
-      SEAICEdiffKhAge    = 0. _d 0
+      SEAICEdiffKhArea   = UNSET_RL
+      SEAICEdiffKhHeff   = UNSET_RL
+      SEAICEdiffKhSnow   = UNSET_RL
+      SEAICEdiffKhSalt   = UNSET_RL
+      SEAICEdiffKhAge    = UNSET_RL
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
@@ -272,8 +285,9 @@ C     two pseudo time steps correspond to the original modified
 C     Euler time stepping scheme of Zhang+Hibler (1997)
       NPSEUDOTIMESTEPS = 2
       LSR_ERROR  = 0.0001    _d 0
-      DIFF1      = .002      _d 0
-      DIFF1      = 2.0*DIFF1
+      DIFF1      = 0. _d 0
+C--   old DIFF1 default:
+c     DIFF1      = .004 _d 0
       A22        = 0.15      _d 0
       areaMin    = 0.15 _d 0
       areaMax    = 1.00 _d 0
@@ -469,6 +483,8 @@ C     so we reset them here
 C     Set advection schemes to some sensible values if not done
 C     in data.seaice
       IF ( SEAICEadvSchArea .EQ. UNSET_I )
+     &     SEAICEadvSchArea = SEAICEadvSchHeff
+      IF ( SEAICEadvSchArea .EQ. UNSET_I )
      &     SEAICEadvSchArea = SEAICEadvScheme
       IF ( SEAICEadvScheme .NE. SEAICEadvSchArea )
      &     SEAICEadvScheme  = SEAICEadvSchArea
@@ -480,6 +496,19 @@ C     in data.seaice
      &     SEAICEadvSchSalt = SEAICEadvSchHeff
       IF ( SEAICEadvSchAge  .EQ. UNSET_I )
      &     SEAICEadvSchAge  = SEAICEadvSchHeff
+C     Set diffusivity to some sensible values if not done in data.seaice
+      IF ( SEAICEdiffKhArea .EQ. UNSET_RL )
+     &     SEAICEdiffKhArea = SEAICEdiffKhHeff
+      IF ( SEAICEdiffKhArea .EQ. UNSET_RL )
+     &     SEAICEdiffKhArea = 0. _d 0
+      IF ( SEAICEdiffKhHeff .EQ. UNSET_RL )
+     &     SEAICEdiffKhHeff = SEAICEdiffKhArea
+      IF ( SEAICEdiffKhSnow .EQ. UNSET_RL )
+     &     SEAICEdiffKhSnow = SEAICEdiffKhHeff
+      IF ( SEAICEdiffKhSalt .EQ. UNSET_RL )
+     &     SEAICEdiffKhSalt = SEAICEdiffKhHeff
+      IF ( SEAICEdiffKhAge  .EQ. UNSET_RL )
+     &     SEAICEdiffKhAge  = SEAICEdiffKhHeff
 
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
