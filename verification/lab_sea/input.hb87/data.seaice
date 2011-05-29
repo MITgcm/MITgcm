@@ -1,6 +1,5 @@
 # SEAICE parameters
  &SEAICE_PARM01
- SEAICEwriteState   = .TRUE.,
  SEAICE_initialHEFF = 1.0,
  SEAICE_deltaTtherm = 3600.,
  SEAICE_deltaTdyn   = 3600.,
@@ -8,10 +7,12 @@
  SEAICE_deltaTevp   = 30.,
  useHB87stressCoupling = .TRUE.,
  SEAICE_no_slip     = .TRUE.,
+ SEAICEdiffKhArea   = 200.,
  AreaFile           = 'AREA.0000008760',
  HsnowFile          = 'HSNOW.0000008760',
  HsaltFile          = 'HSALT.0000008760',
  HeffFile           = 'HEFF.0000008760',
+ SEAICEwriteState   = .TRUE.,
  &
 
  &SEAICE_PARM03

@@ -1,6 +1,5 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      SEAICEwriteState   = .TRUE.,
       SEAICE_initialHEFF = 1.0,
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
@@ -8,7 +7,6 @@
 #-- According to Martin, SEAICE_clipVelocities is not recommended
 #     SEAICE_clipVelocities=.TRUE.,
       SEAICEadvSalt      =.FALSE.,
-      SEAICEadvAge       =.FALSE.,
 #-- above: to reproduce old results
 ###      LSR_ERROR          = 1.E-6,
       SEAICE_deltaTevp   = 60,
@@ -17,6 +15,8 @@
       SEAICE_availHeatFrac = 0.8,
       SEAICEadvSnow      = .TRUE.,
       SEAICEuseFlooding  = .TRUE.,
+      SEAICEdiffKhArea   = 200.,
+      SEAICEwriteState   = .TRUE.,
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
