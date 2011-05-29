@@ -1,20 +1,19 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      SEAICEwriteState   = .TRUE.,
+#- old DIFF1 default:
+      DIFF1 = 4.E-3,
       SEAICE_initialHEFF = 1.0,
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.FALSE.,
 #-- According to Martin, SEAICE_clipVelocities is not recommended
 #     SEAICE_clipVelocities=.TRUE.,
-      SEAICEadvSalt      =.FALSE.,
-      SEAICEadvAge       =.FALSE.,
       SEAICEadvSnow      =.FALSE.,
-#     SEAICEuseFlooding  =.FALSE.,
 #-- above: to reproduce old results
       LSR_ERROR          = 1.E-12,
+      SEAICEwriteState   = .TRUE.,
  &
-#
+
  &SEAICE_PARM02
   mult_ice   = 1.,
 # choose which seaice cost term you want
@@ -23,4 +22,7 @@
   costIceStart2 = 00000,
   costIceEnd1   = 20000201,
   costIceEnd2   = 00000,
+ &
+
+ &SEAICE_PARM03
  &

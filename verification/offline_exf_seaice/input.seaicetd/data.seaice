@@ -1,22 +1,26 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      SEAICEwriteState   = .TRUE.,
+#- old DIFF1 default:
+      DIFF1 = 4.E-3,
       SEAICE_initialHEFF = 1.0,
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.FALSE.,
       LSR_ERROR          = 1.E-12,
 # does not have an effect here
-# for backward compatibility turn off advection
-# of snow
+# for backward compatibility turn off advection of snow
  SEAICEadvSnow = .FALSE.,
  SEAICEuseFlooding = .FALSE.,
+ SEAICEwriteState   = .TRUE.,
  &
-#
+
  &SEAICE_PARM02
  mult_smrarea = 100.0,
  smrareadatfile = 'icearea_daily92to03_20x16.labsea1979',
  wsmrarea0 = 0.5,
  wmean_smrarea = 0.5,
  smrarea_errfile = ' ',
+ &
+
+ &SEAICE_PARM03
  &
