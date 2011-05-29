@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.94 2011/05/29 19:22:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.95 2011/05/29 23:44:16 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -6,8 +6,8 @@ C $Name:  $
 CBOP
 C     !ROUTINE: SEAICE_READPARMS
 C     !INTERFACE:
-
       SUBROUTINE SEAICE_READPARMS( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R SEAICE_READPARMS
@@ -50,6 +50,7 @@ C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL chkFlag
       INTEGER iUnit
 #ifdef SEAICE_AGE
       INTEGER iTracer
@@ -285,7 +286,7 @@ C     two pseudo time steps correspond to the original modified
 C     Euler time stepping scheme of Zhang+Hibler (1997)
       NPSEUDOTIMESTEPS = 2
       LSR_ERROR  = 0.0001    _d 0
-      DIFF1      = 0. _d 0
+      DIFF1      = UNSET_RL
 C--   old DIFF1 default:
 c     DIFF1      = .004 _d 0
       A22        = 0.15      _d 0
@@ -593,6 +594,56 @@ C-    Set Output type flags :
      &  'some out of date parameters were found in the namelist'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+      IF ( DIFF1 .EQ. UNSET_RL ) THEN
+        DIFF1 = 0. _d 0
+        chkFlag = .FALSE.
+        IF ( SEAICEadvScheme.EQ.2 ) THEN
+C--   Since DIFF1 default value has been changed (2011/05/29), issue a warning
+C     in case using centered avection scheme without any diffusion:
+         IF ( SEAICEadvHeff .AND. SEAICEdiffKhHeff .EQ. 0. _d 0 ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &    'will use AdvScheme = 2 for HEFF  without any diffusion'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          chkFlag = .TRUE.
+         ENDIF
+         IF ( SEAICEadvArea .AND. SEAICEdiffKhArea .EQ. 0. _d 0 ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &    'will use AdvScheme = 2 for AREA  without any diffusion'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          chkFlag = .TRUE.
+         ENDIF
+         IF ( SEAICEadvSnow .AND. SEAICEdiffKhSnow .EQ. 0. _d 0 ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &    'will use AdvScheme = 2 for HSNOW without any diffusion'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          chkFlag = .TRUE.
+         ENDIF
+         IF ( SEAICEadvSalt .AND. SEAICEdiffKhSalt .EQ. 0. _d 0 ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &    'will use AdvScheme = 2 for HSALT without any diffusion'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          chkFlag = .TRUE.
+         ENDIF
+         IF ( SEAICEadvAge  .AND. SEAICEdiffKhAge  .EQ. 0. _d 0 ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &    'will use AdvScheme = 2 for IceAgeTr without any diffusion'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          chkFlag = .TRUE.
+         ENDIF
+         IF ( chkFlag ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'since DIFF1 is set to 0 (= new DIFF1 default value)'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+        ENDIF
       ENDIF
 
       _END_MASTER(myThid)
