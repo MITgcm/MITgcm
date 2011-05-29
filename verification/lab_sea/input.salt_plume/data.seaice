@@ -1,6 +1,7 @@
 # SEAICE parameters
  &SEAICE_PARM01
- SEAICEwriteState   = .TRUE.,
+#- old DIFF1 default:
+ DIFF1 = 4.E-3,
  SEAICE_initialHEFF = 1.0,
  SEAICE_deltaTtherm = 3600.,
  SEAICE_deltaTdyn   = 3600.,
@@ -18,7 +19,8 @@
  SEAICE_gamma_t     = 259200.,
  SEAICE_gamma_t_frz = 10800.,
  SEAICE_clipVelocities= .TRUE.,
- SEAICEuseFluxForm  = .TRUE.,
+ SEAICEwriteState   = .TRUE.,
  &
+
  &SEAICE_PARM03
  &
