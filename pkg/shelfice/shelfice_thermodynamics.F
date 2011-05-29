@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.20 2011/05/10 07:46:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.21 2011/05/29 18:50:13 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -58,7 +58,7 @@ C     convertFW2SaltLoc:: local copy of convertFW2Salt
 C     cFac             :: 1 for conservative form, 0, otherwise
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
-C     eps1, eps2, eps3, eps4, eps5, eps6, eps7
+C     eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
 C     aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
       INTEGER I,J,K,Kp1
@@ -69,7 +69,7 @@ C     drKp1, recip_drLoc
       _RL thetaFreeze, saltFreeze
       _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
-      _RL eps1, eps2, eps3, eps4, eps5, eps6, eps7
+      _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7
       _RL cFac, rFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
@@ -250,13 +250,20 @@ C     correct form of the quadratic equation for salinity. The abbreviations
 C     only make sense in connection with my notes on this (M.Losch)
             eps3 = rhoShelfIce*SHELFICEheatCapacity_Cp
      &           * SHELFICEkappa/pLoc(I,J)
+cph introduce a constant variant of eps3 to avoid AD of
+cph code of typ (pLoc-const)/pLoc
+            eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
+     &           * SHELFICEkappa
             eps4 = b*pLoc(I,J) + c0
             eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
             aqe = a0  *(eps1+eps3)
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-            bqe = eps1*eps6 + eps3*eps7 - eps2
+            bqe = eps1*eps6 
+     &           + eps3a*b
+     &           + eps3*( c0 - SHELFICEthetaSurface )
+     &           - eps2
             cqe = eps2*sLoc(I,J)
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
@@ -295,8 +302,11 @@ C     only make sense in connection with my notes on this (M.Losch)
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
             thetaFreeze = a0*saltFreeze + eps4
 C--   upward fresh water flux due to melting (in kg/m^2/s)
+cph change to identical form
+cph            freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
+cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
             freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
-     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
+     &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
 #ifdef ALLOW_SHIFWFLX_CONTROL
      &           + xx_shifwflx_loc(I,J,bi,bj)
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
