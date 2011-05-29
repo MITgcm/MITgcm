@@ -1,27 +1,45 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1445 2011/05/27 23:28:39 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1446 2011/05/29 23:50:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  => Change some of the defaults (2011/05/29):
+     - change SEAICEuseFluxForm default (from False to True)
+     - change DIFF1 default (from 0.004 m/s to 0. m/s)
+     And print warnings if DIFF1 is not set in data.seaice and centered
+      avection scheme is used without any diffusion.
+  also:
+  - fix seaice_diffusion calls in default AdvScheme part of seaice_advdiff.F;
+  - set SEAICEdiffKh[] default in the same way as SEAICEadvSch[]
+  - stop if DIFF1<>0 with SEAICEadvScheme <> 2, if DIFF1<>0 with any
+    other non-zero SEAICEdiffKh[] diffusivity, if SEAICEadvSalt=T with
+    #undef SEAICE_VARIABLE_SALINITY, if SEAICEadvAge=T with #undef SEAICE_AGE.
+  update results of test exp.:
+     lab_sea: output.fd (switch to AdvScheme=33 with diffKh=20)
+         output.hb87, output_adm.evp (SEAICEuseFluxForm=T and diffKh=200)
+         output_adm.noseaicedyn (SEAICEuseFluxForm=T)
+     offline_exf_seaice: output.seaicetd, output_adm (SEAICEuseFluxForm=T)
+     seaice_obcs: output (SEAICEuseFluxForm=T)
+  and prescribe old default for SEAICEuseFluxForm (=F) and DIFF1 (=0.004)
+      for standard fwd & AD lab_sea tests (to keep the same output).
 o pkg/seaice/seaice_growth.F:
-  - use Ian Fenty's capping formulas for actual ice 
+  - use Ian Fenty's capping formulas for actual ice
   thickness thoughout EVOLUTION branch.
   - put treatment pathological case #2) in CPP brackets
   (ALLOW_AVOID_INFINITESIMAL_AREA, undef by default).
-  - update global_ocean.cs32x15 and 1D_ocean_ice_colum results accordingly.  
+  - update global_ocean.cs32x15 and 1D_ocean_ice_colum results accordingly.
 o pkg/seaice:
   - seaice_diffusion.F : remove the min(DX,DY) factor permanently;
-  pass the Laplacian diffusivity (in m/s2) diffKh as a parameter; 
-  also pass fac as a param, which can be 1. (to update the tendency 
+  pass the Laplacian diffusivity (in m^2/s) diffKh as a parameter;
+  also pass fac as a param, which can be 1. (to update the tendency
   field) or the time step (to update the field itself).
-  - seaice_advdiff.F: for multidim, call seaice_diffusion with 
+  - seaice_advdiff.F: for multidim, call seaice_diffusion with
   e.g. SEAICEdiffKhHeff and with fac=1; for single-dim, call
   seaice_diffusion with e.g. SEAICEdiffKhHeff and with fac=time step.
-  - SEAICE_PARAMS.h, seaice_readparms.F, seaice_check.F : 
+  - SEAICE_PARAMS.h, seaice_readparms.F, seaice_check.F :
   hooks to handle SEAICEdiffKhHeff, SEAICEdiffKhArea, etc.
-  - note: if any of SEAICEdiffKhHeff, SEAICEdiffKhArea, etc. 
-  is specified to be >0, then DIFF1 is set to 0.
 o pkg/seaice:
   diffusion with centered advection scheme (diffus.F & advect.F):
   - simplify S/R DIFFUS (put deltaT & DIFF1 factor outside, move EXCH outside)
