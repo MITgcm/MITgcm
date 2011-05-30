@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.21 2011/05/29 18:50:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.22 2011/05/30 20:21:51 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -80,7 +80,7 @@ C     drKp1, recip_drLoc
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
       _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif 
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     are we doing the conservative form of Jenkins et al. (2001)?
@@ -132,9 +132,9 @@ C     where this value is part of the protocol
         ENDDO
        ENDDO
       ENDDO
-      CALL CTRL_GET_GEN ( 
+      CALL CTRL_GET_GEN (
      &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
-     &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1, 
+     &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &     mytime, myiter, mythid )
@@ -260,9 +260,10 @@ cph code of typ (pLoc-const)/pLoc
             aqe = a0  *(eps1+eps3)
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-            bqe = eps1*eps6 
-     &           + eps3a*b
-     &           + eps3*( c0 - SHELFICEthetaSurface )
+c           bqe = eps1*eps6 + eps3*eps7 - eps2
+            bqe = eps1*eps6
+     &           + eps3a*( b
+     &                   + ( c0 - SHELFICEthetaSurface )/pLoc(I,J) )
      &           - eps2
             cqe = eps2*sLoc(I,J)
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
