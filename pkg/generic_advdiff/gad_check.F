@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.5 2010/11/16 17:39:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.6 2011/06/01 22:38:25 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -119,6 +119,17 @@ C     for mom limitations, done in CONFIG_CHECK, but can move to MOM_INIT_FIXED
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_CHECK'
       ENDIF
+
+C Check compatibility with adjoint
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF ( tempAdvScheme.EQ.ENUM_OS7MP .OR.
+     &     saltAdvScheme.EQ.ENUM_OS7MP ) THEN
+        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: ', ENUM_OS7MP,
+     &     'not yet implemented for adjoint'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_CHECK'
+      ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       _END_MASTER(myThid)
 

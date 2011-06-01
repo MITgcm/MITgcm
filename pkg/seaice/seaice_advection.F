@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.23 2011/05/25 20:44:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.24 2011/06/01 22:38:25 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -258,13 +258,13 @@ C-     Initialise Advective flux in X & Y
        ENDDO
 #endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
        withSigns = .FALSE.
        CALL FILL_CS_CORNER_UV_RS(
      &      withSigns, maskLocW,maskLocS, bi,bj, myThid )
       ENDIF
-#endif
+cph-exch2#endif
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
@@ -327,14 +327,14 @@ C-     Advective flux in X
           ENDDO
          ENDDO
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
           CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               localTij, bi,bj, myThid )
          ENDIF
-#endif
+cph-exch2#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
@@ -380,13 +380,13 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 C--   Advective flux in X : done
         ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
-#endif
+cph-exch2#endif
 
 C-     Update the local seaice field where needed:
 
@@ -526,14 +526,14 @@ C-     Advective flux in Y
           ENDDO
          ENDDO
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
           CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               localTij, bi,bj, myThid )
          ENDIF
-#endif
+cph-exch2#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef DISABLE_MULTIDIM_ADVECTION
@@ -579,13 +579,13 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 C-     Advective flux in Y : done
         ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for next calculations in X
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
-#endif
+cph-exch2#endif
 
 C-     Update the local seaice field where needed:
 
