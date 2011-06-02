@@ -6,7 +6,8 @@
  OB_Jnorth =   10*8,
  OB_Iwest  =   8*1,
  OB_Ieast  =   8*10,
-#
+# This flag check and equalise topography across open boundaries:
+ OBCSfixTopo = .TRUE.,
  useOBCSprescribe=.TRUE.,
 #
  OBSsFile='OBSs.seaice_obcs',
