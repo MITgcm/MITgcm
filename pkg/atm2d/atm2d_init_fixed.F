@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.3 2007/10/10 19:37:01 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.4 2011/06/02 21:33:21 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -78,14 +78,6 @@ C     MITGCM helper routines; hopefully no unit conflict...
 #ifdef CPL_OCEANCO2
       ocupt=0.0
       temuptann=0.0
-#endif
-
-#ifdef IPCC_EMI
-      OPEN (961,file='ipccemi.dat',
-     &  status='old')
-      READ (961,*)nemis
-      PRINT *,'IPCC EMI=',nemis
-      CLOSE (961)
 #endif
 
 #ifdef OCEAN_3D

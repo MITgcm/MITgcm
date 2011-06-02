@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.18 2011/05/23 18:51:30 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.19 2011/06/02 21:33:21 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -61,13 +61,8 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       CHARACTER *40 f4tem,f4clm
       CHARACTER *4  cfile
       CHARACTER *8  f14tem,f14clm
-      INTEGER nfile
-#endif
-
-#ifdef DATA4TEM 
       f14tem='data4tem'
       f14clm='data4clm'
-      nfile=1
 #endif
 
 C     print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
@@ -113,9 +108,9 @@ C    &             idyear,iyr,inyr,monid,inday,dayid
         DO j=1,jm0
           co24ocnan(j)=0.0
         ENDDO
-#if ( defined ML_2D )
+#  ifdef ML_2D
           call kvcarbon(iyr)
-#endif
+#  endif
 #endif
 #ifdef CPL_TEM
         DO j=1,jm0
@@ -218,12 +213,6 @@ C--------------------- End of coupled period loop --------------------
 C
       IF (inday.EQ.0) THEN  !do this block if end-of-day
 C        PRINT *,'***block at end of day'
-#ifdef CPL_OCEANCO2
-        DO j=1,jm0
-          ocumn=ocumn+fluxco2(j)
-          fluxco2mn(j)=fluxco2mn(j)+fluxco2(j)
-        ENDDO
-#endif
       ENDIF  !end block end-of-day
 
       IF (inyr.EQ.jdofmhr(monid)) THEN !do block if month-end
@@ -290,7 +279,8 @@ c   12.e-15 from moles to Gt carbon
         ocumn=ocumn*12.e-15
 C        tnow= jyear + (jday-.5)/365.
 C        CALL emissipcc(tnow,nepmn,ocumn,CO2,xco2ann,nemis)
-        CALL emissipcc_mn(nepmn,ocumn,xco2ann,nemis)
+         print *,nepmn,ocumn,xco2ann
+        CALL emissipcc_mn(nepmn,ocumn,xco2ann)
 #endif
       ENDIF  !end block done at month-end
 
@@ -337,44 +327,28 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         IF (iloop.EQ.nTimeSteps) CALL ATM2D_FINISH(myThid)
 #endif
 
-#if (defined CPL_TEM || defined CPL_OCEANCO2)
-        OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
-
-#  if (defined CPL_TEM && defined CPL_OCEANCO2)
+#if (defined CPL_TEM) || (defined CPL_OCEANCO2)
         PRINT '(a6,i6,2(a5,f10.4))','Year=',iyr,
-     &         ' NEP=',nepan,' OCU=',ocuptp
-        WRITE(333,*)iyr,nepan,ocuptp
-#  else
-
-#     ifdef CPL_TEM
-        PRINT '(a6,i6,2(a5,f10.4))','Year=',iyr,
-     &         ' NEP=',nepan
-        WRITE(333,*)iyr,nepan,nepan
-#      ifdef CPL_NEM
-        PRINT *,' CH4=',ch4ann,' N2O=',n2oann
-#      endif
-#     endif
-
-#     ifdef CPL_OCEANCO2
-        PRINT '(a6,i6,2(a5,f10.4))','Year=',iyr,
-     &         ' OCU=',ocuptp
-        WRITE(333,*)iyr,ocuptp,ocuptp
-#     endif
-
-#  endif
-        CLOSE(333)
-#endif
-
-#if (defined CPL_OCEANCO2 && defined ML_2D)
-        WRITE(602)iyr
-        CALL wrgary
-        CALL zerogary
-#endif
-
-#ifdef IPCC_EMI
+     &         ' NEP=',nepan,' OCU=',OCUPTP
+#  ifdef IPCC_EMI
         PRINT '(a6,i6,(a5,f10.4))','Year=',iyr,
      &         ' CO2AN=',xco2ann/12.
         CALL emissipcc_yr
+#  endif
+
+#  ifdef CPL_NEM
+        PRINT *,' CH4=',ch4ann,' N2O=',n2oann
+#  endif
+        OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
+C        WRITE(333,'(2f9.5)')nepan,ocuptp
+        WRITE(333,*)iyr,nepan,ocuptp
+        CLOSE(333)
+
+#  if (defined CPL_OCEANCO2) && (defined ML_2D)
+        WRITE(602)iyr
+        CALL wrgary
+        CALL zerogary
+#  endif
 #endif
 
 #ifdef CPL_OCEANCO2
