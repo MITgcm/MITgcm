@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.14 2011/06/01 22:38:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.15 2011/06/02 18:34:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -14,7 +14,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE THSICE_ADVECTION(
      I     tracerIdentity,
      I     advectionScheme,
-     I     useGridVolume,
+     I     useGridArea,
      I     uTrans, vTrans, maskOc, deltaTadvect, iceEps,
      U     iceVol, iceFld,
      O     afx, afy,
@@ -27,7 +27,7 @@ C and can only be used for the non-linear advection schemes such as the
 C direct-space-time method and flux-limiters.
 C
 C This routine is an adaption of the GAD_ADVECTION for 2D-fields.
-C for Area, effective thickness or other "extensive" sea-ice field,
+C for Area, effective thickness or other sea-ice field,
 C  the contribution iceFld*div(u) (that is present in gad_advection)
 C  is not included here.
 C
@@ -48,7 +48,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "THSICE_SIZE.h"
+#if ( defined ALLOW_DBUG_THSICE || defined ALLOW_AUTODIFF_TAMC )
+# include "THSICE_SIZE.h"
+#endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
@@ -57,7 +59,6 @@ C !USES: ===============================================================
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "THSICE_PARAMS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -65,7 +66,7 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  tracerIdentity  :: tracer identifier (required only for OBCS)
 C  advectionScheme :: advection scheme to use (Horizontal plane)
-C  useGridVolume   :: use grid-cell Area & Volume (instead of "iceVol" field)
+C  useGridArea     :: use grid-cell Area (instead of "iceVol" field)
 C  uTrans,vTrans   :: volume transports at U,V points
 C  maskOc          :: oceanic mask
 C  iceVol          :: sea-ice volume
@@ -78,7 +79,7 @@ C  myIter          :: current iteration number
 C  myThid          :: my thread Id. number
       INTEGER tracerIdentity
       INTEGER advectionScheme
-      LOGICAL useGridVolume
+      LOGICAL useGridArea
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskOc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -100,6 +101,7 @@ C  afy             :: horizontal advective flux, y direction
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C !LOCAL VARIABLES: ====================================================
+C  maskLocC      :: 2-D array mask at grid-cell center
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
 C  iMin,iMax,    :: loop range for called routines
@@ -120,6 +122,7 @@ C  myTile        :: variables used to determine which cube face
 C  nCFace        :: owns a tile for cube grid runs using
 C                :: multi-dim advection.
 C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
+      _RS maskLocC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
@@ -128,6 +131,7 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       _RL uCfl    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vCfl    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpVol
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
       LOGICAL interiorOnly, overlapOnly
       INTEGER nipass,ipass
@@ -136,14 +140,16 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif
+#ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
       INTEGER idb,jdb,biDb
       _RL tmpFac
-      _RL tmpVol
+#endif /* ALLOW_DBUG_THSICE */
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      k = 1
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
       max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -157,7 +163,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      k = 1
+#ifdef ALLOW_DBUG_THSICE
       dBugFlag = debugLevel.GE.debLevB
      &     .AND. myIter.EQ.nIter0
      &     .AND. ( tracerIdentity.EQ.GAD_SI_HICE .OR.
@@ -166,6 +172,7 @@ c    &     .AND. tracerIdentity.EQ.GAD_SI_FRAC
       idb  = MIN(13,sNx)
       jdb  = MOD(17,sNy)
       biDb = nSx/2
+#endif /* ALLOW_DBUG_THSICE */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -206,11 +213,14 @@ C--   Set tile-specific parameters for horizontal fluxes
 
 C--   Start horizontal fluxes
 
-C--   set mask West & South
+C--   set mask West & South (and local Centered mask)
       DO j=1-OLy,sNy+OLy
        maskLocW(1-Olx,j) = 0.
        DO i=2-OLx,sNx+OLx
         maskLocW(i,j) = MIN( maskOc(i-1,j), maskOc(i,j) )
+#ifdef ALLOW_OBCS
+     &                * maskInW(i,j,bi,bj)
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
       DO i=1-OLx,sNx+OLx
@@ -219,6 +229,19 @@ C--   set mask West & South
       DO j=2-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         maskLocS(i,j) = MIN( maskOc(i,j-1), maskOc(i,j) )
+#ifdef ALLOW_OBCS
+     &                * maskInS(i,j,bi,bj)
+#endif /* ALLOW_OBCS */
+       ENDDO
+      ENDDO
+C     maskLocC is just a local copy of Ocean mask (maskOc) except if using OBCS:
+C     use "maksInC" to prevent updating tracer field in OB regions
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        maskLocC(i,j) = maskOc(i,j)
+#ifdef ALLOW_OBCS
+     &                * maskInC(i,j,bi,bj)
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
 
@@ -271,9 +294,11 @@ C--   not CubedSphere
         calc_fluxes_X = MOD(ipass,2).EQ.1
         calc_fluxes_Y = .NOT.calc_fluxes_X
        ENDIF
+#ifdef ALLOW_DBUG_THSICE
        IF (dBugFlag.AND.bi.EQ.biDb ) WRITE(6,'(A,3I4,2I5,4L5)')
      &   'ICE_adv:', tracerIdentity, ipass, bi, idb, jdb,
      &   calc_fluxes_X, calc_fluxes_Y, overlapOnly, interiorOnly
+#endif /* ALLOW_DBUG_THSICE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
@@ -293,7 +318,7 @@ CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
 C-     Advective flux in X
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           af(i,j) = 0.
+            af(i,j) = 0.
           ENDDO
          ENDDO
 
@@ -302,14 +327,14 @@ C-     Internal exchange for calculations in X
          IF ( overlapOnly ) THEN
           CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceFld, bi,bj, myThid )
-          IF ( .NOT.useGridVolume )
+          IF ( .NOT.useGridArea )
      &    CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 cph-exch2#endif
 
 C-     Compute CFL number
-         IF ( useGridVolume ) THEN
+         IF ( useGridArea ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=2-Olx,sNx+Olx
             uCfl(i,j) = deltaTadvect*(
@@ -334,9 +359,11 @@ C-     Compute CFL number
           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .FALSE.,
      I             deltaTadvect, uTrans, uCfl, iceFld,
      O             af, myThid )
+#ifdef ALLOW_DBUG_THSICE
           IF (dBugFlag.AND.bi.EQ.biDb ) WRITE(6,'(A,1P4E14.6)')
      &      'ICE_adv: xFx=', af(idb,jdb), iceFld(idb,jdb),
      &       uTrans(idb,jdb), af(idb,jdb)/uTrans(idb,jdb)
+#endif /* ALLOW_DBUG_THSICE */
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .FALSE., deltaTadvect,
      I             uTrans, uCfl, maskLocW, iceFld,
@@ -359,7 +386,7 @@ C--   Internal exchange for next calculations in Y
          IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
           CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceFld, bi,bj, myThid )
-          IF ( .NOT.useGridVolume )
+          IF ( .NOT.useGridArea )
      &    CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
@@ -383,106 +410,109 @@ C            in corner region) but safer to keep them.
 CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
 CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
 #endif
-         IF ( S_edge .AND. useGridVolume ) THEN
-          DO j=1-OLy,0
-           DO i=iMinUpd,iMaxUpd
-            iceFld(i,j) = iceFld(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                                *recip_rA(i,j,bi,bj)
-     &                                *( af(i+1,j)-af(i,j) )
-           ENDDO
-          ENDDO
-         ELSEIF ( S_edge ) THEN
-          DO j=1-OLy,0
-           DO i=iMinUpd,iMaxUpd
-            tmpVol = iceVol(i,j)
-            iceVol(i,j) = iceVol(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                          *( uTrans(i+1,j)-uTrans(i,j) )
-            IF ( iceVol(i,j).GT.iceEps )
-     &      iceFld(i,j) = ( iceFld(i,j)*tmpVol
-     &                     -deltaTadvect*maskOc(i,j)
-     &                                  *( af(i+1,j)-af(i,j) )
-     &                    )/iceVol(i,j)
-           ENDDO
-          ENDDO
-         ENDIF
-         IF ( N_edge .AND. useGridVolume ) THEN
-          DO j=sNy+1,sNy+OLy
-           DO i=iMinUpd,iMaxUpd
-            iceFld(i,j) = iceFld(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                                *recip_rA(i,j,bi,bj)
-     &                                *( af(i+1,j)-af(i,j) )
-           ENDDO
-          ENDDO
-         ELSEIF ( N_edge ) THEN
-          DO j=sNy+1,sNy+OLy
-           DO i=iMinUpd,iMaxUpd
-            tmpVol = iceVol(i,j)
-            iceVol(i,j) = iceVol(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                          *( uTrans(i+1,j)-uTrans(i,j) )
-            IF ( iceVol(i,j).GT.iceEps )
-     &      iceFld(i,j) = ( iceFld(i,j)*tmpVol
-     &                     -deltaTadvect*maskOc(i,j)
-     &                                  *( af(i+1,j)-af(i,j) )
-     &                    )/iceVol(i,j)
-           ENDDO
-          ENDDO
-         ENDIF
-C--   keep advective flux (for diagnostics)
          IF ( S_edge ) THEN
+          IF ( useGridArea ) THEN
+           DO j=1-OLy,0
+            DO i=iMinUpd,iMaxUpd
+             iceFld(i,j) = iceFld(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                                 *recip_rA(i,j,bi,bj)
+     &                                 *( af(i+1,j)-af(i,j) )
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=1-OLy,0
+            DO i=iMinUpd,iMaxUpd
+             tmpVol = iceVol(i,j)
+             iceVol(i,j) = iceVol(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                           *( uTrans(i+1,j)-uTrans(i,j) )
+             IF ( iceVol(i,j).GT.iceEps )
+     &       iceFld(i,j) = ( iceFld(i,j)*tmpVol
+     &                      -deltaTadvect*maskLocC(i,j)
+     &                                  *( af(i+1,j)-af(i,j) )
+     &                     )/iceVol(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+C-    keep advective flux (for diagnostics)
           DO j=1-OLy,0
            DO i=1-OLx+1,sNx+OLx
-            afx(i,j) = af(i,j)
+             afx(i,j) = af(i,j)
            ENDDO
           ENDDO
+C-    end if South Edge
          ENDIF
          IF ( N_edge ) THEN
+          IF ( useGridArea ) THEN
+           DO j=sNy+1,sNy+OLy
+            DO i=iMinUpd,iMaxUpd
+             iceFld(i,j) = iceFld(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                                 *recip_rA(i,j,bi,bj)
+     &                                 *( af(i+1,j)-af(i,j) )
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=sNy+1,sNy+OLy
+            DO i=iMinUpd,iMaxUpd
+             tmpVol = iceVol(i,j)
+             iceVol(i,j) = iceVol(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                           *( uTrans(i+1,j)-uTrans(i,j) )
+             IF ( iceVol(i,j).GT.iceEps )
+     &       iceFld(i,j) = ( iceFld(i,j)*tmpVol
+     &                      -deltaTadvect*maskLocC(i,j)
+     &                                   *( af(i+1,j)-af(i,j) )
+     &                     )/iceVol(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+C-    keep advective flux (for diagnostics)
           DO j=sNy+1,sNy+OLy
            DO i=1-OLx+1,sNx+OLx
-            afx(i,j) = af(i,j)
+             afx(i,j) = af(i,j)
            ENDDO
           ENDDO
+C-    end if North Edge
          ENDIF
 
         ELSE
 C     do not only update the overlap
-         jMinUpd = 1-OLy
-         jMaxUpd = sNy+OLy
-         IF ( interiorOnly .AND. S_edge ) jMinUpd = 1
-         IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
-         IF ( useGridVolume ) THEN
-          DO j=jMinUpd,jMaxUpd
-           DO i=1-OLx+1,sNx+OLx-1
-            iceFld(i,j) = iceFld(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                                *recip_rA(i,j,bi,bj)
-     &                                *( af(i+1,j)-af(i,j) )
+          jMinUpd = 1-OLy
+          jMaxUpd = sNy+OLy
+          IF ( interiorOnly .AND. S_edge ) jMinUpd = 1
+          IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
+          IF ( useGridArea ) THEN
+           DO j=jMinUpd,jMaxUpd
+            DO i=1-OLx+1,sNx+OLx-1
+             iceFld(i,j) = iceFld(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                                 *recip_rA(i,j,bi,bj)
+     &                                 *( af(i+1,j)-af(i,j) )
+            ENDDO
            ENDDO
-          ENDDO
-         ELSE
-          DO j=jMinUpd,jMaxUpd
-           DO i=1-OLx+1,sNx+OLx-1
-            tmpVol = iceVol(i,j)
-            iceVol(i,j) = iceVol(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                          *( uTrans(i+1,j)-uTrans(i,j) )
-            IF ( iceVol(i,j).GT.iceEps )
-     &      iceFld(i,j) = ( iceFld(i,j)*tmpVol
-     &                     -deltaTadvect*maskOc(i,j)
-     &                                  *( af(i+1,j)-af(i,j) )
-     &                    )/iceVol(i,j)
+          ELSE
+           DO j=jMinUpd,jMaxUpd
+            DO i=1-OLx+1,sNx+OLx-1
+             tmpVol = iceVol(i,j)
+             iceVol(i,j) = iceVol(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                           *( uTrans(i+1,j)-uTrans(i,j) )
+             IF ( iceVol(i,j).GT.iceEps )
+     &       iceFld(i,j) = ( iceFld(i,j)*tmpVol
+     &                      -deltaTadvect*maskLocC(i,j)
+     &                                   *( af(i+1,j)-af(i,j) )
+     &                     )/iceVol(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ENDIF
-C--   keep advective flux (for diagnostics)
-         DO j=jMinUpd,jMaxUpd
+          ENDIF
+C-    keep advective flux (for diagnostics)
+          DO j=jMinUpd,jMaxUpd
            DO i=1-OLx+1,sNx+OLx
-            afx(i,j) = af(i,j)
+             afx(i,j) = af(i,j)
            ENDDO
-         ENDDO
+          ENDDO
 
 C-     end if/else update overlap-Only
         ENDIF
@@ -508,7 +538,7 @@ CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
 C-     Advective flux in Y
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           af(i,j) = 0.
+            af(i,j) = 0.
           ENDDO
          ENDDO
 
@@ -517,14 +547,14 @@ C-     Internal exchange for calculations in Y
          IF ( overlapOnly ) THEN
           CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceFld, bi,bj, myThid )
-          IF ( .NOT.useGridVolume )
+          IF ( .NOT.useGridArea )
      &    CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 cph-exch2#endif
 
 C-     Compute CFL number
-         IF ( useGridVolume ) THEN
+         IF ( useGridArea ) THEN
           DO j=2-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
             vCfl(i,j) = deltaTadvect*(
@@ -549,9 +579,11 @@ C-     Compute CFL number
           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .FALSE.,
      I             deltaTadvect, vTrans, vCfl, iceFld,
      O             af, myThid )
+#ifdef ALLOW_DBUG_THSICE
           IF (dBugFlag.AND.bi.EQ.biDb ) WRITE(6,'(A,1P4E14.6)')
      &      'ICE_adv: yFx=', af(idb,jdb), iceFld(idb,jdb),
      &       vTrans(idb,jdb), af(idb,jdb)/vTrans(idb,jdb)
+#endif /* ALLOW_DBUG_THSICE */
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .FALSE., deltaTadvect,
      I             vTrans, vCfl, maskLocS, iceFld,
@@ -573,7 +605,7 @@ cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
           CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceFld, bi,bj, myThid )
-          IF ( .NOT.useGridVolume )
+          IF ( .NOT.useGridArea )
      &    CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
@@ -597,106 +629,109 @@ C         in corner region) but safer to keep them.
 CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
 CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
 #endif
-         IF ( W_edge .AND. useGridVolume ) THEN
-          DO j=jMinUpd,jMaxUpd
-           DO i=1-OLx,0
-            iceFld(i,j) = iceFld(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                                *recip_rA(i,j,bi,bj)
-     &                                *( af(i,j+1)-af(i,j) )
-           ENDDO
-          ENDDO
-         ELSEIF ( W_edge ) THEN
-          DO j=jMinUpd,jMaxUpd
-           DO i=1-OLx,0
-            tmpVol = iceVol(i,j)
-            iceVol(i,j) = iceVol(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                          *( vTrans(i,j+1)-vTrans(i,j) )
-            IF ( iceVol(i,j).GT.iceEps )
-     &      iceFld(i,j) = ( iceFld(i,j)*tmpVol
-     &                     -deltaTadvect*maskOc(i,j)
-     &                                  *( af(i,j+1)-af(i,j) )
-     &                    )/iceVol(i,j)
-           ENDDO
-          ENDDO
-         ENDIF
-         IF ( E_edge .AND. useGridVolume ) THEN
-          DO j=jMinUpd,jMaxUpd
-           DO i=sNx+1,sNx+OLx
-            iceFld(i,j) = iceFld(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                                *recip_rA(i,j,bi,bj)
-     &                                *( af(i,j+1)-af(i,j) )
-           ENDDO
-          ENDDO
-         ELSEIF ( E_edge ) THEN
-          DO j=jMinUpd,jMaxUpd
-           DO i=sNx+1,sNx+OLx
-            tmpVol = iceVol(i,j)
-            iceVol(i,j) = iceVol(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                          *( vTrans(i,j+1)-vTrans(i,j) )
-            IF ( iceVol(i,j).GT.iceEps )
-     &      iceFld(i,j) = ( iceFld(i,j)*tmpVol
-     &                     -deltaTadvect*maskOc(i,j)
-     &                                  *( af(i,j+1)-af(i,j) )
-     &                    )/iceVol(i,j)
-           ENDDO
-          ENDDO
-         ENDIF
-C--   keep advective flux (for diagnostics)
          IF ( W_edge ) THEN
+          IF ( useGridArea ) THEN
+           DO j=jMinUpd,jMaxUpd
+            DO i=1-OLx,0
+             iceFld(i,j) = iceFld(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                                 *recip_rA(i,j,bi,bj)
+     &                                 *( af(i,j+1)-af(i,j) )
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=jMinUpd,jMaxUpd
+            DO i=1-OLx,0
+             tmpVol = iceVol(i,j)
+             iceVol(i,j) = iceVol(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                           *( vTrans(i,j+1)-vTrans(i,j) )
+             IF ( iceVol(i,j).GT.iceEps )
+     &       iceFld(i,j) = ( iceFld(i,j)*tmpVol
+     &                      -deltaTadvect*maskLocC(i,j)
+     &                                   *( af(i,j+1)-af(i,j) )
+     &                     )/iceVol(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+C-    keep advective flux (for diagnostics)
           DO j=1-OLy+1,sNy+OLy
            DO i=1-OLx,0
-            afy(i,j) = af(i,j)
+             afy(i,j) = af(i,j)
            ENDDO
           ENDDO
+C-    end if West Edge
          ENDIF
          IF ( E_edge ) THEN
+          IF ( useGridArea ) THEN
+           DO j=jMinUpd,jMaxUpd
+            DO i=sNx+1,sNx+OLx
+             iceFld(i,j) = iceFld(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                                 *recip_rA(i,j,bi,bj)
+     &                                 *( af(i,j+1)-af(i,j) )
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=jMinUpd,jMaxUpd
+            DO i=sNx+1,sNx+OLx
+             tmpVol = iceVol(i,j)
+             iceVol(i,j) = iceVol(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                           *( vTrans(i,j+1)-vTrans(i,j) )
+             IF ( iceVol(i,j).GT.iceEps )
+     &       iceFld(i,j) = ( iceFld(i,j)*tmpVol
+     &                      -deltaTadvect*maskLocC(i,j)
+     &                                   *( af(i,j+1)-af(i,j) )
+     &                     )/iceVol(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+C-    keep advective flux (for diagnostics)
           DO j=1-OLy+1,sNy+OLy
            DO i=sNx+1,sNx+OLx
-            afy(i,j) = af(i,j)
+             afy(i,j) = af(i,j)
            ENDDO
           ENDDO
+C-    end if East Edge
          ENDIF
 
         ELSE
 C     do not only update the overlap
-         iMinUpd = 1-OLx
-         iMaxUpd = sNx+OLx
-         IF ( interiorOnly .AND. W_edge ) iMinUpd = 1
-         IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
-         IF ( useGridVolume ) THEN
-          DO j=1-OLy+1,sNy+OLy-1
+          iMinUpd = 1-OLx
+          iMaxUpd = sNx+OLx
+          IF ( interiorOnly .AND. W_edge ) iMinUpd = 1
+          IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
+          IF ( useGridArea ) THEN
+           DO j=1-OLy+1,sNy+OLy-1
+            DO i=iMinUpd,iMaxUpd
+             iceFld(i,j) = iceFld(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                                 *recip_rA(i,j,bi,bj)
+     &                                 *( af(i,j+1)-af(i,j) )
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=1-OLy+1,sNy+OLy-1
+            DO i=iMinUpd,iMaxUpd
+             tmpVol = iceVol(i,j)
+             iceVol(i,j) = iceVol(i,j)
+     &                    -deltaTadvect*maskLocC(i,j)
+     &                           *( vTrans(i,j+1)-vTrans(i,j) )
+             IF ( iceVol(i,j).GT.iceEps )
+     &       iceFld(i,j) = ( iceFld(i,j)*tmpVol
+     &                      -deltaTadvect*maskLocC(i,j)
+     &                                   *( af(i,j+1)-af(i,j) )
+     &                     )/iceVol(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+C-    keep advective flux (for diagnostics)
+          DO j=1-OLy+1,sNy+OLy
            DO i=iMinUpd,iMaxUpd
-            iceFld(i,j) = iceFld(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                                *recip_rA(i,j,bi,bj)
-     &                                *( af(i,j+1)-af(i,j) )
+             afy(i,j) = af(i,j)
            ENDDO
           ENDDO
-         ELSE
-          DO j=1-OLy+1,sNy+OLy-1
-           DO i=iMinUpd,iMaxUpd
-            tmpVol = iceVol(i,j)
-            iceVol(i,j) = iceVol(i,j)
-     &                   -deltaTadvect*maskOc(i,j)
-     &                          *( vTrans(i,j+1)-vTrans(i,j) )
-            IF ( iceVol(i,j).GT.iceEps )
-     &      iceFld(i,j) = ( iceFld(i,j)*tmpVol
-     &                     -deltaTadvect*maskOc(i,j)
-     &                                  *( af(i,j+1)-af(i,j) )
-     &                    )/iceVol(i,j)
-           ENDDO
-          ENDDO
-         ENDIF
-C--   keep advective flux (for diagnostics)
-         DO j=1-OLy+1,sNy+OLy
-           DO i=iMinUpd,iMaxUpd
-            afy(i,j) = af(i,j)
-           ENDDO
-         ENDDO
 
 C      end if/else update overlap-Only
         ENDIF
@@ -708,6 +743,7 @@ C--   End of ipass loop
       ENDDO
 
 C-    explicit advection is done ; add some debugging print
+#ifdef ALLOW_DBUG_THSICE
       IF ( dBugFlag ) THEN
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -731,6 +767,7 @@ C-    explicit advection is done ; add some debugging print
      &      afx,afy, k, standardMessageUnit,bi,bj,myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
+#endif /* ALLOW_DBUG_THSICE */
 
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
