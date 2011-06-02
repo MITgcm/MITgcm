@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1447 2011/06/01 22:41:34 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1448 2011/06/02 18:39:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - fix bug in thsice_calc_thickn.F (was introduced in version 1.18) in
+    2nd layer seaice sublimation (unlikely to happen)
+  - use Interior mask for OBCS in thsice_advection.F (similar to what is
+    done in gad_advection & seaice_advection).
 o adjoint:
   bug fix spotted by Gael Forget:
   seaice_advection and thsice_advection still had
