@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.7 2011/06/02 21:33:21 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.8 2011/06/03 19:03:06 jscott Exp $
 C $Name:  $
 
       COMMON /DRIVER_VARS/
@@ -42,12 +42,6 @@ C $Name:  $
        REAL*8 pC_atm(jm0)
        REAL*8 wind_amp
        REAL*8 fluxco2(jm0)
-#endif
-
-#if (defined CPL_TEM) || (defined CPL_OCEANCO2)
-      COMMON /DRIVER_VAR_C02TEM/nepan, ocuptp
-       REAL*8 nepan
-       REAL*8 ocuptp      
 #endif
 
 #ifdef IPCC_EMI

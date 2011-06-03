@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.19 2011/06/02 21:33:21 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.20 2011/06/03 19:03:06 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -52,7 +52,10 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       INTEGER ndmonth(12)
       DATA ndmonth/31,28,31,30,31,30,31,31,30,31,30,31/
       REAL*4 totup, aduptt
+#endif
+#if (defined CPL_TEM) || (defined CPL_OCEANCO2)
       REAL*8 nepan
+      REAL*8 ocuptp      
 #endif
 #ifdef OCEAN_3D
       INTEGER iloop_ocn
