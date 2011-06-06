@@ -1,22 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.60 2011/01/13 00:13:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.61 2011/06/06 14:56:13 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_CHECK
+C     !INTERFACE:
       SUBROUTINE SEAICE_LSR( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE  SEAICE_LSR                                   |
-C     | o Solve ice momentum equation with an LSR dynamics solver|
-C     |   (see Zhang and Hibler,   JGR, 102, 8691-8702, 1997     |
-C     |    and Zhang and Rothrock, MWR, 131,  845- 861, 2003)    |
-C     |   Written by Jinlun Zhang, PSC/UW, Feb-2001              |
-C     |                     zhang@apl.washington.edu             |
-C     |==========================================================|
-C     | C-grid version by Martin Losch                           |
-C     | Since 2009/03/18: finite-Volume discretization of stress |
-C     | divergence that includes all metric terms                |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SEAICE_LSR
+C     | o Solve ice momentum equation with an LSR dynamics solver
+C     |   (see Zhang and Hibler,   JGR, 102, 8691-8702, 1997
+C     |    and Zhang and Rothrock, MWR, 131,  845- 861, 2003)
+C     |   Written by Jinlun Zhang, PSC/UW, Feb-2001
+C     |                     zhang@apl.washington.edu
+C     |==========================================================*
+C     | C-grid version by Martin Losch
+C     |   Since 2009/03/18: finite-Volume discretization of
+C     |   stress divergence that includes all metric terms
+C     \==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -32,32 +39,29 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myTime :: Simulation time
-C     myIter :: Simulation timestep number
-C     myThid :: my Thread Id. number
-      INTEGER ilcall
+C     myTime     :: Simulation time
+C     myIter     :: Simulation timestep number
+C     myThid     :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef SEAICE_CGRID
 #ifdef SEAICE_ALLOW_DYNAMICS
 
-C     |==========================================================|
-C     | C-grid version by Martin Losch                           |
-C     | Since 2009/03/18: finite-Volume discretization of stress |
-C     | divergence that includes all metric terms                |
-C     \==========================================================/
-
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     i,j,bi,bj - Loop counters
+C     i,j,bi,bj  :: Loop counters
 
+      INTEGER ilcall
       INTEGER i, j, k, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2
       INTEGER kSrf
-      INTEGER phexit
+      LOGICAL doIterate
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL AA3, S1, S2, S1A, S2A
@@ -519,23 +523,24 @@ C     contribution to the rhs part of grad(sigma)_x
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-        CALL DEBUG_STATS_RL(1,UICE,'UICE before iter. (SEAICE_LSR)',
-     &                      myThid)
+      IF ( debugLevel .GE. debLevD ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &        'Uice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+        CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
 C NOW DO ITERATION
 
 cph--- iteration starts here
 cph--- need to kick out goto
-      phexit = -1
+      doIterate = .TRUE.
 
 C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration uice
 #endif /* ALLOW_AUTODIFF_TAMC */
-      DO M=1, solv_max_iters
-      IF ( phexit .EQ. -1 ) THEN
+      DO m = 1,solv_max_iters
+      IF ( doIterate ) THEN
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -607,7 +612,7 @@ C     end bi,bj-loops
        ENDDO
       ENDDO
 
-      IF(MOD(M,SOLV_NCHECK).EQ.0) THEN
+      IF(MOD(m,SOLV_NCHECK).EQ.0) THEN
        S1=ZERO
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -624,11 +629,11 @@ C     end bi,bj-loops
 c       WRITE(standardMessageUnit,'(A,2I6,1P4E16.9)')
 c    &   ' U iters,error,WF = ',ilcall,M,S1,S1A,WFAU
 C SAFEGUARD AGAINST BAD FORCING ETC
-       IF(M.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
+       IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
        S1A=S1
        IF(S1.LT.LSR_ERROR) THEN
-        ICOUNT1=M
-        phexit = 1
+        ICOUNT1=m
+        doIterate = .FALSE.
        ENDIF
       ENDIF
       CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
@@ -638,13 +643,16 @@ C SAFEGUARD AGAINST BAD FORCING ETC
 C ITERATION END -----------------------------------------------------
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-       _BEGIN_MASTER( myThid )
+      IF ( debugLevel .GE. debLevC ) THEN
+        _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(A,I6,1P2E22.14)')
      &      ' U lsr iters, error = ',ICOUNT1,S1
-       _END_MASTER( myThid )
-        CALL DEBUG_STATS_RL(1,UICE,'UICE after  iter. (SEAICE_LSR)',
-     &                      myThid)
+        _END_MASTER( myThid )
+        IF ( debugLevel .GE. debLevD ) THEN
+         WRITE(msgBuf,'(A,I3,A)')
+     &        'Uice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+         CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
+        ENDIF
         IF (S1.EQ.0.D0.AND.ICOUNT1.GT.SOLV_NCHECK)
      &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (uIce)'
       ENDIF
@@ -777,9 +785,10 @@ C     contribution to the rhs part of grad(sigma)_y
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-        CALL DEBUG_STATS_RL(1,VICE,'VICE before iter. (SEAICE_LSR)',
-     &                      myThid)
+      IF ( debugLevel .GE. debLevD ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &        'Vice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+        CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
 
@@ -787,14 +796,14 @@ C NOW DO ITERATION
 
 cph--- iteration starts here
 cph--- need to kick out goto
-      phexit = -1
+      doIterate = .TRUE.
 
 C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration vice
 #endif /* ALLOW_AUTODIFF_TAMC */
-      DO M=1, solv_max_iters
-      IF ( phexit .EQ. -1 ) THEN
+      DO m = 1,solv_max_iters
+      IF ( doIterate ) THEN
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -854,7 +863,7 @@ C     end bi,bj-loops
        ENDDO
       ENDDO
 
-      IF(MOD(M,SOLV_NCHECK).EQ.0) THEN
+      IF(MOD(m,SOLV_NCHECK).EQ.0) THEN
        S2=ZERO
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -869,11 +878,11 @@ C     end bi,bj-loops
        ENDDO
        _GLOBAL_MAX_RL( S2, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
-       IF(M.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
+       IF(m.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
        S2A=S2
        IF(S2.LT.LSR_ERROR) THEN
-        ICOUNT2=M
-        phexit = 1
+        ICOUNT2=m
+        doIterate = .FALSE.
        ENDIF
       ENDIF
       CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
@@ -883,13 +892,16 @@ C SAFEGUARD AGAINST BAD FORCING ETC
 C ITERATION END -----------------------------------------------------
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
-       _BEGIN_MASTER( myThid )
+      IF ( debugLevel .GE. debLevC ) THEN
+        _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(A,I6,1P2E22.14)')
      &      ' V lsr iters, error = ',ICOUNT2,S2
-       _END_MASTER( myThid )
-        CALL DEBUG_STATS_RL(1,VICE,'VICE after  iter. (SEAICE_LSR)',
-     &                      myThid)
+        _END_MASTER( myThid )
+        IF ( debugLevel .GE. debLevD ) THEN
+         WRITE(msgBuf,'(A,I3,A)')
+     &        'Vice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
+        ENDIF
         IF (S2.EQ.0.D0.AND.ICOUNT2.GT.SOLV_NCHECK)
      &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (vIce)'
       ENDIF
@@ -909,7 +921,7 @@ C     APPLY MASKS
 CML      CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
 
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevC ) THEN
        resnorm = 0. _d 0
        EKnorm  = 0. _d 0
        counter = 0. _d 0
@@ -937,9 +949,11 @@ C--   Compute residual norm and print
        _GLOBAL_SUM_RL( EKnorm, myThid )
        _GLOBAL_SUM_RL( counter, myThid )
        IF ( counter .gt. 0. _d 0 ) EKnorm = EKnorm/counter
-       WRITE(*,'(A,I7,1X,2E22.14)')
-     &      'S/R seaice_lsr: IPSEUDO, RESNORM, EKNORM = ',
+       _BEGIN_MASTER( myThid )
+       WRITE(standardMessageUnit,'(A,I7,1X,2E22.14)')
+     &      'S/R SEAICE_LSR: IPSEUDO, RESNORM, EKNORM = ',
      &      ilcall, sqrt(resnorm), EKnorm
+       _END_MASTER( myThid )
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
