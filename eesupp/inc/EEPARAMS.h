@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.29 2010/10/05 17:43:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.30 2011/06/06 12:44:51 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -87,11 +87,13 @@ C     UNSET_xxx :: Used to indicate variables that have not been given a value
 
 C     debLevX  :: used to decide when to print debug messages
       INTEGER debLevZero
+      INTEGER debLevA, debLevB,  debLevC, debLevD, debLevE
       PARAMETER ( debLevZero=0 )
-      INTEGER debLevA
       PARAMETER ( debLevA=1 )
-      INTEGER debLevB
       PARAMETER ( debLevB=2 )
+      PARAMETER ( debLevC=3 )
+      PARAMETER ( debLevD=4 )
+      PARAMETER ( debLevE=5 )
 
 C     SQUEEZE_RIGHT       - Flag indicating right blank space removal
 C                           from text field.
@@ -153,6 +155,7 @@ C--   COMMON /EEPARAMS_L/ Execution environment public logical variables.
 C     eeBootError    :: Flags indicating error during multi-processing
 C     eeEndError     :: initialisation and termination.
 C     fatalError     :: Flag used to indicate that the model is ended with an error
+C     debugMode      :: controls printing of debug msg (sequence of S/R calls).
 C     useSingleCpuIO :: When useSingleCpuIO is set, MDS_WRITE_FIELD outputs from
 C                       master MPI process only. -- NOTE: read from main parameter
 C                       file "data" and not set until call to INI_PARMS.
@@ -164,7 +167,8 @@ C     useNEST_PARENT :: use Parent Nesting interface (pkg/nest_parent)
 C     useNEST_CHILD  :: use Child  Nesting interface (pkg/nest_child)
 C     useOASIS       :: use OASIS-coupler for a multi-components set-up.
       COMMON /EEPARAMS_L/
-     &  eeBootError, fatalError, eeEndError,
+c    &  eeBootError, fatalError, eeEndError,
+     &  eeBootError, eeEndError, fatalError, debugMode,
      &  useSingleCpuIO, printMapIncludesZeros,
      &  useCubedSphereExchange, useCoupler,
      &  useNEST_PARENT, useNEST_CHILD, useOASIS,
@@ -172,6 +176,7 @@ C     useOASIS       :: use OASIS-coupler for a multi-components set-up.
       LOGICAL eeBootError
       LOGICAL eeEndError
       LOGICAL fatalError
+      LOGICAL debugMode
       LOGICAL useSingleCpuIO
       LOGICAL printMapIncludesZeros
       LOGICAL useCubedSphereExchange
