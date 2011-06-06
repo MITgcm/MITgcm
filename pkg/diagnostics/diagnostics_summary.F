@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.6 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.7 2011/06/06 15:42:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -47,7 +47,7 @@ C     !LOCAL VARIABLES:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
        IF ( myIter.EQ.nIter0 ) THEN
         outpSummary = .TRUE.
         dUnit = standardMessageUnit
@@ -70,7 +70,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        outpSummary = .FALSE.
       ENDIF
 
-      IF ( outpSummary .AND. debugLevel.GE.debLevA ) THEN
+      IF ( outpSummary .AND. debugLevel.GE.debLevB ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     write a summary diagnostics state:
 

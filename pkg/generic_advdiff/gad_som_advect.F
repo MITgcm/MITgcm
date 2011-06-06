@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.8 2009/06/28 01:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.9 2011/06/06 15:44:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -464,7 +464,7 @@ C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
 #endif
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB
+       IF ( debugLevel .GE. debLevC
      &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
      &   .AND. k.LE.3 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1

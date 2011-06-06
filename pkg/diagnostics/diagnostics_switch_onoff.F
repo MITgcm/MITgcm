@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.16 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.17 2011/06/06 15:42:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -61,7 +61,7 @@ c     INTEGER newIter
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      dBugFlag = debugLevel.GT.debLevB .AND. myThid.EQ.1
+      dBugFlag = debugLevel.GE.debLevE .AND. myThid.EQ.1
       dBugUnit = errorMessageUnit
 
 c     newIter = 1 + myIter
@@ -150,7 +150,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        IF ( diagSt_freq(n).LT.0. ) THEN
 C--    Select diagnostics list that uses instantaneous output
 
-        dBugFlag = debugLevel.GT.debLevB
+        dBugFlag = debugLevel.GE.debLevE
 
         freqSec = diagSt_freq(n)
         phiSec = diagSt_phase(n)

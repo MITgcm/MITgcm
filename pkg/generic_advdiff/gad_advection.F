@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.65 2011/05/20 21:08:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.66 2011/06/06 15:44:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -652,7 +652,7 @@ C-    horizontal advection done; store intermediate result in 3D array:
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB
+      IF ( debugLevel .GE. debLevC
      &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
      &   .AND. k.LE.3 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1

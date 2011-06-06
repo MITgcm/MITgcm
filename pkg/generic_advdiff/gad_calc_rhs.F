@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.56 2011/03/29 15:52:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.57 2011/06/06 15:44:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -239,7 +239,7 @@ C-    Advective flux in X
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
-           CALL GAD_U3_ADV_X( bi,bj,k, uTrans, maskLocW, locABT, 
+           CALL GAD_U3_ADV_X( bi,bj,k, uTrans, maskLocW, locABT,
      O              af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
            CALL GAD_C4_ADV_X( bi,bj,k, uTrans, maskLocW, locABT,
@@ -733,7 +733,7 @@ C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unc
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB
+      IF ( debugLevel .GE. debLevC
      &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
      &   .AND. k.EQ.2 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1

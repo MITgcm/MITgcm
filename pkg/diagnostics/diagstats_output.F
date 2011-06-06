@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.10 2010/01/10 04:09:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.11 2011/06/06 15:42:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -115,7 +115,7 @@ C-          Check for empty Diag (= not filled or using empty mask)
              _END_MASTER( myThid )
             ENDIF
 
-            IF ( debugLevel .GE. debLevA ) THEN
+            IF ( debugLevel .GE. debLevB ) THEN
              _BEGIN_MASTER( myThid )
               WRITE(ioUnit,'(A,I6,3A,I4,A,1PE10.3,2A)')
      &         ' Compute Stats, Diag. # ',ndId, '  ', cdiag(ndId),

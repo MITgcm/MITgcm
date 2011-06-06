@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.32 2010/01/13 01:42:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.33 2011/06/06 15:42:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -130,7 +130,7 @@ C       state-variable time-step:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( write2file ) THEN
-          IF ( debugLevel.GE.debLevB ) THEN
+          IF ( debugLevel.GE.debLevC ) THEN
             CALL DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
           ENDIF
 C-      wait for everyone before setting arrays to zero:

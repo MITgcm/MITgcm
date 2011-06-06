@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.48 2010/03/16 00:14:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.49 2011/06/06 15:42:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -378,7 +378,7 @@ C-        Empty diagnostics case :
           ELSE
 C-        diagnostics is not empty :
 
-            IF ( debugLevel.GE.debLevA .AND. myThid.EQ.1 ) THEN
+            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
               WRITE(ioUnit,'(A,I6,3A,I8,2A)')
      &         ' Computing Diagnostic # ', ndId, '  ', cdiag(ndId),
      &         '     Counter:',ndiag(ip,1,1),'   Parms: ',gdiag(ndId)
