@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.58 2011/05/25 21:04:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.59 2011/06/06 14:55:08 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,7 +42,7 @@ C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL PSTAR
-      INTEGER myIter, kSurface
+      INTEGER kSurface
 #ifdef SEAICE_CGRID
       _RS  mask_uice
 #endif
@@ -287,18 +287,17 @@ C--   Update overlap regions
 #endif
 
 C--   Now lets look at all these beasts
-      IF ( debugLevel .GE. debLevB ) THEN
-         myIter=0
+      IF ( debugLevel .GE. debLevC ) THEN
          CALL PLOT_FIELD_XYRL( HEFFM   , 'Current HEFFM   ' ,
-     &        myIter, myThid )
+     &        nIter0, myThid )
 #ifdef SEAICE_CGRID
          CALL PLOT_FIELD_XYRL( seaiceMaskU, 'Current seaiceMaskU',
-     &        myIter, myThid )
+     &        nIter0, myThid )
          CALL PLOT_FIELD_XYRL( seaiceMaskV, 'Current seaiceMaskV',
-     &        myIter, myThid )
+     &        nIter0, myThid )
 #else
          CALL PLOT_FIELD_XYRL( UVM     , 'Current UVM     ' ,
-     &        myIter, myThid )
+     &        nIter0, myThid )
 #endif
       ENDIF
 

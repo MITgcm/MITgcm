@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.24 2011/06/01 22:38:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.25 2011/06/06 14:55:08 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,6 +140,7 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       EXTERNAL    SEAICE_DIAG_SUFX
 #endif
       LOGICAL dBug
+      INTEGER ioUnit
       _RL tmpFac
 CEOP
 
@@ -171,7 +172,8 @@ C--   Set diagnostic suffix for the current tracer
       ENDIF
 #endif
 
-      dBug = debugLevel.GE.debLevB
+      ioUnit = standardMessageUnit
+      dBug = debugLevel.GE.debLevC
      &     .AND. myIter.EQ.nIter0
      &     .AND. ( tracerIdentity.EQ.GAD_HEFF .OR.
      &             tracerIdentity.EQ.GAD_QICE2 )
@@ -298,7 +300,7 @@ C--   not CubedSphere
         calc_fluxes_X = MOD(ipass,2).EQ.1
         calc_fluxes_Y = .NOT.calc_fluxes_X
        ENDIF
-       IF (dBug.AND.bi.EQ.3 ) WRITE(6,*) 'ICE_adv:',tracerIdentity,
+       IF (dBug.AND.bi.EQ.3 ) WRITE(ioUnit,*)'ICE_adv:',tracerIdentity,
      &   ipass,calc_fluxes_X,calc_fluxes_Y,overlapOnly,interiorOnly
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -351,7 +353,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
           IF ( dBug .AND. bi.EQ.3 ) THEN
             i=MIN(12,sNx)
             j=MIN(11,sNy)
-            WRITE(6,'(A,1P4E14.6)') 'ICE_adv: xFx=', af(i+1,j),
+            WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv: xFx=', af(i+1,j),
      &        localTij(i,j), uTrans(i+1,j), af(i+1,j)/uTrans(i+1,j)
           ENDIF
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -550,7 +552,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
           IF ( dBug .AND. bi.EQ.3 ) THEN
             i=MIN(12,sNx)
             j=MIN(11,sNy)
-            WRITE(6,'(A,1P4E14.6)') 'ICE_adv: yFx=', af(i,j+1),
+            WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv: yFx=', af(i,j+1),
      &        localTij(i,j), vTrans(i,j+1), af(i,j+1)/vTrans(i,j+1)
           ENDIF
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -712,7 +714,7 @@ C-    explicit advection is done ; store tendency in gFld:
        i=MIN(12,sNx)
        j=MIN(11,sNy)
        tmpFac= SEAICE_deltaTtherm*recip_rA(i,j,bi,bj)
-       WRITE(6,'(A,1P4E14.6)') 'ICE_adv:',
+       WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv:',
      &      afx(i,j)*tmpFac,afx(i+1,j)*tmpFac,
      &      afy(i,j)*tmpFac,afy(i,j+1)*tmpFac
       ENDIF

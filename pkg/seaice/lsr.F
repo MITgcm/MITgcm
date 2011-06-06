@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.28 2010/03/16 00:23:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.29 2011/06/06 14:55:08 jmc Exp $
 C $Name:  $
 
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
@@ -357,7 +357,7 @@ C SAFEGUARD AGAINST BAD FORCING ETC
       ENDDO
 C ITERATION END -----------------------------------------------------
 
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevC ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
        _END_MASTER( myThid )
@@ -606,7 +606,7 @@ C SAFEGUARD AGAINST BAD FORCING ETC
       ENDDO
 C ITERATION END -----------------------------------------------------
 
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevC ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
        _END_MASTER( myThid )
