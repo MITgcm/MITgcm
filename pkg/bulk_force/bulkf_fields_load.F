@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.16 2011/04/17 20:57:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.17 2011/06/07 20:45:30 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
-#undef ALLOW_THSICE
 
 C     !ROUTINE: BULKF_FIELDS_LOAD
 C     !INTERFACE:
@@ -41,9 +40,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "BULKF_PARAMS.h"
 #include "BULKF.h"
-#ifdef ALLOW_THSICE
-#include "THSICE_VARS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -181,7 +177,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' BULKF_FIELDS_LOAD,', myIter,
@@ -199,12 +195,14 @@ C     This is the correct formulation (works in Adjoint run).
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
-        _BEGIN_MASTER(myThid)
+       IF ( debugLevel.GE.debLevZero ) THEN
+         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
      &   ' BULKF_FIELDS_LOAD, it=', myIter,
      &   ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, bulkfRec(bi,bj), ' )'
         _END_MASTER(myThid)
+       ENDIF
 
       IF ( AirTempFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( AirTempFile,tair0,intime0,
@@ -389,10 +387,10 @@ C       -- dasilva data in g, ncep in kg ---
      &                        +aWght*rain1(i,j,bi,bj)
           RUNOFF(i,j,bi,bj)  = bWght*runoff0(i,j,bi,bj)
      &                        +aWght*runoff1(i,j,bi,bj)
-#ifdef ALLOW_THSICE
-          SNOW(i,j,bi,bj)    = bWght*snow0(i,j,bi,bj)
-     &                        +aWght*snow1(i,j,bi,bj)
-#endif
+c#ifdef ALLOW_THSICE
+c         SNOW(i,j,bi,bj)    = bWght*snow0(i,j,bi,bj)
+c    &                        +aWght*snow1(i,j,bi,bj)
+c#endif
           Qnetch(i,j,bi,bj)  = bWght*qnetch0(i,j,bi,bj)
      &                        +aWght*qnetch1(i,j,bi,bj)
           EmPch(i,j,bi,bj)   = bWght*empch0(i,j,bi,bj)
