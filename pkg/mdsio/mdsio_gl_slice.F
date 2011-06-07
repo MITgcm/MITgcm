@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.11 2010/01/05 02:55:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.12 2011/06/07 22:30:29 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -141,7 +141,7 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
-          if ( debugLevel .GE. debLevA ) then
+          if ( debugLevel .GE. debLevB ) then
            write(msgbuf,'(a,a)')
      &      ' MDSREADFIELD_XZ_GL: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,
@@ -368,7 +368,7 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
-          if ( debugLevel .GE. debLevA ) then
+          if ( debugLevel .GE. debLevB ) then
            write(msgbuf,'(a,a)')
      &      ' MDSREADFIELD_YZ_GL: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,

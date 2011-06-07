@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.7 2010/12/23 14:54:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.8 2011/06/07 22:30:29 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -175,7 +175,7 @@ C--   Open the file:
      &            access='direct', recl=length_of_rec )
             fileIsOpen=.TRUE.
           ENDIF
-          IF ( debugLevel.GE.debLevB ) THEN
+          IF ( debugLevel.GE.debLevC ) THEN
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITEVEC_LOC: open file: ',dataFname(1:pIL+13)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.7 2010/10/16 19:22:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.8 2011/06/07 22:26:37 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -72,7 +72,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iMax = sNx
       jMin = 1
       jMax = sNy
-      dBugFlag = debugLevel.GE.debLevB
+      dBugFlag = debugLevel.GE.debLevC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.1 : ice-covered fraction ;

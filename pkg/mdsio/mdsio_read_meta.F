@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.4 2009/05/29 16:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.5 2011/06/07 22:30:29 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -180,7 +180,7 @@ c    &               fileName(1:iL), ' , ', mFileName(1:iLm)
       ELSE
 
 C--   File exist
-        IF ( debugLevel .GE. debLevA ) THEN
+        IF ( debugLevel .GE. debLevB ) THEN
           WRITE(msgBuf,'(2A)') ' MDS_READ_META: opening file: ',
      &                        mFileName(1:iLm)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

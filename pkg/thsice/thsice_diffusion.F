@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diffusion.F,v 1.2 2010/01/03 21:09:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diffusion.F,v 1.3 2011/06/07 22:26:37 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -68,7 +68,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      dBugFlag = debugLevel.GE.debLevB
+      dBugFlag = debugLevel.GE.debLevC
       hIceEpsil = 1. _d -10
 
       IF ( thSIce_diffK .GT. 0. ) THEN

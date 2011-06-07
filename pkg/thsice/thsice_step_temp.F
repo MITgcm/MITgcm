@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.12 2010/12/17 04:00:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.13 2011/06/07 22:26:37 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -98,7 +98,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                         + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      dBugFlag = debugLevel.GE.debLevB
+      dBugFlag = debugLevel.GE.debLevC
 C-    Initialise flxAtm,evpAtm
        DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx

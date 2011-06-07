@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.18 2010/12/24 00:53:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.19 2011/06/07 22:26:37 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -165,7 +165,7 @@ C-    Define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 
 #ifdef ALLOW_DBUG_THSICE
-      dBugFlag = debugLevel.GE.debLevB
+      dBugFlag = debugLevel.GE.debLevC
       stdUnit = standardMessageUnit
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.15 2011/06/02 18:34:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.16 2011/06/07 22:26:37 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -164,7 +164,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DBUG_THSICE
-      dBugFlag = debugLevel.GE.debLevB
+      dBugFlag = debugLevel.GE.debLevC
      &     .AND. myIter.EQ.nIter0
      &     .AND. ( tracerIdentity.EQ.GAD_SI_HICE .OR.
      &             tracerIdentity.EQ.GAD_SI_QICE2 )
@@ -758,7 +758,7 @@ C-    explicit advection is done ; add some debugging print
       ENDIF
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB
+      IF ( debugLevel .GE. debLevC
      &     .AND. tracerIdentity.EQ.GAD_SI_HICE
      &     .AND. k.LE.3 .AND. myIter.EQ.1+nIter0
      &     .AND. nPx.EQ.1 .AND. nPy.EQ.1
