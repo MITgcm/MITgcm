@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.32 2011/05/18 03:14:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.33 2011/06/07 22:11:55 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -126,8 +126,7 @@ c     == end of interface ==
 c--   Get the time flags and record numbers for the time averaging.
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesflags',myThid)
+      IF ( debugMode ) CALL DEBUG_CALL('cost_averagesflags',myThid)
 #endif
       call cost_averagesflags(
      I                    myiter,     mytime,       mythid,
@@ -153,7 +152,7 @@ c--   Get the time flags and record numbers for the time averaging.
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric psbar',myThid)
 #endif
       do bj = jtlo,jthi
@@ -184,7 +183,7 @@ c--   Get the time flags and record numbers for the time averaging.
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric tbar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -205,7 +204,7 @@ c--   Get the time flags and record numbers for the time averaging.
 #ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
 cph#ifdef ALLOW_SEAICE_COST_AREASST
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric sstbar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -221,7 +220,7 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric sbar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -416,7 +415,7 @@ c     &     first, last, .false., .false., intmp,
 c     &     ntimesteps, 1, 1, mythid )
 cph: switch to annual means:
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric hfluxmeanbar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -430,7 +429,7 @@ cph: switch to annual means:
 cph: these are annual means
 # ifndef ALLOW_SEAICE
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric sfluxmeanbar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -440,7 +439,7 @@ cph: these are annual means
      &     sum1year, yearrec, 1, mythid )
 # else
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric sfluxmeanbar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -464,7 +463,7 @@ cph: these are annual means
 # ifdef ALLOW_SEAICE_COST_SMR_AREA
 c
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric smrareabar',myThid)
 #endif
       call cost_averagesgeneric(
@@ -474,23 +473,23 @@ c
      &     sum1day, dayrec, 1, mythid )
 c
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric smrsstbar',myThid)
 #endif
       call cost_averagesgeneric(
-     &     smrsstbarfile, 
-     &     smrsstbar, theta(1-Olx,1-Oly,1,1,1), 
+     &     smrsstbarfile,
+     &     smrsstbar, theta(1-Olx,1-Oly,1,1,1),
      &     xx_smrsstbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
 c
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric smrsssbar',myThid)
 #endif
       call cost_averagesgeneric(
-     &     smrsssbarfile, 
-     &     smrsssbar, salt(1-Olx,1-Oly,1,1,1), 
+     &     smrsssbarfile,
+     &     smrsssbar, salt(1-Olx,1-Oly,1,1,1),
      &     xx_smrsssbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
@@ -504,11 +503,11 @@ cph currently all assumed to be surface fields, i.e. 2-d
       do num_var = 1, NGENCOST
       if ( gencost_barfile(num_var) .ne. ' ' ) then
       call cost_averagesgeneric(
-     &     gencost_barfile(num_var), 
-     &     gencost_barfld(1-Olx,1-Oly,1,1,num_var), 
+     &     gencost_barfile(num_var),
+     &     gencost_barfld(1-Olx,1-Oly,1,1,num_var),
      &     gencost_modfld(1-Olx,1-Oly,1,1,num_var),
      &     xx_genbar_dummy(num_var),
-     &     first, last, 
+     &     first, last,
      &     startofgen(num_var), endofgen(num_var), ingen(num_var),
      &     sum1gen(num_var), genrec(num_var), 1, mythid )
       endif
@@ -560,10 +559,8 @@ cph   In the mean time increment ad hoc during day
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('cost_averagesfields leave',myThid)
+      IF ( debugMode ) CALL DEBUG_LEAVE('cost_averagesfields',myThid)
 #endif
 
       return
       end
-
