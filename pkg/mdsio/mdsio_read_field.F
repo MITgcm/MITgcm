@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.16 2010/12/23 02:41:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.17 2011/06/07 22:33:35 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -214,13 +214,11 @@ C Check first for global file with simple name (ie. fName)
         dataFName = fName
         INQUIRE( file=dataFName, exist=exst )
         IF (exst) THEN
-          IF ( debugLevel .GE. debLevA ) THEN
+          IF ( debugLevel .GE. debLevB ) THEN
             WRITE(msgBuf,'(A,A)')
      &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL)
-#ifndef ALLOW_ECCO
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT , myThid)
-#endif
           ENDIF
           globalFile = .TRUE.
         ENDIF
@@ -230,13 +228,11 @@ C If negative check for global file with MDS name (ie. fName.data)
           WRITE(dataFName,'(2a)') fName(1:IL),'.data'
           INQUIRE( file=dataFName, exist=exst )
           IF (exst) THEN
-           IF ( debugLevel .GE. debLevA ) THEN
+           IF ( debugLevel .GE. debLevB ) THEN
             WRITE(msgBuf,'(A,A)')
      &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL+5)
-#ifndef ALLOW_ECCO
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT , myThid)
-#endif
            ENDIF
            globalFile = .TRUE.
           ENDIF
@@ -443,7 +439,7 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
            IF (exst) THEN
-            IF ( debugLevel .GE. debLevA ) THEN
+            IF ( debugLevel .GE. debLevB ) THEN
              WRITE(msgBuf,'(A,A)')
      &       ' MDS_READ_FIELD: opening file: ',dataFName(1:pIL+13)
              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
