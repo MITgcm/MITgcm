@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.24 2010/04/07 20:52:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.25 2011/06/07 22:17:45 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -190,7 +190,7 @@ C     as is already done above in order to allow cross-PoleArctic flow
 
 C check validity of input/output coordinates
 #ifdef ALLOW_DEBUG
-        if ( debugLevel .ge. debLevB ) then
+        if ( debugLevel.GE.debLevC ) then
          do j=1,sny
           do i=1,snx
            if ( xG(i,j,bi,bj) .lt. x_in(0)         .or.

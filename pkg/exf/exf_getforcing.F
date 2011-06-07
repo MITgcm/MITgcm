@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.38 2010/05/21 10:08:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.39 2011/06/07 22:17:45 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -201,8 +201,8 @@ c     Apply runoff, masks and exchanges
             do i = 1,snx
 #ifdef ALLOW_ATM_TEMP
 c             Net surface heat flux.
-              hflux(i,j,bi,bj) = 
-     &              - hs(i,j,bi,bj) 
+              hflux(i,j,bi,bj) =
+     &              - hs(i,j,bi,bj)
      &              - hl(i,j,bi,bj)
      &              + lwflux(i,j,bi,bj)
 #ifndef SHORTWAVE_HEATING
@@ -244,7 +244,7 @@ c     Get values of the surface flux anomalies.
       call exf_getsurfacefluxes( mytime, myiter, mythid )
 
       if ( useExfCheckRange .AND.
-     &     ( myiter.EQ.niter0 .OR. debugLevel.GE.debLevB ) ) then
+     &     ( myiter.EQ.nIter0 .OR. debugLevel.GE.debLevC ) ) then
          call exf_check_range( mytime, myiter, mythid )
       endif
 
