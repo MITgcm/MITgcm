@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.49 2011/05/29 17:15:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.50 2011/06/07 03:58:23 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,6 +65,17 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER i, j, bi, bj
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
+#ifdef ALLOW_SITRACER
+      INTEGER iTr
+      _RL SItrEFF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpscal1, tmpscal2
+#ifdef ALLOW_SITRACER_ADVCAP
+      _RL SItrPrev  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_SITRACER_DIAG
+      _RL DIAGarray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
+#endif
 #ifdef SEAICE_AGE
       INTEGER iTracer
 #endif
@@ -296,13 +307,102 @@ C     now do the "explicit" time step
         ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
 
+#ifdef ALLOW_SITRACER
+C--   Sea Ice Tracers
+        IF ( SEAICEadvHEFF ) THEN
+         DO iTr = 1, SItrMaxNum
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+C--   scale to effective value
+            SItrEFF(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
+     &          SItracer(i,j,bi,bj,iTr) * HEFFNM1(i,j,bi,bj)
+#ifdef ALLOW_SITRACER_ADVCAP
+C--   store previous value for spurious maxima treament
+            SItrPrev(i,j,bi,bj)=SItracer(i,j,bi,bj,iTr)
+#endif
+#ifdef ALLOW_SITRACER_DIAG
+            diagArray(I,J,2+(iTr-1)*5) = SItrEFF(i,j,bi,bj)
+#endif
+           ENDDO
+          ENDDO
+C--   compute advective tendency 
+          CALL SEAICE_ADVECTION(
+     I         GAD_SITR+iTr-1, SEAICEadvSchHEFF,
+     I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I         uTrans, vTrans, SItrEFF(1-OLx,1-OLy,bi,bj),
+     I         recip_heff,
+     O         gFld, afx, afy,
+     I         bi, bj, myTime, myIter, myThid )
+          IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
+C--   add diffusive tendency
+          CALL SEAICE_DIFFUSION(
+     I         GAD_SITR+iTr-1, SEAICEdiffKhHEFF, ONE,
+     I         SItrEFF(1-OLx,1-OLy,bi,bj), HEFFM,
+     I         xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+          ENDIF
+C--   apply tendency
+          DO j=1,sNy
+           DO i=1,sNx
+            SItrEFF(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &        SItrEFF(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j) )
+           ENDDO
+          ENDDO
+C--   scale back to actual value, or move effective value to ocean bucket
+          DO j=1,sNy
+           DO i=1,sNx
+            if (HEFF(I,J,bi,bj).GE.siEps) then
+            SItracer(i,j,bi,bj,iTr)=SItrEFF(i,j,bi,bj)/HEFF(I,J,bi,bj)
+            SItrBucket(i,j,bi,bj,iTr)=0. _d 0
+            else
+            SItracer(i,j,bi,bj,iTr)=0. _d 0
+            SItrBucket(i,j,bi,bj,iTr)=SItrEFF(i,j,bi,bj)
+            endif
+#ifdef ALLOW_SITRACER_ADVCAP
+c hack to try avoid 'spontaneous generation' of maxima, which supposedly would
+c occur less frequently if we advected SItr with uXheff instead SItrXheff with u
+             tmpscal1=max(SItrPrev(i,j,bi,bj),
+     &       SItrPrev(i+1,j,bi,bj),SItrPrev(i-1,j,bi,bj),
+     &       SItrPrev(i,j+1,bi,bj),SItrPrev(i,j-1,bi,bj))
+             tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
+             SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
+             SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
+     &           +tmpscal2*HEFF(I,J,bi,bj)
+#endif
+c           treat case of potential negative value
+            if (HEFF(I,J,bi,bj).GE.siEps) then
+              tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
+              SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
+              SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
+     &                                 +HEFF(I,J,bi,bj)*tmpscal1
+            endif
+#ifdef ALLOW_SITRACER_DIAG
+      diagArray(I,J,1+(iTr-1)*5)= - SItrBucket(i,j,bi,bj,iTr)
+     &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
+      tmpscal1= ( HEFF(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr) 
+     &  + SItrBucket(i,j,bi,bj,iTr) )*HEFFM(I,J,bi,bj)
+      diagArray(I,J,2+(iTr-1)*5)= tmpscal1-diagArray(I,J,2+(iTr-1)*5)
+      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) * 
+     &  SEAICE_deltaTtherm * gFld(i,j)
+#endif
+           ENDDO
+          ENDDO
+C--
+         ENDDO
+#ifdef ALLOW_SITRACER_DIAG
+      CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG2  ',0,Nr,2,bi,bj,myThid)
+#endif
+        ENDIF
+#endif /* ALLOW_SITRACER */
+
 #ifdef SEAICE_AGE
 C--   Sea Ice Age
         IF ( SEAICEadvAge ) THEN
          DO iTracer = 1, SEAICE_num
 C--
           CALL SEAICE_ADVECTION(
-     I         GAD_ICEAGETR+iTracer-1, SEAICEadvSchAge,
+     I         GAD_SITR+SItrMaxNum+iTracer-1, SEAICEadvSchAge,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
      I         uTrans, vTrans, IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer),
      I         recip_heff,
@@ -311,7 +411,7 @@ C--
           IF ( SEAICEdiffKhAge .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I         GAD_ICEAGETR+iTracer-1, SEAICEdiffKhAge, ONE,
+     I         GAD_SITR+SItrMaxNum+iTracer-1, SEAICEdiffKhAge, ONE,
      I         IceAgeTr(1-OLx,1-OLy,bi,bj,iTracer), HEFFM,
      I         xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
      U         gFld,
@@ -420,7 +520,7 @@ C-    Add tendency due to diffusion
 C--   Add tendency due to diffusion
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
-            CALL SEAICE_DIFFUSION( GAD_ICEAGETR+iTracer-1,
+            CALL SEAICE_DIFFUSION( GAD_SITR+SItrMaxNum+iTracer-1,
      I           SEAICEdiffKhAge, SEAICE_deltaTtherm,
      I           fldNm1(1-OLx,1-OLy,bi,bj), HEFFM,
      I           xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),

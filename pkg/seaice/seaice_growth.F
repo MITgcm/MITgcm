@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.123 2011/05/28 22:39:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.124 2011/06/07 03:58:23 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -179,7 +179,7 @@ C     wind speed
 #endif
 
 C     pathological cases thresholds
-      _RL heffTooThin, heffTooHeavy
+      _RL heffTooHeavy
 
 C temporary variables available for the various computations
 #ifdef SEAICE_GROWTH_LEGACY
@@ -247,8 +247,6 @@ C ===================================================================
        kSurface        = 1
       ENDIF
 
-C     Cutoff for very thin ice
-      heffTooThin=1. _d -5
 C     Cutoff for iceload
       heffTooHeavy=dRf(kSurface) / 5. _d 0
 
@@ -404,7 +402,7 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-          if (HEFF(I,J,bi,bj).LE.heffTooThin) then
+          if (HEFF(I,J,bi,bj).LE.siEps) then
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
             TICE(I,J,bi,bj)=celsius2K
@@ -487,6 +485,9 @@ C 3) store regularized values of heff, hsnow, area at the onset of thermo.
           HEFFpreTH(I,J)=HEFF(I,J,bi,bj)
           HSNWpreTH(I,J)=HSNOW(I,J,bi,bj)
           AREApreTH(I,J)=AREA(I,J,bi,bj)
+#ifdef ALLOW_SITRACER
+          SItrHEFF(I,J,bi,bj,1)=HEFF(I,J,bi,bj)
+#endif
          ENDDO
         ENDDO
 
@@ -906,6 +907,9 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
 #ifdef ALLOW_DIAGNOSTICS
           DIAGarrayA(I,J) = d_HEFFbyOCNonICE(i,j)
 #endif
+#ifdef ALLOW_SITRACER
+          SItrHEFF(I,J,bi,bj,2)=HEFF(I,J,bi,bj)
+#endif
          ENDDO
         ENDDO
 
@@ -1028,6 +1032,9 @@ c         Limit ice growth by potential melt by ocean
 
 #ifdef ALLOW_DIAGNOSTICS
           DIAGarrayA(I,J) = d_HEFFbyATMonOCN_cover(I,J)
+#endif
+#ifdef ALLOW_SITRACER
+          SItrHEFF(I,J,bi,bj,3)=HEFF(I,J,bi,bj)
 #endif
          ENDDO
         ENDDO
@@ -1171,6 +1178,15 @@ C           allow not only growth but also melt by open ocean heat flux
      
 #endif /* SEAICE_GROWTH_LEGACY */
 
+#ifdef ALLOW_SITRACER
+        DO J=1,sNy
+         DO I=1,sNx
+c needs to be here to allow use also with LEGACY branch
+          SItrHEFF(I,J,bi,bj,4)=HEFF(I,J,bi,bj)
+         ENDDO
+        ENDDO
+#endif
+
 C convert snow to ice if submerged.
 C =================================
 
@@ -1196,7 +1212,6 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
         ENDIF
 #endif /* ALLOW_SEAICE_FLOODING */
 #endif /* SEAICE_GROWTH_LEGACY */
-
 
 C ===================================================================
 C ==========PART 4: determine ice cover fraction increments=========-
@@ -1584,6 +1599,14 @@ C =================================
 
 #endif /* SEAICE_GROWTH_LEGACY */
 
+#ifdef ALLOW_SITRACER
+        DO J=1,sNy
+         DO I=1,sNx
+c needs to be here to allow use also with LEGACY branch
+          SItrHEFF(I,J,bi,bj,5)=HEFF(I,J,bi,bj)
+         ENDDO
+        ENDDO
+#endif
 
 C ===================================================================
 C ===============PART 6: determine ice age increments================

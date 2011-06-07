@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.88 2011/05/25 21:04:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.89 2011/06/07 03:58:23 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,6 +59,9 @@ CEndOfInterface
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
+#ifdef ALLOW_SITRACER
+      INTEGER iTr
+#endif
 #ifdef SEAICE_AGE
       INTEGER iTracer
 #endif
@@ -220,6 +223,10 @@ C     because of ugly time level business
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
        ENDIF
 
+#ifdef ALLOW_SITRACER
+       CALL SEAICE_TRACER_PHYS ( myTime, myIter, myThid )        
+#endif
+
 C--   Apply ice tracer open boundary conditions
 #ifdef ALLOW_OBCS
 # ifndef DISABLE_SEAICE_OBCS
@@ -233,6 +240,11 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_RL( HSNOW, myThid )
 #ifdef SEAICE_VARIABLE_SALINITY
        _EXCH_XY_RL( HSALT, myThid )
+#endif
+#ifdef ALLOW_SITRACER
+       DO iTr = 1, SItrMaxNum
+        _EXCH_XY_RL( SItracer(1-Olx,1-Oly,1,1,iTr),myThid )
+       ENDDO
 #endif
 #ifdef SEAICE_AGE
        DO iTracer = 1, SEAICE_num

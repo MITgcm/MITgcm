@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_SIZE.h,v 1.1 2011/03/05 18:06:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_SIZE.h,v 1.2 2011/06/07 03:58:23 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -15,6 +15,8 @@ C SEAICE_num defines how many passive tracers are allocated/exist.
 C  and is set here (default 4)
 C
 C     Number of tracers
+      INTEGER SItrMaxNum
+      PARAMETER(SItrMaxNum = 3 )
       INTEGER SEAICE_num
       PARAMETER(SEAICE_num = 4 )
 
