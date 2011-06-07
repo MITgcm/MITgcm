@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.25 2011/06/06 14:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.26 2011/06/07 14:45:45 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -729,7 +729,7 @@ C-    explicit advection is done ; store tendency in gFld:
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB
+      IF ( debugLevel .GE. debLevC
      &     .AND. tracerIdentity.EQ.GAD_HEFF
      &     .AND. k.LE.3 .AND. myIter.EQ.1+nIter0
      &     .AND. nPx.EQ.1 .AND. nPy.EQ.1
