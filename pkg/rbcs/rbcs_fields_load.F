@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.14 2011/05/14 19:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.15 2011/06/07 22:25:10 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -79,7 +79,7 @@ C--   Now calculate whether it is time to update the forcing arrays
      I                   rbcsForcingCycle, rbcsForcingPeriod,
      I                   deltaTclock, locTime, myThid )
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel.GE.debLevA ) THEN
+       IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' RBCS_FIELDS_LOAD,', myIter,
@@ -111,12 +111,14 @@ C     Unfortunatly, produces many recomputations <== not used until it is fixed
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
-       _BEGIN_MASTER(myThid)
-       WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' RBCS_FIELDS_LOAD, it=', myIter,
-     &   ' : Reading new data, i0,i1=', intime0, intime1,
+       IF ( debugLevel.GE.debLevZero ) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &    ' RBCS_FIELDS_LOAD, it=', myIter,
+     &    ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, rbcsLdRec(bi,bj), ' )'
-       _END_MASTER(myThid)
+        _END_MASTER(myThid)
+       ENDIF
 
 C     for rbcsSingleTimeFiles=.TRUE.
        Ifprd = NINT(rbcsForcingPeriod/deltaTrbcs)

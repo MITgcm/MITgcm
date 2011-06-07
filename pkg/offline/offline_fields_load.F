@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.20 2011/04/20 03:13:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.21 2011/06/07 22:25:09 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -96,7 +96,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' OFFLINE_FIELDS_LOAD,', myIter,
@@ -129,12 +129,14 @@ C     Unfortunatly, produces many recomputations <== not used until it is fixed
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
+       IF ( debugLevel.GE.debLevZero ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
      &   ' OFFLINE_FIELDS_LOAD, it=', myIter,
      &   ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, offlineLdRec(bi,bj), ' )'
         _END_MASTER(myThid)
+       ENDIF
 
        _BARRIER
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.35 2011/06/02 22:49:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.36 2011/06/07 22:23:46 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -213,7 +213,7 @@ C--   Default flags and values for OBCS
       OBCS_uvApplyFac    = 1. _d 0
       OBCS_monitorFreq   = monitorFreq
       OBCS_monSelect     = 0
-      OBCSprintDiags     = debugLevel.GE.debLevB
+      OBCSprintDiags     = debugLevel.GE.debLevC
 
       OBNuFile = ' '
       OBNvFile = ' '

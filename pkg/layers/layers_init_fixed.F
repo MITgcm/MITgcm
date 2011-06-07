@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.4 2009/12/28 02:35:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.5 2011/06/07 22:20:58 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -122,9 +122,9 @@ C       See which grid box the point lies in
         ENDIF
       ENDDO
 
-      IF (debugLevel .GT. 0) THEN
+      IF ( debugLevel .GE. debLevB ) THEN
         CALL PRINT_MESSAGE( 'LAYERS_INIT_FIXED Debugging:',
-     &      standardMessageUnit,SQUEEZE_RIGHT , 1)
+     &             standardMessageUnit, SQUEEZE_RIGHT, myThid )
         DO kk=1,NZZ
           WRITE(msgBuf,'(A,1F6.1,A,I3,A,I3,A,I3,A,1F6.4,A,I3,A,I3)')
      &     '// ZZc=', ZZc(kk),
@@ -132,7 +132,7 @@ C       See which grid box the point lies in
      &     ', MapFact(',kk,')=',MapFact(kk),
      &     ', CellIndex(',kk,')=',CellIndex(kk)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , 1)
+     &                        SQUEEZE_RIGHT, myThid )
         ENDDO
       ENDIF
 

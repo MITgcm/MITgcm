@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.6 2011/05/14 19:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.7 2011/06/07 22:25:10 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -97,7 +97,7 @@ C--   Apply mask:
            ENDDO
           ENDDO
          ENDDO
-         IF ( debugLevel .GE. debLevB ) THEN
+         IF ( debugLevel.GE.debLevC ) THEN
            _BARRIER
            _BEGIN_MASTER( myThid )
            CALL PLOT_FIELD_XYRS( RBC_mask(1-Olx,1-Oly,1,1,1,irbc),
@@ -167,7 +167,7 @@ C--   Apply mask:
            ENDDO
           ENDDO
          ENDDO
-         IF ( debugLevel .GE. debLevB ) THEN
+         IF ( debugLevel.GE.debLevC ) THEN
            _BARRIER
            _BEGIN_MASTER( myThid )
            CALL PLOT_FIELD_XYRS( RBC_maskU,

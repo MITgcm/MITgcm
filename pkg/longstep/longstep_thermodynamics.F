@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.4 2010/11/18 00:38:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.5 2011/06/07 22:21:25 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -473,7 +473,7 @@ C--   end bi,bj loops.
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevB ) THEN
+      IF ( debugLevel.GE.debLevD ) THEN
        CALL DEBUG_STATS_RL(Nr,LS_uVel,'LS_Uvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,LS_vVel,'LS_Vvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,LS_wVel,'LS_Wvel (THERMODYNAMICS)',myThid)

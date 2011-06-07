@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.4 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.5 2011/06/07 22:23:46 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -121,7 +121,7 @@ c    &   'OBCS_balance it,areaE,flowE=', myIter, areaE, flowE
         CALL GLOBAL_SUM_TILE_RL( tileArea, areaE, myThid )
         IF ( areaE.GT.0. ) THEN
           CALL GLOBAL_SUM_TILE_RL( tileFlow, flowE, myThid )
-          IF ( debugLevel.GE.debLevB ) THEN
+          IF ( debugLevel.GE.debLevC ) THEN
             WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &            myIter, ' ) correct OBEu:', flowE, -flowE/areaE
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -168,7 +168,7 @@ c    &   'OBCS_balance it,areaW,flowW=', myIter, areaW, flowW
         CALL GLOBAL_SUM_TILE_RL( tileArea, areaW, myThid )
         IF ( areaW.GT.0. ) THEN
           CALL GLOBAL_SUM_TILE_RL( tileFlow, flowW, myThid )
-          IF ( debugLevel.GE.debLevB ) THEN
+          IF ( debugLevel.GE.debLevC ) THEN
             WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &            myIter, ' ) correct OBWu:', flowW, -flowW/areaW
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -215,7 +215,7 @@ c    &   'OBCS_balance it,areaN,flowN=', myIter, areaN, flowN
         CALL GLOBAL_SUM_TILE_RL( tileArea, areaN, myThid )
         IF ( areaN.GT.0. ) THEN
           CALL GLOBAL_SUM_TILE_RL( tileFlow, flowN, myThid )
-          IF ( debugLevel.GE.debLevB ) THEN
+          IF ( debugLevel.GE.debLevC ) THEN
             WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &            myIter, ' ) correct OBNv:', flowN, -flowN/areaN
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -262,7 +262,7 @@ c    &   'OBCS_balance it,areaS,flowS=', myIter, areaS, flowS
         CALL GLOBAL_SUM_TILE_RL( tileArea, areaS, myThid )
         IF ( areaS.GT.0. ) THEN
           CALL GLOBAL_SUM_TILE_RL( tileFlow, flowS, myThid )
-          IF ( debugLevel.GE.debLevB ) THEN
+          IF ( debugLevel.GE.debLevC ) THEN
             WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &            myIter, ' ) correct OBSv:', flowS, -flowS/areaS
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -280,7 +280,7 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
       IF ( flag ) CALL GLOBAL_SUM_TILE_RL( tileAreaOB, areaOB, myThid )
       IF ( areaOB.GT.0. ) THEN
         CALL GLOBAL_SUM_TILE_RL( tileInFlow, inFlow, myThid )
-        IF ( debugLevel.GE.debLevB ) THEN
+        IF ( debugLevel.GE.debLevC ) THEN
           WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &       myIter, ' ) correct for inFlow:', inFlow, inFlow/areaOB
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -293,7 +293,7 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
       IF ( OBCS_balanceFacN.GE.0. ) flowN =  inFlow*OBCS_balanceFacN
       IF ( OBCS_balanceFacS.GE.0. ) flowS = -inFlow*OBCS_balanceFacS
 
-      IF ( debugLevel.GE.debLevB  .AND. areaOB.GT.0. ) THEN
+      IF ( debugLevel.GE.debLevC  .AND. areaOB.GT.0. ) THEN
           WRITE(msgBuf,'(A,1P2E16.8)')
      &     'OBCS_balance correction to OBEu,OBWu:', flowE, flowW
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

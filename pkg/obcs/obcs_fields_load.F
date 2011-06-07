@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.3 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.4 2011/06/07 22:23:46 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -107,7 +107,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' OBCS_FIELDS_LOAD,', myIter,
@@ -132,12 +132,14 @@ C     Unfortunatly, produces many recomputations <== not used until it is fixed
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
+       IF ( debugLevel.GE.debLevZero ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
      &   ' OBCS_FIELDS_LOAD, it=', myIter,
      &   ' : Reading new data, i0,i1=', iRec0, iRec1,
      &    ' (prev=', iRecP, OBCS_ldRec(bi,bj), ' )'
         _END_MASTER(myThid)
+       ENDIF
 
 #ifndef ALLOW_MDSIO
        STOP 'ABNORMAL END: OBCS_FIELDS_LOAD: NEEDS MSDIO PKG'
