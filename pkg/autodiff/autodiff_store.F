@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.18 2011/05/24 20:35:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.19 2011/06/07 20:06:32 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -80,8 +80,7 @@ c     == local variables ==
 c--   == end of interface ==
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_ENTER('AUTODIFF_STORE',myThid)
+      IF ( debugMode ) CALL DEBUG_ENTER('AUTODIFF_STORE',myThid)
 #endif
 
 C--   Over all tiles
@@ -608,8 +607,7 @@ C-      2D arrays
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_LEAVE('AUTODIFF_STORE',myThid)
+      IF ( debugMode ) CALL DEBUG_LEAVE('AUTODIFF_STORE',myThid)
 #endif
 
 #endif /* ALLOW_AUTODIFF_TAMC */

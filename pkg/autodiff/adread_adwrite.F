@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.16 2011/01/21 22:02:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.17 2011/06/07 20:06:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,8 +142,7 @@ c     == end of interface ==
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_ENTER('ADREAD',myThid)
+      IF ( debugMode ) CALL DEBUG_ENTER('ADREAD',myThid)
 #endif
 
       IF ( doSinglePrecTapelev ) THEN
@@ -161,7 +160,7 @@ CEOP
 #else
       lenLoc = il+jl+7
       write(itername,'(a,i4.4)') '.it',optimcycle
-      write(fname(1:lenLoc),'(a,a,a)') 
+      write(fname(1:lenLoc),'(a,a,a)')
      &     adTapeDir(1:jl),name(1:il),itername
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
@@ -185,19 +184,19 @@ c
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,mythid)
         enddo
       else
-c   The other case actually does not (and should not) occur within the main loop, 
-c   where we only store global arrays (i.e. with bi,bj indices) to disk. 
+c   The other case actually does not (and should not) occur within the main loop,
+c   where we only store global arrays (i.e. with bi,bj indices) to disk.
 c     At init and final time it is always be possible to recompute or store in
 c   memory without much trouble or computational cost.
 c
 c    Presently there are three instances where non-global arrays are stored to disk:
-c   (a) the one instance when onetape is used, to store mytime, which is of no effect. 
+c   (a) the one instance when onetape is used, to store mytime, which is of no effect.
 c   In the_main_loop, we switch onetape to memory tape if ALLOW_AUTODIFF_WHTAPEIO
 c   (b) the two instances when tapelev_ini_bibj_k is used (in convective
 c   _adjustment_ini.F and cost_drifter.F) are disabled at compile time if
 c   ALLOW_AUTODIFF_WHTAPEIO. So is the definition of tapelev_ini_bibj_k,
 c   which is not supported with ALLOW_AUTODIFF_WHTAPEIO (side-note:
-c   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector) 
+c   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector)
 c
 c   The issue could be revisited if needed.
          WRITE(msgBuf,'(3A)')
@@ -205,14 +204,14 @@ c   The issue could be revisited if needed.
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT , myThid)
       endif
-      
+
 #else
 
       _BEGIN_MASTER( mythid )
        by = myByLo(myThid)
        bx = myBxLo(myThid)
 #ifdef ALLOW_DEBUG
-       if ( debugLevel .GE. debLevB ) then
+       if ( debugLevel.GE.debLevC ) then
         write(msgBuf,'(A,I12,4I6)')
      &       'ADREAD: ph', length, bx, by, irec
         call print_message( msgBuf, standardMessageUnit,
@@ -229,8 +228,7 @@ c     Everyone must wait for the read operation to be completed.
       _BARRIER
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_LEAVE('ADREAD',myThid)
+      IF ( debugMode ) CALL DEBUG_LEAVE('ADREAD',myThid)
 #endif
 
       return
@@ -321,8 +319,7 @@ c     == end of interface ==
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_ENTER('ADWRITE',myThid)
+      IF ( debugMode ) CALL DEBUG_ENTER('ADWRITE',myThid)
 #endif
 
       IF ( doSinglePrecTapelev ) THEN
@@ -340,11 +337,11 @@ CEOP
 #else
       lenLoc = il+jl+7
       write(itername,'(a,i4.4)') '.it',optimcycle
-      write(fname(1:lenLoc),'(a,a,a)') 
+      write(fname(1:lenLoc),'(a,a,a)')
      &     adTapeDir(1:jl),name(1:il),itername
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
 #ifdef ALLOW_DEBUG
-      if ( debugLevel .GE. debLevB ) then
+      if ( debugLevel .GE. debLevC ) then
        write(msgBuf,'(A,I3,A,A)')
      &      'ADWRITE: call mdsio routine for size, fname = ',
      &      sizetmp, ', ', fname(1:lenLoc)
@@ -372,7 +369,7 @@ c
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,mythid)
         enddo
       else
-       write(msgBuf,'(3A)') 
+       write(msgBuf,'(3A)')
      &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
        call print_message( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid)
@@ -386,7 +383,7 @@ c
        by = myByLo(myThid)
        bx = myBxLo(myThid)
 #ifdef ALLOW_DEBUG
-       if ( debugLevel .GE. debLevB ) then
+       if ( debugLevel .GE. debLevC ) then
         write(msgBuf,'(A,I12,4I6)')
      &       'ADWRITE: ph', length, bx, by, irec
         call print_message( msgBuf, standardMessageUnit,
@@ -403,8 +400,7 @@ c     Everyone must wait for the write operation to be completed.
       _BARRIER
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_LEAVE('ADWRITE',myThid)
+      IF ( debugMode ) CALL DEBUG_LEAVE('ADWRITE',myThid)
 #endif
 
       return
