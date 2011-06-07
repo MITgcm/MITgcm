@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.11 2011/04/21 15:15:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.12 2011/06/07 21:01:01 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -254,7 +254,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' CHEAPAML_FIELDS_LOAD,', myIter,
@@ -270,12 +270,14 @@ C     This is the correct formulation (works in Adjoint run).
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
-        _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' CHEAPAML_FIELDS_LOAD, it=', myIter,
-     &   ' : Reading new data, i0,i1=', intime0, intime1,
+        IF ( debugLevel.GE.debLevZero ) THEN
+         _BEGIN_MASTER(myThid)
+         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &    ' CHEAPAML_FIELDS_LOAD, it=', myIter,
+     &    ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, cheapaml_ldRec(bi,bj), ' )'
-        _END_MASTER(myThid)
+         _END_MASTER(myThid)
+        ENDIF
 
       IF ( SolarFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RL( SolarFile,solar0,intime0,

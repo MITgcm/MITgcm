@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.17 2011/04/17 21:01:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.18 2011/06/07 21:01:01 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -64,7 +64,7 @@ C--   Now calculate whether it is time to update the forcing arrays
        bi = myBxLo(myThid)
        bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel.GE.debLevA ) THEN
+       IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' CFC_FIELDS_LOAD,', myIter,
@@ -89,12 +89,14 @@ C     Unfortunatly, might produce many recomputations <== not used until it is f
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
-        _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' CFC_FIELDS_LOAD, it=', myIter,
-     &   ' : Reading new data, i0,i1=', intime0, intime1,
+        IF ( debugLevel.GE.debLevZero ) THEN
+         _BEGIN_MASTER(myThid)
+         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &    ' CFC_FIELDS_LOAD, it=', myIter,
+     &    ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, CFC_ldRec(bi,bj), ' )'
-        _END_MASTER(myThid)
+         _END_MASTER(myThid)
+        ENDIF
 
         _BARRIER
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.30 2011/04/17 21:08:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.31 2011/06/07 21:01:01 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -58,7 +58,7 @@ C--   Now calculate whether it is time to update the forcing arrays
        bi = myBxLo(myThid)
        bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel.GE.debLevA ) THEN
+       IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' DIC_FIELDS_LOAD,', myIter,
@@ -83,12 +83,14 @@ C     Unfortunatly, produces many recomputations <== not used until it is fixed
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
-        _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' DIC_FIELDS_LOAD, it=', myIter,
-     &   ' : Reading new data, i0,i1=', intime0, intime1,
+        IF ( debugLevel.GE.debLevZero ) THEN
+         _BEGIN_MASTER(myThid)
+         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &    ' DIC_FIELDS_LOAD, it=', myIter,
+     &    ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, DIC_ldRec(bi,bj), ' )'
-        _END_MASTER(myThid)
+         _END_MASTER(myThid)
+        ENDIF
 
         _BARRIER
 
