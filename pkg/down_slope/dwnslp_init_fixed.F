@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_init_fixed.F,v 1.2 2010/04/23 13:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_init_fixed.F,v 1.3 2011/06/07 21:05:13 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -7,6 +7,7 @@ CBOP
 C     !ROUTINE: DWNSLP_INIT_FIXED
 C     !INTERFACE:
       SUBROUTINE DWNSLP_INIT_FIXED( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DWNSLP_INIT_FIXED
@@ -281,13 +282,13 @@ C- Print usefull variables :
       _BARRIER
       _BEGIN_MASTER(myThid)
 
-      DWNSLP_ioUnit = standardMessageUnit
-      IF ( debugLevel .GE. debLevA ) THEN
-       CALL MDSFINDUNIT( DWNSLP_ioUnit, myThid )
-       IF ( DWNSLP_ioUnit.NE.standardMessageUnit ) THEN
-         WRITE(logFname,'(A11,I4.4,A4)') 'down_slope.',myProcId,'.log'
-         OPEN(DWNSLP_ioUnit,FILE=logFname,STATUS='UNKNOWN')
-       ENDIF
+      DWNSLP_ioUnit = 0
+      IF ( debugLevel.GE.debLevA ) THEN
+        CALL MDSFINDUNIT( DWNSLP_ioUnit, myThid )
+      ENDIF
+      IF ( DWNSLP_ioUnit.GT.0 ) THEN
+        WRITE(logFname,'(A11,I4.4,A4)') 'down_slope.',myProcId,'.log'
+        OPEN(DWNSLP_ioUnit,FILE=logFname,STATUS='UNKNOWN')
       ENDIF
 
       DO bj = 1,nSy
@@ -296,9 +297,9 @@ C- Print usefull variables :
         WRITE(msgBuf,'(A,2I4,I8)')
      &      'DWNSLP_INIT: DWNSLP_NbSite=',bi,bj,DWNSLP_NbSite(bi,bj)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , 1)
+     &                      SQUEEZE_RIGHT, myThid )
 C---
-        IF ( debugLevel .GE. debLevA ) THEN
+        IF ( DWNSLP_ioUnit.GT.0 ) THEN
          WRITE(DWNSLP_ioUnit,'(A,2I4,2I8)')
      &     ' DWNSLP_INIT: bi,bj, DWNSLP_NbSite, xSize =',
      &        bi,bj, DWNSLP_NbSite(bi,bj), xSize
@@ -327,8 +328,10 @@ C---
 C---
        ENDDO
       ENDDO
-      IF ( DWNSLP_ioUnit.NE.standardMessageUnit .AND. .NOT.debugMode )
-     &   CLOSE(DWNSLP_ioUnit)
+      IF ( DWNSLP_ioUnit.GT.0 .AND. debugLevel.LT.debLevD ) THEN
+        CLOSE(DWNSLP_ioUnit)
+        DWNSLP_ioUnit = 0
+      ENDIF
 
       _END_MASTER(myThid)
 

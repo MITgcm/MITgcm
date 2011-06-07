@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_flow.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_flow.F,v 1.4 2011/06/07 21:05:13 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -9,6 +9,7 @@ C     !INTERFACE:
       SUBROUTINE DWNSLP_CALC_FLOW(
      I                             bi, bj, kBottom, rho3d,
      I                             myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DWNSLP_CALC_FLOW
@@ -46,7 +47,7 @@ C     myThid    :: my Thread Id number
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error message buffer
+C     msgBuf    :: Informational/error message buffer
 C     ijd     :: horiz. index of deep water column receiving dense water flow
 C     ijs     :: horiz. index of shallow water column (e.g. shelf)
 C                from which dense water flow originates
@@ -137,7 +138,8 @@ C    with DWNSLP_Gamma = slope * effective cross-section area
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO
 
-      IF (debugMode) THEN
+      IF ( DWNSLP_ioUnit.GT.0 ) THEN
+       _BEGIN_MASTER(myThid)
        WRITE(DWNSLP_ioUnit,'(A,I8,2I4)')
      &      ' DWNSLP_CALC_FLOW: iter,bi,bj=',myIter,bi,bj
        WRITE(DWNSLP_ioUnit,'(A)')
@@ -156,6 +158,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
        ENDDO
        WRITE(DWNSLP_ioUnit,*)
+       _END_MASTER(myThid)
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS

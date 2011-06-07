@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.4 2011/06/07 21:05:13 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -13,6 +13,7 @@ C     !INTERFACE:
      I            tracer,
      U            trStar,
      I            myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DWNSLP_APPLY
@@ -125,11 +126,13 @@ C--   Set diagnostic suffix for the current tracer
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-       IF (debugMode) THEN
+       IF ( DWNSLP_ioUnit.GT.0 ) THEN
+        _BEGIN_MASTER(myThid)
         WRITE(DWNSLP_ioUnit,'(A,I8,3I4)')
      &   ' DWNSLP_APPLY: iter, iTr, bi,bj=', myIter,trIdentity, bi,bj
         WRITE(DWNSLP_ioUnit,'(2A)') '  bi  bj     n    ijDp    ijSh',
      &   ' kDp   Tr_Dp         Gt_Dp         Tr_Sh         Gt_Sh'
+        _END_MASTER(myThid)
        ENDIF
 
        DO n=1,DWNSLP_NbSite(bi,bj)
@@ -170,7 +173,8 @@ C- downsloping flow (out) & return flow to the shelf
          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-         IF (debugMode) THEN
+         IF ( DWNSLP_ioUnit.GT.0 ) THEN
+          _BEGIN_MASTER(myThid)
           k=DWNSLP_deepK(n,bi,bj)
           WRITE(DWNSLP_ioUnit,'(2I4,I6,2I8,I4,1P4E14.6)')
      &      bi,bj,n,ijd,ijs,k,
@@ -184,10 +188,15 @@ C- downsloping flow (out) & return flow to the shelf
      &       *recip_drF(kshelf)*recip_hFac_arg(ijs,kshelf,bi,bj)
      &       *recip_rA_arg(ijs,bi,bj)*
      &        (tmpFld-tracer(ijs,kshelf,bi,bj))
+          _END_MASTER(myThid)
          ENDIF
         ENDIF
        ENDDO
-       IF (debugMode) WRITE(DWNSLP_ioUnit,*)
+       IF ( DWNSLP_ioUnit.GT.0 ) THEN
+         _BEGIN_MASTER(myThid)
+         WRITE(DWNSLP_ioUnit,*)
+         _END_MASTER(myThid)
+       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
        IF ( doDiagDwnSlpTend )
