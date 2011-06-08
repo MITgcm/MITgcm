@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.251 2011/06/06 12:43:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.252 2011/06/08 01:23:52 jmc Exp $
 C $Name:  $
 C
 
@@ -152,6 +152,7 @@ C     cg3dMaxIters        :: Maximum number of iterations in the
 C                           three-dimensional con. grad solver.
 C     cg3dChkResFreq      :: Frequency with which to check residual
 C                           in con. grad solver.
+C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
 C     writeStatePrec      :: Precision used for writing model state.
@@ -188,10 +189,9 @@ C-    debugLevel          :: controls printing of algorithm intermediate results
 C                            and statistics ; higher -> more writing
 
       COMMON /PARM_I/
-     &        cg2dMaxIters,
-     &        cg2dChkResFreq, cg2dPreCondFreq,
-     &        cg3dMaxIters,
-     &        cg3dChkResFreq,
+     &        cg2dMaxIters, cg2dChkResFreq, cg2dPreCondFreq,
+     &        cg3dMaxIters, cg3dChkResFreq,
+     &        printResidualFreq,
      &        nIter0, nTimeSteps, nEndIter,
      &        writeStatePrec,
      &        writeBinaryPrec, readBinaryPrec,
@@ -210,6 +210,7 @@ C                            and statistics ; higher -> more writing
       INTEGER cg2dPreCondFreq
       INTEGER cg3dMaxIters
       INTEGER cg3dChkResFreq
+      INTEGER printResidualFreq
       INTEGER nIter0
       INTEGER nTimeSteps
       INTEGER nEndIter
