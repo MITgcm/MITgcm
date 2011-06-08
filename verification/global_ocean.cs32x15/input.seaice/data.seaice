@@ -1,7 +1,5 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#SEAICE_monFreq        = 2592000.,
-#SEAICEwriteState      = .TRUE.,
  LSR_ERROR             = 1.E-12,
 #SEAICE_deltaTevp = 60.,
 #SEAICEuseDynamics = .FALSE.,
@@ -13,5 +11,9 @@
  SEAICEadvArea         = .TRUE.,
  SEAICEadvSnow         = .TRUE.,
  SEAICEadvScheme       = 77,
- DIFF1                 = 0.,
+#SEAICE_monFreq        = 2592000.,
+#SEAICEwriteState      = .TRUE.,
+ &
+
+ &SEAICE_PARM03
  &
