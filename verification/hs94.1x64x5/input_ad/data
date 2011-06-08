@@ -28,6 +28,7 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
 # globalFiles=.TRUE.,
+ debugLevel=2,
  &
 
 # Elliptic solver parameters
