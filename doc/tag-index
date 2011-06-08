@@ -1,9 +1,33 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1449 2011/06/02 23:01:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1450 2011/06/08 15:36:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model debug options:
+  - Switch reading of debugMode from S/R INI_PARMS (parameter file "data", stored
+    in PARAMS.h) to S/R EESET_PARMS (parameter file "eedata", stored in EEPARAMS.h).
+  - Refine debug-msg printing selection (3 new levels):
+    debugMode  : controls printing of debug messages (sequence of S/R calls).
+    debugLevel : controls printing of algorithm-relevant auxiliary/debug messages
+     debLevZero =  0 ; /* level of disabled aux. msg printing */
+     debLevA =  1 ; /* level of minimum  aux. msg printing */
+     debLevB =  2 ; /* level of low aux. print (report read-file opening)*/
+     debLevC =  3 ; /* level of moderate debug prt (most pkgs debug msg) */
+     debLevD =  4 ; /* level of enhanced debug prt (add DEBUG_STATS prt) */
+     debLevE =  5 ; /* level of extensive debug printing */
+    New debugLevel default: with default debugMode value (=F),
+      = 2 (debLevB) or = 1 (debLevA) in case ALLOW_AUTODIFF is defined.;
+      and if debugMode=T, default debugLevel = 4 (debLevD).
+    Relation with previous settings:
+     debLevB (=2) corresponds to former debLevA (=1)
+     debLevD (=4) corresponds to former debLevB (=2)
+    Note:
+     a) if debugLevel=0, skip WRITE_GRID call when nIter0 > 0 (same as before);
+     b) default debugLevel=1 is convenient in AD runs (avoid many file opening msgs);
+        to recover previous default, set debugLevel=2 (e.g. AD-test hs94.1x64x5)
+  - Add new parameter (printResidualFreq, read from PARM02 namelist) to print
+    detailed CG solvers convergence; off (=0) by default, except if debugLevel=5.
 o pkg/obcs:
   - change OBCSfixTopo default from True to False (should not change the results);
     keep OBCSfixTopo=T in verification-exp. seaice_obcs.
