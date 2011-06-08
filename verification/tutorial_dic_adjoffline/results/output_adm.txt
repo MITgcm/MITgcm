@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62v
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62y
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Wed Apr 20 14:55:39 EDT 2011
+(PID.TID 0000.0001) // Build date:        Wed Jun  8 02:31:56 EDT 2011
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -51,6 +51,7 @@
 (PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
 (PID.TID 0000.0001) useCoupler=    F ;/* Flag used to control communications with   */
 (PID.TID 0000.0001)                   /*  other model components, through a coupler */
+(PID.TID 0000.0001) debugMode =    F ; /* print debug msg. (sequence of S/R calls)  */
 (PID.TID 0000.0001) printMapIncludesZeros=    F ; /* print zeros in Std.Output maps */
 (PID.TID 0000.0001) maxLengthPrt1D=   65 /* maxLength of 1D array printed to StdOut */
 (PID.TID 0000.0001) 
@@ -72,8 +73,6 @@
 (PID.TID 0000.0001) //       NORTH: Tile = 000001, Process = 000001, Comm = put
 (PID.TID 0000.0001) //                bi = 000001, bj = 000001
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) DEBUG_MSG: ENTERED S/R THE_MODEL_MAIN
-(PID.TID 0000.0001) DEBUG_MSG: CALLING S/R INITIALISE_FIXED
 (PID.TID 0000.0001)  INI_PARMS: opening model parameter file "data"
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data
 (PID.TID 0000.0001) // =======================================================
@@ -1057,157 +1056,6 @@
 (PID.TID 0000.0001) %MON AngleSN_min                  =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_mean                 =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_sd                   =   0.0000000000000E+00
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =         -5.200000000000000E+03
-(PID.TID 0000.0001) // CMAX =         -5.000000000000000E+01
-(PID.TID 0000.0001) // CINT =          1.907407407407407E+02
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001) //                I=6       I=16      I=26      I=36      I=46      I=56      I=66      I=76      I=86      I=96      I=106     I=116     I=126
-(PID.TID 0000.0001) // |--J--|321012345|789012345|789012345|789012345|789012345|789012345|789012345|789012345|789012345|789012345|789012345|789012345|789012345|789012
-(PID.TID 0000.0001) //     68 ........................................................................................................................................
-(PID.TID 0000.0001) //     67 ........................................................................................................................................
-(PID.TID 0000.0001) //     66 ........................................................................................................................................
-(PID.TID 0000.0001) //     65 ........................................................................................................................................
-(PID.TID 0000.0001) //     64 ........................................................................................................................................
-(PID.TID 0000.0001) //     63 ........................................................................................................................................
-(PID.TID 0000.0001) //     62 ........................................................................................................................................
-(PID.TID 0000.0001) //     61 +zsnovwy++...+zzzzzz++++.......................................................................................................++zsnovwy
-(PID.TID 0000.0001) //     60 +zrmmnot.....+zzzzzzzzz+.................................................................................y....................zz+zrmmnot
-(PID.TID 0000.0001) //     59 omjjklnoqyz++zyzzzzzzzz.................................................................................yxwvvyy..............zzromjjklno
-(PID.TID 0000.0001) //     58 sponmlmoqwzyzzzzzzzz++.....................................................................................wrtxz............zytssponmlmo
-(PID.TID 0000.0001) //     57 rqmmmkmmz....................................................................................................tvz............xwurrqmmmkmm
-(PID.TID 0000.0001) //     56 vqjmmuyz......................................................................................................yx........yyyyy..zvqjmmuyz
-(PID.TID 0000.0001) //     55 xwrrux..............................................................++.......................................+yuu.....wonrwyzzzyxwrrux..
-(PID.TID 0000.0001) //     54 wyz++............................................................ymnz+++......................................wmkkr..qmmotsqooruwyz++...
-(PID.TID 0000.0001) //     53 v...++.................................................zzzz...omsjjjjm+++.....zjghl...........................zojjjlkkloronmpvxtv...++..
-(PID.TID 0000.0001) //     52 ....++................................................+xxyy...ggijjljjmpz.++tdeffhjm............................zmjiijlqnljlqtpo....++..
-(PID.TID 0000.0001) //     51 .......................................................xvvx..ddfdhjsqmpqdbcddddefghjlz..........................zylgghhikkjhigqy........
-(PID.TID 0000.0001) //     50 z+.....................................................+uutw---aaaa------aaaabddefghjnq..........................zvogdefglkgfddpz+......
-(PID.TID 0000.0001) //     49 dg+....................................................roqja------------------abddefhmmx..........................+whddehlnjdddddg+.....
-(PID.TID 0000.0001) //     48 oxy.....................................................va------a--------------addefgjlx.....................++nj+wfddfgjnmkgeddoxy.....
-(PID.TID 0000.0001) //     47 t......................................................a------a--------------aaaddefgiks...................+qfbaaahebddgoqnhfa--t.......
-(PID.TID 0000.0001) //     46 v.....................................................z------d--a-d----------------abddg..................lfdda-----bdhksrqhdacev.......
-(PID.TID 0000.0001) //     45 g.....................................................b-----fb---cdhfe-------------aadddk................oeaaddb-abcehlnmkgcabjdg.......
-(PID.TID 0000.0001) //     44 .................................................+.vgs-----ci----aaa--------------bddddefu..............xf--ddb---adhlkihjd-bfgi........
-(PID.TID 0000.0001) //     43 ................................................+ywfdng-------------a-a--------abddddddefhr............+vd--ab----afkjgccda-deju........
-(PID.TID 0000.0001) //     42 ...............................................+zveddhna-------------ddedbba----addddddeffh............+vd-------acgifaa-aaadis.........
-(PID.TID 0000.0001) //     41 .........................op.....................qdeeddn---a--a--------ddheddea---abddddeefgizw.......t+++n-------adifd-----dem..........
-(PID.TID 0000.0001) //     40 .........................ljn.................zom----ddil---aac---fkic-dfdddgja------ddddegghjl.......tmv.uq------adifa--bbadfs..........
-(PID.TID 0000.0001) //     39 ........................zhijj.....ppq.......rjmxa---bdfiea----acaigefghf---cda-------adefggijjl......jkrvt.vnu--adejfa-aadehjm..........
-(PID.TID 0000.0001) //     38 .......................nhggghr...llmn+.....vngt.g--aadfib---------ea---aa---------bbbaddefggjhkjiv.....wphiggrna-agifaa---cljn..........
-(PID.TID 0000.0001) //     37 ....................wttlheefes..+jjkmu+....oggx.x---adig-----addd----------------bbbdddddeefghjkiggh...ojizsjssjbadfhca----bdj..........
-(PID.TID 0000.0001) //     36 ......................qghfdddpq.+hiipoz....rrt...--adiige----gdefd-----caebb-dd--abbdddddeeghikjhghhjy.vt......mgddddhfbaa-adh..........
-(PID.TID 0000.0001) //     35 ......................adgieddkos+gghksy....tt....--gdimmnheeddcdfd---a--ackfbaabddddddddefffgghkjihhjqt.........+sfeddfhgfefhdd+........
-(PID.TID 0000.0001) //     34 l+owgp+..............laddfiighojeefght........wjlldfdelfedhkigddddd--a---aehdddddddddddddeeggghjjjjlqolm..........zjfedgkhfegdddl+owgp+.
-(PID.TID 0000.0001) //     33 caaddgn.............jcadddfkggoedddged.........zxxifefkeddhnmgddddd-------afddeddddddddddefgghijjkmqomkv...........zfeefkkhhddcccaaddgn.
-(PID.TID 0000.0001) //     32 fdaddfl............kdbadddeiigjddddfddd.........yy..zomsrqjqpjdefeda-----aaadddddddddddddeeefghjjjjkqnr..............kjfeffddfgifdaddfl.
-(PID.TID 0000.0001) //     31 heddddes..........vgdddsggfhiidaaddfdddd........xxv.....t.srroljiea------faaaadddddddddddeeefijiihhhiii................nea--adgkheddddes
-(PID.TID 0000.0001) //     30 hdde--di..........rgdfehqiggjtaaaddfaaa-fx...zxxxxw++....mj.spjhdaad---adge-aaaadefddddddeefikiggggfffe................zd---adhlhdde--di
-(PID.TID 0000.0001) //     29 heda--aey.........rigfffhyjjjlaaadddaaaa-ailnmxxxx++++.+..qoqqklfdddfffdfhka-acbddifdefgggfikjheeggfeddl...............vb---aehlheda--ae
-(PID.TID 0000.0001) //     28 hfd---afy.........+kj.ddfojkhfa-addg--d-c-ddd-jx++.....rjggpmigqkllopidc-dlaaadddeffffggghijkigefghgfddd..............+ec---ddjjhfd---af
-(PID.TID 0000.0001) //     27 heda--ag..........zm..edfxikiddaaafla-a----dedr+........vvgklgftkllpqqkc--dddefornkfffgghhjkjhgfhhgeddddi.............rdda--dfjkheda--ag
-(PID.TID 0000.0001) //     26 heda---h..........r+..ddjiimieddaadl-a-----dsw+..........yqnlkkjnlnvsqib--ddddiffkkjgfghhhjkjhgfeefedddgfd............+fdb--afilheda---h
-(PID.TID 0000.0001) //     25 jdd--bkn.........mmz.ndfffimlfddddejda---abfw.............zpvsrsnlljrs---addddddedggggghhijkiggfffffeeggdde...........nfea--adfljdd--bkn
-(PID.TID 0000.0001) //     24 fd---gngu.......zkjx.fddddegkiffdddjd---aajm..............zppsotngdhsp----bdddddddefhihijjljjhghggggghjedff..........pheb---ddgkfd---gng
-(PID.TID 0000.0001) //     23 fedackddm.......tfejsd---degikiffeefdccfba-m..............+gmtmomidiqi-----dddddifeefgghijklmkkjiiihihgffff........zoledcaabdfhkfedackdd
-(PID.TID 0000.0001) //     22 heddhaadjz.....uqbcnnfabdfddffjifffolnljda--+.............zdntmnmngiq------ddddddeeeeefghijlmkjihhhihggfeev........ohgfqihdddfilheddhaad
-(PID.TID 0000.0001) //     21 fefgebabgq.....jpabrofdfiddddfilihjleeonb-abn....++.......sdluotmqjll------dddddddddeffghhikmjjihhhihggfef+.......shgfflgiddfhkkfefgebab
-(PID.TID 0000.0001) //     20 gggdb--addw.zgegi-allghkdddddegllhhgfeddc--kl+vhddnw......dccotrr.tnd--aa--------ddddffffhhjmjiiiiihgggfff.......xfbbbdddffggjkjgggdb--a
-(PID.TID 0000.0001) //     19 jjfda--addddgkefdadkknkfd-adeegnkihhhgfddddddda------v...kddadsvv..via-bb--d------abddddeegjmjgfgijihggffp......zfa-aaaddddfgklljjfda--a
-(PID.TID 0000.0001) //     18 hgddca-dddaagndddflnkjheb-adefglllllkjhfeeddddba-----df..gddbdfux..olifdba-ddd------adddeehkmihfefijihgggy......h------abddfhkljhgddca-d
-(PID.TID 0000.0001) //     17 ggffdddddaabca-dgnomnmjfcbddfgikkklklljhgggedddddddddddn+jddbddr..yxxxqk--addd------adddfghkljigeeefgikii+...++p---aaa--adddgjkjggffdddd
-(PID.TID 0000.0001) //     16 lifeddfedccb--aglnpqpnmgddfpunjjjjjjjklkjihgffeddddeefdjqgdcbde..tsojdaa-aadddbaaaaadddefgjlljhgeeeeffhjk....++j---------addfgkllifeddfe
-(PID.TID 0000.0001) //     15 lljhgghgdcddb-dfdefffffedeou.xnmjjgghijjjkkjjhgggghikjgggldddekzxxvvga--aaaabcddddddddeghiklkihfedddddefi....+zsqmb-afaaabddffhjlljhgghg
-(PID.TID 0000.0001) //     14 jnonnkhikkjjhfc-bfmlhfeedddglxytmjdefhhhhhiihgfedghikljifeddfhjxyydba--aaabcdddefhfddefhjmljhhfedddddddfgj..+zzsqpnnqjigifffdefhjnonnkhi
-(PID.TID 0000.0001) //     13 ijnomnlgddfeeb---gjfeddddddhgmsrjgddeefgggggedddddefgjlmghgfjgkusaa---aabcddghiiijmljihimljhhgeddddaadddfjlllkjihggjkmwvjddfddefijnomnlg
-(PID.TID 0000.0001) //     12 fhifec----bb------------abddlnnrsiddddeedddddddddddddfhjkkiijfd----aaddccdegijlnkihjihggggdddddccdddddddddfihggggggkkjkkjjodddeffhifec--
-(PID.TID 0000.0001) //     11 a----------a-----------abbdddgmmqsjeeededddeddeddddddeeghkllnkjecacddeffgggikmlkihgeddedbaddaaaaaaaaabbbddeghhgilolvxomnllkefgdaa-------
-(PID.TID 0000.0001) //     10 ----dcaa-aaaaaaaabbdebcbddfghhjjmmjjjkprohiijkhhgggghhhggjjlommnnmijijklnmmllkjggeddddaaaaaaaddaaabdddddefgill..zqjkigddddddbaa-----dcaa
-(PID.TID 0000.0001) //      9 adddkhefjfdddddhfdekpy..xpnnpponxxyzz........zyz+y...zzxxwsmmmmmkjjjmmmkkhgggfdeeeddddddddddddddddddddeeghpy...yxnhgedddddddbaaaadddkhef
-(PID.TID 0000.0001) //      8 gnlmkmopvtlkklv..............yx.............................zrppmljjjgfffggeeddddddddefhhigghffeddffilloxy....zyxoihgggdddddddddgnlmkmop
-(PID.TID 0000.0001) //      7 .................................................................xsrvshfeeeeeeeeeeffgjmmnpvwvvwy++yyyyxxz......ywttqmigghggfflyz........
-(PID.TID 0000.0001) //      6 ...............................................................yyyyyyupnkihhggghvyyy+.........................+yyyyyyyyxxxyy............
-(PID.TID 0000.0001) //      5 ................................................................xxyyxxyyyyyzz.................................++zz..zyxy................
-(PID.TID 0000.0001) //      4 ........................................................................................................................................
-(PID.TID 0000.0001) //      3 ........................................................................................................................................
-(PID.TID 0000.0001) //      2 ........................................................................................................................................
-(PID.TID 0000.0001) //      1 ........................................................................................................................................
-(PID.TID 0000.0001) //      0 ........................................................................................................................................
-(PID.TID 0000.0001) //     -1 ........................................................................................................................................
-(PID.TID 0000.0001) //     -2 ........................................................................................................................................
-(PID.TID 0000.0001) //     -3 ........................................................................................................................................
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model Ro_surf (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
-(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacC at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacW at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacS at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  0  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
@@ -1665,16 +1513,19 @@
 (PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useEnergyConservingCoriolis= /* Flx-Form Coriolis scheme flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useJamartWetPoints= /* Coriolis WetPoints method flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useJamartMomAdv= /* V.I. Non-linear terms Jamart flag */
+(PID.TID 0000.0001) useJamartMomAdv= /* V.I Non-linear terms Jamart flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useAbsVorticity= /* Work with f+zeta in Coriolis */
+(PID.TID 0000.0001) useAbsVorticity= /* V.I Works with f+zeta in Coriolis */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectVortScheme= /* Scheme selector for Vorticity-Term */
+(PID.TID 0000.0001) selectVortScheme= /* V.I Scheme selector for Vorticity-Term */
 (PID.TID 0000.0001)               123456789
 (PID.TID 0000.0001)    = 0 : enstrophy (Shallow-Water Eq.) conserving scheme by Sadourny, JAS 75
 (PID.TID 0000.0001)    = 1 : same as 0 with modified hFac
@@ -1682,16 +1533,16 @@
 (PID.TID 0000.0001)    = 3 : energy (general) and enstrophy (2D, nonDiv.) conserving scheme
 (PID.TID 0000.0001)          from Sadourny (Burridge & Haseler, ECMWF Rep.4, 1977)
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) upwindVorticity= /* Upwind bias vorticity flag */
+(PID.TID 0000.0001) upwindVorticity= /* V.I Upwind bias vorticity flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) highOrderVorticity= /* High order interp. of vort. flag */
+(PID.TID 0000.0001) highOrderVorticity= /* V.I High order vort. advect. flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) upwindShear= /* Upwind vertical Shear advection flag */
+(PID.TID 0000.0001) upwindShear= /* V.I Upwind vertical Shear advection flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectKEscheme= /* Kinetic Energy scheme selector */
+(PID.TID 0000.0001) selectKEscheme= /* V.I Kinetic Energy scheme selector */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
@@ -1757,16 +1608,14 @@
 (PID.TID 0000.0001)  useSingleCpuIO = /* only master MPI process does I/O */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugMode  =  /* Debug Mode on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevA  =  /* 1rst level of debugging */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevB  =  /* 2nd  level of debugging */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugLevel =  /* select debugging level */
+(PID.TID 0000.0001) /* debLev[*]  : level of debug & auxiliary message printing */
+(PID.TID 0000.0001) debLevZero =  0 ; /* level of disabled aux. msg printing */
+(PID.TID 0000.0001)    debLevA =  1 ; /* level of minimum  aux. msg printing */
+(PID.TID 0000.0001)    debLevB =  2 ; /* level of low aux. print (report read-file opening)*/
+(PID.TID 0000.0001)    debLevC =  3 ; /* level of moderate debug prt (most pkgs debug msg) */
+(PID.TID 0000.0001)    debLevD =  4 ; /* level of enhanced debug prt (add DEBUG_STATS prt) */
+(PID.TID 0000.0001)    debLevE =  5 ; /* level of extensive debug printing */
+(PID.TID 0000.0001) debugLevel =  /* select debug printing level */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
@@ -1789,6 +1638,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useSRCGSolver =  /* use single reduction CG solver(s) */
 (PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) printResidualFreq = /* Freq. for printing CG residual */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
@@ -2740,41 +2592,11 @@
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
@@ -2905,40 +2727,9 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -2976,9 +2767,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537064280.55042     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -3016,9 +2804,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992670013.07690     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -3056,9 +2841,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  QQ myiter, totcost =            4  -750646137617.80017     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -3096,9 +2878,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  QQ myiter, totcost =            5  -940364265711.65283     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -3136,9 +2915,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  QQ myiter, totcost =            6  -1130479070531.0579     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -3176,9 +2952,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999450755.5286     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
@@ -3216,10 +2989,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707263592.3481     
+ QQ myiter, totcost =            8  -1511707263592.3479     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3256,10 +3026,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512398618.3516     
+ QQ myiter, totcost =            9  -1702512398618.3513     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3296,10 +3063,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301898987.6982     
+ QQ myiter, totcost =           10  -1893301898987.6980     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3342,975 +3106,261 @@
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330189898770D+13
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537064280.55042     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992670013.07690     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  QQ myiter, totcost =            4  -750646137617.80017     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  QQ myiter, totcost =            5  -940364265711.65283     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  QQ myiter, totcost =            6  -1130479070531.0579     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999450755.5286     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707263592.3481     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512398618.3516     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301898987.6982     
+ QQ myiter, totcost =            8  -1511707263592.3479     
+ QQ myiter, totcost =            9  -1702512398618.3513     
+ QQ myiter, totcost =           10  -1893301898987.6980     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512398618.3516     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707263592.3481     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
+ QQ myiter, totcost =            9  -1702512398618.3513     
+ QQ myiter, totcost =            8  -1511707263592.3479     
  QQ myiter, totcost =            7  -1320999450755.5286     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  QQ myiter, totcost =            6  -1130479070531.0579     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  QQ myiter, totcost =            5  -940364265711.65283     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  QQ myiter, totcost =            4  -750646137617.80017     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992670013.07690     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537064280.55042     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
  ph-check entering grdchk_main 
- ph-check fcref =   -1893301898987.6982     
+ ph-check fcref =   -1893301898987.6980     
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
  ph-grd -->hit<--           61           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- QQ myiter, totcost =            2  -373537063881.28778     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- QQ myiter, totcost =            3  -561992669004.15198     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- QQ myiter, totcost =            4  -750646135745.60059     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- QQ myiter, totcost =            5  -940364262765.75024     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- QQ myiter, totcost =            6  -1130479066305.6914     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- QQ myiter, totcost =            7  -1320999445061.4402     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707256249.3162     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512389455.8936     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301887842.9280     
+ QQ myiter, totcost =            2  -373537063881.28772     
+ QQ myiter, totcost =            3  -561992669004.15186     
+ QQ myiter, totcost =            4  -750646135745.60034     
+ QQ myiter, totcost =            5  -940364262765.75000     
+ QQ myiter, totcost =            6  -1130479066305.6912     
+ QQ myiter, totcost =            7  -1320999445061.4399     
+ QQ myiter, totcost =            8  -1511707256249.3159     
+ QQ myiter, totcost =            9  -1702512389455.8931     
+ QQ myiter, totcost =           10  -1893301887842.9275     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330188784293D+13
- ph-check fcpertplus =   -1893301887842.9280     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- ph-check fcpertminus =   -1893301898987.6982     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
+ ph-check fcpertplus =   -1893301887842.9275     
+ ph-check fcpertminus =   -1893301898987.6980     
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537064679.81421     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992671022.00586     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  QQ myiter, totcost =            4  -750646139490.00940     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  QQ myiter, totcost =            5  -940364268657.57385     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  QQ myiter, totcost =            6  -1130479074756.4558     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999456449.6650     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707270935.4495     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512407780.9053     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301910132.5952     
+ QQ myiter, totcost =            8  -1511707270935.4492     
+ QQ myiter, totcost =            9  -1702512407780.9050     
+ QQ myiter, totcost =           10  -1893301910132.5950     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.189330191013260D+13
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
+ global fc = -0.189330191013259D+13
 grad-res -------------------------------
  grad-res     0    1   61    5    1    1    1    1   -.189330189899E+13 -.189330188784E+13 -.189330191013E+13
- grad-res     0    1    1    1 4447    1    1    1   0.111448338804E+18 0.111448336182E+18 0.235318351471E-07
+ grad-res     0    1    1    1 4447    1    1    1   0.111448338804E+18 0.111448337402E+18 0.125787502636E-07
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.89330189898770E+12
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.11448338804225E+17
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            1 , ichknum =            1
  ph-grd -->hit<--           62           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- QQ myiter, totcost =            2  -373537063866.05206     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
+ QQ myiter, totcost =            2  -373537063866.05200     
  QQ myiter, totcost =            3  -561992668932.36047     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- QQ myiter, totcost =            4  -750646135560.69360     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- QQ myiter, totcost =            5  -940364262398.04871     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
+ QQ myiter, totcost =            4  -750646135560.69348     
+ QQ myiter, totcost =            5  -940364262398.04858     
  QQ myiter, totcost =            6  -1130479065676.0691     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999444083.5371     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707254831.4587     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512387502.5554     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301885255.8943     
+ QQ myiter, totcost =            8  -1511707254831.4585     
+ QQ myiter, totcost =            9  -1702512387502.5552     
+ QQ myiter, totcost =           10  -1893301885255.8940     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330188525589D+13
- ph-check fcpertplus =   -1893301885255.8943     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- ph-check fcpertminus =   -1893301898987.6982     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
+ ph-check fcpertplus =   -1893301885255.8940     
+ ph-check fcpertminus =   -1893301898987.6980     
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537064695.04993     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992671093.79761     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- QQ myiter, totcost =            4  -750646139674.91760     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- QQ myiter, totcost =            5  -940364269025.27856     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- QQ myiter, totcost =            6  -1130479075386.0845     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- QQ myiter, totcost =            7  -1320999457427.5796     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707272353.3257     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512409734.2720     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301912719.6704     
+ QQ myiter, totcost =            4  -750646139674.91748     
+ QQ myiter, totcost =            5  -940364269025.27844     
+ QQ myiter, totcost =            6  -1130479075386.0842     
+ QQ myiter, totcost =            7  -1320999457427.5793     
+ QQ myiter, totcost =            8  -1511707272353.3252     
+ QQ myiter, totcost =            9  -1702512409734.2715     
+ QQ myiter, totcost =           10  -1893301912719.6699     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330191271967D+13
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    2   62    5    1    1    1    1   -.189330189899E+13 -.189330188526E+13 -.189330191272E+13
- grad-res     0    2    2    2 4447    1    1    1   0.137318880264E+18 0.137318880615E+18 -.255800380877E-08
+ grad-res     0    2    2    2 4447    1    1    1   0.137318880264E+18 0.137318879395E+18 0.633154684238E-08
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.89330189898770E+12
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.37318880263972E+17
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            2 , ichknum =            2
  ph-grd -->hit<--           63           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537063891.44739     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992668997.09045     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  QQ myiter, totcost =            4  -750646135679.01221     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  QQ myiter, totcost =            5  -940364262579.98291     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  QQ myiter, totcost =            6  -1130479065928.6777     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999444410.4080     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
  QQ myiter, totcost =            8  -1511707255232.8892     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512387975.6060     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301885794.5298     
+ QQ myiter, totcost =            9  -1702512387975.6057     
+ QQ myiter, totcost =           10  -1893301885794.5295     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330188579453D+13
- ph-check fcpertplus =   -1893301885794.5298     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- ph-check fcpertminus =   -1893301898987.6982     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
+ ph-check fcpertplus =   -1893301885794.5295     
+ ph-check fcpertminus =   -1893301898987.6980     
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  QQ myiter, totcost =            2  -373537064669.65454     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  QQ myiter, totcost =            3  -561992671029.06750     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- QQ myiter, totcost =            4  -750646139556.59851     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- QQ myiter, totcost =            5  -940364268843.34326     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
+ QQ myiter, totcost =            4  -750646139556.59839     
+ QQ myiter, totcost =            5  -940364268843.34314     
  QQ myiter, totcost =            6  -1130479075133.4739     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999457100.7058     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
  QQ myiter, totcost =            8  -1511707271951.8911     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
  QQ myiter, totcost =            9  -1702512409261.2163     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
  QQ myiter, totcost =           10  -1893301912181.0283     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
@@ -4318,258 +3368,77 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330191218103D+13
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    3   63    5    1    1    1    1   -.189330189899E+13 -.189330188579E+13 -.189330191218E+13
- grad-res     0    3    3    3 4447    1    1    1   0.131932493614E+18 0.131932492676E+18 0.711445979906E-08
+ grad-res     0    3    3    3 4447    1    1    1   0.131932493614E+18 0.131932493896E+18 -.213802309190E-08
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.89330189898770E+12
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.31932493614410E+17
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            3 , ichknum =            3
  ph-grd -->hit<--           64           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- QQ myiter, totcost =            2  -373537063770.38422     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- QQ myiter, totcost =            3  -561992668683.34607     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- QQ myiter, totcost =            4  -750646135081.18311     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- QQ myiter, totcost =            5  -940364261615.84888     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- QQ myiter, totcost =            6  -1130479064512.9858     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- QQ myiter, totcost =            7  -1320999442459.9143     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- QQ myiter, totcost =            8  -1511707252664.1838     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- QQ myiter, totcost =            9  -1702512384705.9634     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- QQ myiter, totcost =           10  -1893301881741.5037     
+ QQ myiter, totcost =            2  -373537063770.38416     
+ QQ myiter, totcost =            3  -561992668683.34595     
+ QQ myiter, totcost =            4  -750646135081.18286     
+ QQ myiter, totcost =            5  -940364261615.84863     
+ QQ myiter, totcost =            6  -1130479064512.9856     
+ QQ myiter, totcost =            7  -1320999442459.9138     
+ QQ myiter, totcost =            8  -1511707252664.1833     
+ QQ myiter, totcost =            9  -1702512384705.9629     
+ QQ myiter, totcost =           10  -1893301881741.5032     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330188174150D+13
- ph-check fcpertplus =   -1893301881741.5037     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- ph-check fcpertminus =   -1893301898987.6982     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
+ ph-check fcpertplus =   -1893301881741.5032     
+ ph-check fcpertminus =   -1893301898987.6980     
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dic_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: alk_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: po4_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
  QQ first guess pH   8.1709968511049578        19.806661605834961        35.597469329833984        1.9665573835372925       1.90226259292103350E-004  4.22883080318570137E-003   2.3077514171600342     
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
  QQ - preturb alpha  9.70000000000000011E-011   0.0000000000000000     
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
- OFFLINE_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  OFFLINE_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: uVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: vVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: wVeltave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Ttave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Stave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Convtave.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwx-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwy-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: GM_Kwz-T.0005184060.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
- DIC_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
  QQ myiter, totcost =            1  -188410270482.86154     
- EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- OFFLINE_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- QQ myiter, totcost =            2  -373537064790.71820     
- EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- OFFLINE_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
+ QQ myiter, totcost =            2  -373537064790.71814     
  QQ myiter, totcost =            3  -561992671342.81360     
- EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- OFFLINE_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  QQ myiter, totcost =            4  -750646140154.43213     
- EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- OFFLINE_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
- DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  QQ myiter, totcost =            5  -940364269807.48669     
- EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- OFFLINE_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
- DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  QQ myiter, totcost =            6  -1130479076549.1826     
- EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- OFFLINE_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
- DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  QQ myiter, totcost =            7  -1320999459051.2266     
- EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- OFFLINE_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
- DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
  QQ myiter, totcost =            8  -1511707274520.6367     
- EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- OFFLINE_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
- DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
  QQ myiter, totcost =            9  -1702512412530.9158     
- EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- OFFLINE_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
- DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
  QQ myiter, totcost =           10  -1893301916234.1321     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> objf_test(bi,bj)   =  0.000000000000000D+00
@@ -4577,10 +3446,9 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.189330191623413D+13
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    4   64    5    1    1    1    1   -.189330189899E+13 -.189330188174E+13 -.189330191623E+13
- grad-res     0    4    4    4 4447    1    1    1   0.172463143736E+18 0.172463142090E+18 0.954618428750E-08
+ grad-res     0    4    4    4 4447    1    1    1   0.172463143736E+18 0.172463144531E+18 -.460992000129E-08
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.89330189898770E+12
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.72463143736209E+17
  ph-grd  ierr ---------------------------
@@ -4598,148 +3466,148 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1    61     5     1    0.000000000E+00 -1.000000000E-13
 (PID.TID 0000.0001) grdchk output (c):   1 -1.8933018989877E+12 -1.8933018878429E+12 -1.8933019101326E+12
-(PID.TID 0000.0001) grdchk output (g):   1     1.1144833618164E+17  1.1144833880422E+17  2.3531835147139E-08
+(PID.TID 0000.0001) grdchk output (g):   1     1.1144833740234E+17  1.1144833880422E+17  1.2578750263614E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2    62     5     1    0.000000000E+00 -1.000000000E-13
 (PID.TID 0000.0001) grdchk output (c):   2 -1.8933018989877E+12 -1.8933018852559E+12 -1.8933019127197E+12
-(PID.TID 0000.0001) grdchk output (g):   2     1.3731888061523E+17  1.3731888026397E+17 -2.5580038087725E-09
+(PID.TID 0000.0001) grdchk output (g):   2     1.3731887939453E+17  1.3731888026397E+17  6.3315468423752E-09
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3    63     5     1    0.000000000E+00 -1.000000000E-13
 (PID.TID 0000.0001) grdchk output (c):   3 -1.8933018989877E+12 -1.8933018857945E+12 -1.8933019121810E+12
-(PID.TID 0000.0001) grdchk output (g):   3     1.3193249267578E+17  1.3193249361441E+17  7.1144597990624E-09
+(PID.TID 0000.0001) grdchk output (g):   3     1.3193249389648E+17  1.3193249361441E+17 -2.1380230919021E-09
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4    64     5     1    0.000000000E+00 -1.000000000E-13
 (PID.TID 0000.0001) grdchk output (c):   4 -1.8933018989877E+12 -1.8933018817415E+12 -1.8933019162341E+12
-(PID.TID 0000.0001) grdchk output (g):   4     1.7246314208984E+17  1.7246314373621E+17  9.5461842875011E-09
+(PID.TID 0000.0001) grdchk output (g):   4     1.7246314453125E+17  1.7246314373621E+17 -4.6099200012861E-09
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   338.88000000000000
-(PID.TID 0000.0001)         System time:   3.1499999999999999
-(PID.TID 0000.0001)     Wall clock time:   345.94101786613464
+(PID.TID 0000.0001)           User time:   337.93000000000001
+(PID.TID 0000.0001)         System time:   6.2100000000000000
+(PID.TID 0000.0001)     Wall clock time:   362.73367500305176
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.53000000000000003
-(PID.TID 0000.0001)         System time:  5.99999999999999978E-002
-(PID.TID 0000.0001)     Wall clock time:   2.5417680740356445
+(PID.TID 0000.0001)           User time:  0.54000000000000004
+(PID.TID 0000.0001)         System time:  7.00000000000000067E-002
+(PID.TID 0000.0001)     Wall clock time:   2.1917397975921631
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   138.02000000000001
-(PID.TID 0000.0001)         System time:   1.3599999999999999
-(PID.TID 0000.0001)     Wall clock time:   140.75588989257813
+(PID.TID 0000.0001)           User time:   139.06000000000000
+(PID.TID 0000.0001)         System time:   6.0899999999999999
+(PID.TID 0000.0001)     Wall clock time:   161.71270298957825
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   8.5000000000001137
-(PID.TID 0000.0001)         System time:  7.00000000000002842E-002
-(PID.TID 0000.0001)     Wall clock time:   8.5937545299530029
+(PID.TID 0000.0001)           User time:   9.2800000000000296
+(PID.TID 0000.0001)         System time:  1.99999999999995737E-002
+(PID.TID 0000.0001)     Wall clock time:   9.3638989925384521
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  2.00000000000386535E-002
+(PID.TID 0000.0001)           User time:  1.00000000000477485E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.22690105438232422E-002
+(PID.TID 0000.0001)     Wall clock time:  1.93831920623779297E-002
 (PID.TID 0000.0001)          No. starts:         119
 (PID.TID 0000.0001)           No. stops:         119
 (PID.TID 0000.0001)   Seconds in section "OFFLINE_FLDS_LOAD  [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   9.8200000000002206
-(PID.TID 0000.0001)         System time:  6.00000000000000533E-002
-(PID.TID 0000.0001)     Wall clock time:   9.9870464801788330
+(PID.TID 0000.0001)           User time:   10.919999999999959
+(PID.TID 0000.0001)         System time:  2.99999999999993605E-002
+(PID.TID 0000.0001)     Wall clock time:   10.992651462554932
 (PID.TID 0000.0001)          No. starts:         119
 (PID.TID 0000.0001)           No. stops:         119
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.06215476989746094E-003
+(PID.TID 0000.0001)     Wall clock time:  9.92536544799804688E-004
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.00421905517578125E-003
+(PID.TID 0000.0001)     Wall clock time:  8.98838043212890625E-004
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   194.60999999999996
-(PID.TID 0000.0001)         System time:   1.3999999999999990
-(PID.TID 0000.0001)     Wall clock time:   196.60081934928894
+(PID.TID 0000.0001)           User time:   191.69000000000023
+(PID.TID 0000.0001)         System time:  4.99999999999998224E-002
+(PID.TID 0000.0001)     Wall clock time:   192.10832548141479
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.9399999999999409
-(PID.TID 0000.0001)         System time:  1.00000000000002309E-002
-(PID.TID 0000.0001)     Wall clock time:   1.9510970115661621
+(PID.TID 0000.0001)           User time:   1.9400000000001114
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.9422514438629150
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   17.829999999999757
-(PID.TID 0000.0001)         System time:  0.10999999999999988
-(PID.TID 0000.0001)     Wall clock time:   18.000955343246460
+(PID.TID 0000.0001)           User time:   17.710000000000093
+(PID.TID 0000.0001)         System time:  9.99999999999978684E-003
+(PID.TID 0000.0001)     Wall clock time:   17.772547245025635
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.61000000000035470
+(PID.TID 0000.0001)           User time:  0.62000000000000455
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.64073681831359863
+(PID.TID 0000.0001)     Wall clock time:  0.63311171531677246
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.4100000000000250
+(PID.TID 0000.0001)           User time:   1.4000000000000341
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.4008808135986328
+(PID.TID 0000.0001)     Wall clock time:   1.3985838890075684
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.07049942016601563E-003
+(PID.TID 0000.0001)     Wall clock time:  9.92774963378906250E-004
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   1.0799999999999841
-(PID.TID 0000.0001)         System time:  1.00000000000002309E-002
-(PID.TID 0000.0001)     Wall clock time:   1.6074616909027100
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.5294275283813477
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.00000000000113687E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.16569614410400391E-002
+(PID.TID 0000.0001)           User time:  3.99999999999636202E-002
+(PID.TID 0000.0001)         System time:  9.99999999999978684E-003
+(PID.TID 0000.0001)     Wall clock time:  6.00385665893554688E-002
 (PID.TID 0000.0001)          No. starts:          99
 (PID.TID 0000.0001)           No. stops:          99
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   200.32999999999998
-(PID.TID 0000.0001)         System time:   1.7300000000000000
-(PID.TID 0000.0001)     Wall clock time:   202.64217209815979
+(PID.TID 0000.0001)           User time:   198.33000000000001
+(PID.TID 0000.0001)         System time:  4.99999999999998224E-002
+(PID.TID 0000.0001)     Wall clock time:   198.82794713973999
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   4.4900000000000659
-(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
-(PID.TID 0000.0001)     Wall clock time:   4.5324218273162842
+(PID.TID 0000.0001)           User time:   4.5300000000000296
+(PID.TID 0000.0001)         System time:  9.99999999999978684E-003
+(PID.TID 0000.0001)     Wall clock time:   4.5489749908447266
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   195.80000000000001
-(PID.TID 0000.0001)         System time:   1.6900000000000004
-(PID.TID 0000.0001)     Wall clock time:   198.05659747123718
+(PID.TID 0000.0001)           User time:   193.73999999999995
+(PID.TID 0000.0001)         System time:  4.00000000000000355E-002
+(PID.TID 0000.0001)     Wall clock time:   194.20375776290894
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   180.57000000000039
-(PID.TID 0000.0001)         System time:   1.5500000000000012
-(PID.TID 0000.0001)     Wall clock time:   182.71100211143494
+(PID.TID 0000.0001)           User time:   178.49999999999977
+(PID.TID 0000.0001)         System time:  2.99999999999993605E-002
+(PID.TID 0000.0001)     Wall clock time:   178.89933967590332
 (PID.TID 0000.0001)          No. starts:          80
 (PID.TID 0000.0001)           No. stops:          80
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.94956970214843750E-004
+(PID.TID 0000.0001)     Wall clock time:  5.84125518798828125E-004
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
@@ -4757,9 +3625,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           2872
+(PID.TID 0000.0001) //            No. barriers =           2868
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           2872
+(PID.TID 0000.0001) //     Total barrier spins =           2868
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally

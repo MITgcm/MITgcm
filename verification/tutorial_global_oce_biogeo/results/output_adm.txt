@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62v
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62y
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Wed Apr 20 15:04:18 EDT 2011
+(PID.TID 0000.0001) // Build date:        Wed Jun  8 02:39:40 EDT 2011
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -51,6 +51,7 @@
 (PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
 (PID.TID 0000.0001) useCoupler=    F ;/* Flag used to control communications with   */
 (PID.TID 0000.0001)                   /*  other model components, through a coupler */
+(PID.TID 0000.0001) debugMode =    F ; /* print debug msg. (sequence of S/R calls)  */
 (PID.TID 0000.0001) printMapIncludesZeros=    F ; /* print zeros in Std.Output maps */
 (PID.TID 0000.0001) maxLengthPrt1D=   65 /* maxLength of 1D array printed to StdOut */
 (PID.TID 0000.0001) 
@@ -99,8 +100,6 @@
 (PID.TID 0000.0001) //       NORTH: Tile = 000002, Process = 000001, Comm = put
 (PID.TID 0000.0001) //                bi = 000002, bj = 000001
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) DEBUG_MSG: ENTERED S/R THE_MODEL_MAIN
-(PID.TID 0000.0001) DEBUG_MSG: CALLING S/R INITIALISE_FIXED
 (PID.TID 0000.0001)  INI_PARMS: opening model parameter file "data"
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data
 (PID.TID 0000.0001) // =======================================================
@@ -964,165 +963,6 @@
 (PID.TID 0000.0001) %MON AngleSN_min                  =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_mean                 =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_sd                   =   0.0000000000000E+00
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =         -5.200000000000000E+03
-(PID.TID 0000.0001) // CMAX =         -5.000000000000000E+01
-(PID.TID 0000.0001) // CINT =          1.907407407407407E+02
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001) //                I=6       I=16      I=26      I=36      I=46      I=56      I=66      I=68      I=78      I=88      I=98      I=108     I=118     I=128
-(PID.TID 0000.0001) // |--J--|321012345|789012345|789012345|789012345|789012345|789012345|789012345|781234567|901234567|901234567|901234567|901234567|901234567|901234567|9012
-(PID.TID 0000.0001) //     68 ................................................................................................................................................
-(PID.TID 0000.0001) //     67 ................................................................................................................................................
-(PID.TID 0000.0001) //     66 ................................................................................................................................................
-(PID.TID 0000.0001) //     65 ................................................................................................................................................
-(PID.TID 0000.0001) //     64 ................................................................................................................................................
-(PID.TID 0000.0001) //     63 ................................................................................................................................................
-(PID.TID 0000.0001) //     62 ................................................................................................................................................
-(PID.TID 0000.0001) //     61 +zsnovwy++...+zzzzzz++++...............................................................................................................++zsnovwy
-(PID.TID 0000.0001) //     60 +zrmmnot.....+zzzzzzzzz+.........................................................................................y....................zz+zrmmnot
-(PID.TID 0000.0001) //     59 omjjklnoqyz++zyzzzzzzzz.........................................................................................yxwvvyy..............zzromjjklno
-(PID.TID 0000.0001) //     58 sponmlmoqwzyzzzzzzzz++.............................................................................................wrtxz............zytssponmlmo
-(PID.TID 0000.0001) //     57 rqmmmkmmz............................................................................................................tvz............xwurrqmmmkmm
-(PID.TID 0000.0001) //     56 vqjmmuyz..............................................................................................................yx........yyyyy..zvqjmmuyz
-(PID.TID 0000.0001) //     55 xwrrux..............................................................++......++.......................................+yuu.....wonrwyzzzyxwrrux..
-(PID.TID 0000.0001) //     54 wyz++............................................................ymnz+++.ymnz+++......................................wmkkr..qmmotsqooruwyz++...
-(PID.TID 0000.0001) //     53 v...++.................................................zzzz...omsjjjjm++sjjjjm+++.....zjghl...........................zojjjlkkloronmpvxtv...++..
-(PID.TID 0000.0001) //     52 ....++................................................+xxyy...ggijjljjmpijjljjmpz.++tdeffhjm............................zmjiijlqnljlqtpo....++..
-(PID.TID 0000.0001) //     51 .......................................................xvvx..ddfdhjsqmpqdhjsqmpqdbcddddefghjlz..........................zylgghhikkjhigqy........
-(PID.TID 0000.0001) //     50 z+.....................................................+uutw---aaaa-----aaa------aaaabddefghjnq..........................zvogdefglkgfddpz+......
-(PID.TID 0000.0001) //     49 dg+....................................................roqja--------------------------abddefhmmx..........................+whddehlnjdddddg+.....
-(PID.TID 0000.0001) //     48 oxy.....................................................va------a-------a--------------addefgjlx.....................++nj+wfddfgjnmkgeddoxy.....
-(PID.TID 0000.0001) //     47 t......................................................a------a----------------------aaaddefgiks...................+qfbaaahebddgoqnhfa--t.......
-(PID.TID 0000.0001) //     46 v.....................................................z------d--a-d-----a-d----------------abddg..................lfdda-----bdhksrqhdacev.......
-(PID.TID 0000.0001) //     45 g.....................................................b-----fb---cdhfe---cdhfe-------------aadddk................oeaaddb-abcehlnmkgcabjdg.......
-(PID.TID 0000.0001) //     44 .................................................+.vgs-----ci----aaa-----aaa--------------bddddefu..............xf--ddb---adhlkihjd-bfgi........
-(PID.TID 0000.0001) //     43 ................................................+ywfdng-------------a-a-----a-a--------abddddddefhr............+vd--ab----afkjgccda-deju........
-(PID.TID 0000.0001) //     42 ...............................................+zveddhna-------------dde-----ddedbba----addddddeffh............+vd-------acgifaa-aaadis.........
-(PID.TID 0000.0001) //     41 .........................op.....................qdeeddn---a--a--------dd------ddheddea---abddddeefgizw.......t+++n-------adifd-----dem..........
-(PID.TID 0000.0001) //     40 .........................ljn.................zom----ddil---aac---fkic-df-fkic-dfdddgja------ddddegghjl.......tmv.uq------adifa--bbadfs..........
-(PID.TID 0000.0001) //     39 ........................zhijj.....ppq.......rjmxa---bdfiea----acaigefghfaigefghf---cda-------adefggijjl......jkrvt.vnu--adejfa-aadehjm..........
-(PID.TID 0000.0001) //     38 .......................nhggghr...llmn+.....vngt.g--aadfib---------ea---a--ea---aa---------bbbaddefggjhkjiv.....wphiggrna-agifaa---cljn..........
-(PID.TID 0000.0001) //     37 ....................wttlheefes..+jjkmu+....oggx.x---adig-----addd-------d----------------bbbdddddeefghjkiggh...ojizsjssjbadfhca----bdj..........
-(PID.TID 0000.0001) //     36 ......................qghfdddpq.+hiipoz....rrt...--adiige----gdefd-----cfd-----caebb-dd--abbdddddeeghikjhghhjy.vt......mgddddhfbaa-adh..........
-(PID.TID 0000.0001) //     35 ......................adgieddkos+gghksy....tt....--gdimmnheeddcdfd---a--fd---a--ackfbaabddddddddefffgghkjihhjqt.........+sfeddfhgfefhdd+........
-(PID.TID 0000.0001) //     34 l+owgp+..............laddfiighojeefght........wjlldfdelfedhkigddddd--a--ddd--a---aehdddddddddddddeeggghjjjjlqolm..........zjfedgkhfegdddl+owgp+.
-(PID.TID 0000.0001) //     33 caaddgn.............jcadddfkggoedddged.........zxxifefkeddhnmgddddd-----ddd-------afddeddddddddddefgghijjkmqomkv...........zfeefkkhhddcccaaddgn.
-(PID.TID 0000.0001) //     32 fdaddfl............kdbadddeiigjddddfddd.........yy..zomsrqjqpjdefeda----feda-----aaadddddddddddddeeefghjjjjkqnr..............kjfeffddfgifdaddfl.
-(PID.TID 0000.0001) //     31 heddddes..........vgdddsggfhiidaaddfdddd........xxv.....t.srroljiea-----iea------faaaadddddddddddeeefijiihhhiii................nea--adgkheddddes
-(PID.TID 0000.0001) //     30 hdde--di..........rgdfehqiggjtaaaddfaaa-fx...zxxxxw++....mj.spjhdaad---adaad---adge-aaaadefddddddeefikiggggfffe................zd---adhlhdde--di
-(PID.TID 0000.0001) //     29 heda--aey.........rigfffhyjjjlaaadddaaaa-ailnmxxxx++++.+..qoqqklfdddfffdfdddfffdfhka-acbddifdefgggfikjheeggfeddl...............vb---aehlheda--ae
-(PID.TID 0000.0001) //     36 ......................qghfdddpq.+hiipoz....rrt...--adiige----gdefd-----cfd-----caebb-dd--abbdddddeeghikjhghhjy.vt......mgddddhfbaa-adh..........
-(PID.TID 0000.0001) //     35 ......................adgieddkos+gghksy....tt....--gdimmnheeddcdfd---a--fd---a--ackfbaabddddddddefffgghkjihhjqt.........+sfeddfhgfefhdd+........
-(PID.TID 0000.0001) //     34 l+owgp+..............laddfiighojeefght........wjlldfdelfedhkigddddd--a--ddd--a---aehdddddddddddddeeggghjjjjlqolm..........zjfedgkhfegdddl+owgp+.
-(PID.TID 0000.0001) //     33 caaddgn.............jcadddfkggoedddged.........zxxifefkeddhnmgddddd-----ddd-------afddeddddddddddefgghijjkmqomkv...........zfeefkkhhddcccaaddgn.
-(PID.TID 0000.0001) //     32 fdaddfl............kdbadddeiigjddddfddd.........yy..zomsrqjqpjdefeda----feda-----aaadddddddddddddeeefghjjjjkqnr..............kjfeffddfgifdaddfl.
-(PID.TID 0000.0001) //     31 heddddes..........vgdddsggfhiidaaddfdddd........xxv.....t.srroljiea-----iea------faaaadddddddddddeeefijiihhhiii................nea--adgkheddddes
-(PID.TID 0000.0001) //     30 hdde--di..........rgdfehqiggjtaaaddfaaa-fx...zxxxxw++....mj.spjhdaad---adaad---adge-aaaadefddddddeefikiggggfffe................zd---adhlhdde--di
-(PID.TID 0000.0001) //     29 heda--aey.........rigfffhyjjjlaaadddaaaa-ailnmxxxx++++.+..qoqqklfdddfffdfdddfffdfhka-acbddifdefgggfikjheeggfeddl...............vb---aehlheda--ae
-(PID.TID 0000.0001) //     28 hfd---afy.........+kj.ddfojkhfa-addg--d-c-ddd-jx++.....rjggpmigqkllopidckllopidc-dlaaadddeffffggghijkigefghgfddd..............+ec---ddjjhfd---af
-(PID.TID 0000.0001) //     27 heda--ag..........zm..edfxikiddaaafla-a----dedr+........vvgklgftkllpqqkckllpqqkc--dddefornkfffgghhjkjhgfhhgeddddi.............rdda--dfjkheda--ag
-(PID.TID 0000.0001) //     26 heda---h..........r+..ddjiimieddaadl-a-----dsw+..........yqnlkkjnlnvsqibnlnvsqib--ddddiffkkjgfghhhjkjhgfeefedddgfd............+fdb--afilheda---h
-(PID.TID 0000.0001) //     25 jdd--bkn.........mmz.ndfffimlfddddejda---abfw.............zpvsrsnlljrs--nlljrs---addddddedggggghhijkiggfffffeeggdde...........nfea--adfljdd--bkn
-(PID.TID 0000.0001) //     24 fd---gngu.......zkjx.fddddegkiffdddjd---aajm..............zppsotngdhsp--ngdhsp----bdddddddefhihijjljjhghggggghjedff..........pheb---ddgkfd---gng
-(PID.TID 0000.0001) //     23 fedackddm.......tfejsd---degikiffeefdccfba-m..............+gmtmomidiqi--midiqi-----dddddifeefgghijklmkkjiiihihgffff........zoledcaabdfhkfedackdd
-(PID.TID 0000.0001) //     22 heddhaadjz.....uqbcnnfabdfddffjifffolnljda--+.............zdntmnmngiq---mngiq------ddddddeeeeefghijlmkjihhhihggfeev........ohgfqihdddfilheddhaad
-(PID.TID 0000.0001) //     21 fefgebabgq.....jpabrofdfiddddfilihjleeonb-abn....++.......sdluotmqjll---mqjll------dddddddddeffghhikmjjihhhihggfef+.......shgfflgiddfhkkfefgebab
-(PID.TID 0000.0001) //     20 gggdb--addw.zgegi-allghkdddddegllhhgfeddc--kl+vhddnw......dccotrr.tnd--ar.tnd--aa--------ddddffffhhjmjiiiiihgggfff.......xfbbbdddffggjkjgggdb--a
-(PID.TID 0000.0001) //     19 jjfda--addddgkefdadkknkfd-adeegnkihhhgfddddddda------v...kddadsvv..via-bv..via-bb--d------abddddeegjmjgfgijihggffp......zfa-aaaddddfgklljjfda--a
-(PID.TID 0000.0001) //     18 hgddca-dddaagndddflnkjheb-adefglllllkjhfeeddddba-----df..gddbdfux..olifdx..olifdba-ddd------adddeehkmihfefijihgggy......h------abddfhkljhgddca-d
-(PID.TID 0000.0001) //     17 ggffdddddaabca-dgnomnmjfcbddfgikkklklljhgggedddddddddddn+jddbddr..yxxxqk..yxxxqk--addd------adddfghkljigeeefgikii+...++p---aaa--adddgjkjggffdddd
-(PID.TID 0000.0001) //     16 lifeddfedccb--aglnpqpnmgddfpunjjjjjjjklkjihgffeddddeefdjqgdcbde..tsojdaa.tsojdaa-aadddbaaaaadddefgjlljhgeeeeffhjk....++j---------addfgkllifeddfe
-(PID.TID 0000.0001) //     15 lljhgghgdcddb-dfdefffffedeou.xnmjjgghijjjkkjjhgggghikjgggldddekzxxvvga--xxvvga--aaaabcddddddddeghiklkihfedddddefi....+zsqmb-afaaabddffhjlljhgghg
-(PID.TID 0000.0001) //     14 jnonnkhikkjjhfc-bfmlhfeedddglxytmjdefhhhhhiihgfedghikljifeddfhjxyydba--ayydba--aaabcdddefhfddefhjmljhhfedddddddfgj..+zzsqpnnqjigifffdefhjnonnkhi
-(PID.TID 0000.0001) //     13 ijnomnlgddfeeb---gjfeddddddhgmsrjgddeefgggggedddddefgjlmghgfjgkusaa---aasaa---aabcddghiiijmljihimljhhgeddddaadddfjlllkjihggjkmwvjddfddefijnomnlg
-(PID.TID 0000.0001) //     12 fhifec----bb------------abddlnnrsiddddeedddddddddddddfhjkkiijfd----aaddc---aaddccdegijlnkihjihggggdddddccdddddddddfihggggggkkjkkjjodddeffhifec--
-(PID.TID 0000.0001) //     11 a----------a-----------abbdddgmmqsjeeededddeddeddddddeeghkllnkjecacddeffcacddeffgggikmlkihgeddedbaddaaaaaaaaabbbddeghhgilolvxomnllkefgdaa-------
-(PID.TID 0000.0001) //     10 ----dcaa-aaaaaaaabbdebcbddfghhjjmmjjjkprohiijkhhgggghhhggjjlommnnmijijklnmijijklnmmllkjggeddddaaaaaaaddaaabdddddefgill..zqjkigddddddbaa-----dcaa
-(PID.TID 0000.0001) //      9 adddkhefjfdddddhfdekpy..xpnnpponxxyzz........zyz+y...zzxxwsmmmmmkjjjmmmkkjjjmmmkkhgggfdeeeddddddddddddddddddddeeghpy...yxnhgedddddddbaaaadddkhef
-(PID.TID 0000.0001) //      8 gnlmkmopvtlkklv..............yx.............................zrppmljjjgffmljjjgfffggeeddddddddefhhigghffeddffilloxy....zyxoihgggdddddddddgnlmkmop
-(PID.TID 0000.0001) //      7 .................................................................xsrvshf.xsrvshfeeeeeeeeeeffgjmmnpvwvvwy++yyyyxxz......ywttqmigghggfflyz........
-(PID.TID 0000.0001) //      6 ...............................................................yyyyyyupnyyyyyupnkihhggghvyyy+.........................+yyyyyyyyxxxyy............
-(PID.TID 0000.0001) //      5 ................................................................xxyyxxyyxxyyxxyyyyyzz.................................++zz..zyxy................
-(PID.TID 0000.0001) //      4 ................................................................................................................................................
-(PID.TID 0000.0001) //      3 ................................................................................................................................................
-(PID.TID 0000.0001) //      2 ................................................................................................................................................
-(PID.TID 0000.0001) //      1 ................................................................................................................................................
-(PID.TID 0000.0001) //      0 ................................................................................................................................................
-(PID.TID 0000.0001) //     -1 ................................................................................................................................................
-(PID.TID 0000.0001) //     -2 ................................................................................................................................................
-(PID.TID 0000.0001) //     -3 ................................................................................................................................................
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model Ro_surf (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
-(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacC at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacW at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacS at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -3:   132:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    68:    -3:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  1  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
@@ -1579,16 +1419,19 @@
 (PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useEnergyConservingCoriolis= /* Flx-Form Coriolis scheme flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useJamartWetPoints= /* Coriolis WetPoints method flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useJamartMomAdv= /* V.I. Non-linear terms Jamart flag */
+(PID.TID 0000.0001) useJamartMomAdv= /* V.I Non-linear terms Jamart flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useAbsVorticity= /* Work with f+zeta in Coriolis */
+(PID.TID 0000.0001) useAbsVorticity= /* V.I Works with f+zeta in Coriolis */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectVortScheme= /* Scheme selector for Vorticity-Term */
+(PID.TID 0000.0001) selectVortScheme= /* V.I Scheme selector for Vorticity-Term */
 (PID.TID 0000.0001)               123456789
 (PID.TID 0000.0001)    = 0 : enstrophy (Shallow-Water Eq.) conserving scheme by Sadourny, JAS 75
 (PID.TID 0000.0001)    = 1 : same as 0 with modified hFac
@@ -1596,16 +1439,16 @@
 (PID.TID 0000.0001)    = 3 : energy (general) and enstrophy (2D, nonDiv.) conserving scheme
 (PID.TID 0000.0001)          from Sadourny (Burridge & Haseler, ECMWF Rep.4, 1977)
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) upwindVorticity= /* Upwind bias vorticity flag */
+(PID.TID 0000.0001) upwindVorticity= /* V.I Upwind bias vorticity flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) highOrderVorticity= /* High order interp. of vort. flag */
+(PID.TID 0000.0001) highOrderVorticity= /* V.I High order vort. advect. flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) upwindShear= /* Upwind vertical Shear advection flag */
+(PID.TID 0000.0001) upwindShear= /* V.I Upwind vertical Shear advection flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectKEscheme= /* Kinetic Energy scheme selector */
+(PID.TID 0000.0001) selectKEscheme= /* V.I Kinetic Energy scheme selector */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
@@ -1671,16 +1514,14 @@
 (PID.TID 0000.0001)  useSingleCpuIO = /* only master MPI process does I/O */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugMode  =  /* Debug Mode on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevA  =  /* 1rst level of debugging */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevB  =  /* 2nd  level of debugging */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugLevel =  /* select debugging level */
+(PID.TID 0000.0001) /* debLev[*]  : level of debug & auxiliary message printing */
+(PID.TID 0000.0001) debLevZero =  0 ; /* level of disabled aux. msg printing */
+(PID.TID 0000.0001)    debLevA =  1 ; /* level of minimum  aux. msg printing */
+(PID.TID 0000.0001)    debLevB =  2 ; /* level of low aux. print (report read-file opening)*/
+(PID.TID 0000.0001)    debLevC =  3 ; /* level of moderate debug prt (most pkgs debug msg) */
+(PID.TID 0000.0001)    debLevD =  4 ; /* level of enhanced debug prt (add DEBUG_STATS prt) */
+(PID.TID 0000.0001)    debLevE =  5 ; /* level of extensive debug printing */
+(PID.TID 0000.0001) debugLevel =  /* select debug printing level */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
@@ -1703,6 +1544,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useSRCGSolver =  /* use single reduction CG solver(s) */
 (PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) printResidualFreq = /* Freq. for printing CG residual */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
@@ -2648,7 +2492,6 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -2659,36 +2502,15 @@
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -2700,37 +2522,13 @@
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2841,44 +2639,8 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    1.57216930216624E-02
@@ -2996,8 +2758,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570465714765E-07  8.32517797868775E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    1.57305005841809E-02
 (PID.TID 0000.0001)                       cg2d_iters =    23
@@ -3114,8 +2874,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93674883522499E-07  8.32220094504515E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    1.54390786384896E-02
 (PID.TID 0000.0001)                       cg2d_iters =    23
@@ -3232,8 +2990,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779859106280E-07  8.31923404225745E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    1.54829951230624E-02
 (PID.TID 0000.0001)                       cg2d_iters =    23
@@ -3365,172 +3121,45 @@
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.645839112404126D+12
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269782580        34.855868723995968     
  QQ myiter, totcost =      5184001  -152532818144.72348     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570465714765E-07  8.32517797868775E+00
  mean surface dic   1.9724035749182158        34.855891583252152     
  QQ myiter, totcost =      5184002  -312200731727.27429     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93674883522499E-07  8.32220094504515E+00
  mean surface dic   1.9724810058293711        34.855910511127952     
  QQ myiter, totcost =      5184003  -476204760338.42871     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779859106280E-07  8.31923404225745E+00
  mean surface dic   1.9725583354642320        34.855946297043630     
  QQ myiter, totcost =      5184004  -645839112404.12610     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779859106280E-07  8.31923404225745E+00
  mean surface dic   1.9725583354642320        34.855946297043630     
  QQ myiter, totcost =      5184004  -645839112404.12573     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93674883522499E-07  8.32220094504515E+00
  mean surface dic   1.9724810058293711        34.855910511127952     
  QQ myiter, totcost =      5184003  -476204760338.42865     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- cg2d: Sum(rhs),rhsMax =   4.44089209850063E-16  4.79745272147137E+03
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
+ cg2d: Sum(rhs),rhsMax =   1.11022302462516E-15  4.79745272147137E+03
  cg2d: Sum(rhs),rhsMax =  -2.93570465714765E-07  8.32517797868775E+00
  mean surface dic   1.9724035749182158        34.855891583252152     
  QQ myiter, totcost =      5184002  -312200731727.27466     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- cg2d: Sum(rhs),rhsMax =   2.90878432451791E-14  2.04744121298933E+04
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
+ cg2d: Sum(rhs),rhsMax =   2.35367281220533E-14  2.04744121298933E+04
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269782580        34.855868723995968     
  QQ myiter, totcost =      5184001  -152532818144.72391     
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
- cg2d: Sum(rhs),rhsMax =  -6.08402217494586E-14  2.54295903646373E+04
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_hflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
+ cg2d: Sum(rhs),rhsMax =  -5.88418203051333E-14  2.54295903646373E+04
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3541,61 +3170,23 @@
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_diffkr.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.002.data
  ph-check entering grdchk_main 
  ph-check fcref =   -645839112404.12610     
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
  ph-grd -->hit<--           61           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3606,36 +3197,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -3647,95 +3217,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269769995        34.855868723996814     
  QQ myiter, totcost =      5184001  -152532818210.21518     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570483478334E-07  8.32517797868775E+00
  mean surface dic   1.9724035749162339        34.855891583252529     
  QQ myiter, totcost =      5184002  -312200731811.17761     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675171292307E-07  8.32220094504515E+00
  mean surface dic   1.9724810058268341        34.855910511128158     
  QQ myiter, totcost =      5184003  -476204760438.49780     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779603310895E-07  8.31923404225753E+00
  mean surface dic   1.9725583354613028        34.855946297043658     
  QQ myiter, totcost =      5184004  -645839112505.25781     
@@ -3755,18 +3259,9 @@ grad-res -------------------------------
   local fc =  0.000000000000000D+00
  global fc = -0.645839112505258D+12
  ph-check fcpertplus =   -645839112505.25781     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
  ph-check fcpertminus =   -645839112404.12610     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3777,36 +3272,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -3818,95 +3292,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269795170        34.855868723995115     
  QQ myiter, totcost =      5184001  -152532818079.23636     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570451503911E-07  8.32517797868775E+00
  mean surface dic   1.9724035749201987        34.855891583251761     
  QQ myiter, totcost =      5184002  -312200731643.38031     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93674965234914E-07  8.32220094504515E+00
  mean surface dic   1.9724810058319084        34.855910511127746     
  QQ myiter, totcost =      5184003  -476204760238.37048     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779585547327E-07  8.31923404225752E+00
  mean surface dic   1.9725583354671619        34.855946297043594     
  QQ myiter, totcost =      5184004  -645839112303.01086     
@@ -3925,29 +3333,16 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.645839112303011D+12
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    1   61    5    1    1    1    1   -.645839112404E+12 -.645839112505E+12 -.645839112303E+12
- grad-res     0    1    1    1 1300    1    1    1   -.101186415783E+08 -.101123474121E+08 0.622036677558E-03
+ grad-res     0    1    1    1 1300    1    1    1   -.101186415783E+08 -.101123474121E+08 0.622036677510E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -6.45839112404126E+11
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.01186415782981E+07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.01186415782977E+07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            1 , ichknum =            1
  ph-grd -->hit<--           62           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3958,36 +3353,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -3999,95 +3373,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269779827        34.855868723996501     
  QQ myiter, totcost =      5184001  -152532818247.89474     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570423082201E-07  8.32517797868775E+00
  mean surface dic   1.9724035749176323        34.855891583252848     
  QQ myiter, totcost =      5184002  -312200731886.78674     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675086027179E-07  8.32220094504515E+00
  mean surface dic   1.9724810058285047        34.855910511128755     
  QQ myiter, totcost =      5184003  -476204760564.35602     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779805815575E-07  8.31923404225753E+00
  mean surface dic   1.9725583354630976        34.855946297044532     
  QQ myiter, totcost =      5184004  -645839112683.93384     
@@ -4107,18 +3415,9 @@ grad-res -------------------------------
   local fc =  0.000000000000000D+00
  global fc = -0.645839112683934D+12
  ph-check fcpertplus =   -645839112683.93384     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
  ph-check fcpertminus =   -645839112404.12610     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4129,36 +3428,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -4170,95 +3448,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269785340        34.855868723995435     
  QQ myiter, totcost =      5184001  -152532818041.55270     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570330711646E-07  8.32517797868775E+00
  mean surface dic   1.9724035749187998        34.855891583251456     
  QQ myiter, totcost =      5184002  -312200731567.76331     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675032736473E-07  8.32220094504515E+00
  mean surface dic   1.9724810058302378        34.855910511127149     
  QQ myiter, totcost =      5184003  -476204760112.50140     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779585547327E-07  8.31923404225752E+00
  mean surface dic   1.9725583354653671        34.855946297042713     
  QQ myiter, totcost =      5184004  -645839112124.32300     
@@ -4277,29 +3489,16 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.645839112124323D+12
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    2   62    5    1    1    1    1   -.645839112404E+12 -.645839112684E+12 -.645839112124E+12
- grad-res     0    2    2    2 1300    1    1    1   -.279786105256E+08 -.279805419922E+08 -.690336858613E-04
+ grad-res     0    2    2    2 1300    1    1    1   -.279786105256E+08 -.279805419922E+08 -.690336858631E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -6.45839112404126E+11
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.79786105255776E+07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            2 , ichknum =            2
  ph-grd -->hit<--           63           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4310,36 +3509,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -4351,95 +3529,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269780493        34.855868723996643     
  QQ myiter, totcost =      5184001  -152532818247.08420     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570550979894E-07  8.32517797868775E+00
  mean surface dic   1.9724035749178035        34.855891583253189     
  QQ myiter, totcost =      5184002  -312200731889.62500     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675132212456E-07  8.32220094504515E+00
  mean surface dic   1.9724810058287670        34.855910511129316     
  QQ myiter, totcost =      5184003  -476204760573.16895     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779731208588E-07  8.31923404225746E+00
  mean surface dic   1.9725583354634437        34.855946297045286     
  QQ myiter, totcost =      5184004  -645839112701.61511     
@@ -4459,18 +3571,9 @@ grad-res -------------------------------
   local fc =  0.000000000000000D+00
  global fc = -0.645839112701615D+12
  ph-check fcpertplus =   -645839112701.61511     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
  ph-check fcpertminus =   -645839112404.12610     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4481,36 +3584,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -4522,95 +3604,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269784670        34.855868723995286     
  QQ myiter, totcost =      5184001  -152532818042.36307     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570394660492E-07  8.32517797868775E+00
  mean surface dic   1.9724035749186288        34.855891583251108     
  QQ myiter, totcost =      5184002  -312200731564.92346     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675196161303E-07  8.32220094504515E+00
  mean surface dic   1.9724810058299755        34.855910511126581     
  QQ myiter, totcost =      5184003  -476204760103.68787     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779191196109E-07  8.31923404225753E+00
  mean surface dic   1.9725583354650209        34.855946297041967     
  QQ myiter, totcost =      5184004  -645839112106.63708     
@@ -4629,29 +3645,16 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.645839112106637D+12
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    3   63    5    1    1    1    1   -.645839112404E+12 -.645839112702E+12 -.645839112107E+12
- grad-res     0    3    3    3 1300    1    1    1   -.297499475630E+08 -.297489013672E+08 0.351663081037E-04
+ grad-res     0    3    3    3 1300    1    1    1   -.297499475630E+08 -.297489013672E+08 0.351663081040E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -6.45839112404126E+11
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.97499475630096E+07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            3 , ichknum =            3
  ph-grd -->hit<--           64           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4662,36 +3665,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -4703,95 +3685,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723251269782380        34.855868723996522     
  QQ myiter, totcost =      5184001  -152532818273.52628     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570366238782E-07  8.32517797868775E+00
  mean surface dic   1.9724035749181621        34.855891583253076     
  QQ myiter, totcost =      5184002  -312200731935.63263     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675313400854E-07  8.32220094504515E+00
  mean surface dic   1.9724810058292845        34.855910511129217     
  QQ myiter, totcost =      5184003  -476204760644.98035     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779759630297E-07  8.31923404225745E+00
  mean surface dic   1.9725583354641094        34.855946297045207     
  QQ myiter, totcost =      5184004  -645839112799.68347     
@@ -4811,18 +3727,9 @@ grad-res -------------------------------
   local fc =  0.000000000000000D+00
  global fc = -0.645839112799683D+12
  ph-check fcpertplus =   -645839112799.68347     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
  ph-check fcpertminus =   -645839112404.12610     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4833,36 +3740,15 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Theta   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Salt    ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GuNm1   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GvNm1   ", #   6 in fldList, rec=   6
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GtNm1   ", #   7 in fldList, rec=   7
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0005184000.data
-(PID.TID 0000.0001)  MDS_READ_META: opening file: pickup_ptracers.0005184000.meta
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -4874,95 +3760,29 @@ grad-res -------------------------------
 (PID.TID 0000.0001)   nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   2.239488000000E+11
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr03   ", #   3 in fldList, rec=   3
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr04   ", #   4 in fldList, rec=   4
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr05   ", #   5 in fldList, rec=   5
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0005184000.data
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup_ptracers.0005184000
  DIC_SURFFORCING_INIT, it=   5184000 : Reading new data, i0,i1=   12    1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_dic.0005184000.data
  QQ alpha before  9.70000000000000011E-011
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_salt.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tr1.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.002.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- EXTERNAL_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_taux.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_tauy.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_qnet.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
- DIC_FIELDS_LOAD,   5184000 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tren_speed.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauu.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_tauv.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_sflux.0000000000.002.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_hflux.0000000000.002.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465159728612E-07  8.32814987068962E+00
  mean surface dic   1.9723251269782782        34.855868723995407     
  QQ myiter, totcost =      5184001  -152532818015.92087     
- EXTERNAL_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
- DIC_FIELDS_LOAD,   5184001 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  cg2d: Sum(rhs),rhsMax =  -2.93570135312393E-07  8.32517797868775E+00
  mean surface dic   1.9724035749182700        34.855891583251221     
  QQ myiter, totcost =      5184002  -312200731518.91644     
- EXTERNAL_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
- DIC_FIELDS_LOAD,   5184002 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  cg2d: Sum(rhs),rhsMax =  -2.93675032736473E-07  8.32220094504515E+00
  mean surface dic   1.9724810058294582        34.855910511126687     
  QQ myiter, totcost =      5184003  -476204760031.87762     
- EXTERNAL_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
- DIC_FIELDS_LOAD,   5184003 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  cg2d: Sum(rhs),rhsMax =  -2.93779557125617E-07  8.31923404225690E+00
  mean surface dic   1.9725583354643552        34.855946297042053     
  QQ myiter, totcost =      5184004  -645839112008.56885     
@@ -4981,13 +3801,9 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
  global fc = -0.645839112008569D+12
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_theta.0000000000.002.002.data
 grad-res -------------------------------
  grad-res     0    4   64    5    1    1    1    1   -.645839112404E+12 -.645839112800E+12 -.645839112009E+12
- grad-res     0    4    4    4 1300    1    1    1   -.395554595312E+08 -.395557312012E+08 -.686807808825E-05
+ grad-res     0    4    4    4 1300    1    1    1   -.395554595312E+08 -.395557312012E+08 -.686807808803E-05
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =   -6.45839112404126E+11
 (PID.TID 0000.0001)   ADM  precision_derivative_grad =   -3.95554595311870E+07
  ph-grd  ierr ---------------------------
@@ -5005,172 +3821,172 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1    61     5     1    0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   1 -6.4583911240413E+11 -6.4583911250526E+11 -6.4583911230301E+11
-(PID.TID 0000.0001) grdchk output (g):   1    -1.0112347412109E+07 -1.0118641578298E+07  6.2203667755800E-04
+(PID.TID 0000.0001) grdchk output (g):   1    -1.0112347412109E+07 -1.0118641578298E+07  6.2203667751004E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2    62     5     1    0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   2 -6.4583911240413E+11 -6.4583911268393E+11 -6.4583911212432E+11
-(PID.TID 0000.0001) grdchk output (g):   2    -2.7980541992187E+07 -2.7978610525578E+07 -6.9033685861308E-05
+(PID.TID 0000.0001) grdchk output (g):   2    -2.7980541992187E+07 -2.7978610525578E+07 -6.9033685863085E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3    63     5     1    0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   3 -6.4583911240413E+11 -6.4583911270162E+11 -6.4583911210664E+11
-(PID.TID 0000.0001) grdchk output (g):   3    -2.9748901367187E+07 -2.9749947563010E+07  3.5166308103740E-05
+(PID.TID 0000.0001) grdchk output (g):   3    -2.9748901367187E+07 -2.9749947563010E+07  3.5166308103962E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4    64     5     1    0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   4 -6.4583911240413E+11 -6.4583911279968E+11 -6.4583911200857E+11
-(PID.TID 0000.0001) grdchk output (g):   4    -3.9555731201172E+07 -3.9555459531187E+07 -6.8680780882513E-06
+(PID.TID 0000.0001) grdchk output (g):   4    -3.9555731201172E+07 -3.9555459531187E+07 -6.8680780880293E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   246.75000000000000
-(PID.TID 0000.0001)         System time:  0.73999999999999999
-(PID.TID 0000.0001)     Wall clock time:   248.16734910011292
+(PID.TID 0000.0001)           User time:   246.46000000000001
+(PID.TID 0000.0001)         System time:   1.0200000000000000
+(PID.TID 0000.0001)     Wall clock time:   249.10557198524475
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.41999999999999998
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:  0.47694206237792969
+(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
+(PID.TID 0000.0001)     Wall clock time:  0.56132292747497559
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   113.61000000000000
-(PID.TID 0000.0001)         System time:  0.62000000000000000
-(PID.TID 0000.0001)     Wall clock time:   114.56437492370605
+(PID.TID 0000.0001)           User time:   113.97000000000000
+(PID.TID 0000.0001)         System time:  0.89000000000000001
+(PID.TID 0000.0001)     Wall clock time:   116.09128618240356
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.27000000000001023
-(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
-(PID.TID 0000.0001)     Wall clock time:  0.26621818542480469
+(PID.TID 0000.0001)           User time:  0.24000000000000909
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.30711650848388672
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.22999999999996135
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  0.21086049079895020
+(PID.TID 0000.0001)           User time:  0.22000000000002728
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.24276947975158691
 (PID.TID 0000.0001)          No. starts:          48
 (PID.TID 0000.0001)           No. stops:          48
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.71932983398437500E-004
+(PID.TID 0000.0001)     Wall clock time:  3.88860702514648438E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   11.189999999999998
+(PID.TID 0000.0001)           User time:   11.129999999999939
 (PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:   11.218712806701660
+(PID.TID 0000.0001)     Wall clock time:   11.165076732635498
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.65972518920898438E-004
+(PID.TID 0000.0001)     Wall clock time:  4.01020050048828125E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   92.159999999999940
+(PID.TID 0000.0001)           User time:   91.780000000000030
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   92.424278259277344
+(PID.TID 0000.0001)     Wall clock time:   91.950057029724121
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   34.629999999999910
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   34.631761312484741
+(PID.TID 0000.0001)           User time:   34.319999999999993
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   34.423436164855957
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.9500000000000455
+(PID.TID 0000.0001)           User time:   3.8999999999999488
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.9563934803009033
+(PID.TID 0000.0001)     Wall clock time:   3.9255280494689941
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.5000000000000284
+(PID.TID 0000.0001)           User time:   1.5499999999999545
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.5200443267822266
+(PID.TID 0000.0001)     Wall clock time:   1.5132007598876953
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.0499999999999829
+(PID.TID 0000.0001)           User time:   1.0600000000000307
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.0862689018249512
+(PID.TID 0000.0001)     Wall clock time:   1.0830135345458984
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   6.6900000000000546
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:   6.6576395034790039
+(PID.TID 0000.0001)           User time:   6.5700000000000784
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   6.6086449623107910
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   1.1999999999999886
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.2012798786163330
+(PID.TID 0000.0001)     Wall clock time:   1.1818611621856689
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.53000000000000114
+(PID.TID 0000.0001)           User time:  0.54000000000002046
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.53889656066894531
+(PID.TID 0000.0001)     Wall clock time:  0.55004549026489258
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.71000000000000796
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.70378613471984863
+(PID.TID 0000.0001)           User time:  0.71999999999999886
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.71949100494384766
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.02450561523437500E-004
+(PID.TID 0000.0001)     Wall clock time:  4.03165817260742188E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.43999999999999773
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.43716216087341309
+(PID.TID 0000.0001)           User time:  0.44999999999998863
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.48799133300781250
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.12999999999999545
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  0.14543533325195313
+(PID.TID 0000.0001)           User time:  0.13999999999998636
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:  0.15945577621459961
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   132.72000000000000
+(PID.TID 0000.0001)           User time:   132.06999999999999
 (PID.TID 0000.0001)         System time:  8.99999999999999689E-002
-(PID.TID 0000.0001)     Wall clock time:   133.12594509124756
+(PID.TID 0000.0001)     Wall clock time:   132.45290398597717
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   3.7299999999999898
-(PID.TID 0000.0001)         System time:  6.00000000000000533E-002
-(PID.TID 0000.0001)     Wall clock time:   3.8307762145996094
+(PID.TID 0000.0001)           User time:   3.7500000000000000
+(PID.TID 0000.0001)         System time:  7.99999999999998490E-002
+(PID.TID 0000.0001)     Wall clock time:   3.8122868537902832
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   128.66999999999996
-(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
-(PID.TID 0000.0001)     Wall clock time:   128.95427298545837
+(PID.TID 0000.0001)           User time:   128.00000000000003
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   128.29564976692200
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   122.13999999999965
-(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
-(PID.TID 0000.0001)     Wall clock time:   122.37634539604187
+(PID.TID 0000.0001)           User time:   121.26000000000013
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   121.53635382652283
 (PID.TID 0000.0001)          No. starts:          32
 (PID.TID 0000.0001)           No. stops:          32
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  1.00000000000193268E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.37905502319335938E-004
+(PID.TID 0000.0001)     Wall clock time:  7.21216201782226563E-004
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
@@ -5221,9 +4037,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          10232
+(PID.TID 0000.0001) //            No. barriers =          10216
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          10232
+(PID.TID 0000.0001) //     Total barrier spins =          10216
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
