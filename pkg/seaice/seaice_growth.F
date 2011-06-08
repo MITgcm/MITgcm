@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.125 2011/06/08 03:04:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.126 2011/06/08 03:41:34 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1272,6 +1272,7 @@ Cgf note: flooding does count negatively
           tmpscal3 = tmpscal1*salt(I,j,kSurface,bi,bj)*HEFFM(I,J,bi,bj)
      &            /SEAICE_deltaTtherm * SEAICE_rhoIce
           saltPlumeFlux(I,J,bi,bj) = MAX( tmpscal3-tmpscal2 , 0. _d 0)
+     &            *SPsalFRAC
 #endif /* ALLOW_SALT_PLUME */
          ENDDO
         ENDDO
@@ -1319,6 +1320,7 @@ C saltPlumeFlux is defined only during freezing:
      &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
      &            *(1-SIsalFRAC)*salt(I,j,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
+     &            *SPsalFRAC
 C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
              IF ( .NOT. SaltPlumeSouthernOcean ) THEN
               IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )

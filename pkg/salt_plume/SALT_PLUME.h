@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.7 2010/08/24 15:08:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.8 2011/06/08 03:41:32 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_SALT_PLUME
@@ -27,9 +27,13 @@ C       for CriterionType=2, default is 0.005 kg/m^3/m
 C     SPovershoot: overshooting depth of penetrating salt plume,
 C       so that 1.0 = no-overshoot, 1.2 = 20% overshoot.
 C       default is 1.0
-      _RL SaltPlumeCriterion, SPovershoot
-      COMMON /SALT_PLUME_PARAMS_R/ SaltPlumeCriterion, SPovershoot
+C     SPsalFRAC: fraction of the salt by-product of seaice growth (not melt) that
+C       will be re-distributed vertically according to the salt_plume_frac.F
+C       Its default is 1. (for 100% effect), and its range is [0. 1.]
 
+      _RL SPsalFRAC, SaltPlumeCriterion, SPovershoot
+      COMMON /SALT_PLUME_PARAMS_R/
+     &   SPsalFRAC, SaltPlumeCriterion, SPovershoot
 C--   SALT_PLUME 2-dim. fields
 C     SaltPlumeDepth :: depth of penetration of salt plumes
 C                       rejected during sea ice growth

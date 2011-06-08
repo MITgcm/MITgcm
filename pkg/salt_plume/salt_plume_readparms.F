@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.4 2009/06/15 23:42:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.5 2011/06/08 03:41:32 gforget Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -28,7 +28,7 @@ CEOP
       NAMELIST /SALT_PLUME_PARM01/
      &     SaltPlumeSouthernOcean,
      &     CriterionType, PlumeMethod, Npower,
-     &     SaltPlumeCriterion, SPovershoot
+     &     SaltPlumeCriterion, SPovershoot, SPsalFRAC
 
 C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
@@ -45,6 +45,7 @@ C--   Default values for SALT_PLUME
       Npower              = 0
       SaltPlumeCriterion  = UNSET_RL
       SPovershoot         = 1.0 _d 0
+      SPsalFRAC           = 1.0 _d 0
 
       WRITE(msgBuf,'(A)')'SALT_PLUME_READPARMS: opening data.salt_plume'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
