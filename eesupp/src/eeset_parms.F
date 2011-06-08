@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.29 2010/10/05 17:43:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.30 2011/06/08 01:39:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -8,7 +8,6 @@ C     !ROUTINE: EESET_PARMS
 
 C     !INTERFACE:
       SUBROUTINE EESET_PARMS
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -23,6 +22,8 @@ C     | information about the number of threads at run-time.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -55,8 +56,7 @@ CEOP
      & useCubedSphereExchange,
      & useCoupler, useNEST_PARENT, useNEST_CHILD, useOASIS,
      & useSETRLSTK, useSIGREG,
-     & printMapIncludesZeros, maxLengthPrt1D
-
+     & debugMode, printMapIncludesZeros, maxLengthPrt1D
 
 C--   For now these options are fixed as the code does
 C     not fully support features for overlapping communication
@@ -108,6 +108,8 @@ C     which sets the stack size to "unlimited" using setrlimit()
       useSIGREG                  = .FALSE.
 
 C--   Parameter for printing (ascii) to Std-Oupt:
+C     Print debug msg (sequence of S/R calls)
+      debugMode = .FALSE.
 C     Text map plots of fields ignore exact zero values
       printMapIncludesZeros = .FALSE.
 C     Maximum length for printing (to Std-Msg-Unit) 1-D array
