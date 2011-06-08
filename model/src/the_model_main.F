@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.109 2010/11/10 22:07:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.110 2011/06/08 01:45:24 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -20,7 +20,7 @@ C equations and algorithm can also be found in the pkg/ directory tree.
 C
 C \subsection{Getting Help and Reporting Errors and Problems}
 C If you have questions please e-mail support@mitgcm.org. We also welcome
-C reports of errors and inconsistencies in the code or in the accompanying 
+C reports of errors and inconsistencies in the code or in the accompanying
 C documentation. Please feel free to send these
 C to support@mitgcm.org. For further information and to review
 C problems reported to support@mitgcm.org please visit http://mitgcm.org.
@@ -41,11 +41,11 @@ C    |              :: Each thread and process will have a unique ID
 C    |              :: but as yet it will not be associated with a
 C    |              :: specific region in decomposed discrete space.
 C    |
-C    |-INITIALISE_FIXED :: Set fixed model arrays such as topography, 
+C    |-INITIALISE_FIXED :: Set fixed model arrays such as topography,
 C    | |                :: grid, solver matrices etc..
 C    | |
 C    | |-INI_PARMS :: Routine to set kernel model parameters.
-C    | |           :: By default kernel parameters are read from file 
+C    | |           :: By default kernel parameters are read from file
 C    | |           :: "data" in directory in which code executes.
 C    | |
 C    | |-MON_INIT :: Initializes monitor package ( see pkg/monitor )
@@ -58,8 +58,8 @@ C    | | |
 C    | | |-INI_CARTESIAN_GRID       :: Cartesian horiz. grid initialization
 C    | | |                          :: (calculate grid from kernel parameters).
 C    | | |
-C    | | |-INI_SPHERICAL_POLAR_GRID :: Spherical polar horiz. grid 
-C    | | |                          :: initialization (calculate grid from 
+C    | | |-INI_SPHERICAL_POLAR_GRID :: Spherical polar horiz. grid
+C    | | |                          :: initialization (calculate grid from
 C    | | |                          :: kernel parameters).
 C    | | |
 C    | | |-INI_CURVILINEAR_GRID     :: General orthogonal, structured horiz.
@@ -88,7 +88,7 @@ C    | | |-OBCS_READPARMS      :: Open bndy package. see pkg/obcs
 C    | | |-AIM_READPARMS       :: Intermediate Atmos. pacakage. see pkg/aim
 C    | | |-COST_READPARMS      :: Cost function package. see pkg/cost
 C    | | |-CTRL_INIT           :: Control vector support package. see pkg/ctrl
-C    | | |-OPTIM_READPARMS     :: Optimisation support package. see pkg/ctrl 
+C    | | |-OPTIM_READPARMS     :: Optimisation support package. see pkg/ctrl
 C    | | |-GRDCHK_READPARMS    :: Gradient check package. see pkg/grdchk
 C    | | |-ECCO_READPARMS      :: ECCO Support Package. see pkg/ecco
 C    | | |-PTRACERS_READPARMS  :: multiple tracer package, see pkg/ptracers
@@ -112,7 +112,7 @@ C    | |
 C    | |-INI_CG3D              :: 3d con. grad solver initialization.
 C    | |
 C    | |-CONFIG_SUMMARY        :: Provide synopsis of kernel setup.
-C    |                         :: Includes annotated table of kernel 
+C    |                         :: Includes annotated table of kernel
 C    |                         :: parameter settings.
 C    |
 C    |-CTRL_UNPACK :: Control vector support package. see pkg/ctrl
@@ -126,7 +126,7 @@ C    |-GRDCHK_MAIN :: Gradient check package. see pkg/grdchk
 C    |
 C    |-THE_MAIN_LOOP :: Main timestepping loop routine.
 C    | |
-C    | |-INITIALISE_VARIA :: Set the initial conditions for time evolving 
+C    | |-INITIALISE_VARIA :: Set the initial conditions for time evolving
 C    | | |                :: variables
 C    | | |
 C    | | |-INI_LINEAR_PHISURF :: Set ref. surface Bo_surf
@@ -150,7 +150,7 @@ C    | | | |-READ_CHECKPOINT :: Read the checkpoint
 C    | | |
 C    | | |-THE_CORRECTION_STEP :: Step forward to next time step.
 C    | | | |                   :: Here applied to move restart conditions
-C    | | | |                   :: (saved in mid timestep) to correct level in 
+C    | | | |                   :: (saved in mid timestep) to correct level in
 C    | | | |                   :: time (only used for pre-c35).
 C    | | | |
 C    | | | |-CALC_GRAD_PHI_SURF :: Return DDx and DDy of surface pressure
@@ -173,7 +173,7 @@ C    | | | |-FIND_RHO  :: Find adjacent densities.
 C    | | | |-CONVECT   :: Mix static instability.
 C    | | | |-TIMEAVE_CUMULATE :: Update convection statistics.
 C    | | |
-C    | | |-PACKAGES_INIT_VARIABLES :: Does initialization of time evolving 
+C    | | |-PACKAGES_INIT_VARIABLES :: Does initialization of time evolving
 C    | | | |                       :: package data.
 C    | | | |
 C    | | | |-GMREDI_INIT          :: GM package. ( see pkg/gmredi )
@@ -205,14 +205,14 @@ C    | |
 C    | |-WRITE_STATE      :: Controlling routine for IO to dump model state.
 C    | | |-WRITE_REC_XYZ_RL :: Single file I/O
 C    | | |-WRITE_FLD_XYZ_RL :: Multi-file I/O
-C    | | 
+C    | |
 C    | |-MONITOR          :: Monitor state ( see pkg/monitor )
 C    | |-CTRL_MAP_FORCING :: Control vector support package. ( see pkg/ctrl )
-C====|>| 
+C====|>|
 C====|>| ****************************
 C====|>| BEGIN MAIN TIMESTEPPING LOOP
 C====|>| ****************************
-C====|>| 
+C====|>|
 C/\  | |-FORWARD_STEP     :: Step forward a time-step ( AT LAST !!! )
 C/\  | | |
 C/\  | | |-DUMMY_IN_STEPPING :: autodiff package ( pkg/autoduff ).
@@ -220,7 +220,7 @@ C/\  | | |-CALC_EXACT_ETA :: Change SSH to flow divergence.
 C/\  | | |-CALC_SURF_DR   :: Calculate the new surface level thickness.
 C/\  | | |-EXF_GETFORCING :: External forcing package. ( pkg/exf )
 C/\  | | |-EXTERNAL_FIELDS_LOAD :: Control loading time dep. external data.
-C/\  | | | |                    :: Simple interpolation between end-points 
+C/\  | | | |                    :: Simple interpolation between end-points
 C/\  | | | |                    :: for forcing datasets.
 C/\  | | | |
 C/\  | | | |-EXCH :: Sync forcing. in overlap regions.
@@ -237,12 +237,12 @@ C/\  | | | |-GRAD_SIGMA      :: Calculate isoneutral gradients
 C/\  | | | |-CALC_IVDC       :: Set Implicit Vertical Diffusivity for Convection
 C/\  | | | |
 C/\  | | | |-OBCS_CALC            :: Open bndy. package ( see pkg/obcs ).
-C/\  | | | |-EXTERNAL_FORCING_SURF:: Accumulates appropriately dimensioned 
+C/\  | | | |-EXTERNAL_FORCING_SURF:: Accumulates appropriately dimensioned
 C/\  | | | | |                    :: forcing terms.
 C/\  | | | | |-PTRACERS_FORCING_SURF :: Tracer package ( see pkg/ptracers ).
 C/\  | | | |
 C/\  | | | |-GMREDI_CALC_TENSOR   :: GM package ( see pkg/gmredi ).
-C/\  | | | |-GMREDI_CALC_TENSOR_DUMMY :: GM package ( see pkg/gmredi ). 
+C/\  | | | |-GMREDI_CALC_TENSOR_DUMMY :: GM package ( see pkg/gmredi ).
 C/\  | | | |-KPP_CALC             :: KPP package ( see pkg/kpp ).
 C/\  | | | |-KPP_CALC_DUMMY       :: KPP package ( see pkg/kpp ).
 C/\  | | | |-AIM_DO_ATMOS_PHYSICS :: Intermed. atmos package ( see pkg/aim ).
@@ -256,7 +256,7 @@ C/\  | | | | |-KPP_CALC_DIFF      :: KPP package ( see pkg/kpp ).
 C/\  | | | |
 C/\  | | | |-CALC_GT              :: Calculate the temperature tendency terms
 C/\  | | | | |
-C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
+C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package
 C/\  | | | | | |                  :: ( see pkg/gad )
 C/\  | | | | | |-KPP_TRANSPORT_T  :: KPP non-local transport ( see pkg/kpp ).
 C/\  | | | | |
@@ -268,7 +268,7 @@ C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
 C/\  | | | |
 C/\  | | | |-CALC_GS              :: Calculate the salinity tendency terms
 C/\  | | | | |
-C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
+C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package
 C/\  | | | | | |                  :: ( see pkg/gad )
 C/\  | | | | | |-KPP_TRANSPORT_S  :: KPP non-local transport ( see pkg/kpp ).
 C/\  | | | | |
@@ -282,7 +282,7 @@ C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
 C/\  | | | |
 C/\  | | | |-PTRACERS_INTEGRATE   :: Integrate other tracer(s) (see pkg/ptracers).
 C/\  | | | | |
-C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
+C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package
 C/\  | | | | | |                  :: ( see pkg/gad )
 C/\  | | | | | |-KPP_TRANSPORT_PTR:: KPP non-local transport ( see pkg/kpp ).
 C/\  | | | | |
@@ -296,14 +296,14 @@ C/\  | | | |
 C/\  | | | |-OBCS_APPLY_TS        :: Open bndy. package (see pkg/obcs ).
 C/\  | | | |
 C/\  | | | |-IMPLDIFF             :: Solve vertical implicit diffusion equation.
-C/\  | | | |-OBCS_APPLY_TS        :: Open bndy. package (see pkg/obcs ). 
+C/\  | | | |-OBCS_APPLY_TS        :: Open bndy. package (see pkg/obcs ).
 C/\  | | | |
 C/\  | | | |-AIM_AIM2DYN_EXCHANGES :: Inetermed. atmos (see pkg/aim).
 C/\  | | | |-EXCH                 :: Update overlaps
 C/\  | | |
 C/\  | | |-DYNAMICS       :: Momentum equations driver.
 C/\  | | | |
-C/\  | | | |-CALC_GRAD_PHI_SURF :: Calculate the gradient of the surface 
+C/\  | | | |-CALC_GRAD_PHI_SURF :: Calculate the gradient of the surface
 C/\  | | | |                       Potential anomaly.
 C/\  | | | |-CALC_VISCOSITY     :: Calculate net vertical viscosity
 C/\  | | | | |-KPP_CALC_VISC    :: KPP package ( see pkg/kpp ).
@@ -348,7 +348,7 @@ C/\  | | | |-CONVECTIVE_ADJUSTMENT :: Control static instability mixing.
 C/\  | | | | |-FIND_RHO  :: Find adjacent densities.
 C/\  | | | | |-CONVECT   :: Mix static instability.
 C/\  | | | | |-TIMEAVE_CUMULATE :: Update convection statistics.
-C/\  | | | | 
+C/\  | | | |
 C/\  | | | |-CALC_EXACT_ETA        :: Change SSH to flow divergence.
 C/\  | | |
 C/\  | | |-DO_FIELDS_BLOCKING_EXCHANGES :: Sync up overlap regions.
@@ -434,7 +434,7 @@ C     !CALLING SEQUENCE:
 C     THE_MODEL_MAIN()
 C       |
 C       |
-C       |--INITIALISE_FIXED 
+C       |--INITIALISE_FIXED
 C       |   o Set model configuration (fixed arrays)
 C       |     Topography, hydrography, timestep, grid, etc..
 C       |
@@ -478,10 +478,10 @@ C     myThid - Thread number for this instance of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     Note: Under the multi-threaded model myCurrentIter and 
-C           myCurrentTime are local variables passed around as routine 
-C           arguments. Although this is fiddly it saves the need to 
-C           impose additional synchronisation points when they are 
+C     Note: Under the multi-threaded model myCurrentIter and
+C           myCurrentTime are local variables passed around as routine
+C           arguments. Although this is fiddly it saves the need to
+C           impose additional synchronisation points when they are
 C           updated.
 C     myCurrentTime - Time counter for this thread
 C     myCurrentIter - Iteration counter for this thread
@@ -494,8 +494,7 @@ c--   set default:
       lastdiva = .TRUE.
 
 #ifdef ALLOW_DEBUG
-C-    cannot test for debugMode which has not yet been set
-      CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
 #endif
 
 #if defined(USE_PAPI) || defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
@@ -505,18 +504,12 @@ C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                    [THE_MODEL_MAIN]',myThid)
 
 #ifdef ALLOW_DEBUG
-C-    cannot test for debugMode which has not yet been set
-      CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
+      IF (debugMode) CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
 #endif
-
 C--   Set model configuration (fixed arrays)
       CALL TIMER_START('INITIALISE_FIXED       [THE_MODEL_MAIN]',myThid)
       CALL INITIALISE_FIXED( myThid )
       CALL TIMER_STOP ('INITIALISE_FIXED       [THE_MODEL_MAIN]',myThid)
-
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_LEAVE('INITIALISE_FIXED',myThid)
-#endif
 
       myCurrentTime = startTime
       myCurrentIter = nIter0
@@ -640,13 +633,6 @@ C--   Call time stepping loop of full model
       CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
 
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
-
-c#ifdef ALLOW_DIAGNOSTICS
-c     IF (useDiagnostics) THEN
-C       Close all diagnostics output files <= now called from DIAGNOSTICS_WRITE
-c       CALL DIAGSTATS_CLOSE_IO( myThid )
-c     ENDIF
-c#endif
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
