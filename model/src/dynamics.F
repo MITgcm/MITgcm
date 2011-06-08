@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.157 2011/05/24 20:25:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.158 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -682,7 +682,7 @@ Cml)
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevD ) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (DYNAMICS)',myThid)
@@ -706,7 +706,7 @@ Cml)
 C- jmc: For safety checking only: This Exchange here should not change
 C       the solution. If solution changes, it means something is wrong,
 C       but it does not mean that it is less wrong with this exchange.
-      IF ( debugLevel .GT. debLevB ) THEN
+      IF ( debugLevel .GE. debLevE ) THEN
        CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
       ENDIF
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.42 2011/05/20 22:25:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.43 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -136,7 +136,7 @@ C-    Initialise Alternating pickup-suffix
       checkPtSuff(2)    = 'ckptB'
 
 C-    Flags specific to RW and MDSIO (and PLOT_FIELDS)
-      printDomain = debugLevel.GE.debLevA
+      printDomain = debugLevel.GE.debLevB
 
 C-    now we make local directories with myProcessStr appended
       IF ( mdsioLocalDir .NE. ' ' ) THEN
@@ -210,7 +210,9 @@ C       belonging to the core dynamical model
 #endif
 
 #ifdef ALLOW_PROFILES
+c     IF ( useProfiles ) THEN
         CALL PROFILES_INI_IO( myThid )
+c     ENDIF
 #endif
 
 #ifdef ALLOW_MONITOR

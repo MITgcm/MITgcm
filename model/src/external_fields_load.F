@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.38 2011/04/18 18:05:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.39 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,7 @@ CBOP
 C     !ROUTINE: EXTERNAL_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE EXTERNAL_FIELDS_LOAD
@@ -76,7 +77,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
      &   ' EXTERNAL_FIELDS_LOAD,', myIter,
@@ -104,12 +105,14 @@ C     Unfortunatly, produces many recomputations <== not used until it is fixed
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
-        _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' EXTERNAL_FIELDS_LOAD, it=', myIter,
-     &   ' : Reading new data, i0,i1=', intime0, intime1,
+        IF ( debugLevel.GE.debLevZero ) THEN
+         _BEGIN_MASTER(myThid)
+         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
+     &    ' EXTERNAL_FIELDS_LOAD, it=', myIter,
+     &    ' : Reading new data, i0,i1=', intime0, intime1,
      &    ' (prev=', intimeP, loadedRec(bi,bj), ' )'
-        _END_MASTER(myThid)
+         _END_MASTER(myThid)
+        ENDIF
 
         IF ( zonalWindFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( zonalWindFile, taux0,
@@ -318,8 +321,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
 
 C-- Print for checking:
 #ifdef ALLOW_DEBUG
-c     IF ( debugLevel.GE.debLevA  .AND. myTime.LT.62208000.) THEN
-      IF ( debugLevel.GT.debLevA ) THEN
+      IF ( debugLevel.GE.debLevC ) THEN
         _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(A,1P4E12.4)')
      &   ' EXTERNAL_FIELDS_LOAD: (fu0,1),fu,fv=',

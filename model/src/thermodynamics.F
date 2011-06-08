@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.136 2011/05/23 00:33:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.137 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -914,7 +914,7 @@ C--   end bi,bj loops.
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel.GE.debLevB ) THEN
+      IF ( debugLevel.GE.debLevD ) THEN
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (THERMODYNAMICS)',myThid)

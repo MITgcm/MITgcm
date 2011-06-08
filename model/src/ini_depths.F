@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.48 2010/01/21 00:15:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.49 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,7 +138,7 @@ C- end setup R_low in the interior
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS(R_low, myThid )
 
-      IF ( debugLevel.GE.debLevB ) THEN
+      IF ( debugLevel.GE.debLevC ) THEN
 c      PRINT *, ' Calling plot field', myThid
        CALL PLOT_FIELD_XYRS( R_low, 'Bottom depths (ini_depths)',
      &                       -1, myThid )
@@ -270,7 +270,7 @@ c    &       R_low(i,j,bi,bj) = rF(1)
        ENDDO
       ENDIF
 
-      IF ( debugLevel.GE.debLevB ) THEN
+      IF ( debugLevel.GE.debLevC ) THEN
        _BARRIER
        CALL PLOT_FIELD_XYRS( Ro_surf,
      &           'Surface reference r-position (ini_depths)',

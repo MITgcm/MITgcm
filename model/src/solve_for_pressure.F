@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.76 2011/05/18 23:41:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.77 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,7 +184,7 @@ C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }  / deltaT
 C--   Add source term arising from w=d/dt (p_s + p_nh)
          DO j=1,sNy
           DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
             cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
@@ -206,7 +206,7 @@ C--   Add source term arising from w=d/dt (p_s)
 #endif /* ALLOW_NONHYDROSTATIC */
          DO j=1,sNy
           DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTfreesurf
@@ -216,7 +216,7 @@ C--   Add source term arising from w=d/dt (p_s)
         ELSE
          DO j=1,sNy
           DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTfreesurf
@@ -249,7 +249,7 @@ C-    end bi,bj loops
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevD ) THEN
        CALL DEBUG_STATS_RL(1,cg2d_b,'cg2d_b (SOLVE_FOR_PRESSURE)',
      &                        myThid)
       ENDIF
@@ -304,7 +304,7 @@ C--   Call the default CG solver
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevD ) THEN
        CALL DEBUG_STATS_RL(1,cg2d_x,'cg2d_x (SOLVE_FOR_PRESSURE)',
      &                        myThid)
       ENDIF
@@ -357,7 +357,7 @@ C                             4) add vertical velocity contribution.
      I                myTime, myIter, myThid )
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB ) THEN
+       IF ( debugLevel .GE. debLevD ) THEN
         CALL DEBUG_STATS_RL(Nr,cg3d_b,'cg3d_b (SOLVE_FOR_PRESSURE)',
      &                         myThid)
        ENDIF

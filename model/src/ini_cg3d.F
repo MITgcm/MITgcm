@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.27 2011/05/18 01:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.28 2011/06/08 01:21:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -215,7 +215,7 @@ C-    Add free-surface source term
      &                *implicitNHPress*implicDiv2DFlow
              tmpSurf = tmpSurf / (1. _d 0 + tmpSurf )
            ENDIF
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
      &         - freeSurfFac*recip_Bo(i,j,bi,bj)
@@ -319,7 +319,7 @@ C--   Update overlap regions
       _EXCH_XYZ_RS(zML, myThid)
       _EXCH_XYZ_RS(zMU, myThid)
 
-      IF ( debugLevel .GE. debLevB ) THEN
+      IF ( debugLevel .GE. debLevC ) THEN
         CALL WRITE_FLD_XYZ_RS( 'zMC',' ',zMC, 0, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zML',' ',zML, 0, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zMU',' ',zMU, 0, myThid )
