@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.53 2009/07/11 22:00:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.54 2011/06/08 01:46:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -103,6 +103,7 @@ c     INTEGER ks
       _RL    localBuf(1:sNx,1:sNy,nSx,nSy)
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL printResidual
 CEOP
 
 
@@ -182,7 +183,7 @@ C--   Initial residual calculation
 #endif /* TARGET_NEC_SX */
         DO J=1,sNy
          DO I=1,sNx
-c         ks = ksurfC(I,J,bi,bj)
+c         ks = kSurfC(I,J,bi,bj)
           cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
      &    (aW2d(I  ,J  ,bi,bj)*cg2d_x(I-1,J  ,bi,bj)
      &    +aW2d(I+1,J  ,bi,bj)*cg2d_x(I+1,J  ,bi,bj)
@@ -221,18 +222,14 @@ c    &    )
        actualIts      = 0
        actualResidual = err
 
+      printResidual = .FALSE.
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
+        printResidual = printResidualFreq.GE.1
         WRITE(standardmessageunit,'(A,1P2E22.14)')
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
-C     _BARRIER
-c     _BEGIN_MASTER( myThid )
-c      WRITE(standardmessageunit,'(A,I6,1PE30.14)')
-c    & ' CG2D iters, err = ',
-c    & actualIts, actualResidual
-c     _END_MASTER( myThid )
       firstResidual=actualResidual
 
       IF ( err .LT. cg2dTolerance ) GOTO 11
@@ -240,10 +237,6 @@ c     _END_MASTER( myThid )
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it2d=1, numIters
 
-CcnhDebugStarts
-C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' residual = ',
-C    &  actualResidual
-CcnhDebugEnds
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -300,8 +293,7 @@ CcnhDebugEnds
         ENDDO
        ENDDO
 
-C--    Do exchanges that require messages i.e. between
-C--    processes.
+C--    Do exchanges that require messages i.e. between processes.
        CALL EXCH_S3D_RL( cg2d_s, 1, myThid )
 
 C==    Evaluate laplace operator on conjugate gradient vector
@@ -314,7 +306,7 @@ C==    q = A.s
 #endif /* TARGET_NEC_SX */
          DO J=1,sNy
           DO I=1,sNx
-c          ks = ksurfC(I,J,bi,bj)
+c          ks = kSurfC(I,J,bi,bj)
            cg2d_q(I,J,bi,bj) =
      &     aW2d(I  ,J  ,bi,bj)*cg2d_s(I-1,J  ,bi,bj)
      &    +aW2d(I+1,J  ,bi,bj)*cg2d_s(I+1,J  ,bi,bj)
@@ -379,15 +371,13 @@ C      Now compute "interior" points.
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
-       IF ( debugLevel.GT.debLevB ) THEN
-c       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-c    &     ) THEN
-        _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+       IF ( printResidual ) THEN
+        IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
+         WRITE(msgBuf,'(A,I6,A,1PE21.14)')
      &    ' cg2d: iter=', actualIts, ' ; resid.= ', actualResidual
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER( myThid )
-c       ENDIF
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
        ENDIF
        IF ( err .LT. cg2dTolerance ) GOTO 11
 
@@ -412,14 +402,10 @@ C--   Un-normalise the answer
 C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
 C     _EXCH_XY_RL(cg2d_x, myThid )
-c     _BEGIN_MASTER( myThid )
-c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
-c    & actualIts, actualResidual
-c     _END_MASTER( myThid )
 
 C--   Return parameters to caller
-      lastResidual=actualResidual
-      numIters=actualIts
+      lastResidual = actualResidual
+      numIters = actualIts
 
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRL( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )

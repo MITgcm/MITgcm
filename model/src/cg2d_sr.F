@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.3 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.4 2011/06/08 01:46:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -107,6 +107,7 @@ C     I, J, it2d :: Loop counters ( it2d counts CG iterations )
       _RL    rhsMax
       _RL    rhsNorm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL printResidual
 CEOP
 
 
@@ -188,8 +189,10 @@ C--   Initial residual calculation
       actualIts      = 0
       actualResidual = err
 
+      printResidual = .FALSE.
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
+        printResidual = printResidualFreq.GE.1
         WRITE(standardmessageunit,'(A,1P2E22.14)')
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
@@ -355,15 +358,13 @@ C     global_vec_sum_r8 does not call BAR2 on input
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
-       IF ( debugLevel.GT.debLevB ) THEN
-c        IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-c    &      ) THEN
-        _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+       IF ( printResidual ) THEN
+        IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
+         WRITE(msgBuf,'(A,I6,A,1PE21.14)')
      &    ' cg2d: iter=', actualIts, ' ; resid.= ', actualResidual
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER( myThid )
-c       ENDIF
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
        ENDIF
        IF ( err .LT. cg2dTolerance ) GOTO 11
 

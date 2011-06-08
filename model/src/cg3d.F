@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.23 2010/01/17 21:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.24 2011/06/08 01:46:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -107,6 +107,7 @@ C     msgBuf     :: Informational/error message buffer
       _RL     rhsMax
       _RL     rhsNorm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL printResidual
       _RL     surfFac
 #ifdef NONLIN_FRSURF
       INTEGER ks
@@ -189,7 +190,7 @@ C--   Initial residual calculation (with free-Surface term)
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-             ks = ksurfC(i,j,bi,bj)
+             ks = kSurfC(i,j,bi,bj)
              surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
      &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
      &              *rA(i,j,bi,bj)*deepFac2F(ks)
@@ -240,13 +241,15 @@ C--   Initial residual calculation (with free-Surface term)
 c      CALL EXCH_S3D_RL( cg3d_s, Nr, myThid )
        CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
-      IF ( debugLevel.GT.debLevB .AND. diagFreq.GT.0. ) THEN
+      IF ( debugLevel.GE.debLevC .AND. diagFreq.GT.0. ) THEN
         CALL WRITE_FLD_S3D_RL(
      I        'cg3d_r_I', 'I10', 1, Nr, cg3d_r, myIter, myThid )
       ENDIF
 
+      printResidual = .FALSE.
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
+        printResidual = printResidualFreq.GE.1
         WRITE(standardmessageunit,'(A,1P2E22.14)')
      &     ' cg3d: Sum(rhs),rhsMax = ',sumRHS,rhsMax
         _END_MASTER( myThid )
@@ -259,11 +262,6 @@ c      CALL EXCH_S3D_RL( cg3d_s, Nr, myThid )
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it3d=1, numIters
 
-CcnhDebugStarts
-c      IF ( mod(it3d-1,10).EQ.0)
-c    &   WRITE(*,*) ' CG3D: Iteration ',it3d-1,
-c    &      ' residual = ',actualResidual
-CcnhDebugEnds
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
@@ -379,7 +377,7 @@ C==    q = A.s
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-             ks = ksurfC(i,j,bi,bj)
+             ks = kSurfC(i,j,bi,bj)
              surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
      &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
      &              *rA(i,j,bi,bj)*deepFac2F(ks)
@@ -513,16 +511,13 @@ C      Now compute "interior" points.
        err = SQRT(err)
        actualIts      = it3d
        actualResidual = err
-       IF ( debugLevel.GT.debLevB ) THEN
-c       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-c    &     ) THEN
-        _BEGIN_MASTER( myThid )
+       IF ( printResidual ) THEN
+        IF ( MOD( it3d-1, printResidualFreq ).EQ.0 ) THEN
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
      &    ' cg3d: iter=', actualIts, ' ; resid.= ', actualResidual
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-        _END_MASTER( myThid )
-c       ENDIF
+        ENDIF
        ENDIF
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
        CALL EXCH_S3D_RL( cg3d_r, Nr, myThid )
@@ -530,7 +525,7 @@ c       ENDIF
    10 CONTINUE
    11 CONTINUE
 
-      IF ( debugLevel.GT.debLevB .AND. diagFreq.GT.0. ) THEN
+      IF ( debugLevel.GE.debLevC .AND. diagFreq.GT.0. ) THEN
         CALL WRITE_FLD_S3D_RL(
      I        'cg3d_r_F', 'I10', 1, Nr, cg3d_r, myIter, myThid )
       ENDIF
