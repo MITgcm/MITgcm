@@ -27,7 +27,6 @@
  tempAdvScheme=30,
  saltAdvScheme=30,
  writeBinaryPrec=32,
- debugLevel=0,
  &
 # Elliptic solver parameters
  &PARM02
