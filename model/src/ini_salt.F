@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.23 2010/01/18 19:37:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.24 2011/06/08 01:27:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,7 @@ CBOP
 C     !ROUTINE: INI_SALT
 C     !INTERFACE:
       SUBROUTINE INI_SALT( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_SALT
@@ -127,7 +128,7 @@ C--   Apply mask and test consistency
        ENDIF
       ENDIF
 
-      IF (debugMode) THEN
+      IF ( debugLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity',
      &                         Nr, 1, myThid )
       ENDIF
