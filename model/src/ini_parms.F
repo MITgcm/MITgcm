@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.239 2011/05/02 13:04:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.240 2011/06/08 01:41:45 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -111,14 +111,15 @@ C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
 C     tempDiffusion :: diffusion of temperature on/off (flag not used)
 C     zonal_filt_lat :: Moved to package "zonal_filt"
-C     gravitySign :: direction of gravity relative to R direction
-C                 :: (removed from namelist and set according to z/p coordinate)
+C     gravitySign  :: direction of gravity relative to R direction
+C                  :: (removed from namelist and set according to z/p coordinate)
 C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
-C                 use old method by setting useAreaViscLength=.true.
+C                     use old method by setting useAreaViscLength=.true.
 C     usePickupBeforeC35 :: to restart from old-pickup files (generated with code
 C                   from before checkpoint-35, Feb 08, 2001): disabled (Jan 2007)
+C     debugMode    :: to print debug msg. now read from parameter file eedata
 C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
@@ -141,6 +142,7 @@ C                     (replaced by SHELFICEtopoFile in SHELFICE.h)
       _RL viscAstrain, viscAtension
       LOGICAL useAnisotropicViscAgridMax
       LOGICAL usePickupBeforeC35
+      LOGICAL saveDebugMode
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       LOGICAL calendarDumps
@@ -215,7 +217,7 @@ C--   Elliptic solver parameters
      & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual,
      & cg2dTargetResWunit, cg2dpcOffDFac, cg2dPreCondFreq,
      & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual,
-     & useSRCGSolver
+     & useSRCGSolver, printResidualFreq
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
@@ -296,6 +298,7 @@ C--   Initialise retired parameters to unlikely value
       viscAtension    = UNSET_RL
       useAnisotropicViscAgridMax=.TRUE.
       usePickupBeforeC35    = .FALSE.
+      saveDebugMode   = debugMode
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
@@ -604,13 +607,9 @@ C--   for backward compatibility :
       ELSE
        recip_gravity = 1. _d 0 / gravity
       ENDIF
-C     This flags are now passed to RW and MDSIO packages in ini_model_io.F
-C     Set globalFiles flag for READ_WRITE_FLD package
-c     CALL SET_WRITE_GLOBAL_FLD( globalFiles )
-C     Set globalFiles flag for READ_WRITE_REC package
-c     CALL SET_WRITE_GLOBAL_REC( globalFiles )
-C     Set globalFiles flag for READ_WRITE_REC package
-c     CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
+C-    set default printResidualFreq according to debugLevel
+      printResidualFreq = 0
+      IF ( debugLevel.GE.debLevE ) printResidualFreq = 1
 
 C     Check for retired parameters still being used
       nRetired = 0
@@ -721,6 +720,13 @@ C     Check for retired parameters still being used
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "usePickupBeforeC35" ',
      &  'is no longer supported & not longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( debugMode.NEQV.saveDebugMode ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "debugMode" has been moved to "eedata"',
+     &  ' and is no longer allowed in file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
@@ -1314,12 +1320,6 @@ C     to temp_EvPrRn and salt_EvPrRn in they are not set in data file
       IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
       IF (salt_addMass .EQ. UNSET_RL) salt_addMass = salt_EvPrRn
 
-C-    debugMode controls printing of debug messages (sequence of S/R calls).
-C-    debugLevel controls printing of algorithm intermediate results and stats.
-C--   Increase debugLevel to debLevB when debugMode is set.
-      IF ( debugMode ) debugLevel = MAX( debugLevel, debLevB )
-c     IF ( debugLevel .GE. debLevB ) debugMode = .TRUE.
-
 C--   flag for approximate adjoint
       IF ( inAdExact ) THEN
        inAdTrue  = .FALSE.
@@ -1340,7 +1340,7 @@ C--   Check whether any retired parameters were found.
 C--   Stop if they were
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'Error reading parameter file "data"'
+     &  'S/R INI_PARMS: Error reading parameter file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'some out of date parameters were found in the namelist'

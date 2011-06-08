@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.154 2011/05/02 13:04:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.155 2011/06/08 01:41:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -185,7 +185,6 @@ Cml      sBeta               = 7.4 _d -4
       dRhoSmall           = 1. _d -6
       hMixSmooth          = 0. _d 0
       usePickupBeforeC54    = .FALSE.
-      debugMode             = .FALSE.
       tempAdvScheme       = 2
       saltAdvScheme       = 2
       multiDimAdvection   = .TRUE.
@@ -200,7 +199,14 @@ Cml      sBeta               = 7.4 _d -4
       useAbsVorticity     = .FALSE.
       upwindShear         = .FALSE.
       selectKEscheme      = 0
-      debugLevel          = debLevA
+      IF ( debugMode ) THEN
+        debugLevel        = debLevD
+      ELSE
+        debugLevel        = debLevB
+#ifdef ALLOW_AUTODIFF
+        debugLevel        = debLevA
+#endif
+      ENDIF
       inAdMode            = .FALSE.
       inAdExact           = .TRUE.
 
