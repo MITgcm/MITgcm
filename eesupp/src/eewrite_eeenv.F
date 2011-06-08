@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.11 2009/05/07 18:30:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.12 2011/06/08 12:17:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -8,7 +8,6 @@ C     !ROUTINE: EEWRITE_EEENV
 
 C     !INTERFACE:
       SUBROUTINE EEWRITE_EEENV
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -23,6 +22,7 @@ C     | model specific nuerical parameters.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -163,7 +163,11 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A,L5,A)') 
+      WRITE(msgBuf,'(A,L5,A)') 'debugMode =', debugMode,
+     & ' ; /* print debug msg. (sequence of S/R calls)  */'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A,L5,A)')
      &  'printMapIncludesZeros=', printMapIncludesZeros,
      &  ' ; /* print zeros in Std.Output maps */'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
