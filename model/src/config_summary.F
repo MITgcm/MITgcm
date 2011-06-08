@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.129 2011/05/12 22:32:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.130 2011/06/08 13:46:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -447,14 +447,29 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      & ' globalFiles =',' /* write "global" (=not per tile) files */')
       CALL WRITE_0D_L( useSingleCpuIO,  INDEX_NONE,
      & ' useSingleCpuIO =', ' /* only master MPI process does I/O */')
-      CALL WRITE_0D_L( debugMode,  INDEX_NONE,
-     & ' debugMode  =', '  /* Debug Mode on/off flag */')
-      CALL WRITE_0D_I( debLevA, INDEX_NONE,
-     & '   debLevA  =', '  /* 1rst level of debugging */')
-      CALL WRITE_0D_I( debLevB, INDEX_NONE,
-     & '   debLevB  =', '  /* 2nd  level of debugging */')
+      WRITE(msgBuf,'(2A)') '/* debLev[*]  :',
+     &             ' level of debug & auxiliary message printing */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I3,A)') 'debLevZero =', debLevZero,
+     &             ' ; /* level of disabled aux. msg printing */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I3,A)') '   debLevA =', debLevA,
+     &             ' ; /* level of minimum  aux. msg printing */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I3,A)') '   debLevB =', debLevB,
+     &   ' ; /* level of low aux. print (report read-file opening)*/'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I3,A)') '   debLevC =', debLevC,
+     &   ' ; /* level of moderate debug prt (most pkgs debug msg) */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I3,A)') '   debLevD =', debLevD,
+     &   ' ; /* level of enhanced debug prt (add DEBUG_STATS prt) */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I3,A)') '   debLevE =', debLevE,
+     &             ' ; /* level of extensive debug printing */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( debugLevel, INDEX_NONE,
-     & ' debugLevel =', '  /* select debugging level */')
+     &   'debugLevel =', '  /* select debug printing level */')
 
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -477,6 +492,8 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &'   /* Freq. for updating cg2d preconditioner */')
       CALL WRITE_0D_L( useSRCGSolver, INDEX_NONE,
      & 'useSRCGSolver =', '  /* use single reduction CG solver(s) */')
+      CALL WRITE_0D_I( printResidualFreq, INDEX_NONE,
+     & 'printResidualFreq =', ' /* Freq. for printing CG residual */')
 
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
