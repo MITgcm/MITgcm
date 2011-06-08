@@ -6,15 +6,12 @@
  &PARM01
  tRef=26*1.,
  sRef=26*35.,
- viscA4=0.0E4,
  viscAh=0.E-2,
  viscAz=1.E-4,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
- diffK4T=0.E4,
  diffKhT=0.E-2,
  diffKzT=1.E-5,
- diffK4S=0.E4,
  diffKhS=0.E-2,
  diffKzS=1.E-5,
  f0=1.4e-4,
@@ -26,11 +23,11 @@
  implicitViscosity=.TRUE.,
  eosType='MDJWF',
  hFacMin=0.05,
- readBinaryPrec=64,
- debugLevel=1,
  tempAdvection=.FALSE.,
  tempAdvScheme=33,
  momAdvection=.FALSE.,
+ readBinaryPrec=64,
+#debugLevel=1,
  &
 
 # Elliptic solver parameters
@@ -41,7 +38,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=20,
 #nTimeSteps=720,
 #nTimeSteps=51840,
@@ -62,11 +59,10 @@
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
- dXspacing=5000,
+ dXspacing=5000.,
  dYspacing=5000.,
- delZ=10, 10, 10, 10, 10, 11, 12, 14, 16, 18, 21, 24, 27,
-      31, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+ delZ=10., 10., 10., 10., 10., 11., 12., 14., 16., 18., 21., 24., 27.,
+      31., 35., 40., 40., 40., 40., 40., 40., 40., 40., 40., 40., 40.,
  &
 
 # Input datasets

@@ -26,11 +26,11 @@
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
  hFacMin=0.05,
- readBinaryPrec=64,
- debugLevel=1,
  tempAdvection=.FALSE.,
  tempAdvScheme=33,
  momAdvection=.FALSE.,
+ readBinaryPrec=64,
+#debugLevel=1,
  &
 
 # Elliptic solver parameters
@@ -41,7 +41,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=20,
 #nTimeSteps=720,
 #nTimeSteps=51840,
