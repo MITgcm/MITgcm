@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.5 2011/04/15 20:37:48 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.6 2011/06/09 18:37:32 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -57,7 +57,7 @@ C     LOCAL VARIABLES:
             pass_PrcAtm(i,j)= sum_prcIce(i,j)/nper
             icFrwAtm(i,j,1,1)= sum_evapIce(i,j)/nper
 
-            pass_sIceLoad(i,j)=sIceLoad(i,j,1,1)  
+C            pass_sIceLoad(i,j)=sIceLoad(i,j,1,1) !do this in thsice_step_fwd
 
 C  Load the following directly into the seaice common block
             snowPrc(i,j,1,1)= sum_snowPrc(i,j)/nper
