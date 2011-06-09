@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.31 2011/06/07 22:26:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.32 2011/06/09 18:50:16 jscott Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -375,6 +375,9 @@ C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
         sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
      &                         + iceHeight(i,j,bi,bj)*rhoi
      &                        )*iceMask(i,j,bi,bj)
+#ifdef ALLOW_ATM2D
+        pass_sIceLoad(i,j)=sIceLoad(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 
