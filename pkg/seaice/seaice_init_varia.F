@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.60 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.61 2011/06/09 19:37:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -143,6 +143,9 @@ c "ice concentration" tracer that should remain .EQ.1.
           ENDDO
           DO jTh = 1, 5
            SItrHEFF (i,j,bi,bj,jTh) = 0. _d 0
+          ENDDO
+          DO jTh = 1, 3
+           SItrAREA (i,j,bi,bj,jTh) = 0. _d 0
           ENDDO
 #endif
 #ifdef SEAICE_AGE

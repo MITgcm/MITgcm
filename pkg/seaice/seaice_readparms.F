@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.96 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.97 2011/06/09 19:37:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -123,7 +123,7 @@ C--   SEAICE parameters
 
 #if (defined SEAICE_AGE)||(defined ALLOW_SITRACER)
       NAMELIST /SEAICE_PARM03/
-     &          IceAgeTrFile, SItrName
+     &          IceAgeTrFile, SItrName, SItrMate
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -356,6 +356,7 @@ C--   Read settings from model parameter file "data.seaice".
       ENDDO
       DO iTracer = 1, SItrMaxNum
        SItrName(iTracer) = ' '
+       SItrMate(iTracer) = 'HEFF'
       ENDDO
 C--
       READ(UNIT=iUnit,NML=SEAICE_PARM03)

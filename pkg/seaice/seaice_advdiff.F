@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.50 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.51 2011/06/09 19:37:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,8 +66,8 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
 #ifdef ALLOW_SITRACER
-      INTEGER iTr
-      _RL SItrEFF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iTr, SEAICEadvSchSItr, SEAICEdiffKhSItr
+      _RL SItrExt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpscal1, tmpscal2
 #ifdef ALLOW_SITRACER_ADVCAP
       _RL SItrPrev  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -309,35 +309,55 @@ C     now do the "explicit" time step
 
 #ifdef ALLOW_SITRACER
 C--   Sea Ice Tracers
-        IF ( SEAICEadvHEFF ) THEN
-         DO iTr = 1, SItrMaxNum
+        DO iTr = 1, SItrMaxNum
+        IF ( (SEAICEadvHEFF.AND.(SItrMate(iTr).EQ.'HEFF')).OR.
+     &       (SEAICEadvAREA.AND.(SItrMate(iTr).EQ.'AREA')) ) THEN
+C--   scale to effective value
+         IF (SItrMate(iTr).EQ.'HEFF') THEN
+          SEAICEadvSchSItr=SEAICEadvSchHEFF
+          SEAICEdiffKhSItr=SEAICEdiffKhHEFF
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-C--   scale to effective value
-            SItrEFF(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
+            SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
      &          SItracer(i,j,bi,bj,iTr) * HEFFNM1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
+         ELSE
+          SEAICEadvSchSItr=SEAICEadvSchAREA
+          SEAICEdiffKhSItr=SEAICEdiffKhAREA
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
+     &          SItracer(i,j,bi,bj,iTr) * AREANM1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF 
+C--   store a couple things
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
 #ifdef ALLOW_SITRACER_ADVCAP
 C--   store previous value for spurious maxima treament
             SItrPrev(i,j,bi,bj)=SItracer(i,j,bi,bj,iTr)
 #endif
 #ifdef ALLOW_SITRACER_DIAG
-            diagArray(I,J,2+(iTr-1)*5) = SItrEFF(i,j,bi,bj)
+            diagArray(I,J,2+(iTr-1)*5) = SItrExt(i,j,bi,bj)
 #endif
            ENDDO
           ENDDO
 C--   compute advective tendency 
           CALL SEAICE_ADVECTION(
-     I         GAD_SITR+iTr-1, SEAICEadvSchHEFF,
+     I         GAD_SITR+iTr-1, SEAICEadvSchSItr,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I         uTrans, vTrans, SItrEFF(1-OLx,1-OLy,bi,bj),
+     I         uTrans, vTrans, SItrExt(1-OLx,1-OLy,bi,bj),
      I         recip_heff,
      O         gFld, afx, afy,
      I         bi, bj, myTime, myIter, myThid )
           IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C--   add diffusive tendency
           CALL SEAICE_DIFFUSION(
-     I         GAD_SITR+iTr-1, SEAICEdiffKhHEFF, ONE,
-     I         SItrEFF(1-OLx,1-OLy,bi,bj), HEFFM,
+     I         GAD_SITR+iTr-1, SEAICEdiffKhSItr, ONE,
+     I         SItrExt(1-OLx,1-OLy,bi,bj), HEFFM,
      I         xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
@@ -345,19 +365,20 @@ C--   add diffusive tendency
 C--   apply tendency
           DO j=1,sNy
            DO i=1,sNx
-            SItrEFF(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &        SItrEFF(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j) )
+            SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &        SItrExt(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j) )
            ENDDO
           ENDDO
 C--   scale back to actual value, or move effective value to ocean bucket
+         IF (SItrMate(iTr).EQ.'HEFF') THEN
           DO j=1,sNy
            DO i=1,sNx
             if (HEFF(I,J,bi,bj).GE.siEps) then
-            SItracer(i,j,bi,bj,iTr)=SItrEFF(i,j,bi,bj)/HEFF(I,J,bi,bj)
+            SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/HEFF(I,J,bi,bj)
             SItrBucket(i,j,bi,bj,iTr)=0. _d 0
             else
             SItracer(i,j,bi,bj,iTr)=0. _d 0
-            SItrBucket(i,j,bi,bj,iTr)=SItrEFF(i,j,bi,bj)
+            SItrBucket(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)
             endif
 #ifdef ALLOW_SITRACER_ADVCAP
 c hack to try avoid 'spontaneous generation' of maxima, which supposedly would
@@ -388,12 +409,44 @@ c           treat case of potential negative value
 #endif
            ENDDO
           ENDDO
+c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
+         ELSE
+          DO j=1,sNy
+           DO i=1,sNx
+            if (AREA(I,J,bi,bj).GE.areaMin) then
+            SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/AREA(I,J,bi,bj)
+            else
+            SItracer(i,j,bi,bj,iTr)=0. _d 0
+            endif
+            SItrBucket(i,j,bi,bj,iTr)=0. _d 0
+#ifdef ALLOW_SITRACER_ADVCAP
+             tmpscal1=max(SItrPrev(i,j,bi,bj),
+     &       SItrPrev(i+1,j,bi,bj),SItrPrev(i-1,j,bi,bj),
+     &       SItrPrev(i,j+1,bi,bj),SItrPrev(i,j-1,bi,bj))
+             tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
+             SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
+#endif
+c           treat case of potential negative value
+            if (AREA(I,J,bi,bj).GE.areaMin) then
+              tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
+              SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
+            endif
+#ifdef ALLOW_SITRACER_DIAG
+      diagArray(I,J,1+(iTr-1)*5)= 0. _d 0
+      diagArray(I,J,2+(iTr-1)*5)= - diagArray(I,J,2+(iTr-1)*5) 
+     & + AREA(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr)*HEFFM(I,J,bi,bj)
+      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) * 
+     &  SEAICE_deltaTtherm * gFld(i,j)
+#endif
+           ENDDO
+          ENDDO
+         ENDIF
 C--
-         ENDDO
+         ENDIF
+        ENDDO
 #ifdef ALLOW_SITRACER_DIAG
       CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG2  ',0,Nr,2,bi,bj,myThid)
 #endif
-        ENDIF
 #endif /* ALLOW_SITRACER */
 
 #ifdef SEAICE_AGE

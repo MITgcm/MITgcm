@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TRACER.h,v 1.2 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TRACER.h,v 1.3 2011/06/09 19:37:01 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -13,6 +13,7 @@ C
 C     SItracer   - generic ice tracer array
 C     SItrBucket - collected SItracer to be later passed to the ocean
 C     SItrHEFF   - history of HEFF evolution during seaice_growth
+C     SItrAREA   - history of AREA evolution during seaice_growth
 C
 C     IceAgeTr(1) - effective sea ice age
 C             at center of grid, i.e., tracer point
@@ -30,10 +31,11 @@ CEOP
 
 #ifdef ALLOW_SITRACER
       COMMON /SEAICE_TRACER_R/
-     &        SItracer, SItrBucket, SItrHEFF
+     &        SItracer, SItrBucket, SItrHEFF, SItrAREA
       _RL SItracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,SItrMaxNum)
       _RL SItrBucket (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,SItrMaxNum)
       _RL SItrHEFF (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,5)
+      _RL SItrAREA (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,3)
 #endif
 
 #ifdef SEAICE_AGE
@@ -44,9 +46,11 @@ CEOP
 #if (defined SEAICE_AGE)||(defined ALLOW_SITRACER)
 C     IceAgeTrFile    - File containing initial sea ice age
 C     SItrName        - tracer name ('salinity', 'age', 'one', etc.)
+C     SItrMate        - variable to which the tracer is associated ('HEFF','AREA',etc.)
       CHARACTER*(MAX_LEN_FNAM) IceAgeTrFile(SEAICE_num)
       CHARACTER*(MAX_LEN_FNAM) SItrName(SItrMaxNum)
-      COMMON /SEAICE_AGE_C/ IceAgeTrFile, SItrName
+      CHARACTER*(MAX_LEN_FNAM) SItrMate(SItrMaxNum)
+      COMMON /SEAICE_AGE_C/ IceAgeTrFile, SItrName, SItrMate
 #endif
 
 CEH3 ;;; Local Variables: ***

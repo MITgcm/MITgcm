@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.126 2011/06/08 03:41:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.127 2011/06/09 19:37:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -463,6 +463,9 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
+#ifdef ALLOW_SITRACER
+          SItrAREA(I,J,bi,bj,1)=AREA(I,J,bi,bj)
+#endif
 #ifdef SEAICE_AGE
           IF (AREA(I,J,bi,bj).GT.areaMax) THEN
            IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
@@ -488,6 +491,7 @@ C 3) store regularized values of heff, hsnow, area at the onset of thermo.
           AREApreTH(I,J)=AREA(I,J,bi,bj)
 #ifdef ALLOW_SITRACER
           SItrHEFF(I,J,bi,bj,1)=HEFF(I,J,bi,bj)
+          SItrAREA(I,J,bi,bj,2)=AREA(I,J,bi,bj)
 #endif
          ENDDO
         ENDDO
@@ -1220,11 +1224,14 @@ C compute cover fraction tendency
 C apply tendency
           IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
-           AREA(I,J,bi,bj)=max(0. _d 0, min( 1. _d 0, AREA(I,J,bi,bj)
+           AREA(I,J,bi,bj)=max(0. _d 0, min( areaMax, AREA(I,J,bi,bj)
      &     +d_AREAbyATM(I,J) + d_AREAbyOCN(I,J) + d_AREAbyICE(I,J) ))
           ELSE
            AREA(I,J,bi,bj)=0. _d 0
           ENDIF
+#ifdef ALLOW_SITRACER
+          SItrAREA(I,J,bi,bj,3)=AREA(I,J,bi,bj)
+#endif
          ENDDO
         ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.1 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.2 2011/06/09 19:37:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -37,8 +37,10 @@ C     === Local variables ===
 
       INTEGER iTr, jTh, I, J, bi, bj, ks
       _RL SItrFromOcean  (1:sNx,1:sNy)
-      _RL SItrFromSnow   (1:sNx,1:sNy)
+      _RL SItrFromFlood   (1:sNx,1:sNy)
       _RL HEFFprev, HEFFpost, growFact, meltPart, tmpscal1
+      _RL SItrExpand  (1:sNx,1:sNy)
+      _RL AREAprev, AREApost, expandFact
 
 #ifdef ALLOW_SITRACER_DIAG
       _RL DIAGarray     (1:sNx,1:sNy,Nr)
@@ -59,16 +61,12 @@ c =============================================
       DO J=1,sNy
        DO I=1,sNx
         SItrFromOcean(i,j)=0. _d 0
-        SItrFromSnow(i,j)=0. _d 0
+        SItrFromFlood(i,j)=0. _d 0
+        SItrExpand(i,j)=0. _d 0
        ENDDO
       ENDDO
       if (SItrName(iTr).EQ.'age') then
-c age tracer: not passed from ocean or snow
-       DO J=1,sNy
-        DO I=1,sNx
-         SItrFromOcean(i,j)=0. _d 0
-        ENDDO
-       ENDDO
+c age tracer: no age in ocean, or effect from ice cover changes
       elseif (SItrName(iTr).EQ.'salinity') then
 c salinity tracer: 
        DO J=1,sNy
@@ -78,6 +76,7 @@ c salinity tracer:
          if (SIsalFRAC.GT.0.) 
      &   SItrFromOcean(i,j)=SIsalFRAC*salt(I,j,ks,bi,bj)
 #endif
+c as of now, flooding implies no salt extraction from ocean
         ENDDO
        ENDDO
       elseif (SItrName(iTr).EQ.'one') then
@@ -85,12 +84,13 @@ c "ice concentration" tracer that should remain .EQ.1.
        DO J=1,sNy
         DO I=1,sNx
          SItrFromOcean(i,j)=1. _d 0
-         SItrFromSnow(i,j)=1. _d 0
+         SItrFromFlood(i,j)=1. _d 0
         ENDDO
        ENDDO
       endif
 c 1) seaice thermodynamics processes
 c ==================================
+      if (SItrMate(iTr).EQ.'HEFF') then
       DO J=1,sNy
        DO I=1,sNx
         HEFFprev=SItrHEFF(i,j,bi,bj,1)
@@ -126,27 +126,49 @@ c apply flooding term
         HEFFpost=SItrHEFF(i,j,bi,bj,5)
         if (HEFFpost.GT.HEFFprev) growFact=HEFFprev/HEFFpost
         SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)*growFact
-     &                     +SItrFromSnow(i,j) *(1. _d 0 - growFact)
-        if ((SItrName(iTr).EQ.'age').OR.(SItrName(iTr).EQ.'one')) then
-c Including this term in the bucket only makes sense for diagnostics purposes
-c and should not be done for tracers that are exchanged with the ocean (we would
-c need another bucket for ice-snow exchange, and snow tracers to start with).
+     &                     +SItrFromFlood(i,j) *(1. _d 0 - growFact)
+c rk: flooding can only imply an ocean-ice tracer exchange, as long
+c as we dont have snow tracers, so it goes through SItrBucket.
           SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
-     &             -HEFFpost*SItrFromSnow(i,j)*(1. _d 0 - growFact)
-        endif
+     &             -HEFFpost*SItrFromFlood(i,j)*(1. _d 0 - growFact)
 #ifdef ALLOW_SITRACER_DIAG
         diagArray(I,J,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr) 
      &  +SItrBucket(i,j,bi,bj,iTr)-diagArray(I,J,5+(iTr-1)*5)
 #endif
        ENDDO
       ENDDO
+c TAF?      if (SItrMate(iTr).EQ.'AREA') then
+      else
+c 1) or seaice cover expansion
+c ============================
+c this is much simpler than for ice volume/mass tracers, because 
+c properties of the ice surface are not be conserved across the 
+c ocean-ice system, the contraction/expansion terms are all
+c simultaneous (which is sane), and the only generic effect 
+c is due to expansion (new cover).
+      DO J=1,sNy
+       DO I=1,sNx
+c apply expansion
+        AREAprev=SItrAREA(i,j,bi,bj,2)
+        AREApost=SItrAREA(i,j,bi,bj,3)
+c compute ratio in [0. 1.] range for expansion/contraction
+        expandFact=1. _d 0
+        if (AREApost.GT.AREAprev) expandFact=AREAprev/AREApost
+c update SItr accordingly
+         SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)*expandFact
+     &                      +SItrExpand(i,j)*(1. _d 0 - expandFact)
+       ENDDO
+      ENDDO
+      endif
 c 2) very ice tracer processes
 c ============================
       if (SItrName(iTr).EQ.'age') then
 c age tracer: grow old as time passes by
        DO J=1,sNy
         DO I=1,sNx
-          if (SItrHEFF(i,j,bi,bj,5).GT.0. _d 0) then
+          if (( (SItrHEFF(i,j,bi,bj,5).GT.0. _d 0).AND.(SItrMate(iTr)
+     &     .EQ.'HEFF') ).OR.( (SItrAREA(i,j,bi,bj,3).GT.0. _d 0).AND.
+     &     (SItrMate(iTr).EQ.'AREA') )) then
             SItracer(i,j,bi,bj,iTr)=
      &      SItracer(i,j,bi,bj,iTr)+SEAICE_deltaTtherm
           else
@@ -158,9 +180,26 @@ c age tracer: grow old as time passes by
 c salinity tracer: no specific process
       elseif (SItrName(iTr).EQ.'one') then
 c "ice concentration" tracer: no specific process
+      elseif (SItrName(iTr).EQ.'ridge') then
+c simple, made up, ice surface roughness index prototype
+#ifndef SEAICE_GROWTH_LEGACY
+       DO J=1,sNy
+        DO I=1,sNx
+c ridging increases roughness
+          SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)+
+     &    MAX(0. _d 0, SItrAREA(i,j,bi,bj,1)-SItrAREA(i,j,bi,bj,2))
+c ice melt reduces ridges/roughness
+          HEFFprev=SItrHEFF(i,j,bi,bj,1)
+          HEFFpost=SItrHEFF(i,j,bi,bj,4)
+          tmpscal1=1. _d 0
+          if (HEFFprev.GT.HEFFpost) tmpscal1=HEFFpost/HEFFprev
+          SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)*tmpscal1
+        ENDDO
+       ENDDO
+#endif
       endif
-c 3) ice-ocean tracer exchange
-c =============================
+c 3) ice-ocean tracer exchange/mapping to external variables
+c ==========================================================
       if (SItrName(iTr).EQ.'age') then
 c age tracer: not passed to ocean
       elseif (SItrName(iTr).EQ.'salinity') then
@@ -186,9 +225,11 @@ c empty bucket
         SItrBucket(i,j,bi,bj,iTr)=0. _d 0
        ENDDO
       ENDDO
+c TAF? elseif (SItrMate(iTr).EQ.'AREA') then
 c 4) diagnostics
 c ==============
 #ifdef ALLOW_SITRACER_DIAG
+      if (SItrMate(iTr).EQ.'HEFF') then
       DO J=1,sNy
        DO I=1,sNx
         HEFFpost=SItrHEFF(i,j,bi,bj,5)
@@ -206,6 +247,19 @@ c diagArray(:,:,4) allows check of conservation : del(SItrBucket)+del(SItr*HEFF)
 c diagArray(:,:,5) is the tracer flux from the ocean (<0 incr. ocean tracer)
        ENDDO
       ENDDO
+      else
+      DO J=1,sNy
+       DO I=1,sNx
+        AREApost=SItrAREA(i,j,bi,bj,3)
+        DIAGarray(I,J,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
+        DIAGarray(I,J,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*AREApost
+c diagArray(:,:,3) is the term of comparison for diagArray(:,:,2)
+        if (SItrName(iTr).EQ.'age') then
+          DIAGarray(I,J,3+(iTr-1)*5) = IceAgeTr(i,j,bi,bj,1)
+        endif
+       ENDDO
+      ENDDO
+      endif
 #endif
       ENDDO
 #ifdef ALLOW_SITRACER_DIAG
