@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1450 2011/06/08 15:36:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1451 2011/06/09 20:29:31 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - introduce siEps=1e-5 parameter
+  - use areaMax in AREA update (part 4), consistent with ridging step (part 2.5).
+  - re-organize SEAICE_ADD_SUBLIMATION_TO_FWBUDGET code.
+  - introduce ALLOW_SITRACER and seaice_tracer_phys.F to handle generic seaice tracer. 
+    For now it covers, and was tested for, ice salinity and age (attached to HEFF),
+    as well as ice cover age and ridging index (attached to AREA).
+    For now the run time parameters (in data.seaice/SEAICE_PARM03) are 
+    SItrName (e.g. 'age') and SItrMate ('HEFF', which is the default, or 'AREA'). 
+    Up to SItrMaxNum=3 tracers can be used simultaneously.
+o pkg/salt_plume:
+  -introduce SPsalFRAC run time parameter that sets the fraction of the 
+   salt by-product of ice growth (SPsalFRAC*(1-SIsalFRAC)*salt typically) 
+   that gets vertically redistributed (fluxed down) by pkg/salt_plume.    
 o model debug options:
   - Switch reading of debugMode from S/R INI_PARMS (parameter file "data", stored
     in PARAMS.h) to S/R EESET_PARMS (parameter file "eedata", stored in EEPARAMS.h).
