@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.50 2011/05/27 23:27:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.51 2011/06/09 20:34:14 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -80,6 +80,13 @@ C--   By default sea ice is fresh.  Set following flag for salty ice.
 
 C--   Track sea ice age.
 #undef SEAICE_AGE
+
+C--   Tracers of ice and/or ice cover.
+#undef ALLOW_SITRACER
+#ifdef ALLOW_SITRACER
+C--   To try avoid 'spontaneous generation' of tracer maxima by advdiff.
+# define ALLOW_SITRACER_ADVCAP
+#endif
 
 C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
