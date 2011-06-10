@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.7 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.8 2011/06/10 20:55:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -133,23 +133,34 @@ C  -- P coordinate : Phi(R_low) is simply at the top :
 
 #ifdef NONLIN_FRSURF
 c      IF ( select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
-       IF ( select_rStar.GT.0 .AND. nonlinFreeSurf.GE.4 ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+       IF ( select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
+C-    Integral of b.dr = rStarFac * Integral of b.dr* :
+        IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+C-     Consistent with Phi'= Integr[ theta'.dPi ] :
+         DO j=jMin,jMax
+          DO i=iMin,iMax
            phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
-     &                          *rStarFacC(i,j,bi,bj)
+     &                          * rStarFacC(i,j,bi,bj)**atm_kappa
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
+     &                          * rStarFacC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
        ENDIF
 #endif /* NONLIN_FRSURF */
 
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
            phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
      &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
      &            + phi0surf(i,j,bi,bj)
-         ENDDO
         ENDDO
+       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  -- end if k=Nr.
