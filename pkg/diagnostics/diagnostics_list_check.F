@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.3 2010/04/03 22:32:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.4 2011/06/12 16:08:04 gforget Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -153,6 +153,43 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            CALL PRINT_ERROR( msgBuf , myThid )
            ndCount = ndCount + 1
          ENDIF
+         IF ( diagName.EQ.'SIyneg  ' ) THEN
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
+     &             diagName, '" was retired in favor of "SIdHbOCN"'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
+     &              '=> need to change "data.diagnostics" accordingly'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           ndCount = ndCount + 1
+         ENDIF
+         IF ( diagName.EQ.'SIfice  ' ) THEN
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
+     &             diagName, '" was retired in favor of "SIdHbATC"'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
+     &              '=> need to change "data.diagnostics" accordingly'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           ndCount = ndCount + 1
+         ENDIF
+         IF ( diagName.EQ.'SIsnwice' ) THEN
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
+     &             diagName, '" was retired in favor of "SIdHbFLO"'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
+     &              '=> need to change "data.diagnostics" accordingly'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           ndCount = ndCount + 1
+         ENDIF
+         IF ( diagName.EQ.'SIthdgrh' ) THEN
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
+     &             diagName, '" was retired in favor of "SIdHb*"'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
+     &              '=> need to change "data.diagnostics" accordingly'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           ndCount = ndCount + 1
+         ENDIF
+         
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
         IF ( ndCount.EQ.0 ) RETURN
