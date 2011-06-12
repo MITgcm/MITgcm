@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.51 2011/06/12 13:58:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.52 2011/06/12 19:16:09 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -58,28 +58,29 @@ C     im    :: counter-mate pointer to storage array
 C     nLevOutp :: number of levels to write in output file
 C
 C--   COMMON /LOCAL_DIAGNOSTICS_OUT/ local common block (for multi-threaded)
-C     qtmp1 :: thread-shared temporary array (needs to be in common block):
-C              to write a diagnostic field to file, copy it first from (big)
-C              diagnostic storage qdiag into it.
-      COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
+C     qtmp1 :: temporary array; used to store a copy of diag. output field.
+C     qtmp2 :: temporary array; used to store a copy of a 2nd diag. field.
+C-  Note: local common block no longer needed.
+c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
+      _RL qtmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
 
       INTEGER i, j, k, lm
       INTEGER bi, bj
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
       CHARACTER*10 gcode
-      _RL undef
-      _RL tmpLev
-      INTEGER iLen
-      INTEGER nLevOutp
+      _RL undefRL
+      INTEGER nLevOutp, kLev
 
+      INTEGER iLen
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec, nRec, nTimRec
       _RL     timeRec(2)
+      _RL     tmpLoc
 #ifdef ALLOW_MDSIO
       LOGICAL glf
 #endif
@@ -94,9 +95,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---  set file properties
       ioUnit= standardMessageUnit
-      undef = UNSET_RL
+      undefRL = UNSET_RL
 #ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) undef = getcon('UNDEF')
+      IF ( useFIZHI ) undefRL = getcon('UNDEF')
 #endif
       WRITE(suff,'(I10.10)') myIter
       iLen = ILNBLNK(fnames(listId))
@@ -126,8 +127,8 @@ C     a) find the time of the previous multiple of output freq:
         timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
         i = INT( timeRec(1) )
         IF ( timeRec(1).LT.0. ) THEN
-          tmpLev = FLOAT(i)
-          IF ( timeRec(1).NE.tmpLev ) i = i - 1
+          tmpLoc = FLOAT(i)
+          IF ( timeRec(1).NE.tmpLoc ) i = i - 1
         ENDIF
         timeRec(1) = phase(listId) + freq(listId)*FLOAT(i)
 c       if ( listId.eq.2 ) write(0,*) 'f',i,timeRec(1)/deltaTClock
@@ -137,8 +138,8 @@ C     b) round off to nearest multiple of time-step:
         timeRec(1) = (timeRec(1)-baseTime)/deltaTClock
         i = NINT( timeRec(1) )
 C     if just half way, NINT will return the next time-step: correct this
-        tmpLev = FLOAT(i) - 0.5 _d 0
-        IF ( timeRec(1).EQ.tmpLev ) i = i - 1
+        tmpLoc = FLOAT(i) - 0.5 _d 0
+        IF ( timeRec(1).EQ.tmpLoc ) i = i - 1
         timeRec(1) = baseTime + deltaTClock*FLOAT(i)
 c       if ( listId.eq.2 ) write(0,*) i,timeRec(1)/deltaTClock
       ENDIF
@@ -161,7 +162,7 @@ C                                 mnc ouput: md loop inside lm loop.
       DO jj=1,jjMx
 
        IF (useMNC .AND. diag_mnc) THEN
-         misValLoc = undef
+         misValLoc = undefRL
          IF ( misvalFlt(listId).NE.UNSET_RL )
      &        misValLoc = misvalFlt(listId)
          CALL DIAGNOSTICS_MNC_SET(
@@ -266,29 +267,27 @@ C-        diagnostics is not empty :
               ENDIF
             ENDIF
 
-            IF ( fflags(listId)(2:2).NE.' ' ) THEN
-C-       get all the levels (for vertical post-processing)
+            IF ( fflags(listId)(2:2).EQ.' ' ) THEN
+C-       get only selected levels:
               DO bj = myByLo(myThid), myByHi(myThid)
                DO bi = myBxLo(myThid), myBxHi(myThid)
-                DO k = 1,kdiag(ndId)
-                  tmpLev = k
-                  CALL GETDIAG(
-     I                         tmpLev,undef,
+                DO k = 1,nlevels(listId)
+                  kLev = NINT(levs(k,listId))
+                  CALL DIAGNOSTICS_GET_DIAG(
+     I                         kLev, undefRL,
      O                         qtmp1(1-OLx,1-OLy,k,bi,bj),
      I                         ndId,mate,ip,im,bi,bj,myThid)
                 ENDDO
                ENDDO
               ENDDO
             ELSE
-C-       get only selected levels:
+C-       get all the levels (for vertical post-processing)
               DO bj = myByLo(myThid), myByHi(myThid)
                DO bi = myBxLo(myThid), myBxHi(myThid)
-                DO k = 1,nlevels(listId)
-                  CALL GETDIAG(
-     I                         levs(k,listId),undef,
-     O                         qtmp1(1-OLx,1-OLy,k,bi,bj),
+                  CALL DIAGNOSTICS_GET_DIAG(
+     I                         0, undefRL,
+     O                         qtmp1(1-OLx,1-OLy,1,bi,bj),
      I                         ndId,mate,ip,im,bi,bj,myThid)
-                ENDDO
                ENDDO
               ENDDO
             ENDIF
@@ -302,8 +301,8 @@ C-          Do vertical interpolation:
 C jmc: for now, this can only work in an atmospheric set-up (fluidIsAir);
               CALL DIAGNOSTICS_INTERP_VERT(
      I                         listId, md, ndId, ip, im, lm,
-     U                         qtmp1,
-     I                         undef, myTime, myIter, myThid )
+     U                         qtmp1, qtmp2,
+     I                         undefRL, myTime, myIter, myThid )
              ELSE
                WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
      &           'INTERP_VERT not allowed in this config'
@@ -316,7 +315,7 @@ C-          Integrate vertically: for now, output field has just 1 level:
               CALL DIAGNOSTICS_SUM_LEVELS(
      I                         listId, md, ndId, ip, im, lm,
      U                         qtmp1,
-     I                         undef, myTime, myIter, myThid )
+     I                         undefRL, myTime, myIter, myThid )
             ENDIF
 
 C--     End of empty diag / not-empty diag block

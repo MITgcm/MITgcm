@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.11 2010/01/10 04:09:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.12 2011/06/12 19:16:09 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -11,7 +11,8 @@ C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_INTERP_VERT(
      I                        listId, md, ndId, ip, im, lm,
      U                        qtmp1,
-     I                        undef,
+     O                        qtmp2,
+     I                        undefRL,
      I                        myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -41,13 +42,15 @@ C     ip      :: diagnostics  pointer to storage array
 C     im      :: counter-mate pointer to storage array
 C     lm      :: index in the averageCycle
 C     qtmp1   :: diagnostics field output array
-C     undef   ::
+C     qtmp2   :: temp working array (same size as output array)
+C     undefRL ::
 C     myTime  :: current time of simulation (s)
 C     myIter  :: current iteration number
 C     myThid  :: my Thread Id number
       INTEGER listId, md, ndId, ip, im, lm
       _RL     qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
-      _RL     undef
+      _RL     qtmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
+      _RL     undefRL
       _RL     myTime
       INTEGER myIter, myThid
 CEOP
@@ -63,16 +66,15 @@ C     i,j,k :: loop indices
       INTEGER i, j, k
       INTEGER bi, bj
       _RL   qtmpsrf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL   qtmp2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       INTEGER kLev
       _RL   qprs (sNx,sNy)
       _RL   qinp (sNx,sNy,NrMax)
       _RL   pkz  (sNx,sNy,NrMax)
       _RL   pksrf(sNx,sNy)
-      _RL   pk, pkTop, tmpLev
+      _RL   pk, pkTop
       _RL   kappa
-      INTEGER jpoint1,ipoint1
-      INTEGER jpoint2,ipoint2
+      INTEGER jpoint1, ipoint1
+      INTEGER jpoint2, ipoint2
       LOGICAL pInc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -110,17 +112,13 @@ C-    averageCycle: move pointer
 
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
-             tmpLev = 1. _d 0
-             CALL GETDIAG( tmpLev,undef,
+             CALL DIAGNOSTICS_GET_DIAG( 1, undefRL,
      O                     qtmpsrf(1-OLx,1-OLy,bi,bj),
      I                     jpoint1,0,ipoint1,0, bi,bj,myThid )
 c            WRITE(0,*) 'rSurf:',bi,bj,qtmpsrf(15,15,bi,bj)
-             DO k = 1,kdiag(jpoint2)
-              tmpLev = k
-              CALL GETDIAG(tmpLev,undef,
-     O                     qtmp2(1-OLx,1-OLy,k,bi,bj),
+             CALL DIAGNOSTICS_GET_DIAG( 0, undefRL,
+     O                     qtmp2(1-OLx,1-OLy,1,bi,bj),
      I                     jpoint2,0,ipoint2,0, bi,bj,myThid )
-             ENDDO
            ENDDO
           ENDDO
 
@@ -177,7 +175,7 @@ c            kLev = k
                 IF (maskC(i,j,kLev,bi,bj).NE.0.) THEN
                  qinp(i,j,k)= qtmp1(i,j,kLev,bi,bj)
                 ELSE
-                 qinp(i,j,k)= undef
+                 qinp(i,j,k)= undefRL
                 ENDIF
                 pkz(i,j,k)  = qtmp2(i,j,kLev,bi,bj)**kappa
               ENDDO
@@ -191,11 +189,11 @@ C-    Interpolate, level per level, and put interpolated field in qprs:
              CALL DIAGNOSTICS_INTERP_P2P(
      O                        qprs,
      I                        qinp,pkz,pksrf,pkTop,pk,
-     I                        undef,pInc,sNx*sNy,kdiag(ndId),myThid )
+     I                        undefRL,pInc,sNx*sNy,kdiag(ndId),myThid )
 C-    Transfert qprs to qtmp1:
              DO j = 1,sNy
               DO i = 1,sNx
-               IF (qprs(i,j).EQ.undef) THEN
+               IF (qprs(i,j).EQ.undefRL) THEN
                  qtmp1(i,j,k,bi,bj) = 0.
                ELSE
                  qtmp1(i,j,k,bi,bj) =  qprs(i,j)
