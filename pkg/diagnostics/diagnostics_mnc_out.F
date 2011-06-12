@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.1 2011/06/11 23:29:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.2 2011/06/12 13:58:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -16,9 +16,8 @@ C     !ROUTINE: DIAGNOSTICS_MNC_SET
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_MNC_SET(
      I     nLevOutp, listId, lm,
-     O     diag_mnc_bn,
-     O     useMissingValue, misValLoc,
-     I     myTime, myIter, myThid )
+     O     diag_mnc_bn, useMissingValue,
+     I     misValLoc, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Set MNC file for writing diagnostics fields.
@@ -58,7 +57,6 @@ C     !LOCAL VARIABLES:
       INTEGER NrMax
       PARAMETER( NrMax = numLevels )
 
-      _RL undef
       _RL tmpLev
       INTEGER iLen
 
@@ -89,11 +87,6 @@ C     Handle missing value attribute (land points)
 #ifdef DIAGNOSTICS_MISSING_VALUE
         useMissingValue = .TRUE.
 #endif /* DIAGNOSTICS_MISSING_VALUE */
-        IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
-          misValLoc = misvalFlt(listId)
-        ELSE
-          misValLoc = undef
-        ENDIF
 C     Defaults to UNSET_I
         misvalIntLoc = misvalInt(listId)
         DO ii=1,2

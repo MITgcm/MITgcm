@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.50 2011/06/11 23:29:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.51 2011/06/12 13:58:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -161,11 +161,13 @@ C                                 mnc ouput: md loop inside lm loop.
       DO jj=1,jjMx
 
        IF (useMNC .AND. diag_mnc) THEN
+         misValLoc = undef
+         IF ( misvalFlt(listId).NE.UNSET_RL )
+     &        misValLoc = misvalFlt(listId)
          CALL DIAGNOSTICS_MNC_SET(
      I                    nLevOutp, listId, jj,
-     O                    diag_mnc_bn,
-     O                    useMissingValue, misValLoc,
-     I                    myTime, myIter, myThid )
+     O                    diag_mnc_bn, useMissingValue,
+     I                    misValLoc, myTime, myIter, myThid )
        ENDIF
 #endif /*  ALLOW_MNC  */
 
