@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.25 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.26 2011/06/12 16:07:30 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,8 +65,27 @@ c     EXTERNAL    SEAICE_DIAG_SUFX
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+
+C=============== state variables ============
+
       diagName  = 'SIarea  '
       diagTitle = 'SEAICE fractional ice-covered area [0 to 1]'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      numArea  = diagNum
+
+      diagName  = 'SIarPrRi'
+      diagTitle = 'SIarea preceeding ridging process'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      numArea  = diagNum
+
+      diagName  = 'SIarPrTh'
+      diagTitle = 'SIarea preceeding thermodynamic growth/melt'
       diagUnits = 'm^2/m^2         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -80,32 +99,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIuice  '
-      diagTitle = 'SEAICE zonal ice velocity, >0 from West to East'
-      diagUnits = 'm/s             '
-#ifdef SEAICE_CGRID
-      diagCode  = 'UU      M1      '
-#else
-      diagCode  = 'UZ      M1      '
-#endif
-      diagMate  = diagNum + 2
+      diagName  = 'SIhePrTh'
+      diagTitle = 'SIheff preceeeding thermodynamic growth/melt'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-      diagName  = 'SIvice  '
-      diagTitle = 'SEAICE merid. ice velocity, >0 from South to North'
-      diagUnits = 'm/s             '
-#ifdef SEAICE_CGRID
-      diagCode  = 'VV      M1      '
-#else
-      diagCode  = 'VZ      M1      '
-#endif
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIhsnow '
-      diagTitle = 'SEAICE snow thickness'
+      diagTitle = 'SEAICE effective snow thickness'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIhsPrTh'
+      diagTitle = 'SIhsnow preceeeding thermodynamic growth/melt'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -136,6 +145,73 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, numArea, myThid )
 
+      diagName  = 'SIuice  '
+      diagTitle = 'SEAICE zonal ice velocity, >0 from West to East'
+      diagUnits = 'm/s             '
+#ifdef SEAICE_CGRID
+      diagCode  = 'UU      M1      '
+#else
+      diagCode  = 'UZ      M1      '
+#endif
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'SIvice  '
+      diagTitle = 'SEAICE merid. ice velocity, >0 from South to North'
+      diagUnits = 'm/s             '
+#ifdef SEAICE_CGRID
+      diagCode  = 'VV      M1      '
+#else
+      diagCode  = 'VZ      M1      '
+#endif
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+
+C=============== momentum, heat and fresh water forcing ============
+
+C     pkg/diagnostics SIfu and oceTAUX, dumpfreq FU, and tavefreq FUtave
+C     are identical but they differ from pkg/diagnostics EXFtaux, which
+C     is stress before impact of ice.  Also when using exf bulk
+C     formulae, EXFtaux is defined on tracer rather than uvel points.
+      diagName  = 'SIfu    '
+      diagTitle = 'SEAICE zonal surface wind stress, >0 increases uVel '
+      diagUnits = 'N/m^2           '
+      diagCode  = 'UU      U1      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+C     pkg/diagnostics SIfv and oceTAUY, dumpfreq FV, and tavefreq FVtave
+C     are identical but they differ from pkg/diagnostics EXFtauy, which
+C     is stress before impact of ice.  Also when using exf bulk
+C     formulae, EXFtauy is defined on tracer rather than vvel points.
+      diagName  = 'SIfv    '
+      diagTitle = 'SEAICE merid. surface wind stress, >0 increases vVel'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'VV      U1      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'SIuwind '
+      diagTitle = 'SEAICE zonal 10-m wind speed, >0 increases uVel'
+      diagUnits = 'm/s             '
+      diagCode  = 'UM      U1      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'SIvwind '
+      diagTitle = 'SEAICE meridional 10-m wind speed, >0 increases uVel'
+      diagUnits = 'm/s             '
+      diagCode  = 'VM      U1      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
 C     SIqnet, Qnet, and QNETtave are identical.
 C     With #undef NONLIN_FRSURF SIqnet is identical to -(TFLUX-TRELAX).
 C     Except over land and under sea ice, SIqnet is also identical to
@@ -163,22 +239,15 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIfwSubl'
-      diagTitle = 'Freshwater flux of sublimated ice, >0 decreases ice'
-      diagUnits = 'kg/m^2/s        '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'SIqneto '
-      diagTitle = 'Heat flux over ocean, turb+rad, >0 decreases theta'
+      diagTitle = 'Open Ocean Part of SIqnet, turb+rad, >0 decr theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIqneti '
-      diagTitle = 'Heat flux under ice, turb+rad, >0 decreases theta'
+      diagTitle = 'Ice Covered Part of SIqnet, turb+rad, >0 decr theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -208,134 +277,110 @@ C     is EmPmR before impact of ice.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIyneg  '
-      diagTitle = 'Ice growth due to oceanic heat flux , >0 melts ice'
+      diagName  = 'SIfwSubl'
+      diagTitle = 'Freshwater flux of sublimated ice, >0 decreases ice'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C============== ice growth/melt ==============
+
+      diagName  = 'SIaQbOCN'
+      diagTitle = 'Potential delta HEFF from turbulent ocean-ice fluxes'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIfice  '
-      diagTitle = 'Ice growth due to atm heat flux, >0 creates ice'
+      diagName  = 'SIaQbATC'
+      diagTitle = 'Potential delta HEFF from atm fluxes over ice'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIuwind '
-      diagTitle = 'SEAICE zonal 10-m wind speed, >0 increases uVel'
-      diagUnits = 'm/s             '
-      diagCode  = 'UM      U1      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-      diagName  = 'SIvwind '
-      diagTitle = 'SEAICE meridional 10-m wind speed, >0 increases uVel'
-      diagUnits = 'm/s             '
-      diagCode  = 'VM      U1      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-C     pkg/diagnostics SIfu and oceTAUX, dumpfreq FU, and tavefreq FUtave
-C     are identical but they differ from pkg/diagnostics EXFtaux, which
-C     is stress before impact of ice.  Also when using exf bulk
-C     formulae, EXFtaux is defined on tracer rather than uvel points.
-      diagName  = 'SIfu    '
-      diagTitle = 'SEAICE zonal surface wind stress, >0 increases uVel '
-      diagUnits = 'N/m^2           '
-      diagCode  = 'UU      U1      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-C     pkg/diagnostics SIfv and oceTAUY, dumpfreq FV, and tavefreq FVtave
-C     are identical but they differ from pkg/diagnostics EXFtauy, which
-C     is stress before impact of ice.  Also when using exf bulk
-C     formulae, EXFtauy is defined on tracer rather than vvel points.
-      diagName  = 'SIfv    '
-      diagTitle = 'SEAICE merid. surface wind stress, >0 increases vVel'
-      diagUnits = 'N/m^2           '
-      diagCode  = 'VV      U1      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-      diagName  = 'SIpress   '
-      diagTitle = 'SEAICE strength (with upper and lower limit)'
-      diagUnits = 'm^2/s^2         '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIzeta   '
-      diagTitle = 'SEAICE nonlinear bulk viscosity'
-      diagUnits = 'm^2/s           '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIeta    '
-      diagTitle = 'SEAICE nonlinear shear viscosity'
-      diagUnits = 'm^2/s           '
+      diagName  = 'SIaQbATO'
+      diagTitle = 'Potential delta HEFF from atm fluxes over open water'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIsigI  '
-      diagTitle = 'SEAICE normalized principle stress, component one'
-      diagUnits = 'no units        '
+      diagName  = 'SIdHbOCN'
+      diagTitle = 'Actual delta HEFF from turbulent ocean-ice fluxes'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIsigII '
-      diagTitle = 'SEAICE normalized principle stress, component two'
-      diagUnits = 'no units        '
+      diagName  = 'SIdSbATC'
+      diagTitle = 'Actual delta HSNOW from atm fluxes over sea ice'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-CML      diagName  = 'SIttendh'
-CML      diagTitle = 'SEAICE tendency of effective ice thickness'
-CML      diagUnits = 'm/s             '
-CML      diagCode  = 'SM      M1      '
-CML      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-CML     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIthdgrh'
-      diagTitle = 'SEAICE thermodynamic growth rate of '//
-     &     'effective ice thickness'
-      diagUnits = 'm/s             '
+      diagName  = 'SIdSbOCN'
+      diagTitle = 'Actual delta HSNOW from turbulent ocean-ice fluxes'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIsnwice'
-      diagTitle = 'SEAICE ice formation rate due to flooding'
-      diagUnits = 'm/s             '
+      diagName  = 'SIdHbATC'
+      diagTitle = 'Actual delta HEFF from atm fluxes over sea ice'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIuheff '
-      diagTitle = 'Zonal Transport of effective ice thickness'
-      diagUnits = 'm^2/s           '
-      diagCode  = 'UU      M1      '
-      diagMate  = diagNum + 2
+      diagName  = 'SIdHbATO'
+      diagTitle = 'Actual delta HEFF from atm fluxes over open water'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIvheff '
-      diagTitle = 'Meridional Transport of effective ice thickness'
-      diagUnits = 'm^2/s           '
-      diagCode  = 'VV      M1      '
-      diagMate  = diagNum
+      diagName  = 'SIdHbFLO'
+      diagTitle = 'Actual delta HEFF from flooding snow'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C     advective and diffusive fluxes
+C=============== expansion/contraction ============
+
+      diagName  = 'SIdAbATO'
+      diagTitle = 'Potential delta AREA from atm fluxes over open water'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIdAbATC'
+      diagTitle = 'Potential delta AREA from atm fluxes over sea ice'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIdAbOCN'
+      diagTitle = 'Potential delta AREA from turb. ocean-ice fluxes'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIdA'
+      diagTitle = 'Actual delta AREA (net)'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C============== advection/diffusion ============
+
 C     effective thickness
       flxUnits = '.m^2/s   '
       locName = 'eff ice thickn '
@@ -352,6 +397,22 @@ C--   advective flux
 
       diagName  = 'ADVy'//diagSufx
       diagTitle = 'Meridional Advective Flux of '//locName
+      diagCode  = 'VV      M1      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'SIuheff '
+      diagTitle = 'Zonal      Transport of eff ice thickn (centered)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'UU      M1      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'SIvheff '
+      diagTitle = 'Meridional Transport of eff ice thickn (centered)'
+      diagUnits = 'm^2/s           '
       diagCode  = 'VV      M1      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -477,76 +538,44 @@ C--   Diffusive flux:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-      diagName  = 'SIdHbATO'
-      diagTitle = 'Actual delta HEFF from atm fluxes over open water'
-      diagUnits = 'm               '
+C=============== dynamics ============
+
+      diagName  = 'SIpress   '
+      diagTitle = 'SEAICE strength (with upper and lower limit)'
+      diagUnits = 'm^2/s^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIzeta   '
+      diagTitle = 'SEAICE nonlinear bulk viscosity'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIeta    '
+      diagTitle = 'SEAICE nonlinear shear viscosity'
+      diagUnits = 'm^2/s           '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIdHbATC'
-      diagTitle = 'Actual delta HEFF from atm fluxes over sea ice'
-      diagUnits = 'm               '
+      diagName  = 'SIsigI  '
+      diagTitle = 'SEAICE normalized principle stress, component one'
+      diagUnits = 'no units        '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIsigII '
+      diagTitle = 'SEAICE normalized principle stress, component two'
+      diagUnits = 'no units        '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 
-      diagName  = 'SIdHbOCN'
-      diagTitle = 'Actual delta HEFF from turbulent ocean-ice fluxes'
-      diagUnits = 'm               '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIdA'
-      diagTitle = 'Actual AREA increment (total)'
-      diagUnits = '1/s             '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIdAbATO'
-      diagTitle = 'Actual delta AREA from atm fluxes over open water'
-      diagUnits = '                '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIdAbATC'
-      diagTitle = 'Actual delta AREA from atm fluxes over sea ice'
-      diagUnits = '                '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIdAbOCN'
-      diagTitle = 'Actual delta AREA from turbulent ocean-ice fluxes'
-      diagUnits = '                '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIaQbATO'
-      diagTitle = 'Potential delta HEFF from atm fluxes over open water'
-      diagUnits = 'm               '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIaQbATC'
-      diagTitle = 'Potential delta HEFF from atm fluxes over ice'
-      diagUnits = 'm               '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIaQbOCN'
-      diagTitle = 'Potential delta HEFF from turbulent ocean-ice fluxes'
-      diagUnits = 'm               '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.127 2011/06/09 19:37:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.128 2011/06/12 16:07:30 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -228,7 +228,6 @@ c     McPhee heat flux parameterization (m/s)
 
 #ifdef ALLOW_DIAGNOSTICS
 c     Helper variables for diagnostics
-      _RL DIAGarray     (1:sNx,1:sNy)
       _RL DIAGarrayA    (1:sNx,1:sNy)
       _RL DIAGarrayB    (1:sNx,1:sNy)
       _RL DIAGarrayC    (1:sNx,1:sNy)
@@ -367,6 +366,12 @@ C =====================================================================
           AREApreTH(I,J)=AREANM1(I,J,bi,bj)
           d_HEFFbyNEG(I,J)=0. _d 0
           d_HSNWbyNEG(I,J)=0. _d 0
+#ifdef ALLOW_DIAGNOSTICS
+          DIAGarrayA(I,J) = AREANM1(I,J,bi,bj)
+          DIAGarrayB(I,J) = AREANM1(I,J,bi,bj)
+          DIAGarrayC(I,J) = HEFFNM1(I,J,bi,bj)
+          DIAGarrayD(I,J) = HSNOW(I,J,bi,bj)
+#endif
          ENDDO
         ENDDO
 
@@ -463,6 +468,9 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
+#ifdef ALLOW_DIAGNOSTICS
+          DIAGarrayA(I,J) = AREA(I,J,bi,bj)
+#endif
 #ifdef ALLOW_SITRACER
           SItrAREA(I,J,bi,bj,1)=AREA(I,J,bi,bj)
 #endif
@@ -489,6 +497,11 @@ C 3) store regularized values of heff, hsnow, area at the onset of thermo.
           HEFFpreTH(I,J)=HEFF(I,J,bi,bj)
           HSNWpreTH(I,J)=HSNOW(I,J,bi,bj)
           AREApreTH(I,J)=AREA(I,J,bi,bj)
+#ifdef ALLOW_DIAGNOSTICS
+          DIAGarrayB(I,J) = AREA(I,J,bi,bj)
+          DIAGarrayC(I,J) = HEFF(I,J,bi,bj)
+          DIAGarrayD(I,J) = HSNOW(I,J,bi,bj)
+#endif
 #ifdef ALLOW_SITRACER
           SItrHEFF(I,J,bi,bj,1)=HEFF(I,J,bi,bj)
           SItrAREA(I,J,bi,bj,2)=AREA(I,J,bi,bj)
@@ -540,6 +553,15 @@ CADJ &     key = iicekey,byte=isbyte
 #endif /* SEAICE_AGE */
 
 #endif /* SEAICE_GROWTH_LEGACY */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+      CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIarPrRi',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIarPrTh',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIhePrTh',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayD,'SIhsPrTh',0,1,3,bi,bj,myThid)
+      ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef SEAICE_MODIFY_GROWTH_ADJ
@@ -845,9 +867,6 @@ c          be triggered by this term, which Ian says is better for adjoint
 
 #endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */
 
-#ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayA (I,J) = a_QbyOCN(I,J) 
-#endif
           r_QbyOCN(i,j) = a_QbyOCN(i,j)
 
          ENDDO
@@ -877,9 +896,6 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
           d_HEFFbyOCNonICE(I,J)=MAX(r_QbyOCN(i,j), -HEFF(I,J,bi,bj))
           r_QbyOCN(I,J)=r_QbyOCN(I,J)-d_HEFFbyOCNonICE(I,J)
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj) + d_HEFFbyOCNonICE(I,J)
-#ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayA(I,J) = d_HEFFbyOCNonICE(i,j)
-#endif
 #ifdef ALLOW_SITRACER
           SItrHEFF(I,J,bi,bj,2)=HEFF(I,J,bi,bj)
 #endif
@@ -970,9 +986,6 @@ c         Limit ice growth by potential melt by ocean
           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)-tmpscal2
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal2
 
-#ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayA(I,J) = d_HEFFbyATMonOCN_cover(I,J)
-#endif
 #ifdef ALLOW_SITRACER
           SItrHEFF(I,J,bi,bj,3)=HEFF(I,J,bi,bj)
 #endif
@@ -1051,12 +1064,7 @@ CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-#ifdef ALLOW_DIAGNOSTICS         
-            DIAGarrayA(I,J) = ZERO
-#endif
-
 #ifdef SEAICE_DO_OPEN_WATER_GROWTH
-         
 c           Initial ice growth is triggered by open water 
 c           heat flux overcoming potential melt by ocean
             tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j) * 
@@ -1073,17 +1081,10 @@ C           allow not only growth but also melt by open ocean heat flux
           d_HEFFbyATMonOCN_open(I,J)=tmpscal3
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal3
           r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal3
-          HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3
-          
+          HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3          
 #endif /* SEAICE_DO_OPEN_WATER_GROWTH */
-
-#ifdef ALLOW_DIAGNOSTICS
-            DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
-     &           * d_HEFFbyATMonOCN_open(I,J)
-#endif
          ENDDO
         ENDDO
-
 #endif /* SEAICE_GROWTH_LEGACY */
 
 #ifdef ALLOW_SITRACER
@@ -1158,9 +1159,6 @@ C compute available heat left after snow melt by atm:
 C (cannot melt more than all the ice)
           tmpscal2 = MAX(-tmpscal0,tmpscal1)
           tmpscal3 = MIN(ZERO,tmpscal2)
-#ifdef ALLOW_DIAGNOSTICS
-          DIAGarray(I,J) = tmpscal2
-#endif
 C gain of new ice over open water
           tmpscal4=MAX(ZERO,a_QbyATM_open(I,J))
 C compute cover fraction tendency
@@ -1617,6 +1615,12 @@ C ===================================================================
      &      'SIdHbATC',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(d_HEFFbyATMonOCN_open,
      &      'SIdHbATO',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(d_HEFFbyFLOODING,
+     &      'SIdHbFLO',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL
+     &      (d_HSNWbyOCNonSNW,'SIdSbOCN',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(d_HSNWbyATMonSNW,
+     &      'SIdSbATC',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL
      &    (d_AREAbyATM,'SIdAbATO',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL
@@ -1632,25 +1636,13 @@ C three that actually need intermediate storage
           DO I=1,sNx
             DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj) 
      &        * d_HSNWbyRAIN(I,J)*SEAICE_rhoSnow/SEAICE_deltaTtherm
-            DIAGarrayB(I,J) =  
-     &        d_AREAbyICE(I,J) + d_AREAbyATM(I,J) + d_AREAbyOCN(I,J)
-            DIAGarrayC(I,J) = (HEFF(I,J,bi,bj)-HEFFpreTH(I,J)
-     &        -d_HEFFbyFLOODING(I,J))/SEAICE_deltaTtherm
+            DIAGarrayB(I,J) =  AREA(I,J,bi,bj)-AREApreTH(I,J)
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL
      &    (DIAGarrayA,'SIsnPrcp',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL
      &    (DIAGarrayB,'SIdA    ',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (DIAGarrayC,'SIthdgrh',0,1,3,bi,bj,myThid)
-         tmpscal1=1. _d 0 / SEAICE_deltaTtherm
-         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyFLOODING,tmpscal1,1,
-     &    'SIsnwice',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (d_HEFFbyOCNonICE,'SIyneg  ',0,1,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (d_HEFFbyATMonOCN_cover,'SIfice  ',0,1,1,bi,bj,myThid)
         ENDIF
 #endif
 
