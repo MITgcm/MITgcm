@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1452 2011/06/10 21:18:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1453 2011/06/12 19:20:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - move MNC code from diagnostics_out.F into new diagnostics_mnc_out.F (2 S/R).
+  - rename S/R GETDIAG to DIAGNOSTICS_GET_DIAG and change type of 1rst argument
+    (was _RL, now integer) with option = 0 to retrieve all levels.
 o model/src (rStar):
   - add rStar scaling factor in diags_phi_hyd.F (similar to calc_grad_phi_hyd.F);
     affect solution only if z* with full pressure in EOS;
