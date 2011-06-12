@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.30 2010/01/15 18:57:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.31 2011/06/12 19:08:21 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
 C--   File diagnostics_utils.F: General purpose support routines
 C--    Contents:
-C--    o GETDIAG
 C--    o DIAGNOSTICS_COUNT
+C--    o DIAGNOSTICS_GET_DIAG
 C--    o DIAGNOSTICS_GET_POINTERS
 C--    o DIAGNOSTICS_SETKLEV
 C--    o DIAGS_GET_PARMS_I (Function)
@@ -14,111 +14,12 @@ C--    o DIAGS_MK_UNITS (Function)
 C--    o DIAGS_MK_TITLE (Function)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
-C     !ROUTINE: GETDIAG
-
-C     !INTERFACE:
-      SUBROUTINE GETDIAG(
-     I                    levreal, undef,
-     O                    qtmp,
-     I                    ndId, mate, ip, im, bi, bj, myThid )
-
-C     !DESCRIPTION:
-C     Retrieve averaged model diagnostic
-
-C     !USES:
-      IMPLICIT NONE
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-
-C     !INPUT PARAMETERS:
-C     levreal :: Diagnostic LEVEL
-C     undef   :: UNDEFINED VALUE
-C     ndId    :: DIAGNOSTIC NUMBER FROM MENU
-C     mate    :: counter DIAGNOSTIC NUMBER if any ; 0 otherwise
-C     ip      :: pointer to storage array location for diag.
-C     im      :: pointer to storage array location for mate
-C     bi      :: X-direction tile number
-C     bj      :: Y-direction tile number
-C     myThid  :: my thread Id number
-      _RL levreal
-      _RL undef
-      INTEGER ndId, mate, ip, im
-      INTEGER bi,bj, myThid
-
-C     !OUTPUT PARAMETERS:
-C     qtmp    ..... AVERAGED DIAGNOSTIC QUANTITY
-      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-CEOP
-
-C     !LOCAL VARIABLES:
-      _RL factor
-      INTEGER i, j, ipnt,ipCt
-      INTEGER lev, levCt, klev
-
-      IF (ndId.GE.1) THEN
-       lev = NINT(levreal)
-       klev = kdiag(ndId)
-       IF (lev.LE.klev) THEN
-
-        IF ( mate.EQ.0 ) THEN
-C-      No counter diagnostics => average = Sum / ndiag :
-
-          ipnt = ip + lev - 1
-          factor = FLOAT(ndiag(ip,bi,bj))
-          IF (ndiag(ip,bi,bj).NE.0) factor = 1. _d 0 / factor
-
-#ifdef ALLOW_FIZHI
-          DO j = 1,sNy+1
-            DO i = 1,sNx+1
-              IF ( qdiag(i,j,ipnt,bi,bj) .LE. undef ) THEN
-                qtmp(i,j) = qdiag(i,j,ipnt,bi,bj)*factor
-              ELSE
-                qtmp(i,j) = undef
-              ENDIF
-            ENDDO
-          ENDDO
-#else /* ALLOW_FIZHI */
-          DO j = 1,sNy+1
-            DO i = 1,sNx+1
-              qtmp(i,j) = qdiag(i,j,ipnt,bi,bj)*factor
-            ENDDO
-          ENDDO
-#endif /* ALLOW_FIZHI */
-
-        ELSE
-C-      With counter diagnostics => average = Sum / counter:
-
-          ipnt = ip + lev - 1
-          levCt= MIN(lev,kdiag(mate))
-          ipCt = im + levCt - 1
-          DO j = 1,sNy+1
-            DO i = 1,sNx+1
-              IF ( qdiag(i,j,ipCt,bi,bj) .NE. 0. ) THEN
-                qtmp(i,j) = qdiag(i,j,ipnt,bi,bj)
-     &                    / qdiag(i,j,ipCt,bi,bj)
-              ELSE
-                qtmp(i,j) = undef
-              ENDIF
-            ENDDO
-          ENDDO
-
-        ENDIF
-       ENDIF
-      ENDIF
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP 0
 C     !ROUTINE: DIAGNOSTICS_COUNT
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_COUNT (chardiag,
-     I                              biArg, bjArg, myThid)
+      SUBROUTINE DIAGNOSTICS_COUNT( diagName,
+     I                              biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -137,12 +38,12 @@ C     !INPUT PARAMETERS:
 C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     chardiag :: Character expression for diag to increment the counter
+C     diagName :: name of diagnostic to increment the counter
 C     biArg    :: X-direction tile number, or 0 if called outside bi,bj loops
 C     bjArg    :: Y-direction tile number, or 0 if called outside bi,bj loops
 C     myThid   :: my thread Id number
 C***********************************************************************
-      CHARACTER*8 chardiag
+      CHARACTER*8 diagName
       INTEGER biArg, bjArg
       INTEGER myThid
 CEOP
@@ -164,9 +65,9 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C--   Run through list of active diagnostics to find which counter
 C     to increment (needs to be a valid & active diagnostic-counter)
-      DO n=1,nlists
+      DO n=1,nLists
        DO m=1,nActive(n)
-        IF ( chardiag.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
+        IF ( diagName.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
          ipt = idiag(m,n)
          IF (ndiag(ipt,bi,bj).GE.0) THEN
           ndId = jdiag(m,n)
@@ -186,6 +87,113 @@ C-    Increment is done
         ENDIF
        ENDDO
       ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: DIAGNOSTICS_GET_DIAG
+
+C     !INTERFACE:
+      SUBROUTINE DIAGNOSTICS_GET_DIAG(
+     I                    kl, undefRL,
+     O                    qtmp,
+     I                    ndId, mate, ip, im, bi, bj, myThid )
+
+C     !DESCRIPTION:
+C     Retrieve time-averaged (or snap-shot) diagnostic field
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
+
+C     !INPUT PARAMETERS:
+C     kl      :: level selection: >0 : single selected lev ; =0 : all kdiag levels
+C     undefRL :: undefined "_RL" type value
+C     ndId    :: diagnostic Id number (in available diagnostics list)
+C     mate    :: counter diagnostic number if any ; 0 otherwise
+C     ip      :: pointer to storage array location for diag.
+C     im      :: pointer to storage array location for mate
+C     bi      :: X-direction tile number
+C     bj      :: Y-direction tile number
+C     myThid  :: my thread Id number
+      INTEGER kl
+      _RL undefRL
+      INTEGER ndId, mate, ip, im
+      INTEGER bi, bj, myThid
+
+C     !OUTPUT PARAMETERS:
+C     qtmp    :: time-averaged (or snap-shot) diagnostic field
+      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,*)
+CEOP
+
+C     !LOCAL VARIABLES:
+      _RL factor
+      INTEGER i, j, ipnt, ipCt
+      INTEGER k, kd, km, kLev
+
+      IF (ndId.GE.1) THEN
+       kLev = kdiag(ndId)
+       IF ( kl.GE.1 .AND. kl.LE.kLev ) THEN
+        kLev = 1
+       ELSEIF ( kl.NE.0 ) THEN
+        kLev = 0
+       ENDIF
+
+       DO k = 1,kLev
+        kd = k
+        IF ( kl.GE.1 ) kd = kl
+
+        IF ( mate.EQ.0 ) THEN
+C-      No counter diagnostics => average = Sum / ndiag :
+
+          ipnt = ip + kd - 1
+          factor = FLOAT(ndiag(ip,bi,bj))
+          IF (ndiag(ip,bi,bj).NE.0) factor = 1. _d 0 / factor
+
+#ifdef ALLOW_FIZHI
+          DO j = 1,sNy+1
+            DO i = 1,sNx+1
+              IF ( qdiag(i,j,ipnt,bi,bj) .LE. undefRL ) THEN
+                qtmp(i,j,k) = qdiag(i,j,ipnt,bi,bj)*factor
+              ELSE
+                qtmp(i,j,k) = undefRL
+              ENDIF
+            ENDDO
+          ENDDO
+#else /* ALLOW_FIZHI */
+          DO j = 1,sNy+1
+            DO i = 1,sNx+1
+              qtmp(i,j,k) = qdiag(i,j,ipnt,bi,bj)*factor
+            ENDDO
+          ENDDO
+#endif /* ALLOW_FIZHI */
+
+        ELSE
+C-      With counter diagnostics => average = Sum / counter:
+
+          ipnt = ip + kd - 1
+          km = MIN(kd,kdiag(mate))
+          ipCt = im + km - 1
+          DO j = 1,sNy+1
+            DO i = 1,sNx+1
+              IF ( qdiag(i,j,ipCt,bi,bj) .NE. 0. ) THEN
+                qtmp(i,j,k) = qdiag(i,j,ipnt,bi,bj)
+     &                      / qdiag(i,j,ipCt,bi,bj)
+              ELSE
+                qtmp(i,j,k) = undefRL
+              ENDIF
+            ENDDO
+          ENDDO
+
+        ENDIF
+       ENDDO
+      ENDIF
 
       RETURN
       END
@@ -247,7 +255,7 @@ C     !LOCAL VARIABLES:
 C--   select the 1rst one which name matches:
 
 C-    search for this diag. in the active 2D/3D diagnostics list
-        DO n=1,nlists
+        DO n=1,nLists
          DO m=1,nActive(n)
            IF ( ip.EQ.0 .AND. diagName.EQ.flds(m,n)
      &                  .AND. idiag(m,n).NE.0 ) THEN
@@ -257,11 +265,11 @@ C-    search for this diag. in the active 2D/3D diagnostics list
          ENDDO
         ENDDO
 
-      ELSEIF ( listId.LE.nlists ) THEN
+      ELSEIF ( listId.LE.nLists ) THEN
 C--   select the unique diagnostic with output-time identical to listId
 
 C-    search for this diag. in the active 2D/3D diagnostics list
-        DO n=1,nlists
+        DO n=1,nLists
          IF ( ip.EQ.0
      &        .AND. freq(n) .EQ. freq(listId)
      &        .AND. phase(n).EQ.phase(listId)
