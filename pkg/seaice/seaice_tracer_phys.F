@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.2 2011/06/09 19:37:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.3 2011/06/13 23:21:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,8 +41,9 @@ C     === Local variables ===
       _RL HEFFprev, HEFFpost, growFact, meltPart, tmpscal1
       _RL SItrExpand  (1:sNx,1:sNy)
       _RL AREAprev, AREApost, expandFact
+      CHARACTER*8   diagName
 
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       _RL DIAGarray     (1:sNx,1:sNy,Nr)
 #endif
 
@@ -94,8 +95,8 @@ c ==================================
       DO J=1,sNy
        DO I=1,sNx
         HEFFprev=SItrHEFF(i,j,bi,bj,1)
-#ifdef ALLOW_SITRACER_DIAG
-        diagArray(I,J,5+(iTr-1)*5) = 
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
+        DIAGarray(I,J,5+(iTr-1)*5) = 
      &    HEFFprev*SItracer(i,j,bi,bj,iTr) + SItrBucket(i,j,bi,bj,iTr)
 #endif
 c apply the sequence of thermodynamics increments to actual traceur
@@ -131,9 +132,9 @@ c rk: flooding can only imply an ocean-ice tracer exchange, as long
 c as we dont have snow tracers, so it goes through SItrBucket.
           SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
      &             -HEFFpost*SItrFromFlood(i,j)*(1. _d 0 - growFact)
-#ifdef ALLOW_SITRACER_DIAG
-        diagArray(I,J,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr) 
-     &  +SItrBucket(i,j,bi,bj,iTr)-diagArray(I,J,5+(iTr-1)*5)
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
+        DIAGarray(I,J,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr) 
+     &  +SItrBucket(i,j,bi,bj,iTr)-DIAGarray(I,J,5+(iTr-1)*5)
 #endif
        ENDDO
       ENDDO
@@ -200,6 +201,14 @@ c ice melt reduces ridges/roughness
       endif
 c 3) ice-ocean tracer exchange/mapping to external variables
 c ==========================================================
+#ifdef ALLOW_DIAGNOSTICS
+      if (SItrMate(iTr).EQ.'HEFF') then
+        WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'FX'
+        tmpscal1=-ONE/SEAICE_deltaTtherm*SEAICE_rhoIce
+        CALL DIAGNOSTICS_SCALE_FILL(SItrBucket(1-oLx,1-oLy,bi,bj,iTr),
+     &   tmpscal1, 1, diagName,0,1,2,bi,bj,myThid)
+      endif
+#endif
       if (SItrName(iTr).EQ.'age') then
 c age tracer: not passed to ocean
       elseif (SItrName(iTr).EQ.'salinity') then
@@ -217,8 +226,8 @@ c "ice concentration" tracer: not passed to ocean
       endif
       DO J=1,sNy
        DO I=1,sNx
-#ifdef ALLOW_SITRACER_DIAG
-        diagArray(I,J,4+(iTr-1)*5) = - SItrBucket(i,j,bi,bj,iTr)
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
+        DIAGarray(I,J,4+(iTr-1)*5) = - SItrBucket(i,j,bi,bj,iTr)
      &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
 #endif
 c empty bucket
@@ -228,14 +237,14 @@ c empty bucket
 c TAF? elseif (SItrMate(iTr).EQ.'AREA') then
 c 4) diagnostics
 c ==============
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       if (SItrMate(iTr).EQ.'HEFF') then
       DO J=1,sNy
        DO I=1,sNx
         HEFFpost=SItrHEFF(i,j,bi,bj,5)
         DIAGarray(I,J,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
         DIAGarray(I,J,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*HEFFpost
-c diagArray(:,:,3) is the term of comparison for diagArray(:,:,2)
+c DIAGarray(:,:,3) is the term of comparison for DIAGarray(:,:,2)
         if (SItrName(iTr).EQ.'age') then
           DIAGarray(I,J,3+(iTr-1)*5) = IceAgeTr(i,j,bi,bj,2)
         elseif (SItrName(iTr).EQ.'salinity') then
@@ -243,8 +252,8 @@ c diagArray(:,:,3) is the term of comparison for diagArray(:,:,2)
         elseif (SItrName(iTr).EQ.'one') then
           DIAGarray(I,J,3+(iTr-1)*5) = HEFFpost
         endif
-c diagArray(:,:,4) allows check of conservation : del(SItrBucket)+del(SItr*HEFF)=0. over do_phys
-c diagArray(:,:,5) is the tracer flux from the ocean (<0 incr. ocean tracer)
+c DIAGarray(:,:,4) allows check of conservation : del(SItrBucket)+del(SItr*HEFF)=0. over do_phys
+c DIAGarray(:,:,5) is the tracer flux from the ocean (<0 incr. ocean tracer)
        ENDDO
       ENDDO
       else
@@ -253,7 +262,7 @@ c diagArray(:,:,5) is the tracer flux from the ocean (<0 incr. ocean tracer)
         AREApost=SItrAREA(i,j,bi,bj,3)
         DIAGarray(I,J,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
         DIAGarray(I,J,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*AREApost
-c diagArray(:,:,3) is the term of comparison for diagArray(:,:,2)
+c DIAGarray(:,:,3) is the term of comparison for DIAGarray(:,:,2)
         if (SItrName(iTr).EQ.'age') then
           DIAGarray(I,J,3+(iTr-1)*5) = IceAgeTr(i,j,bi,bj,1)
         endif
@@ -262,7 +271,7 @@ c diagArray(:,:,3) is the term of comparison for diagArray(:,:,2)
       endif
 #endif
       ENDDO
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG1  ',0,Nr,3,bi,bj,myThid)
 #endif
       ENDDO

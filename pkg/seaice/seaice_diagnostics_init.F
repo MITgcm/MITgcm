@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.26 2011/06/12 16:07:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.27 2011/06/13 23:21:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,14 +54,22 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 
+#ifdef ALLOW_SITRACER
+      INTEGER       iTr, ilnb, numMateTr, numMateTrPreTh
+      CHARACTER*8   locUnitTr
+      CHARACTER*30  locNameTr
+#endif
 #ifdef SEAICE_AGE
       INTEGER       iTracer
 #endif
-      INTEGER       numArea
+      INTEGER       numArea,numAreaPreTh,numHeff,numHeffPreTh
       CHARACTER*9   flxUnits
       CHARACTER*15  locName
       CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
 c     EXTERNAL    SEAICE_DIAG_SUFX
+C     Functions ::
+      INTEGER     ILNBLNK
+      EXTERNAL    ILNBLNK
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -76,21 +84,20 @@ C=============== state variables ============
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       numArea  = diagNum
 
-      diagName  = 'SIarPrRi'
+      diagName  = 'SIareaPR'
       diagTitle = 'SIarea preceeding ridging process'
       diagUnits = 'm^2/m^2         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      numArea  = diagNum
 
-      diagName  = 'SIarPrTh'
+      diagName  = 'SIareaPT'
       diagTitle = 'SIarea preceeding thermodynamic growth/melt'
       diagUnits = 'm^2/m^2         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      numArea  = diagNum
+      numAreaPreTh  = diagNum
 
       diagName  = 'SIheff  '
       diagTitle = 'SEAICE effective ice thickness'
@@ -98,13 +105,15 @@ C=============== state variables ============
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      numHeff  = diagNum
 
-      diagName  = 'SIhePrTh'
+      diagName  = 'SIheffPT'
       diagTitle = 'SIheff preceeeding thermodynamic growth/melt'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      numHeffPreTh  = diagNum
 
       diagName  = 'SIhsnow '
       diagTitle = 'SEAICE effective snow thickness'
@@ -113,7 +122,7 @@ C=============== state variables ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIhsPrTh'
+      diagName  = 'SIhsnoPT'
       diagTitle = 'SIhsnow preceeeding thermodynamic growth/melt'
       diagUnits = 'm               '
       diagCode  = 'SM      M1      '
@@ -126,6 +135,58 @@ C=============== state variables ============
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_SITRACER
+      DO iTr = 1, SItrMaxNum
+
+C--    Set default name & tracer Units:
+       WRITE(locNameTr,'(A,I4.4,A)') 'sea ice tracer no. ',iTr
+       if (SItrMate(iTr).EQ.'HEFF') then
+         locUnitTr  = '(kg/kg) '
+         numMateTr  = numHeff
+         numMateTrPreTh = numHeffPreTh
+       else
+         locUnitTr  = '(kg/m^2)'
+         numMateTr  = numArea
+         numMateTrPreTh = numAreaPreTh
+       endif
+C-     use name & units from data.seaice :
+       ilnb = ILNBLNK(SItrUnit(iTr))
+       IF ( ilnb.GE.1 ) THEN
+         ilnb = LEN(locUnitTr)
+         locUnitTr = SItrUnit(iTr)(1:ilnb)
+       ENDIF
+       ilnb = ILNBLNK(SItrNameLong(iTr))
+       IF ( ilnb.GE.1 ) THEN
+         ilnb = MIN(LEN(locNameTr),ilnb)
+         WRITE(locNameTr,'(A)') SItrNameLong(iTr)(1:ilnb)
+       ELSE
+         ilnb = ILNBLNK(SItrName(iTr))
+         IF ( ilnb.GE.1 ) THEN
+           ilnb = MIN(LEN(locNameTr),ilnb)
+           WRITE(locNameTr,'(2A)') SItrName(iTr)(1:ilnb),' tracer'
+         ENDIF
+       ENDIF
+       ilnb = MAX(ILNBLNK(locNameTr),1)
+
+       WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'  '
+       WRITE(diagTitle,'(4A)') locNameTr(1:ilnb), 
+     &       ' (associated with ',SItrMate(iTr),')'
+       diagUnits = locUnitTr//'         '
+       diagCode  = 'SM  C   M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum, diagName,
+     I      diagCode, diagUnits, diagTitle, numMateTr, myThid )
+
+       WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'PT'
+       WRITE(diagTitle,'(A4,I2.2,2A)') 'SItr',iTr,
+     &     ' preceeeding thermodynamic growth/melt'
+       diagUnits = locUnitTr//'         '
+       diagCode  = 'SM  C   M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum, diagName,
+     I      diagCode, diagUnits, diagTitle, numMateTrPreTh, myThid )
+
+      ENDDO
+#endif
 
 #ifdef SEAICE_AGE
       DO iTracer = 1, SEAICE_num
@@ -283,6 +344,28 @@ C     is EmPmR before impact of ice.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_SITRACER
+      DO iTr = 1, SItrMaxNum
+       IF (SItrMate(iTr).EQ.'HEFF') then
+C--    Set default name & tracer Units:
+       WRITE(diagUnits,'(A)') 'kg/m^2/s'
+C--     use units from data.seaice :
+       ilnb = ILNBLNK(SItrUnit(iTr))
+       IF ( ilnb.GE.1 ) THEN
+         WRITE(diagUnits,'(2A)') SItrUnit(iTr)(1:ilnb),'.kg/m^2/s'
+       ENDIF
+C--       
+       WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'Fx'
+       WRITE(diagTitle,'(A4,I2.2,A)') 'SItr',iTr,
+     I      ' flux out of ice pack (that may enter ocean)'
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum, diagName,
+     I      diagCode, diagUnits, diagTitle, 0, myThid )
+
+      ENDIF
+      ENDDO
+#endif
 
 C============== ice growth/melt ==============
 

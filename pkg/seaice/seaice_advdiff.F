@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.51 2011/06/09 19:37:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.52 2011/06/13 23:21:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,7 +72,7 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
 #ifdef ALLOW_SITRACER_ADVCAP
       _RL SItrPrev  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       _RL DIAGarray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #endif
@@ -340,7 +340,7 @@ C--   store a couple things
 C--   store previous value for spurious maxima treament
             SItrPrev(i,j,bi,bj)=SItracer(i,j,bi,bj,iTr)
 #endif
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
             diagArray(I,J,2+(iTr-1)*5) = SItrExt(i,j,bi,bj)
 #endif
            ENDDO
@@ -398,7 +398,7 @@ c           treat case of potential negative value
               SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
      &                                 +HEFF(I,J,bi,bj)*tmpscal1
             endif
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       diagArray(I,J,1+(iTr-1)*5)= - SItrBucket(i,j,bi,bj,iTr)
      &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
       tmpscal1= ( HEFF(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr) 
@@ -431,7 +431,7 @@ c           treat case of potential negative value
               tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
               SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
             endif
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       diagArray(I,J,1+(iTr-1)*5)= 0. _d 0
       diagArray(I,J,2+(iTr-1)*5)= - diagArray(I,J,2+(iTr-1)*5) 
      & + AREA(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr)*HEFFM(I,J,bi,bj)
@@ -444,7 +444,7 @@ c           treat case of potential negative value
 C--
          ENDIF
         ENDDO
-#ifdef ALLOW_SITRACER_DIAG
+#ifdef ALLOW_SITRACER_DEBUG_DIAG
       CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG2  ',0,Nr,2,bi,bj,myThid)
 #endif
 #endif /* ALLOW_SITRACER */

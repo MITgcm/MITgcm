@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.21 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.22 2011/06/13 23:21:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,7 +55,7 @@ C     == Local variables ==
       INTEGER k
       _RL recip_multdim
 #endif
-#ifdef SEAICE_AGE
+#if (defined SEAICE_AGE)||(defined ALLOW_SITRACER)
       INTEGER iTracer
       CHARACTER*8   diagName
 #endif
@@ -100,6 +100,20 @@ C     division by zero is not possible
 
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
 
+#ifdef ALLOW_SITRACER
+      DO iTracer = 1, SItrMaxNum
+       WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTracer,'  '
+       if (SItrMate(iTracer).EQ.'HEFF') then
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I       SItracer(1-OLx,1-OLy,1,1,iTracer), HEFF, 
+     I       ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
+       else
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I       SItracer(1-OLx,1-OLy,1,1,iTracer), AREA, 
+     I       ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
+       endif
+      ENDDO
+#endif
 #ifdef SEAICE_VARIABLE_SALINITY
        CALL DIAGNOSTICS_FILL(HSALT  ,'SIhsalt ',0,1 ,0,1,1,myThid)
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.128 2011/06/12 16:07:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.129 2011/06/13 23:21:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -226,6 +226,10 @@ c     McPhee heat flux parameterization (m/s)
       _RL surf_theta
 #endif
 
+#ifdef ALLOW_SITRACER
+      INTEGER iTr
+      CHARACTER*8   diagName
+#endif
 #ifdef ALLOW_DIAGNOSTICS
 c     Helper variables for diagnostics
       _RL DIAGarrayA    (1:sNx,1:sNy)
@@ -556,10 +560,24 @@ CADJ &     key = iicekey,byte=isbyte
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-      CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIarPrRi',0,1,3,bi,bj,myThid)
-      CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIarPrTh',0,1,3,bi,bj,myThid)
-      CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIhePrTh',0,1,3,bi,bj,myThid)
-      CALL DIAGNOSTICS_FILL(DIAGarrayD,'SIhsPrTh',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIareaPR',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIareaPT',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIheffPT',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayD,'SIhsnoPT',0,1,3,bi,bj,myThid)
+#ifdef ALLOW_SITRACER
+      DO iTr = 1, SItrMaxNum
+       WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'PT'
+       if (SItrMate(iTr).EQ.'HEFF') then
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I       SItracer(1-OLx,1-OLy,bi,bj,iTr),HEFF(1-OLx,1-OLy,bi,bj), 
+     I       ONE, 1, diagName,0,1,2,bi,bj,myThid )
+       else
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I       SItracer(1-OLx,1-OLy,bi,bj,iTr),AREA(1-OLx,1-OLy,bi,bj), 
+     I       ONE, 1, diagName,0,1,2,bi,bj,myThid )
+       endif
+      ENDDO
+#endif
       ENDIF
 #endif
 
