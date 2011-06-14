@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.52 2011/06/12 19:16:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.53 2011/06/14 00:18:37 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -71,6 +71,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       INTEGER mate, mVec
       CHARACTER*10 gcode
       _RL undefRL
+      INTEGER nFilled
       INTEGER nLevOutp, kLev
 
       INTEGER iLen
@@ -200,7 +201,16 @@ C--     Start processing 1 Fld :
           IF (mate.GT.0) im = im + kdiag(mate)*(lm-1)
           IF (mVec.GT.0) im = im + kdiag(mVec)*(lm-1)
 
-          IF ( ndiag(ip,1,1).EQ.0 ) THEN
+          nFilled = ndiag(ip,1,1)
+          IF ( flds(md,listId).EQ.'PhiVEL  ' ) THEN
+              CALL DIAGNOSTICS_CALC_PHIVEL(
+     I                         listId, md, ndId, ip, im, lm,
+     U                         nFilled, qtmp1, qtmp2,
+     I                         myTime, myIter, myThid )
+          ENDIF
+
+c         IF ( ndiag(ip,1,1).EQ.0 ) THEN
+          IF ( nFilled.EQ.0 ) THEN
 C-        Empty diagnostics case :
 
             _BEGIN_MASTER( myThid )
@@ -241,7 +251,8 @@ C-        Empty diagnostics case :
               ENDDO
             ENDDO
 
-          ELSE
+c         ELSE
+          ELSEIF ( ndiag(ip,1,1).NE.0 ) THEN
 C-        diagnostics is not empty :
 
             IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN

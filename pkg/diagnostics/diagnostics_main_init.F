@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.37 2010/01/15 00:24:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.38 2011/06/14 00:18:37 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -36,6 +36,7 @@ C                   &  r  &  same but cumulate product by model level thickness 
 C                   &  R  &  same but cumulate product by hFac & level thickness \\
 C         parse(4)  &  P  &  positive definite  \\
 C         parse(5 ) &  C  &  with counter array  \\
+C                   &  P  &  post-processed (not filled up) from other diags  \\
 C                   &  D  &  disable an array for output  \\
 C         parse(6--8) & '123'  &  retired, formerly: 3-digit mate number \\
 C         parse(9)  &  U  &  model-level plus 1/2  \\
@@ -333,6 +334,24 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'PhiVEL  '
+      diagTitle = 'Horizontal Velocity Potential (m^2/s)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SMR P   MR      '
+C-    use 'UVELMASS' as mate.
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+c     diagName  = 'PsiVEL  '
+c     diagTitle = 'Horizontal Velocity Stream-Function'
+c     diagUnits = 'm^2/s           '
+c     diagUnits = DIAGS_MK_UNITS( rUnit2c//'.m^2/s', myThid )
+c     diagCode  = 'SZ  P   MR      '
+C-    use 'PhiVEL' as mate.
+c     diagMate  = diagNum
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UTHMASS '
       diagTitle = 'Zonal Mass-Weight Transp of Pot Temp'
