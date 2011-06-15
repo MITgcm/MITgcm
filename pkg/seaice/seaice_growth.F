@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.129 2011/06/13 23:21:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.130 2011/06/15 01:31:07 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1622,33 +1622,35 @@ C ===================================================================
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL
-     &      (a_QbyATM_cover,'SIaQbATC',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &      (a_QbyATM_open,'SIaQbATO',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(a_QbyOCN,'SIaQbOCN',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &      (d_HEFFbyOCNonICE,'SIdHbOCN',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(d_HEFFbyATMonOCN_cover,
-     &      'SIdHbATC',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(d_HEFFbyATMonOCN_open,
-     &      'SIdHbATO',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(d_HEFFbyFLOODING,
-     &      'SIdHbFLO',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &      (d_HSNWbyOCNonSNW,'SIdSbOCN',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(d_HSNWbyATMonSNW,
-     &      'SIdSbATC',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (d_AREAbyATM,'SIdAbATO',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (d_AREAbyICE,'SIdAbATC',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (d_AREAbyOCN,'SIdAbOCN',0,1,3,bi,bj,myThid)
+         tmpscal1=1. _d 0 / SEAICE_deltaTtherm
+         CALL DIAGNOSTICS_SCALE_FILL(a_QbyATM_cover,
+     &      tmpscal1,1,'SIaQbATC',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(a_QbyATM_open,
+     &      tmpscal1,1,'SIaQbATO',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(a_QbyOCN,
+     &      tmpscal1,1,'SIaQbOCN',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyOCNonICE,
+     &      tmpscal1,1,'SIdHbOCN',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyATMonOCN_cover,
+     &      tmpscal1,1,'SIdHbATC',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyATMonOCN_open,
+     &      tmpscal1,1,'SIdHbATO',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyFLOODING,
+     &      tmpscal1,1,'SIdHbFLO',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_HSNWbyOCNonSNW,
+     &      tmpscal1,1,'SIdSbOCN',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_HSNWbyATMonSNW,
+     &      tmpscal1,1,'SIdSbATC',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_AREAbyATM,
+     &      tmpscal1,1,'SIdAbATO',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_AREAbyICE,
+     &      tmpscal1,1,'SIdAbATC',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(d_AREAbyOCN,
+     &      tmpscal1,1,'SIdAbOCN',0,1,3,bi,bj,myThid)     
          CALL DIAGNOSTICS_SCALE_FILL(r_QbyATM_open,
-     &    convertHI2Q,1, 'SIqneto ',0,1,3,bi,bj,myThid)
+     &      convertHI2Q,1, 'SIqneto ',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_SCALE_FILL(r_QbyATM_cover,
-     &    convertHI2Q,1, 'SIqneti ',0,1,3,bi,bj,myThid)
+     &      convertHI2Q,1, 'SIqneti ',0,1,3,bi,bj,myThid)
 C three that actually need intermediate storage
          DO J=1,sNy
           DO I=1,sNx
@@ -1657,10 +1659,10 @@ C three that actually need intermediate storage
             DIAGarrayB(I,J) =  AREA(I,J,bi,bj)-AREApreTH(I,J)
           ENDDO
          ENDDO
-         CALL DIAGNOSTICS_FILL
-     &    (DIAGarrayA,'SIsnPrcp',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL
-     &    (DIAGarrayB,'SIdA    ',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &      'SIsnPrcp',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(DIAGarrayB,
+     &      tmpscal1,1,'SIdA    ',0,1,3,bi,bj,myThid)
         ENDIF
 #endif
 

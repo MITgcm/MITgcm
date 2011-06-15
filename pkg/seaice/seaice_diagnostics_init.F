@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.27 2011/06/13 23:21:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.28 2011/06/15 01:31:07 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -370,64 +370,64 @@ C--
 C============== ice growth/melt ==============
 
       diagName  = 'SIaQbOCN'
-      diagTitle = 'Potential delta HEFF from turbulent ocean-ice fluxes'
-      diagUnits = 'm               '
+      diagTitle = 'Potential HEFF rate of change by ocean ice flux'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbATC'
-      diagTitle = 'Potential delta HEFF from atm fluxes over ice'
-      diagUnits = 'm               '
+      diagTitle = 'Potential HEFF rate of change by atm flux over ice'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIaQbATO'
-      diagTitle = 'Potential delta HEFF from atm fluxes over open water'
-      diagUnits = 'm               '
+      diagTitle = 'Potential HEFF rate of change by open ocn atm flux'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdHbOCN'
-      diagTitle = 'Actual delta HEFF from turbulent ocean-ice fluxes'
-      diagUnits = 'm               '
+      diagTitle = 'HEFF rate of change by ocean ice flux'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdSbATC'
-      diagTitle = 'Actual delta HSNOW from atm fluxes over sea ice'
-      diagUnits = 'm               '
+      diagTitle = 'HSNOW rate of change by atm flux over sea ice'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdSbOCN'
-      diagTitle = 'Actual delta HSNOW from turbulent ocean-ice fluxes'
-      diagUnits = 'm               '
+      diagTitle = 'HSNOW rate of change by ocean ice flux'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdHbATC'
-      diagTitle = 'Actual delta HEFF from atm fluxes over sea ice'
-      diagUnits = 'm               '
+      diagTitle = 'HEFF rate of change by atm flux over sea ice'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdHbATO'
-      diagTitle = 'Actual delta HEFF from atm fluxes over open water'
-      diagUnits = 'm               '
+      diagTitle = 'HEFF rate of change by open ocn atm flux'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdHbFLO'
-      diagTitle = 'Actual delta HEFF from flooding snow'
-      diagUnits = 'm               '
+      diagTitle = 'HEFF rate of change by flooding snow'
+      diagUnits = 'm/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -435,29 +435,29 @@ C============== ice growth/melt ==============
 C=============== expansion/contraction ============
 
       diagName  = 'SIdAbATO'
-      diagTitle = 'Potential delta AREA from atm fluxes over open water'
-      diagUnits = 'm^2/m^2         '
+      diagTitle = 'Potential AREA rate of change by open ocn atm flux'
+      diagUnits = 'm^2/m^2/s       '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdAbATC'
-      diagTitle = 'Potential delta AREA from atm fluxes over sea ice'
-      diagUnits = 'm^2/m^2         '
+      diagTitle = 'Potential AREA rate of change by atm flux over ice'
+      diagUnits = 'm^2/m^2/s       '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdAbOCN'
-      diagTitle = 'Potential delta AREA from turb. ocean-ice fluxes'
-      diagUnits = 'm^2/m^2         '
+      diagTitle = 'Potential AREA rate of change by ocean ice flux'
+      diagUnits = 'm^2/m^2/s       '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdA'
-      diagTitle = 'Actual delta AREA (net)'
-      diagUnits = 'm^2/m^2         '
+      diagTitle = 'AREA rate of change (net)'
+      diagUnits = 'm^2/m^2/s       '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
