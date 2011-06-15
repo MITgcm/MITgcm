@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1454 2011/06/14 16:52:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1455 2011/06/15 01:31:34 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - re-order diags inits so that they appear in order in available_diagnostics.log
+ - added diags: hsnow thermo. rates of change, area preceeding ridiging process,
+   area/heff/hsnow preceeding thermodynamic growth/melt.
+ - modified diag: SIdA; output actual effect, as the description states.
+ - modified description: SIqneti, SIqneto, SIuheff, SIvheff, SIdAb*, HSNOW.
+ - retired redundant diags: SIyneg, SIfice, SIsnwice, SIthdgrh.
+   (SIyneg->SIdHbOCN; SIfice->SIdHbATC; SIsnwice->SIdHbFLO; 
+    and SIthdgrh->SIdHbOCN+SIdHbATC+SIdHbATO)
+ - modified diags (2) : switch all SIdA*, SIdH*, SIdS* from delta to rates.
+ - added diagnostics for seaice genereic tracers (SItr*).
+ - added SItrUnit and SItrNameLong run time param (for SItr* diags).
+ - in diag names, replaced 'PrTh' abbrev. of 'preceeding thermo' with 'PT'.
 o pkg/diagnostics:
   - move MNC code from diagnostics_out.F into new diagnostics_mnc_out.F (2 S/R).
   - rename S/R GETDIAG to DIAGNOSTICS_GET_DIAG and change type of 1rst argument
