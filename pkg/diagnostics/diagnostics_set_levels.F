@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.16 2010/01/15 00:25:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.17 2011/06/15 13:14:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -152,10 +152,19 @@ C--   Check for unvalid diag.mate number
         CALL PRINT_ERROR( msgBuf , myThid )
         ncount = ncount + 1
        ENDIF
+       gcode = gdiag(n)(1:10)
+       IF ( ( gcode(5:5).EQ.'C' .OR. gcode(5:5).EQ.'P' )
+     &                         .AND. hdiag(n).EQ.0 ) THEN
+        WRITE(msgBuf,'(6A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &    'mate number required for diag."',cdiag(n),
+     &    '" (gdiag(5)=',gcode(5:5),')'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        ncount = ncount + 1
+       ENDIF
       ENDDO
       IF ( ncount.GT.0 ) THEN
         WRITE(msgBuf,'(2A,I6,3A)') 'DIAGNOSTICS_SET_LEVELS: ',
-     &    'found', ncount, ' unvalid mate number(s) => STOP'
+     &    'found', ncount, ' unvalid/missing mate number(s) => STOP'
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R DIAGSTATS_SET_LEVELS'
       ENDIF
