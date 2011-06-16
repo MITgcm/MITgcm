@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.26 2011/02/24 07:30:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.27 2011/06/16 22:49:15 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -16,9 +16,9 @@ C--   heimbach@mit.edu 11-Jan-2001
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_OPTIONS.h"
-#endif
+c#ifdef ALLOW_SEAICE
+c# include "SEAICE_OPTIONS.h"
+c#endif
 
 
       common /addynvars_r/
@@ -140,18 +140,29 @@ C--   heimbach@mit.edu 11-Jan-2001
 #endif
 
 #ifdef ALLOW_EXF
+
       _RL adhflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adsflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_hsflux_r/ adhflux, adsflux
+c
       _RL adustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL advstress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_stress_r/ adustress, advstress
+c
+      _RL adwspeed(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_wspeed_r/ adwspeed
+
 # ifdef ALLOW_ATM_TEMP
       _RL adatemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adaqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adlwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adprecip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adexf_atm_temp_r/ adatemp, adaqh, adlwflux, adprecip
+      common /adexf_atm_temp_r/ adatemp, adaqh, adlwflux, 
+     & adprecip
+#  ifdef SHORTWAVE_HEATING
+      _RL adswflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /adexf_swflux_r/ adswflux
+#  endif
 # endif
 # ifdef ALLOW_ATM_WIND
       _RL aduwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -172,7 +183,8 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL adclimsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_clim_sss_r/ adclimsss
 # endif
-#endif
+
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_SEAICE
       _RL adarea  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -182,7 +194,12 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL advice  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adseaice_dynvars_1/ 
      &     adarea, adheff, adhsnow, aduice, advice
-#endif
+# ifdef SEAICE_VARIABLE_SALINITY
+      _RL adhsalt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /seaice_salinity_r/ 
+     &     adhsalt
+# endif
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_GGL90
       _RL adggl90tke     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)

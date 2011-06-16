@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.7 2010/03/16 00:20:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.8 2011/06/16 22:49:15 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -181,6 +181,14 @@ C--   endif master cpu io
 
 C     endif different multiple
       ENDIF
+
+#ifdef ALLOW_EXF
+cph This case is handled separately in exf_adjoint_snapshots_ad.F
+#endif
+
+#ifdef ALLOW_SEAICE
+      CALL ADSEAICE_MONITOR ( myTime, myIter, myThid )
+#endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */

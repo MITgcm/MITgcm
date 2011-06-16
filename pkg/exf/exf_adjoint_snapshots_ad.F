@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.4 2007/12/28 21:13:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.5 2011/06/16 22:49:15 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -71,8 +71,6 @@ c     == end of interface ==
 CEOP
 
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
-      IF (useEXF) THEN
 
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
@@ -197,7 +195,9 @@ c
 
       ENDIF
 
-      ENDIF
+#ifdef ALLOW_MONITOR
+      CALL ADEXF_MONITOR ( iwhen, myTime, myIter, myThid )
+#endif
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
