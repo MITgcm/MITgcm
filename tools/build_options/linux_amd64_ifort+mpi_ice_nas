@@ -1,13 +1,10 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.6 2010/10/26 19:32:04 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.7 2011/06/16 16:30:07 zhc Exp $
 # $Name:  $
 
-# tested on pleiades using:
-# module load comp-intel/11.1.046 mpi/mpt.1.25 netcdf/3.6.0/intel
-#
-# Note: option -xSSE4.2 (left commented below) can be used on queue "normal_N"
-#  (not compatible with  "normal" queue processors) to get additional speed-up.
+# tested on pleiades using SLES11 and:
+# module load comp-intel/2011.2 mpi-sgi/mpt.2.04-fsa netcdf/4.0
 
 FC=ifort
 
@@ -18,10 +15,10 @@ OMPFLAG='-openmp'
 CFLAGS='-fPIC'
 LDADD='-shared-intel'
 
-LIBS='-L/nasa/sgi/mpt/1.25/lib -lmpi -L/nasa/netcdf/3.6.0/intel/lib -lnetcdf'
-INCLUDES='-I/nasa/sgi/mpt/1.25/include -I/nasa/netcdf/3.6.0/intel/include'
-INCLUDEDIRS='/nasa/sgi/mpt/1.25/include'
-MPIINCLUDEDIR='/nasa/sgi/mpt/1.25/include'
+LIBS='-L/nasa/sgi/mpt/2.04-fsa/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
+INCLUDES='-I/nasa/sgi/mpt/2.04-fsa/include -I/nasa/netcdf/4.0/include'
+INCLUDEDIRS='/nasa/sgi/mpt/2.04-fsa/include'
+MPIINCLUDEDIR='/nasa/sgi/mpt/2.04-fsa/include'
 MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
 
@@ -29,9 +26,8 @@ NOOPTFLAGS='-O0 -fPIC'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS="$FFLAGS -fPIC -w95 -W0 -WB -convert big_endian -assume byterecl -align"
-    FOPTIM='-O2 -ip -xSSE4.1 -fp-model precise -ftz'
-#    FOPTIM='-O2 -ip -xSSE4.2 -fp-model precise -ftz'
+    FFLAGS="$FFLAGS -fPIC -W0 -WB -convert big_endian -assume byterecl -align"
+    FOPTIM='-O2 -ip -fp-model precise -axSSSE4.2,SSSE3 -traceback -ftz'
     NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
 else
     #  Try to follow IEEE-754
@@ -42,5 +38,5 @@ fi
 #FFLAGS="$FFLAGS -r8"
 
 #- For really big executable (> 2 GB), uncomment following 2 lines
-#FFLAGS="$FFLAGS -mcmodel medium -shared-intel"
+#FFLAGS="$FFLAGS -mcmodel=medium -shared-intel"
 #CFLAGS='-mcmodel=medium'
