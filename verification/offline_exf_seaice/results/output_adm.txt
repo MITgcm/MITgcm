@@ -6,9 +6,9 @@
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint62y
-(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // Build user:        heimbach
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Sun May 29 15:52:44 EDT 2011
+(PID.TID 0000.0001) // Build date:        Thu Jun 16 19:38:52 EDT 2011
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -51,6 +51,7 @@
 (PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
 (PID.TID 0000.0001) useCoupler=    F ;/* Flag used to control communications with   */
 (PID.TID 0000.0001)                   /*  other model components, through a coupler */
+(PID.TID 0000.0001) debugMode =    F ; /* print debug msg. (sequence of S/R calls)  */
 (PID.TID 0000.0001) printMapIncludesZeros=    F ; /* print zeros in Std.Output maps */
 (PID.TID 0000.0001) maxLengthPrt1D=   65 /* maxLength of 1D array printed to StdOut */
 (PID.TID 0000.0001) 
@@ -1112,81 +1113,6 @@
 (PID.TID 0000.0001) %MON AngleSN_min                  =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_mean                 =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_sd                   =   0.0000000000000E+00
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =         -3.000000000000000E+01
-(PID.TID 0000.0001) // CMAX =         -3.000000000000000E+01
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -2:    23:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    19:    -2:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model Ro_surf (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
-(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -2:    23:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    19:    -2:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacC at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -2:    23:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    19:    -2:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacW at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -2:    23:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    19:    -2:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacS at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -2:    23:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(    19:    -2:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  0  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
@@ -1629,19 +1555,19 @@
 (PID.TID 0000.0001) ctrl_init: control vector length:            1800
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   186
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   190
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   117 EXFtaux
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   118 EXFtauy
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   116 EXFqnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   127 EXFempmr
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   111 EXFhl
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   110 EXFhs
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   113 EXFswnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   112 EXFlwnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   119 EXFuwind
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   120 EXFvwind
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   122 EXFatemp
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   118 EXFtaux
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   119 EXFtauy
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   117 EXFqnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   128 EXFempmr
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   112 EXFhl
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   111 EXFhs
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   114 EXFswnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   113 EXFlwnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   120 EXFuwind
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   121 EXFvwind
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   123 EXFatemp
 (PID.TID 0000.0001)   space allocated for all diagnostics:      11 levels
 (PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: diagsEXF
 (PID.TID 0000.0001)  Levels:       1.
@@ -2057,16 +1983,14 @@
 (PID.TID 0000.0001)  useSingleCpuIO = /* only master MPI process does I/O */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugMode  =  /* Debug Mode on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevA  =  /* 1rst level of debugging */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevB  =  /* 2nd  level of debugging */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugLevel =  /* select debugging level */
+(PID.TID 0000.0001) /* debLev[*]  : level of debug & auxiliary message printing */
+(PID.TID 0000.0001) debLevZero =  0 ; /* level of disabled aux. msg printing */
+(PID.TID 0000.0001)    debLevA =  1 ; /* level of minimum  aux. msg printing */
+(PID.TID 0000.0001)    debLevB =  2 ; /* level of low aux. print (report read-file opening)*/
+(PID.TID 0000.0001)    debLevC =  3 ; /* level of moderate debug prt (most pkgs debug msg) */
+(PID.TID 0000.0001)    debLevD =  4 ; /* level of enhanced debug prt (add DEBUG_STATS prt) */
+(PID.TID 0000.0001)    debLevE =  5 ; /* level of extensive debug printing */
+(PID.TID 0000.0001) debugLevel =  /* select debug printing level */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
@@ -2089,6 +2013,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useSRCGSolver =  /* use single reduction CG solver(s) */
 (PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) printResidualFreq = /* Freq. for printing CG residual */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
@@ -2539,30 +2466,6 @@
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  write diagnostics summary to file ioUnit:      6
-Iter.Nb:         0 ; Time(s):  0.0000000000000E+00
-------------------------------------------------------------------------
-2D/3D diagnostics: Number of lists:     1
-------------------------------------------------------------------------
-listId=    1 ; file name: diagsEXF
- nFlds, nActive,       freq     &     phase        , nLev               
-   11  |   11  |    -36000.000000     18000.000000 |   1
- levels:   1
- diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
-   117 |EXFtaux |      1 |      0 |   1 |       0 |
-   118 |EXFtauy |      2 |      0 |   1 |       0 |
-   116 |EXFqnet |      3 |      0 |   1 |       0 |
-   127 |EXFempmr|      4 |      0 |   1 |       0 |
-   111 |EXFhl   |      5 |      0 |   1 |       0 |
-   110 |EXFhs   |      6 |      0 |   1 |       0 |
-   113 |EXFswnet|      7 |      0 |   1 |       0 |
-   112 |EXFlwnet|      8 |      0 |   1 |       0 |
-   119 |EXFuwind|      9 |      0 |   1 |       0 |
-   120 |EXFvwind|     10 |      0 |   1 |       0 |
-   122 |EXFatemp|     11 |      0 |   1 |       0 |
-------------------------------------------------------------------------
-Global & Regional Statistics diagnostics: Number of lists:     0
-------------------------------------------------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2689,18 +2592,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3350,17 +3241,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    117  EXFtaux      Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    118  EXFtauy      Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    116  EXFqnet      Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    127  EXFempmr     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    111  EXFhl        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    110  EXFhs        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    113  EXFswnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    112  EXFlwnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    119  EXFuwind     Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B            6  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            6   12834028612.064968     
 (PID.TID 0000.0001) // =======================================================
@@ -4271,17 +4151,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    117  EXFtaux      Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    118  EXFtauy      Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    116  EXFqnet      Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    127  EXFempmr     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    111  EXFhl        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    110  EXFhs        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    113  EXFswnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    112  EXFlwnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    119  EXFuwind     Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B           16  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C           16   13748337662.651588     
 (PID.TID 0000.0001) // =======================================================
@@ -5192,17 +5061,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    117  EXFtaux      Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    118  EXFtauy      Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    116  EXFqnet      Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    127  EXFempmr     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    111  EXFhl        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    110  EXFhs        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    113  EXFswnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    112  EXFlwnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    119  EXFuwind     Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B           26  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C           26   14667231105.200865     
 (PID.TID 0000.0001) // =======================================================
@@ -6113,17 +5971,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    117  EXFtaux      Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    118  EXFtauy      Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    116  EXFqnet      Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    127  EXFempmr     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    111  EXFhl        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    110  EXFhs        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    113  EXFswnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    112  EXFlwnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    119  EXFuwind     Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B           36  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C           36   15590683437.358568     
 (PID.TID 0000.0001) // =======================================================
@@ -7034,17 +6881,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    117  EXFtaux      Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    118  EXFtauy      Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    116  EXFqnet      Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    127  EXFempmr     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    111  EXFhl        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    110  EXFhs        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    113  EXFswnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    112  EXFlwnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    119  EXFuwind     Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    120  EXFvwind     Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    122  EXFatemp     Counter:       1   Parms: SM      U1      
  ph-ice B           46  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C           46   16518666973.494375     
 (PID.TID 0000.0001) // =======================================================
@@ -7361,18 +7197,6 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  ph-ice C           46   16518666973.494375     
  ph-ice B           47  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C           47   16611713470.121851     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.534737     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -7421,50 +7245,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  ph-ice C           22   14299125144.024576     
  ph-ice B           23  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C           23   14391083153.955772     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
  ph-check entering grdchk_main 
  ph-check fcref =    16611713470.121851     
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
  ph-grd -->hit<--            9           1           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -7474,18 +7260,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.176550     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -7669,9 +7443,7 @@ grad-res -------------------------------
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117132473366D+11
  ph-check fcpertplus =    16611713247.336641     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  ph-check fcpertminus =    16611713470.121851     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -7681,18 +7453,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.892927     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -7875,7 +7635,6 @@ grad-res -------------------------------
  --> f_transp             = 0.000000000000000D+00
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117136929105D+11
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    1    9    1    1    1    1    1   0.166117134701E+11 0.166117132473E+11 0.166117136929E+11
  grad-res     0    1    1    1  150    1    1    1   -.222786087722E+07 -.222786919594E+07 -.373395010178E-05
@@ -7884,8 +7643,6 @@ grad-res -------------------------------
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            1 , ichknum =            1
  ph-grd -->hit<--           10           1           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -7895,18 +7652,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.195282     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -8090,9 +7835,7 @@ grad-res -------------------------------
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117133432980D+11
  ph-check fcpertplus =    16611713343.298023     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  ph-check fcpertminus =    16611713470.121851     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -8102,18 +7845,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.874182     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -8296,7 +8027,6 @@ grad-res -------------------------------
  --> f_transp             = 0.000000000000000D+00
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117135969462D+11
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    2   10    1    1    1    1    1   0.166117134701E+11 0.166117133433E+11 0.166117135969E+11
  grad-res     0    2    2    2  150    1    1    1   -.126823834775E+07 -.126824111938E+07 -.218542044483E-05
@@ -8305,8 +8035,6 @@ grad-res -------------------------------
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            2 , ichknum =            2
  ph-grd -->hit<--           11           1           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -8316,18 +8044,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.224075     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -8511,9 +8227,7 @@ grad-res -------------------------------
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117133778098D+11
  ph-check fcpertplus =    16611713377.809776     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  ph-check fcpertminus =    16611713470.121851     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -8523,18 +8237,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.845390     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -8717,7 +8419,6 @@ grad-res -------------------------------
  --> f_transp             = 0.000000000000000D+00
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117135624346D+11
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    3   11    1    1    1    1    1   0.166117134701E+11 0.166117133778E+11 0.166117135624E+11
  grad-res     0    3    3    3  150    1    1    1   -.923124420694E+06 -.923124303818E+06 0.126609023599E-06
@@ -8726,8 +8427,6 @@ grad-res -------------------------------
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            3 , ichknum =            3
  ph-grd -->hit<--           12           1           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -8737,18 +8436,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.222939     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -8932,9 +8619,7 @@ grad-res -------------------------------
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117133844763D+11
  ph-check fcpertplus =    16611713384.476349     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  ph-check fcpertminus =    16611713470.121851     
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.4983684781288300E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -8944,18 +8629,6 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_precip.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_swdown.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_uwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_vwind.0000000000.001.001.data
  ph-ice B            0  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
  ph-ice C            0   11982179421.846537     
  ph-ice B            1  9.99999974737875164E-006   0.0000000000000000        0.0000000000000000     
@@ -9138,7 +8811,6 @@ grad-res -------------------------------
  --> f_transp             = 0.000000000000000D+00
  --> objf_hmean           = 0.000000000000000D+00
  --> fc               = 0.166117135557692D+11
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    4   12    1    1    1    1    1   0.166117134701E+11 0.166117133845E+11 0.166117135558E+11
  grad-res     0    4    4    4  150    1    1    1   -.856465863340E+06 -.856464395523E+06 0.171380643943E-05
@@ -9178,99 +8850,99 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   3.4800000000000000
-(PID.TID 0000.0001)         System time:  5.00000000000000028E-002
-(PID.TID 0000.0001)     Wall clock time:   9.6907451152801514
+(PID.TID 0000.0001)           User time:   3.4700000000000002
+(PID.TID 0000.0001)         System time:  8.00000000000000017E-002
+(PID.TID 0000.0001)     Wall clock time:   8.9497909545898438
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.32000000000000001
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:   1.7633490562438965
+(PID.TID 0000.0001)           User time:  0.29999999999999999
+(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
+(PID.TID 0000.0001)     Wall clock time:   1.7394709587097168
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   1.4700000000000000
-(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
-(PID.TID 0000.0001)     Wall clock time:   6.2168140411376953
+(PID.TID 0000.0001)           User time:   1.4800000000000000
+(PID.TID 0000.0001)         System time:  3.99999999999999939E-002
+(PID.TID 0000.0001)     Wall clock time:   5.5028350353240967
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.54999999999999760
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:  0.57043647766113281
+(PID.TID 0000.0001)           User time:  0.59999999999999698
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  0.57214236259460449
 (PID.TID 0000.0001)          No. starts:         480
 (PID.TID 0000.0001)           No. stops:         480
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
+(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.60195732116699219E-002
+(PID.TID 0000.0001)     Wall clock time:  2.63800621032714844E-002
 (PID.TID 0000.0001)          No. starts:        2904
 (PID.TID 0000.0001)           No. stops:        2904
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.99999999999998623
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.0628502368927002
+(PID.TID 0000.0001)           User time:   1.0699999999999830
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   1.0661237239837646
 (PID.TID 0000.0001)          No. starts:         432
 (PID.TID 0000.0001)           No. stops:         432
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.12999999999999945
+(PID.TID 0000.0001)           User time:  7.99999999999996270E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.12429523468017578
+(PID.TID 0000.0001)     Wall clock time:  0.12476134300231934
 (PID.TID 0000.0001)          No. starts:         480
 (PID.TID 0000.0001)           No. stops:         480
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   1.6899999999999999
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.7093868255615234
+(PID.TID 0000.0001)           User time:   1.6900000000000002
+(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
+(PID.TID 0000.0001)     Wall clock time:   1.7062640190124512
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
+(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.39491462707519531E-002
+(PID.TID 0000.0001)     Wall clock time:  2.39636898040771484E-002
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.6699999999999990
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.6812920570373535
+(PID.TID 0000.0001)           User time:   1.6699999999999995
+(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
+(PID.TID 0000.0001)     Wall clock time:   1.6783409118652344
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.45000000000000062
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.45852923393249512
+(PID.TID 0000.0001)           User time:  0.49000000000000021
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  0.45652508735656738
 (PID.TID 0000.0001)          No. starts:         384
 (PID.TID 0000.0001)           No. stops:         384
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.1199999999999837
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.1217770576477051
+(PID.TID 0000.0001)           User time:   1.0599999999999850
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   1.1203474998474121
 (PID.TID 0000.0001)          No. starts:         384
 (PID.TID 0000.0001)           No. stops:         384
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.54218482971191406E-003
+(PID.TID 0000.0001)     Wall clock time:  3.64398956298828125E-003
 (PID.TID 0000.0001)          No. starts:         384
 (PID.TID 0000.0001)           No. stops:         384
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.54504585266113281E-003
+(PID.TID 0000.0001)     Wall clock time:  3.55458259582519531E-003
 (PID.TID 0000.0001)          No. starts:         384
 (PID.TID 0000.0001)           No. stops:         384
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000002309E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.63850593566894531E-003
+(PID.TID 0000.0001)     Wall clock time:  3.65638732910156250E-003
 (PID.TID 0000.0001)          No. starts:         384
 (PID.TID 0000.0001)           No. stops:         384
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.70447540283203125E-003
+(PID.TID 0000.0001)     Wall clock time:  4.66680526733398438E-003
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
