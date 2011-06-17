@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.2 2011/06/17 13:54:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.3 2011/06/17 22:06:29 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -143,7 +143,7 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, adprecip,  '_adprecip',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* ALLOW_ATM_TEMP */
-#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+#if defined(ALLOW_ATM_TEMP) && defined(SHORTWAVE_HEATING)
         CALL MON_WRITESTATS_RL( 1, adswflux,  '_adswflux',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
