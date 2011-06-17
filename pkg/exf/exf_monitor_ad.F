@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.1 2011/06/16 22:49:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.2 2011/06/17 13:54:09 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -41,7 +41,7 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MONITOR
+#if ( defined (ALLOW_MONITOR) && defined (ALLOW_AUTODIFF_MONITOR) )
 
 C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
