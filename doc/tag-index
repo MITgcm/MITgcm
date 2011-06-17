@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1456 2011/06/16 22:50:41 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1457 2011/06/17 13:33:55 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,7 @@ $Name:  $
 
 o adjoint monitor:
  - Add adjoint monitor output for packages exf, seaice
+   and update relevant testreport output
 o pkg/seaice:
  - re-order diags inits so that they appear in order in available_diagnostics.log
  - added diags: hsnow thermo. rates of change, area preceeding ridiging process,
