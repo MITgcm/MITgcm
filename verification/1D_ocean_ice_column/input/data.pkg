@@ -3,6 +3,6 @@
   useKPP    = .TRUE.,
   useEXF    = .TRUE.,
   useSEAICE = .TRUE.,
-  useDiagnostics = .TRUE.,
-  useMNC = .TRUE.,
+#  useDiagnostics = .TRUE.,
+#  useMNC = .TRUE.,
  &
