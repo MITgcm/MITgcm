@@ -26,7 +26,13 @@
 #   momViscosity    - On/Off flag for momentum mixing
 #
  &PARM01
-# an's T,S profiles @ 23 levels
+
+# T,S profiles @ 23 levels
+# tRef               = -1.8420,-1.8464,-1.8392,-1.2854,-0.6,-0.6,-0.9,-1.2,-1.2,-1.3,
+#                      -1.4,-1.4,-1.5,-1.5,-1.5,-1.5,-1.3,-0.9,-0.3, 0.2,
+#                       0.5, 0.5, 0.5
+
+# profile suitable for 10 time step verification experiment
  tRef               = -1.930,-1.931,-1.932,-1.2854,-0.6,-0.6,-0.9,-1.2,-1.2,-1.3,
                       -1.4,-1.4,-1.5,-1.5,-1.5,-1.5,-1.3,-0.9,-0.3, 0.2,
                        0.5, 0.5, 0.5,
@@ -54,8 +60,6 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
-#globalFiles=.TRUE.,
-#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
  useSingleCpuIO=.FALSE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0

@@ -3,7 +3,8 @@
   useKPP    = .TRUE.,
   useEXF    = .TRUE.,
   useSEAICE = .TRUE.,
-  useDiagnostics = .FALSE.,
+#  useDiagnostics = .FALSE.,
   useECCO   = .TRUE.,
-  useGrdchk = .TRUE.,
+  useGrdchk = .FALSE.,
+#  useMNC    = .FALSE,
  &

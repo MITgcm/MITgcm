@@ -71,7 +71,7 @@
 
  vectorInvariantMomentum=.TRUE.,
  useRealFreshWaterFlux = .TRUE.,
-#debugLevel=1,
+# debugLevel=1,
  &
 
 # Elliptic solver parameters
@@ -102,6 +102,7 @@
  &PARM03
 
  startTime=0.0,
+# nTimeSteps= 8784,
  nTimeSteps= 10,
 
  deltaTtracer=3600.0,

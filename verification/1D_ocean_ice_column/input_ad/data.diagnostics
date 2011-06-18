@@ -17,42 +17,43 @@
    dumpatlast  = .TRUE.,
 #
 
-  frequency(1)  = 360000,
-  fields(1,1)   = 'EXFuwind','EXFvwind','EXFlwdn', 'EXFswdn','EXFatemp','EXFaqh','EXFevap','EXFpreci','EXFempmr','EXFhl   ','EXFhs   ',
-  filename(1)   = 'EXF_avg_daily', 
+#  frequency(1)  = 86400,
+#  fields(1,1)   = 'EXFuwind','EXFvwind','EXFlwdn', 'EXFswdn','EXFatemp','EXFaqh','EXFevap','EXFpreci','EXFempmr','EXFhl   ','EXFhs   ',
+#  filename(1)   = 'EXF_avg_daily', 
 
-  frequency(3) = 360000.,
-  fields(1,3) = 'EXFqnet ','EXFswnet','EXFlwnet',
-  filename(3) = 'EXF_net_avg_daily',
+#  frequency(3) = 86400.,
+#  fields(1,3) = 'EXFqnet ','EXFswnet','EXFlwnet',
+#  filename(3) = 'EXF_net_avg_daily',
 
-  frequency(2)  = 360000,
-  fields(1,2)   = 'SIarea  ','SIheff  ','SIhsnow ','SIqsw   ','SIqnet  ','SIempmr ',
+  frequency(2)  = 86400,
+  fields(1:3,2)   = 'SIarea  ','SIheff  ','SIhsnow ',
   filename(2)   = 'ICE_avg_daily',
 
-  frequency(4)  = 360000,
-  fields(1,4)   = 'SIdHbATO','SIdHbATC','SIdHbOCN','SIdAbATO','SIdAbATC','SIdAbOCN','SIdA   ','SIaQbATO','SIaQbATC','SIaQbOCN',
+  frequency(4)  = 86400,
+  fields(1:3,4)   = 'SIdHbATO','SIdHbATC','SIdHbOCN',
   filename(4)   = 'ICE_avg_daily_2',
 
-  frequency(8)   = 360000,
-  fields(1,8)    = 'KPPdiffS','KPPviscA',,'KPPdiffT',
-  filename(8)    = 'KPP_avg_weekly',
+  frequency(4)  = 86400,
+  fields(1:4,4) = 'SIdAbATO','SIdAbATC','SIdAbOCN','SIdA     ',
+  filename(4)   = 'ICE_avg_daily_3',
 
-  frequency(9)   = 360000,
-  fields(1,9)    = 'THETA','SALT',
+
+#  frequency(8)   = 86400,
+#  fields(1,8)    = 'KPPdiffS','KPPviscA',,'KPPdiffT',
+#  filename(8)    = 'KPP_avg_weekly',
+
+  frequency(9)   = 86400,
+  fields(1:2,9)    = 'THETA','SALT',
   filename(9)    = 'Main_3D_avg_daily',
 
-  frequency(10)  = 360000,
-  fields(1,10)   = 'SIuice  ','SIfu    ',
-  filename(10)   = 'ICE_U_avg_daily',
+#  frequency(10)  = 86400,
+#  fields(1,10)   = 'SIuice  ','SIfu    ',
+#  filename(10)   = 'ICE_U_avg_daily',
 
-#  frequency(11)  = 360000,
+#  frequency(11)  = 86400,
 #  fields(1,11)   = 'SIvice  ','SIfv    ',
 #  filename(11)   = 'ICE_V_avg_daily',
 
-
-  frequency(14) = 360000,
-  fields(1,14)  = 'RHOAnoma','DRHODR',
-  filename(14)  = 'RHO_week',
 
 
 #
@@ -73,7 +74,7 @@
 #- an example just to check the agreement with MONITOR output:
 #stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
 #   stat_fname(1)= 'dynStDiag',
-#    stat_freq(1)= -360000.,
+#    stat_freq(1)= -86400.,
 #   stat_phase(1)= 0.,
  &
 

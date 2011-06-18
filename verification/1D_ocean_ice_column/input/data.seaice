@@ -12,7 +12,9 @@
       SEAICEadvSnow      = .TRUE.,
       SIsalFRAC          = 0.30,
       SEAICEuseFlooding  = .TRUE.,
-      areaMin            = 1e-8,
+      SEAICE_area_reg    = 0.15,
+      SEAICE_area_floor  = 1.E-6,
+      SEAICE_hice_reg    = 0.10,
  
  &
  &SEAICE_PARM02
