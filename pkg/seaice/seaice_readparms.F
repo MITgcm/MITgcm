@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.98 2011/06/13 23:21:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.99 2011/06/19 02:31:40 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,6 +60,8 @@ C     retired parameters
       INTEGER nRetired
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_salinity
+      _RL SEAICE_lhSublim
+      _RL areaMin, areaMax, A22, hiceMin
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile
 
 C--   SEAICE parameters
@@ -90,9 +92,10 @@ C--   SEAICE parameters
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
-     & SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
+     & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_salinity,
+     & areaMin, areaMax, A22, hiceMin,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
      & SIsalFRAC, SIsal0, SEAICEstressFactor,
@@ -100,12 +103,14 @@ C--   SEAICE parameters
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
-     & LSR_ERROR, DIFF1, A22, SEAICEuseFREEDRIFT,
-     & areaMin, hiceMin, areaMax,
+     & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
+     & SEAICE_area_reg, SEAICE_hice_reg, 
+     & SEAICE_area_floor, SEAICE_area_max,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
-     & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
+     & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
+     & SEAICE_debugPointI, SEAICE_debugPointJ
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -243,7 +248,6 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_eccen       = 2.     _d 0
 C     coefficients for flux computations/bulk formulae
       SEAICE_dalton      = 1.75   _d -03
-      SEAICE_lhSublim    = 2.834  _d +06
 #ifdef ALLOW_EXF
       IF ( useEXF ) THEN
 C     Use parameters that have already been set in data.exf
@@ -289,10 +293,17 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       DIFF1      = UNSET_RL
 C--   old DIFF1 default:
 c     DIFF1      = .004 _d 0
-      A22        = 0.15      _d 0
-      areaMin    = 0.15 _d 0
-      areaMax    = 1.00 _d 0
-      hiceMin    = 0.05 _d 0
+
+#ifdef SEAICE_GROWTH_LEGACY
+      SEAICE_area_reg   = 0.15 _d 0
+      SEAICE_area_floor = 0.15 _d 0
+#else
+      SEAICE_area_floor = siEPS
+      SEAICE_area_reg   = siEPS
+#endif
+      SEAICE_hice_reg   = 0.05 _d 0
+      SEAICE_area_max    = 1.00 _d 0
+
       SEAICE_airTurnAngle   = 0.0 _d 0
       SEAICE_waterTurnAngle = 0.0 _d 0
       MAX_HEFF          = 10.     _d 0
@@ -314,7 +325,14 @@ C     SEAICE_latentIce   = 6.4474 _d +03
       SEAICE_latentIce   = UNSET_RL
       SEAICE_salinity    = UNSET_RL
       IceAgeFile         = ' '
+      areaMin            = UNSET_RL
+      hiceMin            = UNSET_RL
+      A22                = UNSET_RL
+      areaMax            = UNSET_RL
+      SEAICE_lhSublim    = UNSET_RL
 C     end retired parameters
+      SEAICE_debugPointI = UNSET_I
+      SEAICE_debugPointJ = UNSET_I
 
 #ifdef ALLOW_COST
       mult_ice_export   =  0. _d 0
@@ -574,6 +592,62 @@ C     retired parameter
        WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: replaced by ',
      &  '"IceAgeTrFile(SEAICE_num)" array '
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF 
+      IF ( areaMax .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "areaMax" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: replaced by ',
+     &  '"SEAICE_area_max"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( areaMin .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "areaMin" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: replaced by ',
+     &  '"SEAICE_area_reg" for regularization and ',
+     &  '"SEAICE_area_floor" setting a lower bound'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF (SEAICE_lhSublim .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICE_lhSublim" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: specify ',
+     &  '"SEAICE_lhFusion" and "SEAICE_lhEvap" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( A22 .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "A22" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: replaced by ',
+     &  '"SEAICE_area_reg" for regularization' 
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( hiceMin .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "hiceMin" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: replaced by ',
+     &  '"SEAICE_hice_reg" for regularization' 
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 

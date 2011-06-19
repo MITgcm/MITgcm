@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.47 2011/05/29 22:44:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.48 2011/06/19 02:31:40 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -281,6 +281,17 @@ C--   SEAICE_EXTERNAL_FORCING is obsolete: issue warning but continue.
      &        'seaice now always uses exf to read input files.'
          CALL PRINT_ERROR( msgBuf, myThid )
 #endif
+
+C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
+#ifdef SEAICE_ALLOW_TD_IF
+         WRITE(msgBuf,'(A)')
+     &     'SEAICE_ALLOW_TD_IF option is obsolete:'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &     'the seaice*_IF codes are now merged into the main branch.'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_SALINITY */
 
 C--   SEAICE_SALINITY is obsolete: issue warning and stop.
 #ifdef SEAICE_SALINITY

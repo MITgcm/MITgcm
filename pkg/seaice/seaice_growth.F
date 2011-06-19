@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.130 2011/06/15 01:31:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.131 2011/06/19 02:31:40 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -178,6 +178,9 @@ C     wind speed
       _RL SPEED_SQ
 #endif
 
+C     Regularization values squared
+      _RL area_reg_sq, hice_reg_sq
+
 C     pathological cases thresholds
       _RL heffTooHeavy
 
@@ -250,6 +253,7 @@ C ===================================================================
        kSurface        = 1
       ENDIF
 
+
 C     Cutoff for iceload
       heffTooHeavy=dRf(kSurface) / 5. _d 0
 
@@ -263,8 +267,10 @@ C     HEAT OF FUSION OF ICE (J/m^3)
       QI           = SEAICE_rhoIce*SEAICE_lhFusion
 C     HEAT OF FUSION OF SNOW (J/m^3)
       QS           = SEAICE_rhoSnow*SEAICE_lhFusion
-C
-C     note that QI/QS=ICE2SNOW -- except it wasnt in old code
+
+C     regularization constants
+      area_reg_sq = SEAICE_area_reg * SEAICE_area_reg
+      hice_reg_sq = SEAICE_hice_reg * SEAICE_hice_reg
 
 #ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
       STANTON_NUMBER = 0.0056 _d 0 
@@ -445,7 +451,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 
 C 2) treat the case of very small area:
 
-#ifdef ALLOW_PRECLUDE_INFINITESIMAL_AREA
+#ifndef DISABLE_AREA_FLOOR
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -453,17 +459,17 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
          DO I=1,sNx
           IF ((HEFF(i,j,bi,bj).GT.0).OR.(HSNOW(i,j,bi,bj).GT.0)) THEN
 #ifdef SEAICE_AGE
-           IF (AREA(I,J,bi,bj).LT.areaMin) THEN
+           IF (AREA(I,J,bi,bj).LT.SEAICE_area_floor) THEN
             IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
      &       + IceAgeTr(i,j,bi,bj,1)
-     &       *(areaMin-AREA(I,J,bi,bj)) / areaMin
+     &       *(SEAICE_area_floor-AREA(I,J,bi,bj)) / SEAICE_area_floor
            ENDIF
 #endif /* SEAICE_AGE */
-           AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),areaMin)
+           AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),SEAICE_area_floor)
           ENDIF
          ENDDO
         ENDDO
-#endif
+#endif /* DISABLE_AREA_FLOOR */
 
 C 2.5) treat case of excessive ice cover, e.g., due to ridging:
 
@@ -479,13 +485,13 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
           SItrAREA(I,J,bi,bj,1)=AREA(I,J,bi,bj)
 #endif
 #ifdef SEAICE_AGE
-          IF (AREA(I,J,bi,bj).GT.areaMax) THEN
+          IF (AREA(I,J,bi,bj).GT.SEAICE_area_max) THEN
            IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
      &      - IceAgeTr(i,j,bi,bj,1)
-     &      *(AREA(I,J,bi,bj)-areaMax) / areaMax
+     &      *(AREA(I,J,bi,bj)-SEAICE_area_max) / SEAICE_area_max 
           ENDIF
 #endif /* SEAICE_AGE */
-          AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),areaMax)
+          AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),SEAICE_area_max)
          ENDDO
         ENDDO
 
@@ -606,17 +612,38 @@ CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1         = MAX(areaMin,AREApreTH(I,J))
-          hsnowActual(I,J) = HSNWpreTH(I,J)/tmpscal1
-          tmpscal2         = HEFFpreTH(I,J)/tmpscal1
+
+          if (HEFFpreTH(I,J) .GT. ZERO) THEN
 #ifdef SEAICE_GROWTH_LEGACY
-          heffActual(I,J)  = MAX(tmpscal2,hiceMin)
+            tmpscal1         = MAX(SEAICE_area_reg,AREApreTH(I,J))
+            hsnowActual(I,J) = HSNWpreTH(I,J)/tmpscal1
+            tmpscal2         = HEFFpreTH(I,J)/tmpscal1
+            heffActual(I,J)  = MAX(tmpscal2,SEAICE_hice_reg)
 #else
-          heffActual(I,J)  = sqrt(tmpscal2*tmpscal2 + hiceMin*hiceMin)
-c here we dont impose the area minimum          
-          recip_heffActual(I,J)  = AREApreTH(I,J) / 
-     &           sqrt(HEFFpreTH(I,J)*HEFFpreTH(I,J) + hiceMin*hiceMin)
+cif        regularize AREA with SEAICE_area_reg
+           tmpscal1 = SQRT(AREApreTH(I,J)* AREApreTH(I,J) + area_reg_sq)
+
+cif        heffActual calculated with the regularized AREA 
+           tmpscal2 = HEFFpreTH(I,J) / tmpscal1
+
+cif        regularize heffActual with SEAICE_hice_reg (add lower bound)
+           heffActual(I,J) = SQRT(tmpscal2 * tmpscal2 + hice_reg_sq)
+
+cif        hsnowActual calculated with the regularized AREA  
+           hsnowActual(I,J) = HSNWpreTH(I,J) / tmpscal1
 #endif
+
+cif        regularize the inverse of heffActual by hice_reg 
+           recip_heffActual(I,J)  = AREApreTH(I,J) /
+     &                 sqrt(HEFFpreTH(I,J)*HEFFpreTH(I,J) + hice_reg_sq)
+
+cif       Do not regularize when HEFFpreTH = 0
+          else
+            heffActual(I,J) = ZERO
+            hsnowActual(I,J) = ZERO
+            recip_heffActual(I,J)  = ZERO
+          endif
+
          ENDDO
         ENDDO
 
@@ -1149,6 +1176,10 @@ CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE recip_heffActual = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_AREAbyATM  = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_AREAbyICE  = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_AREAbyOCN  = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE a_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE heffActual = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1240,8 +1271,9 @@ C compute cover fraction tendency
 C apply tendency
           IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
-           AREA(I,J,bi,bj)=max(0. _d 0, min( areaMax, AREA(I,J,bi,bj)
-     &     +d_AREAbyATM(I,J) + d_AREAbyOCN(I,J) + d_AREAbyICE(I,J) ))
+           AREA(I,J,bi,bj)=max(0. _d 0, 
+     &      min( SEAICE_area_max, AREA(I,J,bi,bj)
+     &       +d_AREAbyATM(I,J) + d_AREAbyOCN(I,J) + d_AREAbyICE(I,J) ))
           ELSE
            AREA(I,J,bi,bj)=0. _d 0
           ENDIF

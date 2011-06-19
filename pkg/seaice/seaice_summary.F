@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.33 2011/05/28 14:32:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.34 2011/06/19 02:31:40 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -227,8 +227,6 @@ C     == end of interface ==
      & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')
       CALL WRITE_0D_RL( SEAICE_lhFusion   ,INDEX_NONE,
      & 'SEAICE_lhFusion   =', ' /* latent heat of fusion */')
-      CALL WRITE_0D_RL( SEAICE_lhSublim   ,INDEX_NONE,
-     & 'SEAICE_lhSublim   =', ' /* latent heat of sublimation */')
       CALL WRITE_0D_RL( SEAICE_iceConduct ,INDEX_NONE,
      & 'SEAICE_iceConduct =', ' /* sea-ice conductivity */')
       CALL WRITE_0D_RL( SEAICE_snowConduct,INDEX_NONE,
@@ -273,8 +271,6 @@ C     == end of interface ==
      & 'LSR_ERROR         =', ' /* sets accuracy of LSR solver */')
       CALL WRITE_0D_RL( DIFF1             ,INDEX_NONE,
      & 'DIFF1             =', ' /* parameter used in advect.F */')
-      CALL WRITE_0D_RL( A22               ,INDEX_NONE,
-     & 'A22               =', ' /* parameter used in growth.F */')
 #ifndef SEAICE_CAP_HEFF
       WRITE(msgBuf,'(A,A)')
      &     'MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined'

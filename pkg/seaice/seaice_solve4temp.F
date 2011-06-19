@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.13 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.14 2011/06/19 02:31:40 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,6 +134,10 @@ C     specific humidity at ice surface variables
       _RL mm_pi,mm_log10pi,dqhice_dTice
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
+C     latent heat of sublimation for ice (SEAICE_lhEvap +
+C     SEAICE_lhFusion)
+      _RL lhSublim
+
 C     powers of temperature
       _RL  t1, t2, t3, t4
       _RL lnTEN
@@ -174,7 +178,8 @@ C     SENSIBLE HEAT CONSTANT
       D1=SEAICE_dalton*SEAICE_cpAir*SEAICE_rhoAir
 
 C     ICE LATENT HEAT CONSTANT
-      D1I=SEAICE_dalton*SEAICE_lhSublim*SEAICE_rhoAir
+      lhSublim = SEAICE_lhEvap + SEAICE_lhFusion
+      D1I=SEAICE_dalton*lhSublim*SEAICE_rhoAir
 
 C     STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
       D3=SEAICE_emissivity
@@ -610,7 +615,7 @@ C     Caclulate the net ice-ocean and ice-atmosphere fluxes
 C     Fresh water flux (kg/m^2/s) from latent heat of sublimation.
 C     F_lh is positive upward (sea ice looses heat) and FWsublim
 C     is also positive upward (atmosphere gains freshwater)
-         FWsublim(I,J) = F_lh(I,J)/SEAICE_lhSublim
+         FWsublim(I,J) = F_lh(I,J)/lhSublim
 
 #ifdef SEAICE_DEBUG
          IF ( (I .EQ. SEAICE_debugPointX)   .and.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.74 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.75 2011/06/19 02:31:40 ifenty Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -92,6 +92,8 @@ C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
 C     SEAICEadvSchAge  - sets the advection scheme for sea ice age
 C     SEAICEareaFormula - sets the formula used to increment area as 
 C                         a function of heff increment
+C     SEAICE_debugPointI - I,J index for seaice-specific debuggin
+C     SEAICE_debugPointJ
 C
       INTEGER LAD, IMAX_TICE
       INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
@@ -104,6 +106,8 @@ C
       INTEGER SEAICEadvSchAge
       INTEGER SEAICEadjMODE
       INTEGER SEAICEareaFormula
+      INTEGER SEAICE_debugPointI
+      INTEGER SEAICE_debugPointJ
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
      &     SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
@@ -114,7 +118,9 @@ C
      &     SEAICEadvSchSalt,
      &     SEAICEadvSchAge,
      &     SEAICEadjMODE,
-     &     SEAICEareaFormula
+     &     SEAICEareaFormula,
+     &     SEAICE_debugPointI,
+     &     SEAICE_debugPointJ
       PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
@@ -176,7 +182,6 @@ C
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
 C     SEAICE_eccen       - sea-ice eccentricity of the elliptical yield curve
-C     SEAICE_lhSublim    - latent heat of sublimation for ice and snow (J/kg)
 C     SEAICE_lhFusion    - latent heat of fusion for ice and snow (J/kg)
 C     SEAICE_lhEvap      - latent heat of evaporation for water (J/kg)
 C     SEAICE_dalton      - Dalton number (= sensible heat transfer coefficient)
@@ -204,12 +209,14 @@ C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_
 C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
-C     A22                - parameter used in growth.F
-C     areaMin            - if ice is present the ice cover is enforced to be > areaMin
-C     hiceMin            - minimum value of hice used to regularize
-C                          SEAICE_SOLVE4TEMP and d_AREAbyATM computations
-C     areaMax            - usually set to 1. Seeting areaMax below 1. specifies 
+C     SEAICE_area_max    - usually set to 1. Seeting areaMax below 1. specifies 
 C                          the minimun amount of leads (1-areaMax) in the ice pack.
+C     SEAICE_area_floor  - usually set to 1x10^-5. Specifies 
+C                          a minimun ice fraction in the ice pack.
+C     SEAICE_area_reg    - usually set to 1x10^-5. Specifies  
+C                          a minimun ice fraction for the purposes of regularization
+C     SEAICE_hice_reg    - usually set to 5 cm. Specifies  
+C                          a minimun ice thickness for the purposes of regularization
 C     SEAICEdiffKhArea - sets the diffusivity for area (m^2/s)
 C     SEAICEdiffKhHeff - sets the diffusivity for effective thickness (m^2/s)
 C     SEAICEdiffKhSnow - sets the diffusivity for snow on sea-ice (m^2/s)
@@ -229,15 +236,16 @@ C
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
-      _RL SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap
+      _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
       _RL SIsalFRAC, SIsal0, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
-      _RL OCEAN_drag, LSR_ERROR, DIFF1, A22
-      _RL areaMin, hiceMin, areaMax
+      _RL OCEAN_drag, LSR_ERROR, DIFF1
+      _RL SEAICE_area_reg, SEAICE_hice_reg 
+      _RL SEAICE_area_floor, SEAICE_area_max
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
@@ -257,15 +265,16 @@ C
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
-     &    SEAICE_lhSublim, SEAICE_lhFusion, SEAICE_lhEvap, 
+     &    SEAICE_lhFusion, SEAICE_lhEvap, 
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SIsalFRAC, SIsal0, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     &    OCEAN_drag, LSR_ERROR, DIFF1, A22,
-     &    areaMin, hiceMin, areaMax,
+     &    OCEAN_drag, LSR_ERROR, DIFF1, 
+     &    SEAICE_area_reg, SEAICE_hice_reg, 
+     &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt, SEAICEdiffKhAge,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
