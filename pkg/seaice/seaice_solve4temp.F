@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.14 2011/06/19 02:31:40 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.15 2011/06/19 23:01:54 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -358,7 +358,8 @@ C     ocean beneath ice.
 
 C     Set a mininum sea ice thickness of 5 cm to bound
 C     the magnitude of conductive heat fluxes.
-         hice_tmp = max(HICE_ACTUAL(I,J),5. _d -2)
+cif   * now taken care of by SEAICE_hice_reg in seaice_growth
+C         hice_tmp = max(HICE_ACTUAL(I,J),5. _d -2)
 
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
@@ -370,7 +371,7 @@ C     snow/ice system.
      &        XKS/XKI)/HICE_ACTUAL(I,J)
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
          effConduct(I,J) = XKI * XKS /
-     &        (XKS * hice_tmp + XKI * HSNOW_ACTUAL(I,J))
+     &        (XKS * HICE_ACTUAL(I,j) + XKI * HSNOW_ACTUAL(I,J))
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
