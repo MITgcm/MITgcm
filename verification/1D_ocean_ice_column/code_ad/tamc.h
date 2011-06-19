@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/tamc.h,v 1.1 2011/03/28 15:50:51 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/tamc.h,v 1.2 2011/06/19 00:06:28 ifenty Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,9 +64,9 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_1
       parameter( nchklev_1      =   100 )
       integer    nchklev_2
-      parameter( nchklev_2      =   4 )
+      parameter( nchklev_2      =   15 )
       integer    nchklev_3
-      parameter( nchklev_3      =   4 )
+      parameter( nchklev_3      =   15 )
 
 c--   Note always check for the correct sizes of the common blocks!
 

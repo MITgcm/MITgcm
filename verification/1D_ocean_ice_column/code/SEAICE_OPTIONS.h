@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.3 2011/05/25 19:36:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.4 2011/06/19 00:06:28 ifenty Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -22,7 +22,7 @@ C     This option is provided to allow use of TAMC
 C     on the thermodynamics component of the code only.
 C     Sea-ice dynamics can also be turned off at runtime
 C     using variable SEAICEuseDYNAMICS.
-#define SEAICE_ALLOW_DYNAMICS
+#undef SEAICE_ALLOW_DYNAMICS
 
 C--   By default, the sea-ice package uses its own integrated bulk
 C     formulae to compute fluxes (fu, fv, EmPmR, Qnet, and Qsw) over

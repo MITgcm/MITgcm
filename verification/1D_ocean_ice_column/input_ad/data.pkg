@@ -5,6 +5,6 @@
   useSEAICE = .TRUE.,
 #  useDiagnostics = .FALSE.,
   useECCO   = .TRUE.,
-  useGrdchk = .FALSE.,
+  useGrdchk = .TRUE.,
 #  useMNC    = .FALSE,
  &
