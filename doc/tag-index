@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1457 2011/06/17 13:33:55 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1458 2011/06/19 18:21:32 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -20,6 +20,28 @@ o pkg/seaice:
  - added diagnostics for seaice genereic tracers (SItr*).
  - added SItrUnit and SItrNameLong run time param (for SItr* diags).
  - in diag names, replaced 'PrTh' abbrev. of 'preceeding thermo' with 'PT'.
+ I. Fenty: 18-Jun-2011:
+ Minor changes to seaice package:
+ 1) Retired old variables (A22, SEAICE_lhsublim, areaMax, areaMin, hiceMin) and
+    added some new ones (SEAICE_area_reg, SEAICE_hice_reg, SEAICE_area_floor)
+   - Differentiated "regularization variables" from "floor variables" 
+    * areaMin became SEAICE_area_reg (old A22) and SEAICE_area_floor
+    * hiceMin became SEAICE_hice_reg (old hiceMin)
+      (with _reg meaning regularization variable)
+   - SEAICE_lhSublim becomes lhSublim, the sum of SEAICE_lhEvap and SEAICE_lhFusion
+    so as to ensure energy conservation when going between phases
+  - A22 was not used anywhere 
+ 2) Changed regularization procedure for heffActual and hsnowActual to ensure
+    well-boundedness and smooth adjoint in seaice_growth.F
+ 3) Fixed a bug where seaice_solve4temp would not recognize ice-free grid cells
+    because the old regularization always set heffActual >= 0.05 cm
+ 4) Changed the model so that the default behavior is to put a small (10^-5) "floor"
+    on AREA when HEFF > 0.  
+  - went from requiring ALLOW_PRECLUDE_INFINITESIMAL_AREA to be defined to 
+    requiring that DISABLE_AREA_FLOOR *not* be defined    
+ Affected verifications:
+  - 1D_ocean_ice_column (output.txt output_adm.txt)
+  - global_ocean.cs32x15 (output.seaice.txt output_adm.seaice.txt)
 o pkg/diagnostics:
   - move MNC code from diagnostics_out.F into new diagnostics_mnc_out.F (2 S/R).
   - rename S/R GETDIAG to DIAGNOSTICS_GET_DIAG and change type of 1rst argument
