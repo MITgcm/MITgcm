@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.66 2011/06/06 15:44:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.67 2011/06/19 23:53:19 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -142,6 +142,8 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER npass, ipass
       INTEGER nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif
@@ -173,8 +175,13 @@ CEOP
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
           IF (tracerIdentity.GT.maxpass) THEN
-             print *, 'ph-pass gad_advection ', maxpass, tracerIdentity
-             STOP 'maxpass seems smaller than tracerIdentity'
+           WRITE(msgBuf,'(A,2I3)') 
+     &      'GAD_ADVECTION: maxpass < tracerIdentity ',
+     &      maxpass, tracerIdentity
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R GAD_ADVECTION'
           ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 

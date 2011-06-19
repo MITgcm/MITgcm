@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.26 2011/06/07 14:45:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.27 2011/06/19 23:53:19 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -142,6 +142,8 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       LOGICAL dBug
       INTEGER ioUnit
       _RL tmpFac
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -160,8 +162,13 @@ CEOP
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
           if (tracerIdentity.GT.maxpass) then
-             print *, 'ph-pass gad_advection ', maxpass, tracerIdentity
-             STOP 'maxpass seems smaller than tracerIdentity'
+           WRITE(msgBuf,'(A,2I3)') 
+     &      'SEAICE_ADVECTION: maxpass < tracerIdentity ',
+     &      maxpass, tracerIdentity
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
           endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
