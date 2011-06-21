@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1458 2011/06/19 18:21:32 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1459 2011/06/21 15:15:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,31 +14,31 @@ o pkg/seaice:
  - modified diag: SIdA; output actual effect, as the description states.
  - modified description: SIqneti, SIqneto, SIuheff, SIvheff, SIdAb*, HSNOW.
  - retired redundant diags: SIyneg, SIfice, SIsnwice, SIthdgrh.
-   (SIyneg->SIdHbOCN; SIfice->SIdHbATC; SIsnwice->SIdHbFLO; 
+   (SIyneg->SIdHbOCN; SIfice->SIdHbATC; SIsnwice->SIdHbFLO;
     and SIthdgrh->SIdHbOCN+SIdHbATC+SIdHbATO)
  - modified diags (2) : switch all SIdA*, SIdH*, SIdS* from delta to rates.
- - added diagnostics for seaice genereic tracers (SItr*).
+ - added diagnostics for seaice generic tracers (SItr*).
  - added SItrUnit and SItrNameLong run time param (for SItr* diags).
  - in diag names, replaced 'PrTh' abbrev. of 'preceeding thermo' with 'PT'.
  I. Fenty: 18-Jun-2011:
  Minor changes to seaice package:
  1) Retired old variables (A22, SEAICE_lhsublim, areaMax, areaMin, hiceMin) and
     added some new ones (SEAICE_area_reg, SEAICE_hice_reg, SEAICE_area_floor)
-   - Differentiated "regularization variables" from "floor variables" 
+   - Differentiated "regularization variables" from "floor variables"
     * areaMin became SEAICE_area_reg (old A22) and SEAICE_area_floor
     * hiceMin became SEAICE_hice_reg (old hiceMin)
       (with _reg meaning regularization variable)
    - SEAICE_lhSublim becomes lhSublim, the sum of SEAICE_lhEvap and SEAICE_lhFusion
     so as to ensure energy conservation when going between phases
-  - A22 was not used anywhere 
+  - A22 was not used anywhere
  2) Changed regularization procedure for heffActual and hsnowActual to ensure
     well-boundedness and smooth adjoint in seaice_growth.F
  3) Fixed a bug where seaice_solve4temp would not recognize ice-free grid cells
     because the old regularization always set heffActual >= 0.05 cm
  4) Changed the model so that the default behavior is to put a small (10^-5) "floor"
-    on AREA when HEFF > 0.  
-  - went from requiring ALLOW_PRECLUDE_INFINITESIMAL_AREA to be defined to 
-    requiring that DISABLE_AREA_FLOOR *not* be defined    
+    on AREA when HEFF > 0.
+  - went from requiring ALLOW_PRECLUDE_INFINITESIMAL_AREA to be defined to
+    requiring that DISABLE_AREA_FLOOR *not* be defined
  Affected verifications:
   - 1D_ocean_ice_column (output.txt output_adm.txt)
   - global_ocean.cs32x15 (output.seaice.txt output_adm.seaice.txt)
@@ -49,6 +49,11 @@ o pkg/diagnostics:
   - add pieces of code to compute velocity potential at each level (new diagnostics
     PhiVEL, works only when UVELMASS & VVELMASS are also turned on);
     for now, using same params as CG2D (target-resisual, max Nb of iter ...).
+  - fix few issues with counter diagnostics in diagnostics_setdiag.F &
+    diagstats_setdiag.F (if diagnostic counter is itself a counter diag)
+    and in diagnostics_fract_fill.F (do not need a valid pointer for the
+    diagnostics counter-mate); check that definition of counter-diagnostic
+    includes a valid counter-mate (in diagnostics_set_levels.F).
 o model/src (rStar):
   - add rStar scaling factor in diags_phi_hyd.F (similar to calc_grad_phi_hyd.F);
     affect solution only if z* with full pressure in EOS;
