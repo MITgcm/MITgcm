@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.1 2011/06/14 00:18:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.2 2011/06/21 18:00:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -10,7 +10,7 @@ C     !ROUTINE: DIAGNOSTICS_CALC_PHIVEL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_CALC_PHIVEL(
      I                        listId, md, ndId, ip, im, lm,
-     O                        nFilled, qtmp1, qtmp2,
+     U                        qtmp1, qtmp2,
      I                        myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -36,19 +36,20 @@ C     ndId    :: diagnostics  Id number (in available diagnostics list)
 C     ip      :: diagnostics  pointer to storage array
 C     im      :: counter-mate pointer to storage array
 C     lm      :: index in the averageCycle
-C     nFilled :: effective counter number (from primary diag which this one is
-C                derived from); return 0 is missing filling.
-C     qtmp1   :: diagnostics field output array
-C     qtmp2   :: temp working array (same size as output array)
+C     qtmp1   :: horizontal velocity input diag., u-component
+C     qtmp2   :: horizontal velocity input diag., v-component
 C     myTime  :: current time of simulation (s)
 C     myIter  :: current iteration number
 C     myThid  :: my Thread Id number
       INTEGER listId, md, ndId, ip, im, lm
-      INTEGER nFilled
       _RL     qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL     qtmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL     myTime
       INTEGER myIter, myThid
+
+C     !OUTPUT PARAMETERS:
+C     qtmp1   :: horizontal-velocity potential
+C     qtmp2   :: horizontal-velocity stream-function
 CEOP
 
 C     !FUNCTIONS:
@@ -59,8 +60,7 @@ C     i,j,k :: loop indices
       INTEGER bi, bj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      _RL undefRL
-      INTEGER ip1, ip2, jp1, jp2
+      INTEGER ks
       INTEGER numIters
       LOGICAL normaliseMatrice, diagNormaliseRHS
       _RL  residCriter, firstResidual, lastResidual
@@ -75,50 +75,8 @@ C     i,j,k :: loop indices
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-          undefRL = UNSET_RL
-          CALL DIAGNOSTICS_GET_POINTERS( 'UVELMASS', listId,
-     &                                   jp1, ip1, myThid )
-          CALL DIAGNOSTICS_GET_POINTERS( 'VVELMASS', listId,
-     &                                   jp2, ip2, myThid )
-          IF ( ip1.EQ.0 .OR. ip2.EQ.0 ) THEN
-            WRITE(msgBuf,'(4A)') 'WARNING DIAGNOSTICS_CALC_PHIVEL:',
-     &           ' trying to process "', flds(md,listId), '" :'
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
-            IF ( ip1.EQ.0 ) THEN
-            WRITE(msgBuf,'(4A)') 'WARNING DIAGNOSTICS_CALC_PHIVEL:',
-     &           ' missing filled diag="UVELMASS"'
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
-            ENDIF
-            IF ( ip2.EQ.0 ) THEN
-            WRITE(msgBuf,'(4A)') 'WARNING DIAGNOSTICS_CALC_PHIVEL:',
-     &           ' missing filled diag="VVELMASS"'
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
-            ENDIF
-            nFilled = 0
-          ELSE
-            nFilled = MIN( ndiag(ip1,1,1), ndiag(ip2,1,1) )
-          ENDIF
-          IF ( nFilled.EQ.0 ) RETURN
-
-C-    averageCycle: move pointer
-          ip1 = ip1 + kdiag(jp1)*(lm-1)
-          ip2 = ip2 + kdiag(jp2)*(lm-1)
-
-          DO bj = myByLo(myThid), myByHi(myThid)
-           DO bi = myBxLo(myThid), myBxHi(myThid)
-             CALL DIAGNOSTICS_GET_DIAG( 0, undefRL,
-     O                     qtmp1(1-OLx,1-OLy,1,bi,bj),
-     I                     jp1, 0, ip1, 0, bi, bj, myThid )
-             CALL DIAGNOSTICS_GET_DIAG( 0, undefRL,
-     O                     qtmp2(1-OLx,1-OLy,1,bi,bj),
-     I                     jp2, 0, ip2, 0, bi, bj, myThid )
-           ENDDO
-          ENDDO
-
-      DO k = 1,kdiag(ndId)
+      DO ks = 1,kdiag(ndId)
+        k = NINT(levs(ks,listId))
 C--   Solve for velocity potential for each level:
 
         a2dMax = 0. _d 0
@@ -150,9 +108,9 @@ C-    calculate RHS = Div(uVel,vVel):
            DO j = 1,sNy+1
             DO i = 1,sNx+1
               uTrans(i,j) = dyG(i,j,bi,bj)*drF(k)
-     &                     *qtmp1(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
+     &                     *qtmp1(i,j,ks,bi,bj)*maskInW(i,j,bi,bj)
               vTrans(i,j) = dxG(i,j,bi,bj)*drF(k)
-     &                     *qtmp2(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
+     &                     *qtmp2(i,j,ks,bi,bj)*maskInS(i,j,bi,bj)
             ENDDO
            ENDDO
            DO j = 1,sNy
@@ -234,7 +192,7 @@ C-    Un-normalise the answer
             DO j = 1,sNy
              DO i = 1,sNx
 c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /rhsNorm
-              qtmp1(i,j,k,bi,bj) =  x2d(i,j,bi,bj)/rhsNorm
+              qtmp1(i,j,ks,bi,bj) =  x2d(i,j,bi,bj)/rhsNorm
              ENDDO
             ENDDO
            ENDDO

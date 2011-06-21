@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.53 2011/06/14 00:18:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.54 2011/06/21 18:00:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -67,11 +67,10 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
 
       INTEGER i, j, k, lm
       INTEGER bi, bj
-      INTEGER md, ndId, ip, im
-      INTEGER mate, mVec
+      INTEGER md, ndId, nn, ip, im
+      INTEGER mate, mDbl, mVec
       CHARACTER*10 gcode
       _RL undefRL
-      INTEGER nFilled
       INTEGER nLevOutp, kLev
 
       INTEGER iLen
@@ -180,9 +179,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         gcode = gdiag(ndId)(1:10)
         mate = 0
         mVec = 0
+        mDbl = 0
         IF ( gcode(5:5).EQ.'C' ) THEN
 C-      Check for Mate of a Counter Diagnostic
            mate = hdiag(ndId)
+        ELSEIF ( gcode(5:5).EQ.'P' ) THEN
+C-      Also load the mate (if stored) for Post-Processing
+           nn = ndId
+           DO WHILE ( gdiag(nn)(5:5).EQ.'P' )
+             nn = hdiag(nn)
+           ENDDO
+           IF ( mdiag(md,listId).NE.0 ) mDbl = hdiag(nn)
         ELSEIF ( gcode(1:1).EQ.'U' .OR. gcode(1:1).EQ.'V' ) THEN
 C-      Check for Mate of a Vector Diagnostic
            mVec = hdiag(ndId)
@@ -199,18 +206,10 @@ C--     Start processing 1 Fld :
           ip = ABS(idiag(md,listId)) + kdiag(ndId)*(lm-1)
           im = mdiag(md,listId)
           IF (mate.GT.0) im = im + kdiag(mate)*(lm-1)
+          IF (mDbl.GT.0) im = im + kdiag(mDbl)*(lm-1)
           IF (mVec.GT.0) im = im + kdiag(mVec)*(lm-1)
 
-          nFilled = ndiag(ip,1,1)
-          IF ( flds(md,listId).EQ.'PhiVEL  ' ) THEN
-              CALL DIAGNOSTICS_CALC_PHIVEL(
-     I                         listId, md, ndId, ip, im, lm,
-     U                         nFilled, qtmp1, qtmp2,
-     I                         myTime, myIter, myThid )
-          ENDIF
-
-c         IF ( ndiag(ip,1,1).EQ.0 ) THEN
-          IF ( nFilled.EQ.0 ) THEN
+          IF ( ndiag(ip,1,1).EQ.0 ) THEN
 C-        Empty diagnostics case :
 
             _BEGIN_MASTER( myThid )
@@ -251,14 +250,28 @@ C-        Empty diagnostics case :
               ENDDO
             ENDDO
 
-c         ELSE
-          ELSEIF ( ndiag(ip,1,1).NE.0 ) THEN
+          ELSE
 C-        diagnostics is not empty :
 
             IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
-              WRITE(ioUnit,'(A,I6,3A,I8,2A)')
+              IF ( gcode(5:5).EQ.'P' ) THEN
+               WRITE(ioUnit,'(A,I6,7A,I8,2A)')
+     &         ' Post-Processing Diag # ', ndId, '  ', cdiag(ndId),
+     &         '   Parms: ',gdiag(ndId)
+               IF ( mDbl.EQ.0 ) THEN
+                WRITE(ioUnit,'(2(3A,I6,A,I8))') '   from diag: ',
+     &            cdiag(nn), ' (#', nn, ') Cnt=', ndiag(ip,1,1)
+               ELSE
+                WRITE(ioUnit,'(2(3A,I6,A,I8))') '   from diag: ',
+     &            cdiag(nn), ' (#', nn, ') Cnt=', ndiag(ip,1,1),
+     &          ' and diag: ',
+     &            cdiag(mDbl),' (#',mDbl,') Cnt=',ndiag(im,1,1)
+               ENDIF
+              ELSE
+               WRITE(ioUnit,'(A,I6,3A,I8,2A)')
      &         ' Computing Diagnostic # ', ndId, '  ', cdiag(ndId),
      &         '     Counter:',ndiag(ip,1,1),'   Parms: ',gdiag(ndId)
+              ENDIF
               IF ( mate.GT.0 ) THEN
                WRITE(ioUnit,'(3A,I6,2A)')
      &         '       use Counter Mate for  ', cdiag(ndId),
@@ -287,10 +300,23 @@ C-       get only selected levels:
                   CALL DIAGNOSTICS_GET_DIAG(
      I                         kLev, undefRL,
      O                         qtmp1(1-OLx,1-OLy,k,bi,bj),
-     I                         ndId,mate,ip,im,bi,bj,myThid)
+     I                         ndId, mate, ip, im, bi, bj, myThid )
                 ENDDO
                ENDDO
               ENDDO
+              IF ( mDbl.GT.0 ) THEN
+               DO bj = myByLo(myThid), myByHi(myThid)
+                DO bi = myBxLo(myThid), myBxHi(myThid)
+                 DO k = 1,nlevels(listId)
+                  kLev = NINT(levs(k,listId))
+                  CALL DIAGNOSTICS_GET_DIAG(
+     I                         kLev, undefRL,
+     O                         qtmp2(1-OLx,1-OLy,k,bi,bj),
+     I                         mDbl, 0, im, 0, bi, bj, myThid )
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDIF
             ELSE
 C-       get all the levels (for vertical post-processing)
               DO bj = myByLo(myThid), myByHi(myThid)
@@ -298,9 +324,21 @@ C-       get all the levels (for vertical post-processing)
                   CALL DIAGNOSTICS_GET_DIAG(
      I                         0, undefRL,
      O                         qtmp1(1-OLx,1-OLy,1,bi,bj),
-     I                         ndId,mate,ip,im,bi,bj,myThid)
+     I                         ndId, mate, ip, im, bi, bj, myThid )
                ENDDO
               ENDDO
+              IF ( mDbl.GT.0 ) THEN
+               DO bj = myByLo(myThid), myByHi(myThid)
+                DO bi = myBxLo(myThid), myBxHi(myThid)
+                 DO k = 1,nlevels(listId)
+                  CALL DIAGNOSTICS_GET_DIAG(
+     I                         0, undefRL,
+     O                         qtmp2(1-OLx,1-OLy,k,bi,bj),
+     I                         mDbl, 0, im, 0, bi, bj, myThid )
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDIF
             ENDIF
 
 C-----------------------------------------------------------------------
@@ -327,6 +365,22 @@ C-          Integrate vertically: for now, output field has just 1 level:
      I                         listId, md, ndId, ip, im, lm,
      U                         qtmp1,
      I                         undefRL, myTime, myIter, myThid )
+            ENDIF
+            IF ( gcode(5:5).EQ.'P' ) THEN
+C-          Do Post-Processing:
+             IF ( flds(md,listId).EQ.'PhiVEL  '
+c    &       .OR. flds(md,listId).EQ.'PsiVEL  '
+     &          ) THEN
+              CALL DIAGNOSTICS_CALC_PHIVEL(
+     I                         listId, md, ndId, ip, im, lm,
+     U                         qtmp1, qtmp2,
+     I                         myTime, myIter, myThid )
+             ELSE
+               WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
+     &           'unknown Processing method for diag="',cdiag(ndId),'"'
+               CALL PRINT_ERROR( msgBuf , myThid )
+               STOP 'ABNORMAL END: S/R DIAGNOSTICS_OUT'
+             ENDIF
             ENDIF
 
 C--     End of empty diag / not-empty diag block
