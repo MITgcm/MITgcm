@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.16 2010/01/15 00:24:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.17 2011/06/21 18:01:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -36,6 +36,7 @@ C                   &  r  &  same but cumulate product by model level thickness 
 C                   &  R  &  same but cumulate product by hFac & level thickness \\
 C         parse(4)  &  P  &  positive definite  \\
 C         parse(5 ) &  C  &  with counter array  \\
+C                   &  P  &  post-processed (not filled up) from other diags  \\
 C                   &  D  &  disable an array for output  \\
 C         parse(6--8) & '123'  & retired, formerly: 3-digit mate number \\
 C         parse(9)  &  U  &  model-level plus 1/2  \\
