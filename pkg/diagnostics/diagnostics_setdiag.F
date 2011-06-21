@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.6 2011/06/15 13:44:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.7 2011/06/21 18:00:15 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -46,83 +46,119 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER stdUnit, errUnit
-      INTEGER k, l
-      LOGICAL flag
+      INTEGER nn, k, l
+      LOGICAL diagIsPP, flagD, flagP, flagM
 
       CHARACTER*10 gcode
+      CHARACTER*18 tmpMsg
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 
 C **********************************************************************
 C ****                SET POINTERS FOR DIAGNOSTIC ndId              ****
 C **********************************************************************
 
-      gcode   = gdiag(ndId)(1:10)
       stdUnit = standardMessageUnit
       errUnit = errorMessageUnit
 
-C--   Seach for the same diag (with same freq) to see if already set
-      flag = .TRUE.
-      DO l=1,listId
-       IF (flag .AND. freq(l) .EQ. freq(listId)
-     &          .AND. phase(l).EQ.phase(listId)
-     &          .AND. averageFreq(l) .EQ.averageFreq(listId)
-     &          .AND. averagePhase(l).EQ.averagePhase(listId)
-     &          .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
-        DO k=1,MIN(nActive(l),numperlist)
-         IF (flag .AND. jdiag(k,l).GT.0) THEN
-          IF ( cdiag(ndId).EQ.cdiag(jdiag(k,l)) ) THEN
+C-    Case of Post-Procesed diag, not filled up but computed from other diags:
+      diagIsPP = gdiag(ndId)(5:5).EQ.'P'
+
+C---  Seach for the same diag (with same freq) to see if already set
+C     do it recursively on Post-Processed diag dependance (=mate)
+C     until we find either one already set or a non Post-Processed diag
+      flagD = .TRUE.
+      flagP = .TRUE.
+      nn = ndId
+      DO WHILE ( flagP )
+        DO l=1,listId
+         IF (flagD .AND. freq(l) .EQ. freq(listId)
+     &             .AND. phase(l).EQ.phase(listId)
+     &             .AND. averageFreq(l) .EQ.averageFreq(listId)
+     &             .AND. averagePhase(l).EQ.averagePhase(listId)
+     &             .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
+          DO k=1,MIN(nActive(l),numperList)
+           IF (flagD .AND. jdiag(k,l).GT.0) THEN
+            IF ( cdiag(nn).EQ.cdiag(jdiag(k,l)) ) THEN
 C-    diagnostics already set ; use the same slot:
-           flag = .FALSE.
-           idiag(mId,listId) = -ABS(idiag(k,l))
-           mdiag(mId,listId) = mdiag(k,l)
-          ENDIF
+             flagD = .FALSE.
+             idiag(mId,listId) = -ABS(idiag(k,l))
+             mdiag(mId,listId) = mdiag(k,l)
+            ENDIF
+           ENDIF
+          ENDDO
          ENDIF
         ENDDO
-       ENDIF
+        flagP = flagD .AND. gdiag(nn)(5:5).EQ.'P'
+        IF ( flagP ) nn = hdiag(nn)
       ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---  Set pointer if not already set, otherwise just print a message
 
-      IF ( flag ) THEN
+      IF ( diagIsPP ) THEN
+        WRITE(msgBuf,'(2(A,I6,1X,A))')
+     &    'SETDIAG: Diag #', ndId, cdiag(ndId),
+     &    ' processed from Diag #',nn,cdiag(nn)
+        CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
+      ENDIF
+      gcode   = gdiag(nn)(1:10)
+      IF ( flagD ) THEN
         idiag(mId,listId) = ndiagmx + 1
-        ndiagmx = ndiagmx + kdiag(ndId)*averageCycle(listId)
+        IF ( diagIsPP ) THEN
+C-      Also add "nn" to the Active list
+          k = nActive(listId) + 1
+          IF ( k.LE.numperList ) THEN
+            jdiag(k,listId) = nn
+            idiag(k,listId) = ndiagmx + 1
+            flds (k,listId) = cdiag(nn)
+          ENDIF
+          nActive(listId) = k
+        ENDIF
+        ndiagmx = ndiagmx + kdiag(nn)*averageCycle(listId)
         IF ( ndiagmx.GT.numDiags ) THEN
          WRITE(msgBuf,'(A,I6,1X,A)')
-     &    'SETDIAG: Not enough space for Diagnostic #',ndId,cdiag(ndId)
+     &    'SETDIAG: Not enough space for Diagnostic #',nn,cdiag(nn)
          CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
         ELSE
          WRITE(msgBuf,'(A,2(I3,A),I6,1X,A)') 'SETDIAG: Allocate',
-     &                   kdiag(ndId), ' x', averageCycle(listId),
-     &                ' Levels for Diagnostic #', ndId, cdiag(ndId)
+     &                   kdiag(nn), ' x', averageCycle(listId),
+     &                ' Levels for Diagnostic #', nn, cdiag(nn)
          CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
         ENDIF
       ELSE
-        WRITE(msgBuf,'(A,I6,1X,2A)')
-     &    '- NOTE - SETDIAG: Diagnostic #', ndId, cdiag(ndId),
-     &    ' has already been set'
+        WRITE(msgBuf,'(A,I6,1X,2A)') '- NOTE - SETDIAG: Diagnostic #',
+     &        nn, cdiag(nn), ' is already set'
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
       ENDIF
 
-C     Check for Counter Diagnostic
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C---  Check for Counter Diagnostic
       mate = 0
-      IF ( gcode(5:5).EQ.'C') THEN
-        mate = hdiag(ndId)
 
+C-    if Post-Processed diag, activate 2nd components of vector field
+      tmpMsg = ' Vector-mate Diag.'
+      IF ( diagIsPP .AND. gcode(5:5).NE.'P' .AND.
+     &    (gcode(1:1).EQ.'U' .OR. gcode(1:1).EQ.'V') ) mate = hdiag(nn)
+C-    activate mate if this is a Counter Diagnostic
+      IF ( gcode(5:5).EQ.'C') THEN
+        mate = hdiag(nn)
+        tmpMsg = 'Counter Diagnostic'
+      ENDIF
+
+      IF ( mate.GT.0 ) THEN
 C--     Seach for the same diag (with same freq) to see if already set
-        flag = .TRUE.
+        flagM = .TRUE.
         DO l=1,listId
-         IF (flag .AND. freq(l) .EQ.freq(listId)
-     &            .AND. phase(l).EQ.phase(listId)
-     &            .AND. averageFreq(l) .EQ.averageFreq(listId)
-     &            .AND. averagePhase(l).EQ.averagePhase(listId)
-     &            .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
-          DO k=1,MIN(nActive(l),numperlist)
-           IF (flag .AND. jdiag(k,l).GT.0) THEN
+         IF (flagM .AND. freq(l) .EQ.freq(listId)
+     &             .AND. phase(l).EQ.phase(listId)
+     &             .AND. averageFreq(l) .EQ.averageFreq(listId)
+     &             .AND. averagePhase(l).EQ.averagePhase(listId)
+     &             .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
+          DO k=1,MIN(nActive(l),numperList)
+           IF (flagM .AND. jdiag(k,l).GT.0) THEN
             IF (cdiag(mate).EQ.cdiag(jdiag(k,l)) ) THEN
 C-    diagnostics already set ; use the same slot:
-             flag = .FALSE.
+             flagM = .FALSE.
              mdiag(mId,listId) = ABS(idiag(k,l))
             ENDIF
            ENDIF
@@ -130,26 +166,33 @@ C-    diagnostics already set ; use the same slot:
          ENDIF
         ENDDO
 
-        IF ( flag ) THEN
+C---  Set pointer if not already set, otherwise just print a message
+        IF ( flagM ) THEN
           mdiag(mId,listId) = ndiagmx + 1
+          k = nActive(listId) + 1
+          IF ( k.LE.numperList ) THEN
+C-      Also add mate to the Active list
+            jdiag(k,listId) = mate
+            idiag(k,listId) = ndiagmx + 1
+            flds (k,listId) = cdiag(mate)
+          ENDIF
+          nActive(listId) = k
           ndiagmx = ndiagmx + kdiag(mate)*averageCycle(listId)
           IF ( ndiagmx.GT.numDiags ) THEN
-           WRITE(msgBuf,'(A,I6,1X,A)')
-     &      'SETDIAG: Not enough space for Counter Diagnostic #',
+           WRITE(msgBuf,'(3A,I6,1X,A)')
+     &      'SETDIAG: Not enough space for ',tmpMsg,' #',
      &      mate, cdiag(mate)
            CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
           ELSE
            WRITE(msgBuf,'(A,2(I3,A),I6,1X,A)') 'SETDIAG: Allocate',
      &                     kdiag(mate), ' x', averageCycle(listId),
-     &                  ' Levels for Count.Diag #', mate, cdiag(mate)
+     &                  ' Levels for Mate Diag. #', mate, cdiag(mate)
            CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
           ENDIF
         ELSE
-          WRITE(msgBuf,'(A,I6,1X,2A)')
-     &    '- NOTE - SETDIAG: Counter Diagnostic #', mate, cdiag(mate),
-     &    ' has already been set'
+          WRITE(msgBuf,'(3A,I6,1X,2A)') '- NOTE - SETDIAG: ',tmpMsg,
+     &    ' #', mate, cdiag(mate), ' is already set'
           CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
-          mate = 0
         ENDIF
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.14 2011/06/15 13:22:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.15 2011/06/21 18:00:15 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -35,7 +35,7 @@ C     == Local variables ==
       INTEGER ndiagcount, ndCount
       INTEGER md,ld,nd
       INTEGER mate, nActiveMax
-      INTEGER i, j, k, k1, k2, mm, kLev
+      INTEGER i, j, k, k1, k2, kLev
       LOGICAL found
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*12 suffix
@@ -43,8 +43,8 @@ C     == Local variables ==
       _BEGIN_MASTER( myThid)
 
 C--   Initialize pointer arrays to zero:
-      DO ld=1,numlists
-       DO md=1,numperlist
+      DO ld=1,numLists
+       DO md=1,numperList
         idiag(md,ld) = 0
         jdiag(md,ld) = 0
         mdiag(md,ld) = 0
@@ -80,22 +80,13 @@ C        Search all possible model diagnostics
            ENDIF
            STOP 'ABNORMAL END: S/R DIAGNOSTICS_SET_POINTERS'
          ENDIF
-         IF ( found .AND. mate.GE.1 ) THEN
-           mm = nActive(ld) + 1
-           IF ( mm.LE.numperlist ) THEN
-             jdiag(mm,ld) = mate
-             idiag(mm,ld) = mdiag(md,ld)
-             flds (mm,ld) = cdiag(mate)
-           ENDIF
-           nActive(ld) = mm
-         ENDIF
 
        ENDDO
        nActiveMax = MAX(nActive(ld),nActiveMax)
       ENDDO
 
       IF (  ndiagcount.LE.numDiags .AND.
-     &      nActiveMax.LE.numperlist ) THEN
+     &      nActiveMax.LE.numperList ) THEN
         WRITE(msgBuf,'(A,I8,A)')
      &    '  space allocated for all diagnostics:',
      &    ndiagcount, ' levels'
@@ -112,13 +103,13 @@ C        Search all possible model diagnostics
      &    ' but needs at least', ndiagcount
          CALL PRINT_ERROR( msgBuf , myThid )
        ENDIF
-       IF ( nActiveMax.GT.numperlist ) THEN
+       IF ( nActiveMax.GT.numperList ) THEN
          WRITE(msgBuf,'(2A)')
      &    'DIAGNOSTICS_SET_POINTERS: Not enough space',
      &    ' for all active diagnostics (from data.diagnostics)'
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(A,I6,A,I6)')
-     &    'DIAGNOSTICS_SET_POINTERS: numperlist=', numperlist,
+     &    'DIAGNOSTICS_SET_POINTERS: numperList=', numperList,
      &    ' but needs at least', nActiveMax
          CALL PRINT_ERROR( msgBuf , myThid )
        ENDIF
