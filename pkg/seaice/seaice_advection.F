@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.27 2011/06/19 23:53:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.28 2011/06/21 16:12:09 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -162,11 +162,9 @@ CEOP
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
           if (tracerIdentity.GT.maxpass) then
-           WRITE(msgBuf,'(A,2I3)') 
+           WRITE(msgBuf,'(A,2I3)')
      &      'SEAICE_ADVECTION: maxpass < tracerIdentity ',
      &      maxpass, tracerIdentity
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid )
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
           endif

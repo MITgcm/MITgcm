@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.67 2011/06/19 23:53:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.68 2011/06/21 16:13:52 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -175,11 +175,9 @@ CEOP
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
           IF (tracerIdentity.GT.maxpass) THEN
-           WRITE(msgBuf,'(A,2I3)') 
+           WRITE(msgBuf,'(A,2I3)')
      &      'GAD_ADVECTION: maxpass < tracerIdentity ',
      &      maxpass, tracerIdentity
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid )
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R GAD_ADVECTION'
           ENDIF
