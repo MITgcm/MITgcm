@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# ----------------------------------------------------------------------------
+# FOR MITgcm COMPILATION ON OSC CLUSTER SAL 
+# Last updated: HP 04/08/10
+# ----------------------------------------------------------------------------
+
+FC=mpif77
+CC=mpicc
+LINK=mpif77
+
+CPP='/usr/bin/cpp -P -traditional'
+MPI='true'
+
+#FFLAGS='-fPIC -r8 -i4 -WB -convert big_endian -assume byterecl'
+FFLAGS='-r8 -i4 -WB -convert big_endian -assume byterecl -mcmodel=medium -shared-intel -g' 
+FOPTIM='-O3 -xssse3'
+
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+#CFLAGS='-O3 -xssse3 -ip -fPIC'
+CFLAGS='-03 -xssse3 -ip'
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+
+# --------------------------
+# INCLUDE NETCDF DIRECTORIES
+# --------------------------
+INCLUDEDIRS=""
+INCLUDES="-I/home/system/software/sal/lib/netcdf-4.0/include"
+LIBS="-L/home/system/software/sal/lib/netcdf-4.0/lib -lnetcdf -lmpi"
+
+# -----------------------
+# INCLUDE MPI DIRECTORIES
+# -----------------------
+INCLUDES="$INCLUDES -I/usr/include"
+INCLUDEDIRS="/usr/include"
+MPIINCLUDEDIR="/usr/include"
+LIBS="$LIBS -L/usr/lib64/"
+MPI_HEADER_FILES='/usr/include/mpif.h /usr/include/mpiof.h /usr/include/mpif_parameters.h'
+MPI_HEADER_FILES_INC='/usr/include/mpif.h /usr/include/mpiof.h /usr/include/mpif_parameters.h'
+
+#
+#INCLUDES="-I/usr/include -I/home/system/software/redqueen/libs/netcdf-4.0/include"
+#LIBS="-L/home/system/software/redqueen/libs/netcdf-4.0/lib -lnetcdf -lmpi"
+
+
