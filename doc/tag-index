@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1459 2011/06/21 15:15:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1460 2011/06/21 16:17:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint62z (2011/06/21)
 o adjoint monitor:
  - Add adjoint monitor output for packages exf, seaice
    and update relevant testreport output
