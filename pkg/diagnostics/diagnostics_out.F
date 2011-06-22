@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.54 2011/06/21 18:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.55 2011/06/22 19:09:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -85,7 +85,6 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       LOGICAL glf
 #endif
 #ifdef ALLOW_MNC
-      INTEGER ll, llMx, jj, jjMx
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
       LOGICAL useMissingValue
       REAL*8 misValLoc
@@ -148,25 +147,16 @@ c     DO i=1,nTimRec
 c       timeRec(i) = timeRec(i)/deltaTClock
 c     ENDDO
 
-#ifdef ALLOW_MNC
-C-- this is a trick to reverse the order of the loops on md (= field)
-C   and lm (= averagePeriod): binary output: lm loop inside md loop ;
-C                                 mnc ouput: md loop inside lm loop.
-      IF (useMNC .AND. diag_mnc) THEN
-        jjMx = averageCycle(listId)
-        llMx = 1
-      ELSE
-        jjMx = 1
-        llMx = averageCycle(listId)
-      ENDIF
-      DO jj=1,jjMx
+C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
+      DO lm=1,averageCycle(listId)
 
+#ifdef ALLOW_MNC
        IF (useMNC .AND. diag_mnc) THEN
          misValLoc = undefRL
          IF ( misvalFlt(listId).NE.UNSET_RL )
      &        misValLoc = misvalFlt(listId)
          CALL DIAGNOSTICS_MNC_SET(
-     I                    nLevOutp, listId, jj,
+     I                    nLevOutp, listId, lm,
      O                    diag_mnc_bn, useMissingValue,
      I                    misValLoc, myTime, myIter, myThid )
        ENDIF
@@ -196,12 +186,6 @@ C-      Check for Mate of a Vector Diagnostic
         ENDIF
         IF ( idiag(md,listId).NE.0 .AND. gcode(5:5).NE.'D' ) THEN
 C--     Start processing 1 Fld :
-#ifdef ALLOW_MNC
-         DO ll=1,llMx
-          lm = jj+ll-1
-#else
-         DO lm=1,averageCycle(listId)
-#endif
 
           ip = ABS(idiag(md,listId)) + kdiag(ndId)*(lm-1)
           im = mdiag(md,listId)
@@ -390,7 +374,8 @@ C--     Ready to write field "md", element "lm" in averageCycle(listId)
 
 C-        write to binary file, using MDSIO pkg:
           IF ( diag_mdsio ) THEN
-            nRec = lm + (md-1)*averageCycle(listId)
+c           nRec = lm + (md-1)*averageCycle(listId)
+            nRec = md + (lm-1)*nfields(listId)
 C           default precision for output files
             prec = writeBinaryPrec
 C           fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
@@ -414,16 +399,12 @@ C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
           ENDIF
 #endif /*  ALLOW_MNC  */
 
-C--      end loop on lm (or ll if ALLOW_MNC) counter
-         ENDDO
 C--     end of Processing Fld # md
         ENDIF
        ENDDO
 
-#ifdef ALLOW_MNC
-C--   end loop on jj counter
+C--   end loop on lm counter (= averagePeriod)
       ENDDO
-#endif
 
 #ifdef ALLOW_MDSIO
       IF (diag_mdsio) THEN
@@ -431,7 +412,7 @@ C-    Note: temporary: since it is a pain to add more arguments to
 C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
             glf = globalFiles
-            nRec = nfields(listId)*averageCycle(listId)
+            nRec = averageCycle(listId)*nfields(listId)
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
      &              0, 0, nLevOutp, ' ',
      &              nfields(listId), flds(1,listId), nTimRec, timeRec,
