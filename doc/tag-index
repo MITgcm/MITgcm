@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1460 2011/06/21 16:17:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1461 2011/06/22 02:31:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/diagnostics:
+ - Implement setting of "Post-Processed" diagnostics (corresponding to gdiag(5)='P')
+   which are not filled-up but computed from other diags ; In this case, the mate
+   diag points to the primary (filled-up) diag to used for post processing.
+ - Update Velocity-potential computation using post-processed diag framework.
 
 checkpoint62z (2011/06/21)
 o adjoint monitor:
