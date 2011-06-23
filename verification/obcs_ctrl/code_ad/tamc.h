@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/tamc.h,v 1.2 2011/06/23 21:42:39 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER TAMC
@@ -104,7 +106,7 @@ c     and writing data.
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
-#ifdef ALLOW_PTRACERS 
+#ifdef ALLOW_PTRACERS
 cmm      ALLOW_PASSIVE_TRACER
 cmm      PARAMETER( maxpass     = 3 )
 #else
