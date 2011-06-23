@@ -1,7 +1,9 @@
 # SEAICE parameters
  &SEAICE_PARM01
       SEAICEwriteState   = .TRUE.,
+#      SEAICE_initialHEFF = 1.1E-5,
       SEAICE_initialHEFF = 0.0,
+      HsnowFile          = 'snow_0m_1x1',
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.FALSE.,
@@ -13,9 +15,12 @@
       SIsalFRAC          = 0.30,
       SEAICEuseFlooding  = .TRUE.,
       SEAICE_area_reg    = 0.15,
-      SEAICE_area_floor  = 1.E-6,
+      SEAICE_area_floor  = 1.E-5,
       SEAICE_hice_reg    = 0.10,
- 
+#      SEAICE_debugPointI = 3,
+#      SEAICE_debugPointJ = 3,
+      IMAX_TICE = 6,
+      SEAICE_mon_mnc = .TRUE.
  &
  &SEAICE_PARM02
   mult_ice   = 1.,

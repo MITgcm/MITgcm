@@ -15,8 +15,8 @@
  sststartdate1        = 19790101,
  sststartdate2        = 00000,
 
- tdatfile = 't_ref_5x5x23_one_year',
- sdatfile = 's_ref_5x5x23_one_year',
+ tdatfile = 't_ref_1x1x23x13',
+ sdatfile = 's_ref_1x1x23x13',
  geoid_covariancefile = ' ',
 #
  hflux_errfile        = ' ',

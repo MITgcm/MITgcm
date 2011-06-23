@@ -25,17 +25,17 @@
 #  fields(1,3) = 'EXFqnet ','EXFswnet','EXFlwnet',
 #  filename(3) = 'EXF_net_avg_daily',
 
-  frequency(2)  = 86400,
-  fields(1:3,2)   = 'SIarea  ','SIheff  ','SIhsnow ',
-  filename(2)   = 'ICE_avg_daily',
+#  frequency(2)  = 86400,
+#  fields(1:3,2)   = 'SIarea  ','SIheff  ','SIhsnow ',
+#  filename(2)   = 'ICE_avg_daily',
 
   frequency(4)  = 86400,
   fields(1:3,4)   = 'SIdHbATO','SIdHbATC','SIdHbOCN',
   filename(4)   = 'ICE_avg_daily_2',
 
-  frequency(4)  = 86400,
-  fields(1:4,4) = 'SIdAbATO','SIdAbATC','SIdAbOCN','SIdA     ',
-  filename(4)   = 'ICE_avg_daily_3',
+  frequency(5)  = 86400,
+  fields(1:4,5) = 'SIdAbATO','SIdAbATC','SIdAbOCN','SIdA     ',
+  filename(5)   = 'ICE_avg_daily_3',
 
 
 #  frequency(8)   = 86400,
