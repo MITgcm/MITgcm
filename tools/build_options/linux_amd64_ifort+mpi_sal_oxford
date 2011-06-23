@@ -39,8 +39,10 @@ INCLUDES="$INCLUDES -I/usr/include"
 INCLUDEDIRS="/usr/include"
 MPIINCLUDEDIR="/usr/include"
 LIBS="$LIBS -L/usr/lib64/"
-MPI_HEADER_FILES='/usr/include/mpif.h /usr/include/mpiof.h /usr/include/mpif_parameters.h'
-MPI_HEADER_FILES_INC='/usr/include/mpif.h /usr/include/mpiof.h /usr/include/mpif_parameters.h'
+#MPI_HEADER_FILES='/usr/include/mpif.h /usr/include/mpiof.h /usr/include/mpif_parameters.h'
+#MPI_HEADER_FILES_INC='/usr/include/mpif.h /usr/include/mpiof.h /usr/include/mpif_parameters.h'
+MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
+MPI_HEADER_FILES_INC='mpi_headers/mpif.h mpi_headers/mpiof.h mpi_headers/mpif_parameters.h'
 
 #
 #INCLUDES="-I/usr/include -I/home/system/software/redqueen/libs/netcdf-4.0/include"
