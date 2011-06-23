@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1462 2011/06/22 19:17:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1463 2011/06/23 15:43:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,11 +9,14 @@ o pkg/diagnostics:
    which are not filled-up but computed from other diags ; In this case, the mate
    diag points to the primary (filled-up) diag to used for post processing.
  - Update Velocity-potential computation using post-processed diag framework.
- Change the ordering of fields and time-periods in MDS output file
+ ==> Change the ordering of fields and time-periods in MDS output file
    when using periodic averaging: now writes one time record with the full set
    of fields for this time period, then the next time reccord (it used to be
    one field with the full set of time records then the next field).
-   Note: this is now similar to NetCDF (MNC) output file.
+     Note: this is now similar to NetCDF (MNC) output file. <==
+ - Extend the use of "missing_value" setting from data.diagnostics for the case 
+   of counter-diagnostics (where fraction-weight is zero). This applies both to 
+   MNC and MDS output files.
 
 checkpoint62z (2011/06/21)
 o adjoint monitor:
