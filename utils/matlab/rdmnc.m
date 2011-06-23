@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.23 2011/01/27 11:42:02 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.24 2011/06/23 08:12:11 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -456,7 +456,7 @@ function vf = ncgetvar(fname,varname)
   varid = [];
   for k=0:nvars-1
     if strcmp(netcdf.inqVar(nc,k),varname)
-      varid = netcdf.inqVarId(nc,varname);
+      varid = netcdf.inqVarID(nc,varname);
     end
   end
   if ~isempty(varid); 
@@ -531,7 +531,7 @@ function varid = ncfindvarid(nc,varname)
   varid=[];
   for k=0:nvars-1
     if strcmp(netcdf.inqVar(nc,k),varname);
-      varid = netcdf.inqVarId(nc,varname);
+      varid = netcdf.inqVarID(nc,varname);
       break
     end
   end
