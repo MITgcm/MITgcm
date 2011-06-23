@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.24 2011/06/23 08:12:11 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.25 2011/06/23 08:40:09 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -207,7 +207,12 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
       disp(['No such variable ''',cvar,''' in MNC file ',name(nc)]);
       continue
     end
-    
+    % code by Bruno Deremble: if you do not want to read all tiles these
+    % modifications make the output field smaller, let us see, if it is
+    % robust 
+    if (isfield(S,cvar) == 0); firstiter = 1; else firstiter = 0; end
+    % end code by Bruno Deremble
+
     dims = ncnames(dim(nc{cvar}));        % Dimensions
     sizVar = size(nc{cvar}); nDims=length(sizVar);
     if dims{1} == 'T'
@@ -246,6 +251,16 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     if dBug > 1,
       fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
     end
+    % code by Bruno Deremble: if you do not want to read all tiles these
+    % modifications make the output field smaller, let us see, if it is
+    % robust 
+    if (firstiter)
+      S.i_first.(cvar) = i0;
+      S.j_first.(cvar) = j0;
+    end 
+    i0 = i0 - S.i_first.(cvar);
+    j0 = j0 - S.j_first.(cvar);
+    % end code by Bruno Deremble
     
     Sstr = '';
     for istr = 1:max(nDims,length(dims)),
@@ -334,6 +349,11 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
       disp(['No such variable ''',cvar,''' in MNC file ',fname]);
       continue
     end
+    % code by Bruno Deremble: if you do not want to read all tiles these
+    % modifications make the output field smaller, let us see, if it is
+    % robust 
+    if (isfield(S,cvar) == 0); firstiter = 1; else firstiter = 0; end
+    % end code by Bruno Deremble
     
     [varname,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
     % does this variable contain a record (unlimited) dimension?
@@ -406,7 +426,17 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     if dBug > 1,
       fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
     end
-    %
+    % code by Bruno Deremble: if you do not want to read all tiles these
+    % modifications make the output field smaller, let us see, if it is
+    % robust 
+    if (firstiter)
+      S.i_first.(cvar) = i0;
+      S.j_first.(cvar) = j0;
+    end 
+    i0 = i0 - S.i_first.(cvar);
+    j0 = j0 - S.j_first.(cvar);
+    % end code by Bruno Deremble
+
     Sstr = '';
     for istr = 1:max(nDims,length(dims)),
       if     istr == it,  Sstr = [Sstr,'dii,'];
