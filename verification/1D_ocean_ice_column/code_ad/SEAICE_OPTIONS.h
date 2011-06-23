@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.4 2011/06/19 00:06:28 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.5 2011/06/23 17:59:16 ifenty Exp $
 C $Name:  $
 
 C     /==========================================================\

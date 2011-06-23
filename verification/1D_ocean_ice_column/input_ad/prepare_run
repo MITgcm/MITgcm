@@ -4,7 +4,8 @@
 #- from this dir:
 fromDir="../input"
 
-fileList=`( cd $fromDir ; echo *one_year )`
+#fileList=`( cd $fromDir ; echo *one_year )`
+fileList=`( cd $fromDir ; echo * )`
 
 #echo 'fileList=' $fileList
 

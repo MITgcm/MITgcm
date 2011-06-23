@@ -3,10 +3,10 @@
 # ECCO gradient check
 # *******************
  &GRDCHK_NML
- grdchk_eps       = 1.d-6,
+ grdchk_eps       = 1.d-7,
 # nbeg             = 4,
- iGloPos          = 3,
- jGloPos          = 3,
+ iGloPos          = 1,
+ jGloPos          = 1,
  kGloPos          = 1,
  nstep            = 1,
  nend             = 6,
