@@ -1,5 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_whalos.F,v 1.6 2011/01/21 22:02:33 gforget Exp $
-C $fName:  $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_whalos.F,v 1.7 2011/06/23 22:11:07 jmc Exp $
+C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -112,14 +112,14 @@ c     == end of interface ==
       ELSE
         lengthBuff=sNxWh*gloNyWh
       ENDIF
-      
+
 C Only do I/O if I am the master thread (and mpi process 0 IF locSingleCpuIO):
       iAmDoingIO = .FALSE.
       IF ( .NOT.locSingleCpuIO .OR. myProcId.EQ.0 ) THEN
         _BEGIN_MASTER( myThid )
         iAmDoingIO = .TRUE.
         _END_MASTER( myThid )
-      ENDIF      
+      ENDIF
 
       IF ( iAmDoingIO ) THEN
 c get the unit and open file
@@ -244,6 +244,5 @@ c write chunk if needed
 
 #endif
 
-      return
-      end
-
+      RETURN
+      END
