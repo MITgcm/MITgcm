@@ -3,7 +3,6 @@
       SEAICEwriteState   = .TRUE.,
 #      SEAICE_initialHEFF = 1.1E-5,
       SEAICE_initialHEFF = 0.0,
-#      HsnowFile          = 'snow0_tiny_one_year',
       HsnowFile          = 'snow_0m_1x1',
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
