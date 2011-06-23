@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.55 2011/06/22 19:09:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.56 2011/06/23 15:29:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -86,8 +86,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
 #endif
 #ifdef ALLOW_MNC
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      LOGICAL useMissingValue
-      REAL*8 misValLoc
+      LOGICAL missingValFillsMask
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -98,6 +97,8 @@ C---  set file properties
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) undefRL = getcon('UNDEF')
 #endif
+      IF ( misvalFlt(listId).NE.UNSET_RL ) undefRL = misvalFlt(listId)
+
       WRITE(suff,'(I10.10)') myIter
       iLen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:iLen),'.',suff(1:10)
@@ -152,13 +153,10 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
 
 #ifdef ALLOW_MNC
        IF (useMNC .AND. diag_mnc) THEN
-         misValLoc = undefRL
-         IF ( misvalFlt(listId).NE.UNSET_RL )
-     &        misValLoc = misvalFlt(listId)
          CALL DIAGNOSTICS_MNC_SET(
      I                    nLevOutp, listId, lm,
-     O                    diag_mnc_bn, useMissingValue,
-     I                    misValLoc, myTime, myIter, myThid )
+     O                    diag_mnc_bn, missingValFillsMask,
+     I                    undefRL, myTime, myIter, myThid )
        ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -391,9 +389,9 @@ C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
 #ifdef ALLOW_MNC
           IF (useMNC .AND. diag_mnc) THEN
             CALL DIAGNOSTICS_MNC_OUT(
-     I                       NrMax, nLevOutp, listId, ndId,
+     I                       NrMax, nLevOutp, listId, ndId, mate,
      I                       diag_mnc_bn,
-     I                       useMissingValue, misValLoc,
+     I                       missingValFillsMask, undefRL,
      I                       qtmp1,
      I                       myTime, myIter, myThid )
           ENDIF

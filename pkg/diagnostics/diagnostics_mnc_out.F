@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.2 2011/06/12 13:58:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.3 2011/06/23 15:29:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -16,7 +16,7 @@ C     !ROUTINE: DIAGNOSTICS_MNC_SET
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_MNC_SET(
      I     nLevOutp, listId, lm,
-     O     diag_mnc_bn, useMissingValue,
+     O     diag_mnc_bn, missingValFillsMask,
      I     misValLoc, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -32,18 +32,21 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 
-C     !INPUT PARAMETERS:
-C     nLevOutp :: number of levels to write in output file
-C     listId  :: Diagnostics list number being written
-C     lm      :: loop index (averageCycle)
-C     myIter  :: current iteration number
-C     myTime  :: current time of simulation (s)
-C     myThid  :: my Thread Id number
+C     !INPUT/OUTPUT PARAMETERS:
+C     nLevOutp        :: number of levels to write in output file
+C     listId          :: Diagnostics list number being written
+C     lm              :: loop index (averageCycle)
+C     diag_mnc_bn     :: NetCDF output file name
+C     missingValFillsMask :: fill output-field with Missing-Value where mask=0
+C     misValLoc       :: local Missing Value
+C     myTime          :: current time of simulation (s)
+C     myIter          :: current iteration number
+C     myThid          :: my Thread Id number
       INTEGER nLevOutp
       INTEGER listId, lm
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      LOGICAL useMissingValue
-      REAL*8 misValLoc
+      LOGICAL missingValFillsMask
+      _RL     misValLoc
       _RL     myTime
       INTEGER myIter, myThid
 CEOP
@@ -54,9 +57,6 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER NrMax
-      PARAMETER( NrMax = numLevels )
-
       _RL tmpLev
       INTEGER iLen
 
@@ -70,6 +70,8 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 c     CHARACTER*(NLEN) d_cw_name
 c     CHARACTER*(NLEN) dn_blnk
 #ifdef DIAG_MNC_COORD_NEEDSWORK
+      INTEGER NrMax
+      PARAMETER( NrMax = numLevels )
       INTEGER i, j
       CHARACTER*(5) ctmp
       _RS ztmp(NrMax)
@@ -83,9 +85,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c     IF (useMNC .AND. diag_mnc) THEN
 
 C     Handle missing value attribute (land points)
-        useMissingValue = .FALSE.
+        missingValFillsMask = .FALSE.
 #ifdef DIAGNOSTICS_MISSING_VALUE
-        useMissingValue = .TRUE.
+        missingValFillsMask = .TRUE.
 #endif /* DIAGNOSTICS_MISSING_VALUE */
 C     Defaults to UNSET_I
         misvalIntLoc = misvalInt(listId)
@@ -129,8 +131,7 @@ c       dn(1)(1:NLEN) = dn_blnk(1:NLEN)
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
 C     suppress the missing value attribute (iflag = 0)
-        IF (useMissingValue)
-     &       CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
+        CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
      I       misval_r8, misval_r4, misval_int, myThid )
 
         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
@@ -191,7 +192,7 @@ C         for averaged levels.
      &           myThid)
           ENDIF
 C     suppress the missing value attribute (iflag = 0)
-          IF (useMissingValue)
+          IF (missingValFillsMask)
      &          CALL MNC_CW_VATTR_MISSING(dn(1), 0,
      I          misval_r8, misval_r4, misval_int, myThid )
           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
@@ -212,9 +213,9 @@ C     !ROUTINE: DIAGNOSTICS_MNC_OUT
 
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_MNC_OUT(
-     I     NrMax, nLevOutp, listId, ndId,
+     I     NrMax, nLevOutp, listId, ndId, mate,
      I     diag_mnc_bn,
-     I     useMissingValue, misValLoc,
+     I     missingValFillsMask, misValLoc,
      I     qtmp,
      I     myTime, myIter, myThid )
 
@@ -231,24 +232,30 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-C     nLevOutp :: number of levels to write in output file
-C     listId  :: Diagnostics list number being written
-C     ndId    :: diagnostics  Id number (in available diagnostics list)
-C     myTime  :: current time of simulation (s)
-C     myIter  :: current iteration number
-C     myThid  :: my Thread Id number
+C     NrMax           :: 3rd dimension of output-field array to write
+C     nLevOutp        :: number of levels to write in output file
+C     listId          :: Diagnostics list number being written
+C     ndId            :: diagnostics Id number (in available diagnostics list)
+C     mate            :: counter diagnostic number if any ; 0 otherwise
+C     diag_mnc_bn     :: NetCDF output file name
+C     missingValFillsMask :: fill output-field with Missing-Value where mask=0
+C     misValLoc       :: local Missing Value
+C     qtmp            :: output-field array to write
+C     myTime          :: current time of simulation (s)
+C     myIter          :: current iteration number
+C     myThid          :: my Thread Id number
       INTEGER NrMax
       INTEGER nLevOutp
-      INTEGER listId
-      INTEGER ndId
+      INTEGER listId, ndId, mate
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      LOGICAL useMissingValue
-      REAL*8 misValLoc
-      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
+      LOGICAL missingValFillsMask
+      _RL     misValLoc
+      _RL     qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL     myTime
       INTEGER myIter, myThid
 CEOP
 
+#ifdef ALLOW_MNC
 C     !FUNCTIONS:
 c     INTEGER ILNBLNK
 c     EXTERNAL ILNBLNK
@@ -260,7 +267,6 @@ C     bi,bj :: tile indices
       INTEGER bi, bj
 
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_MNC
 c     INTEGER ll, llMx, jj, jjMx
       INTEGER ii, klev
       INTEGER CW_DIMS, NLEN
@@ -360,14 +366,11 @@ C        Time dimension
          CALL MNC_CW_ADD_VATTR_TEXT( cdiag(ndId),'units',
      &                               udiag(ndId), myThid )
 
-C     Missing values only for scalar diagnostics at mass points (so far)
-         useMisValForThisDiag = useMissingValue
-     &                     .AND.gdiag(ndId)(1:2).EQ.'SM'
-         IF ( useMisValForThisDiag ) THEN
-C     assign missing values and set flag for adding the netCDF atttibute
-           CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 2,
-     I                misval_r8, misval_r4, misval_int, myThid )
-C     and now use the missing values for masking out the land points
+         useMisValForThisDiag = mate.GT.0
+C     Use the missing values for masking out the land points:
+C     only for scalar diagnostics at mass points (so far)
+         IF ( missingValFillsMask.AND.gdiag(ndId)(1:2).EQ.'SM' ) THEN
+           useMisValForThisDiag = .TRUE.
 C     note: better to use 2-D mask if kdiag <> Nr or vert.integral
            DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -383,6 +386,11 @@ C     note: better to use 2-D mask if kdiag <> Nr or vert.integral
              ENDDO
             ENDDO
            ENDDO
+         ENDIF
+         IF ( useMisValForThisDiag ) THEN
+C     assign missing values and set flag for adding the netCDF atttibute
+           CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 2,
+     I                misval_r8, misval_r4, misval_int, myThid )
          ELSE
 C     suppress the missing value attribute (iflag = 0)
 C     Note: We have to call the following subroutine for each mnc that has
