@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.12 2011/06/07 21:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.13 2011/06/24 01:28:22 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -116,8 +116,8 @@ c for the MITGCM.
 
       IF ( SolarFile .EQ. ' '  ) THEN
       IF (useStressOption)then
-        write(*,*)' stress option is turned on.  this is not
-     & consistent with the default time dependent forcing option'
+        write(*,*) ' stress option is turned on.  this is not',
+     & 'consistent with the default time dependent forcing option'
         stop
         ENDIF
          if ( myIter .EQ. nIter0 )then
