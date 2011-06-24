@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.2 2011/05/11 08:33:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.3 2011/06/24 19:40:42 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -121,7 +121,7 @@ c     Number of records to be used.
 
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_shifwflx_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
+        write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_shifwflx_file(1:ilfld), '.', optimcycle
       endif
 
@@ -132,7 +132,7 @@ c--   Loop over records.
      &      fnamefld, tmpfld2d, irec, doglobalread,
      &      ladinit, optimcycle, mythid, xx_shifwflx_dummy )
 
-c--   Loop over this thread's tiles.
+c--   Loop over this thread s tiles.
        do bj = jtlo,jthi
         do bi = itlo,ithi
 
@@ -148,10 +148,10 @@ c--   Determine the weights to be used.
      &          + 1. _d 0
           enddo
          enddo
-         
+
          objf_shifwflx(bi,bj) = objf_shifwflx(bi,bj) + fctile
          fcthread             = fcthread + fctile
-         
+
         enddo
        enddo
 
@@ -182,10 +182,3 @@ c--     Print cost function for all tiles.
 
       return
       end
-
-
-
-
-
-
-
