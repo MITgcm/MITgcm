@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.7 2011/05/24 20:45:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.8 2011/06/24 19:39:32 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -160,7 +160,7 @@ cgg    Need to solve for iobcs would have been.
      &                         doglobalread, ladinit, 0,
      &                         mythid, dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread s tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 

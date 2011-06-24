@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_uvel0.F,v 1.1 2011/03/13 22:24:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_uvel0.F,v 1.2 2011/06/24 19:39:32 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -105,7 +105,7 @@ c--   Read state record from global file.
      &     fnamefld, tmpfld3d, irec, doglobalread,
      &     ladinit, optimcycle, mythid, xx_uvel_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread s tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
