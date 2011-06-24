@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_fixed.F,v 1.3 2011/06/24 01:24:07 jmc Exp $
+C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
 
@@ -9,7 +11,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CHEAPAML_INIT_FIXED
-C     | o Routine to initialize GM/Redi variables
+C     | o Routine to initialize CheapAML variables
 C     |   that are kept fixed during the run.
 C     *==========================================================*
 C     \ev
@@ -20,7 +22,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
