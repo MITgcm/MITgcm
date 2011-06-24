@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1463 2011/06/23 15:43:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1464 2011/06/24 15:51:59 ifenty Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification 1D_ocean_ice_column:
+   made model domain truly 1x1x23 instead of 5x5x23 with only center cell (3,3,:) wet
+   update results
 o pkg/diagnostics:
  - Implement setting of "Post-Processed" diagnostics (corresponding to gdiag(5)='P')
    which are not filled-up but computed from other diags ; In this case, the mate
