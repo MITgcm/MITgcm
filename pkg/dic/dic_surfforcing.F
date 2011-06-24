@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.27 2011/05/05 22:23:27 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.28 2011/06/24 01:35:32 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -186,7 +186,7 @@ C calculate SCHMIDT NO. for CO2
      &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
      &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
      &                *theta(i,j,kLev,bi,bj)
-c make sure Schmidt number isn't negative (will happen if temp>39C)
+c make sure Schmidt number is not negative (will happen if temp>39C)
              SchmidtNoDIC(i,j)=max(1.0 _d -2, SchmidtNoDIC(i,j))
 
 C Determine surface flux (FDIC)
@@ -209,7 +209,7 @@ C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj)
      &         )
 #else
-C Corrected by Val Bennington Nov 2010 per G.A. McKinley's finding
+C Corrected by Val Bennington Nov 2010 per G.A. McKinley s finding
 C of error in application of water vapor correction
 c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
                FluxCO2(i,j,bi,bj) =
