@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.18 2006/08/04 17:03:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.19 2011/06/24 01:20:49 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
        subroutine step_fizhi_corr (myTime, myIter, myThid, dt)
 c----------------------------------------------------------------------
 c  Subroutine step_fizhi_corr - 'Wrapper' routine to advance
-c        the physics state and make the new value. 
+c        the physics state and make the new value.
 c        At this point, increment with the "correction term"
 c        which includes the dynamics tendency and the integral
 c        constraint to enforce agreement with the dynamics state
 c        Also: Set up "bi, bj loop" and some timers and clocks here.
 c
-c Call:phys2dyn (4) (interpolate physics state to dynamics grid 
+c Call:phys2dyn (4) (interpolate physics state to dynamics grid
 c                           for use in the correction terms)
 c      AtoC         (convert physics state on dynamics grid to C-Grid)
 c      CtoA         (convert correction term on dynamics grid to A-Grid)
@@ -86,7 +86,7 @@ C Construct Pressures on physics and dynamics grids
         do j = 1,sNy
         do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
-         if(Lbotij.lt.nr+1) 
+         if(Lbotij.lt.nr+1)
      .    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
         enddo
         enddo
@@ -115,13 +115,13 @@ c Do not use a zero field as the top edge pressure for interpolation
         enddo
         enddo
 c
-c Create a wind magnitude field on the physics grid - 
+c Create a wind magnitude field on the physics grid -
 c   (Load the wind speed bottom up for use by dyn2phys)
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
-         windphy(i,j,L,bi,bj) = 
-     .     sqrt(uphy(i,j,Nrphys+1-L,bi,bj)*uphy(i,j,Nrphys+1-L,bi,bj) 
+         windphy(i,j,L,bi,bj) =
+     .     sqrt(uphy(i,j,Nrphys+1-L,bi,bj)*uphy(i,j,Nrphys+1-L,bi,bj)
      .        + vphy(i,j,Nrphys+1-L,bi,bj)*vphy(i,j,Nrphys+1-L,bi,bj))
         enddo
         enddo
@@ -343,11 +343,11 @@ C                           on dynamics grid (total - physics tend)
        do L=1,Nr
        do j=jm1,jm2
        do i=im1,im2
-        udyntemp(i,j,L,bi,bj) = 
-     .    (uvel(i,j,L,bi,bj)-udynbef(i,j,L,bi,bj))*dtinv - 
+        udyntemp(i,j,L,bi,bj) =
+     .    (uvel(i,j,L,bi,bj)-udynbef(i,j,L,bi,bj))*dtinv -
      .                                        guphy(i,j,L,bi,bj)
-        vdyntemp(i,j,L,bi,bj) = 
-     .    (vvel(i,j,L,bi,bj)-vdynbef(i,j,L,bi,bj))*dtinv - 
+        vdyntemp(i,j,L,bi,bj) =
+     .    (vvel(i,j,L,bi,bj)-vdynbef(i,j,L,bi,bj))*dtinv -
      .                                        gvphy(i,j,L,bi,bj)
        enddo
        enddo
@@ -362,8 +362,8 @@ C  then do vertical interpolation
        do L = 1,Nrphys
        do j = 1,sNy
        do i = 1,sNx
-        windphy(i,j,L,bi,bj) = 
-     .     sqrt(uphy(i,j,Nrphys+1-L,bi,bj)*uphy(i,j,Nrphys+1-L,bi,bj) 
+        windphy(i,j,L,bi,bj) =
+     .     sqrt(uphy(i,j,Nrphys+1-L,bi,bj)*uphy(i,j,Nrphys+1-L,bi,bj)
      .        + vphy(i,j,Nrphys+1-L,bi,bj)*vphy(i,j,Nrphys+1-L,bi,bj))
        enddo
        enddo
@@ -425,8 +425,8 @@ C                           on dynamics grid (total - physics tend)
        do L=1,Nr
        do j=jm1,jm2
        do i=im1,im2
-        thdyntemp(i,j,L,bi,bj) = 
-     .    (theta(i,j,L,bi,bj)-thdynbef(i,j,L,bi,bj))*dtinv - 
+        thdyntemp(i,j,L,bi,bj) =
+     .    (theta(i,j,L,bi,bj)-thdynbef(i,j,L,bi,bj))*dtinv -
      .                                        gthphy(i,j,L,bi,bj)
        enddo
        enddo
@@ -450,7 +450,8 @@ C Last Step - subtract adv+filters and physics tend from total tend on physics g
        do i = 1,sNx
         thphytemp(i,j,L,bi,bj)=
      .    ( (thphy(i,j,L,bi,bj)-thbef(i,j,L,bi,bj))*dtinv
-     .     - dthphy(i,j,L,bi,bj) - thphytemp(i,j,L,bi,bj) ) * 86400. _d 0
+     .     - dthphy(i,j,L,bi,bj) - thphytemp(i,j,L,bi,bj)
+     .    ) * 86400. _d 0
        enddo
        enddo
        enddo
@@ -471,8 +472,8 @@ C                           on dynamics grid (total - physics tend)
        do L=1,Nr
        do j=jm1,jm2
        do i=im1,im2
-        sdyntemp(i,j,L,bi,bj) = 
-     .    (salt(i,j,L,bi,bj)-sdynbef(i,j,L,bi,bj))*dtinv - 
+        sdyntemp(i,j,L,bi,bj) =
+     .    (salt(i,j,L,bi,bj)-sdynbef(i,j,L,bi,bj))*dtinv -
      .                                        gsphy(i,j,L,bi,bj)
        enddo
        enddo
