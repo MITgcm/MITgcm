@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs.F,v 1.5 2011/01/19 13:46:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs.F,v 1.6 2011/06/24 19:38:26 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -16,7 +16,7 @@ c     ==================================================================
 c     SUBROUTINE cost_obcs
 c     ==================================================================
 c
-c     o Evaluate cost function contributions for obc's
+c     o Evaluate cost function contributions for obcs
 c
 c     ==================================================================
 c     SUBROUTINE cost_obcs
