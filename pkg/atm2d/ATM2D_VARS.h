@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.14 2011/04/15 18:30:01 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.15 2011/06/24 01:42:33 jmc Exp $
 C $Name:  $
 
       INTEGER nForcingPer
@@ -152,8 +152,9 @@ c
 c lookup table for ocean gridcell to atmos grid cell. The weight
 c is for that atmos grid cell; 1-weight is for atmos cell+1.
 c
-      COMMON/LOOKUP_GRID/ atm_oc_ind, atm_oc_wgt, atm_oc_frac1, atm_oc_frac2,
-     &                    endwgt1, endwgt2, rsumwgt, tauv_jpt, tauv_jwght
+      COMMON/LOOKUP_GRID/ atm_oc_ind, atm_oc_wgt,
+     &                    atm_oc_frac1, atm_oc_frac2,
+     &                  endwgt1, endwgt2, rsumwgt, tauv_jpt, tauv_jwght
        INTEGER atm_oc_ind(sNy) ! lookup of (first) atm grid for given ocean lat
        _RL atm_oc_wgt(sNy)    ! weight of first atm grid for given ocean lat
        _RL atm_oc_frac1(sNy)  ! fraction of atm lat area covered by ocean lat
@@ -191,8 +192,8 @@ C                                                  ! W/m2, +=down
 
 
 C     These are the fluxes actually passed to the ocean model (w/some unit/sign conversion)
-      COMMON/OCN_FLUXES_PASS/ pass_runoff, pass_precip, pass_evap, pass_qnet,
-     &                        pass_fu, pass_fv, pass_wspeed,
+      COMMON/OCN_FLUXES_PASS/ pass_runoff, pass_precip, pass_evap,
+     &                        pass_qnet, pass_fu, pass_fv, pass_wspeed,
      &                        pass_solarnet, pass_slp, pass_pCO2,
      &                        pass_sIceLoad, sFluxFromIce
        _RL pass_runoff(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! runoff -> ocean (m/s) (+=out of ocean)
@@ -261,8 +262,8 @@ C     Variables used to sum and compute atm2d diagnostic outputs
 
 C      Yearly output diagnostics
       COMMON/YR_MEAN_DIAG/ sst_tave, sss_tave, SHice_min, SHice_max,
-     &                    NHice_min, NHice_max, HF2ocn_tave, FW2ocn_tave,
-     &                    CO2flx_tave
+     &                    NHice_min, NHice_max, HF2ocn_tave,
+     &                    FW2ocn_tave, CO2flx_tave
        _RL sst_tave
        _RL sss_tave
        _RL SHice_min
