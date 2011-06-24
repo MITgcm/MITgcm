@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TRACER.h,v 1.4 2011/06/13 23:21:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TRACER.h,v 1.5 2011/06/24 01:30:25 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -25,7 +25,7 @@ C             ==> for non-zero HEFF,
 C                 units of ICEAGEVOL are seconds * meters
 C                 and actual ice age is ICEAGEVOL / HEFF seconds
 C     IceAgeTr(3), IceAgeTr(4) - effective sea ice age
-C             t.b.d. (poor-man's multi-category)
+C             t.b.d. (poor-man s multi-category)
 C \ev
 CEOP
 
