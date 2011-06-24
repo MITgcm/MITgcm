@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.68 2011/06/21 16:13:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.69 2011/06/24 22:18:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -142,8 +142,10 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER npass, ipass
       INTEGER nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
+#ifdef ALLOW_AUTODIFF_TAMC
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif

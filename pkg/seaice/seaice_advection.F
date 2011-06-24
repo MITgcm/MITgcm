@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.28 2011/06/21 16:12:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.29 2011/06/24 22:23:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,6 +134,10 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
@@ -142,8 +146,6 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       LOGICAL dBug
       INTEGER ioUnit
       _RL tmpFac
-C     msgBuf     :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
