@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.131 2011/06/19 02:31:40 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.132 2011/06/27 13:15:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -774,48 +774,6 @@ C     average over categories
 #endif /* SEAICE_MULTICATEGORY */
 C--  End loop over multi-categories
 
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-CML If I consider the atmosphere above the ice, the surface flux 
-CML which is relevant for the air temperature dT/dt Eq 
-CML accounts for sensible and radiation (with different treatment
-CML according to wave-length) fluxes but not for "latent heat flux",
-CML since it does not contribute to heating the air.
-CML So this diagnostic is only good for heat budget calculations within
-CML the ice-ocean system.
-            DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj) * (
-     &             a_QbyATM_cover(I,J) * AREApreTH(I,J)
-#ifndef SEAICE_GROWTH_LEGACY
-     &           + a_QSWbyATM_cover(I,J) * AREApreTH(I,J)
-#endif /* SEAICE_GROWTH_LEGACY */          
-     &           + a_QbyATM_open(I,J) * ( ONE - AREApreTH(I,J) ) )
-C
-            DIAGarrayB(I,J) = maskC(I,J,kSurface,bi,bj) *
-     &           a_FWbySublim(I,J) * AREApreTH(I,J)
-C
-            DIAGarrayC(I,J) = maskC(I,J,kSurface,bi,bj)*(
-     &           PRECIP(I,J,bi,bj)
-     &           - EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
-#ifdef ALLOW_RUNOFF
-     &           + RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
-     &           )*rhoConstFresh
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
-     &           - a_FWbySublim(I,J)*AREApreTH(I,J)
-#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
-           ENDDO
-          ENDDO
-          IF ( DIAGNOSTICS_IS_ON('SIatmQnt',myThid) ) CALL
-     &     DIAGNOSTICS_FILL(DIAGarrayA,'SIatmQnt',0,1,3,bi,bj,myThid)
-          IF ( DIAGNOSTICS_IS_ON('SIfwSubl',myThid) ) CALL
-     &     DIAGNOSTICS_FILL(DIAGarrayB,'SIfwSubl',0,1,3,bi,bj,myThid)
-          IF ( DIAGNOSTICS_IS_ON('SIatmFW ',myThid) )  CALL
-     &     DIAGNOSTICS_FILL(DIAGarrayC,'SIatmFW ',0,1,3,bi,bj,myThid)
-        ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
 C switch heat fluxes from W/m2 to 'effective' ice meters
         DO J=1,sNy
          DO I=1,sNx
@@ -830,13 +788,11 @@ C switch heat fluxes from W/m2 to 'effective' ice meters
 C and initialize r_QbyATM_cover/r_QbyATM_open
           r_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
           r_QbyATM_open(I,J)=a_QbyATM_open(I,J)
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
 C     Convert fresh water flux by sublimation to 'effective' ice meters. 
 C     Negative sublimation is resublimation and will be added as snow.
           a_FWbySublim(I,J) = SEAICE_deltaTtherm/SEAICE_rhoIce
      &           * a_FWbySublim(I,J)*AREApreTH(I,J)
           r_FWbySublim(I,J)=a_FWbySublim(I,J)
-#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
          ENDDO
         ENDDO
 
@@ -1695,8 +1651,69 @@ C three that actually need intermediate storage
      &      'SIsnPrcp',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_SCALE_FILL(DIAGarrayB,
      &      tmpscal1,1,'SIdA    ',0,1,3,bi,bj,myThid)
-        ENDIF
+C
+         DO J=1,sNy
+          DO I=1,sNx
+CML If I consider the atmosphere above the ice, the surface flux 
+CML which is relevant for the air temperature dT/dt Eq 
+CML accounts for sensible and radiation (with different treatment
+CML according to wave-length) fluxes but not for "latent heat flux",
+CML since it does not contribute to heating the air.
+CML So this diagnostic is only good for heat budget calculations within
+CML the ice-ocean system.
+           DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
+#ifndef SEAICE_GROWTH_LEGACY
+     &            a_QSWbyATM_cover(I,J) +
+#endif /* SEAICE_GROWTH_LEGACY */          
+     &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
+C
+           DIAGarrayB(I,J) = maskC(I,J,kSurface,bi,bj) *
+     &       a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
+C
+           DIAGarrayC(I,J) = maskC(I,J,kSurface,bi,bj)*(
+     &          PRECIP(I,J,bi,bj)
+     &          - EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+#ifdef ALLOW_RUNOFF
+     &          + RUNOFF(I,J,bi,bj)
+#endif /* ALLOW_RUNOFF */
+     &           )*rhoConstFresh
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
+     &     - a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &      'SIatmQnt',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(DIAGarrayB,
+     &      'SIfwSubl',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(DIAGarrayC,
+     &      'SIatmFW ',0,1,3,bi,bj,myThid)
+C
+        DO J=1,sNy
+         DO I=1,sNx
+C the actual Freshwater flux of sublimated ice, >0 decreases ice          
+          DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
+     &       * (a_FWbySublim(I,J)-r_FWbySublim(I,J)) 
+     &       * SEAICE_rhoIce / SEAICE_deltaTtherm
+C the latent heat flux
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
+          tmpscal1= EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+     &            + r_FWbySublim(I,J)*convertHI2PRECIP 
+          tmpscal2= ( a_FWbySublim(I,J)-r_FWbySublim(I,J) )
+     &            * convertHI2PRECIP
+#else
+          tmpscal1= ( EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+          tmpscal2= 0. _d 0
 #endif
+          tmpscal3= SEAICE_lhEvap+SEAICE_lhFusion
+          DIAGarrayB(I,J) = -maskC(I,J,kSurface,bi,bj)*rhoConstFresh
+     &            * ( tmpscal1*SEAICE_lhEvap + tmpscal2*tmpscal3 )
+         ENDDO
+        ENDDO
+      CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIacSubl',0,1,3,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIhl    ',0,1,3,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C close bi,bj loops
        ENDDO

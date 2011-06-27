@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.28 2011/06/15 01:31:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.29 2011/06/27 13:15:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -300,6 +300,13 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'SIhl    '
+      diagTitle = 'Latent heat flux into ocean, >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'SIqneto '
       diagTitle = 'Open Ocean Part of SIqnet, turb+rad, >0 decr theta'
       diagUnits = 'W/m^2           '
@@ -339,7 +346,14 @@ C     is EmPmR before impact of ice.
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIfwSubl'
-      diagTitle = 'Freshwater flux of sublimated ice, >0 decreases ice'
+      diagTitle ='Potential sublimation freshwater flux, >0 decr. ice'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIacSubl'
+      diagTitle = 'Actual sublimation freshwater flux, >0 decr. ice'
       diagUnits = 'kg/m^2/s        '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
