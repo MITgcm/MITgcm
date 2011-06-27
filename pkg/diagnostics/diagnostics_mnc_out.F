@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.3 2011/06/23 15:29:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.4 2011/06/27 22:27:23 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -16,7 +16,7 @@ C     !ROUTINE: DIAGNOSTICS_MNC_SET
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_MNC_SET(
      I     nLevOutp, listId, lm,
-     O     diag_mnc_bn, missingValFillsMask,
+     O     diag_mnc_bn,
      I     misValLoc, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -37,7 +37,6 @@ C     nLevOutp        :: number of levels to write in output file
 C     listId          :: Diagnostics list number being written
 C     lm              :: loop index (averageCycle)
 C     diag_mnc_bn     :: NetCDF output file name
-C     missingValFillsMask :: fill output-field with Missing-Value where mask=0
 C     misValLoc       :: local Missing Value
 C     myTime          :: current time of simulation (s)
 C     myIter          :: current iteration number
@@ -45,7 +44,6 @@ C     myThid          :: my Thread Id number
       INTEGER nLevOutp
       INTEGER listId, lm
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      LOGICAL missingValFillsMask
       _RL     misValLoc
       _RL     myTime
       INTEGER myIter, myThid
@@ -85,10 +83,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c     IF (useMNC .AND. diag_mnc) THEN
 
 C     Handle missing value attribute (land points)
-        missingValFillsMask = .FALSE.
-#ifdef DIAGNOSTICS_MISSING_VALUE
-        missingValFillsMask = .TRUE.
-#endif /* DIAGNOSTICS_MISSING_VALUE */
 C     Defaults to UNSET_I
         misvalIntLoc = misvalInt(listId)
         DO ii=1,2
@@ -192,7 +186,7 @@ C         for averaged levels.
      &           myThid)
           ENDIF
 C     suppress the missing value attribute (iflag = 0)
-          IF (missingValFillsMask)
+          IF (useMissingValue)
      &          CALL MNC_CW_VATTR_MISSING(dn(1), 0,
      I          misval_r8, misval_r4, misval_int, myThid )
           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
@@ -214,10 +208,8 @@ C     !ROUTINE: DIAGNOSTICS_MNC_OUT
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_MNC_OUT(
      I     NrMax, nLevOutp, listId, ndId, mate,
-     I     diag_mnc_bn,
-     I     missingValFillsMask, misValLoc,
-     I     qtmp,
-     I     myTime, myIter, myThid )
+     I     diag_mnc_bn, qtmp,
+     I     misValLoc, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     write diagnostics fields to MNC file.
@@ -238,9 +230,8 @@ C     listId          :: Diagnostics list number being written
 C     ndId            :: diagnostics Id number (in available diagnostics list)
 C     mate            :: counter diagnostic number if any ; 0 otherwise
 C     diag_mnc_bn     :: NetCDF output file name
-C     missingValFillsMask :: fill output-field with Missing-Value where mask=0
-C     misValLoc       :: local Missing Value
 C     qtmp            :: output-field array to write
+C     misValLoc       :: local Missing Value
 C     myTime          :: current time of simulation (s)
 C     myIter          :: current iteration number
 C     myThid          :: my Thread Id number
@@ -248,9 +239,8 @@ C     myThid          :: my Thread Id number
       INTEGER nLevOutp
       INTEGER listId, ndId, mate
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      LOGICAL missingValFillsMask
-      _RL     misValLoc
       _RL     qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
+      _RL     misValLoc
       _RL     myTime
       INTEGER myIter, myThid
 CEOP
@@ -369,7 +359,7 @@ C        Time dimension
          useMisValForThisDiag = mate.GT.0
 C     Use the missing values for masking out the land points:
 C     only for scalar diagnostics at mass points (so far)
-         IF ( missingValFillsMask.AND.gdiag(ndId)(1:2).EQ.'SM' ) THEN
+         IF ( useMissingValue.AND.gdiag(ndId)(1:2).EQ.'SM' ) THEN
            useMisValForThisDiag = .TRUE.
 C     note: better to use 2-D mask if kdiag <> Nr or vert.integral
            DO bj = myByLo(myThid), myByHi(myThid)

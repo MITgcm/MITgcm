@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.56 2011/06/23 15:29:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.57 2011/06/27 22:27:23 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -86,7 +86,6 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
 #endif
 #ifdef ALLOW_MNC
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      LOGICAL missingValFillsMask
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -155,7 +154,7 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
        IF (useMNC .AND. diag_mnc) THEN
          CALL DIAGNOSTICS_MNC_SET(
      I                    nLevOutp, listId, lm,
-     O                    diag_mnc_bn, missingValFillsMask,
+     O                    diag_mnc_bn,
      I                    undefRL, myTime, myIter, myThid )
        ENDIF
 #endif /*  ALLOW_MNC  */
@@ -390,10 +389,8 @@ C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
           IF (useMNC .AND. diag_mnc) THEN
             CALL DIAGNOSTICS_MNC_OUT(
      I                       NrMax, nLevOutp, listId, ndId, mate,
-     I                       diag_mnc_bn,
-     I                       missingValFillsMask, undefRL,
-     I                       qtmp1,
-     I                       myTime, myIter, myThid )
+     I                       diag_mnc_bn, qtmp1,
+     I                       undefRL, myTime, myIter, myThid )
           ENDIF
 #endif /*  ALLOW_MNC  */
 
