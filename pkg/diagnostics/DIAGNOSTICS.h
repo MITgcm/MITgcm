@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.16 2010/01/15 00:24:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.17 2011/06/27 22:23:09 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -54,7 +54,7 @@ C       pdiag  :: index of current averaging interval within the averaging-cycle
       _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numDiags,nSx,nSy)
       _RL qSdiag(0:nStats,0:nRegions,diagSt_size,nSx,nSy)
       INTEGER  ndiag(numDiags,nSx,nSy)
-      INTEGER  pdiag(numlists,nSx,nSy)
+      INTEGER  pdiag(numLists,nSx,nSy)
 
       COMMON / DIAG_STORE_R / qdiag, qSdiag
       COMMON / DIAG_STORE_I / ndiag, pdiag
@@ -81,25 +81,27 @@ C     fnames(n)   :: output file name for output stream # n
 C     fflags(n)   :: character string with per-file flags
 C    settingDiags :: internal flag: enable adding/changing available diagnostics list
 C     dumpAtLast  :: always write time-ave (freq>0) diagnostics at the end of the run
+C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
 
-      _RL freq(numlists), phase(numlists)
-      _RL averageFreq(numlists), averagePhase(numlists)
-      _RL misvalFlt(numlists)
-      _RL levs (numLevels,numlists)
-      INTEGER averageCycle(numlists)
-      INTEGER misvalInt(numlists)
-      INTEGER nlevels(numlists)
-      INTEGER nfields(numlists)
-      INTEGER nActive(numlists)
+      _RL freq(numLists), phase(numLists)
+      _RL averageFreq(numLists), averagePhase(numLists)
+      _RL misvalFlt(numLists)
+      _RL levs (numLevels,numLists)
+      INTEGER averageCycle(numLists)
+      INTEGER misvalInt(numLists)
+      INTEGER nlevels(numLists)
+      INTEGER nfields(numLists)
+      INTEGER nActive(numLists)
       INTEGER nlists
-      INTEGER idiag(numperlist,numlists)
-      INTEGER mdiag(numperlist,numlists)
-      INTEGER jdiag(numperlist,numlists)
-      CHARACTER*8  flds  (numperlist,numlists)
-      CHARACTER*80 fnames(numlists)
-      CHARACTER*8  fflags(numlists)
+      INTEGER idiag(numperList,numLists)
+      INTEGER mdiag(numperList,numLists)
+      INTEGER jdiag(numperList,numLists)
+      CHARACTER*8  flds  (numperList,numLists)
+      CHARACTER*80 fnames(numLists)
+      CHARACTER*8  fflags(numLists)
       LOGICAL settingDiags
-      LOGICAL dumpAtLast, diag_mdsio,  diag_mnc
+      LOGICAL dumpAtLast
+      LOGICAL diag_mdsio, diag_mnc,    useMissingValue
       LOGICAL diag_pickup_read,        diag_pickup_write
       LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
       LOGICAL diag_pickup_read_mnc,    diag_pickup_write_mnc
@@ -114,7 +116,8 @@ C     dumpAtLast  :: always write time-ave (freq>0) diagnostics at the end of th
       COMMON / DIAG_SELECT_C /
      &     flds, fnames, fflags
       COMMON / DIAG_SELECT_L /
-     &     settingDiags, dumpAtLast, diag_mdsio, diag_mnc,
+     &     settingDiags, dumpAtLast,
+     &     diag_mdsio, diag_mnc, useMissingValue,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
      &     diag_pickup_read_mnc,    diag_pickup_write_mnc
@@ -138,17 +141,17 @@ C     diagSt_ioUnit(n) :: fortran IO unit for output stream # n (ascii output)
 C     diagSt_Flds(:,n) :: list of field names in output stream # n
 C     diagSt_Fname(n)  :: output file name for output stream # n
 
-      _RL       diagSt_freq(numlists), diagSt_phase(numlists)
-      INTEGER   iSdiag(numperlist,numlists)
-      INTEGER   mSdiag(numperlist,numlists)
-      INTEGER   jSdiag(numperlist,numlists)
-      INTEGER   diagSt_region(0:nRegions,numlists)
-      INTEGER   diagSt_nbFlds(numlists)
-      INTEGER   diagSt_nbActv(numlists)
+      _RL       diagSt_freq(numLists), diagSt_phase(numLists)
+      INTEGER   iSdiag(numperList,numLists)
+      INTEGER   mSdiag(numperList,numLists)
+      INTEGER   jSdiag(numperList,numLists)
+      INTEGER   diagSt_region(0:nRegions,numLists)
+      INTEGER   diagSt_nbFlds(numLists)
+      INTEGER   diagSt_nbActv(numLists)
       INTEGER   diagSt_nbLists
-      INTEGER   diagSt_ioUnit(numlists)
-      CHARACTER*8  diagSt_Flds(numperlist,numlists)
-      CHARACTER*80 diagSt_Fname(numlists)
+      INTEGER   diagSt_ioUnit(numLists)
+      CHARACTER*8  diagSt_Flds(numperList,numLists)
+      CHARACTER*80 diagSt_Fname(numLists)
       LOGICAL   diagSt_ascii, diagSt_mnc
 
       COMMON / DIAG_STATIS_R /

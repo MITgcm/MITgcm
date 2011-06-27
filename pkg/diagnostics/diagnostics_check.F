@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.8 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.9 2011/06/27 22:23:09 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -37,6 +37,13 @@ C     !LOCAL VARIABLES:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Check diagnostics parameter consistency
+
+      IF ( useMissingValue .AND. .NOT. diag_mnc ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** DIAGNOSTICS_CHECK: ',
+     &            'ignore "useMissingValue" since "diag_mnc" is off'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+      ENDIF
 
 #ifdef DIAGNOSTICS_HAS_PICKUP
       IF ( diag_pickup_read ) THEN
