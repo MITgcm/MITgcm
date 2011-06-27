@@ -3,8 +3,9 @@
   useKPP    = .TRUE.,
   useEXF    = .TRUE.,
   useSEAICE = .TRUE.,
-#  useDiagnostics = .TRUE.,
   useECCO   = .TRUE.,
   useGrdchk = .TRUE.,
+
 #  useMNC    = .TRUE,
+#  useDiagnostics = .TRUE.,
  &
