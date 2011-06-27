@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.132 2011/06/27 13:15:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.133 2011/06/27 13:19:12 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -933,7 +933,15 @@ C     If anything is left, sublimate ice
           r_FWbySublim(I,J)   = r_FWbySublim(I,J) - tmpscal2
          ENDDO
         ENDDO
-C     If anything is left, evaporate ocean, and correct for Lfusion heat.
+        DO J=1,sNy
+         DO I=1,sNx
+C     If anything is left, it will be evaporated from the ocean rather than sublimated.
+C     Since a_QbyATM_cover was computed for sublimation, not simple evapation, we need to
+C     remove the fusion part for the residual (that happens to be precisely r_FWbySublim).
+          a_QbyATM_cover(I,J) = a_QbyATM_cover(I,J)-r_FWbySublim(I,J)
+          r_QbyATM_cover(I,J) = r_QbyATM_cover(I,J)-r_FWbySublim(I,J)
+         ENDDO
+        ENDDO
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
 
 C compute snow melt tendency due to snow-atmosphere interaction
@@ -1506,13 +1514,6 @@ C in principle a_QSWbyATM_cover should always be included here, however
 C for backward compatibility it is left out of the LEGACY branch
      &         +   a_QSWbyATM_cover(I,J)
 #endif /* SEAICE_GROWTH_LEGACY */
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
-C Tricky point: we have taken Lsub heat from the ocean but, by lack of snow/ice,  
-C will take the fresh water from the ocean, which only requires Levap heat.
-C So we have taken an excess Lfusion heat from the ocean, which we need to put back.
-C Given the sign convention (QNET is upward) and current units (ice meters), that is:
-C    &         - r_FWbySublim(I,J)
-#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
      &         - ( d_HEFFbyOCNonICE(I,J) +
      &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW +
      &             d_HEFFbyNEG(I,J) +
@@ -1547,6 +1548,7 @@ C ==================================================
      &             +d_HEFFbyNEG(I,J)
      &             +d_HSNWbyNEG(I,J)/ICE2SNOW
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+C     If r_FWbySublim>0, then it is evaporated from ocean.
      &             +r_FWbySublim(I,J)
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
@@ -1569,6 +1571,9 @@ C ==================================================
      &         *( ONE - AREApreTH(I,J) )
      &         + RUNOFF(I,J,bi,bj)
      &         )*rhoConstFresh
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
+     &     - a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
+#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
          ENDDO
         ENDDO
 #endif
