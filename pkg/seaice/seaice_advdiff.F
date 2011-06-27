@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.52 2011/06/13 23:21:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.53 2011/06/27 13:14:52 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -413,7 +413,7 @@ c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
          ELSE
           DO j=1,sNy
            DO i=1,sNx
-            if (AREA(I,J,bi,bj).GE.areaMin) then
+            if (AREA(I,J,bi,bj).GE.SEAICE_area_floor) then
             SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/AREA(I,J,bi,bj)
             else
             SItracer(i,j,bi,bj,iTr)=0. _d 0
@@ -427,7 +427,7 @@ c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
              SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
 #endif
 c           treat case of potential negative value
-            if (AREA(I,J,bi,bj).GE.areaMin) then
+            if (AREA(I,J,bi,bj).GE.SEAICE_area_floor) then
               tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
               SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
             endif
