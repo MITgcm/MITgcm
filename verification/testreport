@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.163 2011/05/18 22:03:57 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.164 2011/06/27 18:45:16 jmc Exp $
 #  $Name:  $
 #
 
@@ -15,8 +15,9 @@ usage()
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
     echo "  (-mfile|-mf) STRING      MPI: file with list of possible machines to run on"
-    echo "  (-ieee/-noieee)          if possible, use IEEE compiler flags"
-    echo "                             (DEF=\"-ieee\")"
+    echo "  (-fast)                  use optfile default for compiler flags (no '-ieee')"
+    echo "                            DEF=off => use IEEE numerics option (if available)"
+    echo "  (-devel)                 use optfile developement flags (if available)"
     echo "  (-gsl)                   compile with \"-gsl\" flag"
     echo "  (-use_r4|-ur4)           if allowed, use real*4 type for '_RS' variable"
     echo "  (-optfile|-of) STRING    list of optfiles to use"
@@ -338,8 +339,11 @@ genmakemodel()
 	    if test "x$OPTFILE" != xNONE ; then
 		command="$command -optfile=$OPTFILE"
 	    fi
-	    if test "x$IEEE" != x ; then
-		command="$command -ieee"
+	    if test $OptLev = 1 ; then
+ 		command="$command -ieee"
+ 	    fi
+	    if test $OptLev = 0 ; then
+		command="$command -devel"
 	    fi
 	    if test "x$GSL" = xt ; then
 		command="$command -gsl"
@@ -922,6 +926,7 @@ IEEE=true
 if test "x$MITGCM_IEEE" != x ; then
     IEEE=$MITGCM_IEEE
 fi
+OptLev=1
 GSL=f
 
 CLEANUP=f
@@ -1044,8 +1049,12 @@ for ac_option ; do
 	-adm | -ad) ADM=t ;;
 	-oad) OADM=t; NODEPEND=t ;;
 
-	-ieee) IEEE=true ;;
-	-noieee) IEEE= ;;
+	-ieee)   echo "Warning: ignore option '-ieee' (already the default)"
+                 printf " ... " ;;
+	-noieee) echo "Warning: will use option '-fast' instead of '-noieee' (obsolete)"
+                 printf " ... " ; OptLev=`expr $OptLev \* 2` ;;
+	-fast)  OptLev=`expr $OptLev \* 2` ;;
+	-devel) OptLev=0 ;;
 	-gsl) GSL=t ;;
 
 	-verbose) verbose=2 ;;
