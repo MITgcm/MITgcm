@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1465 2011/06/27 16:00:08 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1466 2011/06/27 22:45:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+ - add run-time parameter "useMissingValue" (def=False) to fill land-point
+    (i.e., where mask=0) with MissingValue ; used only in MNC output file.
+   This replaces CPP-option DIAGNOSTICS_MISSING_VALUE.
+ - Extend the use of "missing_value" setting from data.diagnostics for the case
+   of counter-diagnostics (where fraction-weight is zero). This applies both to
+   MNC and MDS output files.
 o pkg/seaice/seaice_growth.F:
   - remove the CPP switch around the *_FWbySublim unit change and move diagnostic
    fill for SIatmQnt, SIfwSubl, SIatmFW to the end of seaice_growth.F.
@@ -24,9 +31,6 @@ o pkg/diagnostics:
    of fields for this time period, then the next time reccord (it used to be
    one field with the full set of time records then the next field).
      Note: this is now similar to NetCDF (MNC) output file. <==
- - Extend the use of "missing_value" setting from data.diagnostics for the case 
-   of counter-diagnostics (where fraction-weight is zero). This applies both to 
-   MNC and MDS output files.
 
 checkpoint62z (2011/06/21)
 o adjoint monitor:
