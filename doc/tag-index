@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1464 2011/06/24 15:51:59 ifenty Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1465 2011/06/27 16:00:08 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F:
+  - remove the CPP switch around the *_FWbySublim unit change and move diagnostic
+   fill for SIatmQnt, SIfwSubl, SIatmFW to the end of seaice_growth.F.
+  - add diagnostic of the actual sublimation freshwater flux (that is 0. ifndef
+   SEAICE_ADD_SUBLIMATION_TO_FWBUDGET) and of the latent heat flux (evap+sublim).
+  - bug fix : frWtrAtm needs a_FWbySublim ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET.
+  - bug fix : missing part to Martin's r_FWbySublim pathological case fix.
 o verification 1D_ocean_ice_column:
    made model domain truly 1x1x23 instead of 5x5x23 with only center cell (3,3,:) wet
    update results
