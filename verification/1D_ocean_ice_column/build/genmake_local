@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/build/Attic/genmake_local,v 1.1 2011/06/19 15:12:12 jmc Exp $
-
-#  This is the local options file for the "new" version of genmake
-
-MAKEDEPEND=cyrus_makedepend
