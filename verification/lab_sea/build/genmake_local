@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/build/genmake_local,v 1.3 2008/02/07 00:41:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/build/genmake_local,v 1.4 2011/06/28 20:09:25 jmc Exp $
 
 #  This is the local options file for the "new" version of genmake
 
-MAKEDEPEND=cyrus_makedepend
+MAKEDEPEND=tools_xmakedepend
+
