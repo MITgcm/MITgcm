@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.20 2011/06/03 19:03:06 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.21 2011/06/28 21:59:46 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -309,7 +309,7 @@ C        CALL emissipcc(tnow,nepmn,ocumn,CO2,xco2ann,nemis)
         IF (iyr.eq.endYear) THEN
 C         NEM emissions and NEP for start of climate-chemistry run
           adupt=aduptt
-          CALL wr_rstrt_nem
+C          CALL wr_rstrt_nem
         ENDIF
 
 #endif
