@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1466 2011/06/27 22:45:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1467 2011/06/28 20:49:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification lab_sea & global_ocean.cs32x15:
+ - use tools/xmakedepend (instead of cyrus_makedepend, in genmake_local):
+   does not miss some dependencies (but is slower) and also works with many files
+   (default makedepend limitation for AD built).
+ - use cyrus_makedepend in adjustment.128x64x1 (so that it still tested).
 o pkg/diagnostics:
  - add run-time parameter "useMissingValue" (def=False) to fill land-point
     (i.e., where mask=0) with MissingValue ; used only in MNC output file.
