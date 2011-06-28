@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.25 2011/06/23 08:40:09 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.26 2011/06/28 09:36:42 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -255,11 +255,11 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     % modifications make the output field smaller, let us see, if it is
     % robust 
     if (firstiter)
-      S.i_first.(cvar) = i0;
-      S.j_first.(cvar) = j0;
+      S.attributes.i_first.(cvar) = i0;
+      S.attributes.j_first.(cvar) = j0;
     end 
-    i0 = i0 - S.i_first.(cvar);
-    j0 = j0 - S.j_first.(cvar);
+    i0 = i0 - S.attributes.i_first.(cvar);
+    j0 = j0 - S.attributes.j_first.(cvar);
     % end code by Bruno Deremble
     
     Sstr = '';
@@ -430,11 +430,11 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     % modifications make the output field smaller, let us see, if it is
     % robust 
     if (firstiter)
-      S.i_first.(cvar) = i0;
-      S.j_first.(cvar) = j0;
+      S.attributes.i_first.(cvar) = i0;
+      S.attributes.j_first.(cvar) = j0;
     end 
-    i0 = i0 - S.i_first.(cvar);
-    j0 = j0 - S.j_first.(cvar);
+    i0 = i0 - S.attributes.i_first.(cvar);
+    j0 = j0 - S.attributes.j_first.(cvar);
     % end code by Bruno Deremble
 
     Sstr = '';
