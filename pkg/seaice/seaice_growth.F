@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.135 2011/06/29 21:39:06 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.136 2011/06/29 23:40:35 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -156,8 +156,11 @@ C                     as EVAP (positive upward)
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
       _RL d_HEFFbySublim      (1:sNx,1:sNy)
       _RL d_HSNWbySublim      (1:sNx,1:sNy)
-      _RL latentHeatFluxMax   (1:sNx,1:sNy)
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+
+C     The latent heat flux which will sublimate all snow and ice
+C     over one time step
+      _RL latentHeatFluxMax   (1:sNx,1:sNy)
 
 C     actual ice thickness (with upper and lower limit)
       _RL heffActual          (1:sNx,1:sNy)
@@ -212,9 +215,7 @@ C temporary variables available for the various computations
       _RL a_QbyATMmult_cover  (1:sNx,1:sNy)
       _RL a_QSWbyATMmult_cover(1:sNx,1:sNy)
       _RL a_FWbySublimMult    (1:sNx,1:sNy)
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
       _RL latentHeatFluxMaxP  (1:sNx,1:sNy)
-#endif
 #else
       PARAMETER ( nDim = 1 )
 #endif /* SEAICE_MULTICATEGORY */
@@ -347,8 +348,8 @@ C =====================
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
           d_HEFFbySublim(I,J)        = 0.0 _d 0
           d_HSNWbySublim(I,J)        = 0.0 _d 0
-          latentHeatFluxMax(I,J)     = 0.0 _d 0
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+          latentHeatFluxMax(I,J)     = 0.0 _d 0
 c
           d_HFRWbyRAIN(I,J)          = 0.0 _d 0
 
@@ -361,9 +362,7 @@ c
           a_QbyATMmult_cover(I,J)    = 0.0 _d 0
           a_QSWbyATMmult_cover(I,J)  = 0.0 _d 0
           a_FWbySublimMult(I,J)      = 0.0 _d 0
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
           latentHeatFluxMaxP(I,J)    = 0.0 _d 0
-#endif
 #endif /* SEAICE_MULTICATEGORY */
          ENDDO
         ENDDO
@@ -668,8 +667,6 @@ cif       Do not regularize when HEFFpreTH = 0
 #endif
 #endif
 
-
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
 C 5) COMPUTE MAXIMUM LATENT HEAT FLUXES FOR THE CURRENT ICE
 C    AND SNOW THICKNESS
 
@@ -687,7 +684,6 @@ c        step (W/m^2)
           endif
          ENDDO
         ENDDO
-#endif
 
 
 C ===================================================================
@@ -828,10 +824,8 @@ cif     The actual vs. maximum latent heat flux
         IF ( useDiagnostics ) THEN
           CALL DIAGNOSTICS_FILL(DIAGarrayA,
      &     'SIactLHF',0,1,3,bi,bj,myThid)
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
           CALL DIAGNOSTICS_FILL(latentHeatFluxMax,
      &     'SImaxLHF',0,1,3,bi,bj,myThid)
-#endif
         ENDIF
 #endif
 
