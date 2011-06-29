@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.5 2007/10/10 09:26:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.6 2011/06/29 16:36:47 heimbach Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -88,6 +88,18 @@ CML#endif ALLOW_KPP
        ENDIF
       ENDIF
 #endif /* ALLOW_ISOMIP_TD */
+
+#ifndef SHI_ALLOW_GAMMAFRICT
+      IF ( SHELFICEuseGammaFrict ) THEN
+       WRITE(msgBuf,'(A,A,A)')
+     &      'Run-time control flag SHELFICEuseGammaFrict was used'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A,A)')
+     &      'when CPP flag SHI_ALLOW_GAMMAFRICT was unset'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+      ENDIF
+#endif /* SHI_ALLOW_GAMMAFRICT */
 
       _END_MASTER(myThid)
 
