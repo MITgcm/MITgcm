@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.22 2011/05/30 20:21:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.23 2011/06/29 16:24:10 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -52,8 +52,9 @@ C     I,J,K,Kp1,bi,bj  :: loop counters
 C     tLoc, sLoc, pLoc :: local in-situ temperature, salinity, pressure
 C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
-C     freshWaterFlux   :: local variable for fresh water melt flux due to
-C                         melting in kg/m^2/s (negative density x melt rate)
+C     freshWaterFlux   :: local variable for fresh water melt flux due
+C                         to melting in kg/m^2/s 
+C                         (negative density x melt rate)
 C     convertFW2SaltLoc:: local copy of convertFW2Salt
 C     cFac             :: 1 for conservative form, 0, otherwise
 C     auxiliary variables and abbreviations:
@@ -75,6 +76,12 @@ C     drKp1, recip_drLoc
       _RL drKp1, recip_drLoc
       _RL tmpFac
 
+#ifdef SHI_ALLOW_GAMMAFRICT
+      _RL shiPr, shiSc, shiLo, shiKarman
+      _RL gammaTmoleT, gammaTmoleS, gammaTurb
+      _RL ustar, ustarSq, etastar
+#endif
+
       _RL SW_TEMP
       EXTERNAL SW_TEMP
 
@@ -83,10 +90,20 @@ C     drKp1, recip_drLoc
 #endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef SHI_ALLOW_GAMMAFRICT
+      shiKarman= 0.4 _d 0
+      shiLo = 0. _d 0
+      shiPr = (viscArNr(1)/diffKrNrT(1))**(2/3)
+      shiSc = (viscArNr(1)/diffKrNrS(1))**(2/3)
+      gammaTmoleT = 12.5 _d 0 * shiPr - 6. _d 0
+      gammaTmoleS = 12.5 _d 0 * shiSc - 6. _d 0
+#endif
+
 C     are we doing the conservative form of Jenkins et al. (2001)?
       cFac = 0. _d 0
       IF ( SHELFICEconserve ) cFac = 1. _d 0
-C     with "real fresh water flux" (affecting ETAN), there is more to modify
+C     with "real fresh water flux" (affecting ETAN), 
+C     there is more to modify
       rFac = 1. _d 0
       IF ( SHELFICEconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
 C     linear dependence of freezing point on salinity
@@ -194,9 +211,10 @@ C--   Calculate freezing temperature as a function of salinity and pressure
      &           sLoc(I,J) * ( a0 + a1*sqrt(sLoc(I,J)) + a2*sLoc(I,J) )
      &           + b*pLoc(I,J) + c0
 C--   Calculate the upward heat and  fresh water fluxes
-            shelfIceHeatFlux(I,J,bi,bj) = maskC(I,J,K,bi,bj) *
-     &           SHELFICEheatTransCoeff * ( tLoc(I,J) - thetaFreeze )
-     &           *HeatCapacity_Cp*rUnit2mass
+            shelfIceHeatFlux(I,J,bi,bj) = maskC(I,J,K,bi,bj)
+     &           * shiTransCoeffT(i,j,bi,bj)
+     &           * ( tLoc(I,J) - thetaFreeze )
+     &           * HeatCapacity_Cp*rUnit2mass
 #ifdef ALLOW_SHIFWFLX_CONTROL
      &           - xx_shifwflx_loc(I,J,bi,bj)*SHELFICElatentHeat
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
@@ -234,16 +252,42 @@ C     Hellmer, H., 1989, A two-dimensional model for the thermohaline
 C     circulation under an ice shelf, Reports on Polar Research, No. 60
 C     (in German).
 
-C     a few abbreviations
-         eps1 = rUnit2mass*HeatCapacity_Cp*SHELFICEheatTransCoeff
-         eps2 = rUnit2mass*SHELFICElatentHeat*SHELFICEsaltTransCoeff
-         eps5 = rUnit2mass*HeatCapacity_Cp*SHELFICEsaltTransCoeff
-
          DO J = 1, sNy
           DO I = 1, sNx
            K    = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-C     solve quadratic equation to get salinity at shelfice-ocean interface
+#ifdef SHI_ALLOW_GAMMAFRICT
+C     Implement friction velocity-dependent transfer coefficient
+C     of Holland and Jenkins, JPO, 1999
+            IF ( SHELFICEuseGammaFrict ) THEN
+             ustarSq = shiCdrag * MAX( 1D-06,
+     &            (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+     &           *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+     &           +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
+     &           *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
+             ustar     = SQRT(ustarSq)
+C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
+             etastar   = 1. _d 0
+             gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
+     &           / ABS( fCori(I,J,bi,bj) * 0.5 _d 0 * viscArNr(k) ) )
+     &           / shiKarman 
+     &           + 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
+     &           - 1. _d 0 / shiKarman
+             shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
+     &           ustar/(gammaTurb + gammaTmoleT) )
+             shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
+     &           ustar/(gammaTurb + gammaTmoleS) )             
+            ENDIF
+#endif
+C     a few abbreviations
+            eps1 = rUnit2mass*HeatCapacity_Cp
+     &           *shiTransCoeffT(i,j,bi,bj)
+            eps2 = rUnit2mass*SHELFICElatentHeat
+     &           *shiTransCoeffS(i,j,bi,bj)
+            eps5 = rUnit2mass*HeatCapacity_Cp
+     &           *shiTransCoeffS(i,j,bi,bj)
+
+C     solve quadratic equation for salinity at shelfice-ocean interface
 C     note: this part of the code is not very intuitive as it involves
 C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
@@ -304,9 +348,11 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
             thetaFreeze = a0*saltFreeze + eps4
 C--   upward fresh water flux due to melting (in kg/m^2/s)
 cph change to identical form
-cph            freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
+cph            freshWaterFlux = rUnit2mass
+cph     &           * shiTransCoeffS(i,j,bi,bj)
 cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
-            freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
+            freshWaterFlux = rUnit2mass
+     &           * shiTransCoeffS(i,j,bi,bj)
      &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
 #ifdef ALLOW_SHIFWFLX_CONTROL
      &           + xx_shifwflx_loc(I,J,bi,bj)
@@ -322,11 +368,11 @@ C--   implies melting and due to upward (positive) heat flux
             shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
-     &           ( SHELFICEheatTransCoeff
+     &           ( shiTransCoeffT(i,j,bi,bj)
      &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
      &           * ( thetaFreeze - tLoc(I,J) )
             shelficeForcingS(i,j,bi,bj) =
-     &           ( SHELFICEsaltTransCoeff
+     &           ( shiTransCoeffS(i,j,bi,bj)
      &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
      &           * ( saltFreeze - sLoc(I,J) )
            ELSE

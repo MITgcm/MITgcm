@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.11 2011/05/10 07:49:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.12 2011/06/29 16:24:10 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -55,7 +55,9 @@ CEOP
      &     SHELFICE_taveFreq,
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
-     &     SHELFICEtopoFile, SHELFICEloadAnomalyFile
+     &     SHELFICEtopoFile, SHELFICEloadAnomalyFile,
+     &     SHELFICEuseGammaFrict,
+     &     shiCdrag, shiZetaN, shiRc
 #ifdef ALLOW_COST
      &     , mult_shelfice
      &     , mult_shifwflx, wshifwflx0, shifwflx_errfile
@@ -87,6 +89,10 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEwriteState       = .FALSE.
       SHELFICE_dumpFreq        = dumpFreq
       SHELFICE_taveFreq        = taveFreq
+      SHELFICEuseGammaFrict    = .FALSE.
+      shiCdrag                 = 0.0015 _d 0
+      shiZetaN                 = 0.052 _d 0
+      shiRc                    = 0.2 _d 0
 #ifdef ALLOW_COST
       mult_shelfice            = 0. _d 0
       mult_shifwflx            = 0. _d 0

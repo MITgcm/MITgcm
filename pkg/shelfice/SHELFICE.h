@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.8 2011/05/10 07:33:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.9 2011/06/29 16:24:10 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -63,7 +63,8 @@ CEOP
      &     SHELFICElatentHeat, recip_SHELFICElatentHeat,
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
-     &     SHELFICEDragLinear, SHELFICEDragQuadratic
+     &     SHELFICEDragLinear, SHELFICEDragQuadratic,
+     &     shiCdrag, shiZetaN, shiRc
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
@@ -75,12 +76,16 @@ CEOP
       _RL SHELFICEDragLinear
       _RL SHELFICEDragQuadratic
       _RL SHELFICEthetaSurface
+      _RL shiCdrag, shiZetaN, shiRc
+
 
       COMMON /SHELFICE_FIELDS_RL/ 
-     &     shelficeForcingT,
-     &     shelficeForcingS
+     &     shelficeForcingT, shelficeForcingS,
+     &     shiTransCoeffT, shiTransCoeffS
       _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiTransCoeffS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SHELFICE_FIELDS_RS/ 
      &     R_shelfIce,
@@ -107,6 +112,7 @@ CEOP
       LOGICAL SHELFICE_tave_mdsio
       LOGICAL SHELFICE_dump_mnc
       LOGICAL SHELFICE_tave_mnc
+      LOGICAL SHELFICEuseGammaFrict
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -117,7 +123,8 @@ CEOP
      &     SHELFICE_dump_mdsio,
      &     SHELFICE_tave_mdsio,
      &     SHELFICE_dump_mnc,
-     &     SHELFICE_tave_mnc
+     &     SHELFICE_tave_mnc,
+     &     SHELFICEuseGammaFrict
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEtopoFile

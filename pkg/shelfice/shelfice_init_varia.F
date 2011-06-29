@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.5 2011/05/10 07:49:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.6 2011/06/29 16:24:10 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -44,6 +44,8 @@ CEOP
           shelficeForcingS      (i,j,bi,bj) = 0. _d 0
           shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
           shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
+          shiTransCoeffT        (i,j,bi,bj) = SHELFICEheatTransCoeff
+          shiTransCoeffS        (i,j,bi,bj) = SHELFICEsaltTransCoeff
          ENDDO
         ENDDO
        ENDDO
