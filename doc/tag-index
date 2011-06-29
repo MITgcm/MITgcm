@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1468 2011/06/29 16:28:46 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1469 2011/06/29 21:44:26 ifenty Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -23,6 +23,12 @@ o pkg/diagnostics:
    of counter-diagnostics (where fraction-weight is zero). This applies both to
    MNC and MDS output files.
 o pkg/seaice/seaice_growth.F:
+  - add 'a priori' cap of latent heat flux based on actual mass considerations
+    when SEAICE_ADD_SUBLIMATION_TO_FWBUDGET is used in conjunction with the
+    non-legacy seaice_solve4temp.
+  - add diagnostic of the residual sublimation freshwater flux (the freshwater
+    flux taken from the ocean if the total actual latent heat fluxes exceed 
+    the maximum)
   - remove the CPP switch around the *_FWbySublim unit change and move diagnostic
    fill for SIatmQnt, SIfwSubl, SIatmFW to the end of seaice_growth.F.
   - add diagnostic of the actual sublimation freshwater flux (that is 0. ifndef
