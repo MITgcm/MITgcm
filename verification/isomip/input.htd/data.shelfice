@@ -8,4 +8,5 @@
  SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
  no_slip_shelfice = .false.,
  SHELFICEwriteState = .TRUE.,
+ SHELFICEuseGammaFrict = .FALSE.
  &

@@ -6,6 +6,7 @@
  SHELFICEtopoFile='icetopo.exp1',
  SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
  useISOMIPTD = .TRUE.,
+ SHELFICEuseGammaFrict = .FALSE.
  no_slip_shelfice = .false.,
  SHELFICEwriteState = .TRUE.,
  &
