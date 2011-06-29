@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.15 2011/06/19 23:01:54 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.16 2011/06/29 21:39:06 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,6 +8,9 @@ C     !ROUTINE: SEAICE_SOLVE4TEMP
 C     !INTERFACE:
       SUBROUTINE SEAICE_SOLVE4TEMP(
      I   UG, HICE_ACTUAL, HSNOW_ACTUAL,
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+     I   F_lh_max,
+#endif
      U   TSURF,
      O   F_ia, IcePenetSWFlux,
      O   FWsublim,
@@ -64,6 +67,9 @@ C                 sublimation (kg/m^2/s)
       _RL UG             (1:sNx,1:sNy)
       _RL HICE_ACTUAL    (1:sNx,1:sNy)
       _RL HSNOW_ACTUAL   (1:sNx,1:sNy)
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+      _RL F_lh_max       (1:sNx,1:sNy)
+#endif
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL F_io_net       (1:sNx,1:sNy)
 c     _RL F_ia_net       (1:sNx,1:sNy)
@@ -375,8 +381,8 @@ C     snow/ice system.
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
-         IF ( (I .EQ. SEAICE_debugPointX)   .and.
-     &        (J .EQ. SEAICE_debugPointY) ) THEN
+         IF ( (I .EQ. SEAICE_debugPointI)   .and.
+     &        (J .EQ. SEAICE_debugPointJ) ) THEN
 
           print '(A,i6)','-----------------------------------'
           print '(A,i6)','ibi merged initialization ', myIter
@@ -458,6 +464,16 @@ C     The following form does the same, but is faster
 c     d(qh)/d(TICE)
           dqhice_dTice = cc1*cc3t/((cc2-cc3t*Ppascals)**2 *t2)
 
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+c     if the latent heat flux implied by tsurfLoc exceeds
+c     F_lh_max, cap F_lh and decouple the flux magnitude from TICE
+          if (F_lh(I,J) .GT. F_lh_max(I,J)) THEN
+             F_lh(I,J)  = F_lh_max(I,J)
+             dqhice_dTice = ZERO
+          endif
+#endif
+
+
 c     d(F_ia)/d(TICE)
           dFiDTs1 = 4.0 _d 0 * D3*t3 + effConduct(I,J) + D1*UG(I,J)
      &         + D1I*UG(I,J)*dqhice_dTice
@@ -472,8 +488,8 @@ c     d(F_ia)/d(TICE)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
-          IF ( (I .EQ. SEAICE_debugPointX)   .and.
-     &         (J .EQ. SEAICE_debugPointY) ) THEN
+          IF ( (I .EQ. SEAICE_debugPointI)   .and.
+     &         (J .EQ. SEAICE_debugPointJ) ) THEN
            print '(A,i6,4(1x,D24.15))',
      &          'ice-iter qhICE,       ', ITER,qhIce(I,J)
 
@@ -519,8 +535,8 @@ C                 realistic values.
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
-          IF ( (I .EQ. SEAICE_debugPointX)   .and.
-     &         (J .EQ. SEAICE_debugPointY) ) THEN
+          IF ( (I .EQ. SEAICE_debugPointI)   .and.
+     &         (J .EQ. SEAICE_debugPointJ) ) THEN
 
            print '(A,i6,4(1x,D24.15))',
      &          'ice-iter tsurfLc,|dif|', ITER,
@@ -576,6 +592,13 @@ C              over ice specific humidity
          qhice(I,J) = bb1*mm_pi/(Ppascals- (1.0 _d 0 - bb1) * mm_pi)
 
          F_lh(I,J) = D1I * UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
+
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+          if (F_lh(I,J) .GT. F_lh_max(I,J)) THEN
+             F_lh(I,J)  = F_lh_max(I,J)
+          endif
+#endif
+
          F_c(I,J)  = -effConduct(I,J) * (TB(I,J) - t1)
          F_lwu(I,J)   = t4 * D3
          F_sens(I,J)  = D1 * UG(I,J) * (t1 - atempLoc(I,J))
@@ -619,8 +642,8 @@ C     is also positive upward (atmosphere gains freshwater)
          FWsublim(I,J) = F_lh(I,J)/lhSublim
 
 #ifdef SEAICE_DEBUG
-         IF ( (I .EQ. SEAICE_debugPointX)   .and.
-     &        (J .EQ. SEAICE_debugPointY) ) THEN
+         IF ( (I .EQ. SEAICE_debugPointI)   .and.
+     &        (J .EQ. SEAICE_debugPointJ) ) THEN
 
           print '(A)','----------------------------------------'
           print '(A,i6)','ibi complete ', myIter
@@ -640,13 +663,31 @@ C     is also positive upward (atmosphere gains freshwater)
      &         'ibi qh(ATM ICE)            ',
      &         AQH(I,J,bi,bj),qhice(I,J)
 
-c         print '(A,4(1x,D24.15))',
-c     &        'ibi F(lwd,swi,lwu)         ',
-c     &        F_lwd(I,J), F_swi(I,J), F_lwu(I,J)
+#ifndef SEAICE_SOLVE4TEMP_LEGACY
+         print '(A,4(1x,D24.15))',
+     &         'ibi F(lwd,swi,lwu)         ',
+     &         F_lwd(I,J), F_swi(I,J), F_lwu(I,J)
 
-c         print '(A,4(1x,D24.15))',
-c     &        'ibi F(c,lh,sens)           ',
-c     &        F_c(I,J), F_lh(I,J), F_sens(I,J)
+         print '(A,4(1x,D24.15))',
+     &         'ibi F(c,lh,sens)           ',
+     &         F_c(I,J), F_lh(I,J), F_sens(I,J)
+
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+         IF (F_lh_max(I,J) .GT. ZERO) THEN
+             print '(A,4(1x,D24.15))',
+     &         'ibi F_lh_max,  F_lh/lhmax) ',
+     &         F_lh_max(I,J), F_lh(I,J)/ F_lh_max(I,J)
+         ELSE 
+             print '(A,4(1x,D24.15))',
+     &         'ibi F_lh_max = ZERO! '
+         ENDIF
+
+         print '(A,4(1x,D24.15))',
+     &         'ibi FWsub, FWsubm*dT/rhoI  ',
+     &          FWsublim(I,J),
+     &          FWsublim(I,J)*SEAICE_deltaTtherm/SEAICE_rhoICE
+#endif
+#endif
 
           print '(A,4(1x,D24.15))',
      &         'ibi F_ia, F_ia_net, F_c    ',
@@ -669,5 +710,5 @@ c     &        F_c(I,J), F_lh(I,J), F_sens(I,J)
        ENDDO                    !/* i */
       ENDDO                     !/* j */
 
-      RETURN
+      RETURN 
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.29 2011/06/27 13:15:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.30 2011/06/29 21:39:06 ifenty Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -355,6 +355,27 @@ C     is EmPmR before impact of ice.
       diagName  = 'SIacSubl'
       diagTitle = 'Actual sublimation freshwater flux, >0 decr. ice'
       diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIrsSubl'
+      diagTitle = 'Residual subl. freshwater flux, >0 taken from ocn'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIactLHF'
+      diagTitle = 'Actual latent heat flux over ice'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SImaxLHF'
+      diagTitle = 'Maximum latent heat flux over ice'
+      diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
