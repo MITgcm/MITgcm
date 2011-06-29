@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.7 2011/06/21 18:00:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.8 2011/06/29 22:03:56 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -102,8 +102,10 @@ C---  Set pointer if not already set, otherwise just print a message
       ENDIF
       gcode   = gdiag(nn)(1:10)
       IF ( flagD ) THEN
-        idiag(mId,listId) = ndiagmx + 1
         IF ( diagIsPP ) THEN
+C-      Add this diag with negative idiag pointer (since those 2 diags
+C        share the same pointer and "nn" will get the positive pointer).
+          idiag(mId,listId) = -(ndiagmx+1)
 C-      Also add "nn" to the Active list
           k = nActive(listId) + 1
           IF ( k.LE.numperList ) THEN
@@ -112,6 +114,8 @@ C-      Also add "nn" to the Active list
             flds (k,listId) = cdiag(nn)
           ENDIF
           nActive(listId) = k
+        ELSE
+          idiag(mId,listId) = ndiagmx + 1
         ENDIF
         ndiagmx = ndiagmx + kdiag(nn)*averageCycle(listId)
         IF ( ndiagmx.GT.numDiags ) THEN
