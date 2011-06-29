@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1467 2011/06/28 20:49:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1468 2011/06/29 16:28:46 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice
+ - Implement friction velocity-dependent transfer coefficients following
+   Holland and Jenkins, JPO, 1999
+   Original code by M. Losch with small modifs.
+   Enable with CPP option SHI_ALLOW_GAMMAFRICT
+   and runtime flag SHELFICEuseGammaFrict
 o verification lab_sea & global_ocean.cs32x15:
  - use tools/xmakedepend (instead of cyrus_makedepend, in genmake_local):
    does not miss some dependencies (but is slower) and also works with many files
