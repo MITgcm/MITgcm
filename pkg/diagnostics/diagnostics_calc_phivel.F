@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.3 2011/06/24 22:15:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.4 2011/07/01 18:50:00 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -10,11 +10,12 @@ C     !ROUTINE: DIAGNOSTICS_CALC_PHIVEL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_CALC_PHIVEL(
      I                        listId, md, ndId, ip, im, lm,
+     I                        NrMax,
      U                        qtmp1, qtmp2,
      I                        myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     Compute Velocity Potential
+C     Compute Velocity Potential and Velocity Stream-Function
 
 C     !USES:
       IMPLICIT NONE
@@ -24,10 +25,7 @@ C     !USES:
 #include "GRID.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
-
-      INTEGER NrMax
-      PARAMETER( NrMax = numLevels )
-
+c#include "DIAGNOSTICS_CALC.h"
 
 C     !INPUT PARAMETERS:
 C     listId  :: Diagnostics list number being written
@@ -36,12 +34,14 @@ C     ndId    :: diagnostics  Id number (in available diagnostics list)
 C     ip      :: diagnostics  pointer to storage array
 C     im      :: counter-mate pointer to storage array
 C     lm      :: index in the averageCycle
+C     NrMax   :: 3rd dimension of input/output arrays
 C     qtmp1   :: horizontal velocity input diag., u-component
 C     qtmp2   :: horizontal velocity input diag., v-component
 C     myTime  :: current time of simulation (s)
 C     myIter  :: current iteration number
 C     myThid  :: my Thread Id number
       INTEGER listId, md, ndId, ip, im, lm
+      INTEGER NrMax
       _RL     qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL     qtmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL     myTime
@@ -53,12 +53,19 @@ C     qtmp2   :: horizontal-velocity stream-function
 CEOP
 
 C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     i,j,k :: loop indices
-      INTEGER i, j, k
+C     bi, bj  :: tile indices
+C     i,j,k   :: loop indices
+C     uTrans  :: horizontal transport, u-component
+C     vTrans  :: horizontal transport, u-component
+C     psiVel  :: horizontal stream-function
+C     psiLoc  :: horizontal stream-function at special location
+C     i,jPsi0 :: indices of grid-point location where Psi == 0
       INTEGER bi, bj
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER i, j, k
 
       INTEGER ks
       INTEGER numIters
@@ -70,10 +77,24 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RS  aS2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  b2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  x2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL psiVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL psiLoc(2)
+      INTEGER iPsi0(nSx,nSy)
+      INTEGER jPsi0(nSx,nSy)
+      INTEGER iL
+      CHARACTER*(MAX_LEN_FNAM) dataFName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         iPsi0(bi,bj) = -1
+         jPsi0(bi,bj) =  0
+       ENDDO
+      ENDDO
 
       DO ks = 1,kdiag(ndId)
         k = NINT(levs(ks,listId))
@@ -107,16 +128,17 @@ C-    calculate cg2d matrix:
 C-    calculate RHS = Div(uVel,vVel):
            DO j = 1,sNy+1
             DO i = 1,sNx+1
-              uTrans(i,j) = dyG(i,j,bi,bj)*drF(k)
-     &                     *qtmp1(i,j,ks,bi,bj)*maskInW(i,j,bi,bj)
-              vTrans(i,j) = dxG(i,j,bi,bj)*drF(k)
-     &                     *qtmp2(i,j,ks,bi,bj)*maskInS(i,j,bi,bj)
+              uTrans(i,j,bi,bj) = dyG(i,j,bi,bj)*drF(k)
+     &                          *qtmp1(i,j,ks,bi,bj)*maskInW(i,j,bi,bj)
+              vTrans(i,j,bi,bj) = dxG(i,j,bi,bj)*drF(k)
+     &                          *qtmp2(i,j,ks,bi,bj)*maskInS(i,j,bi,bj)
             ENDDO
            ENDDO
            DO j = 1,sNy
             DO i = 1,sNx
-              b2d(i,j,bi,bj) = ( ( uTrans(i+1,j) - uTrans(i,j) )
-     &                         + ( vTrans(i,j+1) - vTrans(i,j) )
+              b2d(i,j,bi,bj) = (
+     &                    ( uTrans(i+1,j,bi,bj) - uTrans(i,j,bi,bj) )
+     &                  + ( vTrans(i,j+1,bi,bj) - vTrans(i,j,bi,bj) )
      &                         )*maskInC(i,j,bi,bj)
               rhsMax = MAX(ABS(b2d(I,J,bi,bj)),rhsMax)
             ENDDO
@@ -183,21 +205,85 @@ c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) *rhsNorm
           _END_MASTER( myThid )
         ENDIF
 
-c       _EXCH_XY_RL( x2d, myThid )
+        _EXCH_XY_RL( x2d, myThid )
 
 C-    Un-normalise the answer
         IF (diagNormaliseRHS) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j = 1,sNy
-             DO i = 1,sNx
-c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /rhsNorm
-              qtmp1(i,j,ks,bi,bj) =  x2d(i,j,bi,bj)/rhsNorm
+            DO j = 1-Oly,sNy+Oly
+             DO i = 1-Olx,sNx+Olx
+              x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /rhsNorm
              ENDDO
             ENDDO
            ENDDO
           ENDDO
         ENDIF
+
+C-    Compte divergence-free transport:
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy+1
+           DO i = 1,sNx+1
+            uTrans(i,j,bi,bj) = uTrans(i,j,bi,bj)
+     &                        - ( x2d(i,j,bi,bj) - x2d(i-1,j,bi,bj) )
+     &                         *recip_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
+     &                         *drF(k)*hFacW(i,j,k,bi,bj)
+     &                         *maskInW(i,j,bi,bj)
+            vTrans(i,j,bi,bj) = vTrans(i,j,bi,bj)
+     &                        - ( x2d(i,j,bi,bj) - x2d(i,j-1,bi,bj) )
+     &                         *recip_dyC(i,j,bi,bj)*dxG(i,j,bi,bj)
+     &                         *drF(k)*hFacS(i,j,k,bi,bj)
+     &                         *maskInS(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAG_CALC_PSIVEL(
+     I                         k, iPsi0, jPsi0, uTrans, vTrans,
+     O                         psiVel, psiLoc,
+     I                         myTime, myIter, myThid )
+
+        IF ( useCubedSphereExchange .AND.
+     &       diag_mdsio .AND. myProcId.EQ.0 ) THEN
+C-      Missing-corner value are not written in MDS output file
+C       Write separately these 2 values (should be part of DIAGNOSTICS_OUT)
+         _BEGIN_MASTER( myThid)
+         IF ( diagLoc_ioUnit.EQ.0 ) THEN
+          CALL MDSFINDUNIT( diagLoc_ioUnit, myThid )
+          WRITE(dataFName,'(2A,I10.10,A)')
+     &         'diags_CScorners', '.', nIter0, '.txt'
+          OPEN( diagLoc_ioUnit, FILE=dataFName, STATUS='unknown' )
+          iL = ILNBLNK(dataFName)
+          WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_CALC_PHIVEL: ',
+     &         'open unit=',diagLoc_ioUnit, ', file: ',dataFName(1:iL)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+         IF ( diagLoc_ioUnit.GT.0 ) THEN
+          WRITE(diagLoc_ioUnit,'(1P2E18.10,A,2I4,I8,A,2I4,I6,2A)')
+     &      psiLoc, ' #', k, lm, myIter,
+     &      ' :',listId, md, ndId, ' ', cdiag(ndId)
+C-       check accuracy (f1.SW-corner = f6.NW-corner = f5-NE-corner)
+c         WRITE(0,'(1P2E18.10,A,2I4,I8)')
+c    &         psiVel(1,1+sNy,nSx,nSy)- psiVel(1,1,1,1),
+c    &     psiVel(1+sNx,1+sNy,nSx-1,nSy)-psiVel(1,1,1,1),
+c    &      ' #', k, lm, myIter
+         ENDIF
+         _END_MASTER( myThid)
+        ENDIF
+
+C-    Put the results back in qtmp[1,2]
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy+1
+           DO i = 1,sNx+1
+              qtmp1(i,j,ks,bi,bj) =  x2d(i,j,bi,bj)
+              qtmp2(i,j,ks,bi,bj) =  psiVel(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
       ENDDO
 
