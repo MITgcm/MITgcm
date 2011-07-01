@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.57 2011/06/27 22:27:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.58 2011/07/01 18:49:35 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -52,9 +52,13 @@ C     bi,bj :: tile indices
 C     lm    :: loop index (averageCycle)
 C     md    :: field number in the list "listId".
 C     ndId  :: diagnostics  Id number (in available diagnostics list)
-C     mate  :: counter mate Id number (in available diagnostics list)
 C     ip    :: diagnostics  pointer to storage array
 C     im    :: counter-mate pointer to storage array
+C     mate  :: counter mate Id number (in available diagnostics list)
+C     mDbl  :: processing mate Id number (in case processing requires 2 diags)
+C     mVec  :: vector mate Id number
+C     ppFld :: post-processed diag or not (=0): =1 stored in qtmp1 ; =2 in qtmp2
+C   isComputed :: previous post-processed diag (still available in qtmp)
 C     nLevOutp :: number of levels to write in output file
 C
 C--   COMMON /LOCAL_DIAGNOSTICS_OUT/ local common block (for multi-threaded)
@@ -69,6 +73,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       INTEGER bi, bj
       INTEGER md, ndId, nn, ip, im
       INTEGER mate, mDbl, mVec
+      INTEGER ppFld, isComputed
       CHARACTER*10 gcode
       _RL undefRL
       INTEGER nLevOutp, kLev
@@ -161,22 +166,27 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+       isComputed = 0
        DO md = 1,nfields(listId)
         ndId = jdiag(md,listId)
         gcode = gdiag(ndId)(1:10)
         mate = 0
         mVec = 0
         mDbl = 0
+        ppFld = 0
         IF ( gcode(5:5).EQ.'C' ) THEN
 C-      Check for Mate of a Counter Diagnostic
            mate = hdiag(ndId)
         ELSEIF ( gcode(5:5).EQ.'P' ) THEN
+           ppFld = 1
+           IF ( gdiag(hdiag(ndId))(5:5).EQ.'P' ) ppFld = 2
 C-      Also load the mate (if stored) for Post-Processing
            nn = ndId
            DO WHILE ( gdiag(nn)(5:5).EQ.'P' )
              nn = hdiag(nn)
            ENDDO
            IF ( mdiag(md,listId).NE.0 ) mDbl = hdiag(nn)
+c          write(0,*) ppFld,' ndId=', ndId, nn, mDbl, isComputed
         ELSEIF ( gcode(1:1).EQ.'U' .OR. gcode(1:1).EQ.'V' ) THEN
 C-      Check for Mate of a Vector Diagnostic
            mVec = hdiag(ndId)
@@ -190,8 +200,19 @@ C--     Start processing 1 Fld :
           IF (mDbl.GT.0) im = im + kdiag(mDbl)*(lm-1)
           IF (mVec.GT.0) im = im + kdiag(mVec)*(lm-1)
 
-          IF ( ndiag(ip,1,1).EQ.0 ) THEN
+          IF ( ppFld.EQ.2 .AND. isComputed.EQ.hdiag(ndId) ) THEN
+C-        Post-Processed diag from an other Post-Processed diag -and-
+C         both of them have just been calculated and are still stored in qtmp:
+C         => skip computation and just write qtmp2
+            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+               WRITE(ioUnit,'(A,I6,3A,I6)')
+     &         '  get Post-Proc. Diag # ', ndId, '  ', cdiag(ndId),
+     &         ' from previous computation of Diag # ', isComputed
+            ENDIF
+            isComputed = 0
+          ELSEIF ( ndiag(ip,1,1).EQ.0 ) THEN
 C-        Empty diagnostics case :
+            isComputed = 0
 
             _BEGIN_MASTER( myThid )
             WRITE(msgBuf,'(A,I10)')
@@ -233,9 +254,10 @@ C-        Empty diagnostics case :
 
           ELSE
 C-        diagnostics is not empty :
+            isComputed = 0
 
             IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
-              IF ( gcode(5:5).EQ.'P' ) THEN
+              IF ( ppFld.GE.1 ) THEN
                WRITE(ioUnit,'(A,I6,7A,I8,2A)')
      &         ' Post-Processing Diag # ', ndId, '  ', cdiag(ndId),
      &         '   Parms: ',gdiag(ndId)
@@ -347,15 +369,17 @@ C-          Integrate vertically: for now, output field has just 1 level:
      U                         qtmp1,
      I                         undefRL, myTime, myIter, myThid )
             ENDIF
-            IF ( gcode(5:5).EQ.'P' ) THEN
+            IF ( ppFld.GE.1 ) THEN
 C-          Do Post-Processing:
              IF ( flds(md,listId).EQ.'PhiVEL  '
-c    &       .OR. flds(md,listId).EQ.'PsiVEL  '
+     &       .OR. flds(md,listId).EQ.'PsiVEL  '
      &          ) THEN
               CALL DIAGNOSTICS_CALC_PHIVEL(
      I                         listId, md, ndId, ip, im, lm,
+     I                         NrMax,
      U                         qtmp1, qtmp2,
      I                         myTime, myIter, myThid )
+              isComputed = ndId
              ELSE
                WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
      &           'unknown Processing method for diag="',cdiag(ndId),'"'
@@ -371,26 +395,40 @@ C--     Ready to write field "md", element "lm" in averageCycle(listId)
 
 C-        write to binary file, using MDSIO pkg:
           IF ( diag_mdsio ) THEN
-c           nRec = lm + (md-1)*averageCycle(listId)
-            nRec = md + (lm-1)*nfields(listId)
-C           default precision for output files
-            prec = writeBinaryPrec
-C           fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
-            IF ( fflags(listId)(1:1).EQ.'R' ) prec = precFloat32
-            IF ( fflags(listId)(1:1).EQ.'D' ) prec = precFloat64
+c          nRec = lm + (md-1)*averageCycle(listId)
+           nRec = md + (lm-1)*nfields(listId)
+C         default precision for output files
+           prec = writeBinaryPrec
+C         fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
+           IF ( fflags(listId)(1:1).EQ.'R' ) prec = precFloat32
+           IF ( fflags(listId)(1:1).EQ.'D' ) prec = precFloat64
 C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
+           IF ( ppFld.LE.1 ) THEN
             CALL WRITE_REC_LEV_RL(
      I                            fn, prec,
      I                            NrMax, 1, nLevOutp,
      I                            qtmp1, -nRec, myIter, myThid )
+           ELSE
+            CALL WRITE_REC_LEV_RL(
+     I                            fn, prec,
+     I                            NrMax, 1, nLevOutp,
+     I                            qtmp2, -nRec, myIter, myThid )
+           ENDIF
           ENDIF
 
 #ifdef ALLOW_MNC
           IF (useMNC .AND. diag_mnc) THEN
+           IF ( ppFld.LE.1 ) THEN
             CALL DIAGNOSTICS_MNC_OUT(
      I                       NrMax, nLevOutp, listId, ndId, mate,
      I                       diag_mnc_bn, qtmp1,
      I                       undefRL, myTime, myIter, myThid )
+           ELSE
+            CALL DIAGNOSTICS_MNC_OUT(
+     I                       NrMax, nLevOutp, listId, ndId, mate,
+     I                       diag_mnc_bn, qtmp2,
+     I                       undefRL, myTime, myIter, myThid )
+           ENDIF
           ENDIF
 #endif /*  ALLOW_MNC  */
 
