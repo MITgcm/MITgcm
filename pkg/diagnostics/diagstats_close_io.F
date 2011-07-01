@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.3 2010/01/13 01:44:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.4 2011/07/01 18:28:52 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -61,6 +61,11 @@ C-      write a conclusion & close the file:
 
         ENDDO
 
+      ENDIF
+
+C-    Close also local diagnostics output file
+      IF ( diagLoc_ioUnit.GT.0 ) THEN
+        CLOSE(diagLoc_ioUnit)
       ENDIF
 
       _END_MASTER( myThid )

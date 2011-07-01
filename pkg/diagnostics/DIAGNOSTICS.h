@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.17 2011/06/27 22:23:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.18 2011/07/01 18:28:52 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -15,12 +15,13 @@ C  - DIAG_STORE  contains the large array to store diagnostic fields
 C         qdiag :: storage array for 2D/3D diagnostic fields
 C        qSdiag :: storage array for diagnostics of (per level) statistics
 C         ndiag :: holds number of times a diagnostic is filled (for time-mean diag)
-C  - DIAG_SELECT  contains the user selection of diagnostics to write
+C  - DIAG_SELECT contains the user selection of diagnostics to write
 C         idiag :: slot number in large diagnostic array
 C         mdiag :: slot number in large diagnostic array for the mate
 C         jdiag :: short-list (active diag.) to long-list (available diag.)
 C                  pointer
-C  - DIAG_STATIS  contains the user selection of statistics to write
+C  - DIAG_PARAMS contains general parameters (used for both 2D/3D & Stats diags)
+C  - DIAG_STATIS contains the user selection of statistics-diags to write
 C ======================================================================
 
 C--   DIAG_DEFINE common block:
@@ -31,6 +32,7 @@ C       cdiag  :: list of available diagnostic names
 C       gdiag  :: parser field with characteristics of the diagnostics
 C       tdiag  :: description of field in diagnostic
 C       udiag  :: physical units of the diagnostic field
+C settingDiags :: internal flag: enable adding/changing available diagnostics list
 
       INTEGER        ndiagt
       INTEGER        kdiag(ndiagMax)
@@ -39,11 +41,14 @@ C       udiag  :: physical units of the diagnostic field
       CHARACTER*80   tdiag(ndiagMax)
       CHARACTER*16   gdiag(ndiagMax)
       CHARACTER*16   udiag(ndiagMax)
+      LOGICAL settingDiags
 
       COMMON / DIAG_DEFINE_I /
      &  ndiagt, kdiag, hdiag
       COMMON / DIAG_DEFINE_C /
      &  cdiag, gdiag, tdiag, udiag
+      COMMON / DIAG_DEFINE_L /
+     &  settingDiags
 
 C--   DIAG_STORE common block:
 C       qdiag  :: storage array for 2D/3D diagnostic fields
@@ -79,8 +84,6 @@ C     jdiag(:,n)  :: short-list (active diag.) to long-list (available diag.) po
 C     flds(:,n)   :: list of field names in output stream # n
 C     fnames(n)   :: output file name for output stream # n
 C     fflags(n)   :: character string with per-file flags
-C    settingDiags :: internal flag: enable adding/changing available diagnostics list
-C     dumpAtLast  :: always write time-ave (freq>0) diagnostics at the end of the run
 C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
 
       _RL freq(numLists), phase(numLists)
@@ -99,12 +102,7 @@ C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
       CHARACTER*8  flds  (numperList,numLists)
       CHARACTER*80 fnames(numLists)
       CHARACTER*8  fflags(numLists)
-      LOGICAL settingDiags
-      LOGICAL dumpAtLast
-      LOGICAL diag_mdsio, diag_mnc,    useMissingValue
-      LOGICAL diag_pickup_read,        diag_pickup_write
-      LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
-      LOGICAL diag_pickup_read_mnc,    diag_pickup_write_mnc
+      LOGICAL diag_mdsio, diag_mnc, useMissingValue
 
       COMMON / DIAG_SELECT_R /
      &     freq, phase, averageFreq, averagePhase,
@@ -116,8 +114,23 @@ C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
       COMMON / DIAG_SELECT_C /
      &     flds, fnames, fflags
       COMMON / DIAG_SELECT_L /
-     &     settingDiags, dumpAtLast,
-     &     diag_mdsio, diag_mnc, useMissingValue,
+     &     diag_mdsio, diag_mnc, useMissingValue
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C  - DIAG_PARAMS common block:
+C    diagLoc_ioUnit :: internal parameter: I/O unit for local diagnostics output
+C    dumpAtLast :: always write time-ave (freq>0) diagnostics at the end of the run
+      INTEGER diagLoc_ioUnit
+      LOGICAL dumpAtLast
+      LOGICAL diag_pickup_read,        diag_pickup_write
+      LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
+      LOGICAL diag_pickup_read_mnc,    diag_pickup_write_mnc
+
+      COMMON / DIAG_PARAMS_I /
+     &     diagLoc_ioUnit
+      COMMON / DIAG_PARAMS_L /
+     &     dumpAtLast,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
      &     diag_pickup_read_mnc,    diag_pickup_write_mnc

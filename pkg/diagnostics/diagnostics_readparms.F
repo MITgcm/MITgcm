@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.28 2011/06/27 22:23:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.29 2011/07/01 18:28:52 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -120,6 +120,7 @@ C     Initialize and Read Diagnostics Namelist
           fields(m,l) = blk8c
         ENDDO
       ENDDO
+      diagLoc_ioUnit = 0
       settingDiags = .FALSE.
       dumpAtLast   = .FALSE.
       diag_mnc     = useMNC
