@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.38 2011/06/14 00:18:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.39 2011/07/01 18:52:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -343,15 +343,14 @@ C-    use 'UVELMASS' as mate.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-c     diagName  = 'PsiVEL  '
-c     diagTitle = 'Horizontal Velocity Stream-Function'
-c     diagUnits = 'm^2/s           '
-c     diagUnits = DIAGS_MK_UNITS( rUnit2c//'.m^2/s', myThid )
-c     diagCode  = 'SZ  P   MR      '
+      diagName  = 'PsiVEL  '
+      diagTitle = 'Horizontal Velocity Stream-Function'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c//'.m^2/s', myThid )
+      diagCode  = 'SZ  P   MR      '
 C-    use 'PhiVEL' as mate.
-c     diagMate  = diagNum
-c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-c    I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UTHMASS '
       diagTitle = 'Zonal Mass-Weight Transp of Pot Temp'
