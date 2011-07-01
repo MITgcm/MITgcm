@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.8 2011/06/29 22:03:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.9 2011/07/01 18:26:54 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -50,7 +50,7 @@ C     == Local variables ==
       LOGICAL diagIsPP, flagD, flagP, flagM
 
       CHARACTER*10 gcode
-      CHARACTER*18 tmpMsg
+      CHARACTER*12 tmpMsg
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C **********************************************************************
@@ -129,8 +129,9 @@ C-      Also add "nn" to the Active list
          CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
         ENDIF
       ELSE
-        WRITE(msgBuf,'(A,I6,1X,2A)') '- NOTE - SETDIAG: Diagnostic #',
-     &        nn, cdiag(nn), ' is already set'
+        tmpMsg = ' Diagnostic '
+        WRITE(msgBuf,'(3A,I6,1X,2A)') '- NOTE - SETDIAG: ',tmpMsg,
+     &           ' #', nn, cdiag(nn), ' is already set'
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
       ENDIF
 
@@ -140,13 +141,13 @@ C---  Check for Counter Diagnostic
       mate = 0
 
 C-    if Post-Processed diag, activate 2nd components of vector field
-      tmpMsg = ' Vector-mate Diag.'
+      tmpMsg = ' Vector-mate'
       IF ( diagIsPP .AND. gcode(5:5).NE.'P' .AND.
      &    (gcode(1:1).EQ.'U' .OR. gcode(1:1).EQ.'V') ) mate = hdiag(nn)
 C-    activate mate if this is a Counter Diagnostic
       IF ( gcode(5:5).EQ.'C') THEN
         mate = hdiag(nn)
-        tmpMsg = 'Counter Diagnostic'
+        tmpMsg = 'Counter-mate'
       ENDIF
 
       IF ( mate.GT.0 ) THEN
