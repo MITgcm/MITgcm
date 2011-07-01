@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.15 2011/06/21 18:00:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.16 2011/07/01 18:52:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,6 +41,79 @@ C     == Local variables ==
       CHARACTER*12 suffix
 
       _BEGIN_MASTER( myThid)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   In case an output file contains 2 post-processed diags which are computed
+C     together (mate of 2nd PP-diag one is 1rst PP-diag), move these 2 diags
+C     next to each other (to only computate them once): 1rst one then 2nd one.
+      DO ld=1,nlists
+       found = .FALSE.
+       DO md=1,nfields(ld)
+C        Search all possible model diagnostics
+         nd = 0
+         DO i=1,ndiagt
+          IF ( nd.EQ.0 .AND. flds(md,ld).EQ.cdiag(i) ) nd = i
+         ENDDO
+         j  = 0
+         IF ( nd.GE.1 ) THEN
+           IF ( gdiag(nd)(5:5).EQ.'P' ) THEN
+             mate = hdiag(nd)
+             IF ( gdiag(mate)(5:5).EQ.'P' ) THEN
+C        Mate of Post-Processed diag "nd" is also Post-Processed
+               DO i=1,nfields(ld)
+                 IF ( j.EQ.0 .AND. flds(i,ld).EQ.cdiag(mate) ) j = i
+               ENDDO
+             ENDIF
+           ENDIF
+         ENDIF
+C        And is found in the same output stream "ld" (at rank "j")
+         IF ( j.GE.1 .AND. j.NE.md-1 ) THEN
+           IF ( .NOT.found ) THEN
+             WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_SET_POINTERS: ',
+     &             'Re-Order Diags in Outp.Stream: ',fnames(ld)
+             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                           SQUEEZE_RIGHT, myThid )
+           ENDIF
+           found  = .TRUE.
+           IF ( j.LT.md-1 ) THEN
+             WRITE(msgBuf,'(2A,2(A,I4),2A)')
+     &         ' move ',flds(j,ld),' from ',j,' down to',md-1,
+     &         ' just before ',flds(md,ld)
+             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                           SQUEEZE_RIGHT, myThid )
+             DO i=j,md-2
+               flds(i,ld) = flds(i+1,ld)
+             ENDDO
+             flds(md-1,ld) = cdiag(mate)
+           ELSEIF ( j.GT.md ) THEN
+             WRITE(msgBuf,'(2A,2(A,I4),2A)')
+     &         ' move ',flds(j,ld),' from ',j,'  up to ',md,
+     &         ' just before ',flds(md,ld)
+             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                           SQUEEZE_RIGHT, myThid )
+             DO i=j,md+1,-1
+               flds(i,ld) = flds(i-1,ld)
+             ENDDO
+             flds(md,ld) = cdiag(mate)
+           ENDIF
+         ENDIF
+       ENDDO
+       IF ( found ) THEN
+         WRITE(msgBuf,'(2A,I4,A)') 'DIAGNOSTICS_SET_POINTERS: ',
+     &             'Updated list in Outp.Stream #', ld, ' :'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         DO md = 1,nfields(ld),10
+           j = MIN(nfields(ld),md+9)
+           WRITE(msgBuf,'(21A)') ' Fields:   ',(' ',flds(i,ld),i=md,j)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+         ENDDO
+       ENDIF
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Initialize pointer arrays to zero:
       DO ld=1,numLists
@@ -91,7 +164,7 @@ C        Search all possible model diagnostics
      &    '  space allocated for all diagnostics:',
      &    ndiagcount, ' levels'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT, myThid )
       ELSE
        IF ( ndiagcount.GT.numDiags ) THEN
          WRITE(msgBuf,'(2A)')
@@ -143,7 +216,7 @@ C     and if it exists. Note: for now, only used to print message.
      &         nd, '  ', cdiag(nd), ' , Parms: ', gdiag(nd)(1:10),
      &             ' , mate:', hdiag(nd)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                        SQUEEZE_RIGHT, myThid )
          ENDIF
 
         ENDIF
