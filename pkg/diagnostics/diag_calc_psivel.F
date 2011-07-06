@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_calc_psivel.F,v 1.1 2011/07/01 18:50:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_calc_psivel.F,v 1.2 2011/07/06 01:45:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -117,6 +117,8 @@ C--   step.2 : account for Psi @ tile origin
       IF ( zeroPsi ) THEN
 C--   step.3 : shift stream-function to satisfy Psi == 0 @ a particular location
         _GLOBAL_SUM_RL( offSet, myThid )
+        psiLoc(1) = psiLoc(1) + offSet
+        psiLoc(2) = psiLoc(2) + offSet
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy+1
