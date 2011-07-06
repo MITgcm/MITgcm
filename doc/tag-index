@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1470 2011/07/01 19:03:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1471 2011/07/06 01:50:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,6 +9,7 @@ o pkg/diagnostics:
    particular, re-order list of diags within 1 file to save 2nd computation.
  - add S/R to compute velocity stream-function (called after velocity-potential
    calculation) from divergence free transport -> new diagnostics "PsiVEL".
+ - add parameter to select grid-point location where PsiVEL == 0.
 o eesupp/src:
    new S/R to calculate cumulated sum on tiled array, corner grid-cell location
    (specific S/R needed with exch2 topology - for now, just print an error msg)
