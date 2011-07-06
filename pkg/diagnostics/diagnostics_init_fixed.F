@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.7 2010/01/15 00:24:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.8 2011/07/06 01:43:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -36,6 +36,9 @@ C     (cannot add diags to list anymore after this call)
 
 C--   Calculate pointers for diagnostics set to non-zero frequency
       CALL DIAGNOSTICS_SET_POINTERS( myThid )
+
+C--   Set parameters and variables used in post-processing diagnostics
+      CALL DIAGNOSTICS_SET_CALC( myThid )
 
 C--   Define region-mask for regional statistics diagnostics
       CALL DIAGSTATS_SET_REGIONS( myThid )

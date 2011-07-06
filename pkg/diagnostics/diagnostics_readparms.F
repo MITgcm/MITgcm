@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.29 2011/07/01 18:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.30 2011/07/06 01:43:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
+#include "DIAGNOSTICS_CALC.h"
 #include "DIAGSTATS_REGIONS.h"
 
 C     !INPUT PARAMETERS:
@@ -85,6 +86,7 @@ C--   full level output:
      &     missing_value, missing_value_int,
      &     levels, fields, fileName, fileFlags,
      &     dumpAtLast, diag_mnc, useMissingValue,
+     &     xPsi0, yPsi0,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
 
@@ -129,6 +131,9 @@ C     Initialize and Read Diagnostics Namelist
       diag_pickup_write     = .FALSE.
       diag_pickup_read_mnc  = .FALSE.
       diag_pickup_write_mnc = .FALSE.
+
+      xPsi0 = UNSET_RS
+      yPsi0 = UNSET_RS
 
       diagSt_regMaskFile = ' '
       nSetRegMskFile = 0
