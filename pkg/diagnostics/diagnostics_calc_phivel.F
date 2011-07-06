@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.4 2011/07/01 18:50:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.5 2011/07/06 01:47:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -25,7 +25,7 @@ C     !USES:
 #include "GRID.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
-c#include "DIAGNOSTICS_CALC.h"
+#include "DIAGNOSTICS_CALC.h"
 
 C     !INPUT PARAMETERS:
 C     listId  :: Diagnostics list number being written
@@ -63,7 +63,6 @@ C     uTrans  :: horizontal transport, u-component
 C     vTrans  :: horizontal transport, u-component
 C     psiVel  :: horizontal stream-function
 C     psiLoc  :: horizontal stream-function at special location
-C     i,jPsi0 :: indices of grid-point location where Psi == 0
       INTEGER bi, bj
       INTEGER i, j, k
 
@@ -81,20 +80,11 @@ C     i,jPsi0 :: indices of grid-point location where Psi == 0
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL psiVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL psiLoc(2)
-      INTEGER iPsi0(nSx,nSy)
-      INTEGER jPsi0(nSx,nSy)
       INTEGER iL
       CHARACTER*(MAX_LEN_FNAM) dataFName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         iPsi0(bi,bj) = -1
-         jPsi0(bi,bj) =  0
-       ENDDO
-      ENDDO
 
       DO ks = 1,kdiag(ndId)
         k = NINT(levs(ks,listId))
@@ -156,11 +146,11 @@ C-    Normalise Matrice & RHS :
         rhsNorm = 1. _d 0
         IF ( normaliseMatrice ) THEN
           _GLOBAL_MAX_RL( a2dMax, myThid )
-          IF ( a2dMax .GE. 0. _d 0 ) a2dNorm = 1. _d 0/a2dMax
+          IF ( a2dMax .GT. 0. _d 0 ) a2dNorm = 1. _d 0/a2dMax
         ENDIF
         IF ( diagNormaliseRHS ) THEN
           _GLOBAL_MAX_RL( rhsMax, myThid )
-          IF ( rhsMax .GE. 0. _d 0 ) rhsNorm = 1. _d 0/(a2dNorm*rhsMax)
+          IF ( rhsMax .GT. 0. _d 0 ) rhsNorm = 1. _d 0/(a2dNorm*rhsMax)
           residCriter = cg2dTargetResidual
         ELSE
           residCriter = a2dNorm * cg2dTargetResWunit
