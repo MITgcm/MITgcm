@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_calc.F,v 1.1 2011/07/06 01:43:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_calc.F,v 1.2 2011/07/06 15:28:24 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -95,6 +95,8 @@ C-      find list of grid-points at minimum distance:
           ENDDO
          ENDDO
         ENDDO
+        xyLoc = (sNx+1)*(sNy+1)*nSx*nSy*nPx*nPy + 2.
+        IF ( xyMin.EQ.0. _d 0 ) xyMin = xyLoc
         xyMin = -xyMin
         _GLOBAL_MAX_RL( xyMin, myThid )
         xyMin = -xyMin
@@ -109,7 +111,7 @@ C-      select only one (based on minimum global-map index)
      &    'DIAGNOSTICS_SET_CALC: d2Min=',d2Min, ', ijMin=',xyMin
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        IF ( xyMin.EQ.0. _d 0 ) THEN
+        IF ( xyMin.EQ.xyLoc ) THEN
           WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SET_CALC: ',
      &      'Fail to find the minimum distance => use Default'
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
