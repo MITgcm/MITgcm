@@ -1,17 +1,14 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.12 2010/12/15 17:08:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.13 2011/07/07 22:46:44 jmc Exp $
 #  $Name:  $
-
 
 #  Tested with gcc-gfortran v4.1.x as shipped with Fedora Core 6,7,8
 #         with gcc-gfortran v4.3.x as shipped with Fedora Core 9,10
-#  It fixes the ' \' versus ' &' terminator ;
-#  with older versions (v4.0): namelist problems with syntax such as:
-#     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
-#      which results in run-time errors.)
 
 # OpenMP : Tested on dickens with gcc-gfortran v4.3.2 as shipped with FC 10
+#          and on baudelaire with gcc-gfortran v4.4.5 as shipped with FC 13
+#          also on danton    with gcc-gfortran v4.5.1 as shipped with FC 14
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
 #    and generally, needs to increase the thread stack-size:
