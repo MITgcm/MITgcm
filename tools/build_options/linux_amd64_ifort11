@@ -1,11 +1,16 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.5 2010/12/15 17:08:25 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.6 2011/07/07 22:58:36 jmc Exp $
 # $Name:  $
 #
 #  Constantinos Evangelinos
 #
-#  Build options for the intel 11 fortran compiler
+#  Build options for the intel 11 & 12 fortran compiler
+#
+#  Tested on baudelaire (FC 13) with intel compiler v.11.1.073 (20100806)
+
+# OpenMP : tested on danton (FC 14) using intel compiler v.11.1.046 (20090630)
+#                                              and also  v.12.0.4   (20110427)
 
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -37,34 +42,32 @@ INCLUDEDIRS=''
 INCLUDES=''
 LIBS=''
 
-if test "x$DEVEL" != x ; then
-    FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian -assume byterecl -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all"
-else
-    FFLAGS="$FFLAGS -m64 -fPIC -W0 -WB -convert big_endian -assume byterecl"
-fi
-#- might want to use '-r8' for fizhi pkg:
-#FFLAGS="$FFLAGS -r8"
-
 if test "x$GENERIC" != x ; then
     PROCF=-axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2
 else
     PROCF=-xHost
 fi
-#  Note that the -mp switch is for ieee "maintain precision" and is
-#  roughly equivalent to -ieee
-#  Note the addition of -g to circumvent bug with Intel 11.
-if test "x$IEEE" = x ; then
+
+FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian -assume byterecl"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
     FOPTIM="-O2 -align -ip -opt-streaming-stores auto $PROCF"
 else
-    if test "x$DEVEL" != x ; then
-	FOPTIM="$PROCF"
-    else
-	FOPTIM="-O0 -fp-model source -noalign $PROCF"
-    fi
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM="-O0 -fp-model source -noalign $PROCF"
+  else                          #- development/check options:
+   #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
+    FFLAGS="$FFLAGS -warn all -warn nounused"
+    FOPTIM="-fpe0 -ftz -fp-stack-check -check all -ftrapuv"
+    FOPTIM="$FOPTIM -O0 -noalign -g -traceback $PROCF"
+  fi
 fi
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS="-O2 -ip -m64 -fPIC $PROCF"
+CFLAGS="-O0 -ip -m64 -fPIC $PROCF"
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIRS="${NETCDF_ROOT}/include"
