@@ -14,7 +14,7 @@
 #  W2_mapIO      :: global map IO selector (-1 = old type ; 0 = 1 long line in X
 #                :: 1 = compact, mostly in Y dir)
 #  W2_printMsg   :: option for information messages printing
-#                :: <0 : write to log file ; =0 : minimum print ; 
+#                :: <0 : write to log file ; =0 : minimum print ;
 #                :: =1 : no duplicated print ; =2 : all processes do print
 #--------------------
  &W2_EXCH2_PARM01
@@ -23,17 +23,17 @@
   preDefTopol=0,
 #-- 5 facets llc_120 topology (drop facet 6 and its connection):
   dimsFacets = 120, 360, 120, 360, 120, 120, 360, 120, 360, 120,
-  facetEdgeLink(1,1)= 3.4, 0. , 2.4, 5.1,
-  facetEdgeLink(1,2)= 3.2, 0. , 4.2, 1.3,
-  facetEdgeLink(1,3)= 5.4, 2.1, 4.4, 1.1,
-  facetEdgeLink(1,4)= 5.2, 2.3, 0. , 3.3,
-  facetEdgeLink(1,5)= 1.4, 4.1, 0. , 3.1,
+  facetEdgeLink(1:4,1)= 3.4, 0. , 2.4, 5.1,
+  facetEdgeLink(1:4,2)= 3.2, 0. , 4.2, 1.3,
+  facetEdgeLink(1:4,3)= 5.4, 2.1, 4.4, 1.1,
+  facetEdgeLink(1:4,4)= 5.2, 2.3, 0. , 3.3,
+  facetEdgeLink(1:4,5)= 1.4, 4.1, 0. , 3.1,
 #-- full 6 facets llc_120 topology (equivalent to default preDefTopol=3):
 # dimsFacets = 120, 360, 120, 360, 120, 120, 360, 120, 360, 120, 120, 120,
-# facetEdgeLink(1,1)= 3.4, 6.1, 2.4, 5.1,
-# facetEdgeLink(1,2)= 3.2, 6.3, 4.2, 1.3,
-# facetEdgeLink(1,3)= 5.4, 2.1, 4.4, 1.1,
-# facetEdgeLink(1,4)= 5.2, 2.3, 6.2, 3.3,
-# facetEdgeLink(1,5)= 1.4, 4.1, 6.4, 3.1,
-# facetEdgeLink(1,6)= 1.2, 4.3, 2.2, 5.3,
+# facetEdgeLink(1:4,1)= 3.4, 6.1, 2.4, 5.1,
+# facetEdgeLink(1:4,2)= 3.2, 6.3, 4.2, 1.3,
+# facetEdgeLink(1:4,3)= 5.4, 2.1, 4.4, 1.1,
+# facetEdgeLink(1:4,4)= 5.2, 2.3, 6.2, 3.3,
+# facetEdgeLink(1:4,5)= 1.4, 4.1, 6.4, 3.1,
+# facetEdgeLink(1:4,6)= 1.2, 4.3, 2.2, 5.3,
  &
