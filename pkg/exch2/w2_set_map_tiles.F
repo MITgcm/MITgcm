@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.4 2010/10/13 20:56:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.5 2011/07/09 21:53:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -92,12 +92,12 @@ C--   Check that tile dims divide facet dims
         STOP 'ABNORMAL END: S/R W2_SET_MAP_TILES'
       ENDIF
 C--   Check that domain size and (SIZE.h + blankList) match:
-      IF ( tCnt.NE.nTiles ) THEN
+      IF ( tCnt.NE.exch2_nTiles ) THEN
         WRITE(msgBuf,'(A,I6,A)')
      &   'W2_SET_MAP_TILES: Domain Total # of tiles =', tCnt, ' does'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A,I6)')
-     &   'W2_SET_MAP_TILES:  not match (SIZE.h+blankList)=', nTiles
+     &   'W2_SET_MAP_TILES:  not match (SIZE.h+blankList)=',exch2_nTiles
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R W2_SET_MAP_TILES'
       ENDIF

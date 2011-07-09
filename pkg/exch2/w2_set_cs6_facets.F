@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_cs6_facets.F,v 1.3 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_cs6_facets.F,v 1.4 2011/07/09 21:53:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -101,7 +101,7 @@ C-    Only 1rst dim is set: assuming a regular Cube
         nBl = nRd
       ELSEIF ( nRd+nGr+nBl.EQ.0 ) THEN
 C-    try to get cube size from number of tiles, assuming a regular Cube
-        nGr = nTiles*sNx*sNy
+        nGr = exch2_nTiles*sNx*sNy
         tmpVar = FLOAT(nGr)/6.
         tmpVar = SQRT(tmpVar)
         nRd = NINT(tmpVar)
@@ -113,7 +113,7 @@ C-    try to get cube size from number of tiles, assuming a regular Cube
           CALL PRINT_MESSAGE( msgBuf, W2_oUnit,SQUEEZE_RIGHT,myThid )
         ELSE
           WRITE(msgBuf,'(3(A,I4),A,I10,A,I6,A)')
-     &     ' nTiles*sNx*sNy=', nTiles, ' x',sNx,' x',sNy,' =',nGr
+     &     ' nTiles*sNx*sNy=', exch2_nTiles,' x',sNx,' x',sNy,' =',nGr
           CALL PRINT_MESSAGE( msgBuf, W2_oUnit,SQUEEZE_RIGHT,myThid )
           WRITE(msgBuf,'(A,I6,A,I10)')
      &     '       not equal to: 6 x',nRd,'^2 =', nRd*nRd*6

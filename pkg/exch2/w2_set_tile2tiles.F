@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.4 2010/12/22 21:22:46 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.5 2011/07/09 21:53:36 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -68,7 +68,7 @@ C--   Initialise local arrays
 
       tNx = sNx
       tNy = sNy
-      DO is=1,nTiles
+      DO is=1,exch2_nTiles
        js  = exch2_myFace(is)
 C     test "myFace" for blank tile; no need for connection if tile is blank
        IF ( js.NE.0 ) THEN
@@ -243,7 +243,7 @@ C-    end loop on tile "is"
 C-  Check nbNeighb =< W2_maxNeighbours
       nbNeighb = 0
       it = 0
-      DO is=1,nTiles
+      DO is=1,exch2_nTiles
         IF ( exch2_nNeighbours(is).GT.nbNeighb ) THEN
           nbNeighb = exch2_nNeighbours(is)
           it = is
@@ -267,7 +267,7 @@ C-    Set exch2_opposingSend(ns,is) = Neighbour Id (in list of neighbours
 C     of tile exch2_neighbourId(ns,is)) which is connected to tile "is"
 C     neighbour Id "ns" with matching edge <-> edge connection (ii==i).
       errCnt = 0
-      DO is=1,nTiles
+      DO is=1,exch2_nTiles
        DO ns=1,exch2_nNeighbours(is)
         i  = tile_edge2edge(ns,is)/10
         ii = MOD(tile_edge2edge(ns,is),10)
@@ -311,7 +311,7 @@ c         i  = tile_edge2edge(nt,it)/10
       ENDIF
 C--  Check opposingSend reciprocity:
       errCnt = 0
-      DO is=1,nTiles
+      DO is=1,exch2_nTiles
        DO ns=1,exch2_nNeighbours(is)
         it = exch2_neighbourId(ns,is)
         nt = exch2_opposingSend(ns,is)

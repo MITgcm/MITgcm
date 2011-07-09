@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_readparms.F,v 1.3 2010/04/16 18:06:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_readparms.F,v 1.4 2011/07/09 21:53:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -86,7 +86,6 @@ C--   Initialise other params in namelist
 
 C-    Initialise other parameters:
       nFacets = 0
-      nTiles  = 0
       nBlankTiles = 0
       DO j=1,W2_maxNbFacets
         facet_dims(2*j-1) = 0

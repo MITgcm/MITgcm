@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.6 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.7 2011/07/09 21:53:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,7 @@ C--   Count Nb of Blank-Tiles and set Number of tiles:
          ENDIF
        ENDIF
       ENDDO
-      nTiles = nBlankTiles + (nSx*nSy*nPx*nPy)
+      exch2_nTiles = nBlankTiles + (nSx*nSy*nPx*nPy)
 
       WRITE(msgBuf,'(A,I8)')
      &    'W2_E2SETUP: number of Active Tiles =', nSx*nSy*nPx*nPy
@@ -91,12 +91,12 @@ C--   Count Nb of Blank-Tiles and set Number of tiles:
      &    'W2_E2SETUP: number of Blank Tiles  =', nBlankTiles
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,I8)')
-     &    'W2_E2SETUP: Total number of Tiles  =', nTiles
+     &    'W2_E2SETUP: Total number of Tiles  =', exch2_nTiles
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
 
-      IF ( nTiles.GT.W2_maxNbTiles ) THEN
+      IF ( exch2_nTiles.GT.W2_maxNbTiles ) THEN
         WRITE(msgBuf,'(3(A,I7))') 'W2_E2SETUP: Number of Tiles=',
-     &             nTiles, ' >', W2_maxNbTiles, ' =W2_maxNbTiles'
+     &             exch2_nTiles, ' >', W2_maxNbTiles, ' =W2_maxNbTiles'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'Must increase "W2_maxNbTiles"',
      &                       ' in "W2_EXCH2_SIZE.h" + recompile'
@@ -106,7 +106,7 @@ C--   Count Nb of Blank-Tiles and set Number of tiles:
 
 C--   Check blankList:
       DO i=1,nBlankTiles
-       IF ( blankList(i).LT.1 .OR. blankList(i).GT.nTiles ) THEN
+       IF ( blankList(i).LT.1 .OR. blankList(i).GT.exch2_nTiles ) THEN
          WRITE(msgBuf,'(A,I5,A,I8)')
      &     'W2_E2SETUP: Invalid blankTile number (i=', i,
      &     ' )=', blankList(i)
@@ -139,6 +139,9 @@ C--   Check Topology; setup correspondence matrix for connected Facet-Edges
 
 C--   Define Tile Mapping (+ IO global mapping)
       CALL W2_SET_MAP_TILES( myThid )
+
+C--   Define Tile Mapping (for Cumulated Sum)
+      CALL W2_SET_MAP_CUMSUM( myThid )
 
 C--   Set-up tile neighbours and index relations for EXCH2
       CALL W2_SET_TILE2TILES( myThid )
