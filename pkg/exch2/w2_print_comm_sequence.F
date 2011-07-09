@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.9 2009/06/28 01:00:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.10 2011/07/09 21:49:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -22,7 +22,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
