@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.9 2010/12/22 21:22:46 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.10 2011/07/09 21:49:16 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -19,7 +19,7 @@ C     |   Tile Ids and is function of tile-process repartition
 C     |  (needs SIZE.h to be included before)
 C     *==========================================================*
 CEOP
- 
+
 C---   Parameters for enumerating directions
        INTEGER W2_NORTH, W2_SOUTH, W2_EAST, W2_WEST
        PARAMETER ( W2_NORTH = 1 )
@@ -35,6 +35,7 @@ C      exch2_xStack_Ny   :: Height of domain used for north/south OBCS.
 C      exch2_yStack_Nx   :: Length of domain used for east/west OBCS.
 C      exch2_yStack_Ny   :: Height of domain used for east/west OBCS.
 C---   Tiling and Exch data structures
+C      exch2_nTiles      :: Number of tiles in this topology
 C      exch2_tProc       :: Rank of process owning tile (filled at run time).
 C      exch2_myFace      :: Face number for each tile (used for I/O).
 C      exch2_mydNx       :: Face size in X for each tile (for I/O).
@@ -69,6 +70,7 @@ C                        :: to source connection (neighbour entry "n").
        INTEGER exch2_xStack_Ny
        INTEGER exch2_yStack_Nx
        INTEGER exch2_yStack_Ny
+       INTEGER exch2_nTiles
        INTEGER exch2_tProc( W2_maxNbTiles )
        INTEGER exch2_myFace( W2_maxNbTiles )
        INTEGER exch2_mydNx( W2_maxNbTiles )
@@ -99,7 +101,7 @@ C                        :: to source connection (neighbour entry "n").
      &        exch2_global_Nx, exch2_global_Ny,
      &        exch2_xStack_Nx, exch2_xStack_Ny,
      &        exch2_yStack_Nx, exch2_yStack_Ny,
-     &        exch2_tProc,
+     &        exch2_nTiles, exch2_tProc,
      &        exch2_myFace, exch2_mydNx, exch2_mydNy,
      &        exch2_tNx, exch2_tNy,
      &        exch2_tBasex, exch2_tBasey,
@@ -126,11 +128,23 @@ C                         :: to be updated with neighbour entry "n".
      &        exch2_iLo, exch2_iHi,
      &        exch2_jLo, exch2_jHi
 
+C---   Cumulated Sum operator
+C      W2_tMC1, W2_tMC2 :: tile that holds Missing Corners (=f1.NW,f2.SE)
+C      W2_cumSum_tiles(1,t1,t2) :: cum-sum at tile t2 origin function of
+C                                  tile t1 X-increment
+C      W2_cumSum_tiles(2,t1,t2) :: cum-sum at tile t2 origin function of
+C                                  tile t1 Y-increment
+       INTEGER W2_tMC1, W2_tMC2
+       INTEGER W2_cumSum_tiles( 2, W2_maxNbTiles, W2_maxNbTiles )
+       COMMON /W2_CUMSUM_MATRIX/
+     &        W2_tMC1, W2_tMC2,
+     &        W2_cumSum_tiles
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   COMMON /W2_EXCH2_TILE_ID/ tile ids
 C     W2 tile id variables (tile ids are no longer a function of
-C     process and subgrid indices).
+C                           process and subgrid indices).
 C     W2_myTileList   :: list of tiles owned by this process
 C     W2_procTileList :: same as W2_myTileList, but contains
 C                        information for all processes
