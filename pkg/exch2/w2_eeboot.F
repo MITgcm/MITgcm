@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.13 2010/04/16 18:14:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.14 2011/07/09 21:52:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -23,7 +23,6 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
@@ -50,6 +49,7 @@ C     Set dummy myThid value (we are not multi-threaded here)
       myThid = 1
 
 C     Initialise to zero EXCH2_TOPOLOGY common blocks
+      exch2_nTiles = 0
       DO I = 1,W2_maxNbTiles
         exch2_tNx(I)    = 0
         exch2_tNy(I)    = 0
@@ -112,12 +112,9 @@ C     functional relationship that was used above.
 C     Fill also W2_procTileList for Single-CPU-IO.
 
 C     Number of tiles I handle is nSx*nSy
-      thisProc = 1
-#ifdef ALLOW_USE_MPI
-      thisProc = 1+myPid
-#endif
+      thisProc = 1 + myProcId
       J = 0
-      DO I=1,nTiles
+      DO I=1,exch2_nTiles
        IF ( exch2_myFace(I) .NE. 0 ) THEN
 C--   old ordering (makes no difference if nSy*nPy=1 )
 c       np = 1 + J/(nSx*nSy)
