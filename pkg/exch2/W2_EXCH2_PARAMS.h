@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.11 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.12 2011/07/09 22:09:07 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -21,7 +21,7 @@ C                 :: = 2 : customized topology (w2_set_myown_facets)
 C                 :: = 3 : 6-face Cube (3 face-dims: nRed, nGreen, nBlue).
 C     nFacets     :: Number of facets (or domains) in this topology
 C     facet_dims  :: facet pair of dimensions (n1x,n1y, n2x,n2y, ...)
-C     nTiles      :: Number of tiles in this topology
+C     nTiles      :: Number of tiles in this topology <- moved to W2_EXCH2_TOPOLOGY.h
 C     nBlankTiles :: Number of "Blank-Tiles"
 C     blankList   :: List of "Blank-Tiles" (non active)
 C--
@@ -41,7 +41,6 @@ C             = 2 :: all processes do print (used to check).
       INTEGER preDefTopol
       INTEGER nFacets
       INTEGER facet_dims(2*W2_maxNbFacets)
-      INTEGER nTiles
       INTEGER nBlankTiles
       INTEGER blankList(W2_maxNbTiles)
       INTEGER W2_mapIO
@@ -49,8 +48,7 @@ C             = 2 :: all processes do print (used to check).
       COMMON /W2_EXCH2_PARM_I/
      &        preDefTopol,
      &        nFacets, facet_dims,
-     &        nTiles, nBlankTiles,
-     &        blankList,
+     &        nBlankTiles, blankList,
      &        W2_mapIO,
      &        W2_oUnit, W2_printMsg
 
