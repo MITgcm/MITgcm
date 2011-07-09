@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/cumulsum_z_tile.F,v 1.1 2011/07/01 18:18:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/cumulsum_z_tile.F,v 1.2 2011/07/09 22:13:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,10 +36,7 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-c#include "CUMULSUM.h"
-      COMMON  / CUMULSUM_R8 /  shareBufCS1_R8, shareBufCS2_R8
-      Real*8  shareBufCS1_R8  (nSx,nSy)
-      Real*8  shareBufCS2_R8(2,nSx,nSy)
+#include "CUMULSUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -70,18 +67,13 @@ C         all 4 needs to have the same length as MPI_DOUBLE_PRECISION
       Real*8  loc2Buf(2,nSx,nSy)
       Real*8  globalBuf(3,nSx*nPx,nSy*nPy)
 #endif /* ALLOW_USE_MPI */
-#else
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif /* ALLOW_EXCH2 */
 CEOP
 
 #ifdef ALLOW_EXCH2
-c     CALL EXCH2_CUMULSUM_Z_TILE_RL(
-c    O                       psiZ, psiLoc,
-c    I                       dPsiX, dPsiY, myThid )
-      WRITE(msgBuf,'(A)')
-     &          'CUMULSUM_Z_TILE_RL: missing call to EXCH2 S/R'
-      CALL PRINT_ERROR( msgBuf, myThid )
+      CALL W2_CUMULSUM_Z_TILE_RL(
+     O                       psiZ, psiLoc,
+     I                       dPsiX, dPsiY, myThid )
       RETURN
 #else /* ALLOW_EXCH2 */
 
