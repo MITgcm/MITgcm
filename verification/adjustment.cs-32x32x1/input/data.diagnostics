@@ -23,13 +23,13 @@
   xPsi0 = 135.,
   yPsi0 =  0.,
 #--
-  fields(1: 5,3) = 'UVELMASS','VVELMASS',
+  fields(1:5 ,3) = 'UVELMASS','VVELMASS',
                    'ETAN    ','ETANSQ  ','DETADT2 ',
    fileName(3) = 'dynDiag',
   frequency(3) = -21600.,
   timePhase(3) = -1800.,
 
-  fields(1: 3,2) = 'WVELMASS','PhiVEL  ','PsiVEL  ',
+  fields(1:3 ,2) = 'WVELMASS','PhiVEL  ','PsiVEL  ',
    fileName(2) = 'dyn_Aux',
 # fileFlags(2) = 'D       ',
   frequency(2) = -21600.,
@@ -55,7 +55,7 @@
 #--------------------
  &DIAG_STATIS_PARMS
 # diagSt_mnc    = .TRUE.,
- stat_fields(1:7,1)  = 'ETAN    ','ETANSQ  ','DETADT2 ',
+ stat_fields(1:5,1)  = 'ETAN    ','ETANSQ  ','DETADT2 ',
                        'UVEL    ','VVEL    ',
   stat_fName(1) = 'dynStDiag',
    stat_freq(1) = -7200.,
