@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.24 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.25 2011/07/13 22:59:53 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -105,6 +105,19 @@ C- print out some kee parameters :
        CALL WRITE_0D_RL( GM_BVP_cMin, INDEX_NONE,
      &  'GM_BVP_cMin =',
      &  ' /* Minimum wave speed for BVP [m/s] */')
+       CALL WRITE_0D_L( GM_useSubMeso, INDEX_NONE,
+     &  'GM_useSubMeso =',
+     &  ' /* if TRUE => use Sub-Meso param. (B.Fox-Kemper) */')
+       CALL WRITE_0D_RL( subMeso_Ceff, INDEX_NONE,
+     &  'subMeso_Ceff =',
+     &  ' /* efficiency coeff. of Mixed-Layer Eddies [-] */')
+       CALL WRITE_0D_RL( subMeso_invTau, INDEX_NONE,
+     &  'subMeso_invTau =',
+     &  ' /* inverse of Sub-Meso mixing time-scale [/s] */')
+       CALL WRITE_0D_RL( subMeso_LfMin, INDEX_NONE,
+     &  'subMeso_LfMin =',' /* minimum length-scale "Lf" [m] */')
+       CALL WRITE_0D_RS( subMeso_Lmax, INDEX_NONE,
+     &  'subMeso_Lmax =',' /* maximum grid-scale length [m] */')
 
 C--  Check parameters:
 
@@ -166,6 +179,25 @@ C     Make sure we are not trying to use some arrays that are unavailable
        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
 #endif
+
+#ifdef GM_EXCLUDE_SUBMESO
+      IF ( GM_useSubMeso ) THEN
+        WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+     &   'cannot use Sub-Meso (GM_useSubMeso=T)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+     &   'when compiled with #define GM_EXCLUDE_SUBMESO'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
+#endif /* GM_EXCLUDE_SUBMESO */
+
+      IF ( GM_useSubMeso .AND. .NOT.GM_AdvForm ) THEN
+        WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+     &   'Sub-Meso only implemented within GM_AdvForm'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
 
       IF ( GM_InMomAsStress ) THEN
 #ifdef ALLOW_EDDYPSI

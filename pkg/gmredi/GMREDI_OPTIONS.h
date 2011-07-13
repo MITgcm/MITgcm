@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.11 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.12 2011/07/13 22:59:53 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -19,6 +19,7 @@ C #define GM_EXCLUDE_CLIPPING
 C #define GM_EXCLUDE_FM07_TAP
 C #define GM_EXCLUDE_AC02_TAP
 C #define GM_EXCLUDE_TAPERING
+C #define GM_EXCLUDE_SUBMESO
 
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.8 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.9 2011/07/13 22:59:53 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -81,6 +81,33 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifndef GM_EXCLUDE_SUBMESO
+        diagName  = 'SubMesLf'
+        diagTitle = 'Sub-Meso horiz. Length Scale (Lf)'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'SubMpsiX'
+        diagTitle =
+     &    'Sub-Meso transp.stream-funct. magnitude (Psi0): U component'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'UU      M1      '
+        diagMate  = diagNum + 2
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+        diagName  = 'SubMpsiY'
+        diagTitle =
+     &    'Sub-Meso transp.stream-funct. magnitude (Psi0): V component'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'VV      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
+
         diagName  = 'GM_Kux  '
         diagTitle = 'K_11 element (U.point, X.dir) of GM-Redi tensor'
         diagUnits = 'm^2/s           '
@@ -137,7 +164,7 @@ c     IF ( useDiagnotics ) THEN
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'GM_PsiX '
-        diagTitle = 'GM Bolus transport stream-function : X component'
+        diagTitle = 'GM Bolus transport stream-function : U component'
         diagUnits = 'm^2/s           '
         diagCode  = 'UU      LR      '
         diagMate  = diagNum + 2
@@ -145,7 +172,7 @@ c     IF ( useDiagnotics ) THEN
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_PsiY '
-        diagTitle = 'GM Bolus transport stream-function : Y component'
+        diagTitle = 'GM Bolus transport stream-function : V component'
         diagUnits = 'm^2/s           '
         diagCode  = 'VV      LR      '
         diagMate  = diagNum

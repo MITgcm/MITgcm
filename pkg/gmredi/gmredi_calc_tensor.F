@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.39 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.40 2011/07/13 22:59:53 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -207,9 +207,37 @@ C-    Just initialize to zero (not use anyway)
        ENDDO
       ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- 1rst loop on k : compute Tensor Coeff. at W points.
+#ifdef GM_BOLUS_ADVEC
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         GM_PsiX(i,j,k,bi,bj)  = 0. _d 0
+         GM_PsiY(i,j,k,bi,bj)  = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* GM_BOLUS_ADVEC */
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         Kwx(i,j,k,bi,bj)  = 0. _d 0
+         Kwy(i,j,k,bi,bj)  = 0. _d 0
+         Kwz(i,j,k,bi,bj)  = 0. _d 0
+# ifdef GM_NON_UNITY_DIAGONAL
+         Kux(i,j,k,bi,bj)  = 0. _d 0
+         Kvy(i,j,k,bi,bj)  = 0. _d 0
+# endif
+# ifdef GM_EXTRA_DIAGONAL
+         Kuz(i,j,k,bi,bj)  = 0. _d 0
+         Kvz(i,j,k,bi,bj)  = 0. _d 0
+# endif
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
 
+C--   Initialise Mixed Layer related array:
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
          hTransLay(i,j) = R_low(i,j,bi,bj)
@@ -236,6 +264,9 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
        ENDDO
       ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-- 1rst loop on k : compute Tensor Coeff. at W points.
+
       DO k=Nr,2,-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -249,21 +280,6 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
          dSigmaDr(i,j)     = 0. _d 0
          SlopeSqr(i,j)     = 0. _d 0
          taperFct(i,j)     = 0. _d 0
-         Kwx(i,j,k,bi,bj)  = 0. _d 0
-         Kwy(i,j,k,bi,bj)  = 0. _d 0
-         Kwz(i,j,k,bi,bj)  = 0. _d 0
-# ifdef GM_NON_UNITY_DIAGONAL
-         Kux(i,j,k,bi,bj)  = 0. _d 0
-         Kvy(i,j,k,bi,bj)  = 0. _d 0
-# endif
-# ifdef GM_EXTRA_DIAGONAL
-         Kuz(i,j,k,bi,bj)  = 0. _d 0
-         Kvz(i,j,k,bi,bj)  = 0. _d 0
-# endif
-# ifdef GM_BOLUS_ADVEC
-         GM_PsiX(i,j,k,bi,bj)  = 0. _d 0
-         GM_PsiY(i,j,k,bi,bj)  = 0. _d 0
-# endif
         ENDDO
        ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -529,6 +545,39 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Calculate Stream-Functions used in Advective Form:
+
+#ifdef GM_BOLUS_ADVEC
+      IF (GM_AdvForm) THEN
+#ifdef GM_BOLUS_BVP
+       IF (GM_UseBVP) THEN
+        CALL GMREDI_CALC_PSI_BVP(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+       ELSE
+#endif
+        CALL GMREDI_CALC_PSI_B(
+     I              bi, bj, iMin, iMax, jMin, jMax,
+     I              sigmaX, sigmaY, sigmaR,
+     I              ldd97_LrhoW, ldd97_LrhoS,
+     I              myThid )
+#ifdef GM_BOLUS_BVP
+       ENDIF
+#endif
+      ENDIF
+#endif
+
+#ifndef GM_EXCLUDE_SUBMESO
+      IF ( GM_useSubMeso .AND. GM_AdvForm ) THEN
+        CALL SUBMESO_CALC_PSI(
+     I              bi, bj, iMin, iMax, jMin, jMax,
+     I              sigmaX, sigmaY, sigmaR,
+     I              locMixLayer,
+     I              myIter, myThid )
+      ENDIF
+#endif /* ndef GM_EXCLUDE_SUBMESO */
 
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -913,28 +962,6 @@ C-- end 3rd  loop on vertical level index k
       ENDDO
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
-
-
-#ifdef GM_BOLUS_ADVEC
-      IF (GM_AdvForm) THEN
-#ifdef GM_BOLUS_BVP
-       IF (GM_UseBVP) THEN
-        CALL GMREDI_CALC_PSI_BVP(
-     I             bi, bj, iMin, iMax, jMin, jMax,
-     I             sigmaX, sigmaY, sigmaR,
-     I             myThid )
-       ELSE
-#endif
-        CALL GMREDI_CALC_PSI_B(
-     I              bi, bj, iMin, iMax, jMin, jMax,
-     I              sigmaX, sigmaY, sigmaR,
-     I              ldd97_LrhoW, ldd97_LrhoS,
-     I              myThid )
-#ifdef GM_BOLUS_BVP
-       ENDIF
-#endif
-      ENDIF
-#endif
 
 #ifdef ALLOW_TIMEAVE
 C--   Time-average

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.21 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.22 2011/07/13 22:59:53 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -61,7 +61,9 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &          GM_Scrit, GM_Sd,
      &          GM_MNC,
-     &          GM_UseBVP,GM_BVP_cMin,GM_BVP_ModeNumber
+     &          GM_UseBVP, GM_BVP_cMin, GM_BVP_ModeNumber,
+     &          GM_useSubMeso, subMeso_Ceff, subMeso_invTau,
+     &          subMeso_LfMin, subMeso_Lmax
 
       _BEGIN_MASTER(myThid)
 
@@ -105,6 +107,12 @@ C--   Default values BVP
       GM_BVP_ModeNumber   = 1
       GM_BVP_cMin         = 1. _d -1
 
+C--   Default values Sub-Meso (corresponding tau = 5.8 days):
+      GM_useSubMeso = .FALSE.
+      subMeso_invTau =  2.0 _d -6
+      subMeso_LfMin  =  1.0 _d +3
+      subMeso_Ceff   =  7.0 _d -2
+      subMeso_Lmax   = 110. _d +3
 
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

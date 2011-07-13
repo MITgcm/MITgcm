@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.18 2011/02/10 21:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.19 2011/07/13 22:59:53 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -15,6 +15,7 @@ C--   COMMON /GM_PARAMS_L/ GM/Redi Logical-type parameters
 C     GM_AdvForm       :: use Advective Form (instead of Skew-Flux form)
 C     GM_AdvSeparate   :: do separately advection by Eulerian and Bolus velocity
 C     GM_useBVP        :: use Boundary-Value-Problem method for Bolus transport
+C     GM_useSubMeso    :: use parameterization of mixed layer (Sub-Mesoscale) eddies
 C     GM_ExtraDiag     :: select extra diagnostics
 C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
@@ -22,12 +23,14 @@ C     GM_MDSIO         ::
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
+      LOGICAL GM_useSubMeso
       LOGICAL GM_ExtraDiag
       LOGICAL GM_InMomAsStress
       LOGICAL GM_MNC
       LOGICAL GM_MDSIO
       COMMON /GM_PARAMS_L/
-     &                   GM_AdvForm, GM_AdvSeparate, GM_useBVP,
+     &                   GM_AdvForm, GM_AdvSeparate,
+     &                   GM_useBVP,  GM_useSubMeso,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress
 
@@ -60,11 +63,18 @@ C     GM_maxSlope      :: maximum slope (tapering/clipping) [-]
 C     GM_Kmin_horiz    :: minimum horizontal diffusivity [m^2/s]
 C     GM_Small_Number  :: epsilon used in computing the slope
 C     GM_slopeSqCutoff :: slope^2 cut-off value
-C-    transition layer thickness definition:
+C-    Transition layer thickness definition:
 C     GM_facTrL2dz   :: minimum Trans. Layer Thick. as a factor of local dz
 C     GM_facTrL2ML   :: maximum Trans. Layer Thick. as a factor of Mix-Layer Depth
 C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
+C-    Boundary-Value-Problem method parameters:
 C     GM_BVP_cMin    :: minimum value for wave speed parameter "c" in BVP [m/s]
+C-    mixed layer (Sub-Mesoscale) eddies parameterization:
+C     subMeso_Ceff   :: efficiency coefficient of Mixed-Layer Eddies [-]
+C     subMeso_invTau :: inverse of mixing time-scale in sub-meso parameteriz. [s^-1]
+C     subMeso_LfMin  :: minimum value for length-scale "Lf" [m]
+C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
+
       _RL GM_isopycK
       _RL GM_background_K
       _RL GM_maxSlope
@@ -84,7 +94,11 @@ C     GM_BVP_cMin    :: minimum value for wave speed parameter "c" in BVP [m/s]
       _RL GM_Scrit
       _RL GM_Sd
       _RL GM_BVP_cMin
-      COMMON /GM_PARAMS_R/
+      _RL subMeso_Ceff
+      _RL subMeso_invTau
+      _RL subMeso_LfMin
+      _RS subMeso_Lmax
+      COMMON /GM_PARAMS_RL/
      &                   GM_isopycK, GM_background_K,
      &                   GM_maxSlope,
      &                   GM_Kmin_horiz,
@@ -94,7 +108,10 @@ C     GM_BVP_cMin    :: minimum value for wave speed parameter "c" in BVP [m/s]
      &                   GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                   GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
-     &                   GM_Scrit, GM_Sd, GM_BVP_cMin
+     &                   GM_Scrit, GM_Sd, GM_BVP_cMin,
+     &                   subMeso_Ceff, subMeso_invTau, subMeso_LfMin
+      COMMON /GM_PARAMS_RS/
+     &                   subMeso_Lmax
 
 C--   COMMON /GM_DERIVED_PAR/ other GM/Redi parameters
 C     (derived from previous block and not directly user configured)
