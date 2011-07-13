@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/GMREDI_OPTIONS.h,v 1.2 2010/03/22 02:26:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/GMREDI_OPTIONS.h,v 1.3 2011/07/13 23:01:22 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -18,6 +18,7 @@ C  exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_AC02_TAP
 #define GM_EXCLUDE_FM07_TAP
 #undef GM_EXCLUDE_TAPERING
+#define GM_EXCLUDE_SUBMESO
 
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K
@@ -33,6 +34,9 @@ C be used with the advective form (Bolus velocity) of GM
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
 #undef  GM_BOLUS_ADVEC
+
+C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
+#undef GM_BOLUS_BVP
 
 C Following option avoids specific recomputation in adjoint
 C routines of gmredi_x/y/rtransport
