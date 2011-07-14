@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1473 2011/07/11 12:03:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1474 2011/07/14 17:06:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/gmredi:
+   Add Sub-Meso Eddies parameterisation from Baylor (for now, disabled with TAF),
+   and test it in verification exp. "front_relax.bvp" (update output.bvp.txt)
 
 checkpoint63 (2011/07/11)
 o pkg/exch2:
