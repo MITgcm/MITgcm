@@ -9,5 +9,8 @@
  GM_facTrL2dz   = 0.,
 #GM_facTrL2ML   = 5.,
 #GM_maxTransLay = 500.,
+ GM_useSubMeso = .TRUE.,
+#subMeso_Ceff  = 5.e-2,
+#subMeso_LfMin = 5.e+3,
  &
 
