@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.49 2011/02/26 00:41:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.50 2011/07/15 13:00:17 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -245,6 +245,10 @@ c
 #endif
 #ifdef ALLOW_SSS0_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', adsss, myThid)
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adBottomDrag',
+     &         adbottomdragfld, myThid)
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,

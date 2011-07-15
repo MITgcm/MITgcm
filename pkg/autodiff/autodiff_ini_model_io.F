@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.19 2011/05/20 22:24:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.20 2011/07/15 13:00:17 mlosch Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -184,6 +184,17 @@ C      create directory
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS','long_name',
      &     'adjoint sea_surface_salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
+     &     'coordinates','XC YC RC iter', myThid)
+#endif
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+      CALL MNC_CW_ADD_VNAME('adBottomDrag', 'Cen_xy_Hn__-__t',
+     .3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adBottomDrag',
+     &     'units','[cost]/[N/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adBottomDrag','long_name',
+     &     'adjoint bottom drag', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adBottomDrag',
      &     'coordinates','XC YC RC iter', myThid)
 #endif
 
