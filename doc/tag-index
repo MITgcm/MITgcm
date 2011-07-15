@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1474 2011/07/14 17:06:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1475 2011/07/15 13:02:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F
+  - fix recomputation with FENTY_AREA_EXPANSION_CONTRACTION code,
+    remove then obsolete STORE directives
+  - fix STORE directives for tice and tices, so that only the
+    appropriate part of the fields are stored (and not the entire
+    field)
+  - cosmetic changes: adjust CPP flags and indentation for better
+    legibilty
+o pkg/autodiff: add mnc-output of adBottomDragFld (code contributed by
+  Chris Wilson)
 o pkg/gmredi:
    Add Sub-Meso Eddies parameterisation from Baylor (for now, disabled with TAF),
    and test it in verification exp. "front_relax.bvp" (update output.bvp.txt)
