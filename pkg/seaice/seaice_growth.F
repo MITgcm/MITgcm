@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.137 2011/07/15 13:01:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.138 2011/07/16 22:55:57 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -740,12 +740,14 @@ C     Compute relative wind speed over sea ice.
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tice(:,:,bi,bj) = comlev1, key = ikey_dynamics, byte = isbyte
+CADJ STORE tice(:,:,bi,bj) 
+CADJ &     = comlev1, key = ikey_dynamics, byte = isbyte
 CADJ STORE hsnowActual = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heffActual  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
 # ifdef SEAICE_MULTICATEGORY
-CADJ STORE tices(:,:,:,bi,bj) = comlev1, key = ikey_dynamics, byte = isbyte
+CADJ STORE tices(:,:,:,bi,bj) 
+CADJ &     = comlev1, key = ikey_dynamics, byte = isbyte
 # endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -1186,6 +1188,11 @@ CADJ STORE d_HEFFbyATMonOCN_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE recip_heffActual = comlev1_bibj,key=iicekey,byte=isbyte
+cph(
+cphCADJ STORE d_AREAbyATM  = comlev1_bibj,key=iicekey,byte=isbyte   
+cphCADJ STORE d_AREAbyICE  = comlev1_bibj,key=iicekey,byte=isbyte  
+cphCADJ STORE d_AREAbyOCN  = comlev1_bibj,key=iicekey,byte=isbyte
+cph)
 CADJ STORE a_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE heffActual = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
