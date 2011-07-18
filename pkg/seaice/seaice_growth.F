@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.138 2011/07/16 22:55:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.139 2011/07/18 08:55:18 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -741,13 +741,13 @@ C     Compute relative wind speed over sea ice.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tice(:,:,bi,bj) 
-CADJ &     = comlev1, key = ikey_dynamics, byte = isbyte
+CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnowActual = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heffActual  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
 # ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices(:,:,:,bi,bj) 
-CADJ &     = comlev1, key = ikey_dynamics, byte = isbyte
+CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 # endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
