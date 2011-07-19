@@ -19,20 +19,20 @@
 #--------------------
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
-  fields(1:8 ,1) = 'ETAN    ','DETADT2 ','PHIBOT  ',
-                   'MXLDEPTH','GM_BVPcW','GM_BVPcS',
-                   'SubMesLf','SubMpsiY',
-#                  'GM_hTrsL','GM_baseS','GM_rLamb',
-#                  'GM_VisbK',
+  fields(1:8,1) = 'ETAN    ','DETADT2 ','PHIBOT  ',
+                  'MXLDEPTH','GM_BVPcW','GM_BVPcS',
+                  'SubMesLf','SubMpsiY',
+#                 'GM_hTrsL','GM_baseS','GM_rLamb',
+#                 'GM_VisbK',
    levels(1,1) = 1.,
-   fileName(1) = 'surfDiag',
+  fileName(1) = 'surfDiag',
   frequency(1) = -86400.,
   timePhase(1) = 0.,
 
   fields(1:7,2)  = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
                    'THETA   ','THETASQ ','UVELSQ  ',
 # do not specify levels => all levels are selected
-#  fileName(2) = 'dynDiag',
+  fileName(2) = 'dynDiag',
   frequency(2) = -864000.,
   timePhase(2) = 0.,
 
@@ -40,7 +40,7 @@
                    'GM_Kwy  ','GM_Kwz  ','GM_Kvy  ',
                    'THETA   ',
                    'GM_PsiY ','GM_Kvz  ',
-   fileName(3) = 'oceDiag',
+  fileName(3) = 'oceDiag',
   frequency(3) = -86400.,
   timePhase(3) = 0.,
 
@@ -70,11 +70,11 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
- stat_fields(1:13,1) = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
-                       'MXLDEPTH','SubMesLf','SubMpsiY','GM_PsiY ',
-                       'GM_Kwy  ','GM_Kwz  ','GM_Kvy  ','GM_Kvz  ',
-#                      'GM_hTrsL','GM_baseS','GM_rLamb',
-  stat_fName(1) = 'dynStDiag',
-   stat_freq(1) = 18000.,
-# stat_phase(1) = 0.,
+# stat_fields(1:13,1) = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+#                       'MXLDEPTH','SubMesLf','SubMpsiY','GM_PsiY ',
+#                       'GM_Kwy  ','GM_Kwz  ','GM_Kvy  ','GM_Kvz  ',
+##                      'GM_hTrsL','GM_baseS','GM_rLamb',
+## stat_fName(1) = 'dynStDiag',
+#   stat_freq(1) = 18000.,
+## stat_phase(1) = 0.,
  &

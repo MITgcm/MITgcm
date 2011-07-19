@@ -19,9 +19,9 @@
 #--------------------
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
-  fields(1:9 ,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
-                   'MXLDEPTH','GM_hTrsL','GM_baseS','GM_rLamb',
-#                  'GM_VisbK',
+  fields(1:9,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
+                  'MXLDEPTH','GM_hTrsL','GM_baseS','GM_rLamb',
+#                 'GM_VisbK',
    levels(1,1) = 1.,
    fileName(1) = 'surfDiag',
   frequency(1) = -86400.,
