@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.40 2011/05/24 20:56:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.41 2011/07/19 12:44:11 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -880,9 +880,8 @@ c     initialise some output
        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                fldperiod) + 2
        if ( nfac .ne. 1 ) then
-c     This is the case of obcs. I am not sure that this is correct, but
-c     it seems to work in most configurations.
-        endrec   = (endrec - startrec + 1)*nfac
+c     This is the case of obcs.
+        endrec   = endrec*nfac + 1
         startrec = (startrec - 1)*nfac + 1
        endif
       endif
