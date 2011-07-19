@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.39 2011/07/01 18:52:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.40 2011/07/19 23:51:21 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -540,6 +540,16 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
       diagCode  = 'SM P    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef NONLIN_FRSURF
+      diagName  = 'PHIHYDcR'
+      diagTitle = DIAGS_MK_TITLE( 'Hydrostatic '
+     I                       //pTitle//' Anomaly @ const r', myThid )
+      diagUnits = 'm^2/s^2         '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
       diagName  = 'PHI_NH  '
