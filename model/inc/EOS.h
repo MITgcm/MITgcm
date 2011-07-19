@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.4 2003/07/18 20:06:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.5 2011/07/19 12:53:23 mlosch Exp $
 C $Name:  $
 CBOP
 C    !ROUTINE: EOS.h
@@ -41,10 +41,15 @@ C     eosJMDCSw  :: of sea water at pressure 0
 C     eosJMDCKFw :: of secant bulk modulus K of fresh water at pressure 0
 C     eosJMDCKSw :: of secant bulk modulus K of sea water at pressure 0
 C     eosJMDCKP  :: of secant bulk modulus K at pressure p
-C     eosType = 'DJWF02' (McDougall et al. 2002, JAOT, submitted)
+C     eosType = 'MDJWF' (McDougall et al. 2002, JAOT, submitted)
 C     COMMON /PARM_EOS_MDJWF/ 
 C     eosMDJWFnum :: coefficients of numerator
 C     eosMDJWFden :: coefficients of denominator
+C     eosType = 'TEOS10' (McDougall et al. 2011, http://www.teos-10.org)
+C     Note: this eos implies that variables THETA and SALT are interpreted
+C     as conservative temperature and absolute salinity
+C     COMMON /PARM_TEOS10/
+C     teos        :: 48 coeffiencts of numerator and denominator
 C     end nonlinear equation of state
       _RL eosJMDCFw(6), eosJMDCSw(9)
       _RL eosJMDCKFw(5), eosJMDCKSw(7), eosJMDCKP(14)
@@ -53,6 +58,9 @@ C     end nonlinear equation of state
       _RL eosMDJWFnum(0:11), eosMDJWFden(0:12)
       COMMON /PARM_EOS_MDJWF/ 
      &     eosMDJWFnum, eosMDJWFden
+      _RL teos(48)
+      COMMON /PARM_TEOS10/
+     &     teos
 
 C     pressure :: global absolute pressure variable needed for the 
 C                 nonlinear equation of state

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.37 2009/10/22 04:33:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.38 2011/07/19 12:53:24 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -194,6 +194,29 @@ C     density of sea water at pressure p
      I             iMin, iMax, jMin, jMax,
      I             locPres, tFld, sFld,
      O             rhoDen,
+     I             myThid )
+
+c#ifdef ALLOW_AUTODIFF_TAMC
+cph can not DO storing here since find_rho is called multiple times;
+cph additional recomp. should be acceptable
+c#endif /* ALLOW_AUTODIFF_TAMC */
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            rhoLoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
+          ENDDO
+         ENDDO
+
+      ELSEIF ( equationOfState.EQ.'TEOS10' ) THEN
+
+         CALL PRESSURE_FOR_EOS(
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     O             locPres,
+     I             myThid )
+
+         CALL FIND_RHOTEOS(
+     I             iMin, iMax, jMin, jMax,
+     I             locPres, tFld, sFld,
+     O             rhoNum, rhoDen,
      I             myThid )
 
 c#ifdef ALLOW_AUTODIFF_TAMC
@@ -562,6 +585,93 @@ C     abbreviations
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
+C     !ROUTINE: FIND_RHOTEOS
+C     !INTERFACE:
+      SUBROUTINE FIND_RHOTEOS(
+     I                iMin, iMax, jMin, jMax,
+     I                locPres, tFld, sFld,
+     O                rhoNum, rhoDen,
+     I                myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_RHONUMTEOS
+C     |   Calculates numerator and inverse of denominator of the 
+C     |   TEOS-10 (McDougall et al. 2011) equation of state
+C     |   - the code is more or less a copy the teos-10 toolbox
+C     |     available at http://www.teos-10.org
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EOS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      INTEGER iMin,iMax,jMin,jMax
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER i,j
+      _RL ct, sa, sqrtsa, p
+      _RL den, epsln
+      parameter ( epsln = 0. _d 0 )
+CEOP
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+C     abbreviations
+        ct      = tFld(i,j)
+        sa      = sFld(i,j)
+        IF ( sa .GT. 0. _d 0 ) THEN
+         sqrtsa = SQRT(sa)
+        ELSE
+         sa     = 0. _d 0
+         sqrtsa = 0. _d 0
+        ENDIF
+        p       = locPres(i,j)*SItodBar
+        
+        rhoNum(i,j) = teos(01) 
+     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))  
+     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct) 
+     &   + sqrtsa*(teos(08) + ct*(teos(09) 
+     &                      + ct*(teos(10) + teos(11)*ct))))
+     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct) 
+     &                 + sa*(teos(15) + teos(16)*ct) 
+     &   + p*(teos(17) + ct*(teos(18) + teos(19)*ct) + teos(20)*sa))
+        
+        den = teos(21) 
+     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct))) 
+     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28) 
+     &   + ct*(teos(29) + teos(30)*ct))) 
+     &   + teos(36)*sa 
+     &   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
+     &            + ct*(teos(34) + teos(35)*ct)))))  
+     &   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))  
+     &   + sa*(teos(41) + teos(42)*ct) 
+     &   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa) 
+     &   + p*(teos(47) + teos(48)*ct)))
+        
+        rhoDen(i,j) = 1.0/(epsln+den)
+
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: FIND_RHO_SCALAR
 C     !INTERFACE:
       SUBROUTINE FIND_RHO_SCALAR(
@@ -593,6 +703,7 @@ C     == Routine arguments ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       _RL t1, t2, t3, t4, s1, s3o2, p1, p2, sp5, p1t1
+      _RL ct, sa, sqrtsa, p
       _RL rfresh, rsalt, rhoP0
       _RL bMfresh, bMsalt, bMpres, BulkMod
       _RL rhoNum, rhoDen, den, epsln
@@ -759,6 +870,44 @@ C     density of sea water at pressure p
          rhoDen = 1.0/(epsln+den)
 
          rhoLoc = rhoNum*rhoDen
+
+      ELSEIF( equationOfState .EQ. 'TEOS10' ) THEN
+
+       ct      = tLoc
+       sa      = sLoc
+       IF ( sa .GT. 0. _d 0 ) THEN
+        sqrtsa = SQRT(sa)
+       ELSE
+        sa     = 0. _d 0
+        sqrtsa = 0. _d 0
+       ENDIF
+       p       = pLoc*SItodBar
+        
+       rhoNum = teos(01) 
+     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))  
+     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct) 
+     &   + sqrtsa*(teos(08) + ct*(teos(09) 
+     &            + ct*(teos(10) + teos(11)*ct))))
+     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct) 
+     &                      + sa*(teos(15) + teos(16)*ct) 
+     &   + p*(teos(17) + ct*(teos(18) + teos(19)*ct) + teos(20)*sa))
+        
+       den = teos(21) 
+     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct))) 
+     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28) 
+     &   + ct*(teos(29) + teos(30)*ct))) 
+     &   + teos(36)*sa 
+     %   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
+     &            + ct*(teos(34) + teos(35)*ct)))))  
+     %   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))  
+     %   + sa*(teos(41) + teos(42)*ct) 
+     %   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa) 
+     %   + p*(teos(47) + teos(48)*ct)))
+        
+        
+       rhoDen = 1.0/(epsln+den)
+       
+       rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C

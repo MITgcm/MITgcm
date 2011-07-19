@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.17 2008/08/09 01:02:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.18 2011/07/19 12:53:24 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -53,6 +53,7 @@ C     == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,tP,sP
       _RL t1, t2, t3, s1, s3o2, p1, p2, sp5, p1t1
+      _RL ct, sa, sqrtsa, p
       _RL drhoP0dtheta, drhoP0dthetaFresh, drhoP0dthetaSalt
       _RL dKdtheta, dKdthetaFresh, dKdthetaSalt, dKdthetaPres
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -267,6 +268,55 @@ C     of sea water at p
          ENDDO
       ENDDO
 
+      ELSEIF ( equationOfState.EQ.'TEOS10' ) THEN
+
+       CALL PRESSURE_FOR_EOS(
+     I      bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O      locPres,
+     I      myThid )
+
+       CALL FIND_RHOTEOS(
+     I      iMin, iMax, jMin, jMax, locPres,
+     I      theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O      rhoLoc, rhoDen,
+     I      myThid )
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         ct      = theta(i,j,k,bi,bj)
+         sa      = salt(i,j,k,bi,bj)
+         IF ( sa .GT. 0. _d 0 ) THEN
+          sqrtsa = SQRT(sa)
+         ELSE
+          sa     = 0. _d 0
+          sqrtsa = 0. _d 0
+         ENDIF
+         p       = locPres(i,j)*SItodBar
+
+         dnum_dtheta = teos(02)
+     &   + ct*(2.*teos(03) + 3.*teos(04)*ct)  
+     &   + sa*(teos(06) + 2.*teos(07)*ct
+     &   + sqrtsa*(teos(09) + ct*(2.*teos(10) + 3.*teos(11)*ct)))
+     &   + p*(     teos(13) + 2.*teos(14)*ct  + sa*2.*teos(16)
+     &        + p*(teos(18) + 2.*teos(19)*ct))
+         
+         dden_dtheta = teos(22) 
+     &   + ct*(2.*teos(23) + ct*(3.*teos(24) + 4.*teos(25)*ct))
+     &   + sa*(teos(27) 
+     &   + ct*(2.*teos(28) + ct*(3.*teos(29) + 4.*teos(30)*ct))
+     &   + sqrtsa*(teos(32) 
+     &   + ct*(2.*teos(33) + ct*(3.*teos(34) + 4.*teos(35)*ct))))  
+     &   + p*(teos(38) + ct*(2.*teos(39) + 3.*teos(40)*ct)
+     &   + teos(42)
+     &   + p*(teos(44) + 2.*teos(45)*ct + teos(46)*sa
+     &   + p*teos(48) ))
+
+         alphaLoc(i,j)    = rhoDen(i,j)*(dnum_dtheta
+     &        - (rhoLoc(i,j)*rhoDen(i,j))*dden_dtheta)
+         
+        ENDDO
+       ENDDO
+
       ELSE
          WRITE(*,*) 'FIND_ALPHA: equationOfState = ',equationOfState
          STOP 'FIND_ALPHA: "equationOfState" has illegal value'
@@ -315,6 +365,7 @@ C     == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,tP,sP
       _RL t1, t2, t3, s1, s3o2, p1, sp5, p1t1
+      _RL ct, sa, sqrtsa, p
       _RL drhoP0dS
       _RL dKdS, dKdSSalt, dKdSPres
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -505,6 +556,49 @@ C     of sea water at p
 
             ENDDO
          ENDDO
+
+      ELSEIF ( equationOfState.EQ.'TEOS10' ) THEN
+
+       CALL PRESSURE_FOR_EOS(
+     I      bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O      locPres,
+     I      myThid )
+
+       CALL FIND_RHOTEOS(
+     I      iMin, iMax, jMin, jMax, locPres,
+     I      theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O      rhoLoc, rhoDen,
+     I      myThid )
+       
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         ct      = theta(i,j,k,bi,bj)
+         sa      = salt(i,j,k,bi,bj)
+         IF ( sa .GT. 0. _d 0 ) THEN
+          sqrtsa = SQRT(sa)
+         ELSE
+          sa     = 0. _d 0
+          sqrtsa = 0. _d 0
+         ENDIF
+         p       = locPres(i,j)*SItodBar
+
+         dnum_dsalt =  teos(05) + ct*(teos(06) + teos(07)*ct)
+     &   + 1.5*sqrtsa*(teos(08)
+     &           + ct*(teos(09) + ct*(teos(10) + teos(11)*ct)))
+     &   + p*(teos(15) + teos(16)*ct + p*teos(20))
+
+         dden_dsalt = teos(26) 
+     &   + ct*(teos(27) + ct*(teos(28) + ct*(teos(29) + teos(30)*ct)))
+     &   + 2.*teos(36)*sa 
+     &   + 1.5*sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
+     &                          + ct*(teos(34) + teos(35)*ct))))
+     &   + p*(teos(41) + teos(42)*ct + p*teos(46))
+
+         betaLoc(i,j) = rhoDen(i,j)*( dnum_dsalt
+     &        - (rhoLoc(i,j)*rhoDen(i,j))*dden_dsalt )
+
+        ENDDO
+       ENDDO
 
       ELSE
          WRITE(*,*) 'FIND_BETA: equationOfState = ',equationOfState
