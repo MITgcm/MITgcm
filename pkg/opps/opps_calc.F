@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.9 2011/06/24 01:08:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.10 2011/07/19 13:08:24 mlosch Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -470,6 +470,7 @@ C     == Local variables ==
       _RL rhoLoc, dRho
       _RL pLoc
       _RL t1, t2, t3, t4, s1, s3o2, p1, p2, sp5, p1t1
+      _RL ct, sa, sqrtsa, p
       _RL rfresh, rsalt, rhoP0
       _RL bMfresh, bMsalt, bMpres, BulkMod
       _RL rhoNum, rhoDen, den, epsln
@@ -647,6 +648,44 @@ C     density of sea water at pressure p
          rhoDen = 1.0/(epsln+den)
 
          rhoLoc = rhoNum*rhoDen - rhoConst
+
+      ELSEIF( equationOfState .EQ. 'TEOS10' ) THEN
+
+       ct      = tLoc
+       sa      = sLoc
+       IF ( sa .GT. 0. _d 0 ) THEN
+        sqrtsa = SQRT(sa)
+       ELSE
+        sa     = 0. _d 0
+        sqrtsa = 0. _d 0
+       ENDIF
+       p       = pLoc*SItodBar
+        
+       rhoNum = teos(01) 
+     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))  
+     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct) 
+     &   + sqrtsa*(teos(08) + ct*(teos(09) 
+     &            + ct*(teos(10) + teos(11)*ct))))
+     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct) 
+     &                      + sa*(teos(15) + teos(16)*ct) 
+     &   + p*(teos(17) + ct*(teos(18) + teos(19)*ct) + teos(20)*sa))
+        
+       den = teos(21) 
+     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct))) 
+     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28) 
+     &   + ct*(teos(29) + teos(30)*ct))) 
+     &   + teos(36)*sa 
+     %   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
+     &            + ct*(teos(34) + teos(35)*ct)))))  
+     %   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))  
+     %   + sa*(teos(41) + teos(42)*ct) 
+     %   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa) 
+     %   + p*(teos(47) + teos(48)*ct)))
+        
+        
+       rhoDen = 1.0/(epsln+den)
+       
+       rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C
