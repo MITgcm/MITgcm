@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.14 2010/03/22 02:16:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.15 2011/07/19 12:44:36 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -54,7 +54,6 @@ c     == local variables ==
       integer ip,jp
       integer i,j,k
       integer ii,jj,kk
-      integer il
       integer irec,iobcs,nrec_nl
       integer itlo,ithi
       integer jtlo,jthi
@@ -62,15 +61,9 @@ c     == local variables ==
       integer imin,imax
 
       integer cbuffindex
-cgg(
-      integer igg
       integer reclen, irectrue
       integer cunit2, cunit3
-      _RL     gg
-      character*(80) weightname
       character*(80) cfile2, cfile3
-
-cgg)
 
       real*4  cbuff      ( snx*nsx*npx*nsy*npy )
       real*4  globfldtmp2( snx,nsx,npx,nsy,npy )
@@ -79,13 +72,15 @@ cgg)
       _RL     globfld3d  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskxz  ( snx,nsx,npx,nsy,npy,nr,nobcs )
 #ifdef CTRL_PACK_PRECISE
+      integer il
+      character*(80) weightname
       _RL     weightfldxz( snx,nsx,npx,nsy,npy,nr,nobcs )
-#endif
 
 c     == external ==
 
       integer  ilnblnk
       external ilnblnk
+#endif
 
 c     == end of interface ==
 
@@ -176,22 +171,6 @@ c--   Only the master thread will do I/O.
          call MDSREADFIELD_XZ_GL(
      &        weightname, ctrlprec, 'RL',
      &        Nr, weightfldxz(1,1,1,1,1,1,iobcs), iobcs, mythid)
-CGG   One special exception: barotropic velocity should be nondimensionalized
-cgg   differently. Probably introduce new variable.
-         if (iobcs .eq. 3 .or. iobcs .eq. 4) then
-            k = 1
-            do jp = 1,nPy
-               do bj = jtlo,jthi
-                  do ip = 1,nPx
-                     do bi = itlo,ithi
-                        do i = imin,imax
-cph                           weightfldxz(i,bi,ip,bj,jp,k,iobcs) = wbaro
-                        enddo
-                     enddo
-                  enddo
-               enddo
-            enddo
-         endif
 #endif
       enddo
 
@@ -207,28 +186,6 @@ C     method that works for .not.useSingleCPUio cannot be used
      &        nr, globfld3d, irec, mythid)
          do j=1,sny
             iobcs= mod((irec-1)*sny+j-1,nobcs)+1
-
-CGG   One special exception: barotropic velocity should be nondimensionalized
-cgg   differently. Probably introduce new variable.
-            if (iobcs .eq. 3 .or. iobcs .eq. 4) then
-               k = 1
-               do jp = 1,nPy
-                  do bj = jtlo,jthi
-                     do ip = 1,nPx
-                        do bi = itlo,ithi
-                           do i = imin,imax
-#ifdef NO_CONTROL_BAROTROPIC_VELOCITY
-                              if (.not. lxxadxx) then
-cgg    Get rid of any sensitivity to barotropic velocity.
-                                 globfld3d(i,bi,ip,j,bj,jp,k) = 0.
-                              endif
-#endif
-                           enddo
-                        enddo
-                     enddo
-                  enddo
-               enddo
-            endif
 
             write(cunit) ncvarindex(ivartype)
             write(cunit) 1
@@ -299,34 +256,11 @@ c     -- end of irec loop --
       enddo
 
       do irec = nrec_nl*ny+1, ncvarrecs(ivartype)
-cgg       do iobcs = 1, nobcs
-cgg    Need to solve for what iobcs would have been.
+c     Need to solve for what iobcs would have been.
          iobcs= mod(irec-1,nobcs)+1
 
          call MDSREADFIELD_XZ_GL( fname, ctrlprec, 'RL',
      &        nr, globfldxz, irec, mythid)
-
-CGG   One special exception: barotropic velocity should be nondimensionalized
-cgg   differently. Probably introduce new variable.
-         if (iobcs .eq. 3 .or. iobcs .eq. 4) then
-            k = 1
-            do jp = 1,nPy
-               do bj = jtlo,jthi
-                  do ip = 1,nPx
-                     do bi = itlo,ithi
-                        do i = imin,imax
-#ifdef NO_CONTROL_BAROTROPIC_VELOCITY
-                           if (.not. lxxadxx) then
-cgg    Get rid of any sensitivity to barotropic velocity.
-                              globfldxz(i,bi,ip,bj,jp,k) = 0.
-                           endif
-#endif
-                        enddo
-                     enddo
-                  enddo
-               enddo
-            enddo
-         endif
 
          write(cunit) ncvarindex(ivartype)
          write(cunit) 1
@@ -389,8 +323,6 @@ c
 c
 c     -- end of k loop --
          enddo
-c     -- end of iobcs loop --
-cgg       enddo
 c     -- end of irec loop --
       enddo
 

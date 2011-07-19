@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.16 2011/05/05 09:22:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.17 2011/07/19 12:44:36 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -55,7 +55,6 @@ c     == local variables ==
       integer ip,jp
       integer i,j,k
       integer ii,jj,kk
-      integer il
       integer irec,iobcs,nrec_nl
       integer itlo,ithi
       integer jtlo,jthi
@@ -70,23 +69,21 @@ c     == local variables ==
       _RL     globfldyz( nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskyz( nsx,npx,sny,nsy,npy,nr,nobcs )
-#ifdef CTRL_UNPACK_PRECISE
-      _RL   weightfldyz( nsx,npx,sny,nsy,npy,nr,nobcs )
-#endif
 
-cgg(
       integer reclen, irectrue
       integer cunit2, cunit3
-      integer igg
-      _RL     gg
-      character*(80) weightname
       character*(80) cfile2, cfile3
-cgg)
+
+#ifdef CTRL_UNPACK_PRECISE
+      integer il
+      character*(80) weightname
+      _RL   weightfldyz( nsx,npx,sny,nsy,npy,nr,nobcs )
 
 c     == external ==
 
       integer  ilnblnk
       external ilnblnk
+#endif
 
 cc     == end of interface ==
 
@@ -179,23 +176,7 @@ c--   Only the master thread will do I/O.
          call MDSREADFIELD_YZ_GL(
      &       weightname, ctrlprec, 'RL',
      &       Nr, weightfldyz(1,1,1,1,1,1,iobcs), iobcs, mythid)
-CGG   One special exception: barotropic velocity should be nondimensionalized
-cgg   differently. Probably introduce new variable.
-         if (iobcs .eq. 3 .or. iobcs .eq. 4) then
-            k = 1
-            do jp = 1,nPy
-               do bj = jtlo,jthi
-                  do j = jmin,jmax
-                     do ip = 1,nPx
-                        do bi = itlo,ithi
-cph                           weightfldyz(bi,ip,j,bj,jp,k,iobcs) = wbaro
-                        enddo
-                     enddo
-                  enddo
-               enddo
-            enddo
-         endif
-#endif
+#endif /* CTRL_UNPACK_PRECISE */
       enddo
 
       if ( useSingleCPUio ) then
@@ -206,8 +187,7 @@ C     method that works for .not.useSingleCPUio cannot be used
        nrec_nl = int(ncvarrecs(ivartype)/Nx)
       endif
       do irec = 1, nrec_nl
-cgg      do iobcs = 1, nobcs
-cgg      And now back-calculate what iobcs should be.
+c     And now back-calculate what iobcs should be.
          do i=1,snx
             iobcs= mod((irec-1)*snx+i-1,nobcs)+1
 
@@ -291,12 +271,11 @@ c     -- end of i loop --
      &                             Nr, globfld3d, irec,
      &                             optimcycle, mythid)
 
-c     -- end of iobcs loop -- This loop has been removed.
-cgg     enddo
 c     -- end of irec loop --
       enddo
 
       do irec = nrec_nl*nx+1,ncvarrecs(ivartype)
+c     And now back-calculate what iobcs should be.
          iobcs= mod(irec-1,nobcs)+1
 
          read(cunit) filencvarindex(ivartype)
@@ -367,8 +346,6 @@ c     -- end of k loop
      &                             Nr, globfldyz, irec,
      &                             optimcycle, mythid)
 
-c     -- end of iobcs loop -- This loop has been removed.
-cgg     enddo
 c     -- end of irec loop --
       enddo
 

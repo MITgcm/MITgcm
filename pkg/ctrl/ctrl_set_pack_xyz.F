@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.21 2010/12/23 02:43:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.22 2011/07/19 12:44:36 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -52,7 +52,6 @@ c     == local variables ==
       integer ip,jp
       integer i,j,k
       integer ii
-      integer il
       integer irec
       integer itlo,ithi
       integer jtlo,jthi
@@ -64,13 +63,13 @@ c     == local variables ==
       _RL     globmsk  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
 #ifdef CTRL_PACK_PRECISE
+      integer il
+      character*(80) weightname
       _RL   weightfld3d( snx,nsx,npx,sny,nsy,npy,nr )
 #endif
       real*4 cbuff      ( snx*nsx*npx*sny*nsy*npy )
       real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
       real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
-
-      character*(80) weightname
 
       _RL delZnorm
       integer reclen, irectrue
