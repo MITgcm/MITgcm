@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.8 2011/06/10 20:55:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.9 2011/07/19 23:49:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,6 +62,9 @@ C     i,j :: Loop counters
       _RL zero, one, half
       _RL ddRloc, ratioRm, ratioRp
       PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
+#ifdef NONLIN_FRSURF
+      _RL facP, dPhiRef
+#endif /* NONLIN_FRSURF */
 CEOP
 
       IF ( usingZCoords ) THEN
@@ -135,32 +138,59 @@ C  -- P coordinate : Phi(R_low) is simply at the top :
 c      IF ( select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
        IF ( select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
 C-    Integral of b.dr = rStarFac * Integral of b.dr* :
-        IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+        IF ( fluidIsAir ) THEN
 C-     Consistent with Phi'= Integr[ theta'.dPi ] :
          DO j=jMin,jMax
           DO i=iMin,iMax
-           phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
-     &                          * rStarFacC(i,j,bi,bj)**atm_kappa
+           facP = rStarFacC(i,j,bi,bj)**atm_kappa
+           dPhiRef = phiRef(2*k+1) - gravity*topoZ(i,j,bi,bj)
+     &                             - phi0surf(i,j,bi,bj)
+           phiHydLow(i,j,bi,bj) =
+     &              phiHydLow(i,j,bi,bj)*facP
+     &            + MAX( dPhiRef, zero )*( facP - 1. _d 0 )
+     &            + phi0surf(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSEIF ( usingPCoords ) THEN
+C- Note: dPhiRef*(rStarFacC -1) = 1/rho*PSo*((eta+PSo)/PSo -1) = Bo_surf*etaN
+C     so that this expression is the same as before (same as in "ELSE" block below)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           dPhiRef = ( Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj) )
+     &              *recip_rhoConst
+           phiHydLow(i,j,bi,bj) =
+     &              phiHydLow(i,j,bi,bj)*rStarFacC(i,j,bi,bj)
+     &            + dPhiRef*( rStarFacC(i,j,bi,bj) - 1. _d 0 )
+     &            + phi0surf(i,j,bi,bj)
           ENDDO
          ENDDO
         ELSE
+C- Note: dPhiRef*(rStarFacC -1) = g*H*((eta+H)/H -1) = Bo_surf*etaN
+C     so that this expression is the same as before (same as in "ELSE" block below)
          DO j=jMin,jMax
           DO i=iMin,iMax
-           phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
-     &                          * rStarFacC(i,j,bi,bj)
+           dPhiRef = ( Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj) )
+     &              *gravity
+           phiHydLow(i,j,bi,bj) =
+     &              phiHydLow(i,j,bi,bj)*rStarFacC(i,j,bi,bj)
+     &            + dPhiRef*( rStarFacC(i,j,bi,bj) - 1. _d 0 )
+     &            + phi0surf(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
-       ENDIF
+       ELSE
+#else /* NONLIN_FRSURF */
+       IF ( .TRUE. ) THEN
 #endif /* NONLIN_FRSURF */
 
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+         DO j=jMin,jMax
+          DO i=iMin,iMax
            phiHydLow(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
      &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
      &            + phi0surf(i,j,bi,bj)
-        ENDDO
-       ENDDO
+          ENDDO
+         ENDDO
+       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  -- end if k=Nr.

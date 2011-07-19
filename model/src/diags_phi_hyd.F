@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_hyd.F,v 1.3 2011/06/10 20:54:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_hyd.F,v 1.4 2011/07/19 23:49:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,48 +49,79 @@ C     myThid :: Instance number for this call of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     i,j :: Loop counters
+C     i,j        :: Loop counters
+C     phiHydCstR :: total hydrostatic Potential (anomaly, for now),
+C                   at fixed r-position, cell center level location.
       INTEGER i,j
+#ifdef NONLIN_FRSURF
+      _RL facP, dPhiRef
+      _RL phiHydCstR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* NONLIN_FRSURF */
 CEOP
+
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           totPhiHyd(i,j,k,bi,bj) = phiHydC(i,j)
+     &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+     &            + phi0surf(i,j,bi,bj)
+#ifdef NONLIN_FRSURF
+           phiHydCstR(i,j) = totPhiHyd(i,j,k,bi,bj)
+#endif /* NONLIN_FRSURF */
+         ENDDO
+        ENDDO
 
 #ifdef NONLIN_FRSURF
 c     IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
       IF (select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
 c# ifndef DISABLE_RSTAR_CODE
 C-    Integral of b.dr = rStarFac * Integral of b.dr* :
-       IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+       IF ( fluidIsAir ) THEN
 C-     Consistent with Phi'= Integr[ theta'.dPi ] :
         DO j=jMin,jMax
          DO i=iMin,iMax
+           facP = rStarFacC(i,j,bi,bj)**atm_kappa
+           dPhiRef = phiRef(2*k) - gravity*topoZ(i,j,bi,bj)
+     &                           - phi0surf(i,j,bi,bj)
            totPhiHyd(i,j,k,bi,bj) =
-     &              phiHydC(i,j)*rStarFacC(i,j,bi,bj)**atm_kappa
-     &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+     &              phiHydC(i,j)*facP
+     &            + MAX( dPhiRef, 0. _d 0 )*( facP - 1. _d 0 )
      &            + phi0surf(i,j,bi,bj)
+c          phiHydCstR(i,j) = phiHydCstR(i,j)
+c    &            + phiHydC(i,j)*( facP - 1. _d 0 )
+         ENDDO
+        ENDDO
+       ELSEIF ( usingPCoords ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+c    &     dPhiRef = phiRef(2*k) - gravity*topoZ(i,j,bi,bj)
+c    &                           - phi0surf(i,j,bi,bj)
+C--    assume PhiRef is just (ps0 - p)/rhoConst :
+           dPhiRef =( Ro_surf(i,j,bi,bj)-rC(k) )*recip_rhoConst
+           totPhiHyd(i,j,k,bi,bj) =
+     &              phiHydC(i,j)*rStarFacC(i,j,bi,bj)
+     &            + MAX( dPhiRef, 0. _d 0 )
+     &                *( rStarFacC(i,j,bi,bj) - 1. _d 0 )
+     &            + phi0surf(i,j,bi,bj)
+c          totPhiHyd(i,j,k,bi,bj) = phiHydCstR(i,j)
          ENDDO
         ENDDO
        ELSE
         DO j=jMin,jMax
          DO i=iMin,iMax
+           dPhiRef =( Ro_surf(i,j,bi,bj)-rC(k) )*gravity
            totPhiHyd(i,j,k,bi,bj) =
      &              phiHydC(i,j)*rStarFacC(i,j,bi,bj)
-     &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+     &            + MAX( dPhiRef, 0. _d 0 )
+     &                *( rStarFacC(i,j,bi,bj) - 1. _d 0 )
      &            + phi0surf(i,j,bi,bj)
+c          totPhiHyd(i,j,k,bi,bj) = phiHydCstR(i,j)
          ENDDO
         ENDDO
        ENDIF
+       CALL DIAGNOSTICS_FILL(phiHydCstR,'PHIHYDcR',k,1,2,bi,bj,myThid)
 c# endif /* DISABLE_RSTAR_CODE */
-      ELSE
-#else /* NONLIN_FRSURF */
-      IF (.TRUE.) THEN
-#endif /* NONLIN_FRSURF */
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-           totPhiHyd(i,j,k,bi,bj) = phiHydC(i,j)
-     &            + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-     &            + phi0surf(i,j,bi,bj)
-         ENDDO
-        ENDDO
       ENDIF
+#endif /* NONLIN_FRSURF */
 
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
 
