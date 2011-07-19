@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.49 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.50 2011/07/19 22:33:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -175,6 +175,7 @@ C------ read from file:
 C- read surface topography (in m) from topoFile (case topoFile.NE.' '):
 
         CALL READ_REC_XY_RS( topoFile, topoZ, 1, 0, myThid )
+        _EXCH_XY_RS( topoZ, myThid )
 
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
 C----
