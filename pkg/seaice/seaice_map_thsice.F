@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.2 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.3 2011/07/19 11:23:02 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,6 +24,10 @@ C     === Global variables ===
 #ifdef ALLOW_THSICE
 # include "THSICE_VARS.h"
 #endif /* ALLOW_THSICE */
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     === Routine arguments ===
 C     myTime - Simulation time
@@ -39,6 +43,11 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
+
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icemask   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE iceheight = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

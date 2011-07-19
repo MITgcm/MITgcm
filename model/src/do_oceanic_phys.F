@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.104 2011/05/03 18:05:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.105 2011/07/19 11:23:02 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,9 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+# endif
+# ifdef ALLOW_THSICE
+#  include "THSICE_VARS.h"
 # endif
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
@@ -328,6 +331,8 @@ C     impact has been vetted in forward integrations
       IF ( allowInteriorFreezing ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hfacc = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
         CALL FREEZE_INTERIOR(  myTime, myIter, myThid )
