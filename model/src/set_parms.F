@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.7 2010/01/06 00:49:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.8 2011/07/19 13:02:45 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,7 +149,8 @@ c     useDynP_inEos_Zc = .FALSE.
       useDynP_inEos_Zc = ( fluidIsWater .AND. usingZCoords
      &              .AND. ( eosType .EQ. 'JMD95P' .OR.
      &                      eosType .EQ. 'UNESCO' .OR.
-     &                      eosType .EQ. 'MDJWF'       )  )
+     &                      eosType .EQ. 'MDJWF'  .OR.
+     &                      eosType .EQ. 'TEOS10'      )  )
 
 C--   Adjust parameters related to length of the simulation
 
