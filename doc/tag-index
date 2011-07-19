@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1475 2011/07/15 13:02:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1476 2011/07/19 12:54:25 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add code for TEOS-10 (www.teos-10.org, McDougall et al. 2011). Use
+  this eos with eosType = 'TEOS10', in data (PARM01). This eos implies
+  that THETA and SALT are "conservative temperature" and "absolute
+  salinity"
+o pkg/ctrl
+  - fix computation of endrec in s/r ctrl_init_rec
+  - ctrl_pack/unpack_*: remove unused variables and some obsolete code
 o pkg/seaice/seaice_growth.F
   - fix recomputation with FENTY_AREA_EXPANSION_CONTRACTION code,
     remove then obsolete STORE directives
