@@ -8,7 +8,7 @@
  sRef = 15*35.,
  viscAr=1.E-3,
  viscAh=5.E5,
- viscA4=3.E14,
+ viscA4=1.E14,
  diffKhT=0.,
  diffKrT=3.E-5,
  diffKhS=0.,
