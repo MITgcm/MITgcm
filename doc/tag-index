@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1476 2011/07/19 12:54:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1477 2011/07/20 13:45:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src (rStar):
+  - include r* effect on reference-state (PhiRef) in totPhiHyd
+    (so that it's really the potential anomaly at the cell center);
+    affect solution only if z* with full pressure in EOS.
+  - test-exp global_ocean.90x40x15: reduce viscA4 (was not stable) and
+    update output (because of z* in totPhiHyd and viscA4 changes);
+  - keep the previous diagnostics as "PHIHYDcR" (closer to potential anomaly
+    @ constant r) until interpolation at constant r is implemented.
+o pkg/diagnostics
+  - fix RCENTER diagnostics in case cell center is not at interface middle
 o add code for TEOS-10 (www.teos-10.org, McDougall et al. 2011). Use
   this eos with eosType = 'TEOS10', in data (PARM01). This eos implies
   that THETA and SALT are "conservative temperature" and "absolute
@@ -16,7 +26,7 @@ o pkg/seaice/seaice_growth.F
     remove then obsolete STORE directives
   - fix STORE directives for tice and tices, so that only the
     appropriate part of the fields are stored (and not the entire
-    field)
+    field); update global_ocean.cs32x15.seaice AD output.
   - cosmetic changes: adjust CPP flags and indentation for better
     legibilty
 o pkg/autodiff: add mnc-output of adBottomDragFld (code contributed by
