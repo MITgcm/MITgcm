@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.139 2011/07/18 08:55:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.140 2011/07/21 13:45:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -428,6 +428,8 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
+          tmpscal2=0. _d 0
+          tmpscal3=0. _d 0
           if (HEFF(I,J,bi,bj).LE.siEps) then
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
@@ -435,9 +437,6 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #ifdef SEAICE_AGE
             IceAgeTr(i,j,bi,bj,2)=0. _d 0
 #endif /* SEAICE_AGE */
-          else
-            tmpscal2=0. _d 0
-            tmpscal3=0. _d 0
           endif
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+tmpscal2
           d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
@@ -1232,29 +1231,28 @@ C compute cover fraction tendency
 #  ifdef FENTY_AREA_EXPANSION_CONTRACTION
 
 C         the various volume tendency terms
-          tmpscal1 = d_HEFFbyATMOnOCN_open(I,J)
-          tmpscal2 = d_HEFFbyATMOnOCN_cover(I,J)
-          tmpscal3 = d_HEFFbyOCNonICE(I,J)
 
 C         Part 1: expansion/contraction of ice cover in open-water areas.
           d_AREAbyATM(I,J) = 0. _d 0
-          IF (tmpscal1 .GT. ZERO) then
+          IF (d_HEFFbyATMOnOCN_open(I,J) .GT. ZERO) then
 C         Ice cover is all created from open ocean-water air-sea heat fluxes
-             d_AREAbyATM(I,J)=tmpscal1/HO_loc
+             d_AREAbyATM(I,J)=d_HEFFbyATMOnOCN_open(I,J)/HO_loc
           ELSEIF (AREApreTH(I,J) .GT. ZERO) THEN
 C         that can also act to remove ice cover.
-             d_AREAbyATM(i,J) = HALF*tmpscal1*recip_heffActual(I,J)
+             d_AREAbyATM(i,J) = HALF*d_HEFFbyATMOnOCN_open(I,J)
+     &          *recip_heffActual(I,J)
           ENDIF
 
 C         Part 2: contraction from ice thinning from above
           d_AREAbyICE(I,J) = 0. _d 0
-          if (tmpscal2 .LE. ZERO) d_AREAbyICE(I,J) =
-     &            HALF * tmpscal2 * recip_heffActual(I,J)
+          if (d_HEFFbyATMOnOCN_cover(I,J) .LE. ZERO) 
+     &         d_AREAbyICE(I,J) = HALF * d_HEFFbyATMOnOCN_cover(I,J) 
+     &         * recip_heffActual(I,J)
 
 C         Part 3: contraction from ice thinning from below
           d_AREAbyOCN(I,J) = 0. _d 0
-          if (tmpscal3 .LE.ZERO) d_AREAbyOCN(I,J) =
-     &         HALF * tmpscal3* recip_heffActual(I,J)
+          if (d_HEFFbyOCNonICE(I,J) .LE.ZERO) d_AREAbyOCN(I,J) =
+     &         HALF * d_HEFFbyOCNonICE(I,J)* recip_heffActual(I,J)
 
 # else /* FENTY_AREA_EXPANSION_CONTRACTION */
 
