@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1477 2011/07/20 13:45:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1478 2011/07/21 13:45:55 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F: small changes that permit vectorizable
+  adjoint code. In general statements like tmpscal=fld(i,j) are problematic
+  and should be avoided where possible.
 o model/src (rStar):
   - include r* effect on reference-state (PhiRef) in totPhiHyd
     (so that it's really the potential anomaly at the cell center);
