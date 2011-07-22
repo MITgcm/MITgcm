@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1478 2011/07/21 13:45:55 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1479 2011/07/22 19:55:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics (velocity potential):
+  - fix mask for OBCS (still problems in stream-function with OBCS);
+  - add specific parameter (default = main code CG2D params) for solver;
+  - in case of poor convergence, use solution corresponding to lowest residual.
 o pkg/seaice/seaice_growth.F: small changes that permit vectorizable
   adjoint code. In general statements like tmpscal=fld(i,j) are problematic
   and should be avoided where possible.
