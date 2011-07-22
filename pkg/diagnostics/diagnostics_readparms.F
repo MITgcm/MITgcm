@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.30 2011/07/06 01:43:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.31 2011/07/22 19:47:14 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -86,7 +86,8 @@ C--   full level output:
      &     missing_value, missing_value_int,
      &     levels, fields, fileName, fileFlags,
      &     dumpAtLast, diag_mnc, useMissingValue,
-     &     xPsi0, yPsi0,
+     &     diagCG_maxIters, diagCG_resTarget,
+     &     diagCG_prtResFrq, xPsi0, yPsi0,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
 
@@ -132,6 +133,9 @@ C     Initialize and Read Diagnostics Namelist
       diag_pickup_read_mnc  = .FALSE.
       diag_pickup_write_mnc = .FALSE.
 
+      diagCG_maxIters  = cg2dMaxIters
+      diagCG_resTarget = cg2dTargetResidual
+      diagCG_prtResFrq = printResidualFreq
       xPsi0 = UNSET_RS
       yPsi0 = UNSET_RS
 
@@ -471,6 +475,10 @@ C     Echo History List Data Structure
      & ' diag_mnc =', '   /* write NetCDF output files */')
       CALL WRITE_0D_L( useMissingValue, INDEX_NONE,
      & ' useMissingValue =', ' /* put MissingValue where mask = 0 */')
+      CALL WRITE_0D_I( diagCG_maxIters, INDEX_NONE,
+     & ' diagCG_maxIters =', ' /* max number of iters in diag_cg2d */')
+      CALL WRITE_0D_RL( diagCG_resTarget, INDEX_NONE,
+     & ' diagCG_resTarget =', ' /* residual target for diag_cg2d */')
       WRITE(msgBuf,'(A)')
      & '-----------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
