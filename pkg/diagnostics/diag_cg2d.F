@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.1 2011/06/14 00:18:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.2 2011/07/22 19:53:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -9,9 +9,10 @@ C     !INTERFACE:
       SUBROUTINE DIAG_CG2D(
      I                aW2d, aS2d, b2d,
      I                residCriter,
-     O                firstResidual, lastResidual,
+     O                firstResidual, minResidual, lastResidual,
      U                x2d, numIters,
-     I                myThid )
+     O                nIterMin,
+     I                printResidFrq, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CG2D
@@ -39,28 +40,32 @@ c#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     b2d    :: The source term or "right hand side"
-C     x2d    :: The solution
+C     b2d           :: The source term or "right hand side"
+C     x2d           :: The solution
 C     firstResidual :: the initial residual before any iterations
+C     minResidual   :: the lowest residual reached
 C     lastResidual  :: the actual residual reached
 C     numIters  :: Entry: the maximum number of iterations allowed
 C                  Exit:  the actual number of iterations used
-C     myThid    :: Thread on which I am working.
+C     nIterMin      :: iteration number corresponding to lowest residual
+C     printResidFrq :: Frequency for printing residual in CG iterations
+C     myThid        :: my Thread Id number
       _RS  aW2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aS2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  b2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  residCriter
       _RL  firstResidual
+      _RL  minResidual
       _RL  lastResidual
       _RL  x2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER numIters
+      INTEGER nIterMin
+      INTEGER printResidFrq
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     === Local variables ====
-C     actualIts      :: Number of iterations taken
-C     actualResidual :: residual
-C     bi, bj     :: Block index in X and Y.
+C     bi, bj     :: tile indices
 C     eta_qrN    :: Used in computing search directions
 C     eta_qrNM1     suffix N and NM1 denote current and
 C     cgBeta        previous iterations respectively.
@@ -69,10 +74,8 @@ C     sumRHS     :: Sum of right-hand-side. Sometimes this is a
 C                   useful debuggin/trouble shooting diagnostic.
 C                   For neumann problems sumRHS needs to be ~0.
 C                   or they converge at a non-zero residual.
-C     err        :: Measure of residual of Ax - b, usually the norm.
+C     err        :: Measure of current residual of Ax - b, usually the norm.
 C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
-      INTEGER actualIts
-      _RL    actualResidual
       INTEGER bi, bj
       INTEGER i, j, it2d
       _RL    err,     errTile(nSx,nSy)
@@ -92,6 +95,7 @@ CEOP
       _RL  q2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL  r2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL  s2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL  x2dm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   Set matrice main diagnonal:
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -147,6 +151,7 @@ C--   Initial residual calculation
         DO j=1-1,sNy+1
          DO i=1-1,sNx+1
           s2d(i,j,bi,bj) = 0.
+          x2dm(i,j,bi,bj) = x2d(i,j,bi,bj)
          ENDDO
         ENDDO
         sumRHStile(bi,bj) = 0. _d 0
@@ -171,14 +176,15 @@ C--   Initial residual calculation
       CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
       err = SQRT(err)
-      actualIts      = 0
-      actualResidual = err
-      firstResidual  = err
+      it2d = 0
+      firstResidual = err
+      minResidual   = err
+      nIterMin = it2d
 
       printResidual = .FALSE.
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
-        printResidual = printResidualFreq.GE.1
+        printResidual = printResidFrq.GE.1
 c       WRITE(standardmessageunit,'(A,1P2E22.14)')
 c    &  ' diag_cg2d: Sum(rhs),rhsMax = ', sumRHS, rhsMax
         _END_MASTER( myThid )
@@ -267,28 +273,53 @@ C      Now compute "interior" points.
 
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
        err = SQRT(err)
-       actualIts      = it2d
-       actualResidual = err
        IF ( printResidual ) THEN
-        IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
+        IF ( MOD( it2d-1, printResidFrq ).EQ.0 ) THEN
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-     &    ' diag_cg2d: iter=', actualIts, ' ; resid.= ', actualResidual
+     &    ' diag_cg2d: iter=', it2d, ' ; resid.= ', err
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ENDIF
        ENDIF
        IF ( err .LT. residCriter ) GOTO 11
+       IF ( err .LT. minResidual ) THEN
+C-     Store lowest residual solution
+         minResidual = err
+         nIterMin = it2d
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             x2dm(i,j,bi,bj) = x2d(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+       ENDIF
 
        CALL EXCH_S3D_RL( r2d, 1, myThid )
 
    10 CONTINUE
+      it2d = numIters
    11 CONTINUE
 
-c     CALL EXCH_XY_RL( x2d, myThid )
-
 C--   Return parameters to caller
-      lastResidual = actualResidual
-      numIters = actualIts
+      lastResidual = err
+      numIters = it2d
+
+      IF ( err .GT. minResidual ) THEN
+C-    use the lowest residual solution (instead of current one <-> last residual)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+             x2d(i,j,bi,bj) = x2dm(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+c     CALL EXCH_XY_RL( x2d, myThid )
 
       RETURN
       END

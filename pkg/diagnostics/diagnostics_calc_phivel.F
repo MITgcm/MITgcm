@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.5 2011/07/06 01:47:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.6 2011/07/22 19:53:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -67,9 +67,9 @@ C     psiLoc  :: horizontal stream-function at special location
       INTEGER i, j, k
 
       INTEGER ks
-      INTEGER numIters
+      INTEGER numIters, nIterMin
       LOGICAL normaliseMatrice, diagNormaliseRHS
-      _RL  residCriter, firstResidual, lastResidual
+      _RL  residCriter, firstResidual, minResidual, lastResidual
       _RL  a2dMax, a2dNorm
       _RL  rhsMax, rhsNorm
       _RS  aW2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -106,10 +106,10 @@ C-    calculate cg2d matrix:
             DO i = 1,sNx+1
               aW2d(i,j,bi,bj) = dyG(i,j,bi,bj)*recip_dxC(i,j,bi,bj)
      &                         *drF(k)*hFacW(i,j,k,bi,bj)
-     &                         *maskInW(i,j,bi,bj)
+     &                         *maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
               aS2d(i,j,bi,bj) = dxG(i,j,bi,bj)*recip_dyC(i,j,bi,bj)
      &                         *drF(k)*hFacS(i,j,k,bi,bj)
-     &                         *maskInS(i,j,bi,bj)
+     &                         *maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
               a2dMax = MAX(a2dMax,aW2d(i,j,bi,bj))
               a2dMax = MAX(a2dMax,aS2d(i,j,bi,bj))
             ENDDO
@@ -139,7 +139,7 @@ C-   end bi,bj loops
         ENDDO
 
 C-    Normalise Matrice & RHS :
-        diagNormaliseRHS = cg2dTargetResWunit.LE.0.
+        diagNormaliseRHS = diagCG_resTarget.GT.0.
         normaliseMatrice = .TRUE.
         diagNormaliseRHS = .TRUE.
         a2dNorm = 1. _d 0
@@ -151,9 +151,9 @@ C-    Normalise Matrice & RHS :
         IF ( diagNormaliseRHS ) THEN
           _GLOBAL_MAX_RL( rhsMax, myThid )
           IF ( rhsMax .GT. 0. _d 0 ) rhsNorm = 1. _d 0/(a2dNorm*rhsMax)
-          residCriter = cg2dTargetResidual
+          residCriter = diagCG_resTarget
         ELSE
-          residCriter = a2dNorm * cg2dTargetResWunit
+          residCriter = a2dNorm * ABS(diagCG_resTarget)
      &                          * globalArea / deltaTmom
         ENDIF
         IF ( normaliseMatrice .OR. diagNormaliseRHS ) THEN
@@ -179,19 +179,20 @@ c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) *rhsNorm
           _END_MASTER( myThid )
         ENDIF
 
-        numIters = cg2dMaxIters
+        numIters = diagCG_maxIters
         CALL DIAG_CG2D(
      I                aW2d, aS2d, b2d,
      I                residCriter,
-     O                firstResidual, lastResidual,
+     O                firstResidual, minResidual, lastResidual,
      U                x2d, numIters,
-     I                myThid )
+     O                nIterMin,
+     I                diagCG_prtResFrq, myThid )
 
         IF ( debugLevel.GE.debLevA ) THEN
           _BEGIN_MASTER( myThid )
-          WRITE(standardMessageUnit,'(A,I4,A,I6,A,1P2E17.9)')
-     &     ' diag_cg2d : k=', k, ' , iters=', numIters,
-     &     ' ; ini,last_Res=', firstResidual, lastResidual
+          WRITE(standardMessageUnit,'(A,I4,A,2I6,A,1P3E14.7)')
+     &    ' diag_cg2d : k=', k, ' , it=', nIterMin, numIters,
+     &    ' ; ini,min,last_Res=',firstResidual,minResidual,lastResidual
           _END_MASTER( myThid )
         ENDIF
 
@@ -219,12 +220,12 @@ C-    Compte divergence-free transport:
      &                        - ( x2d(i,j,bi,bj) - x2d(i-1,j,bi,bj) )
      &                         *recip_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
      &                         *drF(k)*hFacW(i,j,k,bi,bj)
-     &                         *maskInW(i,j,bi,bj)
+     &                         *maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
             vTrans(i,j,bi,bj) = vTrans(i,j,bi,bj)
      &                        - ( x2d(i,j,bi,bj) - x2d(i,j-1,bi,bj) )
      &                         *recip_dyC(i,j,bi,bj)*dxG(i,j,bi,bj)
      &                         *drF(k)*hFacS(i,j,k,bi,bj)
-     &                         *maskInS(i,j,bi,bj)
+     &                         *maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
