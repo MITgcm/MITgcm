@@ -234,12 +234,10 @@ cgg)
                         if (cbuffindex .gt. 0) then
                            do icvcomp = 1,cbuffindex
                               cbuff(icvcomp) = vv(icvoffset + icvcomp)
-cgg( Right now, the changes to the open boundary velocities are not balanced.
-cgg( The model will crash due to physical reasons. 
-cgg( However, we can optimize with respect to just O.B. T and S if the
-cgg( next two lines are uncommented.
-cgg                              if (iobcs .eq. 3) cbuff(icvcomp)=0.
-cgg                              if (iobcs .eq. 4) cbuff(icvcomp)=0.
+c     If you want to optimize with respect to just O.B. T and S
+c     uncomment the next two lines.
+c                              if (iobcs .eq. 3) cbuff(icvcomp)=0.
+c                              if (iobcs .eq. 4) cbuff(icvcomp)=0.
                            enddo
                            write( funit ) cbuffindex
                            write( funit ) k
