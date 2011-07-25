@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1481 2011/07/25 08:26:46 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1482 2011/07/25 08:59:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,7 @@ $Name:  $
 
 o optim/optim_readdata.F:
   - add some output about obcs variables that might help debugging
+  - add a check about nvarlength
 o pkg/ctrl: once again, fix computation of endrec in s/r ctrl_init_rec
 o pkg/diagnostics (velocity potential):
   - fix mask for OBCS (still problems in stream-function with OBCS);
