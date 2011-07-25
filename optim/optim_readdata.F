@@ -282,83 +282,95 @@ ce    Add some more checks. ...
 
       if (.NOT. lheaderonly) then
 c--   Read the data.
-         icvoffset = 0
-         do icvar = 1,maxcvars
-            if ( ncvarindex(icvar) .ne. -1 ) then
-               do icvrec = 1,ncvarrecs(icvar)
-                  do bj = 1,nsy
-                     do bi = 1,nsx
-                        read( funit ) ncvarindex(icvar)
-                        read( funit ) filej
-                        read( funit ) filei
-                        do k = 1,ncvarnrmax(icvar)
-                           cbuffindex = 0
-                           if (ncvargrd(icvar) .eq. 'c') then
-                              cbuffindex = nWetcGlobal(k)
-                           else if (ncvargrd(icvar) .eq. 's') then
-                              cbuffindex = nWetsGlobal(k)
-                           else if (ncvargrd(icvar) .eq. 'w') then
-                              cbuffindex = nWetwGlobal(k)
-                           else if (ncvargrd(icvar) .eq. 'v') then
-                              cbuffindex = nWetvGlobal(k)
+       icvoffset = 0
+       do icvar = 1,maxcvars
+        if ( ncvarindex(icvar) .ne. -1 ) then
+         do icvrec = 1,ncvarrecs(icvar)
+          do bj = 1,nsy
+           do bi = 1,nsx
+            read( funit ) ncvarindex(icvar)
+            read( funit ) filej
+            read( funit ) filei
+            do k = 1,ncvarnrmax(icvar)
+             cbuffindex = 0
+             if (ncvargrd(icvar) .eq. 'c') then
+              cbuffindex = nWetcGlobal(k)
+             else if (ncvargrd(icvar) .eq. 's') then
+              cbuffindex = nWetsGlobal(k)
+             else if (ncvargrd(icvar) .eq. 'w') then
+              cbuffindex = nWetwGlobal(k)
+             else if (ncvargrd(icvar) .eq. 'v') then
+              cbuffindex = nWetvGlobal(k)
 #ifdef ALLOW_SHIFWFLX_CONTROL
-                           else if (ncvargrd(icvar) .eq. 'i') then
-                              cbuffindex = nWetiGlobal(k)
+             else if (ncvargrd(icvar) .eq. 'i') then
+              cbuffindex = nWetiGlobal(k)
 #endif
 cgg(   O.B. points have the grid mask "m".
-                           else if (ncvargrd(icvar) .eq. 'm') then
+             else if (ncvargrd(icvar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.
-                             gg   = (icvrec-1)/nobcs
-                             igg  = int(gg)
-                             iobcs= icvrec - igg*nobcs
+              gg   = (icvrec-1)/nobcs
+              igg  = int(gg)
+              iobcs= icvrec - igg*nobcs
 #ifdef ALLOW_OBCSN_CONTROL
-                             if (icvar .eq. 11) then                    
-                               cbuffindex = nWetobcsnGlo(k,iobcs)
-                             endif
+              if (icvar .eq. 11) then                    
+               cbuffindex = nWetobcsnGlo(k,iobcs)
+              endif
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-                             if (icvar .eq. 12) then
-                               cbuffindex = nWetobcssGlo(k,iobcs)
-                             endif
+              if (icvar .eq. 12) then
+               cbuffindex = nWetobcssGlo(k,iobcs)
+              endif
 #endif 
 #ifdef ALLOW_OBCSW_CONTROL
-                             if (icvar .eq. 13) then
-                               cbuffindex = nWetobcswGlo(k,iobcs)
-                             endif
+              if (icvar .eq. 13) then
+               cbuffindex = nWetobcswGlo(k,iobcs)
+              endif
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-                             if (icvar .eq. 14) then
-                               cbuffindex = nWetobcseGlo(k,iobcs)
-                             endif
+              if (icvar .eq. 14) then
+               cbuffindex = nWetobcseGlo(k,iobcs)
+              endif
 #endif
 cgg)
-                           endif
-                           if (cbuffindex .gt. 0) then
-                              read( funit ) cbuffindex
-                              read( funit ) filek
-                              read( funit ) (cbuff(ii), ii=1,cbuffindex)
-                              do icvcomp = 1,cbuffindex
-                                 vv(icvoffset+icvcomp) = cbuff(icvcomp)
-cgg( Right now, the changes to the open boundary velocities are not balanced.
-cgg( The model will crash due to physical reasons. 
-cgg( However, we can optimize with respect to just O.B. T and S if the
-cgg( next two lines are uncommented.
-cgg                         if (iobcs .eq. 3) vv(icvoffset+icvcomp)=0.
-cgg                         if (iobcs .eq. 4) vv(icvoffset+icvcomp)=0.
-                              enddo
-                              icvoffset = icvoffset + cbuffindex
-                           endif
-                        enddo
-                     enddo
-                  enddo
-               enddo
-            endif
+             endif
+             if ( icvoffset + cbuffindex .gt. nvarlength ) then
+              print*
+              print *, ' ERROR:'
+              print *, ' There are at least ', icvoffset+cbuffindex,
+     &             ' records in '//fname(1:28)//'.'
+              print *, ' This is more than expected from nvarlength =', 
+     &             nvarlength, '.'
+              print *, ' Something is wrong in the computation of '//
+     &             'the wet points or'
+              print *, ' in computing the number of records in '//
+     &             'some variable(s).'
+              print *, '  ...  stopped in OPTIM_READDATA.'
+              stop     '  ...  stopped in OPTIM_READDATA.'
+             endif
+             if (cbuffindex .gt. 0) then
+              read( funit ) cbuffindex
+              read( funit ) filek
+              read( funit ) (cbuff(ii), ii=1,cbuffindex)
+              do icvcomp = 1,cbuffindex
+               vv(icvoffset+icvcomp) = cbuff(icvcomp)
+c     If you want to optimize with respect to just O.B. T and S
+c     uncomment the next two lines.
+c              if (iobcs .eq. 3) vv(icvoffset+icvcomp)=0.
+c              if (iobcs .eq. 4) vv(icvoffset+icvcomp)=0.
+              enddo
+              icvoffset = icvoffset + cbuffindex
+             endif
+            enddo
+           enddo
+          enddo
          enddo
-
+        endif
+       enddo
+         
       else
 
 c--   Assign the number of control variables.
-         nn = nvarlength
+       nn = nvarlength
          
       endif
 
@@ -367,9 +379,9 @@ c--   Assign the number of control variables.
 c--   Assign the cost function value in case we read the cost file.
 
       if      ( dfile .eq. ctrlname ) then
-        ff = 0. d 0
+       ff = 0. d 0
       else if ( dfile .eq. costname ) then
-        ff = fileff
+       ff = fileff
       endif
 
       return
