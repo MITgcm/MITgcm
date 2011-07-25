@@ -205,6 +205,30 @@ cph      if (lheaderonly) then
          print *, 'pathei: nWetiGlobal ',
      &        (nWetiGlobal(k), k=1,nr)
 #endif
+#ifdef ALLOW_OBCSN_CONTROL
+         do iobcs=1,nobcs
+          print *, 'pathei: nWetobcsnGlo (iobcs=', iobcs,')',
+     &         (nWetobcsnGlo(k,iobcs), k=1,nr)
+         enddo
+#endif
+#ifdef ALLOW_OBCSS_CONTROL
+         do iobcs=1,nobcs
+          print *, 'pathei: nWetobcssGlo (iobcs=', iobcs,')',
+     &         (nWetobcssGlo(k,iobcs), k=1,nr)
+         enddo
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+         do iobcs=1,nobcs
+          print *, 'pathei: nWetobcswGlo (iobcs=', iobcs,')',
+     &         (nWetobcswGlo(k,iobcs), k=1,nr)
+         enddo
+#endif
+#ifdef ALLOW_OBCSE_CONTROL
+         do iobcs=1,nobcs
+          print *, 'pathei: nWetobcseGlo (iobcs=', iobcs,')',
+     &         (nWetobcseGlo(k,iobcs), k=1,nr)
+         enddo
+#endif
          print *, 'pathei: ncvarindex ', 
      &        (ncvarindex(i), i=1,maxcvars)
          print *, 'pathei: ncvarrecs ', 
