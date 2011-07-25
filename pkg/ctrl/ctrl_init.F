@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.41 2011/07/19 12:44:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.42 2011/07/25 08:20:44 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -881,8 +881,8 @@ c     initialise some output
      &                fldperiod) + 2
        if ( nfac .ne. 1 ) then
 c     This is the case of obcs.
-        endrec   = endrec*nfac + 1
         startrec = (startrec - 1)*nfac + 1
+        endrec   = endrec*nfac
        endif
       endif
 # else /* ndef ALLOW_CAL */
