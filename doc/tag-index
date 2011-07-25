@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1479 2011/07/22 19:55:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1480 2011/07/25 08:21:46 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl: once again, fix computation of endrec in s/r ctrl_init_rec
 o pkg/diagnostics (velocity potential):
   - fix mask for OBCS (still problems in stream-function with OBCS);
   - add specific parameter (default = main code CG2D params) for solver;
