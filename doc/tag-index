@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1482 2011/07/25 08:59:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1483 2011/07/27 15:00:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf/exf_readparms.F
+  - make treatment of optional namelists (EXF_NML_04, EXF_NML_SGRUNOFF, 
+    EXF_NML_OBCS) more consistent, so that you need not have these lists
+    in data.exf when they are not used.
 o optim/optim_readdata.F:
   - add some output about obcs variables that might help debugging
   - add a check about nvarlength
