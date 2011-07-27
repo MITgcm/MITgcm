@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.65 2011/05/25 00:33:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.66 2011/07/27 15:00:15 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -59,7 +59,6 @@ c     == local variables ==
 #ifdef USE_EXF_INTERPOLATION
       integer i
 #endif
-      integer idummy
       integer iUnit
 
       character*(max_len_mbuf) msgbuf
@@ -163,10 +162,9 @@ c     Surface flux data.
      &     climustr_exfremo_intercept, climustr_exfremo_slope,
      &     climvstr_exfremo_intercept, climvstr_exfremo_slope
 
-      NAMELIST /EXF_NML_04/
-     & idummy
 #ifdef USE_EXF_INTERPOLATION
-     & , ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+      NAMELIST /EXF_NML_04/
+     & ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
      & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      & ustress_nlon, ustress_nlat, vstress_nlon, vstress_nlat,
      & hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
@@ -204,14 +202,17 @@ c     Surface flux data.
      & climustr_lat0, climustr_lat_inc, climustr_nlat,
      & climvstr_lon0, climvstr_lon_inc, climvstr_nlon,
      & climvstr_lat0, climvstr_lat_inc, climvstr_nlat
-#endif
+#endif /* USE_EXF_INTERPOLATION */
 
+#ifdef ALLOW_ICEFRONT
       NAMELIST /EXF_NML_SGRUNOFF/
      &    sgrunoffstartdate1, sgrunoffstartdate2,
      &    sgrunoffstartdate,  sgrunoffperiod,
      &    sgrunoffconst,      sgrunoff_exfremo_intercept,
      &    sgrunoff_exfremo_slope, exf_inscal_sgrunoff
+#endif /* ALLOW_ICEFRONT */
 
+#ifdef ALLOW_OBCS
       NAMELIST /EXF_NML_OBCS/
      &    useOBCSYearlyFields,
      &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
@@ -222,6 +223,7 @@ c     Surface flux data.
      &    siobSstartdate1,    siobSstartdate2,   siobSperiod,
      &    siobEstartdate1,    siobEstartdate2,   siobEperiod,
      &    siobWstartdate1,    siobWstartdate2,   siobWperiod
+#endif /* ALLOW_OBCS */
 
       _BEGIN_MASTER(mythid)
 
@@ -790,40 +792,46 @@ c     Next, read the forcing data file.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_03 )
+#ifdef USE_EXF_INTERPOLATION
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_04 )
+#endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_ICEFRONT
-      WRITE(msgBuf,'(A)')
-     &     'EXF_READPARMS: reading EXF_NML_SGRUNOFF'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
-      READ(  iUnit, nml = EXF_NML_SGRUNOFF )
+      IF ( useIcefront ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'EXF_READPARMS: reading EXF_NML_SGRUNOFF'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , 1)
+       READ(  iUnit, nml = EXF_NML_SGRUNOFF )
+      ENDIF
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_OBCS
-      WRITE(msgBuf,'(A)')
-     &     'EXF_READPARMS: reading EXF_NML_OBCS'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
-      READ(  iUnit, nml = EXF_NML_OBCS )
-      IF(siobNstartdate1.EQ.UNSET_I ) siobNstartdate1 = obcsNstartdate1
-      IF(siobNstartdate2.EQ.UNSET_I ) siobNstartdate2 = obcsNstartdate2
-      IF(siobNperiod    .EQ.UNSET_RL) siobNperiod     = obcsNperiod
-      IF(siobSstartdate1.EQ.UNSET_I ) siobSstartdate1 = obcsSstartdate1
-      IF(siobSstartdate2.EQ.UNSET_I ) siobSstartdate2 = obcsSstartdate2
-      IF(siobSperiod    .EQ.UNSET_RL) siobSperiod     = obcsSperiod
-      IF(siobEstartdate1.EQ.UNSET_I ) siobEstartdate1 = obcsEstartdate1
-      IF(siobEstartdate2.EQ.UNSET_I ) siobEstartdate2 = obcsEstartdate2
-      IF(siobEperiod    .EQ.UNSET_RL) siobEperiod     = obcsEperiod
-      IF(siobWstartdate1.EQ.UNSET_I ) siobWstartdate1 = obcsWstartdate1
-      IF(siobWstartdate2.EQ.UNSET_I ) siobWstartdate2 = obcsWstartdate2
-      IF(siobWperiod    .EQ.UNSET_RL) siobWperiod     = obcsWperiod
+      IF ( useOBCS ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'EXF_READPARMS: reading EXF_NML_OBCS'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , 1)
+       READ(  iUnit, nml = EXF_NML_OBCS )
+       IF(siobNstartdate1.EQ.UNSET_I ) siobNstartdate1=obcsNstartdate1
+       IF(siobNstartdate2.EQ.UNSET_I ) siobNstartdate2=obcsNstartdate2
+       IF(siobNperiod    .EQ.UNSET_RL) siobNperiod    =obcsNperiod
+       IF(siobSstartdate1.EQ.UNSET_I ) siobSstartdate1=obcsSstartdate1
+       IF(siobSstartdate2.EQ.UNSET_I ) siobSstartdate2=obcsSstartdate2
+       IF(siobSperiod    .EQ.UNSET_RL) siobSperiod    =obcsSperiod
+       IF(siobEstartdate1.EQ.UNSET_I ) siobEstartdate1=obcsEstartdate1
+       IF(siobEstartdate2.EQ.UNSET_I ) siobEstartdate2=obcsEstartdate2
+       IF(siobEperiod    .EQ.UNSET_RL) siobEperiod    =obcsEperiod
+       IF(siobWstartdate1.EQ.UNSET_I ) siobWstartdate1=obcsWstartdate1
+       IF(siobWstartdate2.EQ.UNSET_I ) siobWstartdate2=obcsWstartdate2
+       IF(siobWperiod    .EQ.UNSET_RL) siobWperiod    =obcsWperiod
 
-      IF(exf_iprec_obcs .EQ. UNSET_I) exf_iprec_obcs  = exf_iprec
+       IF(exf_iprec_obcs .EQ. UNSET_I) exf_iprec_obcs =exf_iprec
+      ENDIF
 #endif /* ALLOW_OBCS */
 
       WRITE(msgBuf,'(A)')
