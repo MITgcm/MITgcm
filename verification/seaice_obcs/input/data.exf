@@ -102,8 +102,10 @@
  &
 
 # *********************
- &EXF_NML_04
- &
+# old open64 compiler (4.2.1) cannot skip this namelist to read in the next one;
+# comment out this namelist (not read).
+#&EXF_NML_04
+#&
 
 # *********************
  &EXF_NML_OBCS
