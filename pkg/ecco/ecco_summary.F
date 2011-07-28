@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.7 2011/03/13 22:24:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.8 2011/07/28 18:43:42 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -244,7 +244,8 @@ c--   Read the EGM data from file.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 c--   Use NSCAT data for getting the weights.
       write(msgbuf,'(a)')
      &'// ALLOW_SCAT_COST_CONTRIBUTION:                     defined'

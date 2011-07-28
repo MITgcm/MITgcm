@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.12 2010/08/24 14:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.13 2011/07/28 18:43:42 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -195,7 +195,8 @@ c--       Initialise uvel, vvel average.
           xx_wbar_mean_dummy = 0. _d 0
 #endif
 
-#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 c--       Initialise salinity average (2d).
           do j = jmin,jmax
             do i =  imin,imax

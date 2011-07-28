@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.44 2011/05/21 02:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.45 2011/07/28 18:43:42 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -811,7 +811,8 @@ c--   convert to units of meters
 #endif
 
 c--   Read zonal wind stress variance.
-#if (defined (ALLOW_SCAT_COST_CONTRIBUTION))
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 
       nnz   =   1
       irec  =   1

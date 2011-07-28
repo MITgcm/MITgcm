@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.54 2011/05/18 03:16:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.55 2011/07/28 18:43:42 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -44,9 +44,9 @@ c     =============================
 
 c     Number of days: (hard-coded to set up some vector dimensions
 c     =============================
-c     17 years: 6210
+c     22 years: 8050
       INTEGER maxNumDays
-      PARAMETER ( maxNumDays = 6210 )
+      PARAMETER ( maxNumDays = 8050 )
 
 c     Number of Generic Cost terms:
 c     =============================
@@ -243,7 +243,8 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       _RL   wfmean
 #endif
 
-#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
       _RL tauxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
       _RL tauybar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
 #else

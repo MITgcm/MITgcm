@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.5 2009/06/17 15:12:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.6 2011/07/28 18:43:42 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -62,8 +62,17 @@ c     == local variables ==
 cnew(
       integer  il
       integer mody, modm
-      integer iyear, imonth
-      character*(80) fnametmp
+      integer obsrec, localrec
+      _RL daytime
+      _RL diffsecs
+      integer dayiter
+      integer daydate(4)
+      integer difftime(4)
+      integer middate(4)
+      integer yday, ymod
+      integer md, dd, sd, ld, wd
+      integer beginmodel, beginlocal
+      character*(128) fnametmp
       logical exst
 cnew)
 
@@ -98,23 +107,50 @@ c     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
 c      endif
 
 
-cnew(
-      mody = modelstartdate(1)/10000
-      modm = modelstartdate(1)/100 - mody*100
-      iyear = mody + INT((modm-1+irec-1)/12)
-      imonth = 1 + MOD(modm-1+irec-1,12)
-
-      il=ilnblnk(scatxdatfile)
-      write(fnametmp(1:80),'(2a,i4)')
-     &     scatxdatfile(1:il), '_', iyear
-      inquire( file=fnametmp, exist=exst )
-      if (.NOT. exst) then
-         write(fnametmp(1:80),'(a)') scatxdatfile(1:il)
-         imonth = irec
-      endif
+#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+c-- assume monthly fields
+           beginlocal = scatxstartdate(1)/10000
+           beginmodel = modelstartdate(1)/10000
+           obsrec =
+     &           ( beginmodel - beginlocal )*nmonthyear
+     &         + ( mod(modelstartdate(1)/100,100)
+     &            -mod(scatxstartdate(1)/100,100) )
+     &         + irec
+           mody   = modelstartdate(1)/10000
+           modm   = modelstartdate(1)/100 - mody*100
+           yday   = mody + INT((modm-1+irec-1)/12)
+           localrec = 1 + MOD(modm-1+irec-1,12)
+#else
+c-- assume daily fields
+           obsrec = irec
+           daytime = FLOAT(secondsperday*(irec-1)) + modelstart
+           dayiter = hoursperday*(irec-1) + modeliter0
+           call cal_getdate( dayiter, daytime, daydate, mythid )
+           call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
+           ymod = scatxstartdate(1)/10000
+           if ( ymod .EQ. yday ) then
+              middate(1) = modelstartdate(1)
+           else
+              middate(1) = yday*10000+100+1
+           endif
+           middate(2) = 0
+           middate(3) = modelstartdate(3)
+           middate(4) = modelstartdate(4)
+           call cal_TimePassed( middate, daydate, difftime, mythid )
+           call cal_ToSeconds( difftime, diffsecs, mythid )
+           localrec = int(diffsecs/86400. _d 0) + 1
+#endif
+        il=ilnblnk(scatxdatfile)
+        write(fnametmp(1:128),'(2a,i4)')
+     &       scatxdatfile(1:il), '_', yday
+        inquire( file=fnametmp, exist=exst )
+        if (.NOT. exst) then
+           write(fnametmp(1:128),'(a)') scatxdatfile(1:il)
+           localrec = obsrec
+        endif
 
       call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
-     &                   scatxdat, imonth, mythid )
+     &                   scatxdat, localrec, mythid )
 cnew)
 
       nobs = 0
