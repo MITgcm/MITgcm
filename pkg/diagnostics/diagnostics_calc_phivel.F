@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.6 2011/07/22 19:53:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.7 2011/08/01 20:39:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -71,7 +71,7 @@ C     psiLoc  :: horizontal stream-function at special location
       LOGICAL normaliseMatrice, diagNormaliseRHS
       _RL  residCriter, firstResidual, minResidual, lastResidual
       _RL  a2dMax, a2dNorm
-      _RL  rhsMax, rhsNorm
+      _RL  rhsMax, b2dNorm, x2dNorm
       _RS  aW2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aS2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  b2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -86,7 +86,7 @@ C     psiLoc  :: horizontal stream-function at special location
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      DO ks = 1,kdiag(ndId)
+      DO ks = 1,nlevels(listId)
         k = NINT(levs(ks,listId))
 C--   Solve for velocity potential for each level:
 
@@ -115,7 +115,7 @@ C-    calculate cg2d matrix:
             ENDDO
            ENDDO
 
-C-    calculate RHS = Div(uVel,vVel):
+C-    calculate horizontal transport
            DO j = 1,sNy+1
             DO i = 1,sNx+1
               uTrans(i,j,bi,bj) = dyG(i,j,bi,bj)*drF(k)
@@ -124,6 +124,22 @@ C-    calculate RHS = Div(uVel,vVel):
      &                          *qtmp2(i,j,ks,bi,bj)*maskInS(i,j,bi,bj)
             ENDDO
            ENDDO
+C-   end bi,bj loops
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
+         CALL OBCS_DIAG_BALANCE(
+     I             k,
+     U             uTrans, vTrans,
+     I             myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
+
+C-    calculate RHS = rAc*Div(uVel,vVel):
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
               b2d(i,j,bi,bj) = (
@@ -133,8 +149,6 @@ C-    calculate RHS = Div(uVel,vVel):
               rhsMax = MAX(ABS(b2d(I,J,bi,bj)),rhsMax)
             ENDDO
            ENDDO
-
-C-   end bi,bj loops
          ENDDO
         ENDDO
 
@@ -143,14 +157,19 @@ C-    Normalise Matrice & RHS :
         normaliseMatrice = .TRUE.
         diagNormaliseRHS = .TRUE.
         a2dNorm = 1. _d 0
-        rhsNorm = 1. _d 0
+        b2dNorm = 1. _d 0
+        x2dNorm = 1. _d 0
         IF ( normaliseMatrice ) THEN
           _GLOBAL_MAX_RL( a2dMax, myThid )
           IF ( a2dMax .GT. 0. _d 0 ) a2dNorm = 1. _d 0/a2dMax
+          b2dNorm = a2dNorm
         ENDIF
         IF ( diagNormaliseRHS ) THEN
           _GLOBAL_MAX_RL( rhsMax, myThid )
-          IF ( rhsMax .GT. 0. _d 0 ) rhsNorm = 1. _d 0/(a2dNorm*rhsMax)
+          IF ( rhsMax .GT. 0. _d 0 ) THEN
+            b2dNorm = 1. _d 0/rhsMax
+            x2dNorm = a2dNorm*rhsMax
+          ENDIF
           residCriter = diagCG_resTarget
         ELSE
           residCriter = a2dNorm * ABS(diagCG_resTarget)
@@ -163,8 +182,8 @@ C-    Normalise Matrice & RHS :
              DO i = 1,sNx+1
               aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)*a2dNorm
               aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)*a2dNorm
-              b2d(i,j,bi,bj)  = b2d(i,j,bi,bj) *a2dNorm*rhsNorm
-c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) *rhsNorm
+              b2d(i,j,bi,bj)  = b2d(i,j,bi,bj) *b2dNorm
+c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /x2dNorm
              ENDDO
             ENDDO
            ENDDO
@@ -174,8 +193,8 @@ c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) *rhsNorm
         IF ( debugLevel.GE.debLevA .AND. k.EQ.1 ) THEN
           _BEGIN_MASTER( myThid )
           WRITE(standardMessageUnit,'(A,I9,2(A,1P1E13.6),A,1P1E9.2)')
-     &     ' diag_cg2d (it=', myIter,') a2dNorm,rhsNorm=', a2dNorm,
-     &     ' ,', rhsNorm, ' ; Criter=', residCriter
+     &     ' diag_cg2d (it=', myIter,') a2dNorm,x2dNorm=', a2dNorm,
+     &     ' ,', x2dNorm, ' ; Criter=', residCriter
           _END_MASTER( myThid )
         ENDIF
 
@@ -204,7 +223,7 @@ C-    Un-normalise the answer
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j = 1-Oly,sNy+Oly
              DO i = 1-Olx,sNx+Olx
-              x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /rhsNorm
+              x2d(i,j,bi,bj) =  x2d(i,j,bi,bj)*x2dNorm
              ENDDO
             ENDDO
            ENDDO
@@ -233,13 +252,13 @@ C-    Compte divergence-free transport:
         CALL DIAG_CALC_PSIVEL(
      I                         k, iPsi0, jPsi0, uTrans, vTrans,
      O                         psiVel, psiLoc,
-     I                         myTime, myIter, myThid )
+     I                         prtFirstCall, myTime, myIter, myThid )
 
+        _BEGIN_MASTER( myThid)
         IF ( useCubedSphereExchange .AND.
      &       diag_mdsio .AND. myProcId.EQ.0 ) THEN
 C-      Missing-corner value are not written in MDS output file
 C       Write separately these 2 values (should be part of DIAGNOSTICS_OUT)
-         _BEGIN_MASTER( myThid)
          IF ( diagLoc_ioUnit.EQ.0 ) THEN
           CALL MDSFINDUNIT( diagLoc_ioUnit, myThid )
           WRITE(dataFName,'(2A,I10.10,A)')
@@ -261,8 +280,9 @@ c    &         psiVel(1,1+sNy,nSx,nSy)- psiVel(1,1,1,1),
 c    &     psiVel(1+sNx,1+sNy,nSx-1,nSy)-psiVel(1,1,1,1),
 c    &      ' #', k, lm, myIter
          ENDIF
-         _END_MASTER( myThid)
         ENDIF
+        IF ( prtFirstCall ) prtFirstCall = .FALSE.
+        _END_MASTER( myThid)
 
 C-    Put the results back in qtmp[1,2]
         DO bj = myByLo(myThid), myByHi(myThid)
