@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.2 2011/07/22 19:53:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.3 2011/08/01 20:40:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
+#undef DEBUG_DIAG_CG2D
 
 CBOP
 C     !ROUTINE: DIAG_CG2D
@@ -34,9 +35,6 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "CG2D.h"
-c#include "GRID.h"
-c#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -85,6 +83,7 @@ C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
       _RL    alpha,  alphaTile(nSx,nSy)
       _RL    sumRHS, sumRHStile(nSx,nSy)
       _RL    pW_tmp, pS_tmp
+      _RL    diagCG_pcOffDFac
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
 CEOP
@@ -93,7 +92,12 @@ CEOP
       _RS  pS  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  q2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+#ifdef DEBUG_DIAG_CG2D
+      CHARACTER*(10) sufx
+      _RL  r2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
       _RL  r2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+#endif
       _RL  s2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL  x2dm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -112,6 +116,7 @@ C--   Set matrice main diagnonal:
       CALL EXCH_XY_RS(aC2d, myThid)
 
 C--   Initialise preconditioner
+      diagCG_pcOffDFac = cg2dpcOffDFac
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy+1
@@ -126,15 +131,18 @@ C--   Initialise preconditioner
            pW(i,j,bi,bj) = 0.
           ELSE
            pW(i,j,bi,bj) = -aW2d(i,j,bi,bj)
-     &                   /( (cg2dpcOffDFac*pW_tmp)**2 )
+     &                   /( (diagCG_pcOffDFac*pW_tmp)**2 )
           ENDIF
           pS_tmp = aC2d(i,j,bi,bj)+aC2d(i,j-1,bi,bj)
           IF ( pS_tmp .EQ. 0. ) THEN
            pS(i,j,bi,bj) = 0.
           ELSE
            pS(i,j,bi,bj) = -aS2d(i,j,bi,bj)
-     &                   /( (cg2dpcOffDFac*pS_tmp)**2 )
+     &                   /( (diagCG_pcOffDFac*pS_tmp)**2 )
           ENDIF
+c         pC(i,j,bi,bj) = 1.
+c         pW(i,j,bi,bj) = 0.
+c         pS(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
@@ -172,9 +180,14 @@ C--   Initial residual calculation
         ENDDO
        ENDDO
       ENDDO
+#ifdef DEBUG_DIAG_CG2D
+      CALL EXCH_XY_RL ( r2d, myThid )
+#else
       CALL EXCH_S3D_RL( r2d, 1, myThid )
+#endif
       CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
-      CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
+      IF ( printResidFrq.GE.1 )
+     &  CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
       err = SQRT(err)
       it2d = 0
       firstResidual = err
@@ -185,10 +198,20 @@ C--   Initial residual calculation
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidFrq.GE.1
-c       WRITE(standardmessageunit,'(A,1P2E22.14)')
-c    &  ' diag_cg2d: Sum(rhs),rhsMax = ', sumRHS, rhsMax
+        IF ( printResidual ) THEN
+         WRITE(msgBuf,'(2A,I6,A,1PE17.9,A,1PE14.6)')' diag_cg2d:',
+     &    ' iter=', it2d, ' ; resid.=', err, ' ; sumRHS=', sumRHS
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
         _END_MASTER( myThid )
       ENDIF
+#ifdef DEBUG_DIAG_CG2D
+      IF ( printResidFrq.GE.1 ) THEN
+        WRITE(sufx,'(I10.10)') 0
+        CALL WRITE_FLD_XY_RL( 'r2d.',sufx, r2d, 1, myThid )
+      ENDIF
+#endif
 
       IF ( err .LT. residCriter ) GOTO 11
 
@@ -275,8 +298,8 @@ C      Now compute "interior" points.
        err = SQRT(err)
        IF ( printResidual ) THEN
         IF ( MOD( it2d-1, printResidFrq ).EQ.0 ) THEN
-         WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-     &    ' diag_cg2d: iter=', it2d, ' ; resid.= ', err
+         WRITE(msgBuf,'(A,I6,A,1PE17.9)')
+     &    ' diag_cg2d: iter=', it2d, ' ; resid.=', err
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ENDIF
@@ -297,7 +320,16 @@ C-     Store lowest residual solution
          ENDDO
        ENDIF
 
+#ifdef DEBUG_DIAG_CG2D
+       CALL EXCH_XY_RL( r2d, myThid )
+       IF ( printResidFrq.GE.1 ) THEN
+        WRITE(sufx,'(I10.10)') it2d
+        CALL WRITE_FLD_XY_RL( 'r2d.',sufx, r2d, 1, myThid )
+        CALL WRITE_FLD_XY_RL( 'x2d.',sufx, x2d, 1, myThid )
+       ENDIF
+#else
        CALL EXCH_S3D_RL( r2d, 1, myThid )
+#endif
 
    10 CONTINUE
       it2d = numIters
