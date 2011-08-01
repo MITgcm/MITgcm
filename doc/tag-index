@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1483 2011/07/27 15:00:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1484 2011/08/01 20:47:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics (velocity potential):
+  - fix velocity-potential calculation when using OBCS: balance net inflow
+    at each level (new S/R OBCS_DIAG_BALANCE).
+  - fix some of the problems with OBCS in stream-function calculation.
 o pkg/exf/exf_readparms.F
-  - make treatment of optional namelists (EXF_NML_04, EXF_NML_SGRUNOFF, 
+  - make treatment of optional namelists (EXF_NML_04, EXF_NML_SGRUNOFF,
     EXF_NML_OBCS) more consistent, so that you need not have these lists
     in data.exf when they are not used.
 o optim/optim_readdata.F:
