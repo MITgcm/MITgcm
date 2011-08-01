@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.31 2011/07/22 19:47:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.32 2011/08/01 20:38:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -133,6 +133,7 @@ C     Initialize and Read Diagnostics Namelist
       diag_pickup_read_mnc  = .FALSE.
       diag_pickup_write_mnc = .FALSE.
 
+      prtFirstCall     = .TRUE.
       diagCG_maxIters  = cg2dMaxIters
       diagCG_resTarget = cg2dTargetResidual
       diagCG_prtResFrq = printResidualFreq
