@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.8 2011/05/12 15:09:54 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.9 2011/08/01 21:55:05 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -55,7 +55,7 @@ C     TatV     :: temperature at U point
 C     TatV     :: temperature at V point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kk,kg,kci
+      INTEGER i,j,k,kk,kg,kci,kp1
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU, TatV
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -113,16 +113,18 @@ C       DO i=1-Olx+1,sNx+Olx-1
 
 #ifdef LAYERS_UFLUX
 C ------ Find theta at the U point (west) on the fine Z grid
+         kp1=k+1
+         IF (hFacW(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
          IF (LAYER_nb .EQ. 1) THEN
          TatU = MapFact(kk) *
      &    0.5 _d 0 * (theta(i-1,j,k,bi,bj)+theta(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
-     &    0.5 _d 0 * (theta(i-1,j,k+1,bi,bj)+theta(i,j,k+1,bi,bj))
+     &    0.5 _d 0 * (theta(i-1,j,kp1,bi,bj)+theta(i,j,kp1,bi,bj))
          ELSEIF (LAYER_nb .EQ. 2) THEN
          TatU = MapFact(kk) *
      &    0.5 _d 0 * (salt(i-1,j,k,bi,bj)+salt(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
-     &    0.5 _d 0 * (salt(i-1,j,k+1,bi,bj)+salt(i,j,k+1,bi,bj))
+     &    0.5 _d 0 * (salt(i-1,j,kp1,bi,bj)+salt(i,j,kp1,bi,bj))
          ENDIF
 
 C ------ Now that we know T everywhere, determine the binning.
@@ -185,16 +187,18 @@ C ------ Augment the bin values
 
 #ifdef LAYERS_VFLUX
 C ------ Find theta at the V point (south) on the fine Z grid
+         kp1=k+1
+         IF (hFacS(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
          IF (LAYER_nb .EQ. 1) THEN
          TatV = MapFact(kk) *
      &    0.5 _d 0 * (theta(i,j-1,k,bi,bj)+theta(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
-     &    0.5 _d 0 * (theta(i,j-1,k+1,bi,bj)+theta(i,j,k+1,bi,bj))
+     &    0.5 _d 0 * (theta(i,j-1,kp1,bi,bj)+theta(i,j,kp1,bi,bj))
          ELSEIF (LAYER_nb .EQ. 2) THEN
          TatV = MapFact(kk) *
      &    0.5 _d 0 * (salt(i,j-1,k,bi,bj)+salt(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
-     &    0.5 _d 0 * (salt(i,j-1,k+1,bi,bj)+salt(i,j,k+1,bi,bj))
+     &    0.5 _d 0 * (salt(i,j-1,kp1,bi,bj)+salt(i,j,kp1,bi,bj))
          ENDIF
 
 C ------ Now that we know T everywhere, determine the binning
