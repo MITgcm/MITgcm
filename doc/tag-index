@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1484 2011/08/01 20:47:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1485 2011/08/02 14:04:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63a (2011/08/02)
 o pkg/diagnostics (velocity potential):
   - fix velocity-potential calculation when using OBCS: balance net inflow
     at each level (new S/R OBCS_DIAG_BALANCE).
@@ -54,7 +55,7 @@ o pkg/gmredi:
    Add Sub-Meso Eddies parameterisation from Baylor (for now, disabled with TAF),
    and test it in verification exp. "front_relax.bvp" (update output.bvp.txt)
 
-checkpoint63 (2011/07/11)
+checkpoint63  (2011/07/11)
 o pkg/exch2:
  - rename+move: nTiles in W2_EXCH2_PARAMS.h --> exch2_nTiles in W2_EXCH2_TOPOLOGY.h
  - exch2 version of Cumul-Sum routine: S/R W2_SET_MAP_CUMSUM set up the
