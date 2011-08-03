@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.164 2011/06/27 18:45:16 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.165 2011/08/03 18:34:31 jmc Exp $
 #  $Name:  $
 #
 
@@ -48,8 +48,10 @@ usage()
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
     echo "                             (DEF=\"$MATCH_CRIT\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
+    echo "  (-ef) STRING             used as genmake2 \"-extra_flag\" argument"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\" & clean run-dir"
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
+    echo "  (-obj)                   only produces objects (=norun & no executable)"
     echo "  (-runonly|-ro)           *ONLY* run stage (=\"-quick\" without make)"
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
     echo "  (-nogenmake|-ng)         skip the genmake stage"
@@ -358,6 +360,9 @@ genmakemodel()
 	    if test "x$USE_R4" = xt ; then
 		command="$command -use_r4"
 	    fi
+	    if test "x$EXTRFLG" != x ; then
+		command="$command -extra_flag $EXTRFLG"
+	    fi
 	    if test "x$TS" = xt ; then
 		command="$command -ts"
 	    fi
@@ -484,9 +489,9 @@ makemodel()
 		$MAKE adAll >> make.tr_log 2>&1
             else
 		if test "x$JOBS" = x ; then
-		    $MAKE >> make.tr_log 2>&1
+		    $MAKE $TARG >> make.tr_log 2>&1
 		else
-		    $MAKE -j $JOBS >> make.tr_log 2>&1
+		    $MAKE -j $JOBS $TARG >> make.tr_log 2>&1
 		fi
 	    fi
 	    RETVAL=$?
@@ -955,12 +960,14 @@ if test "x$CC" = x ; then
     CC=cc
 fi
 JOBS=
+TARG=
 MPI=0
 MPI_MFILE=
 MULTI_THREAD=f
 OUTDIR=
 DELDIR=
 USE_R4=
+EXTRFLG=
 
 ADM=
 OADM=
@@ -1025,9 +1032,13 @@ for ac_option ; do
 	-j | --j) ac_prev=JOBS ;;
 	-j=* | --j=*) JOBS=$ac_optarg ;;
 
+	-ef | --ef) ac_prev=EXTRFLG ;;
+	-ef=* | --ef=*) EXTRFLG=$ac_optarg ;;
+
 	-clean | --clean) CLEANUP=t ; DELDIR=t ;;
 
 	-norun | --norun | -nr | --nr) NORUN=t ;;
+	-obj | --obj ) TARG='obj' ; NORUN=t ;;
 	-runonly | --runonly | -ro | --ro) QUICK=t ; NOMAKE=t ;;
 	-quick | --quick | -q | --q) QUICK=t ;;
 	-nogenmake | --nogenmake | -ng | --ng) NOGENMAKE=t ;;
