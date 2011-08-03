@@ -2,15 +2,15 @@
 *.log
 *.f
 *.for
+*.f90
+*.mod
 *.o
-*.data
-*.meta
-*.nc
-STD*
-output.txt
+*.flowdir
+*.tr_log
 mfile*
 mitgcmuv*
 work.pc*
+SIZE.h.mpi
 PACKAGES_CONFIG.h
 BUILD_INFO.h
 AD_CONFIG.h
@@ -18,4 +18,5 @@ FC_NAMEMANGLE.h
 genmake_state
 genmake_ad_optfile
 genmake_optfile
-genmake_warnings
+taf_command
+taf_output
