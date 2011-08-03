@@ -2,6 +2,8 @@
 *.log
 *.f
 *.for
+*.f90
+*.mod
 *.o
 *.flowdir
 *.tr_log
@@ -18,4 +20,3 @@ genmake_ad_optfile
 genmake_optfile
 taf_command
 taf_output
-
