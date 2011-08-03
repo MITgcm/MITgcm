@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.221 2011/06/24 22:03:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.222 2011/08/03 18:14:08 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1128,7 +1128,6 @@ MACHINE=`uname -a`
 EXECUTABLE=
 EXEHOOK=
 EXEDIR=
-PACKAGES_CONF=
 IEEE=
 if test "x$MITGCM_IEEE" != x ; then
     IEEE=$MITGCM_IEEE
@@ -1150,22 +1149,23 @@ SVD_TAMC_FLAGS=
 TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
-gm_s1="OPTFILE PKG_DEPEND PKG_GROUPS MAKEFILE MAKEDEPEND PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CC USE_R4 TS PAPIS PCLS PAPI PCL HPMT IEEE DEVEL GSL MPI OMP DUMPSTATE STANDARDDIRS"
+gm_s1="OPTFILE PKG_DEPEND PKG_GROUPS DISABLE ENABLE MAKEFILE MAKEDEPEND PLATFORM"
+gm_s2="FC CC MPI OMP USE_R4 TS PAPIS PCLS PAPI PCL HPMT IEEE DEVEL GSL FEXTRAFLAGS"
+gm_s3="ROOTDIR STANDARDDIRS MODS DUMPSTATE"
 
 #  The following state is not directly set by command-line switches
-gm_s3="LN S64 LINK MAKE PACKAGES INCLUDES FFLAGS FOPTIM FEXTRAFLAGS"
-gm_s4="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
-gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD THISHOST THISUSER THISDATE THISVER MACHINE"
-gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
-gm_s7="FC_NAMEMANGLE HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME"
+gm_s4="LN S64 LINK MAKE PACKAGES INCLUDES FFLAGS FOPTIM"
+gm_s5="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
+gm_s6="TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
+gm_s7="PWD THISHOST THISUSER THISDATE THISVER MACHINE"
+gm_s8="FC_NAMEMANGLE HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME"
 
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
 gm_s12="TAF_EXTRA TAMC_EXTRA"
 
-gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7"
+gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
 gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
 
 cat <<EOF
@@ -1357,6 +1357,11 @@ for ac_option in "$@" ; do
 	-ds | --ds)
 	    DUMPSTATE=t ;;
 	
+	-extra_flag | --extra_flag)
+	    ac_prev=FEXTRAFLAGS ;;
+	-extra_flag=* | --extra_flag=*)
+	    FEXTRAFLAGS=$ac_optarg ;;
+	
 	-taf_extra | --taf_extra)
 	    ac_prev=TAF_EXTRA ;;
 	-taf_extra=* | --taf_extra=*)
@@ -1440,7 +1445,7 @@ if test "x$MAKEFILE" = x ; then
     MAKEFILE="Makefile"
 fi
 
-echo "  getting OPTFILE information:  "
+echo "  getting OPTFILE information:"
 if test "x${OPTFILE}" = x ; then
     if test "x$MITGCM_OF" = x ; then
 	echo "Warning: no OPTFILE specified so we'll look for possible settings"
@@ -1469,7 +1474,7 @@ if test "x$OPTFILE" != xNONE ; then
     fi
 fi
 
-echo "  getting AD_OPTFILE information:  "
+echo "  getting AD_OPTFILE information:"
 if test "x${AD_OPTFILE}" = x ; then
     if test "x$MITGCM_AD_OF" = x ; then
 	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
@@ -2681,6 +2686,7 @@ all: \$(EXECUTABLE)
 \$(EXECUTABLE): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
+
 depend:
 	@make links
 	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
@@ -2692,6 +2698,8 @@ lib: libmitgcmuv.a
 libmitgcmuv.a: \$(OBJFILES)
 	ar rcv libmitgcmuv.a \$(OBJFILES)
 	ar d   libmitgcmuv.a main.o
+
+obj: \$(OBJFILES)
 
 links: \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(SPECIAL_FILES)
 
@@ -3250,6 +3258,6 @@ if test "x$DUMPSTATE" = xt ; then
     for i in $gm_state ; do
 	t1="t2=\$$i"
 	eval $t1
-	echo "$i='$t2'" >> genmake_state
+	echo "$i='$t2'" | sed -e 's/  */ /g' >> genmake_state
     done
 fi
