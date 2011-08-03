@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.105 2011/07/19 11:23:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.106 2011/08/03 00:31:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -368,6 +368,10 @@ C     balance fluxes
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
+#else  /* ALLOW_AUTODIFF_TAMC */
+C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing
+C     and all vertical mixing schemes, but keep OBCS_CALC
+      IF ( fluidIsWater ) THEN
 #endif /* ALLOW_AUTODIFF_TAMC */
       DO bj=myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -387,10 +391,6 @@ CHPF$ INDEPENDENT
           itdkey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
-#else  /* ALLOW_AUTODIFF_TAMC */
-C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing
-C     and all vertical mixing schemes, but keep OBCS_CALC
-        IF ( fluidIsWater ) THEN
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
@@ -805,21 +805,21 @@ C--     Calculate Downsloping Flow for Down_Slope parameterization
         ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
-#ifndef ALLOW_AUTODIFF_TAMC
-C---  if fluid Is Water: end
-        ENDIF
-#endif
-
-#ifdef ALLOW_MYPACKAGE
-        IF ( useMYPACKAGE ) THEN
-         CALL MYPACKAGE_CALC_RHS(
-     I        bi, bj, myTime, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_MYPACKAGE */
-
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifndef ALLOW_AUTODIFF_TAMC
+C---  if fluid Is Water: end
+      ENDIF
+#endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) THEN
+       CALL MYPACKAGE_CALC_RHS(
+     I                          myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_MYPACKAGE */
 
 #ifdef ALLOW_GMREDI
       IF ( useGMRedi ) THEN
