@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1486 2011/08/03 00:32:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1487 2011/08/04 14:59:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o genmake2 & testreport
+  - add target "obj" (just for OBJFILES files) to Makefile;
+  - add option to specify FEXTRAFLAGS on command line.
 o pkg/mypackage:
   - remove bi,bj arguments from argument list of S/R MYPACKAGE_CALC_RHS
 
