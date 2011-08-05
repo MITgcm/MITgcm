@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.12 2011/05/24 22:40:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.13 2011/08/05 17:56:55 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -95,9 +95,9 @@ c--   Print header.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT, mythid )
 
-      write(msgbuf,'(A,2X,A,1X,3A6,A8,11X,A12)')
-     & 'grdchk output h.p:', 'Id', 'Itile', 'Jtile',
-     & 'LAYER', 'X(Id)', 'X(Id)+/-EPS'
+      write(msgbuf,'(A,2X,4A,3(3X,A),11X,A)')
+     & 'grdchk output h.p:', 'Id', ' Itile', ' Jtile',
+     & ' LAYER', 'bi', 'bj', 'X(Id)', 'X(Id)+/-EPS'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid )
       write(msgbuf,'(A,2X,A,A4,1X,2A21)')
@@ -146,9 +146,9 @@ c--   Individual checks.
      &  ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT, mythid )
-        write(msgbuf,'(A,I4,3I6,2x,1P2E17.9)')
+        write(msgbuf,'(A,I4,3I6,2I5,1x,1P2E17.9)')
      &       'grdchk output (p):',
-     &       i, itilepos, jtilepos, layer,
+     &       i, itilepos, jtilepos, layer, itile, jtile,
      &       xxmemo_ref, xxmemo_pert
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT, mythid )
