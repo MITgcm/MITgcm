@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1487 2011/08/04 14:59:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1488 2011/08/06 19:25:11 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o adjoint verifications
+  - changed 5 experiments to multi-threaded
+    * global_ocean.90x40x15
+    * obcs_ctrl
+    * offline_exf_seaice
+    * tutorial_dic_adjoffline
+    * tutorial_tracer_adjsens
+    changed reference output for those that crossed tile boundaries
+    (changed choices of gradient check positions)
+  - temporary bug fix in grdchk_loc.F for obcs
 
 o genmake2 & testreport
   - add target "obj" (just for OBJFILES files) to Makefile;
