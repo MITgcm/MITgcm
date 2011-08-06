@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.10 2011/02/03 02:00:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.11 2011/08/06 19:08:58 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -60,11 +60,6 @@ ce    some reference temperature
       ENDDO
 
       objf_tracer(bi,bj) = objf_tracer(bi,bj) + locfc
-
-#ifdef ALLOW_PTRACERS
-      print *, 'COST TRACER nach', objf_tracer(bi,bj),
-     &     ptracer(83,33,1,1,1,1), ptracer(83,33,2,1,1,1)
-#endif
 
 #endif /* ALLOW_COST_TRACER */
 
