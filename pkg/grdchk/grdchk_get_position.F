@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.7 2011/05/24 22:41:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.8 2011/08/06 18:30:21 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
       subroutine grdchk_get_position( mythid )
 
@@ -28,6 +31,9 @@ c     == global variables ==
 #include "GRID.h"
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
+#endif
+#ifdef ALLOW_OBCS
+# include "OBCS_GRID.h"
 #endif
 #include "ctrl.h"
 #include "grdchk.h"
@@ -158,28 +164,32 @@ c--             Ice shelf mask.
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
                      if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.) then
+                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
+     &                       .and. j.eq. OB_Jn(I,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
                         wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
                      else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.) then
+                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0. 
+     &                       .and. j.eq. OB_Js(I,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
                         wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
                      else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.) then
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0. 
+     &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
                         wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
                      else if ( grdchkvarindex .EQ. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.) then
+                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
+     &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
                         wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)

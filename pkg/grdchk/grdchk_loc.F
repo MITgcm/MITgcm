@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.14 2011/05/24 20:41:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.15 2011/08/06 18:30:21 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
       subroutine grdchk_loc(
      I                     icomp,
@@ -61,7 +64,6 @@ c     == routine arguments ==
       integer       itilepos
       integer       jtilepos
       integer       itest
-      integer       iwettot
       integer       ierr
       integer       mythid
 
@@ -103,6 +105,10 @@ c     initialise parameters
       icglom1 = 0
       icomploc= 0
 
+cph(
+      print *, 'ph-test icomp, ncvarcomp, ichknum ',
+     &     icomp, ncvarcomp, ichknum
+cph)
       if ( icomp .gt. 0 ) then
        if ( icomp .le. ncvarcomp ) then
 c--     A valid component of the control variable has been selected.
@@ -116,7 +122,6 @@ c--     A valid component of the control variable has been selected.
             iobcswrk  = 1
             jwrk      = 1
             iwrk      = 1
-            iwettot   = 0
             icglo     = 0
          else
             itest     = itestmem (ichknum-1)
@@ -130,19 +135,11 @@ c--     A valid component of the control variable has been selected.
             jwrk      = jlocmem  (ichknum-1)
             iwrk      = ilocmem  (ichknum-1)
             iwrk      = iwrk + 1
-            iwettot   = iwetsum(biwrk,bjwrk,kwrk)
          end if
 
 c--   set max loop index for obcs multiplicities
         if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
            nobcsmax = nobcs
-           if (grdchkvarindex.EQ.11.OR.grdchkvarindex.EQ.12) then
-             jwrk = 1
-           else if (grdchkvarindex.EQ.13.OR.grdchkvarindex.EQ.14) then
-             iwrk = 1
-           else
-             STOP 'in grdchk_loc for obcs: should never get here'
-           endif
         else
            nobcsmax = 1
         endif
@@ -161,8 +158,8 @@ cph         do iobcs = iobcswrk, nobcsmax
              icglo   = icglo + nwettile(bi,bj,k,iobcs)
              icglom1 = icglo - nwettile(bi,bj,k,iobcs)
 cph(
-cph-print        print *, 'ph-grd _loc: bi, bj, icomptest, ichknum ',
-cph-print     &       icomptest, ichknum
+        print *, 'ph-grd _loc: bi, bj, icomptest, ichknum ',
+     &       bi, bj, icomptest, ichknum
 cph-print        print *, 'ph-grd _loc: icglo ',
 cph-print     &       k, icglo, icglom1, iwetsum(bi,bj,k)
 cpj)
@@ -218,7 +215,8 @@ cpj)
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
                      if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.) then
+                        if ( grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
+     &                       .and. j.eq. OB_Jn(I,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = i
                            jtmp = OB_Jn(I,bi,bj)
@@ -226,7 +224,8 @@ cpj)
 #endif
                      else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.) then
+                        if ( grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0. 
+     &                       .and. j.eq. OB_Js(I,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = i
                            jtmp = OB_Js(I,bi,bj)
@@ -234,7 +233,8 @@ cpj)
 #endif
                      else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.) then
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0. 
+     &                       .and. i.eq. OB_Iw(J,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = OB_Iw(J,bi,bj)
                            jtmp = j
@@ -242,7 +242,8 @@ cpj)
 #endif
                      else if ( grdchkvarindex .EQ. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.) then
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0. 
+     &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = OB_Ie(J,bi,bj)
                            jtmp = j
@@ -260,7 +261,7 @@ cpj)
                      layer    = k
                      obcspos  = iobcs
                      ierr     = 0
-                     itest    = iwetsum(bi,bj,k)
+cph                     itest    = iwetsum(bi,bj,k)
 cph(
                      print *, 'ph-grd -->hit<-- ', itmp,jtmp,k,iobcs
                      goto 1234
