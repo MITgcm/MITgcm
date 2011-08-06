@@ -36,7 +36,7 @@
 # Time stepping parameters
  &PARM03
  startTime=0.,
- endTime=21600.,
+ endTime=4800.,
  deltaTmom=1200.0,
  deltaTtracer=1200.0,
  dumpInitAndLast=.TRUE.,

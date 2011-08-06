@@ -6,9 +6,13 @@
  grdchk_eps       = 1.d-4,
 # nbeg             = 4,
  iGloPos          = 1,
- jGloPos          = 32,
+ jGloPos          = 1,
  kGloPos          = 4,
+### iGloTile         = 1,
+### jgloTile         = 1,
  nstep            = 1,
  nend             = 4,
  grdchkvarindex   = 13,
+#ph: currently only 12 and 13 work,
+#ph: and only for South j=1 or West i=1
  &
