@@ -1,0 +1,86 @@
+%%
+%%  $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_description.tex,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+%%  $Name:  $
+%%
+
+Package ``BBL'' is a simple bottom boundary layer scheme.  The initial
+motivation is to allow dense water that forms on the continental shelf around
+Antarctica (High Salinity Shelf Water) in the CS510 configuration to sink to
+the bottom of the model domain and to become a source of Antarctic Bottom
+Water.  The bbl package aims to address the following two crippling limitations of
+package down_slope:
+
+(i) In pkg/down_slope, dense water cannot flow down-slope unless there is a
+step, i.e., a change of vertical level in the bathymetry.  In pkg/bbl, dense
+water can flow down-slope even on a slightly inclined or flat bottom.
+
+(ii) In pkg/down_slope, dense water is diluted as it flows into grid cells
+whose thickness depends on the model's vertical grid and that are typically
+much thicker than the bottom boundary layer.  In pkg/bbl, the dense water is
+contained in a thinner layer and hence better able to preserve its tracer
+properties.
+
+Specifically, the bottommost wet grid cell of thickness
+
+         Thk = hFacC(kBot) * drF(kBot),
+
+of tracer properties Tracer, and of density rho is divided in two sub-levels:
+
+1. A bottom boundary layer with T/S tracer properties bbl_Tracer, density
+bbl_rho, thickness bbl_eta, and volume bbl_Volume.
+
+2. A residual thickness
+
+         resThk = Thk - bbl_eta
+
+with tracer properties
+
+         resTracer = ( Tracer * Thk - bbl_Tracer * bbl_eta ) / resThk
+
+such that the volume integral of bbl_Tracer and resTracer is consistent with
+the Tracer properties of bottommost wet grid cell.
+
+At every time step, the bottom boundary layer properties bbl_Tracer evolve as
+follows:
+
+I. There is a vertical exchange between the BBL and the residual volume of
+bottommost wet grid cell:
+
+(i) If rho >= bbl_rho then set bbl_Tracer = Tracer
+
+(ii) If bbl_rho > rho , the T/S properties of the BBL diffuse into the
+residual volume with a relaxation time scale of bbl_RelaxR seconds.
+
+         bbl_Tracer(T+deltaT) = bbl_Tracer(T) +
+                                deltaT * (resTheta-bbl_Tracer(T)) / bbl_RelaxR
+
+The above two operations do not change the tracer properties of the bottommost
+wet grid box.  They only redistribute properties between bbl_eta and resThk.
+
+II. There is horizontal exchange between adjacent bottom boundary layer cells
+when heavy BBL water is above or at the same level as lighter BBL water.  The
+strength of the horizontal exchange is controlled by time scale bbl_RelaxH:
+
+(i) First this horizontal exchange is accumulated in BBL tracer tendency terms
+zonally and meridionally:
+
+         bbl_TendTracer(i) = bbl_TendTracer(i) +
+                             ( bbl_Tracer(i+1) - bbl_Tracer(i) ) /
+                             bbl_RelaxH
+
+         bbl_TendTracer(i+1) = bbl_TendTracer(i+1) -
+                             ( bbl_Tracer(i+1) - bbl_Tracer(i) ) * bbl_Volume(i) /
+                             ( bbl_Volume(i+1) * bbl_RelaxH )
+
+(ii) Then these tendency terms are applied to the BBL tracer properties:
+
+         bbl_Tracer(T+deltaT) = bbl_Tracer(T) + deltaT * bbl_TendTracer
+
+(iii) Finally these tracer tendencies are scaled by the full thickness Thk of
+the bottommost wet cell:
+
+         bbl_TendTracerScaled = bbl_TendTracer * bbl_eta / Thk
+
+and applied to the model's tracer quantities by bbl_tendency_apply.  Apart
+from this lateral exchange of tracer properties between the bottommost model
+grid cells, all other normal advection diffusion terms are also applied.

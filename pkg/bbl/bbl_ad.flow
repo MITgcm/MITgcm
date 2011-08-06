@@ -1,0 +1,14 @@
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_ad.flow,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Name:  $
+
+C----------------------------------------
+C subroutine  bbl_diagnostics_state
+C----------------------------------------
+CADJ SUBROUTINE bbl_diagnostics_state INPUT  = 1,2,3
+CADJ SUBROUTINE bbl_diagnostics_state OUTPUT =
+
+C----------------------------------------
+C subroutine  bbl_read_pickup
+C----------------------------------------
+CADJ SUBROUTINE bbl_read_pickup  INPUT  = 1,2
+CADJ SUBROUTINE bbl_read_pickup  OUTPUT =
