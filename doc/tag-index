@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1489 2011/08/07 07:08:14 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1490 2011/08/07 19:53:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,9 +7,8 @@ $Name:  $
 o adding package bbl (Bottom Boundary Layer)
   description in MITgcm/pkg/bbl/bbl_description.tex
   example/test experiment in MITgcm_contrib/bbl
-
 o adjoint verifications
-  - changed 5 experiments to multi-threaded
+  - changed 5 experiments to multi-tiles
     * global_ocean.90x40x15
     * obcs_ctrl
     * offline_exf_seaice
@@ -17,8 +16,8 @@ o adjoint verifications
     * tutorial_tracer_adjsens
     changed reference output for those that crossed tile boundaries
     (changed choices of gradient check positions)
+  - with same tiling, switch on MPI test for the last 4 (add SIZE.h_mpi)
   - temporary bug fix in grdchk_loc.F for obcs
-
 o genmake2 & testreport
   - add target "obj" (just for OBJFILES files) to Makefile;
   - add option to specify FEXTRAFLAGS on command line.
