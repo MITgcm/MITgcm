@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.107 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.108 2011/08/07 21:40:39 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -512,6 +512,9 @@ CADJ &     kind = isbyte
 #endif /* ALLOW_DOWN_SLOPE */
 #ifdef ALLOW_BBL
            IF ( useBBL ) THEN
+C     pkg/bbl requires in-situ bbl density for depths equal to and deeper than the bbl.
+C     To reduce computation and storage requirement, these densities are stored in the
+C     dry grid boxes of rhoInSitu.  See BBL_CALC_RHO for details.
             CALL BBL_CALC_RHO(
      I                  theta, salt,
      O                  rhoInSitu,

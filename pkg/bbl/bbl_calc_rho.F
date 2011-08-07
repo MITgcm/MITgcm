@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rho.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rho.F,v 1.3 2011/08/07 21:40:39 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -16,11 +16,18 @@ C     *==========================================================*
 C     | SUBROUTINE BBL_CALC_RHO
 C     | o Calculates [rho(S,T,z)-rhoConst] of a 2-D slice
 C     |     filling land-points with BBL density.
-C     |   Top cell to kLowC computes rhoLoc at level k
-C     |     based on tFld(k) and sFld(k).
-C     |   kLowC+1 to Nr+1 computes rhoLoc at level k-1
-C     |     based on bbl_theta and bbl_salt.
+C     |   pkg/bbl requires in-situ bbl density for depths equal to
+C     |     and deeper than the bbl. To reduce computation and
+C     |     storage requirement, these densities are stored in the
+C     |     dry grid boxes of rhoInSitu:
+C     |   Top cell to kLowC computes rhoLoc at level k based on
+C     |     tFld(k) and sFld(k). This is identical to FIND_RHO_2D.
+C     |   kLowC+1 to Nr computes rhoLoc at level k-1 based on
+C     |     bbl_theta and bbl_salt.
+C     |   There is one level missing, bbl density at depth Nr,
+C     |     which is intead stored in bbl_rho_nr.
 C     *==========================================================*
+
 C     \ev
 
 C     !USES:
