@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.80 2010/12/15 23:06:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.81 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,8 @@ C       |
 C       |-- GMREDI_INIT_VARIA
 C       |
 C       |-- DWNSLP_INIT_VARIA
+C       |
+C       |-- BBL_INIT_VARIA
 C       |
 C       |-- KPP_INIT_VARIA
 C       |
@@ -158,6 +160,12 @@ C--   Initialize GM/Redi parameterization
         CALL DWNSLP_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
+
+#ifdef ALLOW_BBL
+      IF ( useBBL ) THEN
+        CALL BBL_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_BBL */
 
 #ifdef ALLOW_KPP
 C--   Initialize KPP vertical mixing scheme.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/BBL.h,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/BBL.h,v 1.2 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_BBL
@@ -18,10 +18,11 @@ C     file names for initial conditions:
       COMMON /BBL_PARM_C/ bbl_thetaFile, bbl_saltFile, bbl_etaFile
 
 C     BBL 2-dim. fields
-      _RL bbl_theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL bbl_salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL bbl_eta  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /BBL_STATE_2D/ bbl_theta, bbl_salt, bbl_eta
+      _RL bbl_theta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL bbl_salt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL bbl_eta   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL bbl_rho_nr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /BBL_STATE_2D/ bbl_theta, bbl_salt, bbl_eta, bbl_rho_nr
 
 C     BBL tendency terms
       _RL bbl_TendTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

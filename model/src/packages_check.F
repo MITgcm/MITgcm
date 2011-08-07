@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.54 2011/06/08 01:34:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.55 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,6 +164,12 @@ C---  Continue with standard packages (with standard usePKG flag)
 #ifndef ALLOW_DOWN_SLOPE
       IF (useDOWN_SLOPE)
      &            CALL PACKAGES_ERROR_MSG('DOWN_SLOPE',' ',myThid)
+#endif
+
+#ifdef ALLOW_BBL
+      IF (useBBL) CALL BBL_CHECK( myThid )
+#else
+      IF (useBBL) CALL PACKAGES_ERROR_MSG('BBL',' ',myThid)
 #endif
 
 #ifdef ALLOW_OBCS
@@ -367,6 +373,17 @@ C---  Exclusive packages (which cannot be used together):
       IF ( useEXF .AND. useBulkForce ) THEN
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  'both useEXF and useBulkForce are set'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
+     &  ' but cannot be used together => need to select only one.'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
+      ENDIF
+
+C---  Exclusive packages (which cannot be used together):
+      IF ( useDOWN_SLOPE .AND. useBBL ) THEN
+        WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
+     &  'both useDOWN_SLOPE and useBBL are set'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  ' but cannot be used together => need to select only one.'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -78,11 +78,15 @@ C     and of in-situ BBL density
          DO i=1-OLx,sNx+OLx
           bbl_TendTheta(i,j,bi,bj) = 0. _d 0
           bbl_TendSalt (i,j,bi,bj) = 0. _d 0
-          kBot = max(1,kLowC(i,j,bi,bj))
+          kBot        = max(1,kLowC(i,j,bi,bj))
           tLoc(i,j)   = theta(i,j,kBot,bi,bj)
           sLoc(i,j)   = salt (i,j,kBot,bi,bj)
           rholoc(i,j) = rhoInSitu(i,j,kBot,bi,bj)
-          rhoBBL(i,j) = rhoInSitu(i,j,kBot+1, bi,bj)
+          IF ( kBot .EQ. Nr ) THEN
+           rhoBBL(i,j) = bbl_rho_nr(i,j,bi,bj)
+          ELSE
+           rhoBBL(i,j) = rhoInSitu(i,j,kBot+1, bi,bj)
+          ENDIF
          ENDDO
         ENDDO
 
@@ -128,8 +132,13 @@ C     Compare the bbl densities at the higher pressure
 C     (highest possible density of given t,s)
 C     bbl in situ density is stored in kLowC + 1 index  
            kl = MAX(kLowC1, kLowC2) + 1
-           bbl_rho1 = rhoInSitu(i,j,kl,bi,bj) 
-           bbl_rho2 = rhoInSitu(i+1,j,kl,bi,bj)         
+           IF ( kl .GT. Nr ) THEN
+            bbl_rho1 = bbl_rho_nr(i,j,bi,bj)
+            bbl_rho2 = bbl_rho_nr(i+1,j,bi,bj)
+           else
+            bbl_rho1 = rhoInSitu(i,j,kl,bi,bj)
+            bbl_rho2 = rhoInSitu(i+1,j,kl,bi,bj)
+           endif
            deltaRho = bbl_rho2 - bbl_rho1
            deltaDpt = R_low(i  ,j,bi,bj) + bbl_eta(i  ,j,bi,bj) -
      &          R_low(i+1,j,bi,bj) - bbl_eta(i+1,j,bi,bj)
@@ -166,8 +175,13 @@ C     compare the bbl densities at the higher pressure
 C     (highest possible density of given t,s)
 C     bbl in situ density is stored in kLowC + 1 index  
            kl = MAX(kLowC1, kLowC2) + 1
-           bbl_rho1 = rhoInSitu(i,j,kl,bi,bj) 
-           bbl_rho2 = rhoInSitu(i,j+1,kl,bi,bj)         
+           IF ( kl .GT. Nr ) THEN
+            bbl_rho1 = bbl_rho_nr(i,j,bi,bj)
+            bbl_rho2 = bbl_rho_nr(i,j+1,bi,bj)
+           else
+            bbl_rho1 = rhoInSitu(i,j,kl,bi,bj)
+            bbl_rho2 = rhoInSitu(i,j+1,kl,bi,bj)
+           endif
            deltaRho = bbl_rho2 - bbl_rho1
            deltaDpt = R_low(i,j  ,bi,bj) + bbl_eta(i,j  ,bi,bj) -
      &          R_low(i,j+1,bi,bj) - bbl_eta(i,j+1,bi,bj)
@@ -233,12 +247,12 @@ C     Check salinity conservation
         ENDIF
 #endif /* ALLOW_DEBUG */
 
-        CALL EXCH_XY_RL( bbl_theta, myThid )
-        CALL EXCH_XY_RL( bbl_salt , myThid )
-
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+      CALL EXCH_XY_RL( bbl_theta, myThid )
+      CALL EXCH_XY_RL( bbl_salt , myThid )
 
       RETURN
       END

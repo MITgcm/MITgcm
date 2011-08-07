@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.67 2010/11/19 14:41:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.68 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,8 @@ C       |
 C       |-- GMREDI_READPARMS
 C       |
 C       |-- DWNSLP_READPARMS
+C       |
+C       |-- BBL_READPARMS
 C       |
 C       |-- KPP_READPARMS
 C       |
@@ -159,6 +161,11 @@ C--   Initialize GM/Redi parameters
 #ifdef ALLOW_DOWN_SLOPE
 C--   Initialize Down-Slope flow parameters
       IF (useDOWN_SLOPE) CALL DWNSLP_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_BBL
+C--   Initialize BBL parameters
+      IF (useBBL) CALL BBL_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_KPP

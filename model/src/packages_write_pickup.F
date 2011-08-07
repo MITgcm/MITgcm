@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.38 2009/10/01 21:28:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.39 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -76,6 +76,13 @@ C     Write restart file for 2nd-Order moment (active) Tracers
      &                  suffix, myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_BBL
+      IF (useBBL) THEN
+        CALL BBL_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_MYPACKAGE */
 
 #ifdef  ALLOW_SEAICE
       IF ( useSEAICE ) THEN

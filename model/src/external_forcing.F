@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.58 2011/05/14 20:01:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.59 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -406,6 +406,12 @@ c     ENDIF
       ENDIF
 #endif
 
+#ifdef ALLOW_BBL
+      IF ( useBBL ) CALL BBL_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_BBL */
+
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_T(
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
@@ -570,6 +576,12 @@ C     Add fresh-water in top-layer
      I           myTime, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
+
+#ifdef ALLOW_BBL
+      IF ( useBBL ) CALL BBL_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_S(

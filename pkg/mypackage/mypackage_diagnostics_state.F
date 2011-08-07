@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_state.F,v 1.1 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_state.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -19,9 +19,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MYPACKAGE
 #include "MYPACKAGE.h"
-#endif
 
 C     !INPUT PARAMETERS:
 C     myTime   :: Current time of simulation ( s )

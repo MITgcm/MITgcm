@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_diagnostics_state.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_diagnostics_state.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -19,9 +19,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_BBL
 #include "BBL.h"
-#endif
 
 C     !INPUT PARAMETERS:
 C     myTime   :: Current time of simulation ( s )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.252 2011/06/08 01:23:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.253 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 C
 
@@ -928,6 +928,7 @@ C Logical flags for selecting packages
       LOGICAL useKPP
       LOGICAL useGMRedi
       LOGICAL useDOWN_SLOPE
+      LOGICAL useBBL
       LOGICAL useCAL
       LOGICAL useEXF
       LOGICAL useBulkForce
@@ -963,7 +964,7 @@ C Logical flags for selecting packages
       COMMON /PARM_PACKAGES/
      &        useGAD, useOBCS, useSHAP_FILT, useZONAL_FILT,
      &        useOPPS, usePP81, useMY82, useGGL90, useKPP,
-     &        useGMRedi, useDOWN_SLOPE,
+     &        useGMRedi, useBBL, useDOWN_SLOPE,
      &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
      &        useGrdchk, useSMOOTH, useECCO, useSBO, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,

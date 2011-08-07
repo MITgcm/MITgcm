@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.54 2011/03/18 10:48:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.55 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,6 +55,7 @@ C     data.pkg namelists
      &          useKPP,
      &          useGMRedi,
      &          useDOWN_SLOPE,
+     &          useBBL,
 c    &          useCAL,
      &          useEXF,
      &          useBulkForce,
@@ -114,6 +115,7 @@ c     useGAD          =.FALSE.
       useKPP          =.FALSE.
       useGMRedi       =.FALSE.
       useDOWN_SLOPE   =.FALSE.
+      useBBL          =.FALSE.
       useCAL          =.FALSE.
       useEXF          =.FALSE.
       useBulkForce    =.FALSE.

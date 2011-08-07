@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.106 2011/08/03 00:31:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.107 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -503,22 +503,30 @@ CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_DOWN_SLOPE
-          IF ( useDOWN_SLOPE ) THEN
+           IF ( useDOWN_SLOPE ) THEN
             CALL DWNSLP_CALC_RHO(
      I                  theta, salt,
      O                  rhoInSitu(1-OLx,1-OLy,k,bi,bj),
      I                  k, bi, bj, myTime, myIter, myThid )
-          ELSE
+           ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
+#ifdef ALLOW_BBL
+           IF ( useBBL ) THEN
+            CALL BBL_CALC_RHO(
+     I                  theta, salt,
+     O                  rhoInSitu,
+     I                  k, bi, bj, myTime, myIter, myThid )
+
+           ENDIF
+#endif /* ALLOW_BBL */
+           IF ( .NOT. ( useDOWN_SLOPE .OR. useBBL ) ) THEN
             CALL FIND_RHO_2D(
      I                iMin, iMax, jMin, jMax, k,
      I                theta(1-OLx,1-OLy,k,bi,bj),
      I                salt (1-OLx,1-OLy,k,bi,bj),
      O                rhoInSitu(1-OLx,1-OLy,k,bi,bj),
      I                k, bi, bj, myThid )
-#ifdef ALLOW_DOWN_SLOPE
-          ENDIF
-#endif /* ALLOW_DOWN_SLOPE */
+           ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
           ELSE
 C-        fluid is not water:
@@ -813,6 +821,13 @@ C--   end bi,bj loops.
 C---  if fluid Is Water: end
       ENDIF
 #endif
+
+#ifdef ALLOW_BBL
+      IF ( useBBL ) THEN
+       CALL BBL_CALC_RHS(
+     I                          myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN

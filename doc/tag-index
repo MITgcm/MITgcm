@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1488 2011/08/06 19:25:11 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1489 2011/08/07 07:08:14 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o adding package bbl (Bottom Boundary Layer)
+  description in MITgcm/pkg/bbl/bbl_description.tex
+  example/test experiment in MITgcm_contrib/bbl
 
 o adjoint verifications
   - changed 5 experiments to multi-threaded

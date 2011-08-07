@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_tendency_apply.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_tendency_apply.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -84,22 +84,5 @@ C     !LOCAL VARIABLES:
        ENDDO
       ENDDO
 
-      RETURN
-      END
-
-C This following stub is included for compatibility with external_forcing.F.
-C It should be removed if bbl becomes a package.
-      SUBROUTINE BBL_TENDENCY_APPLY_U(
-     &                     iMin, iMax, jMin, jMax,
-     &                     bi, bj, k, myTime, myThid )
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
-      _RL myTime
-      RETURN
-      END
-      SUBROUTINE BBL_TENDENCY_APPLY_V(
-     &                     iMin, iMax, jMin, jMax,
-     &                     bi, bj, k, myTime, myThid )
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
-      _RL myTime
       RETURN
       END

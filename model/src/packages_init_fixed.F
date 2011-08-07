@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.73 2011/02/21 22:26:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.74 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,6 +37,8 @@ C       |
 C       |-- GMREDI_INIT_FIXED
 C       |
 C       |-- DWNSLP_INIT_FIXED
+C       |
+C       |-- BBL_INIT_FIXED
 C       |
 C       |-- KPP_INIT_FIXED
 C       |
@@ -166,6 +168,13 @@ C--   Initialize fixed arrays for GM-Redi
 C--   Initialize fixed arrays for Down-Slope pkg
       IF ( useDOWN_SLOPE ) THEN
        CALL DWNSLP_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_BBL
+C--   Initialize fixed arrays for BBL pkg
+      IF ( useBBL ) THEN
+       CALL BBL_INIT_FIXED( myThid )
       ENDIF
 #endif
 

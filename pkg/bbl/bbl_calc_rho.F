@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rho.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rho.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -45,7 +45,7 @@ C     myIter    :: Current time-step number
 C     myThid    :: my Thread Id number
       _RL     tFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     sFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL     rhoLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL     rhoLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER k, bi, bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -85,14 +85,13 @@ C-    For k > kLowC replace rhoLoc with rBBL
        ENDDO
       ENDDO
 
-C-    Compute rhoLoc at level Nr based on bbl_theta and bbl_salt.
+C-    Compute bbl_rho_nr at level Nr based on bbl_theta and bbl_salt.
       IF ( k .EQ. Nr ) THEN
-       kl = Nr + 1
        CALL FIND_RHO_2D(
      I      1-OLx, sNx+OLx, 1-OLy, sNy+OLy, Nr,
      I      bbl_theta,
      I      bbl_salt,
-     O      rhoLoc(1-OLx,1-OLy,kl,bi,bj),
+     O      bbl_rho_nr(1-OLx,1-OLy,bi,bj),
      I      Nr, bi, bj, myThid )
       ENDIF
 
