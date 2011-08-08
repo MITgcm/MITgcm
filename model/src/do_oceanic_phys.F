@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.108 2011/08/07 21:40:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.109 2011/08/08 18:10:15 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -418,7 +418,7 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
 #ifdef ALLOW_AUTODIFF_TAMC
 cph all the following init. are necessary for TAF
 cph although some of these are re-initialised later.
-c          rhoInSitu(i,j,k,bi,bj) = 0.
+           rhoInSitu(i,j,k,bi,bj) = 0.
            IVDConvCount(i,j,k,bi,bj) = 0.
 # ifdef ALLOW_GMREDI
            Kwx(i,j,k,bi,bj)  = 0. _d 0
