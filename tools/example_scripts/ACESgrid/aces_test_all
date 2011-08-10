@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.22 2011/05/08 11:27:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.23 2011/08/10 23:35:56 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -92,7 +92,7 @@ get_outp_back()
          if test "x_$ready_to_send" = x_0 ; then
            run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
 #-      results output:
-           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
+           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep "^tr_$outPfix" | head -1`
            if test "x$tdir" != x ; then
              #- check this is the right output
              chk=`echo $tdir | grep -c $today`
@@ -108,10 +108,10 @@ get_outp_back()
                  REJECTED="$REJECTED $i"
                fi
              else
-               rm -f "/tmp/tr_aces-"$i".tar.gz"
-               ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
+               rm -f "/tmp/tr_$outPfix-"$i".tar.gz"
+               ( cd $run_dir ; tar -czf "/tmp/tr_$outPfix-"$i".tar.gz" ./$tdir )
                if test "x$HAVE_MPACK" = xt ; then
-                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
+                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_$outPfix-"$i".tar.gz" jmc@mitgcm.org
                  echo "Email sent for $i at:     " `date` | tee -a $LOG_FIL
                else
                  echo " no email sent for $i (no mpack)" | tee -a $LOG_FIL
@@ -125,7 +125,7 @@ get_outp_back()
                fi
            fi
 #-      restart output:
-           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^rs_aces' | head -1`
+           tdir=`ls -1 -t $run_dir | grep -v tr_out | grep "^rs_$outPfix" | head -1`
            if test "x$tdir" != x ; then
              #- check this is the right output
              chk=`echo $tdir | grep -c $today`
@@ -137,10 +137,10 @@ get_outp_back()
                echo "tdir='$tdir'" | tee -a $LOG_FIL
                echo "Restart output do not match, no email sent for $i" | tee -a $LOG_FIL
              else
-               rm -f "/tmp/rs_aces-"$i".tar.gz"
-               ( cd $run_dir ; tar -czf "/tmp/rs_aces-"$i".tar.gz" ./$tdir )
+               rm -f "/tmp/rs_$outPfix-"$i".tar.gz"
+               ( cd $run_dir ; tar -czf "/tmp/rs_$outPfix-"$i".tar.gz" ./$tdir )
                if test "x$HAVE_MPACK" = xt ; then
-                 $MPACK -s MITgcm-test -m 3555000 "/tmp/rs_aces-"$i".tar.gz" jmc@mitgcm.org
+                 $MPACK -s MITgcm-test -m 3555000 "/tmp/rs_$outPfix-"$i".tar.gz" jmc@mitgcm.org
                  echo "Email sent for $i restart:" `date` | tee -a $LOG_FIL
                else
                  echo " no email sent for $i restart (no mpack)" | tee -a $LOG_FIL
@@ -197,28 +197,33 @@ fi
 
 # QSUB="/usr/local/bin/qsub"
 # QSTAT="/usr/local/bin/qstat"
+# TST_DIR="/mit/jm_c/test_acesgrid/"
+# logPfix='tst_submit'
+# outPfix='acesgrid'
 QSUB=qsub
 QSTAT=qstat
 TST_DIR="/home/jmc/test_ACES"
+logPfix='tst_all'
+outPfix='aces'
+
 MPACK="MITgcm_tools/mpack-1.6/mpack"
 SUB_DIR="MITgcm_tools/example_scripts/ACESgrid"
-
 TMP_FIL="$TST_DIR/output/TTT.$$"
-LOG_FIL="$TST_DIR/output/tst_all."`date +%m%d`".log"
+LOG_FIL="$TST_DIR/output/$logPfix."`date +%m%d`".log"
 
 #-- clean up old log files and start a new one:
 cd $TST_DIR/output
 
-rm -f tst_all.*.log_bak
+rm -f $logPfix.*.log_bak
 if test -f $LOG_FIL ; then mv -f $LOG_FIL ${LOG_FIL}_bak ; fi
 echo -n '-- Starting: ' | tee -a $LOG_FIL
 date | tee -a $LOG_FIL
 
-n=$(( `ls tst_all.*.log | wc -l` - 10 ))
+n=$(( `ls $logPfix.*.log | wc -l` - 10 ))
 if test $n -gt 0 ; then
   echo ' remove old log files:' | tee -a $LOG_FIL
-    ls -lt tst_all.*.log | tail -"$n" | tee -a $LOG_FIL
-    ls -t  tst_all.*.log | tail -"$n" | xargs rm -f
+    ls -lt $logPfix.*.log | tail -"$n" | tee -a $LOG_FIL
+    ls -t  $logPfix.*.log | tail -"$n" | xargs rm -f
 fi
 
 . /etc/profile.d/modules.sh
