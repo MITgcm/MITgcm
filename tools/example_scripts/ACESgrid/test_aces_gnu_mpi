@@ -2,11 +2,11 @@
 #
 #PBS -q four
 #PBS -N tst_gnu
-#PBS -l nodes=1:ppn=4
+#PBS -l nodes=1:ppn=6
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_gnu.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.1 2011/08/08 20:04:49 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.2 2011/08/10 23:32:51 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -28,8 +28,10 @@ sfx='gnu'
  module add gcc
  module add openmpi
  OPTFILE="../tools/build_options/linux_amd64_gfortran+mpi_generic"
- options="-j 2 -MPI 4 -mf $PBS_NODEFILE"
- EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
+#options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
+#EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
+ options="-j 2 -MPI 6"
+ EXE="mpirun -v -np TR_NPROC ./mitgcmuv"
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
