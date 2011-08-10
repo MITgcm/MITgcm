@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.222 2011/08/03 18:14:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.223 2011/08/10 19:39:35 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1522,7 +1522,7 @@ EOF
 fi
 if test "x$GET_FC_VERSION" != x ; then
   echo "Get compiler version using: $FC $GET_FC_VERSION" >> $LOGFILE
-  $FC $GET_FC_VERSION >> $LOGFILE 2>&1
+  $FC $GET_FC_VERSION >> $LOGFILE 2> /dev/null
   echo "<-- compiler version ----" >> $LOGFILE
 fi
 
