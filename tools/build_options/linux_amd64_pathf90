@@ -1,11 +1,12 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.5 2011/08/10 00:35:36 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.6 2011/08/10 23:27:21 jmc Exp $
 #  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
 #  first version tested on Fedore Core 3 x86-64 Opteron (Linux batsi)
-#  updated and tested on acesgrid (Fedora Core 15)
+#  updated and tested on acesgrid (Fedora Core 15), using:
+#     module load ekopath	(Version 4.0.10)
 #
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -20,13 +21,15 @@
 
 CC=pathcc
 FC=pathf90
-LD=pathf90
+LINK=pathf90
+
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-NOOPTFLAGS='-O0 -g'
-NOOPTFILES=''
 GET_FC_VERSION="-v"
 OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES=''
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
