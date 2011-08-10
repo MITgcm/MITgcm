@@ -1,20 +1,32 @@
-#!/bin/bash
+#! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.4 2009/06/22 23:13:30 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.5 2011/08/10 00:35:36 jmc Exp $
 #  $Name:  $
 #
-# Build options for Fedore Core 3 x86-64 Opteron
-# tested on (Linux batsi 2.6.10-1.766_FC3smp #1 SMP Wed Feb 9 23:17:48 EST 2005 x86_64 x86_64 x86_64 GNU/Linux) system 20051802
+# Build options for PathScale (EKOPATH) Compiler on Linux x86-64
+#  first version tested on Fedore Core 3 x86-64 Opteron (Linux batsi)
+#  updated and tested on acesgrid (Fedora Core 15)
 #
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export PSC_OMP_STACK_SIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv PSC_OMP_STACK_SIZE 400m
+#-------
 
 CC=pathcc
 FC=pathf90
 LD=pathf90
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m64 -g -fPIC'
+NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
+GET_FC_VERSION="-v"
+OMPFLAG='-openmp'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
@@ -27,12 +39,12 @@ if test "x$IEEE" = x ; then
     FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
 fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -fPIC'
+CFLAGS='-O0 -m64 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
