@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1490 2011/08/07 19:53:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1491 2011/08/12 22:22:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/grdchk:
+  - Assume that all gradient-check position are within the same tile
+    corresponding to global indices (iGloTile,jGloTile) and that
+    positions (i,j indices or nbeg) are local to this tile;
+  - set tile local-indices and proc. number according to tile global-indices;
+  - remove grdchkwhichproc from namelist (retired param);
+  - send adjoint gradient to all procs so that all procs print it to STDOUT;
+  - switch on MPI test for global_ocean.90x40x15 AD test experiment.
 o adding package bbl (Bottom Boundary Layer)
   description in MITgcm/pkg/bbl/bbl_description.tex
   example/test experiment in MITgcm_contrib/bbl
