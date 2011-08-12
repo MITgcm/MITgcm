@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.31 2011/05/24 22:40:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.32 2011/08/12 18:36:49 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -211,6 +211,7 @@ c--   gradient checks.
       do icomp = nbeg, nend, nstep
 
          ichknum = (icomp - nbeg)/nstep + 1
+         adxxmemo  = 0.
 
 cph(
 cph-print         print *, 'ph-grd _main: nbeg, icomp, ichknum ',
@@ -243,7 +244,9 @@ c--   get gradient component calculated via adjoint
      &              itilepos, jtilepos,
      &              adxxmemo, mythid )
             endif
-            _BARRIER
+C--   Add a global-sum call so that all proc will get the adjoint gradient
+            _GLOBAL_SUM_RL( adxxmemo, myThid )
+c           _BARRIER
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
 c******************************************************
@@ -443,50 +446,43 @@ c******************************************************
 
                WRITE(standardmessageunit,'(A)')
      &             'grad-res -------------------------------'
-               WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
+               WRITE(standardmessageunit,'(A,8I5,1x,1P3E19.11)')
      &              ' grad-res ',myprocid,ichknum,itilepos,jtilepos,
      &              layer,itile,jtile,obcspos,
      &              fcref, fcpertplus, fcpertminus
 #ifdef ALLOW_TANGENTLINEAR_RUN
-               WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
+               WRITE(standardmessageunit,'(A,8I5,1x,1P3E19.11)')
      &              ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),iobcsmem(ichknum),
      &              ftlxxmemo, gfd, ratio_ftl
-               WRITE(msgBuf,'(A34,2(1PE24.14,X))')
-     &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
-               CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-c
-               WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' TLM  precision_derivative_cost =', fcref
-               CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-               WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' TLM  precision_derivative_grad =', ftlxxmemo
-               CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #else
-               WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
+               WRITE(standardmessageunit,'(A,8I5,1x,1P3E19.11)')
      &              ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),obcspos,
      &              adxxmemo, gfd, ratio_ad
-c              WRITE(msgBuf,'(A34,2(1PE24.14,X))')
-c    &              'precision_grdchk_result ADM ', fcref, adxxmemo
-c              CALL PRINT_MESSAGE
-c    &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-               WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' ADM  precision_derivative_cost =', fcref
-               CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-               WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' ADM  precision_derivative_grad =', adxxmemo
-               CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
-
             endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
+            WRITE(msgBuf,'(A34,1PE24.14)')
+     &              ' TLM  precision_derivative_cost =', fcref
+            CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
+            WRITE(msgBuf,'(A34,1PE24.14)')
+     &              ' TLM  precision_derivative_grad =', ftlxxmemo
+            CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
+#else
+            WRITE(msgBuf,'(A34,1PE24.14)')
+     &              ' ADM  precision_derivative_cost =', fcref
+            CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
+            WRITE(msgBuf,'(A34,1PE24.14)')
+     &              ' ADM  precision_derivative_grad =', adxxmemo
+            CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
+#endif
 
             print *, 'ph-grd  ierr ---------------------------'
             print *, 'ph-grd  ierr = ', ierr, ', icomp = ', icomp,
