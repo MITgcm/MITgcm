@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk.h,v 1.12 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk.h,v 1.13 2011/08/12 18:29:13 jmc Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -40,8 +40,8 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                       iGloPos,
      &                       jGloPos,
      &                       kGloPos,
-     &                       iGloTile,
-     &                       jGloTile,
+     &                       iLocTile,
+     &                       jLocTile,
      &                       idep,
      &                       jdep,
      &                       obcsglo,
@@ -56,8 +56,8 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer iGloPos
       integer jGloPos
       integer kGloPos
-      integer iGloTile
-      integer jGloTile
+      integer iLocTile
+      integer jLocTile
       integer idep
       integer jdep
       integer obcsglo
