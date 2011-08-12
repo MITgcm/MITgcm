@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.4 2010/03/21 17:59:54 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.5 2011/08/12 23:09:08 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -34,6 +34,7 @@ LIBS="$LDFLAGS -shared-intel"
 DEFINES='-DWORDLENGTH=4 -DIFORT'
 CPP='cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
 #OMPFLAG='-openmp'
 
 NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F mon_ke.F'

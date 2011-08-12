@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.7 2010/09/02 14:12:41 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.8 2011/08/12 23:09:08 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -39,6 +39,7 @@ LIBS="$LDFLAGS -shared-intel"
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DIFORT'
 CPP='cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
 #OMPFLAG='-openmp'
 
 NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F mon_ke.F'

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+authors,v 1.2 2010/03/21 17:59:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+authors,v 1.3 2011/08/12 23:09:08 jmc Exp $
 # $Name:  $
 
 #  Build options for the intel 9.0 fortran compiler
@@ -22,13 +22,14 @@
 #-------
 
 FC=/usr/local/pkg/intel/intel_fc_90/bin/ifort
-F90C=/usr/local/pkg/intel/intel_fc_90/bin/ifort
-LINK='/usr/local/pkg/intel/intel_fc_90/bin/ifort -i-static -no-ipo'
+F90C=$FC
+LINK="$FC -i-static -no-ipo"
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
 OMPFLAG='-openmp'
 
 INCLUDES='-I/usr/local/pkg/netcdf/netcdf-3.5.1/include'

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces,v 1.2 2010/03/21 17:59:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces,v 1.3 2011/08/12 23:09:08 jmc Exp $
 # $Name:  $
 
 # test Multi-Treaded with OpenMP:
@@ -27,6 +27,7 @@ LIBS='-L/usr/local/pkg/ifc/ifc-9.0.021/lib'
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
 OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0'

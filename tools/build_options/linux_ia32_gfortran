@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.8 2010/05/14 21:59:32 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.9 2011/08/12 23:09:08 jmc Exp $
 #  $Name:  $
 #
 
@@ -31,6 +31,7 @@ DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp -traditional -P'
 NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
 OMPFLAG='-fopenmp'
 
 if test "x$DEVEL" != x ; then
