@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.15 2011/08/06 18:30:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.16 2011/08/12 18:30:15 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
 
       subroutine grdchk_loc(
      I                     icomp,
@@ -74,7 +71,7 @@ c     == local variables ==
       integer i,j,k
       integer itmp,jtmp
       integer iobcs
-      integer biwrk,bjwrk
+c     integer biwrk,bjwrk
       integer iwrk, jwrk, kwrk
       integer iobcswrk
       integer irec, irecwrk
@@ -116,8 +113,8 @@ c--     A valid component of the control variable has been selected.
             itest     = 0
             icomptest = 0
             irecwrk   = 1
-            bjwrk     = 1
-            biwrk     = 1
+c           bjwrk     = 1
+c           biwrk     = 1
             kwrk      = 1
             iobcswrk  = 1
             jwrk      = 1
@@ -127,8 +124,8 @@ c--     A valid component of the control variable has been selected.
             itest     = itestmem (ichknum-1)
             icomptest = icompmem (ichknum-1)
             irecwrk   = irecmem  (ichknum-1)
-            bjwrk     = bjmem    (ichknum-1)
-            biwrk     = bimem    (ichknum-1)
+c           bjwrk     = bjmem    (ichknum-1)
+c           biwrk     = bimem    (ichknum-1)
             kwrk      = klocmem  (ichknum-1)
             iobcswrk  = iobcsmem (ichknum-1)
             icglo     = icglomem (ichknum-1)
@@ -152,8 +149,10 @@ c--   Start to loop over records.
         do irec = irecwrk, ncvarrecs(grdchkvarindex)
 cph         do iobcs = iobcswrk, nobcsmax
          iobcs = MOD((irec-1),nobcsmax) + 1
-          do bj = bjwrk, jthi
-           do bi = biwrk, ithi
+c         do bj = bjwrk, jthi
+c          do bi = biwrk, ithi
+            bj = jLocTile
+            bi = iLocTile
             do k = kwrk, ncvarnrmax(grdchkvarindex)
              icglo   = icglo + nwettile(bi,bj,k,iobcs)
              icglom1 = icglo - nwettile(bi,bj,k,iobcs)
@@ -224,7 +223,7 @@ cpj)
 #endif
                      else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-                        if ( grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0. 
+                        if ( grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
      &                       .and. j.eq. OB_Js(I,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = i
@@ -233,7 +232,7 @@ cpj)
 #endif
                      else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0. 
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
      &                       .and. i.eq. OB_Iw(J,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = OB_Iw(J,bi,bj)
@@ -242,7 +241,7 @@ cpj)
 #endif
                      else if ( grdchkvarindex .EQ. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0. 
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
      &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
                            icomptest = icomptest + 1
                            itmp = OB_Ie(J,bi,bj)
@@ -291,11 +290,11 @@ c--   End of loop over k
             enddo
             kwrk = 1
 c--   End of loop over bi
-           enddo
-           biwrk = 1
+c          enddo
+c          biwrk = 1
 c--   End of loop over bj
-          enddo
-          bjwrk = 1
+c         enddo
+c         bjwrk = 1
 c--   End of loop over iobcs
 cph         enddo
 cph         iobcswrk = 1

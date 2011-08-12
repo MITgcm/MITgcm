@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.8 2011/08/06 18:30:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.9 2011/08/12 18:30:15 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
 
       subroutine grdchk_get_position( mythid )
 
@@ -58,7 +55,7 @@ c     == local variables ==
       integer bi,bj
       integer i,j,k
       integer iobcs
-      integer biwrk,bjwrk
+c     integer biwrk,bjwrk
       integer iproc, jproc
       integer iwrk, jwrk, kwrk
       integer iobcswrk
@@ -85,8 +82,8 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      itile = iGloTile
-      jtile = jGloTile
+      itile = iLocTile
+      jtile = jLocTile
       itilepos = iGloPos
       jtilepos = jGloPos
       layer    = kGloPos
@@ -95,7 +92,7 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
-c--   determine proc. number from following assumptions
+c--   determine proc. number from following assumptions <= done in grdchk_readparms
 
       if ( myProcId .EQ. grdchkwhichproc ) then
 
@@ -107,8 +104,8 @@ c     initialise parameters
       itest     = 0
       icomptest = 0
       irecwrk   = 1
-      bjwrk     = 1
-      biwrk     = 1
+c     bjwrk     = 1
+c     biwrk     = 1
       kwrk      = 1
       iobcswrk  = 1
       jwrk      = 1
@@ -124,8 +121,10 @@ c--   set max loop index for obcs multiplicities
 c--   Start to loop over records.
         do irec = irecwrk, ncvarrecs(grdchkvarindex)
          iobcs = MOD((irec-1),nobcsmax) + 1
-          do bj = bjwrk, jthi
-           do bi = biwrk, ithi
+c         do bj = bjwrk, jthi
+c          do bi = biwrk, ithi
+            bi = itile
+            bj = jtile
             do k = kwrk, ncvarnrmax(grdchkvarindex)
 
 cph(
@@ -172,7 +171,7 @@ c--             Ice shelf mask.
 #endif
                      else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0. 
+                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
      &                       .and. j.eq. OB_Js(I,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
@@ -180,7 +179,7 @@ c--             Ice shelf mask.
 #endif
                      else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0. 
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
      &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
@@ -245,11 +244,11 @@ c--   End of loop over k
             enddo
             kwrk = 1
 c--   End of loop over bi
-           enddo
-           biwrk = 1
+c          enddo
+c          biwrk = 1
 c--   End of loop over bj
-          enddo
-          bjwrk = 1
+c         enddo
+c         bjwrk = 1
 c--   End of loop over iobcs
 cph         enddo
 cph         iobcswrk = 1
