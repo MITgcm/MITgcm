@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.14 2011/05/24 22:41:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.15 2011/08/12 18:29:41 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -35,12 +35,13 @@ c     == routine arguments ==
 #ifdef ALLOW_GRDCHK
 c     == local variables ==
 
-      integer i,j,k
-      integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
+      INTEGER iGloTile, jGloTile
+c     integer i,j,k
+c     integer bi,bj
+c     integer itlo,ithi
+c     integer jtlo,jthi
+c     integer jmin,jmax
+c     integer imin,imax
 
       integer errio
       integer il
@@ -75,14 +76,14 @@ c--   Optimization parameters.
      &                  obcsglo,
      &                  recglo
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+c     jtlo = mybylo(mythid)
+c     jthi = mybyhi(mythid)
+c     itlo = mybxlo(mythid)
+c     ithi = mybxhi(mythid)
+c     jmin = 1-oly
+c     jmax = sny+oly
+c     imin = 1-olx
+c     imax = snx+olx
 
       _BEGIN_MASTER( mythid )
 
@@ -92,7 +93,7 @@ c--     Set default values.
         nend            = 0
         nstep           = 0
         useCentralDiff  = .TRUE.
-        grdchkwhichproc = 0
+        grdchkwhichproc = -1
         iGloPos         = 0
         jGloPos         = 0
         kGloPos         = 1
@@ -102,7 +103,6 @@ c--     Set default values.
         jdep            = 1
         obcsglo         = 1
         recglo          = 1
-
 
 c       Next, read the calendar data file.
         WRITE(msgBuf,'(A)') 'GRDCHK_READPARMS: opening data.grdchk'
@@ -125,20 +125,33 @@ c       Next, read the calendar data file.
 
         IF ( iGloPos .GT. sNx .OR. jGloPos .GT. sNy ) THEN
            WRITE(msgBuf,'(A)') 'i/j GloPos must be <= sNx/y'
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
-           STOP 'S/R grdchk_readparms'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R GRDCHK_READPARMS'
         ENDIF
-        IF ( jGloTile .GT. 1 .AND. useCubedSphereExchange ) THEN
-           WRITE(msgBuf,'(A)')
-     &          'jGloTile must be = 1 for useCubedSphereExchange'
-           STOP 'S/R grdchk_readparms'
+        IF ( iGloTile .GT. nSx*nPx .OR. jGloTile .GT. nSy*nPy ) THEN
+           WRITE(msgBuf,'(A)') 'i/j GloTile must be <= nSx*nPx/y'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R GRDCHK_READPARMS'
+        ENDIF
+        IF ( grdchkwhichproc .NE. -1 ) THEN
+           WRITE(msgBuf,'(2A)') 'S/R GRDCHK_READPARMS: ',
+     &         'grdchkwhichproc no longer allowed in namelist'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R GRDCHK_READPARMS'
+        ENDIF
+
+C--    From Tile Global-Indices, set Tile Local-Indices and proc. number
+        iLocTile = iGloTile - (myXGlobalLo-1)/sNx
+        jLocTile = jGloTile - (myYGlobalLo-1)/sNy
+        IF ( iLocTile.GE.1 .AND. iLocTile.LE.nSx .AND.
+     &       jLocTile.GE.1 .AND. jLocTile.LE.nSy ) THEN
+          grdchkwhichproc = myProcId
         ENDIF
 
 c--     Summarize the gradient check setup.
         call grdchk_Summary( mythid )
-      _END_MASTER( mythid )
 
+      _END_MASTER( mythid )
       _BARRIER
 
 #endif /* ALLOW_GRDCHK */
