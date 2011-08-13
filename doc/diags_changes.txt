@@ -168,3 +168,7 @@ Notes:
       is not the right one for this purpose, it's just zero at k=1).
 3) There is just one more undocumented/hidden case
    (nonlinFreeSurf=0 & select_rStar=-1) which is not covered.
+4) For extended diagnostics in the presence of sea-ice and using
+   pkg/seaice/ (in particular atmosphere-ice and ice-ocean fluxes)
+   see online documentation, section 6.6.2.6 "SEAICE diagnostics"
+
