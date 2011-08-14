@@ -11,7 +11,6 @@
  kGloPos          = 1,
  iGloTile         = 2,
  jgloTile         = 2,
-### grdchkwhichproc  = 3,
 ### nbeg             = 1,
  nstep            = 1,
  nend             = 3,

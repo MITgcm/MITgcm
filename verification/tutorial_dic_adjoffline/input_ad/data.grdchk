@@ -10,7 +10,6 @@
  kGloPos          = 1,
  iGloTile         = 1,
  jgloTile         = 1,
-### grdchkwhichproc  = 0,
  nstep            = 1,
  nend             = 4,
  grdchkvarindex   = 30,
