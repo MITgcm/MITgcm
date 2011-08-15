@@ -6,13 +6,13 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.1 2011/08/15 03:00:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.2 2011/08/15 21:06:25 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
-# Note: added "ulimit -s unlimited" in file "~/.bashrc"
+# Note: added "ulimit -s unlimited" in file "~/.tcshrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
 umask 0022
@@ -32,8 +32,9 @@ sfx='mp2'
 #EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
  options="-j 2 -MPI 3 -mth"
  EXE="mpirun -v -np TR_NPROC ./mitgcmuv"
+#- note: with mpich1, need to set these 2 vars in .tcshrc
  export OMP_NUM_THREADS=2
-#export GOMP_STACKSIZE=400m	<-- added in file "~/.bashrc"
+ export GOMP_STACKSIZE=400m
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
