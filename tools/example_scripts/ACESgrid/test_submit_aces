@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.6 2011/08/15 03:00:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.7 2011/08/15 22:32:46 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -191,7 +191,7 @@ today=`date +%Y%m%d`
 if test $# = 0
 then
  #TEST_LIST='g77 gnu ifc pgi adm mp2 mth tuv'
-  TEST_LIST='gnu pgi adm mp2 mth'
+  TEST_LIST='gnu mp2 adm pgi path mth'
 else
   TEST_LIST=$*
 fi
