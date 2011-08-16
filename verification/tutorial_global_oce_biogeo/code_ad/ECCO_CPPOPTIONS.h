@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.1 2009/10/16 16:20:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.2 2011/08/16 10:35:15 heimbach Exp $
 C $Name:  $
 
 C
@@ -18,7 +18,7 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> Extract adjoint state
-#undef ALLOW_AUTODIFF_MONITOR
+#define ALLOW_AUTODIFF_MONITOR
 C
 C       >>> DO 2-level checkpointing instead of 3-level
 #undef AUTODIFF_2_LEVEL_CHECKPOINT
