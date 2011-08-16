@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.81 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.82 2011/08/16 10:34:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -266,13 +266,13 @@ cph# endif
 #endif /* ALLOW_OFFLINE */
 
 #ifdef ALLOW_GCHEM
-# ifndef ALLOW_AUTODIFF_TAMC
+cph# ifndef ALLOW_AUTODIFF_TAMC
       IF (useGCHEM) THEN
-# endif
+cph# endif
         CALL GCHEM_INIT_VARI( myThid )
-# ifndef ALLOW_AUTODIFF_TAMC
+cph# ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-# endif
+cph# endif
 #endif /* ALLOW_GCHEM */
 
 #ifdef ALLOW_LAND
