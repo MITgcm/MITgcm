@@ -60,6 +60,7 @@
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
  monitorFreq= 1.,
+ adjMonitorFreq=1.,
  &
 
 # Gridding parameters
