@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mth.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mth.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mth,v 1.1 2011/08/10 03:03:14 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mth,v 1.2 2011/08/16 16:44:16 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -49,7 +49,7 @@ fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
     /bin/rm -rf $gcmDIR/verification/??_acesgrid-${sfx}_????????_?
-#   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+    ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
   else
@@ -77,4 +77,8 @@ fi
 cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -odir acesgrid-$sfx
 ./testreport $options -of $OPTFILE -odir acesgrid-$sfx
+
+echo ''
+echo ../tools/do_tst_2+2 -o acesgrid-$sfx -a NONE
+../tools/do_tst_2+2 -o acesgrid-$sfx -a NONE
 
