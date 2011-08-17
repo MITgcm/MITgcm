@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mth.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mth.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.14 2010/12/14 21:34:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.15 2011/08/17 20:45:35 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -49,6 +49,11 @@ if [ $checkOut -eq 1 ] ; then
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+       echo " cvs update fail (return val=$RETVAL) => exit"
+       exit
+    fi
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
@@ -62,16 +67,18 @@ if [ $checkOut -eq 2 ] ; then
 # cvs co MITgcm
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
-else
-  if test -e $gcmDIR/verification ; then
-     echo "dir $gcmDIR/verification exist"
-  else
-     echo "no dir $gcmDIR/verification => exit"
-     exit
-  fi
 fi
 
-cd $gcmDIR/verification
+#- change dir to $gcmDIR/verification dir:
+if test -e $gcmDIR/verification ; then
+  if [ $checkOut -lt 2 ] ; then
+    echo " dir $gcmDIR/verification exist" ; fi
+  cd $gcmDIR/verification
+else
+  echo "no dir $gcmDIR/verification => exit"
+  exit
+fi
+
 echo ./testreport $options -of $OPTFILE -odir aces-$sfx
 ./testreport $options -of $OPTFILE -odir aces-$sfx
 

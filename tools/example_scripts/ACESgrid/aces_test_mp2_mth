@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.8 2011/02/15 18:33:15 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.9 2011/08/17 20:45:35 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -62,6 +62,11 @@ if [ $checkOut -eq 1 ] ; then
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+       echo " cvs update fail (return val=$RETVAL) => exit"
+       exit
+    fi
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
@@ -74,13 +79,16 @@ if [ $checkOut -eq 2 ] ; then
   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
+fi
+
+#- change dir to $gcmDIR/verification dir:
+if test -e $gcmDIR/verification ; then
+  if [ $checkOut -lt 2 ] ; then
+    echo " dir $gcmDIR/verification exist" ; fi
+  cd $gcmDIR/verification
 else
-  if test -e $gcmDIR/verification ; then
-     echo "dir $gcmDIR/verification exist"
-  else
-     echo "no dir $gcmDIR/verification => exit"
-     exit
-  fi
+  echo "no dir $gcmDIR/verification => exit"
+  exit
 fi
 
 #-- in case mpiexec get stuck, run this script in background to check
@@ -89,7 +97,7 @@ if test -x $HERE/check_$sfx ; then
    mv -f $HERE/check_${sfx}.log $HERE/check_${sfx}.log_bak
    ( cd $HERE ; ./check_$sfx > check_${sfx}.log 2>&1 ) &
 fi
-cd $gcmDIR/verification
+
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
 ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
 

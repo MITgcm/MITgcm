@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.13 2011/01/21 05:02:25 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.14 2011/08/17 20:45:35 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -50,6 +50,11 @@ if [ $checkOut -eq 1 ] ; then
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+       echo " cvs update fail (return val=$RETVAL) => exit"
+       exit
+    fi
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
@@ -63,16 +68,18 @@ if [ $checkOut -eq 2 ] ; then
   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
-else
-  if test -e $gcmDIR/verification ; then
-     echo "dir $gcmDIR/verification exist"
-  else
-     echo "no dir $gcmDIR/verification => exit"
-     exit
-  fi
 fi
 
-cd $gcmDIR/verification
+#- change dir to $gcmDIR/verification dir:
+if test -e $gcmDIR/verification ; then
+  if [ $checkOut -lt 2 ] ; then
+    echo " dir $gcmDIR/verification exist" ; fi
+  cd $gcmDIR/verification
+else
+  echo "no dir $gcmDIR/verification => exit"
+  exit
+fi
+
 echo ./testreport $options -of $OPTFILE -odir aces-$sfx
 ./testreport $options -of $OPTFILE -odir aces-$sfx
 

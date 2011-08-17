@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_tuv.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.1 2011/08/17 19:49:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.2 2011/08/17 20:45:35 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -71,12 +71,12 @@ if [ $checkOut -eq 2 ] ; then
   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
-elif test -e $gcmDIR/verification ; then
-  echo "dir $gcmDIR/verification exist"
 fi
 
 #- change dir to $gcmDIR/verification dir:
 if test -e $gcmDIR/verification ; then
+  if [ $checkOut -lt 2 ] ; then
+    echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
   echo "no dir $gcmDIR/verification => exit"
