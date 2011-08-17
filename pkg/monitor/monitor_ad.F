@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.8 2011/06/16 22:49:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.9 2011/08/17 15:01:18 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -29,6 +29,9 @@ C     !USES:
 #include "MONITOR.h"
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
+#endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
 #endif
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
@@ -188,6 +191,10 @@ cph This case is handled separately in exf_adjoint_snapshots_ad.F
 
 #ifdef ALLOW_SEAICE
       CALL ADSEAICE_MONITOR ( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_PTRACERS
+      CALL ADPTRACERS_MONITOR ( myTime, myIter, myThid )
 #endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

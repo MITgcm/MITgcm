@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.20 2011/07/15 13:00:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.21 2011/08/17 15:01:18 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -30,6 +30,9 @@ C     \ev
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+#endif
 #ifdef ALLOW_AUTODIFF_MONITOR
 #include "adcommon.h"
 #endif
