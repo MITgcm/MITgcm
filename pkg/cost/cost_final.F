@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.26 2011/05/24 22:14:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.27 2011/08/17 10:19:29 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -131,7 +131,7 @@ c--   Sum up all contributions.
 c--   Do global summation.
       _GLOBAL_SUM_RL( fc , myThid )
 
-#ifdef ALLOW_DIC
+#ifdef ALLOW_DIC_COST
 cph-- quickly for testing
       fc = totcost
 #endif

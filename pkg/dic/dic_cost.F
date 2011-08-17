@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.12 2009/10/16 15:48:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.13 2011/08/17 10:19:29 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -29,7 +29,7 @@ C     == Routine arguments ==
       _RL myTime
       INTEGER myThid
 
-#ifdef ALLOW_COST
+#ifdef ALLOW_DIC_COST
 
 C     == Local variables ==
       INTEGER i, j, bi, bj, k, it
