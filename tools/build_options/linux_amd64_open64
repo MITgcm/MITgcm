@@ -1,38 +1,56 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.1 2007/11/26 19:18:46 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.2 2011/08/17 14:53:19 jmc Exp $
 #  $Name:  $
 #
-# Build options for Fedore Core 4 x86-64 Opteron
-# tested on (Linux batsi.mit.edu 2.6.14-1.1656_FC4smp #1 SMP Thu Jan 5 22:26:33 EST 2006 x86_64 x86_64 x86_64 GNU/Linux) system 20071121
-#
+# Build options for Open64 Compiler on Linux x86-64
+#  first version tested on Fedore Core 4 x86-64 Opteron (Linux batsi)
+#  updated and tested on acesgrid (Fedora Core 15), using:
+#     module load open64       (Version 4.2.4)
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export OMP_SLAVE_STACK_SIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv OMP_SLAVE_STACK_SIZE 400m
+#-------
 
 CC=opencc
 FC=openf90
-LD=openf90
+LINK=openf90
+
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m64 -g -fPIC'
+EXTENDED_SRC_FLAG='-extend-source'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+#OMPFLAG='-openmp -OPT:early_mp=ON'
+
+NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
-if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
-else
-    FFLAGS='-m64 -convert big_endian -fPIC'
-fi
+FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
+if test "x$IEEE" = x ; then     #- with optimisation:
     FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3' # -funsafe-math-optimizations'
 else
-    #  Try to follow IEEE-754
-    FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  else                          #- development/check options:
+    FFLAGS="$FFLAGS -ffortran-bounds-check -trapuv -g"
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  fi
 fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -fPIC'
+CFLAGS='-O0 -m64 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
