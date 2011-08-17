@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.1 2011/08/17 15:00:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.2 2011/08/17 18:02:42 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -94,7 +94,7 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
      &             '============================='
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
             WRITE(msgBuf,'(A)')
-     &             '// Begin MONITOR ptracer field statistics'
+     &             '// Begin MONITOR adptracer field statistics'
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
             WRITE(msgBuf,'(2A)') '// ==========================',
      &             '============================='
@@ -107,8 +107,7 @@ C--   endif master cpu io
 C      Print the basic statistics of ptracer variables
        CALL MON_SET_PREF('ad_trcstat_',myThid)
        DO ip = 1, PTRACERS_numInUse
-         WRITE(suff,'(A7,A2)') 'adptracer',PTRACERS_ioLabel(ip)
-c        WRITE(suff,'(A6,I4.4)') 'adptrac', ip
+         WRITE(suff,'(A9,A2)') 'adptracer',PTRACERS_ioLabel(ip)
          CALL MON_WRITESTATS_RL(
      &            Nr, adptracer(1-OLx,1-OLy,1,1,1,ip), suff,
      &            hFacC, maskInC, rA ,drF, dummyRL, myThid )
