@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_open64+mth,v 1.1 2009/06/22 23:13:30 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_open64+mth,v 1.1 2011/08/17 14:49:11 jmc Exp $
 #  $Name:  $
 #
 # Multithreaded tests require
