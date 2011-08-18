@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.20 2010/09/11 21:24:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.21 2011/08/18 20:29:49 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -93,8 +93,12 @@ C--   Interface r-distances undefined:
 C     assume Interface at middle between 2 Center
        drF(1) = delRc(1)
        DO k=2,Nr
-         drF(k-1) = 0.5 _d 0 *delRc(k) + drF(k-1)
+c        drF(k-1) = 0.5 _d 0 *delRc(k) + drF(k-1)
+c        drF( k ) = 0.5 _d 0 *delRc(k)
+C- note: change the order to prevent some compilers to produce wrong code
+C        when trying to optimise this loop :
          drF( k ) = 0.5 _d 0 *delRc(k)
+         drF(k-1) = 0.5 _d 0 *delRc(k) + drF(k-1)
        ENDDO
        drF(Nr) = delRc(Nr+1) + drF(Nr)
       ENDIF
