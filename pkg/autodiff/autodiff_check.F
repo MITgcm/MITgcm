@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.8 2011/08/18 09:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.9 2011/08/18 09:13:35 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -25,6 +25,8 @@ C     \ev
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid -  Number of this instances
       INTEGER myThid
+C     msgBuf :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
