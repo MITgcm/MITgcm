@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.10 2011/08/18 09:35:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.11 2011/08/18 09:42:17 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -37,11 +37,11 @@ CEOP
      &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)') 
-     &       '            nchklev_1*nchklev_2 = ',
+     &       'nchklev_1*nchklev_2 = ',
      &       nchklev_1*nchklev_2
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)') 
-     &       '            are not consistent with nTimeSteps = ',
+     &       'are not consistent with nTimeSteps = ',
      &       nTimeSteps
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
@@ -52,11 +52,11 @@ CEOP
      &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)') 
-     &       '            nchklev_1*nchklev_2*nchklev_3*nchklev_4 = ',
+     &       'nchklev_1*nchklev_2*nchklev_3*nchklev_4 = ',
      &       nchklev_1*nchklev_2*nchklev_3*nchklev_4
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)') 
-     &       '            are not consistent with nTimeSteps = ',
+     &       'are not consistent with nTimeSteps = ',
      &       nTimeSteps
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
@@ -69,11 +69,11 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
      &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)') 
-     &       '            nchklev_1*nchklev_2*nchklev_3 = ',
+     &       'nchklev_1*nchklev_2*nchklev_3 = ',
      &       nchklev_1*nchklev_2*nchklev_3
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)') 
-     &       '            are not consistent with nTimeSteps = ',
+     &       'are not consistent with nTimeSteps = ',
      &       nTimeSteps
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
