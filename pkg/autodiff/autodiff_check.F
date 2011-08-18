@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.9 2011/08/18 09:13:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.10 2011/08/18 09:35:31 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -33,41 +33,65 @@ CEOP
 
 #if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
       if (nchklev_1*nchklev_2 .lt. nTimeSteps) then
-        print*, ' the_main_loop: TAMC checkpointing parameters'
-        print*, '     nchklev_1*nchklev_2 = ',
+        WRITE(msgBuf,'(A)') 
+     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(A,I10)') 
+     &       '            nchklev_1*nchklev_2 = ',
      &       nchklev_1*nchklev_2
-        print*, '            are not consistent with nTimeSteps = ',
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(A,I10)') 
+     &       '            are not consistent with nTimeSteps = ',
      &       nTimeSteps
-        stop    ' ... stopped in autodiff_check'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
       endif
 #elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
       if (nchklev_1*nchklev_2*nchklev_3*nchklev_4 .lt. nTimeSteps) then
-        print*, ' the_main_loop: TAMC checkpointing parameters'
-        print*, '     nchklev_1*nchklev_2*nchklev_3*nchklev_4 = ',
+        WRITE(msgBuf,'(A)') 
+     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(A,I10)') 
+     &       '            nchklev_1*nchklev_2*nchklev_3*nchklev_4 = ',
      &       nchklev_1*nchklev_2*nchklev_3*nchklev_4
-        print*, '            are not consistent with nTimeSteps = ',
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(A,I10)') 
+     &       '            are not consistent with nTimeSteps = ',
      &       nTimeSteps
-        stop    ' ... stopped in autodiff_check'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
       endif
 #else
 c--   Check the choice of the checkpointing parameters in relation
 c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
       if (nchklev_1*nchklev_2*nchklev_3 .lt. nTimeSteps) then
-        print*, ' the_main_loop: TAMC checkpointing parameters'
-        print*, '     nchklev_1*nchklev_2*nchklev_3 = ',
+        WRITE(msgBuf,'(A)') 
+     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(A,I10)') 
+     &       '            nchklev_1*nchklev_2*nchklev_3 = ',
      &       nchklev_1*nchklev_2*nchklev_3
-        print*, '            are not consistent with nTimeSteps = ',
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(A,I10)') 
+     &       '            are not consistent with nTimeSteps = ',
      &       nTimeSteps
-        stop    ' ... stopped in autodiff_check'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
       endif
 #endif
 
 #ifndef ALLOW_AUTODIFF_MONITOR
        IF ( adjDumpFreq .NE. 0. ) THEN
-        STOP 'adjDumpFreq <> 0, but undef ALLOW_AUTODIFF_MONITOR'
+        WRITE(msgBuf,'(A)') 
+     &         'adjDumpFreq <> 0, but undef ALLOW_AUTODIFF_MONITOR'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
        ENDIF
        IF ( adjMonitorFreq .NE. 0. ) THEN
-        STOP 'adjMonitorFreq <> 0, but undef ALLOW_AUTODIFF_MONITOR'
+        WRITE(msgBuf,'(A)') 
+     &         'adjMonitorFreq <> 0, but undef ALLOW_AUTODIFF_MONITOR'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
        ENDIF
 #endif
 
@@ -76,7 +100,7 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
         WRITE(msgBuf,'(A)') 
      &         'Need to have useSingleCpuIO=.FALSE. with useGrdchk'
         CALL PRINT_ERROR( msgBuf , myThid )
-          STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
+        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
        ENDIF
 #endif
 
