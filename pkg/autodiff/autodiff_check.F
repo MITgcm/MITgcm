@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.7 2007/10/19 23:52:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.8 2011/08/18 09:10:26 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -71,7 +71,10 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
 
 #ifdef ALLOW_GRDCHK
        IF ( useSingleCpuIO .AND. useGrdchk ) THEN
-          STOP 'Need to have useSingleCpuIO=.FALSE. with useGrdchk'
+        WRITE(msgBuf,'(A)') 
+     &         'Need to have useSingleCpuIO=.FALSE. with useGrdchk'
+        CALL PRINT_ERROR( msgBuf , myThid )
+          STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
        ENDIF
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.2 2011/08/17 15:01:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.3 2011/08/18 09:10:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,9 +34,6 @@ C     == Global variables ===
 #include "MNC_PARAMS.h"
 #endif
 #include "GRID.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_SIZE.h"
-#endif
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
 #endif

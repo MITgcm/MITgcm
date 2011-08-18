@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.21 2011/08/17 15:01:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.22 2011/08/18 09:10:26 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -30,13 +30,14 @@ C     \ev
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_SIZE.h"
-#endif
-#ifdef ALLOW_AUTODIFF_MONITOR
-#include "adcommon.h"
-#endif
 #include "AUTODIFF.h"
+#ifdef ALLOW_AUTODIFF_MONITOR
+# include "adcommon.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+#  include "ptracers_adcommon.h"
+# endif
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid -  Number of this instances

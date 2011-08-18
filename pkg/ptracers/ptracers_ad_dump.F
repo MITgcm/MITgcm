@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.1 2011/08/17 18:02:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.2 2011/08/18 09:10:26 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -38,7 +38,7 @@ C     == Global variables ===
 #endif
 #include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-# include "adcommon.h"
+# include "ptracers_adcommon.h"
 #endif
 
       LOGICAL  DIFFERENT_MULTIPLE

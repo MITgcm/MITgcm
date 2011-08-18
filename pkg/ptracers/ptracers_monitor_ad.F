@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.2 2011/08/17 18:02:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.3 2011/08/18 09:10:26 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -28,7 +28,7 @@ C !USES: ===============================================================
 #endif
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
-#  include "adcommon.h"
+#  include "ptracers_adcommon.h"
 # endif
 #endif
 
