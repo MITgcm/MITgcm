@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.6 2011/08/10 23:27:21 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.7 2011/08/18 22:04:49 jmc Exp $
 #  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
@@ -25,24 +25,30 @@ LINK=pathf90
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-extend-source'
 GET_FC_VERSION="-v"
 OMPFLAG='-openmp'
+#OMPFLAG='-openmp -OPT:early_mp=ON'
 
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
-if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
-else
-    FFLAGS='-m64 -convert big_endian -fPIC'
-fi
+FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
+if test "x$IEEE" = x ; then     #- with optimisation:
+   #- full optimisation, trips over MITgcm code because of compiler problems:
+   #FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
+   #- high optimisation (-O3), might find Pb with few S/R; fully safe: switch to -O2:
+    FOPTIM='-O3 -LNO:fusion=2 -funsafe-math-optimizations'
 else
-    #  Try to follow IEEE-754
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  else                          #- development/check options:
+    FFLAGS="$FFLAGS -ffortran-bounds-check -trapuv -g"
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  fi
 fi
 
 F90FLAGS=$FFLAGS
