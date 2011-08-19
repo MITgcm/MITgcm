@@ -1,12 +1,20 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.3 2011/08/18 22:04:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.4 2011/08/19 22:48:06 jmc Exp $
 #  $Name:  $
 #
 # Build options for Open64 Compiler on Linux x86-64
 #  first version tested on Fedore Core 4 x86-64 Opteron (Linux batsi)
 #  updated and tested on acesgrid (Fedora Core 15), using:
 #     module load open64       (Version 4.2.4)
+# Also tested with MPI on acesgrid, using:
+#     module load open64       (Version 4.2.4)
+#  and  with mpich1:
+#     module load mvapich
+#   or  with mpich2:
+#     module load mvapich2
+#   or  with openmpi:  <== not yet tested
+#     module load openmpi
 
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -19,9 +27,15 @@
 #     > setenv OMP_SLAVE_STACK_SIZE 400m
 #-------
 
-CC=opencc
-FC=openf90
-LINK=openf90
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif90
+  LINK=mpif90
+else
+  CC=opencc
+  FC=openf90
+  LINK=openf90
+fi
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
@@ -58,6 +72,10 @@ F90OPTIM=$FOPTIM
 CFLAGS='-O0 -m64 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
 
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
     INCLUDES="-I${NETCDF_ROOT}/include"
@@ -91,5 +109,13 @@ elif test -d /usr/local/netcdf ; then
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
 fi
 
