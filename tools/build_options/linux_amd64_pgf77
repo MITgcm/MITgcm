@@ -1,12 +1,11 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.3 2010/12/20 14:45:18 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.4 2011/08/19 22:54:42 jmc Exp $
 #  $Name:  $
 #
 # Build options for PGI compiler on Linux AMD64 platform
 #
 # tested with PGI version 10.9 on baudelaire (Linux 2.6.34.7-61.fc13.x86_64), using:
-#-------
 #   -  sh,bash:
 #     > export PGI=/srv/software/pgi/pgi-10.9
 #     > export PATH=$PGI/linux86-64/10.9/bin:$PATH
@@ -17,10 +16,23 @@
 #     > set path=($PGI/linux86-64/10.9/bin $path)
 #     > setenv MANPATH "$MANPATH":$PGI/linux86-64/10.9/man
 #     > setenv LM_LICENSE_FILE $PGI/license.dat
+#
+# and tested also with MPI on acesgrid (Fedora Core 15), using:
+#       module load pgi     (Version 11.7)
+#   and with mpich2:
+#       module load mvapich2
+#   or  with openmpi:
+#       module load openmpi
 #-------
 
-FC=pgf77
-CC=pgcc
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif77
+  LINK=mpif77
+else
+  CC=pgcc
+  FC=pgf77
+fi
 
 DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp -traditional -P'
@@ -28,17 +40,28 @@ EXTENDED_SRC_FLAG='-Mextend'
 GET_FC_VERSION="-V"
 
 NOOPTFLAGS='-O0'
+NOOPTFILES=''
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    FFLAGS="$FFLAGS -byteswapio -Ktrap=fp"
-    FOPTIM='-tp k8-64 -pc=64 -O2 -Mvect=sse'
-   #FOPTIM="$FOPTIM -fastsse -O3 -Msmart -Mvect=cachesize:1048576,transform"
-else
-    #  Try to follow IEEE-754
-    FFLAGS="$FFLAGS -byteswapio -Ktrap=fp -Mdclchk"
-    FOPTIM='-pc=64 -O0 -Kieee'
-fi
+FFLAGS="$FFLAGS -byteswapio -Ktrap=fp"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
+if test "x$IEEE" = x ; then	#- with optimisation:
+    FOPTIM='-tp k8-64 -pc=64 -O2 -Mvect=sse'
+   #FOPTIM="$FOPTIM -fastsse -O3 -Msmart -Mvect=cachesize:1048576,transform"
+else				#- no optimisation + IEEE :
+   #FFLAGS="$FFLAGS -Mdclchk"  #- pkg/zonal_filt does not pass with declaration-check
+    FOPTIM='-pc=64 -O0 -Kieee'
+fi
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
