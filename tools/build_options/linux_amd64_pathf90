@@ -1,13 +1,21 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.7 2011/08/18 22:04:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.8 2011/08/19 22:54:04 jmc Exp $
 #  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
 #  first version tested on Fedore Core 3 x86-64 Opteron (Linux batsi)
 #  updated and tested on acesgrid (Fedora Core 15), using:
 #     module load ekopath	(Version 4.0.10)
-#
+# Also tested with MPI on acesgrid, using:
+#     module load ekopath	(Version 4.0.10)
+#   and with mpich1:
+#     module load mvapich
+#   or  with mpich2:
+#     module load mvapich2
+#   or  with openmpi:
+#     module load openmpi
+
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
 #    and generally, needs to increase the thread stack-size:
@@ -19,14 +27,20 @@
 #     > setenv PSC_OMP_STACK_SIZE 400m
 #-------
 
-CC=pathcc
-FC=pathf90
-LINK=pathf90
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif90
+  LINK=mpif90
+else
+  CC=pathcc
+  FC=pathf90
+  LINK=pathf90
+fi
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-extend-source'
-GET_FC_VERSION="-v"
+GET_FC_VERSION="--version"
 OMPFLAG='-openmp'
 #OMPFLAG='-openmp -OPT:early_mp=ON'
 
@@ -42,6 +56,7 @@ if test "x$IEEE" = x ; then     #- with optimisation:
    #FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
    #- high optimisation (-O3), might find Pb with few S/R; fully safe: switch to -O2:
     FOPTIM='-O3 -LNO:fusion=2 -funsafe-math-optimizations'
+    NOOPTFILES="$NOOPTFILES mon_set_iounit.F"
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
@@ -55,6 +70,10 @@ F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS='-O0 -m64 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -91,3 +110,10 @@ elif test -d /usr/local/include/netcdf.inc ; then
     LIBS='-L/usr/local/lib64'
 fi
 
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
