@@ -1,14 +1,31 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.13 2011/07/07 22:46:44 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.14 2011/08/21 21:06:51 jmc Exp $
 #  $Name:  $
 
+# Build options for gfortran compiler (GNU) on Linux AMD64 platform
+#
 #  Tested with gcc-gfortran v4.1.x as shipped with Fedora Core 6,7,8
 #         with gcc-gfortran v4.3.x as shipped with Fedora Core 9,10
-
+#
 # OpenMP : Tested on dickens with gcc-gfortran v4.3.2 as shipped with FC 10
-#          and on baudelaire with gcc-gfortran v4.4.5 as shipped with FC 13
-#          also on danton    with gcc-gfortran v4.5.1 as shipped with FC 14
+#              on baudelaire with gcc-gfortran v4.4.5 as shipped with FC 13
+#              on danton     with gcc-gfortran v4.5.1 as shipped with FC 14
+#              on acesgrid   with gcc-gfortran v4.6.0 as shipped with FC 15
+#
+# MPI : Tested on acesgrid (Fedora Core 15), using:
+#       module load gcc     (Version 4.6.0)
+#   and with mpich1:
+#       module load mvapich
+#   or  with mpich2:
+#       module load mvapich2
+#   or  with openmpi:
+#       module load openmpi
+# and on baudelaire.csail.mit.edu (FC13), using:
+#       export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
+#       export MPI_INC_DIR=$MPI_GCC_DIR/include
+#       export PATH=$MPI_GCC_DIR/bin:$PATH
+
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
 #    and generally, needs to increase the thread stack-size:
@@ -20,46 +37,61 @@
 #     > setenv GOMP_STACKSIZE 400m
 #-------
 
-FC=gfortran
-F90C=gfortran
-CC=gcc
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
+else
+  CC=gcc
+  FC=gfortran
+  F90C=gfortran
+fi
+
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
-CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0'
+CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 GET_FC_VERSION="--version"
 OMPFLAG='-fopenmp'
 
-if test "x$DEVEL" != x ; then
-    FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
-else
-    FFLAGS=''
-fi
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
 
 # Requires gfortran from 2006 onwards for -fconvert=big-endian
 FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
 # for big objects:
 FFLAGS="$FFLAGS -fPIC"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8"
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
+if test "x$IEEE" = x ; then     #- with optimisation:
+   #- full optimisation
     FOPTIM='-O3 -funroll-loops'
+    NOOPTFILES="$NOOPTFILES ini_masks_etc.F"
+   #- can use -O2 (safe optimisation) to avoid Pb with some gcc version of -O3:
+   #FOPTIM='-O2 -funroll-loops'
 else
-    #  Try to follow IEEE-754
-    # these may also be useful, but require specific gfortran versions:
-    # -Wnonstd-intrinsics  for gfortran <= 4.3
-    # -Wintrinsics-std     for gfortran >= 4.4
-    # -Wno-tabs            for gfortran >= 4.3
+   # these may also be useful, but require specific gfortran versions:
+   # -Wnonstd-intrinsics  for gfortran <= 4.3
+   # -Wintrinsics-std     for gfortran >= 4.4
+   # -Wno-tabs            for gfortran >= 4.3
     FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
-#   to get plenty of warnings :
-#   FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
+   #- to get plenty of warnings: -Wall -Wextra (older form: -Wall -W) or:
+   #FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0'
-#   for automatic testing with testreport (but no relation with IEEE arithmetic):
+  else                          #- development/check options:
+    FOPTIM='-O0'
     FOPTIM="$FOPTIM -g -ffpe-trap=invalid,zero,overflow -fbounds-check"
+  fi
 fi
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS='-O0 -fPIC'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -94,4 +126,12 @@ elif test -d /usr/local/netcdf ; then
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
 fi
