@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1491 2011/08/12 22:22:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1492 2011/08/22 15:29:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - towards single optfile for MPI and non-MPI built: merge few +mpi optfile
+    into previously non MPI one (linux_am64 pgf77,open64,pathf90,ifort11)
+  - linux_amd64_gfortran: merge +mpi_generic version into standard optfile:
+    * move IEEE flags to DEVEL section; take IEEE flags from +mpi_generic ;
+    * FAST case: for now, keep -O3 with ini_masks_etc.F in NOOPTFILES list;
+    and use "-devel" testreport option for standard testing on baudelaire.
 o pkg/grdchk:
   - Assume that all gradient-check position are within the same tile
     corresponding to global indices (iGloTile,jGloTile) and that
