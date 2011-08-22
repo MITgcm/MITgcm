@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.8 2011/01/27 01:30:28 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.9 2011/08/22 15:27:23 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -32,7 +32,7 @@ sepDir=1
 option=
 tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
 #tst_list='g77 adm gfo ifc mth pgi+rs'
-#tst_list='g77 gfo+rs mth'
+#tst_list='adm gfo+rs mth'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
@@ -128,11 +128,11 @@ do
   case $typ in
    'g77'|'g7a')		OPTFILE='../tools/build_options/linux_amd64_g77' ;;
    'gfo'|'adm'|'mth')	OPTFILE='../tools/build_options/linux_amd64_gfortran'
-			comm="$comm -match $MC" ;;
+			comm="$comm -match $MC -devel" ;;
    'ifc')		OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
    'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
-   'mpa'|'mpi'|'mp2')	OPTFILE='../tools/build_options/linux_amd64_gfortran+mpi_generic'
-			comm="$comm -match $MC" ; MPI=6 ;;
+   'mpa'|'mpi'|'mp2')	OPTFILE='../tools/build_options/linux_amd64_gfortran'
+			comm="$comm -match $MC -devel" ; MPI=6 ;;
        *)		OPTFILE= ;;
   esac
 #-- set MPI command:
