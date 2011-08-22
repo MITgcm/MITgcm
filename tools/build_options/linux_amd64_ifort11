@@ -1,16 +1,20 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.6 2011/07/07 22:58:36 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.7 2011/08/22 03:51:11 jmc Exp $
 # $Name:  $
-#
-#  Constantinos Evangelinos
-#
-#  Build options for the intel 11 & 12 fortran compiler
-#
-#  Tested on baudelaire (FC 13) with intel compiler v.11.1.073 (20100806)
 
+#  Build options for version 11 and newer of intel compiler on Linux AMD64 platform
+#  Author: Constantinos Evangelinos
+
+#  Tested on baudelaire (FC 13) with intel compiler v.11.1.073 (20100806)
+#
 # OpenMP : tested on danton (FC 14) using intel compiler v.11.1.046 (20090630)
 #                                              and also  v.12.0.4   (20110427)
+#
+# MPI : Tested  on danton (FC 14), with and without OpenMP, using
+#       intel compiler v.11.1.046 (20090630) and also  v.12.0.4   (20110427)
+# ==> DON'T FORGET to set environment variable MPI_INC_DIR to the include
+#     directory of your MPI implementation
 
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -21,15 +25,24 @@
 #   - csh,tcsh:
 #     > setenv OMP_NUM_THREADS 2
 #     > setenv KMP_STACKSIZE 400m
+#  NOTE, MPI+OpenMP: might need to set KMP_STACKSIZE in ~/.tcshrc
+#        (but curiously, works without OMP_NUM_THREADS in ~/.tcshrc).
 #-------
 
-FC=ifort
-F90C=ifort
-CC=icc
-LINK=ifort
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
+  LINK="$F90C -shared-intel -no-ipo"
+else
+  CC=icc
+  FC=ifort
+  F90C=ifort
+  LINK=ifort
+fi
 
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp  -traditional -P'
+CPP='cpp -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
@@ -37,10 +50,6 @@ OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
-
-INCLUDEDIRS=''
-INCLUDES=''
-LIBS=''
 
 if test "x$GENERIC" != x ; then
     PROCF=-axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2
@@ -68,6 +77,10 @@ fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS="-O0 -ip -m64 -fPIC $PROCF"
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIRS="${NETCDF_ROOT}/include"
@@ -108,3 +121,10 @@ elif test -f /usr/local/include/netcdf.inc ; then
     LIBS='-L/usr/local/lib64 -L/usr/local/lib'
 fi
 
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
