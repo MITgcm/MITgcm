@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_path.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_path.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mpi,v 1.2 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mpi,v 1.3 2011/08/24 12:57:36 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -27,11 +27,14 @@ HERE=$TST_DIR/output
 sfx='path'
  module add ekopath
  module add openmpi
- OPTFILE="../tools/build_options/linux_amd64_pathf90+mpi"
+ OPTFILE="../tools/build_options/linux_amd64_pathf90"
 #options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
 #EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
  options="-j 2 -MPI 6"
  EXE="mpirun -v -np TR_NPROC ./mitgcmuv"
+
+dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
+if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
@@ -57,7 +60,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -81,7 +84,7 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 
