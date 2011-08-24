@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.2 2008/04/06 02:03:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.3 2011/08/24 22:34:15 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -36,7 +36,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  none
 
 #ifdef ALLOW_MYPACKAGE
-#if (defined MYPACKAGE_3D_STATE) || (defined MYPACKAGE_3D_STATE)
+#if (defined MYPACKAGE_3D_STATE) || (defined MYPACKAGE_2D_STATE)
 
 C     === Functions ====
       INTEGER  ILNBLNK
@@ -54,6 +54,7 @@ C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
       INTEGER j, nj, fp, lChar
       LOGICAL glf
+      _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 12 )
@@ -131,15 +132,16 @@ C     uses this specific S/R to write (with more informations) only meta files
           nj = nWrFlds
         ENDIF
         glf  = globalFiles
+        timList(1) = myTime
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, j, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
-#endif /* MYPACKAGE_3D_STATE or MYPACKAGE_3D_STATE */
+#endif /* MYPACKAGE_3D_STATE or MYPACKAGE_2D_STATE */
 #endif /* ALLOW_MYPACKAGE */
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_read_pickup.F,v 1.2 2009/06/14 21:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_read_pickup.F,v 1.3 2011/08/24 22:34:15 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -27,7 +27,7 @@ C     myThid            :: thread number
       INTEGER myThid
 
 #ifdef ALLOW_MYPACKAGE
-#if (defined MYPACKAGE_3D_STATE) || (defined MYPACKAGE_3D_STATE)
+#if (defined MYPACKAGE_3D_STATE) || (defined MYPACKAGE_2D_STATE)
 
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
@@ -186,7 +186,7 @@ C-      Assume Agrid position:
         CALL EXCH_XY_RL( myPa_Surf2, myThid )
 #endif /* MYPACKAGE_2D_STATE */
 
-#endif /* MYPACKAGE_3D_STATE or MYPACKAGE_3D_STATE */
+#endif /* MYPACKAGE_3D_STATE or MYPACKAGE_2D_STATE */
 #endif /* ALLOW_MYPACKAGE */
 
       RETURN
