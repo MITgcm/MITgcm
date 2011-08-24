@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_tuv.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.2 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.3 2011/08/24 12:58:00 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -34,6 +34,9 @@ sfx='tuv'
 #export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
  ulimit -s unlimited
 
+#dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
+#if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
+
 checkOut=1
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
@@ -55,7 +58,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -79,7 +82,7 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 
