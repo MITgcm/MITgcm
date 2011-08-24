@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.3 2011/08/01 20:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.4 2011/08/24 02:23:41 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -101,9 +101,19 @@ CEOP
       _RL  s2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL  x2dm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('DIAG_CG2D',myThid)
+#endif
+
 C--   Set matrice main diagnonal:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    Initialise overlap regions (in case EXCH call do not fill them all)
+        DO j = 1-Oly,sNy+Oly
+         DO i = 1-Olx,sNx+Olx
+           aC2d(i,j,bi,bj) = 0.
+         ENDDO
+        ENDDO
         DO j=1,sNy
          DO i=1,sNx
            aC2d(i,j,bi,bj) = -( ( aW2d(i,j,bi,bj)+aW2d(i+1,j,bi,bj) )
@@ -352,6 +362,10 @@ C-    use the lowest residual solution (instead of current one <-> last residual
         ENDDO
       ENDIF
 c     CALL EXCH_XY_RL( x2d, myThid )
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('DIAG_CG2D',myThid)
+#endif
 
       RETURN
       END
