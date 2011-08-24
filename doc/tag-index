@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1492 2011/08/22 15:29:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1493 2011/08/24 02:51:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics (velocity potential solver):
+  - fix initialisation of main diagonal matrix (for overlap values)
 o tools/build_options:
   - towards single optfile for MPI and non-MPI built: merge few +mpi optfile
     into previously non MPI one (linux_am64 pgf77,open64,pathf90,ifort11)
