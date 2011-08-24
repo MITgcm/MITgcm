@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.3 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.4 2011/08/24 12:56:48 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -27,7 +27,7 @@ HERE=$TST_DIR/output
 sfx='mp2'
  module add gcc
  module add mvapich2
- OPTFILE="../tools/build_options/linux_amd64_gfortran+mpi_generic"
+ OPTFILE="../tools/build_options/linux_amd64_gfortran"
 #options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
 #EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
  options="-j 2 -MPI 3 -mth"
@@ -35,6 +35,9 @@ sfx='mp2'
 #- note: with mpich1, need to set these 2 vars in .tcshrc
  export OMP_NUM_THREADS=2
  export GOMP_STACKSIZE=400m
+
+dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
+if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
@@ -55,12 +58,12 @@ fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
     /bin/rm -rf $gcmDIR/verification/??_acesgrid-${sfx}_????????_?
-#   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+    ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -84,11 +87,15 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 
 # avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir acesgrid-$sfx
 ./testreport $options -of $OPTFILE -command "$EXE" -odir acesgrid-$sfx
+
+echo ''
+echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o acesgrid-$sfx -a NONE
+../tools/do_tst_2+2 -mpi -exe "$EXE" -o acesgrid-$sfx -a NONE
 
