@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.8 2011/08/17 19:49:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.9 2011/08/24 12:58:26 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -37,6 +37,16 @@ sub_list_jobs()
        else
        #-- to submit job
          if test "x_$job_exist" = x_0 ; then
+           #-- update code if not done within submitted script 
+           doUp=`grep -c '^ *checkOut=0' $SUB_DIR/test_aces_$sfx`
+           if test ! -e $TST_DIR/MITgcm_$i ; then doUp=0; fi
+           if [ $doUp -ge 1 ] ; then
+             echo "" >> $LOG_FIL
+             echo " update $TST_DIR/MITgcm_$i :" | tee -a $LOG_FIL
+             ( cd $TST_DIR/MITgcm_$i
+               cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+             ) >> $LOG_FIL 2>&1
+           fi
            echo -n " $JOB : " | tee -a $LOG_FIL
            $QSUB $SUB_DIR/test_aces_$sfx | tee -a $LOG_FIL
            eval M_$i='submitted'
@@ -191,14 +201,14 @@ today=`date +%Y%m%d`
 if test $# = 0
 then
  #TEST_LIST='g77 gnu ifc pgi adm mp2 mth tuv'
-  TEST_LIST='gnu mp2 adm pgi path mth tuv'
+  TEST_LIST='gnu mp2 adm pgi path mth op64 tuv'
 else
   TEST_LIST=$*
 fi
 
 QSUB="/usr/local/bin/qsub"
 QSTAT="/usr/local/bin/qstat"
-TST_DIR="/mit/jm_c/test_acesgrid/"
+TST_DIR="/mit/jm_c/test_acesgrid"
 logPfix='tst_submit'
 outPfix='acesgrid'
 # QSUB=qsub
@@ -242,12 +252,12 @@ if test $action = 1 ; then
 else
 #date_str=`date +%Y%m%d`"_0"
 
+  echo "" | tee -a $LOG_FIL
 #- build the mpack utility (from build_mpack in testreport):
   MPACKDIR=`dirname $MPACK`
   ( cd $MPACKDIR && ./configure && make ) > TTT.build_mpack.$$ 2>&1
   RETVAL=$?
   if test "x$RETVAL" != x0 ; then
-    echo
     echo "Error building the mpack tools at: $MPACK_DIR" | tee -a $LOG_FIL
     if test -x $MPACK ; then
        HAVE_MPACK=t
@@ -260,13 +270,13 @@ else
     if test -x $MPACK ; then
        rm -f TTT.build_mpack.$$
        HAVE_MPACK=t
-       echo " building mpack: OK" | tee -a $LOG_FIL
+       echo "Building mpack: OK" | tee -a $LOG_FIL
     else
        echo " $MPACK not executable" | tee -a $LOG_FIL
        HAVE_MPACK=f
     fi
   fi
-  echo
+  echo "" >> $LOG_FIL
 
   NB_JOBS2GET=$NB_SUB_JOBS
 fi
