@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_calc_psivel.F,v 1.3 2011/08/01 20:40:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_calc_psivel.F,v 1.4 2011/08/24 02:24:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -75,6 +75,10 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL kPsi(1:sNx+1,1:sNy+1)
 #endif /* ALLOW_OBCS */
 CEOP
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('DIAG_CALC_PSIVEL',myThid)
+#endif
 
 C--   Initialise
       zeroPsi = iPsi0(1,1).GE.0
@@ -262,6 +266,10 @@ C--   step.3 : shift stream-function to satisfy Psi == 0 @ a particular location
          ENDDO
         ENDDO
       ENDIF
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('DIAG_CALC_PSIVEL',myThid)
+#endif
 
       RETURN
       END

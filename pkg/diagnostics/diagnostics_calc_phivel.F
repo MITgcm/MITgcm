@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.7 2011/08/01 20:39:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.8 2011/08/24 02:24:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -85,6 +85,10 @@ C     psiLoc  :: horizontal stream-function at special location
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('DIAGNOSTICS_CALC_PHIVEL',myThid)
+#endif
 
       DO ks = 1,nlevels(listId)
         k = NINT(levs(ks,listId))
@@ -297,6 +301,10 @@ C-    Put the results back in qtmp[1,2]
         ENDDO
 
       ENDDO
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('DIAGNOSTICS_CALC_PHIVEL',myThid)
+#endif
 
       RETURN
       END
