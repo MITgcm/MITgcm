@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.11 2010/03/16 00:22:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.12 2011/08/25 22:19:17 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -59,6 +59,7 @@ C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
       INTEGER iTracer, j, prec, lChar
       LOGICAL glf
+      _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 3*PTRACERS_num )
@@ -167,10 +168,11 @@ C--------------------------
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta files
         glf  = globalFiles
+        timList(1) = myTime
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
      &                         0, 0, Nr, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList,
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_write_pickup.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_write_pickup.F,v 1.2 2011/08/25 22:19:17 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -52,6 +52,7 @@ C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
       INTEGER j, fp, lChar
       LOGICAL glf
+      _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 3 )
@@ -100,10 +101,11 @@ C--------------------------
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write meta file
         glf  = globalFiles
+        timList(1) = myTime
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, 1, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList,
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

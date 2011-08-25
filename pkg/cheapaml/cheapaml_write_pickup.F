@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.6 2011/03/18 22:39:06 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.7 2011/08/25 22:19:17 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -54,6 +54,7 @@ C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
       INTEGER j, nj, fp, lChar
       LOGICAL glf
+      _RL     timList
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 12 )
@@ -82,7 +83,7 @@ C-    switch to 2-D fields:
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        Tair, nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Tair    '
-     
+
 
         j = j + 1
         nj = nj-1
@@ -107,7 +108,7 @@ C-    switch to 2-D fields:
      &                        EmPmR, nj, myIter, myThid )
          IF (j.LE.listDim) wrFldList(j) = 'EmPmR   '
 
-        endif 
+        endif
 
 
         if (useCheapTracer) then
@@ -118,7 +119,7 @@ C-    switch to 2-D fields:
      &                        Cheaptracer, nj, myIter, myThid )
          IF (j.LE.listDim) wrFldList(j) = 'cTracer '
 
-         endif 
+         endif
 
 C--------------------------
         nWrFlds = j
@@ -140,10 +141,11 @@ C     uses this specific S/R to write (with more informations) only meta files
           nj = nWrFlds
         ENDIF
         glf  = globalFiles
+        timList(1) = myTime
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, j, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

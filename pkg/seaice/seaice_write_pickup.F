@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.6 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.7 2011/08/25 22:19:17 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,6 +54,7 @@ C     nj          :: record number
 C     msgBuf      :: Informational/error message buffer
       INTEGER fp
       LOGICAL  glf
+      _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 20 )
@@ -173,10 +174,11 @@ C--    write Sea-Ice Dynamics variables (all 2-D fields):
 C     uses this specific S/R to write (with more informations) only meta files
        nj = ABS(nj)
        glf  = globalFiles
+       timList(1) = myTime
        CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, 1, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
