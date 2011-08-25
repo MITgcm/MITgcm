@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1493 2011/08/24 02:51:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1494 2011/08/25 22:47:03 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/matrix_example:
+   To allow to split the domain in several tiles, change the domain size
+    from 31x31 to 32x32 by adding 1 row (on Southern side) + 1 column (on
+    Western side) of land points.
+o (*_)write_pickup:
+  - fix few bugs in mypackage_read/write_pickup.F
+  - in MDS_WR_METAFILES calls, replace "myTime" by a local copy into
+    array of length 1 (was caught by compiler syntax-check).
 o pkg/diagnostics (velocity potential solver):
   - fix initialisation of main diagonal matrix (for overlap values)
 o tools/build_options:
