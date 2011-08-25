@@ -1,6 +1,6 @@
 # Packages
  &PACKAGES
- usePTRACERS=.TRUE.
- useMATRIX=.TRUE.
- /
+ usePTRACERS=.TRUE.,
+ useMATRIX  =.TRUE.,
+ &
   

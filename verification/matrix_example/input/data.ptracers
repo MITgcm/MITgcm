@@ -8,6 +8,6 @@
  PTRACERS_advScheme(1)=30,
  PTRACERS_diffKh(1)=5.E3,
  PTRACERS_diffKr(1)=5.E-5,
- PTRACERS_initialFile(1)='trinit1',
- /
+ PTRACERS_initialFile(1)='tr1_ini.bin',
+ &
 

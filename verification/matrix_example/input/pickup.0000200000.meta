@@ -1,7 +1,7 @@
  nDims = [   2 ];
  dimList = [
-             31,    1,   31,
-             31,    1,   31
+             32,    1,   32,
+             32,    1,   32
           ];
  format = [ 'float64' ];
  nrecords = [    11 ];
