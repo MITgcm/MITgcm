@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1494 2011/08/25 22:47:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1495 2011/08/26 20:27:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/matrix_example:
+  - split domain in 8 tiles (2x4); add SIZE.h_mpi and eedata.mth for
+    MPI and mutlti-threaded testing.
+o pkg/matrix:
+  - change name of S/R MATRIX_INIT to S/R MATRIX_INIT_VARIA ;
+  - fix for multi-tiles (add bi,bj indices to exp/impMatrixCounter);
+  - fix for multi-threaded (remove DATA statement);
+  - use standard DIFFERENT_MULTIPLE function;
+  - add MATRIX_OPTIONS.h
 o verification/matrix_example:
    To allow to split the domain in several tiles, change the domain size
     from 31x31 to 32x32 by adding 1 row (on Southern side) + 1 column (on
