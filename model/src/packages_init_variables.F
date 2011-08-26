@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.82 2011/08/16 10:34:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.83 2011/08/26 19:26:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,7 +79,7 @@ C       |-- ATM2D_INIT_VARS
 C       |
 C       |-- FIZHI_INI_VARS
 C       |
-C       |-- MATRIX_INIT
+C       |-- MATRIX_INIT_VARIA
 C       |
 C       |-- RBCS_INIT_VARIA
 C       |
@@ -412,7 +412,7 @@ C Initialize FIZHI state variables
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('MATRIX_INIT',myThid)
 # endif
-        CALL MATRIX_INIT( myThid )
+        CALL MATRIX_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_MATRIX */
 

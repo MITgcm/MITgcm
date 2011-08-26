@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/Attic/matrix_init.F,v 1.3 2007/11/05 18:58:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_init_varia.F,v 1.1 2011/08/26 19:26:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE MATRIX_INIT( myThid )
+      SUBROUTINE MATRIX_INIT_VARIA( myThid )
 
       IMPLICIT NONE
 
