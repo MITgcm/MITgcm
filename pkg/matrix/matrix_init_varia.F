@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_init_varia.F,v 1.1 2011/08/26 19:26:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_init_varia.F,v 1.2 2011/08/26 19:47:00 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "MATRIX_OPTIONS.h"
 
       SUBROUTINE MATRIX_INIT_VARIA( myThid )
 
@@ -25,39 +24,30 @@ C     local variables:
       INTEGER iTracer
 
 C     Initialize counters
-      expMatrixCounter=0
-      impMatrixCounter=0
+      expMatrixWriteCount = 1
+      impMatrixWriteCount = 1
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         expMatrixCounter(bi,bj) = 0
+         impMatrixCounter(bi,bj) = 0
+       ENDDO
+      ENDDO
       DO iTracer=1,PTRACERS_num
-        DO bj=myByLo(myThid), myByHi (myThid)
-          DO bi=myBxLo (myThid), myBxHi (myThid)
-            DO k=1,Nr
-              DO j=1-Oly, sNy+Oly
-                DO i=1-Olx, sNx+Olx
-                    PTRACERS_initial(i,j,k,bi,bj,iTracer)=
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-Oly, sNy+Oly
+             DO i=1-Olx, sNx+Olx
+               PTRACERS_initial(i,j,k,bi,bj,iTracer) =
      &                  pTracer(i,j,k,bi,bj,iTracer)
-                  MATRIX(i,j,k,bi,bj,iTracer,1)= 0. _d 0
-                  MATRIX(i,j,k,bi,bj,iTracer,2)= 0. _d 0
-                ENDDO
-              ENDDO
+               MATRIX(i,j,k,bi,bj,iTracer,1) = 0. _d 0
+               MATRIX(i,j,k,bi,bj,iTracer,2) = 0. _d 0
+             ENDDO
             ENDDO
-          ENDDO
+           ENDDO
+         ENDDO
         ENDDO
       ENDDO
-
-C      DO iTracer=1,PTRACERS_numInUse
-C         DO bj=myByLo(myThid), myByHi (myThid)
-C            DO bi=myBxLo (myThid), myBxHi (myThid)
-C               DO k=1,Nr
-C                  DO j=1-Oly, sNy+Oly
-C                     DO i=1-Olx, sNx+Olx
-C                        MATRIX(i,j,k,bi,bj,iTracer,1)= 0. _d 0
-C                        MATRIX(i,j,k,bi,bj,iTracer,2)= 0. _d 0
-C                     ENDDO
-C                  ENDDO
-C               ENDDO
-C            ENDDO
-C         ENDDO
-C      ENDDO
 
 #endif /* ALLOW_MATRIX */
       RETURN
