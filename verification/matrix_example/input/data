@@ -18,7 +18,7 @@
  tAlpha=2.E-4,
  sBeta =0.E-4,
 # ivdc_kappa=50.,
-# implicitViscosity=.TRUE., 
+# implicitViscosity=.TRUE.,
 # implicitDiffusion=.TRUE.,
 # turn on looped cells
 # hFacMin=.2,
@@ -30,8 +30,7 @@
 # set precision of data files
 # readBinaryPrec=32,
  writeBinaryPrec=64,
- globalFiles=.TRUE., 
- useSingleCpuIO=.TRUE. 
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
