@@ -1,33 +1,38 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.4 2009/08/30 22:06:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.5 2011/08/28 17:35:38 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE EBM_LOAD_CLIMATOLOGY( myThid )
-C     |==========================================================|
-C     | S/R EBM_LOAD_CLIMATOLOGY                                 |
-C     |==========================================================|
+CBOP 0
+C !ROUTINE: EBM_LOAD_CLIMATOLOGY
 
+C !INTERFACE:
+      SUBROUTINE EBM_LOAD_CLIMATOLOGY( myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | S/R EBM_LOAD_CLIMATOLOGY
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
 #ifdef ALLOW_EBM
 # include "EBM.h"
 #endif
-C     === Routine arguments ===
-      INTEGER myThid
 
-CEndOfInterface
+C     !INPUT PARAMETERS:
+C     myThid     :: my Thread Id number
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_EBM
-
-C     === Local variables ===
-C     msgBuf - Error message buffer
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j
       _RL distY,tauX,tauMax,lY
 
@@ -90,15 +95,15 @@ c          tauX  = -tauMax*cos(2. _d 0*PI*distY)
       _EXCH_XY_RS( Run, myThid )
       CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
-      CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , 1, myThid )
-      CALL PLOT_FIELD_XYRS( SSS, 'Salt  Climatology' , 1, myThid )
-      CALL PLOT_FIELD_XYRS( Run, 'Runoff Climatology' , 1, myThid )
-      CALL PLOT_FIELD_XYRS( fu,
-     &   'WIND_STRESS_CLIMATOLOGY FU',1,myThid)
-      CALL PLOT_FIELD_XYRS( fv,
-     &   'WIND_STRESS_CLIMATOLOGY FV',1,myThid)
+      IF ( debugLevel.GE.debLevC ) THEN
+        CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , 1, myThid )
+        CALL PLOT_FIELD_XYRS( SSS, 'Salt  Climatology' , 1, myThid )
+        CALL PLOT_FIELD_XYRS( Run, 'Runoff Climatology', 1, myThid )
+        CALL PLOT_FIELD_XYRS(fu,'Wind Stress Climatology FU',1,myThid)
+        CALL PLOT_FIELD_XYRS(fv,'Wind Stress Climatology FV',1,myThid)
+      ENDIF
 
-#endif
+#endif /* ALLOW_EBM */
 
       RETURN
       END
