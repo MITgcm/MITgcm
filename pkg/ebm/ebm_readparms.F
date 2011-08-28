@@ -1,14 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.1 2004/05/14 21:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.2 2011/08/28 21:53:43 jmc Exp $
 C $Name:  $
 #include "EBM_OPTIONS.h"
 
-      SUBROUTINE EBM_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE EBM_READPARMS                                 |
-C     | o Routine to read in file data.ebm                       |
-C     \==========================================================/
-      IMPLICIT NONE
+CBOP 0
+C !ROUTINE: EBM_READPARMS
 
+C !INTERFACE:
+      SUBROUTINE EBM_READPARMS( myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EBM_READPARMS
+C     | o Routine to read in parameters from file data.ebm
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -18,17 +25,16 @@ C     === Global variables ===
 #include "EBM.h"
 #endif
 
-C     === Routine arguments ===
-C     myThid -  Number of this instance
+C     !INPUT PARAMETERS:
+C     myThid     :: my Thread Id number
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_EBM
-
-C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     errIO       - IO error flag
-C     iUnit       - Work variable for IO unit number
-
+C     !LOCAL VARIABLES:
+C     msgBuf     :: Informational/error message buffer
+C     errIO      :: IO error flag
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errIO, iUnit
 
@@ -40,17 +46,17 @@ C--   Namelist
 
       _BEGIN_MASTER(myThid)
 
-      WRITE(msgBuf,'(A)') ' ebm_readparms: opening data.ebm'
+      WRITE(msgBuf,'(A)') ' EBM_READPARMS: opening data.ebm'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
-     I                     'data.ebm', 'ebm_readparms',
-     O                     iUnit, myThid )
+     I                          'data.ebm', 'EBM_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
-C--   set default 
+C--   set default
       tauThetaZonRelax = 0.
-      lambdaThetaZonRelax = 0.
       scale_runoff = 1.
       RunoffFile = ' '
 
@@ -59,30 +65,40 @@ C-----------------------------------------------------------------------
 C--   Read settings from model parameter file "data.ebm".
       READ(UNIT=iUnit,NML=EBM_PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'S/R ebm_readparms'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data.ebm"'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist EBM_PARM01'
-       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)') 'S/R EBM_READPARMS'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'Error reading numerical model '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'parameter file "data.ebm"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'Problem in namelist EBM_PARM01'
+       CALL PRINT_ERROR( msgBuf, myThid )
 C      CALL MODELDATA_EXAMPLE( myThid )
-       STOP 'ABNORMAL END: S/R ebm_readparms'
+       STOP 'ABNORMAL END: S/R EBM_READPARMS'
       ENDIF
-
+C     Close the open data file
       CLOSE(iUnit)
 
-      WRITE(msgBuf,'(A)') ' ebm_readparms: finished reading data.ebm'
+      WRITE(msgBuf,'(A)') ' EBM_READPARMS: finished reading data.ebm'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       IF ( tauThetaZonRelax .NE. 0. _d 0 ) THEN
-       lambdaThetaZonRelax = 1./tauThetaZonRelax
+        IF ( tauThetaClimRelax.NE.0. _d 0 ) THEN
+          WRITE(msgBuf,'(2A)') 'EBM_READPARMS: ',
+     &     'tauThetaClimRelax > 0 AND tauThetaZonRelax > 0'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A)') 'EBM_READPARMS: ',
+     &     'cannot relax Temp. to 2-d map AND ZonAver SST'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EBM_READPARMS'
+        ELSE
+          WRITE(msgBuf,'(2A)') ' EBM_READPARMS: ',
+     &     'set tauThetaClimRelax to tauThetaZonRelax value'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          tauThetaClimRelax = tauThetaZonRelax
+        ENDIF
       ENDIF
 
       _END_MASTER(myThid)
@@ -92,5 +108,5 @@ C--   Everyone else must wait for the parameters to be loaded
 
 #endif /* ALLOW_EBM */
 
-      return
-      end
+      RETURN
+      END
