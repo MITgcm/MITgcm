@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.3 2009/04/28 18:11:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.4 2011/08/28 22:18:13 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE EBM_WIND_PERTURB( myTime, myIter, myThid )
-C     |==========================================================|
-C     | S/R EBM_WIND_PERTURB                                     |
-C     | o Calculated random wind perturbations.                  |
-C     |==========================================================|
+C     *==========================================================*
+C     | S/R EBM_WIND_PERTURB
+C     | o Calculated random wind perturbations.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global data ==
@@ -34,8 +34,8 @@ CEndOfInterface
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j, bi, bj
-      _RS ya(1-OLy:sNy+OLy), ya2(1-OLy:sNy+OLy) 
-      _RS xa(1-OLx:sNx+OLx), xa2(1-OLx:sNx+OLx)  
+      _RS ya(1-OLy:sNy+OLy), ya2(1-OLy:sNy+OLy)
+      _RS xa(1-OLx:sNx+OLx), xa2(1-OLx:sNx+OLx)
       _RS y(1-OLy:sNy+OLy), x(1-OLx:sNx+OLx)
       _RS temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS temp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -109,10 +109,10 @@ C     add AR1 process
          if ( ya2(j) .gt. sNy+Oly ) then
             ya2(j) = 0.0
          endif
-c     time lag correlation coefficient, use 0.75 for temperature timescale, 
+c     time lag correlation coefficient, use 0.75 for temperature timescale,
 c     0.98 for the momentum timescale.
          winPert(i,j,bi,bj) = maskW(i,j,k,bi,bj)*
-     &        (1.0/1.66)*(0.75*winPert(i,j,bi,bj) + 
+     &        (1.0/1.66)*(0.75*winPert(i,j,bi,bj) +
      &        stdev(j)*(1.0/6.0)*
      &        ((y(j)-ya(j))*temp2(i,INT(ya2(j)))+
      &        (6.0-y(j)+ya(j))*temp2(i,INT(ya(j)))))
@@ -126,9 +126,20 @@ C      CALL PLOT_FIELD_XYRS( winPert, 'winPert',1,myThid)
 
       _EXCH_XY_RS(winPert  , myThid )
 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+            fu(i,j,bi,bj) = fu(i,j,bi,bj)
+     &                    + winPert(i,j,bi,bj)*rUnit2mass
+     &                     *drF(1)*hFacW(i,j,1,bi,bj)
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+
 # endif /* EBM_WIND_PERT */
 #endif /* ALLOW_EBM */
 
-      end
-
-
+      RETURN
+      END
