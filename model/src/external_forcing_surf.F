@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.52 2011/01/18 21:05:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.53 2011/08/28 21:57:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,7 +103,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Start with surface restoring term :
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key=ikey, kind = isbyte
 # endif
 
@@ -225,7 +225,7 @@ C--   end restoring / no restoring block.
 
 #ifdef ALLOW_PTRACERS
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key=ikey, kind = isbyte
 # endif
       IF ( usePTRACERS ) THEN
@@ -283,7 +283,7 @@ C-    Apply mask on Fresh-Water flux
 C      (needed for SSH forcing, whether or not exactConserv is used)
       IF ( useRealFreshWaterFlux ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key=ikey, kind = isbyte
 # endif
         DO j=1-OLy,sNy+OLy
@@ -461,17 +461,6 @@ c       ENDDO
        ENDIF
       ENDIF
 #endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_EBM
-c--    Values for surfaceForcingT, surfaceForcingS
-c      are overwritten by those produced by EBM
-cph    AD recomputation problems if these IF useEBM are used
-cph      IF ( useEBM ) THEN
-       CALL EBM_FORCING_SURF(
-     I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
-cph      ENDIF
-#endif
 
       RETURN
       END
