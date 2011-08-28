@@ -1,8 +1,7 @@
 # Packages
  &EBM_PARM01
-# convert from mm/year to m/sec
- scale_runoff     = 3.170979198E-11,
+# convert from mm/year to m/sec and change sign (see ebm_forcing_surf.F)
+ scale_runoff     = -3.170979198E-11,
  tauThetaZonRelax = 5184000.0,
  RunoffFile       = 'Runoff.bin',
  &
-  
