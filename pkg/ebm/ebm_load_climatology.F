@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.5 2011/08/28 17:35:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.6 2011/08/28 21:47:33 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -36,14 +36,6 @@ C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j
       _RL distY,tauX,tauMax,lY
 
-      IF ( saltClimFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( saltClimFile, ' ', SSS, 0, myThid )
-      ENDIF
-
-      IF ( thetaClimFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
-      ENDIF
-
       IF ( RunoffFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RS( RunoffFile, ' ', Run, 0, myThid )
       ENDIF
@@ -72,28 +64,9 @@ c          tauX  = -tauMax*cos(2. _d 0*PI*distY)
          ENDDO
         ENDDO
        ENDDO
-      ELSE
-       CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
       ENDIF
 
-      IF (meridWindFile .EQ. ' ' ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           fv(i,j,bi,bj) = 0.0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-       CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
-      ENDIF
-
-      _EXCH_XY_RS( SSS, myThid )
-      _EXCH_XY_RS( SST, myThid )
       _EXCH_XY_RS( Run, myThid )
-      CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
       IF ( debugLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , 1, myThid )
