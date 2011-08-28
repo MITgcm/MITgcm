@@ -8,20 +8,20 @@
  sRef = 15*35.,
  viscAr=1.E-3,
  viscAh=5.E5,
- diffKhT=0.0,
+ diffKhT=0.,
  diffKrT=3.E-5,
- diffKhS=0.0,
+ diffKhS=0.,
  diffKrS=3.E-5,
- rhonil=1035.,
- rotationPeriod=86400.,
- gravity=9.81,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
  eosType = 'POLY3',
- ivdc_kappa=100.,
+ ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
- useOldFreezing=.TRUE.,
- useRealFreshWaterFlux=.TRUE.,
+ allowFreezing=.TRUE.,
+#exactConserv=.TRUE.,
+#- runoff missing in SSH forcing => comment out realFreshWaterFlux
+#useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
@@ -42,38 +42,34 @@
 # 100 years of integration will yield a reasonable flow field
 # startTime  =          0.,
 # endTime    = 3110400000.,
- deltaTmom = 1200.0,
+ deltaTmom = 1200.,
  tauCD =     321428.,
- deltaTtracer= 43200.0,
- deltaTClock = 43200.0,
-# if you are using a version later than checkpoint45d on the main branch
-# you can uncomment the following line and increase the time step
-# deltaTtracer and deltaTClock to 172800.0 as well to speed up the
-# asynchronous time stepping
-# deltaTfreesurf = 172800.0,
+ deltaTtracer = 43200.,
+ deltaTClock  = 43200.,
+ deltaTfreesurf=43200.,
  abEps = 0.1,
  pChkptFreq= 311040000.,
  dumpFreq=   311040000.,
- dumpFreq=   864000.,
  taveFreq=   311040000.,
+ dumpFreq=   864000.,
  taveFreq=   864000.,
 #monitorFreq=31104000.,
  monitorFreq=1.,
 # 2 months restoring timescale for temperature
- tauThetaClimRelax =  5184000.0,
+#tauThetaClimRelax =  5184000.0,
 # 6 months restoring timescale for salinity
  tauSaltClimRelax = 15552000.0,
- periodicExternalForcing=.TRUE.,
- externForcingPeriod=2592000.,
- externForcingCycle=31104000.,
+#periodicExternalForcing=.TRUE.,
+#externForcingPeriod=2592000.,
+#externForcingCycle=31104000.,
  &
 
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- delR= 50., 70., 100., 140., 190.,
-       240., 290., 340., 390., 440.,
-       490., 540., 590., 640., 690.,
+ delR= 50.,  70., 100., 140., 190.,
+      240., 290., 340., 390., 440.,
+      490., 540., 590., 640., 690.,
  ygOrigin=-80.,
  dySpacing=4.,
  dxSpacing=4.,
@@ -86,6 +82,6 @@
  hydrogSaltFile= 'Lev_clim_salt.bin',
  zonalWindFile=  'Taux.bin',
  meridWindFile=  'Tauy.bin',
- thetaClimFile=  'SST.bin',
+#thetaClimFile=  'SST.bin',
  saltClimFile=   'SSS.bin',
  &
