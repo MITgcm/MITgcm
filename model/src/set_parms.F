@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.8 2011/07/19 13:02:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.9 2011/08/28 12:47:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,6 +132,10 @@ C--   Advection and Forcing for Temp and salt  on/off flags
       saltForcing   = saltStepping .AND. saltForcing
       tempImplVertAdv = tempAdvection .AND. tempImplVertAdv
       saltImplVertAdv = saltAdvection .AND. saltImplVertAdv
+      doThetaClimRelax = tempForcing .AND.
+     &                 ( tauThetaClimRelax.GT.0. _d 0 )
+      doSaltClimRelax  = saltForcing .AND.
+     &                 ( tauSaltClimRelax .GT.0. _d 0 )
 
 C--   Dynamically Active Tracers : set flags
       tempIsActiveTr = momPressureForcing .AND. tempAdvection

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.240 2011/06/08 01:41:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.241 2011/08/28 12:47:20 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -878,18 +878,6 @@ C     o CD coupling (CD scheme):
         IF ( tauCD .EQ. 0. _d 0 ) tauCD = deltaTmom
         IF ( rCD .LT. 0. ) rCD = 1. _d 0 - deltaTMom/tauCD
         IF ( epsAB_CD .EQ. UNSET_RL ) epsAB_CD = abEps
-      ENDIF
-C     o Temperature climatology relaxation time scale
-      IF ( tauThetaClimRelax .EQ. 0. _d 0 ) THEN
-       doThetaClimRelax     = .FALSE.
-      ELSE
-       doThetaClimRelax     = .TRUE.
-      ENDIF
-C     o Salinity climatology relaxation time scale
-      IF ( tauSaltClimRelax .EQ. 0. _d 0 ) THEN
-       doSaltClimRelax     = .FALSE.
-      ELSE
-       doSaltClimRelax     = .TRUE.
       ENDIF
 
       IF ( startTime.EQ.UNSET_RL .AND. nIter0.EQ.-1 ) THEN
