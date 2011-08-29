@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.9 2011/08/28 21:54:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.10 2011/08/29 19:38:44 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -52,13 +52,35 @@ CEOP
 
 #ifdef ALLOW_EBM
 C     !LOCAL VARIABLES:
-      _RL ReCountX(1-OLy:sNy+OLy,nSy)
-      INTEGER bi, bj
-      INTEGER i, j
+      INTEGER i, j, bi, bj
       INTEGER no_so
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER iebmkey
 #endif /* ALLOW_AUTODIFF_TAMC */
+      _RL ReCountX(1-OLy:sNy+OLy,nSy)
+
+C--   Local arrays used for EBM computation (previously declared in EBM.h)
+C-    sin(lat) and Legendre polynomials
+cph We will make these three (i,j) arrays to
+cph avoid AD recomputations
+      _RL S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSy)
+      _RL P2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSy)
+      _RL P4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSy)
+C-    Shortwave and albedo parameters
+      _RL SW(1-OLy:sNy+OLy,nSy)
+C-    Longwave parameters
+      _RL LW(1-OLy:sNy+OLy,nSy)
+C-    Heat transport parameters
+      _RL Hd(1-OLy:sNy+OLy,nSy), Hd35(2)
+C-    Freshwater flux parameters
+      _RL Fw(1-OLy:sNy+OLy,nSy), Fw35(2)
+C-    Temperature parameterization
+      _RL T(1-OLy:sNy+OLy,nSy)
+      _RL T_var(4), T0(2), T2(2), T35(2), DTDy35(2)
+C-    Parameters used to calculate the transport efficiency
+      _RL Cl, Cf, Cs, C
+      _RL gamma, kappa, De
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -117,10 +139,10 @@ c=====================================================
 c     Fit area-weighed  averaged SST north/south of 34
 c     degree  to second  Legendre polynomial:
 c=======================================================
-        T_var(1) = SIN(lat(2)*deg2rad) - SIN(lat(1)*deg2rad)
-        T_var(2) = SIN(lat(3)*deg2rad) - SIN(lat(2)*deg2rad)
-        T_var(3) = SIN(lat(2)*deg2rad)**3 - SIN(lat(1)*deg2rad)**3
-        T_var(4) = SIN(lat(3)*deg2rad)**3 - SIN(lat(2)*deg2rad)**3
+        T_var(1) = SIN(latBnd(2)*deg2rad) - SIN(latBnd(1)*deg2rad)
+        T_var(2) = SIN(latBnd(3)*deg2rad) - SIN(latBnd(2)*deg2rad)
+        T_var(3) = SIN(latBnd(2)*deg2rad)**3 - SIN(latBnd(1)*deg2rad)**3
+        T_var(4) = SIN(latBnd(3)*deg2rad)**3 - SIN(latBnd(2)*deg2rad)**3
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE T_var(:) = comlev1_bibj, key=iebmkey, byte=isbyte
 #endif
@@ -143,14 +165,14 @@ c-----------------------------------------
         DO no_so = 1,2
          T35(no_so)= T0(no_so) +
      &        T2(no_so)*0.5*
-     &        ( 3.*SIN(lat(2)*deg2rad)**2 - 1. )
+     &        ( 3.*SIN(latBnd(2)*deg2rad)**2 - 1. )
         ENDDO
 c-----------------------------------------
 c     Temperature gradient at 35 N/S
 c-----------------------------------------
         DO no_so = 1, 2
          DTDy35(no_so) = 3.*T2(no_so)*
-     &        SIN(lat(2)*deg2rad)/rSphere
+     &        SIN(latBnd(2)*deg2rad)/rSphere
         ENDDO
 c-----------------------------------------------------------
 c     Magnitude of the heat and moisture transport at 35 N/S
@@ -160,7 +182,6 @@ c-----------------------------------------------------------
 CADJ STORE T35(:)    = comlev1_bibj, key=iebmkey, byte=isbyte
 CADJ STORE DTDy35(:) = comlev1_bibj, key=iebmkey, byte=isbyte
 #endif
-
         DO no_so = 1, 2
          IF ( DTDy35(no_so).NE.0. .AND. T35(no_so).NE.0. ) THEN
           gamma = -T35(no_so)*beta*Hw*Nw*Nw/
@@ -177,10 +198,10 @@ CADJ STORE DTDy35(:) = comlev1_bibj, key=iebmkey, byte=isbyte
      &        -1. _d 0/(1. _d 0/De+5420. _d 0*tau/(T35(no_so)**2)
      &        +1. _d 0/dz))
           Cl = Cf*lv
-          Hd35(no_so) = 2.*PI*rSphere*COS(lat(2)*deg2rad)
+          Hd35(no_so) = 2.*PI*rSphere*COS(latBnd(2)*deg2rad)
      &        *(Cs + Cl*exp(-5420./T35(no_so)))
      &        *(abs(DTDy35(no_so))**trans_eff)
-          Fw35(no_so) = 2.*PI*rSphere*COS(lat(2)*deg2rad)
+          Fw35(no_so) = 2.*PI*rSphere*COS(latBnd(2)*deg2rad)
      &        *(abs(DTDy35(no_so))**trans_eff)
      &        *Cf*exp(-5420./T35(no_so))
          ELSE
@@ -204,7 +225,7 @@ c
         DO j=1,sNy
          DO i=1,sNx
 C     sin(lat)
-          S(i,j,bj) = sin(yC(i,j,bi,bj)*deg2rad)
+          S(i,j,bj) = SIN(yC(i,j,bi,bj)*deg2rad)
 C     setup Legendre polynomials and  derivatives
           P2(i,j,bj) = 0.5*(3.*S(i,j,bj)**2 - 1.)
           P4(i,j,bj) = 0.12 _d 0 *

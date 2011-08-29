@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.2 2011/08/28 21:53:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.3 2011/08/29 19:38:44 jmc Exp $
 C $Name:  $
 #include "EBM_OPTIONS.h"
 
@@ -40,7 +40,7 @@ C     iUnit      :: Work variable for IO unit number
 
 C--   Namelist
       NAMELIST /EBM_PARM01/
-     & tauThetaZonRelax, lambdaThetaZonRelax,
+     & tauThetaZonRelax,
      & scale_runoff,
      & RunoffFile
 
@@ -83,6 +83,7 @@ C     Close the open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
+C--   Set other parameters
       IF ( tauThetaZonRelax .NE. 0. _d 0 ) THEN
         IF ( tauThetaClimRelax.NE.0. _d 0 ) THEN
           WRITE(msgBuf,'(2A)') 'EBM_READPARMS: ',
@@ -100,6 +101,10 @@ C     Close the open data file
           tauThetaClimRelax = tauThetaZonRelax
         ENDIF
       ENDIF
+C-   Set latitude boundaries used in EBM
+      latBnd(1) =  0. _d 0
+      latBnd(2) = 35. _d 0
+      latBnd(3) = 85. _d 0
 
       _END_MASTER(myThid)
 
