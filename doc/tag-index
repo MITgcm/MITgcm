@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1497 2011/08/29 17:23:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1498 2011/08/29 19:46:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ebm:
+  - fix multi-threading in ebm_area_t.F ; clean-up EBM.h header file.
+  - add multi-threaded test for verification exp. global_ocean_ebm
 
 checkpoint63b (2011/08/29)
 o pkg/ebm:
