@@ -1,22 +1,28 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.4 2009/04/28 18:42:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.5 2011/08/29 19:39:33 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
 
+CBOP 0
+C !ROUTINE: EBM_AREA_T
+
+C !INTERFACE:
       SUBROUTINE EBM_AREA_T( myTime, myIter, myThid )
-C     |==========================================================|
-C     | S/R CALCULATE ZONAL MEAN TEMPERATURE                     |
-C     |==========================================================|
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | CALCULATE MEAN TEMPERATURE OVER 4 LAT. BAND
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_EBM
 # include "EBM.h"
 #endif
@@ -25,19 +31,16 @@ C     === Global variables ===
 # include "tamc_keys.h"
 #endif
 
-C     === Routine arguments ===
-C     myThid - Instance number for this innvocation 
-      INTEGER myThid
-      INTEGER myIter
+C     !INPUT PARAMETERS:
+C     myThid     :: my Thread Id number
       _RL myTime
-
-CEndOfInterface
-C     == Local variables ==
-C     I, J, K - Loop counters
+      INTEGER myIter
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_EBM
-
-      INTEGER iMin, iMax, jMin, jMax
+C     !LOCAL VARIABLES:
+C     i, j, k  :: Loop counters
       INTEGER i, j, k, bi, bj
       _RL TmlS_tile(nSx, nSy)
       _RL TmlN_tile(nSx, nSy)
@@ -55,81 +58,61 @@ C     I, J, K - Loop counters
 C--   Top layer only
       k = 1
 
-      TmlS = 0.0
-      CountmlS = 0.0
-      TmlN = 0.0
-      CountmlN = 0.0
-      TtS = 0.0
-      CounttS = 0.0
-      TtN = 0.0
-      CounttN = 0.0
-
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-          TmlS_tile(bi,bj) = 0.
-          TmlN_tile(bi,bj) = 0.
-          TtS_tile(bi,bj) = 0.
-          TtN_tile(bi,bj) = 0.
-          CountmlS_tile(bi,bj) = 0.
-          CountmlN_tile(bi,bj) = 0.
-          CounttS_tile(bi,bj) = 0.
-          CounttN_tile(bi,bj) = 0.
-          
+        TmlS_tile(bi,bj) = 0.
+        TmlN_tile(bi,bj) = 0.
+        TtS_tile(bi,bj) = 0.
+        TtN_tile(bi,bj) = 0.
+        CountmlS_tile(bi,bj) = 0.
+        CountmlN_tile(bi,bj) = 0.
+        CounttS_tile(bi,bj) = 0.
+        CounttN_tile(bi,bj) = 0.
+
 C--   Calculate sum of temperatures over each tile
         DO j = 1,sNy
          DO i = 1, sNx
-          IF ( yC(i,j,bi,bj) .GE. -lat(3) .AND. 
-     &         yC(i,j,bi,bj) .LE. -lat(2)) THEN
-            TmlS_tile(bi,bj) = TmlS_tile(bi,bj) + 
-     &           theta(i,j,k,bi,bj)
-            CountmlS_tile(bi,bj) = CountmlS_tile(bi,bj) + 
-     &           maskC(i,j,k,bi,bj)
-          ELSEIF ( yC(i,j,bi,bj) .GT. -lat(2) .AND. 
-     &       yC(i,j,bi,bj) .LT. -lat(1)) THEN 
-            TtS_tile(bi,bj) = TtS_tile(bi,bj) + 
-     &           theta(i,j,k,bi,bj)
-            CounttS_tile(bi,bj) = CounttS_tile(bi,bj) + 
-     &           maskC(i,j,k,bi,bj)
-          ELSEIF ( yC(i,j,bi,bj) .GT. lat(1) .AND. 
-     &       yC(i,j,bi,bj) .LT. lat(2)) THEN
-            TtN_tile(bi,bj) = TtN_tile(bi,bj) + 
-     &           theta(i,j,k,bi,bj)
-            CounttN_tile(bi,bj) = CounttN_tile(bi,bj) + 
-     &           maskC(i,j,k,bi,bj)
-          ELSEIF ( yC(i,j,bi,bj) .GE. lat(2) .AND. 
-     &       yC(i,j,bi,bj) .LT. lat(3)) THEN
-             TmlN_tile(bi,bj) = TmlN_tile(bi,bj) + 
-     &           theta(i,j,k,bi,bj)
-            CountmlN_tile(bi,bj) = CountmlN_tile(bi,bj) + 
-     &           maskC(i,j,k,bi,bj)
-         ENDIF
-            
+          IF ( yC(i,j,bi,bj) .GE. -latBnd(3) .AND.
+     &         yC(i,j,bi,bj) .LE. -latBnd(2) ) THEN
+            TmlS_tile(bi,bj) = TmlS_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+            CountmlS_tile(bi,bj) = CountmlS_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)
+          ELSEIF ( yC(i,j,bi,bj) .GT. -latBnd(2) .AND.
+     &             yC(i,j,bi,bj) .LT. -latBnd(1) ) THEN
+            TtS_tile(bi,bj) = TtS_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+            CounttS_tile(bi,bj) = CounttS_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)
+          ELSEIF ( yC(i,j,bi,bj) .GT. latBnd(1) .AND.
+     &             yC(i,j,bi,bj) .LT. latBnd(2) ) THEN
+            TtN_tile(bi,bj) = TtN_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+            CounttN_tile(bi,bj) = CounttN_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)
+          ELSEIF ( yC(i,j,bi,bj) .GE. latBnd(2) .AND.
+     &             yC(i,j,bi,bj) .LT. latBnd(3) ) THEN
+            TmlN_tile(bi,bj) = TmlN_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+            CountmlN_tile(bi,bj) = CountmlN_tile(bi,bj)
+     &                       + maskC(i,j,k,bi,bj)
+          ENDIF
          ENDDO
         ENDDO
 
-C--   Sum over the tiles
-        TmlS = TmlS + TmlS_tile(bi,bj)
-        CountmlS = CountmlS + CountmlS_tile(bi,bj)
-        TmlN = TmlN + TmlN_tile(bi,bj)
-        CountmlN = CountmlN + CountmlN_tile(bi,bj)
-        TtS = TtS + TtS_tile(bi,bj)
-        CounttS = CounttS + CounttS_tile(bi,bj)
-        TtN = TtN + TtN_tile(bi,bj)
-        CounttN = CounttN + CounttN_tile(bi,bj)
-        
        ENDDO
       ENDDO
 
-      _GLOBAL_SUM_RL( TmlS, myThid )
-      _GLOBAL_SUM_RL( TmlN, myThid )
-      _GLOBAL_SUM_RL( TtS, myThid )
-      _GLOBAL_SUM_RL( TtN, myThid )
-c
-      _GLOBAL_SUM_RL( CountmlS, myThid )
-      _GLOBAL_SUM_RL( CountmlN, myThid )
-      _GLOBAL_SUM_RL( CounttS, myThid )
-      _GLOBAL_SUM_RL( CounttN, myThid )
+      CALL GLOBAL_SUM_TILE_RL( TmlS_tile, TmlS, myThid )
+      CALL GLOBAL_SUM_TILE_RL( TmlN_tile, TmlN, myThid )
+      CALL GLOBAL_SUM_TILE_RL( TtS_tile,  TtS,  myThid )
+      CALL GLOBAL_SUM_TILE_RL( TtN_tile,  TtN,  myThid )
+
+      CALL GLOBAL_SUM_TILE_RL( CountmlS_tile, CountmlS, myThid )
+      CALL GLOBAL_SUM_TILE_RL( CountmlN_tile, CountmlN, myThid )
+      CALL GLOBAL_SUM_TILE_RL( CounttS_tile,  CounttS,  myThid )
+      CALL GLOBAL_SUM_TILE_RL( CounttN_tile,  CounttN,  myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE CountmlS = comlev1, key = ikey_dynamics
@@ -137,15 +120,19 @@ CADJ STORE CountmlN = comlev1, key = ikey_dynamics
 CADJ STORE CounttS  = comlev1, key = ikey_dynamics
 CADJ STORE CounttN  = comlev1, key = ikey_dynamics
 #endif
-      if ( CountmlS .NE. 0.) TmlS = TmlS/CountmlS + t_mlt
-      if ( CountmlN .NE. 0.) TmlN = TmlN/CountmlN + t_mlt
-      if ( CounttS .NE. 0.) TtS = TtS/CounttS + t_mlt
-      if ( CounttN .NE. 0.) TtN = TtN/CounttN + t_mlt
+      _BEGIN_MASTER(myThid)
+      IF ( CountmlS .NE. 0.) TmlS = TmlS/CountmlS
+      IF ( CountmlN .NE. 0.) TmlN = TmlN/CountmlN
+      IF ( CounttS  .NE. 0.) TtS  = TtS /CounttS
+      IF ( CounttN  .NE. 0.) TtN  = TtN /CounttN
+      TmlS = TmlS + t_mlt
+      TmlN = TmlN + t_mlt
+      TtS  = TtS  + t_mlt
+      TtN  = TtN  + t_mlt
+      _END_MASTER(myThid)
+      _BARRIER
 
 #endif /* ALLOW_EBM */
 
       RETURN
       END
-
-
-
