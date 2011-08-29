@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1496 2011/08/29 03:00:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1497 2011/08/29 17:23:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63b (2011/08/29)
 o pkg/ebm:
   - fix sign of runoff;
   - update directly forcing fields (Qnet,EmPmR) to use standard
