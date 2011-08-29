@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1495 2011/08/26 20:27:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1496 2011/08/29 03:00:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ebm:
+  - fix sign of runoff;
+  - update directly forcing fields (Qnet,EmPmR) to use standard
+    external_forcing_surf.F (remove ebm_forcing_surf.F);
+  - avoid loading forcing fields a 2nd time (1rst time from ini_forcing.F);
+  - set either tauThetaClimRelax (in data) or tauThetaZonRelax (in data.ebm)
+    and apply relaxation towards corresponding SST field (2-D map or ZonAver).
+  - update global_ocean_ebm parameters file data and update output (fwd+ad).
 o verification/matrix_example:
   - split domain in 8 tiles (2x4); add SIZE.h_mpi and eedata.mth for
     MPI and mutlti-threaded testing.
