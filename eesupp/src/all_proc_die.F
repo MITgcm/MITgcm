@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.4 2010/09/25 23:09:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.5 2011/08/30 21:50:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -56,6 +56,7 @@ C--   Finishes
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
 #endif
+      _BEGIN_MASTER(myThid)
 C     better to avoid this call if multi-components set-up ; otherwise will
 C     hang here since procs of other comp. are not calling MPI_finalize now.
        IF ( .NOT.( useCoupler
@@ -64,7 +65,7 @@ C     hang here since procs of other comp. are not calling MPI_finalize now.
      &    ) THEN
 #ifdef ALLOW_OASIS
          IF ( useOASIS ) CALL OASIS_ABORT
-#endif /* ALLOW_OASIS */        
+#endif /* ALLOW_OASIS */
          CALL MPI_FINALIZE  ( mpiRC )
          IF ( mpiRC .NE. MPI_SUCCESS ) THEN
           WRITE(msgBuf,'(A,I5)')
@@ -72,6 +73,7 @@ C     hang here since procs of other comp. are not calling MPI_finalize now.
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
        ENDIF
+      _END_MASTER(myThid)
 #ifndef ALWAYS_USE_MPI
       ENDIF
 #endif
