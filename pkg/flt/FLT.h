@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.6 2011/01/12 19:00:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.7 2011/08/31 21:41:55 jmc Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -45,7 +45,7 @@ C
 C    note:  flt_int_prof is the time between getting profiles, not the
 C           the return  cycle of the float to the surface. The latter can
 C           be specified individually for every float. Because the mechanism
-C           for return ing to the surface is called in the profiling routine
+C           for returning to the surface is called in the profiling routine
 C           flt_int_prof has to be the minimum of all iup(max_npart).
 C           The subsampling of profiles can be done later in the analysis.
 
@@ -54,6 +54,14 @@ C           The subsampling of profiles can be done later in the analysis.
       COMMON / FLT_PARAM_R /
      &       flt_noise, flt_deltaT,
      &       flt_int_traj, flt_int_prof
+
+C  flt_selectTrajOutp :: select which var. to output along trajectories
+C  flt_selectProfOutp :: select which var. to output along profiles
+C                        =0 : none ; =1 : position only ; =2 : +p,u,v,t,s
+      INTEGER flt_selectTrajOutp
+      INTEGER flt_selectProfOutp
+      COMMON / FLT_PARAM_I /
+     &       flt_selectTrajOutp, flt_selectProfOutp
 
 C     flt_file    :: name of the file containing the initial positions.
 C                    At initialization the program first looks for a
