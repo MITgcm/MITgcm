@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.8 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.9 2011/08/31 21:35:35 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -54,8 +54,9 @@ C     == end of interface ==
       WRITE(fn,'(A,A)') 'pickup_flt.', suff(1:iLen)
       npart_dist = 0.
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+      _BEGIN_MASTER( myThid )
+       DO bj=1,nSy
+        DO bi=1,nSx
 
 C the standard routine mds_writevec_loc can be used here
 C (1) write actual number floats and time into file
@@ -66,7 +67,7 @@ C (1) write actual number floats and time into file
           tmp(4) = 0.
           tmp(5) = 0.
           tmp(6) = max_npart
-          tmp(7) = 0.
+          tmp(7) = imax
           tmp(8) = 0.
           tmp(9) = 0.
 
@@ -101,14 +102,15 @@ C (2) write float positions into file
 
         ENDDO
        ENDDO
+      _END_MASTER( myThid )
 
-       _GLOBAL_SUM_RL( npart_dist, myThid )
-       _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,*) 'FLT_WRITE_PICKUP:',
-     &                   npart_dist, ' floats written'
+      _GLOBAL_SUM_RL( npart_dist, myThid )
+      _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(A,F16.2,A)') ' FLT_WRITE_PICKUP:',
+     &                  npart_dist, ' floats written'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-       _END_MASTER( myThid )
+      _END_MASTER( myThid )
 
       RETURN
       END
