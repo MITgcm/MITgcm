@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.9 2011/01/12 19:00:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.10 2011/08/31 21:43:00 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -240,6 +240,12 @@ C--   end global-file / tiled-file separated treatment
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       _END_MASTER( myThid )
+
+C--   Initial call just to check which variables to write
+      IF ( flt_int_prof.NE.0. )
+     &  CALL FLT_UP( startTime, nIter0, myThid )
+      IF ( flt_int_traj.NE.0. )
+     &  CALL FLT_TRAJ( startTime, nIter0, myThid )
 
       RETURN
       END
