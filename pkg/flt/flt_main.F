@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.8 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.9 2011/08/31 21:33:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -50,10 +50,14 @@ C     changed: Arne Biastoch abiastoch@ucsd.edu 21-JUN-2001
 C
 C     ==================================================================
 
+CBOP 0
+C !ROUTINE: FLT_MAIN
 
+C !INTERFACE:
       SUBROUTINE FLT_MAIN (
      I                      myTime, myIter, myThid )
 
+C     !DESCRIPTION:
 C     ==================================================================
 C     SUBROUTINE FLT_MAIN
 C     ==================================================================
@@ -74,19 +78,35 @@ C     ==================================================================
 
 C     !USES:
       IMPLICIT NONE
-
-#include "EEPARAMS.h"
+C     == global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "FLT_SIZE.h"
 #include "FLT.h"
 
-C     == routine arguments ==
-C     myThid - thread number for this instance of the routine.
+C     !INPUT PARAMETERS:
+C     myTime :: current time in simulation
+C     myIter :: current iteration number
+C     myThid :: my Thread Id number
       _RL myTime
       INTEGER myIter, myThid
 
-C     integration of the float trajectories
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
+C     !LOCAL VARIABLES:
+CEOP
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER( 'FLT_MAIN', myThid )
+#endif
+
+C--   integration of the float trajectories
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('FLT_RUNGA*', myThid )
+#endif
 #ifdef FLT_SECOND_ORDER_RUNGE_KUTTA
 c         WRITE(0,*) ' bf call flt_runga2', myIter
          CALL TIMER_START('FLOATS RUNGA2      [FLT  LOOP]',myThid)
@@ -101,9 +121,11 @@ c         WRITE(0,*) ' bf call flt_runga4', myIter
 c         WRITE(0,*) ' af call flt_runga4', myIter
 #endif
 
-C     check if exchanges between tiles are necessary
+C--   do exchanges between tiles if necessary
 
-c        IF (Nx .NE. sNx .OR. Ny .NE. sNy) THEN
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('FLT_EXCH*', myThid )
+#endif
          CALL TIMER_START('FLOATS EXCHG       [FLT  LOOP]',myThid)
 #ifdef ALLOW_EXCH2
          CALL FLT_EXCH2( myTime, myIter, myThid )
@@ -111,32 +133,45 @@ c        IF (Nx .NE. sNx .OR. Ny .NE. sNy) THEN
          CALL FLT_EXCHG( myTime, myIter, myThid )
 #endif
          CALL TIMER_STOP ('FLOATS EXCHG       [FLT  LOOP]',myThid)
-c        ENDIF
 
-C     store profiles every flt_int_prof time steps:
-C     and move floats up and down
+C--   store profiles every flt_int_prof time steps and move floats up and down
 
-         IF ( MOD(myTime,flt_int_prof).EQ.0. ) THEN
+         IF (  DIFFERENT_MULTIPLE( flt_int_prof, myTime, deltaTClock )
+     &      ) THEN
+#ifdef ALLOW_DEBUG
+           IF (debugMode) CALL DEBUG_CALL('FLT_UP', myThid )
+#endif
            CALL TIMER_START('FLOATS UP          [FLT  LOOP]',myThid)
            CALL FLT_UP( myTime, myIter, myThid )
            CALL TIMER_STOP ('FLOATS UP          [FLT  LOOP]',myThid)
          ENDIF
 
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('FLT_DOWN', myThid )
+#endif
 c         WRITE(0,*) ' bf call flt_down', myIter
            CALL TIMER_START('FLOATS DOWN        [FLT  LOOP]',myThid)
            CALL FLT_DOWN( myTime, myIter, myThid )
            CALL TIMER_STOP ('FLOATS DOWN        [FLT  LOOP]',myThid)
 c         WRITE(0,*) ' af call flt_down', myIter
 
-C     store particles every flt_int_traj timesteps:
+C--   store particles every flt_int_traj timesteps:
 
-         IF ( MOD(myTime,flt_int_traj).EQ.0. ) THEN
+         IF (  DIFFERENT_MULTIPLE( flt_int_traj, myTime, deltaTClock )
+     &      ) THEN
+#ifdef ALLOW_DEBUG
+           IF (debugMode) CALL DEBUG_CALL('FLT_TRAJ', myThid )
+#endif
 c         WRITE(0,*) ' bf call flt_traj', myIter
            CALL TIMER_START('FLOATS TRAJ        [FLT  LOOP]',myThid)
            CALL FLT_TRAJ( myTime, myIter, myThid )
            CALL TIMER_STOP ('FLOATS TRAJ        [FLT  LOOP]',myThid)
 c         WRITE(0,*) ' af call flt_traj', myIter
          ENDIF
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE( 'FLT_MAIN', myThid )
+#endif
 
       RETURN
       END
