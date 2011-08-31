@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_rec_rs.F,v 1.2 2011/06/07 22:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_rec_rs.F,v 1.3 2011/08/31 21:28:18 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -47,7 +47,7 @@ C !LOCAL VARIABLES:
       INTEGER k
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF ( debugMode ) THEN
+      IF ( debugLevel.GE.debLevD ) THEN
         WRITE(msgBuf,'(A,I9,2x,I9)')
      &      ' MDS_WR_REC_RS: iRec,Dim = ', iRec, nArr
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
