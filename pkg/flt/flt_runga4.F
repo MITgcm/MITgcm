@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga4.F,v 1.2 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga4.F,v 1.3 2011/08/31 21:32:46 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
+#undef _USE_INTEGERS
 
       SUBROUTINE FLT_RUNGA4 (
      I                        myTime, myIter, myThid )
@@ -34,8 +35,18 @@ C     == routine arguments ==
       INTEGER myIter, myThid
 
 C     == Functions ==
-c     _RL FLT_MAP_R2K
-c     EXTERNAL FLT_MAP_R2K
+#ifdef USE_FLT_ALT_NOISE
+      Real*8   PORT_RAND_NORM
+      EXTERNAL PORT_RAND_NORM
+#else
+      Real*8   PORT_RAND
+      EXTERNAL PORT_RAND
+#ifdef _USE_INTEGERS
+      INTEGER seed
+#else
+      Real*8 seed
+#endif
+#endif /* USE_FLT_ALT_NOISE */
 
 C     == local variables ==
       INTEGER bi, bj
@@ -49,21 +60,16 @@ C     == local variables ==
 #endif
       _RL ix, jy, itx1, jty1, itx2, jty2, itx3, jty3
       _RL scalex, scaley
-#ifdef USE_FLT_ALT_NOISE
-      Real*8 PORT_RAND_NORM
-#else
-      Real*8 PORT_RAND
-#undef _USE_INTEGERS
-#ifdef _USE_INTEGERS
-      INTEGER seed
-      seed = -1
-#else
-      Real*8 seed
-      seed = -1.d0
-#endif
-#endif
 
 C     == end of interface ==
+
+#ifndef USE_FLT_ALT_NOISE
+#ifdef _USE_INTEGERS
+      seed = -1
+#else
+      seed = -1.d0
+#endif
+#endif /* ndef USE_FLT_ALT_NOISE */
 
 #ifdef ALLOW_3D_FLT
       kzlo = 0.5 _d 0
@@ -93,7 +99,7 @@ C     Start integration between tstart and tend (individual for each float)
 
               scalex=recip_dxF(ic,jc,bi,bj)
               scaley=recip_dyF(ic,jc,bi,bj)
-              iG = myXGlobalLo + (bi-1)*sNx + ic-1 
+              iG = myXGlobalLo + (bi-1)*sNx + ic-1
               jG = myYGlobalLo + (bj-1)*sNy + jc-1
 
 C     First step
@@ -120,7 +126,7 @@ C expects it to be just a normal kpart type variable.
 
 C When using this alternative scheme the noise probably should not be added twice.
 #ifndef USE_FLT_ALT_NOISE
-              IF (iup(ip,bi,bj).NE.-2.) THEN
+              IF ( flt_noise.NE.0. .AND. iup(ip,bi,bj).NE.-2. ) THEN
                 u1 = u1 + u1*(PORT_RAND(seed)-0.5)*flt_noise
                 v1 = v1 + v1*(PORT_RAND(seed)-0.5)*flt_noise
 #ifdef ALLOW_3D_FLT
@@ -131,7 +137,7 @@ C When using this alternative scheme the noise probably should not be added twic
 #endif
 #endif /* ALLOW_3D_FLT */
               ENDIF
-#endif
+#endif /* ndef USE_FLT_ALT_NOISE */
 
 C ix and itx are in indices. Therefore it is necessary to multiply
 C with a grid scale factor.
@@ -160,14 +166,14 @@ C     Second step
      &               kc,2,bi,bj,myThid)
               ENDIF
 
-              IF (iup(ip,bi,bj).NE.-2.) THEN
+              IF ( flt_noise.NE.0. .AND. iup(ip,bi,bj).NE.-2. ) THEN
 #ifdef USE_FLT_ALT_NOISE
-                u2 = u2 + port_rand_norm()*flt_noise
-                v2 = v2 + port_rand_norm()*flt_noise
+                u2 = u2 + PORT_RAND_NORM()*flt_noise
+                v2 = v2 + PORT_RAND_NORM()*flt_noise
 #ifdef ALLOW_3D_FLT
 #ifdef ALLOW_FLT_3D_NOISE
                 IF (iup(ip,bi,bj).EQ.-1.) THEN
-                  w2 = w2 + port_rand_norm()*flt_noise
+                  w2 = w2 + PORT_RAND_NORM()*flt_noise
                 ENDIF
 #endif
 #endif /* ALLOW_3D_FLT */
@@ -210,14 +216,14 @@ C     Third step
      &               kc,2,bi,bj,myThid)
               ENDIF
 
-              IF (iup(ip,bi,bj).NE.-2.) THEN
+              IF ( flt_noise.NE.0. .AND. iup(ip,bi,bj).NE.-2. ) THEN
 #ifdef USE_FLT_ALT_NOISE
-                u3 = u3 + port_rand_norm()*flt_noise
-                v3 = v3 + port_rand_norm()*flt_noise
+                u3 = u3 + PORT_RAND_NORM()*flt_noise
+                v3 = v3 + PORT_RAND_NORM()*flt_noise
 #ifdef ALLOW_3D_FLT
 #ifdef ALLOW_FLT_3D_NOISE
                 IF (iup(ip,bi,bj).EQ.-1.) THEN
-                  w3 = w3 + port_rand_norm()*flt_noise
+                  w3 = w3 + PORT_RAND_NORM()*flt_noise
                 ENDIF
 #endif
 #endif /* ALLOW_3D_FLT */
@@ -260,14 +266,14 @@ C     Fourth step
      &               kc,2,bi,bj,myThid)
               ENDIF
 
-              IF (iup(ip,bi,bj).NE.-2.) THEN
+              IF ( flt_noise.NE.0. .AND. iup(ip,bi,bj).NE.-2. ) THEN
 #ifdef USE_FLT_ALT_NOISE
-                u4 = u4 + port_rand_norm()*flt_noise
-                v4 = v4 + port_rand_norm()*flt_noise
+                u4 = u4 + PORT_RAND_NORM()*flt_noise
+                v4 = v4 + PORT_RAND_NORM()*flt_noise
 #ifdef ALLOW_3D_FLT
 #ifdef ALLOW_FLT_3D_NOISE
                 IF (iup(ip,bi,bj).EQ.-1.) THEN
-                  w4 = w4 + port_rand_norm()*flt_noise
+                  w4 = w4 + PORT_RAND_NORM()*flt_noise
                 ENDIF
 #endif
 #endif /* ALLOW_3D_FLT */
@@ -285,13 +291,13 @@ C     Fourth step
 
 #endif /* USE_FLT_ALT_NOISE */
               ENDIF
-              
+
 C ipart is in coordinates. Therefore it is necessary to multiply
 C with a grid scale factor divided by the number grid points per
 C geographical coordinate.
-              ipart(ip,bi,bj) = ipart(ip,bi,bj) + flt_deltaT/6 
+              ipart(ip,bi,bj) = ipart(ip,bi,bj) + flt_deltaT/6
      &                        * (u1 + 2*u2 + 2*u3 + u4) * scalex
-              jpart(ip,bi,bj) = jpart(ip,bi,bj) + flt_deltaT/6 
+              jpart(ip,bi,bj) = jpart(ip,bi,bj) + flt_deltaT/6
      &                        * (v1 + 2*v2 + 2*v3 + v4) * scaley
 #ifdef ALLOW_3D_FLT
               IF (iup(ip,bi,bj).EQ.-1.) THEN
