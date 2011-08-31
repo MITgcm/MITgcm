@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.7 2009/03/26 22:21:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.8 2011/08/31 21:35:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -23,7 +23,9 @@ C     | SUBROUTINE EXCH_RL_SEND_PUT_VEC_X
 C     | o "Send" or "put" X edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing send or
-C     | direct "put" of data to update buffer in X direction
+C     |   direct "put" of data to update buffer in X direction
+C     | Note: Since only master-thread send/put, assumes input
+C     |       & output arrays are shared (i.e. incommon block)
 C     *==========================================================*
 
 C     !USES:
@@ -88,11 +90,14 @@ C     COMM_PUT   "Put" communication ( UMP_, shmemput, etc... )
 C                Fill east receive buffer of west-neighbor tile
 C                Fill west receive buffer of east-neighbor tile
 C                Sync. memory
-C                Write data-ready Ack for east edge of west-neighbor
-C                tile
-C                Write data-ready Ack for west edge of east-neighbor
-C                tile
+C                Write data-ready Ack for east edge of west-neighbor tile
+C                Write data-ready Ack for west edge of east-neighbor tile
 C                Sync. memory
+
+C     Prevent anyone to access shared buffer while an other thread modifies it
+      _BARRIER
+
+      _BEGIN_MASTER(myThid)
 
 #ifdef DBUG_EXCH_VEC
       ioUnit = errorMessageUnit
@@ -101,8 +106,8 @@ C                Sync. memory
      &     exchNeedsMemsync,exchUsesBarrier
 #endif
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+      DO bj=1,nSy
+       DO bi=1,nSx
 
         westCommMode  = _tileCommModeW(bi,bj)
         eastCommMode  = _tileCommModeE(bi,bj)
@@ -186,6 +191,8 @@ c         write(0,*) 'SEND_PUT_VEC_X: copy W:',biE,bjE,' <- E:',bi,bj
        ENDDO
       ENDDO
 
+      _END_MASTER(myThid)
+
 C--   Signal completetion ( making sure system-wide memory state is
 C--                         consistent ).
 
@@ -222,6 +229,9 @@ C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
+C     Wait until all threads finish filling buffer <-- jmc: really needed ?
+      _BARRIER
+
       RETURN
       END
 
@@ -240,7 +250,9 @@ C     | SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y
 C     | o "Send" or "put" Y edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing send or
-C     | direct "put" of data to update buffer in Y direction
+C     |   direct "put" of data to update buffer in X direction
+C     | Note: Since only master-thread send/put, assumes input
+C     |       & output arrays are shared (i.e. incommon block)
 C     *==========================================================*
 
 C     !USES:
@@ -276,7 +288,7 @@ C     biS, bjS      :: South tile indices
 C     biN, bjN      :: North tile indices
 C     theProc       :: Variables used in message building
 C     theTag        :: Variables used in message building
-C     theType       :: Variables used in message building   
+C     theType       :: Variables used in message building
 C     theSize       :: Variables used in message building
 C     southCommMode :: variables holding type of communication
 C     northCommMode ::  a particular tile face uses.
@@ -309,18 +321,21 @@ C     COMM_PUT   "Put" communication ( UMP_, shmemput, etc... )
 C                Fill east receive buffer of south-neighbor tile
 C                Fill west receive buffer of north-neighbor tile
 C                Sync. memory
-C                Write data-ready Ack for east edge of south-neighbor
-C                tile
-C                Write data-ready Ack for west edge of north-neighbor
-C                tile
+C                Write data-ready Ack for east edge of south-neighbor tile
+C                Write data-ready Ack for west edge of north-neighbor tile
 C                Sync. memory
+
+C     Prevent anyone to access shared buffer while an other thread modifies it
+      _BARRIER
+
+      _BEGIN_MASTER(myThid)
 
 #ifdef DBUG_EXCH_VEC
       ioUnit = errorMessageUnit
 #endif
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+      DO bj=1,nSy
+       DO bi=1,nSx
 
         southCommMode  = _tileCommModeS(bi,bj)
         northCommMode  = _tileCommModeN(bi,bj)
@@ -390,6 +405,8 @@ c         write(0,*) 'SEND_PUT_VEC_Y: copy S:',biN,bjN,' <- N:',bi,bj
        ENDDO
       ENDDO
 
+      _END_MASTER(myThid)
+
 C--   Signal completetion ( making sure system-wide memory state is
 C--                         consistent ).
 
@@ -425,6 +442,9 @@ C     thread while it waits. On most machines the system barrier
 C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
+
+C     Wait until all threads finish filling buffer <-- jmc: really needed ?
+      _BARRIER
 
       RETURN
       END

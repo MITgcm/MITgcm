@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.7 2009/08/04 16:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.8 2011/08/31 21:35:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#undef EXCH_USE_SPINNING
 #undef DBUG_EXCH_VEC
 
 C--   Contents
@@ -77,8 +78,10 @@ C--   iii. Set data read flag + memory sync.
 
       ioUnit = errorMessageUnit
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+      _BEGIN_MASTER(myThid)
+
+      DO bj=1,nSy
+       DO bi=1,nSx
         westCommMode  = _tileCommModeW(bi,bj)
         eastCommMode  = _tileCommModeE(bi,bj)
 #ifdef DBUG_EXCH_VEC
@@ -151,7 +154,37 @@ c         endif
       write(ioUnit,'(A,5I6,I12)') 'RECV_X:',myProcId
 #endif
 
-C--   Wait for buffers I am going read to be ready.
+      IF ( .NOT.exchUsesBarrier  ) THEN
+       DO bj=1,nSy
+        DO bi=1,nSx
+         IF ( exchNReqsX(1,bi,bj) .GT. 0 ) THEN
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+          IF ( usingMPI ) THEN
+#endif
+          CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
+     &                      mpiStatus, mpiRC )
+#ifndef ALWAYS_USE_MPI
+          ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+         ENDIF
+C        Clear outstanding requests counter
+         exchNReqsX(1,bi,bj) = 0
+        ENDDO
+       ENDDO
+      ENDIF
+
+      _END_MASTER(myThid)
+
+C--   need to sync threads after master has received data ;
+C     (done after mpi waitall in case waitall is really needed)
+      _BARRIER
+
+C--   Threads wait for buffers I am going to read to be ready.
+C     note: added BARRIER in exch_send_put S/R and here above (message
+C     mode) so that we no longer needs this (undef EXCH_USE_SPINNING)
+#ifdef EXCH_USE_SPINNING
       IF ( exchUsesBarrier  ) THEN
 C      o On some machines ( T90 ) use system barrier rather than spinning.
        CALL BARRIER( myThid )
@@ -182,25 +215,10 @@ C        i.e. we only lock waiting for data that we need.
 C        Clear outstanding requests
          westRecvAck(1,bi,bj) = 0
          eastRecvAck(1,bi,bj) = 0
-
-         IF ( exchNReqsX(1,bi,bj) .GT. 0 ) THEN
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-          IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
-     &                      mpiStatus, mpiRC )
-#ifndef ALWAYS_USE_MPI
-          ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-         ENDIF
-C        Clear outstanding requests counter
-         exchNReqsX(1,bi,bj) = 0
-C        Update statistics
         ENDDO
        ENDDO
       ENDIF
+#endif /* EXCH_USE_SPINNING */
 
       RETURN
       END
@@ -274,8 +292,10 @@ C--   iii. Set data read flag + memory sync.
 
       ioUnit = errorMessageUnit
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+      _BEGIN_MASTER(myThid)
+
+      DO bj=1,nSy
+       DO bi=1,nSx
         southCommMode  = _tileCommModeS(bi,bj)
         northCommMode  = _tileCommModeN(bi,bj)
 #ifdef DBUG_EXCH_VEC
@@ -331,7 +351,38 @@ c       bjS =  _tileBjS(bi,bj)
       write(ioUnit,'(A,5I6,I12)') 'RECV_Y:',myProcId
 #endif
 
-C--   Wait for buffers I am going read to be ready.
+C--   Processes wait for buffers I am going to read to be ready.
+      IF ( .NOT.exchUsesBarrier  ) THEN
+       DO bj=1,nSy
+        DO bi=1,nSx
+         IF ( exchNReqsY(1,bi,bj) .GT. 0 ) THEN
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+          IF ( usingMPI ) THEN
+#endif
+          CALL MPI_Waitall( exchNReqsY(1,bi,bj), exchReqIdY(1,1,bi,bj),
+     &                      mpiStatus, mpiRC )
+#ifndef ALWAYS_USE_MPI
+          ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+         ENDIF
+C        Clear outstanding requests counter
+         exchNReqsY(1,bi,bj) = 0
+        ENDDO
+       ENDDO
+      ENDIF
+
+      _END_MASTER(myThid)
+
+C--   need to sync threads after master has received data ;
+C     (done after mpi waitall in case waitall is really needed)
+      _BARRIER
+
+C--   Threads wait for buffers I am going to read to be ready.
+C     note: added BARRIER in exch_send_put S/R and here above (message
+C     mode) so that we no longer needs this (undef EXCH_USE_SPINNING)
+#ifdef EXCH_USE_SPINNING
       IF ( exchUsesBarrier  ) THEN
 C      o On some machines ( T90 ) use system barrier rather than spinning.
        CALL BARRIER( myThid )
@@ -362,25 +413,10 @@ C        i.e. we only lock waiting for data that we need.
 C        Clear outstanding requests
          southRecvAck(1,bi,bj) = 0
          northRecvAck(1,bi,bj) = 0
-
-         IF ( exchNReqsY(1,bi,bj) .GT. 0 ) THEN
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-          IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Waitall( exchNReqsY(1,bi,bj), exchReqIdY(1,1,bi,bj),
-     &                      mpiStatus, mpiRC )
-#ifndef ALWAYS_USE_MPI
-          ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-         ENDIF
-C        Clear outstanding requests counter
-         exchNReqsY(1,bi,bj) = 0
-C        Update statistics
         ENDDO
        ENDDO
       ENDIF
+#endif /* EXCH_USE_SPINNING */
 
       RETURN
       END

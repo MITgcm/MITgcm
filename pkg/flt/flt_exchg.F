@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.14 2011/02/01 17:08:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.15 2011/08/31 21:35:11 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -29,22 +29,26 @@ C     == routine arguments ==
       _RL myTime
       INTEGER myIter, myThid
 
-C     == local variables ==
-      INTEGER bi, bj, ic
-      INTEGER ip, jp, jl, npNew
-      INTEGER icountE, icountW, icountN, icountS
-      INTEGER deleteList(max_npart_exch*2)
-      INTEGER imax, imax2, m
-      _RL ilo, ihi, jlo, jhi, iNew, jNew
+C     == shared variables ==
+C-    buffer for sending/receiving variables (E/W are also used for S/N)
+C     (needs to be in common block for multi-threaded)
+      INTEGER imax, imax2
       PARAMETER(imax=9)
       PARAMETER(imax2=imax*max_npart_exch)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C     buffer for sending/receiving variables (E/W are also used for S/N)
       _RL fltbuf_sendE(imax2,nSx,nSy)
       _RL fltbuf_sendW(imax2,nSx,nSy)
       _RL fltbuf_recvE(imax2,nSx,nSy)
       _RL fltbuf_recvW(imax2,nSx,nSy)
+      COMMON / FLT_EXCHG_BUFF /
+     &   fltbuf_sendE, fltbuf_sendW, fltbuf_recvE, fltbuf_recvW
+
+C     == local variables ==
+      INTEGER bi, bj, ic
+      INTEGER ip, jp, jl, m, npNew
+      INTEGER icountE, icountW, icountN, icountS
+      INTEGER deleteList(max_npart_exch*2)
+      _RL ilo, ihi, jlo, jhi, iNew, jNew
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef FLT_WITHOUT_X_PERIODICITY
       LOGICAL wSide, eSide
 #endif /* FLT_WITHOUT_X_PERIODICITY */
