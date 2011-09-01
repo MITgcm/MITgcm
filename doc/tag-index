@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1498 2011/08/29 19:46:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1499 2011/09/01 15:08:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+  - make FLT EXCH working with multi-threads (and MPI + multi-threads);
+  - use buffer for floats IO (trajectories & profiles); size set in FLT_SIZE.h;
+  - fix pickup and trajectories + profiles output with multi-threads;
+  - add parameter to select group of fields to write along trajectory and
+    profile (default unchanged);
+  - only call PORT_RAND* function when flt_noise <> 0;
+  - add multi-threaded test for verification exp. flt_example.
+o eesupp/src:
+  - fix S/R ALL_PROC_DIE for MPI+multi-threads.
+  - USE_OMP_THREADING: check that number of threads (from eedata) matches
+    actual number (from env.var. setting).
 o pkg/ebm:
   - fix multi-threading in ebm_area_t.F ; clean-up EBM.h header file.
   - add multi-threaded test for verification exp. global_ocean_ebm
