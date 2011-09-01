@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_gnu.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.16 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.17 2011/09/01 23:05:08 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -53,7 +53,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -77,7 +77,7 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 

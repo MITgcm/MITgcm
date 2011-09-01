@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.14 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.15 2011/09/01 23:05:08 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -26,10 +26,13 @@ HERE=$TST_DIR/output
 #cd $HERE
 
 sfx='tuv'
-module add open64
-OPTFILE="../tools/build_options/linux_ia32_open64.trapuv"
-options='-j 2 -gsl -do'
-export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+ module add open64
+ OPTFILE="../tools/build_options/linux_ia32_open64.trapuv"
+ options='-j 2 -gsl -do'
+ export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
 
 checkOut=1
 #options="$options -nc" ; checkOut=0
@@ -52,7 +55,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -76,7 +79,7 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 

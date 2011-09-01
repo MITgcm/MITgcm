@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.9 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.10 2011/09/01 23:05:08 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -64,7 +64,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -87,7 +87,7 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 

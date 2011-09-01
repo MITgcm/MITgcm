@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_gnu.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.4 2011/08/24 12:57:36 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.5 2011/09/01 23:05:08 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -60,7 +60,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo "cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
        exit
     fi
   else

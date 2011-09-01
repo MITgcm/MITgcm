@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.16 2011/08/17 20:45:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.17 2011/09/01 23:05:08 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -24,11 +24,11 @@ HERE=$TST_DIR/output
 #cd $HERE
 
 sfx='pgi'
-module add mpich/$sfx
-OPTFILE="../tools/build_options/linux_ia32_pgf77+mpi_aces"
-options="-MPI 6 -mf $PBS_NODEFILE"
+ module add mpich/$sfx
+ OPTFILE="../tools/build_options/linux_ia32_pgf77+mpi_aces"
+ options="-MPI 6 -mf $PBS_NODEFILE"
 #options="$options -skd tutorial_advection_in_gyre"
-EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
+ EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
@@ -54,7 +54,7 @@ if [ $checkOut -eq 1 ] ; then
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-       echo " cvs update fail (return val=$RETVAL) => exit"
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
        exit
     fi
   else
@@ -78,7 +78,7 @@ if test -e $gcmDIR/verification ; then
     echo " dir $gcmDIR/verification exist" ; fi
   cd $gcmDIR/verification
 else
-  echo "no dir $gcmDIR/verification => exit"
+  echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
 
