@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.16 2009/09/01 19:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.17 2011/09/02 18:22:50 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -7,46 +7,46 @@ C--  File exf_set_obcs.F:
 C--   Contents
 C--   o EXF_SET_OBCS_XZ
 C--   o EXF_SET_OBCS_YZ
-C--   o EXF_SET_OBCS_X
-C--   o EXF_SET_OBCS_Y
+C--   o EXF_SET_OBCS_X   <- no longer maintained ; use SET_OBCS_XZ with nNz=1
+C--   o EXF_SET_OBCS_Y   <- no longer maintained ; use SET_OBCS_YZ with nNz=1
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXF_SET_OBCS_XZ (
      U       obcs_fld_xz, obcs_xz_0, obcs_xz_1,
-     I       obcs_file, obcsmask,
+     I       obcs_file, obcsmask, nNz,
      I       fac, first, changed, useYearlyFields, obcs_period,
      I       count0, count1, year0, year1,
      I       myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_XZ
-c     ==================================================================
-c
-c     o set open boundary conditions
-c
-c     started: heimbach@mit.edu 01-May-2001
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_XZ
+C     ==================================================================
+C
+C     o set open boundary conditions
+C
+C     started: heimbach@mit.edu 01-May-2001
+C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_XZ
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_XZ
+C     ==================================================================
 
       IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
-
-      _RL obcs_fld_xz(1-OLx:sNx+OLx,Nr,nSx,nSy)
-      _RL obcs_xz_0(1-OLx:sNx+OLx,Nr,nSx,nSy)
-      _RL obcs_xz_1(1-OLx:sNx+OLx,Nr,nSx,nSy)
+C     == routine arguments ==
+C     nNz   :: number of levels to process
+      INTEGER nNz
+      _RL obcs_fld_xz(1-OLx:sNx+OLx,nNz,nSx,nSy)
+      _RL obcs_xz_0(1-OLx:sNx+OLx,nNz,nSx,nSy)
+      _RL obcs_xz_1(1-OLx:sNx+OLx,nNz,nSx,nSy)
 
       CHARACTER*(128) obcs_file
       CHARACTER*1 obcsmask
@@ -61,13 +61,13 @@ c     == routine arguments ==
 
 #ifdef ALLOW_OBCS
 
-c     == local variables ==
+C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
       INTEGER bi, bj
       INTEGER i, k
 
-c     == end of interface ==
+C     == end of interface ==
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -79,12 +79,14 @@ c     == end of interface ==
      O         obcs_file0,
      I         myTime, myIter, myThid )
 
-            CALL READ_REC_XZ_RL( obcs_file0, exf_iprec_obcs, Nr,
+            _BARRIER
+            CALL READ_REC_XZ_RL( obcs_file0, exf_iprec_obcs, nNz,
      &                           obcs_xz_1, count0, myIter, myThid )
+            _BARRIER
          ENDIF
 
-         IF (( first ) .OR. ( changed )) THEN
-            CALL exf_swapffields_xz( obcs_xz_0, obcs_xz_1, myThid )
+         IF ( first .OR. changed ) THEN
+            CALL exf_swapffields_xz( obcs_xz_0, obcs_xz_1, nNz,myThid )
 
             CALL exf_GetYearlyFieldName(
      I         useYearlyFields, twoDigitYear, obcs_period, year1,
@@ -92,13 +94,15 @@ c     == end of interface ==
      O         obcs_file1,
      I         myTime, myIter, myThid )
 
-            CALL READ_REC_XZ_RL( obcs_file1, exf_iprec_obcs, Nr,
+            _BARRIER
+            CALL READ_REC_XZ_RL( obcs_file1, exf_iprec_obcs, nNz,
      &                           obcs_xz_1, count1, myIter, myThid )
+            _BARRIER
          ENDIF
 
          DO bj = myByLo(myThid),myByHi(myThid)
             DO bi = myBxLo(myThid),myBxHi(myThid)
-               DO k = 1,Nr
+               DO k = 1,nNz
                   DO i = 1,sNx
                      obcs_fld_xz(i,k,bi,bj) =
      &                    fac * obcs_xz_0(i,k,bi,bj) +
@@ -119,38 +123,38 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXF_SET_OBCS_YZ (
      U       obcs_fld_yz, obcs_yz_0, obcs_yz_1,
-     I       obcs_file, obcsmask,
+     I       obcs_file, obcsmask, nNz,
      I       fac, first, changed, useYearlyFields, obcs_period,
      I       count0, count1, year0, year1,
      I       myTime, myIter, myThid)
 
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_YZ
-c     ==================================================================
-c
-c     o set open boundary conditions
-c
-c     started: heimbach@mit.edu 01-May-2001
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_YZ
+C     ==================================================================
+C
+C     o set open boundary conditions
+C
+C     started: heimbach@mit.edu 01-May-2001
 
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_YZ
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_YZ
+C     ==================================================================
 
       IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
-
-      _RL obcs_fld_yz(1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL obcs_yz_0(1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL obcs_yz_1(1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     == routine arguments ==
+C     nNz   :: number of levels to process
+      INTEGER nNz
+      _RL obcs_fld_yz(1-OLy:sNy+OLy,nNz,nSx,nSy)
+      _RL obcs_yz_0(1-OLy:sNy+OLy,nNz,nSx,nSy)
+      _RL obcs_yz_1(1-OLy:sNy+OLy,nNz,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) obcs_file
       CHARACTER*1 obcsmask
       LOGICAL first, changed
@@ -164,13 +168,13 @@ c     == routine arguments ==
 
 #ifdef ALLOW_OBCS
 
-c     == local variables ==
+C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
       INTEGER bi, bj
       INTEGER j, k
 
-c     == end of interface ==
+C     == end of interface ==
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -182,12 +186,14 @@ c     == end of interface ==
      O         obcs_file0,
      I         myTime, myIter, myThid )
 
-            CALL READ_REC_YZ_RL( obcs_file0, exf_iprec_obcs, Nr,
+            _BARRIER
+            CALL READ_REC_YZ_RL( obcs_file0, exf_iprec_obcs, nNz,
      &                           obcs_yz_1, count0, myIter, myThid )
+            _BARRIER
          ENDIF
 
-         IF (( first ) .OR. ( changed )) THEN
-            CALL exf_swapffields_yz( obcs_yz_0, obcs_yz_1, myThid )
+         IF ( first .OR. changed ) THEN
+            CALL exf_swapffields_yz( obcs_yz_0, obcs_yz_1, nNz,myThid )
 
             CALL exf_GetYearlyFieldName(
      I         useYearlyFields, twoDigitYear, obcs_period, year1,
@@ -195,13 +201,15 @@ c     == end of interface ==
      O         obcs_file1,
      I         myTime, myIter, myThid )
 
-            CALL READ_REC_YZ_RL( obcs_file1, exf_iprec_obcs, Nr,
+            _BARRIER
+            CALL READ_REC_YZ_RL( obcs_file1, exf_iprec_obcs, nNz,
      &                           obcs_yz_1, count1, myIter, myThid )
+            _BARRIER
          ENDIF
 
          DO bj = myByLo(myThid),myByHi(myThid)
             DO bi = myBxLo(myThid),myBxHi(myThid)
-               DO k = 1,Nr
+               DO k = 1,nNz
                   DO j = 1,sNy
                      obcs_fld_yz(j,k,bi,bj) =
      &                    fac             *obcs_yz_0(j,k,bi,bj) +
@@ -227,20 +235,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I       count0, count1, year0, year1,
      I       myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_X
-c     ==================================================================
-c
-c     o set open boundary conditions
-c       same as EXF_SET_OBCS_XZ but for Nr=1
-c
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_X
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_X
+C     ==================================================================
+C
+C     o set open boundary conditions
+C       same as EXF_SET_OBCS_XZ but for Nr=1
+C
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_X
+C     ==================================================================
 
       IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -248,7 +256,7 @@ c     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
       _RL obcs_fld_x(1-OLx:sNx+OLx,nSx,nSy)
       _RL obcs_x_0(1-OLx:sNx+OLx,nSx,nSy)
@@ -267,12 +275,14 @@ c     == routine arguments ==
 
 #ifdef ALLOW_OBCS
 
-c     == local variables ==
+C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
       INTEGER bi, bj, i
 
-c     == end of interface ==
+C     == end of interface ==
+
+      STOP 'S/R EXF_SET_OBCS_X no longer maintained'
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -289,7 +299,7 @@ c     == end of interface ==
          ENDIF
 
          IF (( first ) .OR. ( changed )) THEN
-            CALL exf_swapffields_x( obcs_x_0, obcs_x_1, myThid )
+            CALL exf_swapffields_xz( obcs_x_0, obcs_x_1, 1,myThid )
 
             CALL exf_GetYearlyFieldName(
      I         useYearlyFields, twoDigitYear, obcs_period, year1,
@@ -327,20 +337,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I       count0, count1, year0, year1,
      I       myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_Y
-c     ==================================================================
-c
-c     o set open boundary conditions
-c       same as EXF_SET_OBCS_YZ but for Nr=1
-c
-c     ==================================================================
-c     SUBROUTINE EXF_SET_OBCS_Y
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_Y
+C     ==================================================================
+C
+C     o set open boundary conditions
+C       same as EXF_SET_OBCS_YZ but for Nr=1
+C
+C     ==================================================================
+C     SUBROUTINE EXF_SET_OBCS_Y
+C     ==================================================================
 
       IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -348,7 +358,7 @@ c     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
       _RL obcs_fld_y(1-OLy:sNy+OLy,nSx,nSy)
       _RL obcs_y_0(1-OLy:sNy+OLy,nSx,nSy)
@@ -366,12 +376,14 @@ c     == routine arguments ==
 
 #ifdef ALLOW_OBCS
 
-c     == local variables ==
+C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
       INTEGER bi, bj, j
 
-c     == end of interface ==
+C     == end of interface ==
+
+      STOP 'S/R EXF_SET_OBCS_X no longer maintained'
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -388,7 +400,7 @@ c     == end of interface ==
          ENDIF
 
          IF (( first ) .OR. ( changed )) THEN
-            CALL exf_swapffields_y( obcs_y_0, obcs_y_1, myThid )
+            CALL exf_swapffields_yz( obcs_y_0, obcs_y_1, 1,myThid )
 
             CALL exf_GetYearlyFieldName(
      I         useYearlyFields, twoDigitYear, obcs_period, year1,
