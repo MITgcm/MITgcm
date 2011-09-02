@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1499 2011/09/01 15:08:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1500 2011/09/02 18:34:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs (seaice):
+  - add missing EXCH for uIce,vIce after applying OBCS;
+  - remove S/R EXF_SWAPFFIELDS_X/Y , disable S/R EXF_SET_OBCS_X/Y by adding
+    argument = number of levels to S/R EXF_SWAPFFIELDS_XZ/YZ and S/R
+    EXF_SET_OBCS_XZ/YZ ; update obcs_exf_load.F;
+  - fix EXF_SET_OBCS_XZ/YZ for multi-threaded (assuming loaded arrays are shared)
+  - verification exp. seaice_obcs: split domain in 2 tiles ; add SIZE.h_mpi
+    and eedata.mth for MPI and mutlti-threaded testing.
 o pkg/flt:
   - make FLT EXCH working with multi-threads (and MPI + multi-threads);
   - use buffer for floats IO (trajectories & profiles); size set in FLT_SIZE.h;
