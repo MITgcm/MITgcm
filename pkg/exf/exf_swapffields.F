@@ -1,355 +1,226 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.6 2007/10/11 01:29:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.7 2011/09/02 18:22:24 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
+C--  File exf_swapffields.F: Routines to swap 2 fields
+C--   Contents
+C--   o EXF_SWAPFFIELDS
+C--   o EXF_SWAPFFIELDS_3D
+C--   o EXF_SWAPFFIELDS_XZ
+C--   o EXF_SWAPFFIELDS_YZ
 
-      subroutine exf_SwapFFields(
-     U                            ffld0,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE EXF_SWAPFFIELDS(
+     O                            ffld0,
      U                            ffld1,
-     I                            mythid
-     &                          )
+     I                            myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_SwapFFields
-c     ==================================================================
-c
-c     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c
-c              - Changed Routine names (package prefix: exf_)
-c
-c     ==================================================================
-c     SUBROUTINE exf_SwapFFields
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE exf_SwapFFields
+C     ==================================================================
+C
+C     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C
+C     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
+C
+C              - Restructured the code in order to create a package
+C                for the MITgcmUV.
+C
+C              Christian Eckert eckert@mit.edu  12-Feb-2000
+C
+C              - Changed Routine names (package prefix: exf_)
+C
+C     ==================================================================
+C     SUBROUTINE exf_SwapFFields
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+      _RL ffld0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ffld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER myThid
 
-      integer mythid
-      _RL ffld0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL ffld1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+C     == local variables ==
+      INTEGER bi, bj
+      INTEGER i, j
 
-c     == local variables ==
+C     == end of interface ==
 
-      integer bi
-      integer bj
-      integer  i
-      integer  j
-      integer  itlo,ithi
-      integer  jtlo,jthi
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = 1,sny
-            do i = 1,snx
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j = 1,sNy
+            DO i = 1,sNx
               ffld0(i,j,bi,bj) = ffld1(i,j,bi,bj)
               ffld1(i,j,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-      end
+      RETURN
+      END
 
-      subroutine exf_SwapFFields_3d(
-     U                            ffld0,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE EXF_SWAPFFIELDS_3D(
+     O                            ffld0,
      U                            ffld1,
-     I                            mythid
-     &                          )
+     I                            nNz, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_SwapFFields_3d
-c     ==================================================================
-c
-c     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
-c
-c     ==================================================================
-c     SUBROUTINE exf_SwapFFields
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE exf_SwapFFields_3d
+C     ==================================================================
+C
+C     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
+C
+C     ==================================================================
+C     SUBROUTINE exf_SwapFFields
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+C     nNz   :: number of levels to process
+      INTEGER nNz
+      _RL ffld0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nNz,nSx,nSy)
+      _RL ffld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nNz,nSx,nSy)
+      INTEGER myThid
 
-      integer mythid
-      _RL ffld0(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL ffld1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+C     == local variables ==
+      INTEGER bi, bj
+      INTEGER i, j, k
 
-c     == local variables ==
+C     == end of interface ==
 
-      integer bi
-      integer bj
-      integer  i
-      integer  j
-      integer  k
-      integer  itlo,ithi
-      integer  jtlo,jthi
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = 1,sny
-              do i = 1,snx
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k = 1,nNz
+            DO j = 1,sNy
+              DO i = 1,sNx
                 ffld0(i,j,k,bi,bj) = ffld1(i,j,k,bi,bj)
                 ffld1(i,j,k,bi,bj) = 0. _d 0
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-      end
+      RETURN
+      END
 
-      subroutine exf_swapffields_xz(
-     U                               ffld0,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE EXF_SWAPFFIELDS_XZ(
+     O                               ffld0,
      U                               ffld1,
-     I                               mythid
-     &                             )
+     I                               nNz, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_xz
-c     ==================================================================
-c
-c     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
-c
-c     started: heimbach@mit.edu 01-May-2001
-c
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_xz
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE exf_swapffields_xz
+C     ==================================================================
+C
+C     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
+C
+C     started: heimbach@mit.edu 01-May-2001
+C
+C     ==================================================================
+C     SUBROUTINE exf_swapffields_xz
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+C     nNz   :: number of levels to process
+      INTEGER nNz
+      _RL ffld0(1-OLx:sNx+OLx,nNz,nSx,nSy)
+      _RL ffld1(1-OLx:sNx+OLx,nNz,nSx,nSy)
+      INTEGER myThid
 
-      integer mythid
-      _RL ffld0(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL ffld1(1-olx:snx+olx,Nr,nsx,nsy)
+C     == local variables ==
+      INTEGER bi, bj
+      INTEGER i, k
 
-c     == local variables ==
+C     == end of interface ==
 
-      integer bi, bj
-      integer  i, k
-      integer  itlo,ithi
-      integer  jtlo,jthi
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,Nr
-            do i = 1,snx
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k = 1,nNz
+            DO i = 1,sNx
               ffld0(i,k,bi,bj) = ffld1(i,k,bi,bj)
               ffld1(i,k,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-      end
+      RETURN
+      END
 
-      subroutine exf_swapffields_yz(
-     U                               ffld0,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE EXF_SWAPFFIELDS_YZ(
+     O                               ffld0,
      U                               ffld1,
-     I                               mythid
-     &                             )
+     I                               nNz, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_yz
-c     ==================================================================
-c
-c     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
-c
-c     started: heimbach@mit.edu 01-May-2001
-c
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_yz
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE exf_swapffields_yz
+C     ==================================================================
+C
+C     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
+C
+C     started: heimbach@mit.edu 01-May-2001
+C
+C     ==================================================================
+C     SUBROUTINE exf_swapffields_yz
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+C     nNz   :: number of levels to process
+      INTEGER nNz
+      _RL ffld0(1-OLy:sNy+OLy,nNz,nSx,nSy)
+      _RL ffld1(1-OLy:sNy+OLy,nNz,nSx,nSy)
+      INTEGER myThid
 
-      integer mythid
-      _RL ffld0(1-oly:sny+oly,Nr,nsx,nsy)
-      _RL ffld1(1-oly:sny+oly,Nr,nsx,nsy)
+C     == local variables ==
+      INTEGER bi, bj
+      INTEGER j, k
 
-c     == local variables ==
+C     == end of interface ==
 
-      integer bi, bj
-      integer  j, k
-      integer  itlo,ithi
-      integer  jtlo,jthi
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,Nr
-            do j = 1,sny
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k = 1,nNz
+            DO j = 1,sNy
               ffld0(j,k,bi,bj) = ffld1(j,k,bi,bj)
               ffld1(j,k,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-      end
-
-      subroutine exf_swapffields_x(
-     U                               ffld0,
-     U                               ffld1,
-     I                               mythid
-     &                             )
-
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_x
-c     ==================================================================
-c
-c     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
-c       same as exf_swapffields_xz but for NR=1
-c
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_x
-c     ==================================================================
-
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-
-      integer mythid
-      _RL ffld0(1-olx:snx+olx,nsx,nsy)
-      _RL ffld1(1-olx:snx+olx,nsx,nsy)
-
-c     == local variables ==
-
-      integer  bi, bj, i, itlo,ithi, jtlo,jthi
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-           do i = 1,snx
-              ffld0(i,bi,bj) = ffld1(i,bi,bj)
-              ffld1(i,bi,bj) = 0. _d 0
-           enddo
-        enddo
-      enddo
-
-      end
-
-      subroutine exf_swapffields_y(
-     U                               ffld0,
-     U                               ffld1,
-     I                               mythid
-     &                             )
-
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_y
-c     ==================================================================
-c
-c     o Copy a forcing field ffld1 to ffld0 and set ffld0 to zero.
-c       same as exf_swapffields_yz but for NR=1
-c
-c     ==================================================================
-c     SUBROUTINE exf_swapffields_y
-c     ==================================================================
-
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-
-      integer mythid
-      _RL ffld0(1-oly:sny+oly,nsx,nsy)
-      _RL ffld1(1-oly:sny+oly,nsx,nsy)
-
-c     == local variables ==
-
-      integer  bi, bj, j, itlo,ithi, jtlo,jthi
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-           do j = 1,sny
-              ffld0(j,bi,bj) = ffld1(j,bi,bj)
-              ffld1(j,bi,bj) = 0. _d 0
-           enddo
-        enddo
-      enddo
-
-      end
+      RETURN
+      END
