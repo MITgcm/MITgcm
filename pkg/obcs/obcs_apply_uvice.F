@@ -1,14 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.13 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.14 2011/09/02 14:19:16 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_APPLY_UVICE
+C     !INTERFACE:
       SUBROUTINE OBCS_APPLY_UVICE(
      U                          uFld, vFld,
      I                          myThid )
-C     /==========================================================\
-C     | S/R OBCS_APPLY_UVICE                                     |
-C     \==========================================================/
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | S/R OBCS_APPLY_UVICE
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
@@ -19,24 +26,26 @@ C     == Global variables ==
 #include "OBCS_GRID.h"
 #include "OBCS_SEAICE.h"
 
-C     == Routine Arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C    myThid   :: my Thread Id number
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
 #if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
 
-C     == Local variables ==
-C     I,J,K,bi,bj - Loop counters
+C     !LOCAL VARIABLES:
+C     I,J,K,bi,bj :: Loop counters
       INTEGER I,J,K,bi,bj
-      K = 1
+CEOP
 
+      K = 1
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C     Set model variables to OB values on North/South Boundaries
 # ifdef ALLOW_OBCS_NORTH
-      if ( OBNvicefile .NE. ' ' ) then
+      IF ( tileHasOBN(bi,bj) ) THEN
       DO I=1-Olx,sNx+Olx
 C     Northern boundary
        IF (OB_Jn(I,bi,bj).NE.0) THEN
@@ -77,10 +86,11 @@ C     Northern boundary
 #  endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
-      endif
+      ENDIF
 # endif /* ALLOW_OBCS_NORTH */
+
 # ifdef ALLOW_OBCS_SOUTH
-      if ( OBSvicefile .NE. ' ' ) then
+      IF ( tileHasOBS(bi,bj) ) THEN
       DO I=1-Olx,sNx+Olx
 C     Southern boundary
        IF (OB_Js(I,bi,bj).NE.0) THEN
@@ -121,12 +131,12 @@ C     Southern boundary
 #  endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
-      endif
+      ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
 
 C     Set model variables to OB values on East/West Boundaries
 # ifdef ALLOW_OBCS_EAST
-      if ( OBEuicefile .NE. ' ' ) then
+      IF ( tileHasOBE(bi,bj) ) THEN
       DO J=1-Oly,sNy+Oly
 C     Eastern boundary
        IF (OB_Ie(J,bi,bj).NE.0) THEN
@@ -167,10 +177,11 @@ C     Eastern boundary
 #  endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
-      endif
+      ENDIF
 # endif /* ALLOW_OBCS_EAST */
+
 # ifdef ALLOW_OBCS_WEST
-      if ( OBWuicefile .NE. ' ' ) then
+      IF ( tileHasOBW(bi,bj) ) THEN
       DO J=1-Oly,sNy+Oly
 C     Western boundary
        IF (OB_Iw(J,bi,bj).NE.0) THEN
@@ -211,11 +222,13 @@ C     Western boundary
 #  endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
-      endif
+      ENDIF
 # endif /* ALLOW_OBCS_WEST */
 
        ENDDO
       ENDDO
+
+      CALL EXCH_UV_XY_RL( uFld, vFld, .TRUE., myThid )
 
 #endif /* defined (ALLOW_OBCS) && defined (ALLOW_SEAICE) */
 
