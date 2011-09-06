@@ -1,48 +1,142 @@
 #!/bin/bash
-#
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_ifort,v 1.16 2010/03/21 17:58:17 jmc Exp $
+
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_ifort,v 1.17 2011/09/06 22:15:55 jmc Exp $
 # $Name:  $
 
-#  Ed Hill
-#
-#  tested on faulks, 20030818
-#
-#  Build options for the intel 8.0 fortran compiler
-#  the compiler is now called ifort (not ifc) and it appears to
-#  need -DWORDLENGTH=1 and not -DWORDLENGTH=4 (which is what ifc 6.0) used to have.
-#  ph: use ifort compiler options -convert big_endian -assume byterecl
+# Build options for the intel fortran compiler - version 9.0 (and earlier) -
+#            on Linux IA32 platform
 
-FC=ifort
-F90C=ifort
-LINK='ifort -static'
+#  tested on faulks (FC.6), with OpenMP, using:
+#      (sh, bash):  source /usr/local/pkg/intel/intel_fc_90/bin/ifortvars.sh
+#      (csh,tcsh):  source /usr/local/pkg/intel/intel_fc_90/bin/ifortvars.csh
+#   [was also tested on hugo (FC.4, FC.9), eddy (FC.5)]
+#  and on aces-grid cluster, with OpenMP, using:
+#       module add ifc/9.0.021 icc/9.0.021 intel/9.0
+#       module add netcdf/3.6.1/icc
+
+# MPI : Tested on aces-grid cluster, using:
+#  a) default intel (v8.1) and default mpich/intel:
+#       module add mpich/intel
+#       module add netcdf/3.6.1/icc
+#   e.g.(sh,bash):
+#       export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-intel/include'
+#   (and run using: mpirun -machinefile my_list_of_nodes)
+#
+#  b) intel v9.0 and mpich2-intel (+ OpenMPI or not) using, in this order:
+#       module add ifc/9.0.021 icc/9.0.021 intel/9.0
+#       module add mpich2/1.0.3/intel
+#       module add netcdf/3.6.1/icc
+#       module add mpiexec             (<-- to run with mpiexec)
+#   e.g.(sh,bash):
+#       export MPI_INC_DIR='/usr/local/pkg/mpich2/mpich2-1.0.3/intel/include'
+#   (and run using mpiexec)
+
+# OpenMP : not working well with version earlier than v.9
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC='mpicc'
+  FC='mpif77'
+  F90C=$FC
+ #F90C='mpif90'
+  LINK=$FC
+else
+  CC='icc'
+  FC='ifort'
+  F90C=$FC
+  LINK="$FC -i-static"
+fi
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
-#OMPFLAG='-openmp'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
 
-###INCLUDES='-I/ocean/data4/ce107/netcdf-3.6.1/Linux-i686-intel8/include'
-###LIBS='-L/ocean/data4/ce107/netcdf-3.6.1/Linux-i686-intel8/lib -lnetcdf'
-INCLUDES='-I/usr/local/pkg/netcdf/include'
-LIBS='-L/usr/local/pkg/netcdf/lib -lnetcdf'
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
 
-#  Note that the -mp switch is for ieee "maintain precision" and is
-#  roughly equivalent to -ieee
-if test "x$IEEE" = x ; then
-    FOPTIM='-O3 -align'
-    F90OPTIM='-O3'
-#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
-#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
-else
-    FOPTIM='-O0 -noalign'
-    F90OPTIM='-O0 -g'
-    FFLAGS="$FFLAGS -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl"
-   #FFLAGS="$FFLAGS -mp -w95 -W0 -WB"
-fi
+FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
-F90FLAGS=$FFLAGS
+if test "x$IEEE" = x ; then     #- with optimisation:
+    F90OPTIM='-O3'
+    FOPTIM='-O3 -align'
+#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+else
+    F90OPTIM='-O0'
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+   #  "-mp" is for ieee "maintain precision"
+    FOPTIM='-O0 -noalign'
+   #FFLAGS="$FFLAGS -mp"
+  else                          #- development/check options:
+   #FOPTIM='-O0 -noalign -CB -CU -CV'
+    FOPTIM='-O0 -noalign -check all'
+    FFLAGS="$FFLAGS -xN -pc64"
+    NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+    NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+    NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
+  fi
+fi
 
+F90FLAGS=$FFLAGS
+#F90OPTIM=$FOPTIM
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+#   MPIINCLUDEDIR="$MPI_INC_DIR"
+#   MPI_HEADER_FILES='mpif.h mpiof.h'
+#   MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
