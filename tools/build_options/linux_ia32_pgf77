@@ -1,25 +1,77 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.9 2010/12/19 22:42:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.10 2011/09/07 20:05:02 jmc Exp $
 # $Name:  $
 
-FC='pgf77'
-CC='pgcc'
+# Build options for portland-group compiler (pgi) on Linux IA32 platform
 
-DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+# Tested on author, pgi 6.1 on faulks (FC 6) using:
+# (sh,bash)  export PGI=/usr/local/pkg/pgi/pgi-6.1-5
+#            export PATH="$PGI/linux86/6.1/bin:$PATH"
+
+# MPI : Tested on aces cluster (pgi 5.2, FC 2), using:
+#       module add mpich/pgi
+#       export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-pgi/include'
+#       export NETCDF_ROOT='/usr/local/pkg/pgi/pgi-5.2/linux86/5.2'
+
+if test "x$MPI" = xtrue ; then
+  CC='mpicc'
+  FC='mpif77'
+  F90C='mpif90'
+else
+  CC='pgcc'
+  FC='pgf77'
+  F90C='pgf90'
+fi
+
+DEFINES="-DWORDLENGTH=4"
+if test "x$ALWAYS_USE_F90" = x1 ; then
+    FC=$F90C
+else
+    DEFINES="$DEFINES -DNML_EXTENDED_F77"
+fi
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
 GET_FC_VERSION="-V"
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -byteswapio"
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FFLAGS="$FFLAGS -Mnodclchk"
+   #FOPTIM='-tp p6 -v -O2 -Munroll'
     FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
-else
-    #  Try to follow IEEE-754
-    FFLAGS="$FFLAGS -byteswapio"
-    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+else                            #- no optimisation + IEEE :
+    FOPTIM='-O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O0'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
