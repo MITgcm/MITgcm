@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.21 2011/04/29 14:05:54 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.22 2011/09/07 21:42:52 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -32,8 +32,8 @@ sepDir=1
 option=
 #tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
 #tst_list='g77 adm gfo ifc mth pgi+rs'
-tst_list='g77 adm gfo ifc mth'
-#tst_list='g77 gfo+rs mth'
+#tst_list='g77 adm gfo ifc mth'
+tst_list='g77 gfo ifc mth'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
@@ -130,8 +130,9 @@ do
   case $typ in
    'g77'|'g7a')	OPTFILE='../tools/build_options/linux_ia32_g77' ;;
    'gfo'|'adm')	OPTFILE='../tools/build_options/linux_ia32_gfortran' ;;
-   'ifc'|'mth')	OPTFILE='../tools/build_options/linux_ia32_ifort+authors' ;;
-   'pgi')	OPTFILE='../tools/build_options/linux_ia32_pgf77+authors_fc5' ;;
+   'ifc'|'mth')	OPTFILE='../tools/build_options/linux_ia32_ifort'
+		comm="$comm -devel" ;;
+   'pgi')	OPTFILE='../tools/build_options/linux_ia32_pgf77' ;;
        *)	OPTFILE= ;;
   esac
 #-- set MPI command:
@@ -145,12 +146,13 @@ do
   fi
 
 #-- set specific Env Vars:
-# if test $typ = 'ifc' ; then
-#   source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
-# fi
+  if test $typ = 'ifc' -o  $typ = 'mth' ; then
+    source /usr/local/pkg/intel/intel_fc_90/bin/ifortvars.sh
+  fi
   if test $typ = 'pgi' ; then
     listT='fizhi-cs-32x32x40 fizhi-cs-aqualev20'
     export PGI=/usr/local/pkg/pgi/pgi-6.1-5
+    export PATH="$PGI/linux86/6.1/bin:$PATH"
   fi
 
   if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
