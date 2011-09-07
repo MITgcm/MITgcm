@@ -1,42 +1,69 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.4 2009/08/14 20:28:19 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.5 2011/09/07 20:05:57 jmc Exp $
 #  $Name:  $
 #
-# Build options for Fedore Core 4 i686 Pentium4
-# tested on (Linux lagoon 2.6.17-1.2142_FC4smp #1 SMP Tue Jul 11 22:57:02 EDT 2006 i686 i686 i386 GNU/Linux) system 20071121
+# Build options for Open64 compiler on Linux IA32 platform
+# tested on lagoon (FC 4),
 #
-# Note: use just -O2 optimisation to avoid some wierd problems with -O3
-#       on aces (open64/4.1 & 4.2) (ideal_2D_ocean)
+# and on aces cluster (FC 2), version 4.2.1, using:
+#       module add open64
+#       export NETCDF_ROOT='/usr/local/pkg/netcdf/netcdf-3.5.1/g77'
+#     and set environment variable 'GSL_IEEE_MODE' if using "-gsl" option:
+#       -  sh,bash:
+#       export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+#       - csh,tcsh:
+#       setenv GSL_IEEE_MODE double-precision,mask-underflow,mask-denormalized
 
-CC=opencc
-FC=openf90
-F90C=openf90
-F90FIXEDFORMAT='-fixedform -x f95'
-LD=openf90
-DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m32 -g'
-NOOPTFILES=''
+# MPI : not yet tested
 
-if test "x$DEVEL" != x ; then
-    FFLAGS='-m32 -convert big_endian -ffortran-bounds-check -trapuv -g'
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif90
+  F90C=mpif90
+  LINK=$FC
 else
-    FFLAGS='-m32 -convert big_endian'
+  CC=opencc
+  FC=openf90
+  F90C=openf90
+  LINK=$FC
 fi
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
+# Pb with "-byteswapio"/"-convert big_endian" option in version 4.0 => use -D_BYTESWAPIO
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-extend-source'
+F90FIXEDFORMAT='-fixedform -x f95'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+#OMPFLAG="$OMPFLAG -OPT:early_mp=ON"
+
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES='ini_vertical_grid.F'
+
+FFLAGS="$FFLAGS -m32 -fPIC"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    # Note: use just -O2 optimisation to avoid some wierd problems with -O3
+    #       on aces (open64/4.1 & 4.2) (ideal_2D_ocean)
     FOPTIM='-O2 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3' # -funsafe-math-optimizations'
+    NOOPTFILES="$NOOPTFILES mon_set_iounit.F mon_init.F"
 else
-    #  Try to follow IEEE-754
-    FOPTIM='-O2 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  else                          #- development/check options:
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+    # full checking options:
+    FOPTIM="$FOPTIM -g -ffortran-bounds-check -trapuv"
+    NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+  fi
 fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O2 -m32'
+CFLAGS='-O0 -m32 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
@@ -74,3 +101,16 @@ elif test -d /usr/local/include/netcdf.inc ; then
     LIBS='-L/usr/local/lib'
 fi
 
+#if [ "x$LIBS" != x ] ; then
+#    LIBS="$LIBS -lstdc++"
+#else
+#    LIBS="-lstdc++"
+#fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
