@@ -1,11 +1,14 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_ifort10.1,v 1.4 2010/03/22 19:47:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_ifort10.1,v 1.5 2011/09/07 23:20:23 jmc Exp $
 # $Name:  $
 #
 #  Constantinos Evangelinos
 #
-#  Build options for the intel 10.1 fortran compiler
+#  Build options for the intel 10.1 fortran compiler (with/without MPI)
+#
+#  with MPI : need to set environment variable MPI_INC_DIR to the include
+#             directory of your MPI implementation
 
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -18,10 +21,17 @@
 #     > setenv KMP_STACKSIZE 400m
 #-------
 
-FC=ifort
-F90C=ifort
-CC=icc
-LINK=ifort
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
+  LINK="$F90C -shared-intel"
+else
+  CC=icc
+  FC=ifort
+  F90C=ifort
+  LINK=$FC
+fi
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
@@ -32,15 +42,7 @@ OMPFLAG='-openmp'
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
-INCLUDEDIRS=''
-INCLUDES=''
-LIBS=''
-
-if test "x$DEVEL" != x ; then
-    FFLAGS="$FFLAGS -convert big_endian -assume byterecl -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all"
-else
-    FFLAGS="$FFLAGS -W0 -WB -convert big_endian -assume byterecl"
-fi
+FFLAGS="$FFLAGS -convert big_endian -assume byterecl"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
@@ -89,20 +91,32 @@ else
 	PROCF=-xK
     fi
 fi
+
+if test "x$DEVEL" = x ; then
+    FFLAGS="$FFLAGS -W0 -WB"
+else
+    FFLAGS="$FFLAGS -O0 -g -debug all -debug-parameters all -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model strict -warn all"
+fi
+
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
-if test "x$IEEE" = x ; then
+if test "x$IEEE" = x ; then     #- with optimisation:
     FOPTIM="-O3 -align -ip -opt-streaming-stores auto $PROCF"
 else
-    if test "x$DEVEL" != x ; then
-	FOPTIM="$PROCF"
-    else
-	FOPTIM="-O0 -mp -noalign $PROCF"
-    fi
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM="-O0 -mp -noalign $PROCF"
+  else                          #- development/check options:
+    FOPTIM="$PROCF"
+  fi
 fi
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS="-O2 -ip $PROCF"
+CFLAGS="-O0 $PROCF"
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIRS="${NETCDF_ROOT}/include"
@@ -143,3 +157,10 @@ elif test -f /usr/local/include/netcdf.inc ; then
     LIBS='-L/usr/local/lib'
 fi
 
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
