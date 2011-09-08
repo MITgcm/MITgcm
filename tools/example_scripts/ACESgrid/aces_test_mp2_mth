@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.10 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.11 2011/09/08 13:39:59 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -30,12 +30,12 @@ sfx='mp2'
  module add ifc/9.0.021 icc/9.0.021 intel/9.0
  module add mpich2/1.0.3/intel
  module add netcdf/3.6.1/icc
- export MPI_INC_DIR='/usr/local/pkg/mpich2/mpich2-1.0.3/intel/include/'
+ export MPI_INC_DIR='/usr/local/pkg/mpich2/mpich2-1.0.3/intel/include'
 #- to run:
  module add mpiexec
- OPTFILE="../tools/build_options/linux_ia32_ifort+mpi_aces"
+ OPTFILE="../tools/build_options/linux_ia32_ifort"
 #OPTFILE="$HERE/linux_ia32_ifort+mpi_aces"
- options="-j 2 -MPI 3 -mth -mf $PBS_NODEFILE"
+ options="-j 2 -MPI 3 -mth -mf $PBS_NODEFILE -devel"
  export OMP_NUM_THREADS=2
  EXE="mpiexec -pernode -comm pmi -np TR_NPROC ./mitgcmuv"
 #export KMP_STACKSIZE=400m  <-- added in file "~/.bashrc"

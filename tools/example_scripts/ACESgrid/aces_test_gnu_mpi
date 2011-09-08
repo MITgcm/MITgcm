@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_gnu.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.17 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.18 2011/09/08 13:39:59 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -25,7 +25,8 @@ HERE=$TST_DIR/output
 
 sfx='gnu'
  module add mpich/$sfx
- OPTFILE="../tools/build_options/linux_ia32_g77+mpi_aces"
+ export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-gcc/include'
+ OPTFILE="../tools/build_options/linux_ia32_g77"
  options="-j 2 -MPI 4 -mf $PBS_NODEFILE"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 

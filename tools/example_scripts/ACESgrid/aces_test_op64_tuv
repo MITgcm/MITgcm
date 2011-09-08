@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.15 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.16 2011/09/08 13:39:59 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -27,8 +27,9 @@ HERE=$TST_DIR/output
 
 sfx='tuv'
  module add open64
- OPTFILE="../tools/build_options/linux_ia32_open64.trapuv"
- options='-j 2 -gsl -do'
+ export NETCDF_ROOT='/usr/local/pkg/netcdf/netcdf-3.5.1/g77'
+ OPTFILE="../tools/build_options/linux_ia32_open64"
+ options='-j 2 -devel -gsl -do'
  export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
 
 #- keep a copy of MPI_MFILE:

@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_ifc.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.19 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.20 2011/09/08 13:39:59 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI test using ifort (default=v8) & mpich
@@ -28,10 +28,10 @@ HERE=$TST_DIR/output
 sfx='ifc'
  module add mpich/intel
  module add netcdf/3.6.1/icc
- export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-intel/include/'
- OPTFILE="../tools/build_options/linux_ia32_ifort+mpi_aces"
+ export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-intel/include'
+ OPTFILE="../tools/build_options/linux_ia32_ifort"
 #OPTFILE="$HERE/linux_ia32_ifort+mpi_aces"
- options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
+ options="-j 2 -MPI 6 -mf $PBS_NODEFILE -devel"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
 #- keep a copy of MPI_MFILE:
