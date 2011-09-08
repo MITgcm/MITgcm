@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.21 2011/03/13 22:24:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.22 2011/09/08 19:55:54 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -73,7 +73,7 @@ c     == end of interface ==
       call cost_generic(
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, sstdatfile, mult_sst,
-     &     nmonsrec, modelstartdate, localperiod,
+     &     nmonsrec, sststartdate, localperiod,
      &     'C', wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,
@@ -94,7 +94,7 @@ c
       call cost_generic(
      &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
      &     nnzobs, sstdatfile, mult_sst,
-     &     nrecloc, modelstartdate, localperiod,
+     &     nrecloc, sststartdate, localperiod,
      &     'C', wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,
@@ -157,7 +157,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
       call cost_generic(
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
      &     nnzobs, sssdatfile, mult_sss,
-     &     nmonsrec, modelstartdate, localperiod,
+     &     nmonsrec, sssstartdate, localperiod,
      &     'C', wsss,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sss, num_sss,
