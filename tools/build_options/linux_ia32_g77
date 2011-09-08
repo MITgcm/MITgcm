@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.28 2011/09/06 22:13:26 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.29 2011/09/08 23:13:20 jmc Exp $
 #  $Name:  $
 #
 #  tested on  faulks with gcc-g77 v3.4.6 (with FC 6)
@@ -28,19 +28,23 @@ NOOPTFILES=''
 
 has_sse2=f
 grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
-if test "x$has_sse2" = xt ; then
-    FFLAGS="$FFLAGS -Wimplicit -Wunused -mfpmath=sse -msse -msse2"
-else
-    FFLAGS="$FFLAGS -Wimplicit -Wunused -ffloat-store"
-fi
+
+FFLAGS="$FFLAGS -Wimplicit -Wunused"
 
 if test "x$IEEE" = x ; then     #- with optimisation:
+   #- note(jmc): on aces, sse & sse2 are faster; -O3 is not always faster than -O2
+    if test "x$has_sse2" = xt ; then
+        FFLAGS="$FFLAGS -mfpmath=sse -msse -msse2"
+    fi
    #FOPTIM='-O3 -malign-double -funroll-loops'
-#- note(jmc):
-# -O3 is not always faster than -O2 ; sse & sse2 are faster ;
-# Problems with "-funroll-loops" for some set-up, e.g. tutorial_held_suarez_cs
+   # Problems with "-funroll-loops" for some set-up, e.g. tutorial_held_suarez_cs
     FOPTIM='-O3 -malign-double'
 else                            #- no optimisation + IEEE :
+    if test "x$has_sse2" = xt ; then
+        FFLAGS="$FFLAGS -mfpmath=sse -msse -msse2"
+    else
+        FFLAGS="$FFLAGS -ffloat-store"
+    fi
     FOPTIM='-O0 -malign-double'
 fi
 
