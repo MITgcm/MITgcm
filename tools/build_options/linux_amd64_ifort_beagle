@@ -1,14 +1,13 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.5 2011/08/12 23:09:08 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.6 2011/09/09 16:23:23 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
-#  testing on Beagle without mpi.
+#  testing on Beagle (with and without MPI).
 #
 #  Use after
 #
-#    module add darwin
 #    module add mitgcm
 #
 #  (tested with darwin/20090605 mitgcm/20090605, i.e.,
@@ -21,57 +20,73 @@
 #  alternatively, one may choose to link with one of the intel
 #  "-static" or "-i-static" flags.
 
-FC='ifort'
-CC='icc'
-#F90C='mpif90 -fixed -c '
-LINK='ifort'
+if test "x$MPI" = xtrue ; then
+  CC='mpicc'
+  FC='mpif77'
+  F90C='mpif90'
+  LINK='mpif77'
+  for path in $(echo "$CPATH" | sed 's/:/ /g'); do
+    CPPFLAGS="$CPPFLAGS -I$path"
+  done
+else
+  CC='icc'
+  FC='ifort'
+  F90C=$FC
+  LINK=$FC
+fi
+
 # the netcdf module sets CPPFLAGS, LDFLAGS and FFLAGS
 INCLUDES="$CPPFLAGS"
-# -shared-intel needed with netcdf (namespace conflict???)
+# for static linkage:
+#LIBS="$LDFLAGS -static"
+# for dynamic linkage (note: needed with netcdf <- namespace conflict???)
 LIBS="$LDFLAGS -shared-intel"
 
 # -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
 DEFINES='-DWORDLENGTH=4 -DIFORT'
 CPP='cpp  -traditional -P'
+F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
-#OMPFLAG='-openmp'
+OMPFLAG='-openmp'
 
-NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F mon_ke.F'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mds_byteswap.F'
+NOOPTFILES=$NOOPTFILES' mom_calc_ke.F mon_ke.F'
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    NOOPTFLAGS='-O2'
-    # use this for exact checkpointing (slightly slower):
-    # FOPTIM='-O2 -pc64 -mieee-fp -align'
-    FOPTIM='-O2 -align'
-    # ifort options:
-    # -132        fixed-form line length is 132 characters
-    # -r8         REAL is REAL*8
-    # -i4         INTEGER is INTEGER*4
-    # -w95        don't warn about use of Fortran 95 extensions
-    # -W0         disable all warning messages
-    # -WB         turns a compile-time bounds check error into a warning
-    # -xT         optimize for Intel Core2 and Xeon 51xx
-    # -fno-alias  don't assume aliasing (assume that different variables DON'T refer to the same memory location)
-    # -assume byterecl     record length in OPEN statements is in bytes
-    # -convert big_endian  binary files contain big-endian data
-    FFLAGS="$FFLAGS -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
-else
-    #  Try to follow IEEE-754
-    NOOPTFLAGS='-O0'
-    # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
-    FOPTIM='-O0 -noalign'
-    # -pc64       round floating point values to 64 bits
-    # one could also try
-    # -mp         maintain precision
-    FFLAGS="$FFLAGS -pc64 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
-fi
+# ifort options:
+# -132        fixed-form line length is 132 characters
+# -r8         REAL is REAL*8
+# -i4         INTEGER is INTEGER*4
+# -w95        don't warn about use of Fortran 95 extensions
+# -W0         disable all warning messages
+# -WB         turns a compile-time bounds check error into a warning
+# -xT         optimize for Intel Core2 and Xeon 51xx
+# -fno-alias  don't assume aliasing (assume that different variables
+#                                    DON'T refer to the same memory location)
+# -assume byterecl     record length in OPEN statements is in bytes
+# -convert big_endian  binary files contain big-endian data
+# -CB         check bounds
+# -pc64       round floating point values to 64 bits
+# one could also try
+# -mp         maintain precision
+
+FFLAGS="$FFLAGS -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
-#F90FLAGS=$FFLAGS
-#F90OPTIM=$FOPTIM
+if test "x$IEEE" = x ; then     #- with optimisation:
+    NOOPTFLAGS='-O2'
+    # use this for exact restart (slightly slower):
+    FOPTIM='-O2 -pc64 -mieee-fp -align'
+    # use this for flighty faster execution but with roundoff errors in restart:
+    # FOPTIM='-O2 -align'
+else                            #- no optimisation + IEEE :
+    NOOPTFLAGS='-O0'
+    # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
+    FOPTIM='-O0 -noalign'
+    FFLAGS="$FFLAGS -pc64"
+fi
 
-NOOPTFILES=$NOOPTFILES' mds_byteswap.F'
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
 
