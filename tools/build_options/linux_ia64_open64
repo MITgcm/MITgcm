@@ -1,40 +1,49 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_open64,v 1.2 2008/01/17 05:39:52 utke Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_open64,v 1.3 2011/09/12 17:24:37 jmc Exp $
 #  $Name:  $
 #
+#== Warning ==> comments below have been copied from optfile linux_amd64_open64
+#               and do not strickly apply to this file <==
 # Build options for Fedore Core 4 x86-64 Opteron
 # tested on (Linux batsi.mit.edu 2.6.14-1.1656_FC4smp #1 SMP Thu Jan 5 22:26:33 EST 2006 x86_64 x86_64 x86_64 GNU/Linux) system 20071121
 #
+# Multithreaded tests require
+#       export OMP_SLAVE_STACK_SIZE=400m
+#       export OMP_NUM_THREADS=2
 
 CC=opencc
 FC=openf90
 F90C=openf90
-F90FIXEDFORMAT='-fixedform -x f95'
-LD=openf90
+LINK=openf90
+
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
+#MAKEDEPEND=/usr/X11R6/bin/makedepend
+EXTENDED_SRC_FLAG='-extend-source'
+F90FIXEDFORMAT='-fixedform -x f95'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+#OMPFLAG='-openmp -OPT:early_mp=ON'
+
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
+FFLAGS="$FFLAGS -convert big_endian"
+
 if test "x$DEVEL" != x ; then
-    FFLAGS='-convert big_endian -ffortran-bounds-check -trapuv -g'
-else
-    FFLAGS='-convert big_endian'
+    FFLAGS="$FFLAGS -ffortran-bounds-check -trapuv -g"
 fi
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
+if test "x$IEEE" = x ; then     #- with optimisation:
     FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3' # -funsafe-math-optimizations'
-else
-    #  Try to follow IEEE-754
-    FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+else                            #- no optimisation + IEEE :
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
 fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3'
+CFLAGS='-O0'
 GSLLIB='-lgsl -lgslcblas'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
