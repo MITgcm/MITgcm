@@ -1,39 +1,57 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sparc_sunf90_m64,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sparc_sunf90_m64,v 1.3 2011/09/12 15:18:01 jmc Exp $
 # $Name:  $
 
+# Build options for the Sun fortran compiler (with and without MPI)
+#            on Sun-OS Sparc platform
+# MPI : need to set environment variable MPI_INC_DIR to the include
+#       directory of your MPI implementation
 
-FC=f77
-F90C=f90
-CC=cc
-LINK=${F90C}
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
+  LINK=${F90C}
+else
+  CC='cc'
+  FC='f77'
+  F90C='f90'
+  LINK=${F90C}
+fi
+
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 DEFINES='-DWORDLENGTH=4'
 CPP='/usr/ccs/lib/cpp -P'
-NOOPTFLAGS='-O0 -g -m64 -u -r8const'
-NOOPTFILES=''
 EXTENDED_SRC_FLAG='-e'
 OMPFLAG='-xopenmp'
 
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -m64 -u"
+#FFLAGS="$FFLAGS -r8const"
+
 if test "x$DEVEL" != x ; then
-    FFLAGS='-u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover'
-else
-    FFLAGS='-u -r8const'
+    FFLAGS="$FFLAGS -g -xs -C -xcommonchk -xcheck=init_local -fpover"
+    OMPFLAG='-xopenmp=noopt'
 fi
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    FOPTIM='-fast -m64 -xvector=lib -xpad=local'
-    LIBS="$LIBS -lmopt -lsunmath"
-else
-    #  Try to follow IEEE-754
-#    FOPTIM='-O0 -m64'
-    FOPTIM='-fast -m64 -xpad=local -fsimple=1'
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-fast -xvector=lib -xpad=local'
+    LIBS="$LIBS -lmopt -lsunmath"   #- but get overwritten during NETCDF libs setting below
+else                            #- no optimisation + IEEE :
+#   FOPTIM='-O0'
+    FOPTIM='-fast -xpad=local -fsimple=1'
 fi
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64'
+CFLAGS='-O0 -m64'
+
+INCLUDEDIRS=''
+INCLUDES=''
+#LIBS=''
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -65,5 +83,13 @@ elif test -d /usr/local/netcdf ; then
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64 -L/usr/local/lib'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES=${MPI_HEADER_FILES:='mpif.h mpiof.h'}
+    MPI_HEADER_FILES_INC=${MPI_HEADER_FILES_INC:='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'}
 fi
 
