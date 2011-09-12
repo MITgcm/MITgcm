@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.5 2011/09/07 20:05:57 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.6 2011/09/12 02:38:44 jmc Exp $
 #  $Name:  $
 #
 # Build options for Open64 compiler on Linux IA32 platform
@@ -14,6 +14,10 @@
 #       export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
 #       - csh,tcsh:
 #       setenv GSL_IEEE_MODE double-precision,mask-underflow,mask-denormalized
+
+# Multithreaded tests require
+#       export OMP_SLAVE_STACK_SIZE=400m
+#       export OMP_NUM_THREADS=2
 
 # MPI : not yet tested
 
