@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_altix_jpl,v 1.2 2010/03/21 17:58:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_altix_jpl,v 1.3 2011/09/12 17:33:05 jmc Exp $
 # $Name:  $
 
 #  tested on pollux.jpl.nasa.gov
@@ -11,9 +11,6 @@ DEFINES='-DWORDLENGTH=4'
 CPP='/lib/cpp  -traditional -P'
 EXTENDED_SRC_FLAG='-132'
 
-INCLUDEDIRS="/usr/include"
-INCLUDES="-I/usr/include"
-
 NOOPTFILES='ini_curvilinear_grid.F'
 NOOPTFLAGS='-O3'
 
@@ -21,4 +18,11 @@ FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian -assume byterecl"
 FOPTIM='-O3 -align -ip'
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
+
+INCLUDEDIRS="/usr/include"
+INCLUDES="-I/usr/include"
+if test "x$MPI" = xtrue ; then
+  LIBS='-lmpi'
+fi
+
 
