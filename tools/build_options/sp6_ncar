@@ -1,30 +1,34 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/sp6_ncar,v 1.1 2010/09/08 22:36:39 ce107 Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/sp6_ncar,v 1.2 2011/09/13 00:40:35 jmc Exp $
 # $Name:  $
 
+if test "x$MPI" = xtrue ; then
+  CC='mpcc_r -q64'
+  FC='mpxlf_r -q64'
+  LINK='mpxlf_r -q64'
+else
+  CC='xlc_r -q64'
+  FC='xlf_r -q64'
+  LINK='xlf_r -q64'
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
 S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
-
 DEFINES='-DTARGET_AIX -DWORDLENGTH=4 -DNML_TERMINATOR'
-
-INCLUDES='-I/contrib/netcdf-3.6.2/include'
 CPP='/lib/cpp -P'
-CC='xlc_r -q64'
-FC='xlf_r -q64'
-LINK='xlf_r -q64'
-LIBS='-lmass -L/contrib/netcdf-3.6.2/lib'
-FFLAGS='-qfixed=132'
+
+#FFLAGS="$FFLAGS -qfixed=72"
+FFLAGS="$FFLAGS -qfixed=132"
+
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FOPTIM='-O3 -Q -qarch=pwr6 -qtune=pwr6 -qcache=auto -qmaxmem=-1'
-    CFLAGS='-O3 -Q -qarch=pwr6 -qtune=pwr6 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
 else
-    #  Try to follow IEEE-754
     FOPTIM='-O3 -qstrict -Q -qarch=pwr6 -qtune=pwr6 -qcache=auto -qmaxmem=-1'
-    CFLAGS='-O3 -qstrict -Q -qarch=pwr6 -qtune=pwr6 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
 fi
-FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
 
 HPMTINC=''
 HPMTLIB='-lhpm_r -lpmapi'
@@ -33,3 +37,12 @@ GSLLIB='-L/contrib/gsl-1.12/gsl-1.5/lib64 -lgsl -lgslcblas'
 PAPIINC='-I/contrib/papi-3.6.2/include'
 PAPILIB='-L/contrib/papi-3.6.2/lib -lpapi -lpmapi'
 
+INCLUDES='-I/contrib/netcdf-3.6.2/include'
+LIBS='-lmass -L/contrib/netcdf-3.6.2/lib'
+
+if test "x$MPI" = xtrue ; then
+    INCLUDES="-I/usr/lpp/ppe.poe/include/thread64 $INCLUDES"
+    MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread64'
+    MPI_HEADER_FILES='mpif.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h'
+fi
