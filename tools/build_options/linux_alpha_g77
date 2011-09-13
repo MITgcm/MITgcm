@@ -1,23 +1,26 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_alpha_g77,v 1.5 2010/12/19 22:42:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_alpha_g77,v 1.6 2011/09/13 19:35:13 jmc Exp $
 # $Name:  $
 
 FC='g77'
 
 DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'
-
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 GET_FC_VERSION="--version"
 
-#  For IEEE, use the "-ffloat-store" option
-if test "x$IEEE" = x ; then
+if test "x$IEEE" = x ; then     #- with optimisation:
     FFLAGS=' '
     #FOPTIM='-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3'
     FOPTIM='-O3 -funroll-loops'
-else
+else                            #- no optimisation + IEEE :
+    #  For IEEE, use the "-ffloat-store" option
     FFLAGS='-Wimplicit -Wunused -ffloat-store'
     FOPTIM='-O0'
 fi
 
+if test "x$MPI" = xtrue ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich'
+fi
