@@ -1,40 +1,55 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4,v 1.8 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4,v 1.9 2011/09/13 14:38:19 jmc Exp $
 # $Name:  $
 
 #  tested on bluesky, ce107 Oct 2005
 #  using the following invocation:
-#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/sp4 -make=gmake
+#  ../../../tools/genmake2 -of=../../../tools/build_options/sp4 -mpi -make=gmake
 
-S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_AIX -DWORDLENGTH=4'
-
-#ph: e.g. bluesky.ucar.edu, marcellus.navo.hpc.mil
-INCLUDES='-I/usr/lpp/ppe.poe/include/thread -I/usr/local/include'
-CPP='/lib/cpp -P'
-CC='mpcc_r'
-FC='mpxlf95_r'
-LINK='mpxlf95_r'
-LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib/r4i4'
-FFLAGS='-qfixed=132 -bmaxdata:0x80000000'
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    FOPTIM='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
-    CFLAGS='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+if test "x$MPI" = xtrue ; then
+  CC='mpcc_r'
+  FC='mpxlf95_r'
+  LINK='mpxlf95_r'
 else
-    #  Try to follow IEEE-754
-    FOPTIM='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
-    CFLAGS='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+  CC='cc_r'
+  FC='xlf95_r'
+  LINK='xlf95_r'
 fi
+
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
-MPI_HEADER_FILES='mpif.h'
-MPI_HEADER_FILES_INC='./mpi_headers/mpif.h'
-MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread'
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4'
+CPP='/lib/cpp -P'
+
+#FFLAGS="$FFLAGS -qfixed=72"
+FFLAGS="$FFLAGS -qfixed=132 -bmaxdata:0x80000000"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+else                            #- no optimisation + IEEE :
+    FOPTIM='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+fi
+
 HPMTINC='-I/usr/local/hpmtoolkit/include'
 HPMTLIB='-L/usr/local/hpmtoolkit/lib -lhpm_r -lpmapi'
 GSLINC='-I/home/bluesky/evangeli/gsl-1.5/include'
 GSLLIB='-L/home/bluesky/evangeli/gsl-1.5/lib -lgsl -lgslcblas'
 PAPIINC='-I/usr/local/include'
 PAPILIB='-L/usr/local/lib -lpapi'
+
+#ph: e.g. bluesky.ucar.edu, marcellus.navo.hpc.mil
+INCLUDES='-I/usr/local/include'
+LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib/r4i4'
+
+if test "x$MPI" = xtrue ; then
+    INCLUDES="-I/usr/lpp/ppe.poe/include/thread $INCLUDES"
+    MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread'
+    MPI_HEADER_FILES='mpif.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h'
+else
+    # the original "sp4-32bit" as "/usr/local/lib32" instead of "/usr/local/lib"
+    LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib32/r4i4'
+fi
