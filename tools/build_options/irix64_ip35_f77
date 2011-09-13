@@ -1,14 +1,25 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/irix64_ip35_f77,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/irix64_ip35_f77,v 1.3 2011/09/13 15:47:05 jmc Exp $
 # $Name:  $
 
-S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
-CPP='/lib/cpp -P -traditional'
-DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
+#  modified for MPI & NetCDF by Baylor and Ed @ GFDL on 2004-11-02
+
 FC='f77'
-FFLAGS='-extend_source -mp -mpio -bytereclen -mips4 -r8 -static'
+
+FC_NAMEMANGLE='#define FC_NAMEMANGLE(X) X ## _'
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
+CPP='/lib/cpp -P'
+#CPP='/lib/cpp -P -traditional'
+EXTENDED_SRC_FLAG='-extend_source'
+
+FFLAGS="$FFLAGS -mp -mpio -bytereclen -mips4 -static"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
 FOPTIM='-O3'
-LIBS='-L/opt/mpt/1510/usr/lib64 -lmpi'
+
 INCLUDEDIRS='/opt/mpt/1510/usr/include'
+INCLUDES='-I/usr/local/include'
+LIBS='-L/opt/mpt/1510/usr/lib64 -lmpi -L/usr/local/lib'
+
