@@ -1,29 +1,33 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_efc,v 1.4 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_efc,v 1.5 2011/09/13 19:36:15 jmc Exp $
 # $Name:  $
 
 #  Ed Hill
 #
 #  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029
 
+FC=efc
+
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+
+FFLAGS="$FFLAGS -w95 -W0 -WB"
+#FFLAGS="$FFLAGS -r8"
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FOPTIM='-O3 -align'
+    #P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' )
+    #P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' )
 else
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FOPTIM='-O0 -mp'
 fi
 
-FOPTIM='-O3 -align'
-#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' )
-#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' )
-LIBS='-lPEPCF90'
-
-FC=efc
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
-
-
-
+if test "x$MPI" = xtrue ; then
+    LIBS='-lPEPCF90 -lmpi'
+else
+    LIBS='-lPEPCF90'
+fi
