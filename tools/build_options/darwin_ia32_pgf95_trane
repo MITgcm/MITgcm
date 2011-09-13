@@ -1,34 +1,50 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_pgf95_trane,v 1.1 2010/04/08 12:34:09 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_pgf95_trane,v 1.2 2011/09/13 19:41:40 jmc Exp $
 # $Name:  $
 
-# build options files for trane without MPI
+# build options files for trane (with or without MPI)
 # uname -a
 # Darwin trane.evsc.virginia.edu 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386
 #
+# without MPI: genmake2 -of darwin_ia32_pgf95_trane
+#    with MPI: genmake2 -of darwin_ia32_pgf95_trane -mpi
 
-FC='pgf95'
-CC='pgcc'
-LINK='pgf90'
+if test "x$MPI" = xtrue ; then
+  CC='mpicc'
+  FC='mpif90'
+  LINK='mpif90'
+else
+  CC='pgcc'
+  FC='pgf95'
+  LINK='pgf90'
+fi
 
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/usr/bin/cpp -traditional -P'
+# make clean removes also these files
+RMFILES='*.oo'
+EXTENDED_SRC_FLAG='-Mextend'
+
+FFLAGS="$FFLAGS -byteswapio"
+
+if test "x$IEEE" = x ; then
+   #  No need for IEEE-754
+   FOPTIM='-fast -Mipa=fast,inline,safe'
+else
+   #  Try to follow IEEE-754
+   FFLAGS="$FFLAGS -Mnodclchk -Ktrap=fp -Kieee"
+   FOPTIM=
+fi
+CFLAGS='-fast -Mipa=fast,inline,safe'
+
+# specific location for trane:
+MPI_INC_DIR="/common/mpich2-mx-1.1.1p1..5/src/include"
+if test "x$MPI" = xtrue ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+fi 
 
 NETCDF_INCDIR="/common/usr/local/include"
 INCLUDES="$INCLUDES -I$NETCDF_INCDIR"
 LIBS="-L/common/usr/local/lib"
 
-CPP='/usr/bin/cpp -traditional -P'
-CFLAGS='-fast -Mipa=fast,inline,safe'
-
-if test "x$IEEE" = x ; then
-   #  No need for IEEE-754
-   FFLAGS='-byteswapio -Mextend'
-   FOPTIM='-fast -Mipa=fast,inline,safe'
-else
-   #  Try to follow IEEE-754
-   FFLAGS='-byteswapio -Mnodclchk -Mextend -Ktrap=fp -Kieee'
-   FOPTIM=
-fi
-# make clean removes also these files
-RMFILES='*.oo'
