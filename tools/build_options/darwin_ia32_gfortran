@@ -1,50 +1,92 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.10 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.11 2011/09/13 19:41:18 jmc Exp $
 # $Name:  $
 
-# tested on MacBook Pro with Snow Leopard
-# on 20-Nov-2009
-# gcc and gfortran obtained from
+# Tested on MacBook Pro with Snow Leopard
+#- on 20-Nov-2009, without MPI:
+#    gcc and gfortran obtained from
 # http://hpc.sourceforge.net/
 # http://prdownloads.sourceforge.net/hpc/gcc-snwleo-intel-bin.tar.gz?download
 # http://prdownloads.sourceforge.net/hpc/gfortran-snwleo-intel-bin.tar.gz?download
+#
+#- on 23-Dec-2009, with MPI:
+#    gfortran (version 4.3.1) obtained via fink
+#    OpenMPI (version 1.4) obtained from http://www.open.mpi.org
 
+#-- Note: default location of NetCDF & MPI setting provided in this optfile 
+#         are not standard. For this reason, you might need:
+#    1) to set NETCDF_ROOT to where the NetCDF is installed, e.g.:
+#       export NETCDF_ROOT='/usr/NetCDF'
+#    2) for MPI, to set environment variable MPI_INC_DIR to the include
+#       directory of your MPI implementation
+
+if test "x$MPI" = xtrue ; then
+# CC=mpicc
+  FC=mpif90
+  LINK=$FC
+else
+# CC=gcc
+  FC=gfortran
+  LINK=$FC
+fi
+
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) _ ## X ## _"
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+#MAKEDEPEND=tools_xmakedepend
+#MAKEDEPEND=cyrus_makedepend
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='/usr/bin/cpp -traditional -P'
-FC=gfortran
-###CC=gcc
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+
 #Following flag is needed when using 32-bit gfortran with 64-bit gcc,
 #as can be the case right after switching to Snow Leopard.
 #CFLAGS='-arch i386'
-LINK=gfortran
+
 NOOPTFLAGS='-O0'
-EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+NOOPTFILES=''
 
-S64='$(TOOLSDIR)/set64bitConst.sh'
-#EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
-#EH3 MAKEDEPEND=makedepend
-DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
-INCLUDEDIRS='/sw/include'
-INCLUDES='-I/sw/include'
-LIBS='-L/sw/lib'
+FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8"
 
-##INCLUDEDIRS='/Users/heimbach/NetCDF/netcdf-3.6.0-p1/gfortran/include'
-##INCLUDES='-I/Users/heimbach/NetCDF/netcdf-3.6.0-p1/gfortran/include'
-##LIBS='-L/Users/heimbach/NetCDF/netcdf-3.6.0-p1/gfortran/lib'
-
-###FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) _ ## X ## _"
-###FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
-###FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-
-#  For IEEE, use the "-ffloat-store" option
-if test "x$IEEE" = x ; then
-    FFLAGS='-Wunused -Wuninitialized -fsecond-underscore -fconvert=big-endian'
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FFLAGS='-Wunused -Wuninitialized'
     FOPTIM='-O3 -funroll-loops'
     NOOPTFLAGS='-O2 -funroll-loops'
     NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
-else
-    FFLAGS='-Wunused -ffloat-store -fsecond-underscore -fconvert=big-endian'
+else                            #- no optimisation + IEEE :
+    FFLAGS='-Wunused -ffloat-store'
     FOPTIM='-O0'
 fi
 
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+else
+    #-- default NetCDF location: from former darwin_ia32_gfortran optfile:
+    INCLUDEDIRS='/sw/include'
+    INCLUDES='-I/sw/include'
+    LIBS='-L/sw/lib'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+elif [ "x$MPI" = xtrue ] ; then
+    #-- default MPI header location: from former darwin_ia32_gfortran+mpi optfile:
+    INCLUDES='-I/usr/local/include -I/opt/openmpi/include'
+    LIBS='-L/usr/local/lib'
+fi
