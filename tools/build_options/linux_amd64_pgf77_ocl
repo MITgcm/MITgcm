@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77_ocl,v 1.3 2010/12/19 22:42:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77_ocl,v 1.4 2011/09/13 18:28:04 jmc Exp $
 # $Name:  $
 
 # tested on ocl00.awi-bremerhaven.de
@@ -9,17 +9,14 @@
 # Copyright 1989-2000, The Portland Group, Inc.  All Rights Reserved.
 # Copyright 2000-2004, STMicroelectronics, Inc.  All Rights Reserved.
 
-FC='pgf77'
 CC='pgcc'
+FC='pgf77'
 LINK='pgf77'
 
 DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='/usr/bin/cpp -P -traditional'
 EXTENDED_SRC_FLAG='-Mextend'
 GET_FC_VERSION="-V"
-
-INCLUDES='-I/var/tmp.shared/netcdf-64/include'
-LIBS='-L/var/tmp.shared/netcdf-64/lib -lnetcdf'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
@@ -34,3 +31,11 @@ else
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
+
+INCLUDES='-I/var/tmp.shared/netcdf-64/include'
+LIBS='-L/var/tmp.shared/netcdf-64/lib -lnetcdf'
+
+if test "x$MPI" = xtrue ; then
+    INCLUDES="-I/opt/scali/include $INCLUDES"
+    LIBS="-L/opt/scali/lib64 $LIBS -lfmpi -lmpi"
+fi
