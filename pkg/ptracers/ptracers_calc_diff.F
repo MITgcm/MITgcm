@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.8 2010/03/16 00:22:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.9 2011/09/20 22:29:07 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -83,8 +83,7 @@ C Loop over tracers
 #else
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
 #endif
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifdef ALLOW_3D_DIFFKR
      &       + diffKr(i,j,k,bi,bj)
 #else
      &       + PTRACERS_diffKrNr(k,iTr)
@@ -103,7 +102,7 @@ C--   Set vertical diffusivity contribution from KPP
          CALL KPP_CALC_DIFF_PTR(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      O        KappaRtr(1-Olx,1-Oly,iTr),
-     I        myThid)
+     I        iTr, myThid )
         ENDIF
 #endif
 
