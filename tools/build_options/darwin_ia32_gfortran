@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.12 2011/09/20 14:44:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.13 2011/09/20 15:40:21 mlosch Exp $
 # $Name:  $
 
 # Tested on MacBook Pro with Snow Leopard
@@ -10,9 +10,8 @@
 # http://prdownloads.sourceforge.net/hpc/gcc-snwleo-intel-bin.tar.gz?download
 # http://prdownloads.sourceforge.net/hpc/gfortran-snwleo-intel-bin.tar.gz?download
 #
-#- on 23-Dec-2009, with MPI:
-#    gfortran (version 4.3.1) obtained via fink
-#    OpenMPI (version 1.4) obtained from http://www.open.mpi.org
+#    gfortran (version 4.6.0) 
+#    OpenMPI (version 1.4.3)
 
 #-- Note: default location of NetCDF & MPI setting provided in this optfile 
 #         are not standard. For this reason, you might need:
@@ -34,7 +33,7 @@ fi
 #FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) _ ## X ## _"
 #FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
 #FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-#MAKEDEPEND=tools_xmakedepend
+# for adjoint runs we might need this
 #MAKEDEPEND=cyrus_makedepend
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
@@ -49,44 +48,50 @@ EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
-FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
-#- might want to use '-fdefault-real-8' for fizhi pkg:
-#FFLAGS="$FFLAGS -fdefault-real-8"
-
 if test "x$IEEE" = x ; then     #- with optimisation:
     FFLAGS="$FFLAGS -Wunused -Wuninitialized"
     FOPTIM='-O3 -funroll-loops'
     NOOPTFLAGS='-O2 -funroll-loops'
     NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
+# with gcc version 4.6.0 20101106 (experimental) (GCC) I needed this
+# for better optimization (with bugs), more recent versions of gfortran
+# might not need this any longer
+#    FOPTIM='-O3 -funroll-loops -ftree-vectorize'
+#    NOOPTFLAGS='-O1 -funroll-loops -ftree-vectorize'
+#    NOOPTFILES='exch2_uv_agrid_3d_r4.F exch2_uv_agrid_3d_r8.F exch2_uv_agrid_3d_rl.F exch2_uv_agrid_3d_rs.F exch2_uv_bgrid_3d_r4.F exch2_uv_cgrid_3d_r4.F exch2_uv_cgrid_3d_r8.F exch2_uv_cgrid_3d_rl.F exch2_uv_cgrid_3d_rs.F exch_uv_agrid_3d_r8.F exch_uv_agrid_3d_rl.F exch_uv_agrid_3d_rs.F'
 else                            #- no optimisation + IEEE :
     FFLAGS="$FFLAGS -Wunused -ffloat-store"
     FOPTIM='-O0'
 fi
 
+FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8"
+
 INCLUDEDIRS=''
 INCLUDES=''
 LIBS=''
 
+NETCDF_ROOT=/usr/local
 if [ "x$NETCDF_ROOT" != x ] ; then
-    INCLUDEDIR="${NETCDF_ROOT}/include"
     INCLUDES="-I${NETCDF_ROOT}/include"
-    LIBDIR="${NETCDF_ROOT}/lib"
     LIBS="-L${NETCDF_ROOT}/lib"
 else
     #-- default NetCDF location: from former darwin_ia32_gfortran optfile:
-    INCLUDEDIRS='/sw/include'
+    #   If you optain netcdf libraries from fink, this is where they will
+    #   be. I found that it is easier to get everything from
+    #   sourceforge.net, then the libraries will be in /usr/local
     INCLUDES='-I/sw/include'
     LIBS='-L/sw/lib'
 fi
 
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
-    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
     MPIINCLUDEDIR="$MPI_INC_DIR"
     MPI_HEADER_FILES='mpif.h mpiof.h'
     MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
 elif [ "x$MPI" = xtrue ] ; then
     #-- default MPI header location: from former darwin_ia32_gfortran+mpi optfile:
-    INCLUDES='-I/usr/local/include -I/opt/openmpi/include'
-    LIBS='-L/usr/local/lib'
+    INCLUDES="$INCLUDES -I/usr/local/include -I/opt/openmpi/include"
+    LIBS="$LIBS -L/usr/local/lib"
 fi
