@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.16 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.17 2011/09/20 22:25:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -112,8 +112,7 @@ CEOP
          DO j = 1-Oly,sNy+Oly
           DO i = 1-Olx,sNx+Olx
            KappaRTr(i,j,k) = KappaRTr(i,j,k)
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifdef ALLOW_3D_DIFFKR
      &          + diffKr(i,j,k,bi,bj)
 #else
      &          + diffKrNrT(k)
@@ -126,8 +125,7 @@ CEOP
          DO j = 1-Oly, sNy+Oly
           DO i = 1-Olx, sNx+Olx
            KappaRTr(i,j,k) = KappaRTr(i,j,k)
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifdef ALLOW_3D_DIFFKR
      &          + diffKr(i,j,k,bi,bj)
 #else
      &          + diffKrNrS(k)
@@ -143,8 +141,7 @@ CEOP
          DO j = 1-Oly, sNy+Oly
           DO i = 1-Olx, sNx+Olx
            KappaRTr(i,j,k) = KappaRTr(i,j,k)
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifdef ALLOW_3D_DIFFKR
      &          + diffKr(i,j,k,bi,bj)
 #else
      &          + PTRACERS_diffKrNr(k,iTr)
@@ -176,26 +173,20 @@ C--   Set vertical diffusivity contribution from KPP
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      O        KappaRTr,
      I        myThid)
+#ifdef ALLOW_PTRACERS
        ELSEIF ( trIdentity.GE.GAD_TR1) THEN
+         iTr = trIdentity - GAD_TR1 + 1
          CALL KPP_CALC_DIFF_Ptr(
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      O        KappaRTr,
-     I        myThid)
+     I        iTr, myThid )
+#endif /* ALLOW_PTRACERS */
+       ELSE
+        WRITE(msgBuf,'(A,I4)')
+     &       ' CALC_3D_DIFFUSIVITY: Invalid tracer Id: ',trIdentity
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CALC_3D_DIFFUSIVITY'
        ENDIF
-#if (defined ALLOW_PTRACERS && ! (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))))
-       IF ( trIdentity.GE.GAD_TR1) THEN
-        iTr = trIdentity - GAD_TR1 + 1
-        DO k = 1,Nr
-         DO j = 1-Oly, sNy+Oly
-          DO i = 1-Olx, sNx+Olx
-           KappaRTr(i,j,k) = KappaRTr(i,j,k)
-     &          - diffKrNrS(k) + PTRACERS_diffKrNr(k,iTr)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
       ENDIF
 #endif /* ALLOW_KPP */
 
