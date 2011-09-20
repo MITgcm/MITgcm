@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_ptr.F,v 1.1 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_ptr.F,v 1.2 2011/09/20 22:28:13 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -6,25 +6,27 @@ C $Name:  $
       SUBROUTINE KPP_CALC_DIFF_PTR(
      I        bi,bj,iMin,iMax,jMin,jMax,kArg,kSize,
      O        KappaRx,
-     I        myThid)
+     I        iTr, myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE KPP_CALC_DIFF_PTR                             |
-C     | o Return contribution to net diffusivity from KPP mixing |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE KPP_CALC_DIFF_PTR
+C     | o Return contribution to net diffusivity from KPP mixing
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
+c#include "DYNVARS.h"
+c#include "GRID.h"
+#include "KPP.h"
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#endif
 #ifdef ALLOW_LONGSTEP
 #include "LONGSTEP.h"
-#endif
-#ifdef ALLOW_KPP
-#include "KPP.h"
 #endif
 
 C     == Routine arguments ==
@@ -35,13 +37,15 @@ C     kArg      :: = 0 -> do the k-loop here and treat all levels
 C                  > 0 -> k-loop is done outside and treat only level k=kArg
 C     kSize     :: 3rd Dimension of the vertical diffusivity array KappaRS
 C     KappaRx   :: vertical diffusivity array
+C     iTr       :: tracer index
 C     myThid    :: Instance number for this innvocation of KPP_CALC_DIFF_S
 C
       INTEGER bi,bj,iMin,iMax,jMin,jMax,kArg,kSize
       _RL KappaRx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize)
+      INTEGER iTr
       INTEGER myThid
 
-#ifdef ALLOW_KPP
+#ifdef ALLOW_PTRACERS
 
 C     == Local variables ==
 C     i,j,k     :: Loop counters
@@ -58,6 +62,10 @@ C-    do all levels :
 #else
           KappaRx(i,j,k) = KPPdiffKzS(i,j,k,bi,bj)
 #endif
+#ifndef ALLOW_3D_DIFFKR
+          KappaRx(i,j,k) = KappaRx(i,j,k)
+     &          - diffKrNrS(k) + PTRACERS_diffKrNr(k,iTr)
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -71,11 +79,15 @@ C-    do level k=kArg only :
 #else
          KappaRx(i,j,k) = KPPdiffKzS(i,j,kArg,bi,bj)
 #endif
+#ifndef ALLOW_3D_DIFFKR
+         KappaRx(i,j,k) = KappaRx(i,j,k)
+     &          - diffKrNrS(kArg) + PTRACERS_diffKrNr(kArg,iTr)
+#endif
         ENDDO
        ENDDO
       ENDIF
 
-#endif /* ALLOW_KPP */
+#endif /* ALLOW_PTRACERS */
 
       RETURN
       END
