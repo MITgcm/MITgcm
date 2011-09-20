@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.11 2011/09/13 19:41:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.12 2011/09/20 14:44:52 jmc Exp $
 # $Name:  $
 
 # Tested on MacBook Pro with Snow Leopard
@@ -54,12 +54,12 @@ FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
 #FFLAGS="$FFLAGS -fdefault-real-8"
 
 if test "x$IEEE" = x ; then     #- with optimisation:
-    FFLAGS='-Wunused -Wuninitialized'
+    FFLAGS="$FFLAGS -Wunused -Wuninitialized"
     FOPTIM='-O3 -funroll-loops'
     NOOPTFLAGS='-O2 -funroll-loops'
     NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
 else                            #- no optimisation + IEEE :
-    FFLAGS='-Wunused -ffloat-store'
+    FFLAGS="$FFLAGS -Wunused -ffloat-store"
     FOPTIM='-O0'
 fi
 
