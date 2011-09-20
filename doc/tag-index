@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1500 2011/09/02 18:34:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1501 2011/09/20 22:34:03 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp:
+  - move ptracer/salt correction to KPP diffusivity from calc_3d_diffusivity.F
+    to S/R KPP_CALC_DIFF_PTR (+ add tracer-index to argument list).
+o optfiles:
+  - merged few MPI specific (*+mpi*) and multi-threads specific (*+mth) optfiles
+    into corresponding standard one, which now support different build:
+    (when using "genmake2 -mpi" for MPI built, "genmake2 -omp" for OpenMP built)
+  - add "darwin_amd64_gfortran" optfile (initially from Constantinos, tested by Gael)
 o pkg/obcs (seaice):
   - add missing EXCH for uIce,vIce after applying OBCS;
   - remove S/R EXF_SWAPFFIELDS_X/Y , disable S/R EXF_SET_OBCS_X/Y by adding
