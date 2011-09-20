@@ -1,0 +1,95 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_amd64_gfortran,v 1.1 2011/09/20 18:26:16 jmc Exp $
+# $Name:  $
+
+# tested on MacBook Pro with Snow Leopard & Snow Lion 
+# ==> need to update folowing comments:
+# on 20-Nov-2009
+# gcc and gfortran obtained from
+# http://hpc.sourceforge.net/
+# http://prdownloads.sourceforge.net/hpc/gcc-snwleo-intel-bin.tar.gz?download
+# http://prdownloads.sourceforge.net/hpc/gfortran-snwleo-intel-bin.tar.gz?download
+
+#-------
+# need to set NETCDF_ROOT to where the NetCDF is installed, e.g.:
+#       export NETCDF_ROOT='/usr/NetCDF'
+# MPI : need to set environment variable MPI_INC_DIR to the include
+#       directory of your MPI implementation
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif77
+  F90C=mpif90
+  LINK=$F90C
+else
+  CC=gcc
+  FC=gfortran
+  F90C=gfortran
+  LINK=$F90C
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/usr/bin/cpp -traditional -P'
+GET_FC_VERSION="--version"
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+OMPFLAG='-fopenmp'
+
+#MAKEDEPEND=tools_xmakedepend
+
+#Following flag is needed when using 32-bit gfortran with 64-bit gcc,
+#as can be the case right after switching to Snow Leopard.
+#CFLAGS='-arch i386'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -fconvert=big-endian"
+# for big objects:
+#FFLAGS="$FFLAGS -fPIC"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8"
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS="$FFLAGS -Wunused -Wuninitialized"
+    FOPTIM='-O3 -ftree-vectorize -funroll-loops'
+    NOOPTFLAGS='-O2 -funroll-loops'
+    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
+else
+    FFLAGS="$FFLAGS -Wunused"
+    FOPTIM='-O0'
+fi
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib -lnetcdf -lcurl"
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+fi
+
