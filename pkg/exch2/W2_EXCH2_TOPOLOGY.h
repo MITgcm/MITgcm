@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.10 2011/07/09 21:49:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.11 2011/09/21 16:27:42 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -130,15 +130,24 @@ C                         :: to be updated with neighbour entry "n".
 
 C---   Cumulated Sum operator
 C      W2_tMC1, W2_tMC2 :: tile that holds Missing Corners (=f1.NW,f2.SE)
+C      W2_cumSum_facet(1,f1,f2) :: cum-sum at facet f2 origin function of
+C                                  facet f1 X-increment
+C      W2_cumSum_facet(2,f1,f2) :: cum-sum at tile f2 origin function of
+C                                  facet f1 Y-increment
 C      W2_cumSum_tiles(1,t1,t2) :: cum-sum at tile t2 origin function of
 C                                  tile t1 X-increment
 C      W2_cumSum_tiles(2,t1,t2) :: cum-sum at tile t2 origin function of
 C                                  tile t1 Y-increment
        INTEGER W2_tMC1, W2_tMC2
+       INTEGER W2_cumSum_facet( 2, W2_maxNbFacets,W2_maxNbFacets)
+       COMMON /W2_CUMSUM_TOPO_I/
+     &        W2_tMC1, W2_tMC2,
+     &        W2_cumSum_facet
+#ifdef W2_CUMSUM_USE_MATRIX
        INTEGER W2_cumSum_tiles( 2, W2_maxNbTiles, W2_maxNbTiles )
        COMMON /W2_CUMSUM_MATRIX/
-     &        W2_tMC1, W2_tMC2,
      &        W2_cumSum_tiles
+#endif /* W2_CUMSUM_USE_MATRIX */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

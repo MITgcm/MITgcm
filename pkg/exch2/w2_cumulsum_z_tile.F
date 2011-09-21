@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.1 2011/07/09 22:08:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.2 2011/09/21 16:27:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -158,6 +158,7 @@ C--   Process 0 fills-in its local data
          ENDDO
 
 C--   Cumulate Sum over all tiles:
+#ifdef W2_CUMSUM_USE_MATRIX
          DO tN = 1,exch2_nTiles
            globalBuf(3,tN) = 0.
            DO tS = 1,exch2_nTiles
@@ -166,6 +167,10 @@ C--   Cumulate Sum over all tiles:
      &                       + W2_cumSum_tiles(2,tS,tN)*globalBuf(2,tS)
            ENDDO
          ENDDO
+#else /* W2_CUMSUM_USE_MATRIX */
+         STOP 'ABNORMAL END: missing code in S/R W2_CUMULSUM_Z_TILE'
+#endif /* W2_CUMSUM_USE_MATRIX */
+
 C-    Value at Special location (e.g., Missing-Corner values)
          IF ( W2_tMC1.GE.1 )
      &     psiLoc(1) = globalBuf(3,W2_tMC1) + globalBuf(2,W2_tMC1)

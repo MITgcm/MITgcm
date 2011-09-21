@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_OPTIONS.h,v 1.4 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_OPTIONS.h,v 1.5 2011/09/21 16:27:42 jmc Exp $
 C $Name:  $
 
 C CPP options file for EXCH2 package
@@ -18,5 +18,10 @@ C Use only exch2_R1_cube (and avoid calling exch2_R2_cube)
 C Fill null regions (face-corner halo regions) with e2FillValue_RX (=0)
 C notes: for testing (allow to check that results are not affected)
 #undef W2_FILL_NULL_REGIONS
+
+C Process Global Cumulated-Sum using a Tile x Tile (x 2) Matrix
+C notes: should be faster (vectorise) but storage of this matrix might
+C        become an issue on large set-up (with many tiles)
+#define W2_CUMSUM_USE_MATRIX
 
 #endif /* W2_OPTIONS_H */
