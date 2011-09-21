@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1501 2011/09/20 22:34:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1502 2011/09/21 16:29:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - add new CPP option to disable Cumul-Sum matrix (to save storage when using
+    many tiles); until alternative coding is added, just add a stop.
 o pkg/kpp:
   - move ptracer/salt correction to KPP diffusivity from calc_3d_diffusivity.F
     to S/R KPP_CALC_DIFF_PTR (+ add tracer-index to argument list).
