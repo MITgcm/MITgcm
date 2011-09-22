@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1502 2011/09/21 16:29:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1503 2011/09/22 20:12:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice (LSR):
+  - print to STDOUT number of solver iterations at SEAICE_monFreq interval.
+  - modify solver to deal cleanly with u/v switch at face edges (CS-grid):
+    * identical results with non-CS topology (but save up to half of EXCH calls)
+    * no much changes in cs-32 verification tests since no ice at face edges
+     (differences due to convergence criteria, since nb of iterations changed)
+    * expect some differences on lat-lon-cap grid.
+    update FWD results of global_ocean.cs32x15 test exp. (icedyn & seaice)
 o pkg/exch2:
   - add new CPP option to disable Cumul-Sum matrix (to save storage when using
     many tiles); until alternative coding is added, just add a stop.
