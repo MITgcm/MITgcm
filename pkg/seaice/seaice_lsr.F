@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.61 2011/06/06 14:56:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.62 2011/09/22 19:39:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,6 +51,9 @@ CEOP
 
 #ifdef SEAICE_CGRID
 #ifdef SEAICE_ALLOW_DYNAMICS
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -60,7 +63,7 @@ C     i,j,bi,bj  :: Loop counters
       INTEGER i, j, k, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2
       INTEGER kSrf
-      LOGICAL doIterate
+      LOGICAL doIterate4u, doIterate4v
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
@@ -89,10 +92,15 @@ C     diagonals of coefficient matrices
       _RL AV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL BV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL FXY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-C     coefficients for lateral points (u(j+/-1),v(i+/-1))
-      _RL UVRT1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL UVRT2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C     RHS
+      _RL rhsU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL rhsV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C     coefficients for lateral points, u(j+/-1)
+      _RL uRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C     coefficients for lateral points, v(i+/-1)
+      _RL vRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     abbreviations
       _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -157,7 +165,7 @@ CADJ STORE vicenm1 = comlev1_dynsol, kind=isbyte,
 CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     surrface level
+C     surface level
       kSrf = 1
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -174,8 +182,10 @@ C SET SOME VALUES
       WFAU=WFAU1
       WFAV=WFAV1
 
-      ICOUNT1=SOLV_MAX_ITERS
-      ICOUNT2=SOLV_MAX_ITERS
+      ICOUNT1 = SOLV_MAX_ITERS
+      ICOUNT2 = SOLV_MAX_ITERS
+      S1 = 0.
+      S2 = 0.
 
       k = 1
 
@@ -396,7 +406,9 @@ C     ... d/dy (zeta-eta) k2 v
        ENDDO
       ENDDO
 
-C SOLVE FOR uIce
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Prepare for Solving uIce :
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     assemble coefficient matrix, beware of sign convention: because this
@@ -418,9 +430,9 @@ C     coefficients for UICE(I,J)
      &         + UYM(I  ,J+1,bi,bj) - UYM(I,J,bi,bj)
      &         ) * seaiceMaskU(I,J,bi,bj)
 C     coefficients of uIce(I,J-1)
-          UVRT1(I,J,bi,bj)= UYY(I,J  ,bi,bj) + UYM(I,J  ,bi,bj)
+          uRt1(I,J,bi,bj)= UYY(I,J  ,bi,bj) + UYM(I,J  ,bi,bj)
 C     coefficients of uIce(I,J+1)
-          UVRT2(I,J,bi,bj)= UYY(I,J+1,bi,bj) - UYM(I,J+1,bi,bj)
+          uRt2(I,J,bi,bj)= UYY(I,J+1,bi,bj) - UYM(I,J+1,bi,bj)
          ENDDO
         ENDDO
 
@@ -432,7 +444,7 @@ C     for the free slip case sigma_12 = 0
           hFacM = seaiceMaskU(I,J-1,bi,bj)
           hFacP = seaiceMaskU(I,J+1,bi,bj)
 C     copy contributions to coefficient of U(I,J)
-C     beware of sign convection: UVRT1/2 have the opposite sign convention
+C     beware of sign convection: uRt1/2 have the opposite sign convention
 C     than BU, hence the minus sign
           BU(I,J,bi,bj)=BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj) *
      &         ( ( 1. _d 0 - hFacM )
@@ -440,8 +452,8 @@ C     than BU, hence the minus sign
      &         + ( 1. _d 0 - hFacP )
      &         * ( UYY(I  ,J+1,bi,bj) - UYM(I  ,J+1,bi,bj) ) )
 C     reset coefficients of U(I,J-1) and U(I,J+1)
-          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM
-          UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
+          uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * hFacM
+          uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
 
@@ -456,8 +468,8 @@ C     and the symmetric drag term; must be done after normalizing
      &         + seaiceMaskU(I,J,bi,bj) *
      &         ( seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) ) )
-          UVRT1(I,J,bi,bj) = UVRT1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
-          UVRT2(I,J,bi,bj) = UVRT2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
+          uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
+          uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -504,7 +516,7 @@ C     only need to deal with v(i)-v(i-1)
         DO J=1,sNy
          DO I=1,sNx
 C     coriolis and other forcing
-          FXY(I,J,bi,bj)=0.5 _d 0 *
+          rhsU(I,J,bi,bj)=0.5 _d 0 *
      &         ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
      &          *0.5 _d 0*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
      &         + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
@@ -522,143 +534,8 @@ C     contribution to the rhs part of grad(sigma)_x
        ENDDO
       ENDDO
 
-#ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevD ) THEN
-        WRITE(msgBuf,'(A,I3,A)')
-     &        'Uice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
-        CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
-      ENDIF
-#endif /* ALLOW_DEBUG */
-C NOW DO ITERATION
+C--   Prepare for Solving vIce :
 
-cph--- iteration starts here
-cph--- need to kick out goto
-      doIterate = .TRUE.
-
-C ITERATION START -----------------------------------------------------
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ LOOP = iteration uice
-#endif /* ALLOW_AUTODIFF_TAMC */
-      DO m = 1,solv_max_iters
-      IF ( doIterate ) THEN
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-C NOW SET U(3)=U(1)
-C     save uIce prior to iteration
-        DO J=jMin,jMax
-         DO I=1,sNx
-          uTmp(I,J,bi,bj)=uIce(I,J,bi,bj)
-         ENDDO
-        ENDDO
-
-        DO J=1,sNy
-         DO I=1,sNx
-          IF(I.EQ.1) THEN
-           AA3=( UXX(I-1,J,bi,bj) - UXM(I-1,J,bi,bj) )
-     &          * uIce(I-1,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
-          ELSEIF(I.EQ.sNx) THEN
-           AA3=( UXX(I  ,J,bi,bj) + UXM(I  ,J,bi,bj) )
-     &          * uIce(I+1,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
-          ELSE
-           AA3=ZERO
-          ENDIF
-          URT(I,J)=FXY(I,J,bi,bj)
-     &         + AA3 * recip_rAw(I,J,bi,bj)
-#ifdef SEAICE_VECTORIZE_LSR
-     &         + UVRT1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
-     &         + UVRT2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
-#else
-     &         + UVRT1(I,J,bi,bj)*uIce(I,J-1,bi,bj)
-     &         + UVRT2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
-          URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
-         ENDDO
-
-         DO I=1,sNx
-          CUU(I,J)=CU(I,J,bi,bj)
-         ENDDO
-         URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
-#ifdef SEAICE_VECTORIZE_LSR
-        ENDDO
-C     start a new loop with reversed order to support automatic vectorization
-        DO I=2,sNx
-         IM=I-1
-         DO J=1,sNy
-#else /* do not SEAICE_VECTORIZE_LSR */
-         DO I=2,sNx
-          IM=I-1
-#endif /* SEAICE_VECTORIZE_LSR */
-          CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-          URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
-     &        /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-         ENDDO
-#ifdef SEAICE_VECTORIZE_LSR
-        ENDDO
-C     go back to original order
-        DO J=1,sNy
-#endif /* SEAICE_VECTORIZE_LSR */
-         DO I=1,sNx-1
-          J1=sNx-I
-          J2=J1+1
-          URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
-         ENDDO
-         DO I=1,sNx
-          uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
-     &        +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
-         ENDDO
-        ENDDO
-C     end bi,bj-loops
-       ENDDO
-      ENDDO
-
-      IF(MOD(m,SOLV_NCHECK).EQ.0) THEN
-       S1=ZERO
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1,sNy
-          DO I=1,sNx
-           UERR=(uIce(I,J,bi,bj)-uTmp(I,J,bi,bj))
-     &             * seaiceMaskU(I,J,bi,bj)
-           S1=MAX(ABS(UERR),S1)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_MAX_RL( S1, myThid )
-c       WRITE(standardMessageUnit,'(A,2I6,1P4E16.9)')
-c    &   ' U iters,error,WF = ',ilcall,M,S1,S1A,WFAU
-C SAFEGUARD AGAINST BAD FORCING ETC
-       IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
-       S1A=S1
-       IF(S1.LT.LSR_ERROR) THEN
-        ICOUNT1=m
-        doIterate = .FALSE.
-       ENDIF
-      ENDIF
-      CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
-
-      ENDIF
-      ENDDO
-C ITERATION END -----------------------------------------------------
-
-#ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevC ) THEN
-        _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,I6,1P2E22.14)')
-     &      ' U lsr iters, error = ',ICOUNT1,S1
-        _END_MASTER( myThid )
-        IF ( debugLevel .GE. debLevD ) THEN
-         WRITE(msgBuf,'(A,I3,A)')
-     &        'Uice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
-         CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
-        ENDIF
-        IF (S1.EQ.0.D0.AND.ICOUNT1.GT.SOLV_NCHECK)
-     &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (uIce)'
-      ENDIF
-#endif /* ALLOW_DEBUG */
-
-C NOW FOR vIce
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     assemble coefficient matrix, beware of sign convention: because this
@@ -680,9 +557,9 @@ C     coefficients for VICE(I,J)
      &         - VYM(I,J,bi,bj) + VYM(I  ,J-1,bi,bj)
      &         ) * seaiceMaskV(I,J,bi,bj)
 C     coefficients for V(I-1,J)
-          UVRT1(I,J,bi,bj) = VXX(I  ,J,bi,bj) + VXM(I  ,J,bi,bj)
+          vRt1(I,J,bi,bj) = VXX(I  ,J,bi,bj) + VXM(I  ,J,bi,bj)
 C     coefficients for V(I+1,J)
-          UVRT2(I,J,bi,bj) = VXX(I+1,J,bi,bj) - VXM(I+1,J,bi,bj)
+          vRt2(I,J,bi,bj) = VXX(I+1,J,bi,bj) - VXM(I+1,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -694,7 +571,7 @@ C     for the free slip case sigma_12 = 0
           hFacM = seaiceMaskV(i-1,j,bi,bj)
           hFacP = seaiceMaskV(i+1,j,bi,bj)
 C     copy contributions to coefficient of V(I,J)
-C     beware of sign convection: UVRT1/2 have the opposite sign convention
+C     beware of sign convection: vRt1/2 have the opposite sign convention
 C     than BV, hence the minus sign
           BV(I,J,bi,bj)=BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj) *
      &         ( ( 1. _d 0 - hFacM )
@@ -702,8 +579,8 @@ C     than BV, hence the minus sign
      &         + ( 1. _d 0 - hFacP )
      &         * ( VXX(I+1,J,bi,bj) - VXM(I+1,J,bi,bj) ) )
 C     reset coefficients of V(I-1,J) and V(I+1,J)
-          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM
-          UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
+          vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * hFacM
+          vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
 
@@ -718,8 +595,8 @@ C     and the symmetric drag term; must be done after normalizing
      &         + seaiceMaskV(I,J,bi,bj) *
      &         ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) ) )
-          UVRT1(I,J,bi,bj) = UVRT1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
-          UVRT2(I,J,bi,bj) = UVRT2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
+          vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
+          vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -766,7 +643,7 @@ C     only need to deal with u(j)-u(j-1)
         DO J=1,sNy
          DO I=1,sNx
 C     coriols and other foring
-          FXY(I,J,bi,bj)= - 0.5 _d 0 *
+          rhsV(I,J,bi,bj)= - 0.5 _d 0 *
      &         ( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
      &         *0.5 _d 0*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
      &         + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
@@ -784,8 +661,13 @@ C     contribution to the rhs part of grad(sigma)_y
        ENDDO
       ENDDO
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevD ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &        'Uice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+        CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
         WRITE(msgBuf,'(A,I3,A)')
      &        'Vice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
@@ -796,115 +678,231 @@ C NOW DO ITERATION
 
 cph--- iteration starts here
 cph--- need to kick out goto
-      doIterate = .TRUE.
+      doIterate4u = .TRUE.
+      doIterate4v = .TRUE.
 
 C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ LOOP = iteration vice
+CADJ LOOP = iteration uice
 #endif /* ALLOW_AUTODIFF_TAMC */
-      DO m = 1,solv_max_iters
-      IF ( doIterate ) THEN
+      DO m = 1,SOLV_MAX_ITERS
+       IF ( doIterate4u .OR. doIterate4v ) THEN
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-C NOW SET V(3)=V(1)
-C     save vIce prior to iteration
-        DO J=1,sNy
-         DO I=iMin,iMax
-          vTmp(I,J,bi,bj)=vIce(I,J,bi,bj)
-         ENDDO
-        ENDDO
+        IF ( useCubedSphereExchange ) THEN
+          doIterate4u = .TRUE.
+          doIterate4v = .TRUE.
+        ENDIF
 
-        DO I=1,sNx
-         DO J=1,sNy
-          IF(J.EQ.1) THEN
-           AA3=( VYY(I,J-1,bi,bj) - VYM(I,J-1,bi,bj)
-     &          ) * vIce(I,J-1,bi,bj) * seaiceMaskV(I,J,bi,bj)
-          ELSEIF(J.EQ.sNy) THEN
-           AA3=( VYY(I,J  ,bi,bj) + VYM(I,J  ,bi,bj)
-     &          ) * vIce(I,J+1,bi,bj) * seaiceMaskV(I,J,bi,bj)
-          ELSE
-           AA3=ZERO
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+
+C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
+C     save uIce prior to iteration, NOW SET U(3)=U(1)
+          DO J=jMin,jMax
+           DO I=1,sNx
+            uTmp(I,J,bi,bj)=uIce(I,J,bi,bj)
+           ENDDO
+          ENDDO
+C     save vIce prior to iteration, NOW SET V(3)=V(1)
+          DO J=1,sNy
+           DO I=iMin,iMax
+            vTmp(I,J,bi,bj)=vIce(I,J,bi,bj)
+           ENDDO
+          ENDDO
+
+          IF ( doIterate4u ) THEN
+C Solve for uIce :
+           DO J=1,sNy
+            DO I=1,sNx
+             IF(I.EQ.1) THEN
+              AA3=( UXX(I-1,J,bi,bj) - UXM(I-1,J,bi,bj) )
+     &             * uIce(I-1,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
+             ELSEIF(I.EQ.sNx) THEN
+              AA3=( UXX(I  ,J,bi,bj) + UXM(I  ,J,bi,bj) )
+     &             * uIce(I+1,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
+             ELSE
+              AA3=ZERO
+             ENDIF
+             URT(I,J)=rhsU(I,J,bi,bj)
+     &            + AA3 * recip_rAw(I,J,bi,bj)
+#ifdef SEAICE_VECTORIZE_LSR
+     &            + uRt1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
+     &            + uRt2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
+#else
+     &            + uRt1(I,J,bi,bj)*uIce(I,J-1,bi,bj)
+     &            + uRt2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
+#endif /* SEAICE_VECTORIZE_LSR */
+             URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
+            ENDDO
+
+            DO I=1,sNx
+             CUU(I,J)=CU(I,J,bi,bj)
+            ENDDO
+            URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
+#ifdef SEAICE_VECTORIZE_LSR
+           ENDDO
+C     start a new loop with reversed order to support automatic vectorization
+           DO I=2,sNx
+            IM=I-1
+            DO J=1,sNy
+#else /* do not SEAICE_VECTORIZE_LSR */
+            DO I=2,sNx
+             IM=I-1
+#endif /* SEAICE_VECTORIZE_LSR */
+             CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+             URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
+     &           /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+            ENDDO
+#ifdef SEAICE_VECTORIZE_LSR
+           ENDDO
+C     go back to original order
+           DO J=1,sNy
+#endif /* SEAICE_VECTORIZE_LSR */
+            DO I=1,sNx-1
+             J1=sNx-I
+             J2=J1+1
+             URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
+            ENDDO
+            DO I=1,sNx
+             uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
+     &           +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
+            ENDDO
+           ENDDO
+C--   end doIterate4u
           ENDIF
 
-          VRT(I,J)=FXY(I,J,bi,bj)
-     &         + AA3 * recip_rAs(I,J,bi,bj)
-#ifdef SEAICE_VECTORIZE_LSR
-     &         + UVRT1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
-     &         + UVRT2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
-#else
-     &         + UVRT1(I,J,bi,bj)*vIce(I-1,J,bi,bj)
-     &         + UVRT2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
-          VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
-         ENDDO
+          IF ( doIterate4v ) THEN
+C Solve for vIce
+           DO I=1,sNx
+            DO J=1,sNy
+             IF(J.EQ.1) THEN
+              AA3=( VYY(I,J-1,bi,bj) - VYM(I,J-1,bi,bj)
+     &             ) * vIce(I,J-1,bi,bj) * seaiceMaskV(I,J,bi,bj)
+             ELSEIF(J.EQ.sNy) THEN
+              AA3=( VYY(I,J  ,bi,bj) + VYM(I,J  ,bi,bj)
+     &             ) * vIce(I,J+1,bi,bj) * seaiceMaskV(I,J,bi,bj)
+             ELSE
+              AA3=ZERO
+             ENDIF
 
-         DO J=1,sNy
-          CVV(I,J)=CV(I,J,bi,bj)
-         ENDDO
-         VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
-         DO J=2,sNy
-          JM=J-1
-          CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-          VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
-     &         /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-         ENDDO
-         DO J=1,sNy-1
-          J1=sNy-J
-          J2=J1+1
-          VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
-         ENDDO
-         DO J=1,sNy
-          vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
-     &        +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
+             VRT(I,J)=rhsV(I,J,bi,bj)
+     &            + AA3 * recip_rAs(I,J,bi,bj)
+#ifdef SEAICE_VECTORIZE_LSR
+     &            + vRt1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
+     &            + vRt2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
+#else
+     &            + vRt1(I,J,bi,bj)*vIce(I-1,J,bi,bj)
+     &            + vRt2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
+#endif /* SEAICE_VECTORIZE_LSR */
+             VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
+            ENDDO
+
+            DO J=1,sNy
+             CVV(I,J)=CV(I,J,bi,bj)
+            ENDDO
+            VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
+            DO J=2,sNy
+             JM=J-1
+             CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+             VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
+     &            /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+            ENDDO
+            DO J=1,sNy-1
+             J1=sNy-J
+             J2=J1+1
+             VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
+            ENDDO
+            DO J=1,sNy
+             vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
+     &           +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
+            ENDDO
+           ENDDO
+C--   end doIterate4v
+          ENDIF
+
+C     end bi,bj-loops
          ENDDO
         ENDDO
-C     end bi,bj-loops
-       ENDDO
-      ENDDO
 
-      IF(MOD(m,SOLV_NCHECK).EQ.0) THEN
-       S2=ZERO
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1,sNy
-          DO I=1,sNx
-           UERR=(vIce(I,J,bi,bj)-vTmp(I,J,bi,bj))
-     &             * seaiceMaskV(I,J,bi,bj)
-           S2=MAX(ABS(UERR),S2)
+        IF ( doIterate4u.AND.MOD(m,SOLV_NCHECK).EQ.0) THEN
+         S1=ZERO
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO J=1,sNy
+            DO I=1,sNx
+             UERR=(uIce(I,J,bi,bj)-uTmp(I,J,bi,bj))
+     &               * seaiceMaskU(I,J,bi,bj)
+             S1=MAX(ABS(UERR),S1)
+            ENDDO
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
-       ENDDO
-       _GLOBAL_MAX_RL( S2, myThid )
+         _GLOBAL_MAX_RL( S1, myThid )
+c        WRITE(standardMessageUnit,'(A,2I6,1P4E16.9)')
+c    &   ' U iters,error,WF = ',ilcall,M,S1,S1A,WFAU
 C SAFEGUARD AGAINST BAD FORCING ETC
-       IF(m.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
-       S2A=S2
-       IF(S2.LT.LSR_ERROR) THEN
-        ICOUNT2=m
-        doIterate = .FALSE.
-       ENDIF
-      ENDIF
-      CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
+         IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
+         S1A=S1
+         IF(S1.LT.LSR_ERROR) THEN
+          ICOUNT1=m
+          doIterate4u = .FALSE.
+         ENDIF
+        ENDIF
 
-      ENDIF
+        IF ( doIterate4v.AND.MOD(m,SOLV_NCHECK).EQ.0) THEN
+         S2=ZERO
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO J=1,sNy
+            DO I=1,sNx
+             UERR=(vIce(I,J,bi,bj)-vTmp(I,J,bi,bj))
+     &               * seaiceMaskV(I,J,bi,bj)
+             S2=MAX(ABS(UERR),S2)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         _GLOBAL_MAX_RL( S2, myThid )
+C SAFEGUARD AGAINST BAD FORCING ETC
+         IF(m.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
+         S2A=S2
+         IF(S2.LT.LSR_ERROR) THEN
+          ICOUNT2=m
+          doIterate4v = .FALSE.
+         ENDIF
+        ENDIF
+
+        CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
+
+C--    end doIterate4u or doIterate4v
+       ENDIF
       ENDDO
 C ITERATION END -----------------------------------------------------
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevC ) THEN
+      IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
+     &     .AND. debugLevel.GE.debLevA ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,I6,1P2E22.14)')
-     &      ' V lsr iters, error = ',ICOUNT2,S2
+        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E22.14)')
+     &    ' SEAICE_LSR (ipass=',ilcall,' ) Uice: lsr iters,error=',
+     &      ICOUNT1, S1
+        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E22.14)')
+     &    ' SEAICE_LSR (ipass=',ilcall,' ) Vice: lsr iters,error=',
+     &      ICOUNT2, S2
         _END_MASTER( myThid )
-        IF ( debugLevel .GE. debLevD ) THEN
-         WRITE(msgBuf,'(A,I3,A)')
-     &        'Vice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
-         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
-        ENDIF
-        IF (S2.EQ.0.D0.AND.ICOUNT2.GT.SOLV_NCHECK)
-     &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (vIce)'
       ENDIF
+      IF ( debugLevel .GE. debLevD ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &        'Uice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+        CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
+        WRITE(msgBuf,'(A,I3,A)')
+     &        'Vice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+        CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
+      ENDIF
+      IF ( doIterate4u )
+     &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (uIce)'
+      IF ( doIterate4v )
+     &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (vIce)'
 #endif /* ALLOW_DEBUG */
 
 C     APPLY MASKS
