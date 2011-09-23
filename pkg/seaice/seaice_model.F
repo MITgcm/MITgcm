@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.89 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.90 2011/09/23 02:55:27 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -213,6 +213,7 @@ cphCADJ STORE vice   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifndef DISABLE_SEAICE_GROWTH
 C     thermodynamics growth
 C     must call growth after calling advection
 C     because of ugly time level business
@@ -222,6 +223,7 @@ C     because of ugly time level business
 #endif
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
        ENDIF
+#endif /* DISABLE_SEAICE_GROWTH */
 
 #ifdef ALLOW_SITRACER
        CALL SEAICE_TRACER_PHYS ( myTime, myIter, myThid )        
