@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1503 2011/09/22 20:12:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1504 2011/09/26 18:24:26 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice (SItracer pickup)
+* Simple code for pickup of SItracer fields (#define ALLOW_SITRACER)
+  To be done:
+  - thorough testing of missing fields in S/R seaice_read_pickup
+  - thorough matching between generic tracers and specific fields used
+    (e.g. volume-weighted age, area-weighted age, salinity, ...)
 o pkg/seaice (LSR):
   - print to STDOUT number of solver iterations at SEAICE_monFreq interval.
   - modify solver to deal cleanly with u/v switch at face edges (CS-grid):
