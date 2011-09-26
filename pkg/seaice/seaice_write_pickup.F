@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.7 2011/08/25 22:19:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.8 2011/09/26 18:23:10 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,20 +61,30 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) wrFldList(listDim)
       INTEGER j, nj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef SEAICE_AGE
+#if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
       CHARACTER*(8) fldName
-      INTEGER iTracer
+      CHARACTER*(8) wrFldListTrac(listDim)
+      CHARACTER*(MAX_LEN_FNAM) fnTrac
+      INTEGER iTrac
+      INTEGER jtrac, njtrac
+      INTEGER listDimTrac, nWrFldsTrac
+      PARAMETER( listDimTrac = 20 )
 #endif
 CEOP
 
 C--   Write model fields
       WRITE(fn,'(A,A)') 'pickup_seaice.',suff
+#if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
+      WRITE(fnTrac,'(A,A)') 'pickup_seaice_tracer.',suff
+#endif
 
 c     IF ( seaice_pickup_write_mdsio ) THEN
 
        fp = precFloat64
        j = 0
        nj = 0
+       jtrac = 0
+       njtrac = 0
 C     record number < 0 : a hack not to write meta files now:
 
 C--   write Sea-Ice Thermodynamics State variables, starting with 3-D fields:
@@ -115,14 +125,25 @@ C---  continue to write 2-D fields:
         IF (j.LE.listDim) wrFldList(j) = 'siHSALT '
 #endif
 #ifdef SEAICE_AGE
-         DO iTracer = 1, SEAICE_num
-          WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTracer
+         DO iTrac = 1, SEAICE_num
+          WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTrac
           j = j + 1
           nj = nj-1
           CALL WRITE_REC_3D_RL( fn, fp,  1,
-     &         IceAgeTr(1-Olx,1-Oly,1,1,iTracer),
+     &         IceAgeTr(1-Olx,1-Oly,1,1,iTrac),
      &         nj, myIter, myThid )
           IF (j.LE.listDim) wrFldList(j) = fldName
+         ENDDO
+#endif
+#ifdef ALLOW_SITRACER
+         DO iTrac = 1, SItrMaxNum
+          WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
+          jtrac = jtrac + 1
+          njtrac = njtrac-1
+          CALL WRITE_REC_3D_RL( fnTrac, fp,  1,
+     &         SItracer(1-Olx,1-Oly,1,1,iTrac),
+     &         nj, myIter, myThid )
+          IF (jtrac.LE.listDimTrac) wrFldListTrac(jtrac) = fldName
          ENDDO
 #endif
        ENDIF
@@ -170,6 +191,20 @@ C--    write Sea-Ice Dynamics variables (all 2-D fields):
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R WRITE_SEAICE_PICKUP (list-size Pb)'
        ENDIF
+#ifdef ALLOW_SITRACER
+       nWrFldsTrac = jTrac
+       IF ( nWrFldsTrac.GT.listDimTrac ) THEN
+         WRITE(msgBuf,'(2A,I5,A)') 'WRITE_SEAICE_PICKUP_TRACER: ',
+     &     'trying to write ',nWrFldsTrac,' fields'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I5,A)') 'WRITE_SEAICE_PICKUP_TRACER: ',
+     &     'field-list dim. (listDimTrac=',listDimTrac,') too small'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 
+     &    'ABNORMAL END: S/R WRITE_SEAICE_PICKUP_TRACER (list-size Pb)'
+       ENDIF
+#endif
+
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta files
        nj = ABS(nj)
@@ -180,6 +215,16 @@ C     uses this specific S/R to write (with more informations) only meta files
      &                         nWrFlds, wrFldList,
      &                         1, timList,
      &                         nj, myIter, myThid )
+C
+# ifdef ALLOW_SITRACER
+       njtrac = ABS(njtrac)
+       CALL MDS_WR_METAFILES( fnTrac, fp, glf, .FALSE.,
+     &                         0, 0, 1, ' ',
+     &                         nWrFldsTrac, wrFldListTrac,
+     &                         1, timList,
+     &                         njTrac, myIter, myThid )
+# endif /* ALLOW_SITRACER */
+C
 #endif /* ALLOW_MDSIO */
 C--------------------------
 c     ENDIF
