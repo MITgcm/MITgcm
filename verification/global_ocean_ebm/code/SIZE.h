@@ -1,30 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code/SIZE.h,v 1.1 2004/05/14 21:13:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code/SIZE.h,v 1.2 2011/09/26 13:13:03 jmc Exp $
 C $Name:  $
 
 C
-C     /==========================================================\
-C     | SIZE.h Declare size of underlying computational grid.    |
-C     |==========================================================|
-C     | The design here support a three-dimensional model grid   |
-C     | with indices I,J and K. The three-dimensional domain     |
-C     | is comprised of nPx*nSx blocks of size sNx along one axis|
-C     | nPy*nSy blocks of size sNy along another axis and one    |
-C     | block of size Nz along the final axis.                   |
-C     | Blocks have overlap regions of size OLx and OLy along the|
-C     | dimensions that are subdivided.                          |
-C     \==========================================================/
+CBOP
+C    !ROUTINE: SIZE.h
+C    !INTERFACE:
+C    include SIZE.h
+C    !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SIZE.h Declare size of underlying computational grid.     
+C     *==========================================================*
+C     | The design here support a three-dimensional model grid    
+C     | with indices I,J and K. The three-dimensional domain      
+C     | is comprised of nPx*nSx blocks of size sNx along one axis 
+C     | nPy*nSy blocks of size sNy along another axis and one     
+C     | block of size Nz along the final axis.                    
+C     | Blocks have overlap regions of size OLx and OLy along the 
+C     | dimensions that are subdivided.                           
+C     *==========================================================*
+C     \ev
+CEOP
 C     Voodoo numbers controlling data layout.
-C     sNx - No. X points in sub-grid.
-C     sNy - No. Y points in sub-grid.
-C     OLx - Overlap extent in X.
-C     OLy - Overlat extent in Y.
-C     nSx - No. sub-grids in X.
-C     nSy - No. sub-grids in Y.
-C     nPx - No. of processes to use in X.
-C     nPy - No. of processes to use in Y.
-C     Nx  - No. points in X for the total domain.
-C     Ny  - No. points in Y for the total domain.
-C     Nr  - No. points in Z for full process domain.
+C     sNx :: No. X points in sub-grid.
+C     sNy :: No. Y points in sub-grid.
+C     OLx :: Overlap extent in X.
+C     OLy :: Overlat extent in Y.
+C     nSx :: No. sub-grids in X.
+C     nSy :: No. sub-grids in Y.
+C     nPx :: No. of processes to use in X.
+C     nPy :: No. of processes to use in Y.
+C     Nx  :: No. points in X for the total domain.
+C     Ny  :: No. points in Y for the total domain.
+C     Nr  :: No. points in Z for full process domain.
       INTEGER sNx
       INTEGER sNy
       INTEGER OLx
@@ -37,21 +44,21 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  45,
-     &           sNy =  40,
+     &           sNx =  30,
+     &           sNy =  20,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   2,
-     &           nSy =   1,
+     &           nSx =   3,
+     &           nSy =   2,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =  15)
 
-C     MAX_OLX  - Set to the maximum overlap region size of any array
+C     MAX_OLX :: Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
-C                routine buufers.
+C                routine buffers.
       INTEGER MAX_OLX
       INTEGER MAX_OLY
       PARAMETER ( MAX_OLX = OLx,
