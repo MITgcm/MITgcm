@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.166 2011/08/19 22:24:26 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.167 2011/09/26 12:58:48 jmc Exp $
 #  $Name:  $
 #
 
@@ -251,8 +251,9 @@ testoutput_run()
 		  then echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2 ; fi
 		  testoutput_var $1 "cg2d_init_res" "Press. Solver (cg2d)" $2 $3; yy=$?
 		  if [ $debug -gt 0 ] ; then echo testoutput_run: cg2dres=$yy 1>&2 ; fi ;;
- 	  'Cost') testoutput_var $1 "ADM  precision_derivative_cost" "ADM Cost" $2 $3; yy=$? ;;
- 	  'Grad') testoutput_var $1 "ADM  precision_derivative_grad" "ADM Grad" $2 $3; yy=$? ;;
+ 	  'Cost') testoutput_var $1 "ADM  ref_cost_function" "ADM CostFct" $2 $3; yy=$? ;;
+ 	 'AdGrd') testoutput_var $1 "ADM  adjoint_gradient"  "ADM Ad Grad" $2 $3; yy=$? ;;
+ 	 'FDGrd') testoutput_var $1 "ADM  finite-diff_grad"  "ADM FD Grad" $2 $3; yy=$? ;;
  	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "Theta minimum"  $2 $3; yy=$? ;;
  	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "Theta maximum"  $2 $3; yy=$? ;;
  	   'Tav') testoutput_var $1 "dynstat_theta_mean" "Theta mean"	  $2 $3; yy=$? ;;
@@ -1202,7 +1203,7 @@ if test "x$ADM" = x -a "x$OADM" = x; then
     ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
     EMPTY_RESULTS=$EMPTY_RESULTS`expr $LEN_CHECK_LIST - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
 else
-    DEF_CHECK_LIST='Grad Cost Grad'
+    DEF_CHECK_LIST='AdGrd Cost AdGrd FDGrd'
     EMPTY_RESULTS='.. ..'
     LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
 fi
@@ -1289,8 +1290,8 @@ if test "x$ADM" = x -a "x$OADM" = x; then
     else line_0="default "$MATCH_CRIT ; fi
        line_0="$line_0  ----T-----  ----S-----  ----U-----  ----V-----"
     line_1="G D M    c        m  s        m  s        m  s        m  s"
-    line_2="E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
-    line_3="N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
+    line_2="e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
+    line_3="n n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
     line_4="2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  ."
     for ii in $PTRACERS_NUM ; do
 	line_0="$line_0  --PTR 0"$ii"--"
@@ -1313,10 +1314,10 @@ else
     else line_0="default    "$MATCH_CRIT ; fi
     echo "$line_0" | tee -a $SUMMARY
     cat << EOF | tee -a $SUMMARY
-G D M    C  G
-E p a R  o  r
-N n k u  s  a
-2 d e n  t  d
+G D M    C  A  F
+e p a R  o  d  D
+n n k u  s  G  G
+2 d e n  t  r  r
 
 EOF
 fi
