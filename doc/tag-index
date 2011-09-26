@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1504 2011/09/26 18:24:26 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1505 2011/09/26 19:00:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,6 +10,14 @@ o pkg/seaice (SItracer pickup)
   - thorough testing of missing fields in S/R seaice_read_pickup
   - thorough matching between generic tracers and specific fields used
     (e.g. volume-weighted age, area-weighted age, salinity, ...)
+o pkg/grdchk:
+  - all procs calculate and print finite-difference gradient (for testreport)
+  - change description output used by testreport;
+  - AD testing: also compare and report Finite-difference gradient;
+    => update all output_adm*.txt
+o test exp. global_ocean_ebm:
+  - switch back useRealFreshWaterFlux (no problem anymore with run-off);
+    and turn on exactConserve; update (fwd) output.
 o pkg/seaice (LSR):
   - print to STDOUT number of solver iterations at SEAICE_monFreq interval.
   - modify solver to deal cleanly with u/v switch at face edges (CS-grid):
