@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.32 2011/08/12 18:36:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.33 2011/09/26 12:56:52 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -391,27 +391,27 @@ c******************************************************
 c--   (D): calculate relative differences between gradients
 c******************************************************
 
+            if ( grdchk_eps .eq. 0. ) then
+               gfd = (fcpertplus-fcpertminus)
+            else
+               gfd = (fcpertplus-fcpertminus)
+     &              /(grdchk_epsfac*grdchk_eps)
+            endif
+
+            if ( adxxmemo .eq. 0. ) then
+               ratio_ad = abs( adxxmemo - gfd )
+            else
+               ratio_ad = 1. - gfd/adxxmemo
+            endif
+
+            if ( ftlxxmemo .eq. 0. ) then
+               ratio_ftl = abs( ftlxxmemo - gfd )
+            else
+               ratio_ftl = 1. - gfd/ftlxxmemo
+            endif
+
             if ( myProcId .EQ. grdchkwhichproc .AND.
      &           ierr .EQ. 0 ) then
-
-               if ( grdchk_eps .eq. 0. ) then
-                  gfd = (fcpertplus-fcpertminus)
-               else
-                  gfd = (fcpertplus-fcpertminus)
-     &                 /(grdchk_epsfac*grdchk_eps)
-               endif
-
-               if ( adxxmemo .eq. 0. ) then
-                  ratio_ad = abs( adxxmemo - gfd )
-               else
-                  ratio_ad = 1. - gfd/adxxmemo
-               endif
-
-               if ( ftlxxmemo .eq. 0. ) then
-                  ratio_ftl = abs( ftlxxmemo - gfd )
-               else
-                  ratio_ftl = 1. - gfd/ftlxxmemo
-               endif
 
                tmpplot1(itilepos,jtilepos,layer,itile,jtile)
      &              = gfd
@@ -474,14 +474,18 @@ c******************************************************
             CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
 #else
-            WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' ADM  precision_derivative_cost =', fcref
-            CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
-            WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' ADM  precision_derivative_grad =', adxxmemo
-            CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
+            WRITE(msgBuf,'(A30,1PE22.14)')
+     &              ' ADM  ref_cost_function      =', fcref
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A30,1PE22.14)')
+     &              ' ADM  adjoint_gradient       =', adxxmemo
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A30,1PE22.14)')
+     &              ' ADM  finite-diff_grad       =', gfd
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
 #endif
 
             print *, 'ph-grd  ierr ---------------------------'
