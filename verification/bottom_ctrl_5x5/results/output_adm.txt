@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint62u
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint63b
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Tue Mar 29 14:30:14 EDT 2011
+(PID.TID 0000.0001) // Build date:        Mon Sep 26 01:19:11 EDT 2011
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -49,6 +49,7 @@
 (PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
 (PID.TID 0000.0001) useCoupler=    F ;/* Flag used to control communications with   */
 (PID.TID 0000.0001)                   /*  other model components, through a coupler */
+(PID.TID 0000.0001) debugMode =    F ; /* print debug msg. (sequence of S/R calls)  */
 (PID.TID 0000.0001) printMapIncludesZeros=    F ; /* print zeros in Std.Output maps */
 (PID.TID 0000.0001) maxLengthPrt1D=   65 /* maxLength of 1D array printed to StdOut */
 (PID.TID 0000.0001) 
@@ -70,8 +71,6 @@
 (PID.TID 0000.0001) //       NORTH: Tile = 000001, Process = 000001, Comm = put
 (PID.TID 0000.0001) //                bi = 000001, bj = 000001
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) DEBUG_MSG: ENTERED S/R THE_MODEL_MAIN
-(PID.TID 0000.0001) DEBUG_MSG: CALLING S/R INITIALISE_FIXED
 (PID.TID 0000.0001)  INI_PARMS: opening model parameter file "data"
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data
 (PID.TID 0000.0001) // =======================================================
@@ -280,6 +279,8 @@
 (PID.TID 0000.0001)   First location:                           1
 (PID.TID 0000.0001)   Last location:                           25
 (PID.TID 0000.0001)   Increment:                                3
+(PID.TID 0000.0001)   grdchkWhichProc:                          0
+(PID.TID 0000.0001)   iLocTile =       1  ,    jLocTile =       1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check configuration  >>> END <<<
@@ -359,94 +360,6 @@
 (PID.TID 0000.0001) %MON AngleSN_min                  =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_mean                 =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_sd                   =   0.0000000000000E+00
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =         -5.000000000000000E+03
-(PID.TID 0000.0001) // CMAX =         -2.000000000000000E+03
-(PID.TID 0000.0001) // CINT =          1.111111111111111E+02
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -1:     7:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(     7:    -1:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001) //
-(PID.TID 0000.0001) // |--J--|101234567
-(PID.TID 0000.0001) //      7 ----+----
-(PID.TID 0000.0001) //      6 ----+----
-(PID.TID 0000.0001) //      5 ----+----
-(PID.TID 0000.0001) //      4 ----+----
-(PID.TID 0000.0001) //      3 ----+----
-(PID.TID 0000.0001) //      2 ----+----
-(PID.TID 0000.0001) //      1 ----+----
-(PID.TID 0000.0001) //      0 ----+----
-(PID.TID 0000.0001) //     -1 ----+----
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Model Ro_surf (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
-(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -1:     7:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(     7:    -1:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacC at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -1:     7:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(     7:    -1:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacW at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -1:     7:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(     7:    -1:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field hFacS at iteration          1
-(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
-(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
-(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(    -1:     7:     1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(     7:    -1:    -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  1  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
@@ -879,16 +792,19 @@
 (PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useEnergyConservingCoriolis= /* Flx-Form Coriolis scheme flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useJamartWetPoints= /* Coriolis WetPoints method flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useJamartMomAdv= /* V.I. Non-linear terms Jamart flag */
+(PID.TID 0000.0001) useJamartMomAdv= /* V.I Non-linear terms Jamart flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useAbsVorticity= /* Work with f+zeta in Coriolis */
+(PID.TID 0000.0001) useAbsVorticity= /* V.I Works with f+zeta in Coriolis */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectVortScheme= /* Scheme selector for Vorticity-Term */
+(PID.TID 0000.0001) selectVortScheme= /* V.I Scheme selector for Vorticity-Term */
 (PID.TID 0000.0001)               123456789
 (PID.TID 0000.0001)    = 0 : enstrophy (Shallow-Water Eq.) conserving scheme by Sadourny, JAS 75
 (PID.TID 0000.0001)    = 1 : same as 0 with modified hFac
@@ -896,16 +812,16 @@
 (PID.TID 0000.0001)    = 3 : energy (general) and enstrophy (2D, nonDiv.) conserving scheme
 (PID.TID 0000.0001)          from Sadourny (Burridge & Haseler, ECMWF Rep.4, 1977)
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) upwindVorticity= /* Upwind bias vorticity flag */
+(PID.TID 0000.0001) upwindVorticity= /* V.I Upwind bias vorticity flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) highOrderVorticity= /* High order interp. of vort. flag */
+(PID.TID 0000.0001) highOrderVorticity= /* V.I High order vort. advect. flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) upwindShear= /* Upwind vertical Shear advection flag */
+(PID.TID 0000.0001) upwindShear= /* V.I Upwind vertical Shear advection flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectKEscheme= /* Kinetic Energy scheme selector */
+(PID.TID 0000.0001) selectKEscheme= /* V.I Kinetic Energy scheme selector */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
@@ -971,16 +887,14 @@
 (PID.TID 0000.0001)  useSingleCpuIO = /* only master MPI process does I/O */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugMode  =  /* Debug Mode on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevA  =  /* 1rst level of debugging */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)    debLevB  =  /* 2nd  level of debugging */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  debugLevel =  /* select debugging level */
+(PID.TID 0000.0001) /* debLev[*]  : level of debug & auxiliary message printing */
+(PID.TID 0000.0001) debLevZero =  0 ; /* level of disabled aux. msg printing */
+(PID.TID 0000.0001)    debLevA =  1 ; /* level of minimum  aux. msg printing */
+(PID.TID 0000.0001)    debLevB =  2 ; /* level of low aux. print (report read-file opening)*/
+(PID.TID 0000.0001)    debLevC =  3 ; /* level of moderate debug prt (most pkgs debug msg) */
+(PID.TID 0000.0001)    debLevD =  4 ; /* level of enhanced debug prt (add DEBUG_STATS prt) */
+(PID.TID 0000.0001)    debLevE =  5 ; /* level of extensive debug printing */
+(PID.TID 0000.0001) debugLevel =  /* select debug printing level */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
@@ -1003,6 +917,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useSRCGSolver =  /* use single reduction CG solver(s) */
 (PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) printResidualFreq = /* Freq. for printing CG residual */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
@@ -1324,16 +1241,13 @@
 (PID.TID 0000.0001) // CONFIG_CHECK : Normal End
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1983,38 +1897,28 @@
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
  ph-pack: packing ecco_cost
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_depth.0000000000.001.001.data
  ph-pack: packing ecco_ctrl
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_depth.0000000000.001.001.data
  ph-check entering grdchk_main 
  ph-check fcref =   5.09071982061515965E-002
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
+ ph-test icomp, ncvarcomp, ichknum            1          25           1
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1           0           1
  ph-grd -->hit<--            1           1           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2127,19 +2031,14 @@ grad-res -------------------------------
   local fc =  0.509071989555271D-01
  global fc =  0.509071989555271D-01
  ph-check fcpertplus =   5.09071989555271304E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2251,27 +2150,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071974567760D-01
  global fc =  0.509071974567760D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    1    1    1    1    1    1    1   0.509071982062E-01 0.509071989555E-01 0.509071974568E-01
- grad-res     0    1    1    1   25    1    1    1   0.749357371798E-05 0.749375582421E-05 -.243016528725E-04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    7.49357371797882E-06
+ grad-res     0    1    1    1    1    1    1    1   5.09071982062E-02  5.09071989555E-02  5.09071974568E-02
+ grad-res     0    1    1    1    0    1    1    1   7.49357371798E-06  7.49375582421E-06 -2.43016528725E-05
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  7.49357371797882E-06
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  7.49375582420608E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            1 , ichknum =            1
+ ph-test icomp, ncvarcomp, ichknum            4          25           2
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1           1           2
  ph-grd -->hit<--            4           1           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2384,19 +2280,14 @@ grad-res -------------------------------
   local fc =  0.509071982523496D-01
  global fc =  0.509071982523496D-01
  ph-check fcpertplus =   5.09071982523495864E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2508,27 +2399,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071981599535D-01
  global fc =  0.509071981599535D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    2    4    1    1    1    1    1   0.509071982062E-01 0.509071982523E-01 0.509071981600E-01
- grad-res     0    2    2    4   25    1    1    1   0.461917140109E-06 0.461980419197E-06 -.136992294036E-03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.61917140108749E-07
+ grad-res     0    2    4    1    1    1    1    1   5.09071982062E-02  5.09071982523E-02  5.09071981600E-02
+ grad-res     0    2    2    4    0    1    1    1   4.61917140109E-07  4.61980419197E-07 -1.36992294036E-04
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  4.61917140108749E-07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  4.61980419197427E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            4 , ichknum =            2
+ ph-test icomp, ncvarcomp, ichknum            7          25           3
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1           4           3
  ph-grd -->hit<--            2           2           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2641,19 +2529,14 @@ grad-res -------------------------------
   local fc =  0.509071982379660D-01
  global fc =  0.509071982379660D-01
  ph-check fcpertplus =   5.09071982379660157E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2765,27 +2648,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071981743371D-01
  global fc =  0.509071981743371D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    3    2    2    1    1    1    1   0.509071982062E-01 0.509071982380E-01 0.509071981743E-01
- grad-res     0    3    3    7   25    1    1    1   0.318144600988E-06 0.318144781353E-06 -.566926443790E-06
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.18144600988138E-07
+ grad-res     0    3    2    2    1    1    1    1   5.09071982062E-02  5.09071982380E-02  5.09071981743E-02
+ grad-res     0    3    3    7    0    1    1    1   3.18144600988E-07  3.18144781353E-07 -5.66926443790E-07
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  3.18144600988138E-07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  3.18144781352725E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            7 , ichknum =            3
+ ph-test icomp, ncvarcomp, ichknum           10          25           4
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1           7           4
  ph-grd -->hit<--            5           2           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -2898,19 +2778,14 @@ grad-res -------------------------------
   local fc =  0.509071983152976D-01
  global fc =  0.509071983152976D-01
  ph-check fcpertplus =   5.09071983152975666E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3022,27 +2897,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071980970055D-01
  global fc =  0.509071980970055D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    4    5    2    1    1    1    1   0.509071982062E-01 0.509071983153E-01 0.509071980970E-01
- grad-res     0    4    4   10   25    1    1    1   0.109157146307E-05 0.109146039429E-05 0.101751272987E-03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.09157146307279E-06
+ grad-res     0    4    5    2    1    1    1    1   5.09071982062E-02  5.09071983153E-02  5.09071980970E-02
+ grad-res     0    4    4   10    0    1    1    1   1.09157146307E-06  1.09146039429E-06  1.01751272987E-04
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  1.09157146307279E-06
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  1.09146039428687E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           10 , ichknum =            4
+ ph-test icomp, ncvarcomp, ichknum           13          25           5
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1          10           5
  ph-grd -->hit<--            3           3           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3155,19 +3027,14 @@ grad-res -------------------------------
   local fc =  0.509071985072855D-01
  global fc =  0.509071985072855D-01
  ph-check fcpertplus =   5.09071985072854644E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3279,27 +3146,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071979050175D-01
  global fc =  0.509071979050175D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    5    3    3    1    1    1    1   0.509071982062E-01 0.509071985073E-01 0.509071979050E-01
- grad-res     0    5    5   13   25    1    1    1   0.301376415417E-05 0.301133968456E-05 0.804465609125E-03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.01376415417151E-06
+ grad-res     0    5    3    3    1    1    1    1   5.09071982062E-02  5.09071985073E-02  5.09071979050E-02
+ grad-res     0    5    5   13    0    1    1    1   3.01376415417E-06  3.01133968456E-06  8.04465609125E-04
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  3.01376415417151E-06
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  3.01133968455547E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           13 , ichknum =            5
+ ph-test icomp, ncvarcomp, ichknum           16          25           6
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1          13           6
  ph-grd -->hit<--            1           4           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3412,19 +3276,14 @@ grad-res -------------------------------
   local fc =  0.509071982240805D-01
  global fc =  0.509071982240805D-01
  ph-check fcpertplus =   5.09071982240805257E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3536,27 +3395,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071981882225D-01
  global fc =  0.509071981882225D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    6    1    4    1    1    1    1   0.509071982062E-01 0.509071982241E-01 0.509071981882E-01
- grad-res     0    6    6   16   25    1    1    1   0.179228603653E-06 0.179290332580E-06 -.344414486587E-03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.79228603652842E-07
+ grad-res     0    6    1    4    1    1    1    1   5.09071982062E-02  5.09071982241E-02  5.09071981882E-02
+ grad-res     0    6    6   16    0    1    1    1   1.79228603653E-07  1.79290332580E-07 -3.44414486587E-04
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  1.79228603652842E-07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  1.79290332580351E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           16 , ichknum =            6
+ ph-test icomp, ncvarcomp, ichknum           19          25           7
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1          16           7
  ph-grd -->hit<--            4           4           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3669,19 +3525,14 @@ grad-res -------------------------------
   local fc =  0.509071981790236D-01
  global fc =  0.509071981790236D-01
  ph-check fcpertplus =   5.09071981790235537E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3793,27 +3644,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071982332795D-01
  global fc =  0.509071982332795D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    7    4    4    1    1    1    1   0.509071982062E-01 0.509071981790E-01 0.509071982333E-01
- grad-res     0    7    7   19   25    1    1    1   -.271313817958E-06 -.271279665398E-06 0.125878437413E-03
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.71313817957536E-07
+ grad-res     0    7    4    4    1    1    1    1   5.09071982062E-02  5.09071981790E-02  5.09071982333E-02
+ grad-res     0    7    7   19    0    1    1    1  -2.71313817958E-07 -2.71279665398E-07  1.25878437413E-04
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.71313817957536E-07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.71279665398083E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           19 , ichknum =            7
+ ph-test icomp, ncvarcomp, ichknum           22          25           8
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1          19           8
  ph-grd -->hit<--            2           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -3926,19 +3774,14 @@ grad-res -------------------------------
   local fc =  0.509071986631352D-01
  global fc =  0.509071986631352D-01
  ph-check fcpertplus =   5.09071986631352350E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -4050,27 +3893,24 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071977491679D-01
  global fc =  0.509071977491679D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    8    2    5    1    1    1    1   0.509071982062E-01 0.509071986631E-01 0.509071977492E-01
- grad-res     0    8    8   22   25    1    1    1   0.456977305179E-05 0.456983673125E-05 -.139349282455E-04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.56977305179009E-06
+ grad-res     0    8    2    5    1    1    1    1   5.09071982062E-02  5.09071986631E-02  5.09071977492E-02
+ grad-res     0    8    8   22    0    1    1    1   4.56977305179E-06  4.56983673125E-06 -1.39349282455E-05
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  4.56977305179009E-06
+(PID.TID 0000.0001)  ADM  finite-diff_grad       =  4.56983673124967E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           22 , ichknum =            8
+ ph-test icomp, ncvarcomp, ichknum           25          25           9
+ ph-grd _loc: bi, bj, icomptest, ichknum            1           1          22           9
  ph-grd -->hit<--            5           5           1           1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -4183,19 +4023,14 @@ grad-res -------------------------------
   local fc =  0.509071969914177D-01
  global fc =  0.509071969914177D-01
  ph-check fcpertplus =   5.09071969914176789E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
  ph-check fcpertminus =   5.09071982061515965E-002
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: noWalls.bigRidge
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.9999999999999996E-04
 (PID.TID 0000.0001) 
                      ctrl_depth_ini: ctrl update R_low,
                                      adding the control vector.
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.sin_y
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -4307,12 +4142,12 @@ grad-res -------------------------------
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.509071994208853D-01
  global fc =  0.509071994208853D-01
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
- grad-res     0    9    5    5    1    1    1    1   0.509071982062E-01 0.509071969914E-01 0.509071994209E-01
- grad-res     0    9    9   25   25    1    1    1   -.121476685757E-04 -.121473383435E-04 0.271848210298E-04
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061516E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.21476685757339E-05
+ grad-res     0    9    5    5    1    1    1    1   5.09071982062E-02  5.09071969914E-02  5.09071994209E-02
+ grad-res     0    9    9   25    0    1    1    1  -1.21476685757E-05 -1.21473383435E-05  2.71848210298E-05
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061516E-02
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -1.21476685757339E-05
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -1.21473383435378E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           25 , ichknum =            9
 (PID.TID 0000.0001) 
@@ -4322,43 +4157,43 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  EPS =   1.000000E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output h.p:  Id  Itile Jtile LAYER   X(Id)            X(Id)+/-EPS
+(PID.TID 0000.0001) grdchk output h.p:  Id Itile Jtile LAYER   bi   bj   X(Id)           X(Id)+/-EPS
 (PID.TID 0000.0001) grdchk output h.c:  Id  FC                   FC1                  FC2
 (PID.TID 0000.0001) grdchk output h.g:  Id     FC1-FC2/(2*EPS)      ADJ GRAD(FC)         1-FDGRD/ADGRD
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   1     1     1     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   1     1     1     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   1  5.0907198206152E-02  5.0907198955527E-02  5.0907197456776E-02
 (PID.TID 0000.0001) grdchk output (g):   1     7.4937558242061E-06  7.4935737179788E-06 -2.4301652872483E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   2     4     1     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   2     4     1     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   2  5.0907198206152E-02  5.0907198252350E-02  5.0907198159954E-02
 (PID.TID 0000.0001) grdchk output (g):   2     4.6198041919743E-07  4.6191714010875E-07 -1.3699229403596E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   3     2     2     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   3     2     2     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   3  5.0907198206152E-02  5.0907198237966E-02  5.0907198174337E-02
 (PID.TID 0000.0001) grdchk output (g):   3     3.1814478135272E-07  3.1814460098814E-07 -5.6692644379019E-07
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   4     5     2     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   4     5     2     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   4  5.0907198206152E-02  5.0907198315298E-02  5.0907198097005E-02
 (PID.TID 0000.0001) grdchk output (g):   4     1.0914603942869E-06  1.0915714630728E-06  1.0175127298717E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   5     3     3     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   5     3     3     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   5  5.0907198206152E-02  5.0907198507285E-02  5.0907197905018E-02
 (PID.TID 0000.0001) grdchk output (g):   5     3.0113396845555E-06  3.0137641541715E-06  8.0446560912451E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   6     1     4     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   6     1     4     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   6  5.0907198206152E-02  5.0907198224081E-02  5.0907198188222E-02
 (PID.TID 0000.0001) grdchk output (g):   6     1.7929033258035E-07  1.7922860365284E-07 -3.4441448658695E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   7     4     4     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   7     4     4     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   7  5.0907198206152E-02  5.0907198179024E-02  5.0907198233279E-02
 (PID.TID 0000.0001) grdchk output (g):   7    -2.7127966539808E-07 -2.7131381795754E-07  1.2587843741296E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   8     2     5     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   8     2     5     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   8  5.0907198206152E-02  5.0907198663135E-02  5.0907197749168E-02
 (PID.TID 0000.0001) grdchk output (g):   8     4.5698367312497E-06  4.5697730517901E-06 -1.3934928245529E-05
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output (p):   9     5     5     1    0.000000000E+00 -1.000000000E-04
+(PID.TID 0000.0001) grdchk output (p):   9     5     5     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   9  5.0907198206152E-02  5.0907196991418E-02  5.0907199420885E-02
 (PID.TID 0000.0001) grdchk output (g):   9    -1.2147338343538E-05 -1.2147668575734E-05  2.7184821029813E-05
 (PID.TID 0000.0001) 
@@ -4367,153 +4202,153 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   6.4800000000000004
-(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
-(PID.TID 0000.0001)     Wall clock time:   6.5513210296630859
+(PID.TID 0000.0001)           User time:   6.5499999999999998
+(PID.TID 0000.0001)         System time:  8.00000000000000017E-002
+(PID.TID 0000.0001)     Wall clock time:   6.6869480609893799
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  2.00000000000000004E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.84030437469482422E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  3.77190113067626953E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   1.9099999999999999
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:   1.9250900745391846
+(PID.TID 0000.0001)           User time:   1.9399999999999999
+(PID.TID 0000.0001)         System time:  1.99999999999999969E-002
+(PID.TID 0000.0001)     Wall clock time:   2.0014059543609619
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.28402328491210938E-002
+(PID.TID 0000.0001)           User time:  5.99999999999987210E-002
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  5.35786151885986328E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.95224285125732422E-002
+(PID.TID 0000.0001)     Wall clock time:  1.97782516479492188E-002
 (PID.TID 0000.0001)          No. starts:        2200
 (PID.TID 0000.0001)           No. stops:        2200
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.77145004272460938E-002
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:  1.78110599517822266E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.29999999999999361
+(PID.TID 0000.0001)           User time:  0.29999999999999716
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.24555373191833496
+(PID.TID 0000.0001)     Wall clock time:  0.25437784194946289
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.0799999999999859
+(PID.TID 0000.0001)           User time:   1.0099999999999927
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.99798703193664551
+(PID.TID 0000.0001)     Wall clock time:   1.0313205718994141
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.3999999999999728
+(PID.TID 0000.0001)           User time:   1.9899999999999762
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   2.1913363933563232
+(PID.TID 0000.0001)     Wall clock time:   2.1957588195800781
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.50999999999999801
+(PID.TID 0000.0001)           User time:  0.70999999999999019
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.70900034904479980
+(PID.TID 0000.0001)     Wall clock time:  0.71350336074829102
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10000000000000053
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:  0.14521002769470215
+(PID.TID 0000.0001)           User time:  0.12999999999999812
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.14675140380859375
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)           User time:  4.99999999999989342E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.89764213562011719E-002
+(PID.TID 0000.0001)     Wall clock time:  5.01427650451660156E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10999999999999854
+(PID.TID 0000.0001)           User time:  0.18999999999999773
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.17432022094726563
+(PID.TID 0000.0001)     Wall clock time:  0.18108344078063965
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.83680057525634766E-002
+(PID.TID 0000.0001)     Wall clock time:  1.86550617218017578E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
+(PID.TID 0000.0001)           User time:  5.99999999999996092E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.32653617858886719E-002
+(PID.TID 0000.0001)     Wall clock time:  2.38282680511474609E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.99999999999998224E-002
+(PID.TID 0000.0001)           User time:  7.99999999999991829E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.50658416748046875E-002
+(PID.TID 0000.0001)     Wall clock time:  8.67545604705810547E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.93545818328857422E-002
+(PID.TID 0000.0001)     Wall clock time:  2.29644775390625000E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)           User time:  3.00000000000002487E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.91988945007324219E-002
+(PID.TID 0000.0001)     Wall clock time:  1.99439525604248047E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.94956970214843750E-004
+(PID.TID 0000.0001)     Wall clock time:  7.61032104492187500E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.26054000854492188E-004
+(PID.TID 0000.0001)     Wall clock time:  6.53982162475585938E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   4.5500000000000007
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:   4.5968189239501953
+(PID.TID 0000.0001)           User time:   4.5899999999999999
+(PID.TID 0000.0001)         System time:  5.00000000000000028E-002
+(PID.TID 0000.0001)     Wall clock time:   4.6463170051574707
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.48725414276123047E-002
+(PID.TID 0000.0001)     Wall clock time:  2.50246524810791016E-002
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   4.5100000000000016
-(PID.TID 0000.0001)         System time:  2.99999999999999920E-002
-(PID.TID 0000.0001)     Wall clock time:   4.5652978420257568
+(PID.TID 0000.0001)           User time:   4.5499999999999998
+(PID.TID 0000.0001)         System time:  4.00000000000000078E-002
+(PID.TID 0000.0001)     Wall clock time:   4.6133224964141846
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   4.4600000000000142
-(PID.TID 0000.0001)         System time:  2.99999999999999920E-002
-(PID.TID 0000.0001)     Wall clock time:   4.5149719715118408
+(PID.TID 0000.0001)           User time:   4.5000000000000151
+(PID.TID 0000.0001)         System time:  4.00000000000000078E-002
+(PID.TID 0000.0001)     Wall clock time:   4.5629193782806396
 (PID.TID 0000.0001)          No. starts:        1800
 (PID.TID 0000.0001)           No. stops:        1800
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.64813613891601563E-004
+(PID.TID 0000.0001)     Wall clock time:  5.79833984375000000E-004
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001) // ======================================================
@@ -4531,9 +4366,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =         204422
+(PID.TID 0000.0001) //            No. barriers =         204436
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =         204422
+(PID.TID 0000.0001) //     Total barrier spins =         204436
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
