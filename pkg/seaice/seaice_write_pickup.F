@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.9 2011/09/26 21:19:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.10 2011/09/26 22:05:49 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -142,7 +142,7 @@ C---  continue to write 2-D fields:
           njtrac = njtrac-1
           CALL WRITE_REC_3D_RL( fnTrac, fp,  1,
      &         SItracer(1-Olx,1-Oly,1,1,iTrac),
-     &         nj, myIter, myThid )
+     &         njTrac, myIter, myThid )
           IF (jtrac.LE.listDimTrac) wrFldListTrac(jtrac) = fldName
          ENDDO
 #endif
