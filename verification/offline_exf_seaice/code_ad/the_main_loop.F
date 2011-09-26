@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.6 2011/01/28 16:18:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.7 2011/09/26 23:08:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,13 +25,13 @@ C     | o Run the ocean model and evaluate the specified cost function.
 C     *================================================================*
 C     |
 C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC). 
+C     | Adjoint Model Compiler (TAMC).
 C     | For this purpose the initialization
 C     | of the model was split into two parts. Those parameters that do
 C     | not depend on a specific model run are set in INITIALISE_FIXED,
 C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA. 
-C     | This routine is to be used in conjuction with the MITgcmuv 
+C     | initialized in INITIALISE_VARIA.
+C     | This routine is to be used in conjuction with the MITgcmuv
 C     | checkpoint 37.
 C     *================================================================*
 C     \ev
@@ -47,8 +47,8 @@ c**************************************
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef ALLOW_AUTODIFF_OPENAD
 
-c These includes are needed for 
-c AD-checkpointing. 
+c These includes are needed for
+c AD-checkpointing.
 c They provide the fields to be stored.
 
 #  include "GRID.h"
@@ -114,15 +114,15 @@ c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     note: under the multi-threaded model myiter and 
-C           mytime are local variables passed around as routine 
-C           arguments. Although this is fiddly it saves the need to 
-C           impose additional synchronisation points when they are 
+C     note: under the multi-threaded model myiter and
+C           mytime are local variables passed around as routine
+C           arguments. Although this is fiddly it saves the need to
+C           impose additional synchronisation points when they are
 C           updated.
 C     myIter - iteration counter for this thread
 C     myTime - time counter for this thread
 C     myThid - thread number for this instance of the routine.
-      INTEGER myThid 
+      INTEGER myThid
       INTEGER myIter
       _RL     myTime
 
@@ -351,7 +351,7 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
         print*
         print*, ' the_main_loop: TAMC checkpointing parameter ',
      &       'nchklev_0 = ',       nchklev_0
-        print*, '                 not consistent with nTimeSteps = ', 
+        print*, '                 not consistent with nTimeSteps = ',
      &       nTimeSteps
         stop    ' ... stopped in the_main_loop.'
       endif
@@ -364,19 +364,19 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
 #endif /* undef ALLOW_AUTODIFF_OPENAD */
 
 #ifdef ALLOW_AUTODIFF_OPENAD
-      call openad_checkpointinit(uCheckLev1, 
-     +        uCheckLev2, 
+      call openad_checkpointinit(uCheckLev1,
+     +        uCheckLev2,
      +        uCheckLev3,
      +        uCheckLev4 )
-      
+
       theCurrentStep=0
 
-      if (uCheckLev4 .gt. 0 ) then 
+      if (uCheckLev4 .gt. 0 ) then
        do ilev_4 = 1, uCheckLev4
 
 #endif
 
-#ifndef ALLOW_AUTODIFF 
+#ifndef ALLOW_AUTODIFF
 
 c--   Start the main loop of adjoint_Objfunc. Automatic differentiation
 c--   NOT enabled.
@@ -496,7 +496,7 @@ c--
 #ifdef ALLOW_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
-      CALL MONITOR( myIter, myTime, myThid )
+      CALL MONITOR( myTime, myIter, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
 
@@ -517,9 +517,9 @@ C--   Check status of solution (statistics, cfl, etc...)
 c--     >>> Loop body end <<<
 #ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_AUTODIFF_OPENAD
-#  ifdef ALLOW_AUTODIFF_TAMC 
+#  ifdef ALLOW_AUTODIFF_TAMC
 
-#   ifdef ALLOW_TAMC_CHECKPOINTING 
+#   ifdef ALLOW_TAMC_CHECKPOINTING
             endif
           enddo
           endif
@@ -539,7 +539,7 @@ c--     >>> Loop body end <<<
 # else /* ALLOW_AUTODIFF_OPENAD */
          end do
       else
-         CALL THE_FOURTH_LEVEL_PLAIN( 
+         CALL THE_FOURTH_LEVEL_PLAIN(
      +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
      +theCurrentStep,
      +myTime, myIter, myThid )
