@@ -18,9 +18,8 @@
  ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
-#exactConserv=.TRUE.,
-#- runoff missing in SSH forcing => comment out realFreshWaterFlux
-#useRealFreshWaterFlux=.TRUE.,
+ exactConserv=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
