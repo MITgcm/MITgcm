@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.8 2011/09/26 18:23:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.9 2011/09/26 21:19:25 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,8 +83,6 @@ c     IF ( seaice_pickup_write_mdsio ) THEN
        fp = precFloat64
        j = 0
        nj = 0
-       jtrac = 0
-       njtrac = 0
 C     record number < 0 : a hack not to write meta files now:
 
 C--   write Sea-Ice Thermodynamics State variables, starting with 3-D fields:
@@ -136,6 +134,8 @@ C---  continue to write 2-D fields:
          ENDDO
 #endif
 #ifdef ALLOW_SITRACER
+         jtrac = 0
+         njtrac = 0
          DO iTrac = 1, SItrMaxNum
           WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
           jtrac = jtrac + 1
