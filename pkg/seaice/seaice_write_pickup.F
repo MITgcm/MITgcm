@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.10 2011/09/26 22:05:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.11 2011/09/27 00:08:03 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -63,20 +63,12 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
       CHARACTER*(8) fldName
-      CHARACTER*(8) wrFldListTrac(listDim)
-      CHARACTER*(MAX_LEN_FNAM) fnTrac
       INTEGER iTrac
-      INTEGER jtrac, njtrac
-      INTEGER listDimTrac, nWrFldsTrac
-      PARAMETER( listDimTrac = 20 )
 #endif
 CEOP
 
 C--   Write model fields
       WRITE(fn,'(A,A)') 'pickup_seaice.',suff
-#if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
-      WRITE(fnTrac,'(A,A)') 'pickup_seaice_tracer.',suff
-#endif
 
 c     IF ( seaice_pickup_write_mdsio ) THEN
 
@@ -134,16 +126,14 @@ C---  continue to write 2-D fields:
          ENDDO
 #endif
 #ifdef ALLOW_SITRACER
-         jtrac = 0
-         njtrac = 0
          DO iTrac = 1, SItrMaxNum
           WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
-          jtrac = jtrac + 1
-          njtrac = njtrac-1
-          CALL WRITE_REC_3D_RL( fnTrac, fp,  1,
+          j = j + 1
+          nj = nj-1
+          CALL WRITE_REC_3D_RL( fn, fp,  1,
      &         SItracer(1-Olx,1-Oly,1,1,iTrac),
-     &         njTrac, myIter, myThid )
-          IF (jtrac.LE.listDimTrac) wrFldListTrac(jtrac) = fldName
+     &         nj, myIter, myThid )
+          IF (j.LE.listDim) wrFldList(j) = fldName
          ENDDO
 #endif
        ENDIF
@@ -191,19 +181,6 @@ C--    write Sea-Ice Dynamics variables (all 2-D fields):
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R WRITE_SEAICE_PICKUP (list-size Pb)'
        ENDIF
-#ifdef ALLOW_SITRACER
-       nWrFldsTrac = jTrac
-       IF ( nWrFldsTrac.GT.listDimTrac ) THEN
-         WRITE(msgBuf,'(2A,I5,A)') 'WRITE_SEAICE_PICKUP_TRACER: ',
-     &     'trying to write ',nWrFldsTrac,' fields'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(2A,I5,A)') 'WRITE_SEAICE_PICKUP_TRACER: ',
-     &     'field-list dim. (listDimTrac=',listDimTrac,') too small'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 
-     &    'ABNORMAL END: S/R WRITE_SEAICE_PICKUP_TRACER (list-size Pb)'
-       ENDIF
-#endif
 
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta files
@@ -215,15 +192,6 @@ C     uses this specific S/R to write (with more informations) only meta files
      &                         nWrFlds, wrFldList,
      &                         1, timList,
      &                         nj, myIter, myThid )
-C
-# ifdef ALLOW_SITRACER
-       njtrac = ABS(njtrac)
-       CALL MDS_WR_METAFILES( fnTrac, fp, glf, .FALSE.,
-     &                         0, 0, 1, ' ',
-     &                         nWrFldsTrac, wrFldListTrac,
-     &                         1, timList,
-     &                         njTrac, myIter, myThid )
-# endif /* ALLOW_SITRACER */
 C
 #endif /* ALLOW_MDSIO */
 C--------------------------

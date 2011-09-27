@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.11 2011/09/26 18:23:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.12 2011/09/27 00:08:03 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,7 +56,6 @@ C     bi,bj       :: tile indices
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
       CHARACTER*(8) fldName
-      CHARACTER*(MAX_LEN_FNAM) fnTrac
       INTEGER iTrac, kerr
 #endif
 CEOP
@@ -228,6 +227,16 @@ C--    continue with 2-D fields:
           _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTrac),myThid)
          ENDDO
 #endif /* SEAICE_AGE */
+#ifdef ALLOW_SITRACER
+         DO iTrac = 1, SItrMaxNum
+          WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
+          CALL READ_MFLDS_3D_RL( fldName,
+     &         SItracer(1-Olx,1-Oly,1,1,iTrac),
+     &         nj, fp, 1, nIter0, myThid )
+          _EXCH_XY_RL(SItracer(1-Olx,1-Oly,1,1,iTrac),myThid)
+         ENDDO
+#endif /* ALLOW_SITRACER */
+
         ENDIF
 
 C--    read Sea-Ice Dynamics variables (all 2-D fields):
@@ -265,68 +274,6 @@ C--    Check for missing fields:
      I                    missFldList,
      I                    nMissing, nbFields,
      I                    nIter0, myThid )
-
-
-#ifdef ALLOW_SITRACER
-      IF (pickupSuff .EQ. ' ') THEN
-        WRITE(fnTrac,'(A,I10.10)') 'pickup_seaice_tracer.',nIter0
-      ELSE
-        WRITE(fnTrac,'(A,A10)') 'pickup_seaice_tracer.',pickupSuff
-      ENDIF
-
-       CALL READ_MFLDS_SET(
-     I                      fnTrac,
-     O                      nbFields, filePrec,
-     I                      MULTDIM, nIter0, myThid )
-
-       _BEGIN_MASTER( myThid )
-       IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
-         WRITE(msgBuf,'(2A,I4)') 'SEAICE_READ_PICKUP_TRACER: ',
-     &    'pickup-file binary precision do not match !'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A,2(A,I4))') 'SEAICE_READ_PICKUP_TRACER: ',
-     &    'file prec.=', filePrec, ' but expecting prec.=', fp
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 
-     &    'ABNORMAL END: S/R SEAICE_READ_PICKUP_TRACER (data-prec Pb)'
-       ENDIF
-       _END_MASTER( myThid )
-
-       IF ( nbFields.LE.0 ) THEN
-C-      No meta-file or old meta-file without List of Fields
-        ioUnit = errorMessageUnit
-        IF ( pickupStrictlyMatch ) THEN
-          WRITE(msgBuf,'(4A)') 'SEAICE_READ_PICKUP_TRACER: ',
-     &      'no field-list found in meta-file',
-     &      ' => cannot check for strict-matching'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(4A)') 'SEAICE_READ_PICKUP_TRACER: ',
-     &      'try with " pickupStrictlyMatch=.FALSE.,"',
-     &      ' in file: "data", NameList: "PARM03"'
-          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          STOP 'ABNORMAL END: S/R SEAICE_READ_PICKUP_TRACER'
-        ELSE
-          WRITE(msgBuf,'(4A)') 'WARNING >> SEAICE_READ_PICKUP_TRACER: ',
-     &      ' no field-list found'
-          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        ENDIF
-       ENDIF
-
-       IF ( nbFields.GT.0 ) THEN
-         nj = 0
-         DO iTrac = 1, SItrMaxNum
-          WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
-          CALL READ_MFLDS_3D_RL( fldName,
-     &         SItracer(1-Olx,1-Oly,1,1,iTrac),
-     &         nj, fp, 1, nIter0, myThid )
-          _EXCH_XY_RL(SItracer(1-Olx,1-Oly,1,1,iTrac),myThid)
-         ENDDO
-       ENDIF
-
-C--    Check for missing fields:
-cph: t.b.d. 
-
-#endif /* ALLOW_SITRACER */
 
 C--   end: seaice_pickup_read_mdsio
 c     ENDIF
