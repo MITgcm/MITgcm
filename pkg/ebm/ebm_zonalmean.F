@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.5 2011/08/28 21:46:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.6 2011/09/27 23:43:36 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -43,48 +43,34 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i, j, k :: Loop counters
       INTEGER i, j, k, bi, bj
-      _RL locSumMask(1-OLy:sNy+OLy,nSy)
-      _RL locSumSST (1-OLy:sNy+OLy,nSy)
-
-C- multi-threading note:
-C     global-sum cannot be applied to shared var. (i.e. in common block)
-C     (problem in earlier version if nTx > 1) and all threads should call
-C     global-sum in the same order (problem in earlier version if nTy > 1).
-C     For these reasons, we define local array (locSumMask,locSumSST) to perform
-C     global sum. They need to be initialised not only for bj(myThid) but for all
-C     bj and after applying global-sum (to all bj), all threads will get the right
-C     results, which the master thread can copy to shared array.
+      INTEGER jg
+      _RL tileSumMask(nSx,nSy)
+      _RL tileSumSST (nSx,nSy)
+      _RL locSumMask(Ny)
+      _RL locSumSST (Ny)
 
 C--   Top layer only
       k = 1
 
-c--   Initialise
-      DO bj=1,nSy
-       DO j=1-OLy,sNy+OLy
-         locSumMask(j,bj) = 0.
-         locSumSST (j,bj) = 0.
-       ENDDO
-      ENDDO
-
 C--   Calculate the zonal mean
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j = 1-OLy, sNy+OLy
-         DO i=1,sNx
-          locSumMask(j,bj) = locSumMask(j,bj)
-     &                     + maskC(i,j,k,bi,bj)
-          locSumSST(j,bj)  = locSumSST(j,bj)
-     &                     + maskC(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+      DO jg = 1,Ny
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          tileSumMask(bi,bj) = 0.
+          tileSumSST (bi,bj) = 0.
+          j = jg + 1 - myYGlobalLo - (bj-1)*sNy
+          IF ( j.GE.1 .AND. j.LE.sNy ) THEN
+           DO i = 1,sNx
+            tileSumMask(bi,bj) = tileSumMask(bi,bj)
+     &                         + maskC(i,j,k,bi,bj)
+            tileSumSST (bi,bj) = tileSumSST (bi,bj)
+     &                         + maskC(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+           ENDDO
+          ENDIF
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-
-      DO bj=1,nSy
-       DO j=1-OLy,sNy+OLy
-        _GLOBAL_SUM_RL( locSumMask(j,bj), myThid )
-        _GLOBAL_SUM_RL( locSumSST(j,bj) , myThid )
-       ENDDO
+        CALL GLOBAL_SUM_TILE_RL( tileSumMask, locSumMask(jg), myThid )
+        CALL GLOBAL_SUM_TILE_RL( tileSumSST,  locSumSST(jg),  myThid )
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -93,8 +79,13 @@ CADJ STORE CountX = comlev1, key = ikey_dynamics
       _BEGIN_MASTER(myThid)
       DO bj=1,nSy
        DO j=1-OLy,sNy+OLy
-        CountX(j,bj) = locSumMask(j,bj)
-        ZonalMeanSST(j,bj) = locSumSST(j,bj)
+        jg = myYGlobalLo + j-1 + (bj-1)*sNy
+C       cyclic domain in Y:
+c       jg = 1 + MOD( jg-1+Ny, Ny)
+C       closed domain in Y:
+        jg = MAX(MIN(jg,Ny),1)
+        CountX(j,bj) = locSumMask(jg)
+        ZonalMeanSST(j,bj) = locSumSST(jg)
         IF ( CountX(j,bj).GT.0. _d 0 ) THEN
           ZonalMeanSST(j,bj) = ZonalMeanSST(j,bj)/CountX(j,bj)
         ENDIF
@@ -114,6 +105,7 @@ C-    replace SST with ZonalMeanSST for relaxation towards Zonal-Mean value
          ENDDO
         ENDDO
        ENDDO
+c      _EXCH_XY_RS( SST, myThid )
       ENDIF
 
 #endif /* ALLOW_EBM */
