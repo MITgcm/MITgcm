@@ -1,11 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1506 2011/09/27 23:52:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1507 2011/09/28 13:39:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63c (2011/09/28)
 o pkg/ebm:
-  - fix ebm_zonalmean.F for several procs in Ydir (nPy > 1); update output of 
+  - fix ebm_zonalmean.F for several procs in Ydir (nPy > 1); update output of
     test exp. global_ocean_ebm (affects machine truncation, 12 digits for cg2d)
 o pkg/seaice (SItracer pickup)
 * Simple code for pickup of SItracer fields (#define ALLOW_SITRACER)
