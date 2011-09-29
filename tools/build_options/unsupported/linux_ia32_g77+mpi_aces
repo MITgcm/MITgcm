@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_aces,v 1.4 2010/12/14 21:18:40 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_g77+mpi_aces,v 1.1 2011/09/29 16:11:59 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the GNU compiler for the
