@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.8 2011/08/12 23:09:08 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_ifort+mpi_beagle,v 1.1 2011/09/29 16:09:59 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
