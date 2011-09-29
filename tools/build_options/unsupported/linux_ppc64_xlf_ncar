@@ -1,22 +1,22 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc64_xlf_bigred,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ppc64_xlf_ncar,v 1.1 2011/09/29 16:21:44 jmc Exp $
 # $Name:  $
 
-#  tested on Big Red, ce107 Aug 30 2007
+#  tested on frost, ce107 Aug 4 2005
 #  using the following invocation:
-#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc64_xlf_bigred
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc64_xlf
 
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
-INCLUDES='-I/N/soft/linux-sles9-ppc64/netcdf-3.6.1-ibm-64/include'
+INCLUDES='-I/contrib/fe_tools/xlc64/netcdf-3.6.0-p1/include'
 CPP='/lib/cpp -traditional -P'
 FC='xlf -q64'
 CC='xlc -q64'
 LINK='xlf -q64'
-LIBS='-L/N/soft/linux-sles9-ppc64/netcdf-3.6.1-ibm-64/lib -lnetcdf'
+LIBS='-L/contrib/fe_tools/xlc64/netcdf-3.6.0-p1/lib -lnetcdf'
 FFLAGS='-qfixed=132'
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
