@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_generic,v 1.3 2010/04/20 20:04:06 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_ifort+mpi_generic,v 1.1 2011/09/29 16:08:45 jmc Exp $
 #  $Name:  $
 #
 # Composed and tested by ce107 on ross/weddell (Opteron system)
