@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1507 2011/09/28 13:39:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1508 2011/09/29 17:31:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o tools/build_options:
+  - after merging some MPI and/or multi-threads specific optfiles so that
+    the modified default optfile support both built (using genmake2 -mpi
+    for the MPI built, using genmake2 -omp for OpenMP built),
+    move now obsolete optfiles to tools/build_options/unsupported/
+   (add copy of email sent to support list in doc/optfiles_changes.txt)
 
 checkpoint63c (2011/09/28)
 o pkg/ebm:
