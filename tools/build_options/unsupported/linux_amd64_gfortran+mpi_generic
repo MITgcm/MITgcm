@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_gfortran+mpi_generic,v 1.4 2011/08/21 17:34:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_gfortran+mpi_generic,v 1.1 2011/09/29 16:08:14 jmc Exp $
 #  $Name:  $
 #
 
