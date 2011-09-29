@@ -1,37 +1,35 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_gfortran4.4,v 1.1 2010/04/12 03:55:54 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_gfortran+mpi_generic,v 1.1 2011/09/29 16:12:59 jmc Exp $
 #  $Name:  $
 #
-
-#  Tested with gcc-gfortran v4.1.1 on FC5, FC6, FC8, using flags
-#              formally for gcc-gfortran 4.3*
-#       + with gcc-gfortran v4.3.0 on FC9
+#  Build options for the gfortran compiler with a generic MPI
+#
+# DON'T FORGET to set environment variable MPI_INC_DIR to the include
+# directory of your MPI implementation
+#
 #  It fixes the ' \' versus ' &' terminator problem ;
-#  some namelist problems remain with old version (The biggest seems
+#  some namelist problems remain with old version (The biggest seems 
 #     to be the inability to support namelist syntax such as:
 #     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
 #      which results in run-time errors).
 
-#-------
-# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
-#    and generally, needs to increase the thread stack-size:
-#   -  sh,bash:
-#     > export OMP_NUM_THREADS=2
-#     > export GOMP_STACKSIZE=400m
-#   - csh,tcsh:
-#     > setenv OMP_NUM_THREADS 2
-#     > setenv GOMP_STACKSIZE 400m
-#-------
 
-FC=gfortran
-F90C=gfortran
-CC=gcc
-DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+FC=${FC:=mpif77 -m32}
+F90C=${F90C:=mpif90 -m32}
+CC=${CC:=mpicc -m32}
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp -traditional -P'
-NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 OMPFLAG='-fopenmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
@@ -44,21 +42,15 @@ FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
 #- otherwise, switch to the home-made byte-swap:
 #DEFINES="-D_BYTESWAPIO $DEFINES"
 
-has_sse2=f
-grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    if test "x$has_sse2" = xt ; then
-        FOPTIM='-O3 -funroll-loops -ftree-vectorize -msse -msse2'
-    else
-        FOPTIM='-O3 -funroll-loops'
-    fi
+    FOPTIM='-O3 -funroll-loops'
 else
     #  Try to follow IEEE-754
     has_sse2=f
     grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
     if test "x$has_sse2" = xt ; then
-        FOPTIM='-O0 -ftree-vectorize -mfpmath=sse -msse -msse2'
+        FOPTIM='-O0 -mfpmath=sse -msse -msse2'
     else
         FOPTIM='-O0 -ffloat-store'
     fi
@@ -94,7 +86,7 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
     LIBS="-L${NETCDF_LIBDIR}"
 elif test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
-    LIBS='-L/usr/lib/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
 elif test -d /usr/include/netcdf ; then
     INCLUDES='-I/usr/include/netcdf'
 elif test -d /usr/local/netcdf ; then
@@ -102,5 +94,11 @@ elif test -d /usr/local/netcdf ; then
     LIBS='-L/usr/local/netcdf/lib'
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
-    LIBS='-L/usr/local/lib'
+    LIBS='-L/usr/local/lib64'
 fi
+
+INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+MPIINCLUDEDIR="$MPI_INC_DIR"
+MPI_HEADER_FILES='mpif.h mpiof.h'
+MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
