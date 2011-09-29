@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sunos_sparc_sunf90_m64+mpi_generic,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sunos_sparc_sunf90_m64+mpi_generic+mth,v 1.1 2011/09/29 16:26:39 jmc Exp $
 # $Name:  $
 
 #  Build options for the Sun fortran compiler with a generic MPI
@@ -12,17 +12,16 @@ F90C=${F90C:=mpif90}
 CC=${CC:=mpicc}
 LINK=${F90C}
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 CPP='/usr/ccs/lib/cpp -P'
-NOOPTFLAGS='-O0 -g -m64 -u -r8const'
+NOOPTFLAGS='-O0 -g -m64 -u -r8const -xopenmp=noopt'
 NOOPTFILES=''
 EXTENDED_SRC_FLAG='-e'
-OMPFLAG='-xopenmp'
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover'
+    FFLAGS='-u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover -xopenmp=noopt'
 else
-    FFLAGS='-u -r8const'
+    FFLAGS='-u -r8const -xopenmp'
 fi
 
 if test "x$IEEE" = x ; then
@@ -36,7 +35,7 @@ else
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64'
+CFLAGS='-O3 -m64 -xopenmp'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
