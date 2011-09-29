@@ -1,0 +1,107 @@
+- merging of optfiles: Aug 19 - Sept 13, 2011
+- tag checkpoint63c (Sept 28, 2011)
+- move obsolete optfile to tools/build_options/unsupported/ (Sep 29, 2011)
+====================================================================
+Date: Wed, 14 Sep 2011 20:12:00 -0400
+From: Jean-Michel Campin <jmc@ocean.mit.edu>
+To: mitgcm-support@mitgcm.org
+
+Hi,
+
+There has been some recent cleaning/merging of few optfiles
+(in tools/build_options/), especially some MPI specific optfiles
+have been merged to previously non MPI one, and the modified ones
+now support both type of built (when using genmake2 -mpi for the MPI
+built).
+Similarly, the multi-threads specific optfiles (+mth) with OpenMP
+options have also been merged, so that the modified ones also support
+an OpenMP built (when using genmake2 -omp).
+
+Below is the list of now obsolete optfiles which have been merged
+and the corresponding optfile that should be used instead.
+The plan is to move relatively soon (after the next checkpoint)
+these obsolete optfiles to: tools/build_options/unsupported/.
+
+Note that some modified/merged optfiles have not been tested (because
+of limited access to some platform/compiler), so if something does
+not work with the modified optfile (but was working before),
+let us know.
+
+Thanks,
+Jean-Michel
+
+=====================================================================================
+ obsolete optfile                     -->  merged optfile     genmake2 option to
+(to be moved to "unsupported")                                use with merged optfile
+-------------------------------------------------------------------------------------
+ darwin_ia32_gfortran+mpi             --> darwin_ia32_gfortran       (-mpi)
+ darwin_ia32_pgf95+mpich2-mx_trane    --> darwin_ia32_pgf95_trane    (-mpi)
+
+ irix64_ip27_f77+mpi                  --> irix64_ip27_f77            (-mpi)
+ irix64_ip35_f77+mpi_mnc_gfdl \                                      (-mpi)
+ irix64_ip35+mpi_gfdl          }      --> irix64_ip35_f77            (-mpi)
+
+ linux_amd64_gfortran+mpi_generic     --> linux_amd64_gfortran       (-mpi)
+ linux_amd64_ifort+mpi_generic        --> linux_amd64_ifort          (-mpi)
+ linux_amd64_ifort11+mpi_generic      --> linux_amd64_ifort11        (-mpi)
+ linux_amd64_ifort+mpi_beagle         --> linux_amd64_ifort_beagle   (-mpi)
+ linux_amd64_pgf77+mpi_ocl            --> linux_amd64_pgf77_ocl      (-mpi)
+ linux_amd64_sunf90+mpi_generic    \                                 (-mpi)
+ linux_amd64_sunf90+mpi_generic+mth } --> linux_amd64_sunf90         (-mpi -omp)
+ linux_amd64_sunf90+mth            /                                 (-omp)
+
+ linux_ia32_g77+mpi_aces              --> linux_ia32_g77             (-mpi)
+ linux_ia32_gfortran4.4           \
+ linux_ia32_gfortran+mpi_generic   }  --> linux_ia32_gfortran        (-mpi)
+ linux_ia32_ifort.aces            \
+ linux_ia32_ifort+mpi_aces         }  --> linux_ia32_ifort           (-mpi)
+ linux_ia32_ifort+authors         /
+ linux_ia32_ifort10.1+mpi_generic     --> linux_ia32_ifort10.1       (-mpi)
+ linux_ia32_ifort11+mpi_generic       --> linux_ia32_ifort11         (-mpi)
+ linux_ia32_open64+mth            \                                  (-omp)
+ linux_ia32_open64.trapuv          }  --> linux_ia32_open64          (-devel)
+ linux_ia32_pathf90+mth               --> linux_ia32_pathf90         (-omp)
+ linux_ia32_pgf77+mpi              \                                 (-mpi)
+ linux_ia32_pgf77+mpi_aces          } --> linux_ia32_pgf77           (-mpi)
+ linux_ia32_pgf77+authors_fc5      /
+ linux_ia32_sunf90+mpi_generic     \                                 (-mpi)
+ linux_ia32_sunf90+mpi_generic+mth  } --> linux_ia32_sunf90          (-mpi -omp)
+ linux_ia32_sunf90+mth             /                                 (-omp)
+
+ linux_ia64_efc+mpi                   --> linux_ia64_efc             (-mpi)
+ linux_ia64_open64+mth                --> linux_ia64_open64          (-omp)
+ linux_ia64_ifort+mpi_altix_jpl       --> linux_ia64_ifort_altix_jpl (-mpi)
+
+ linux_ppc64_xlf_bigred+mth      \                         (-omp, set NETCDF_ROOT)
+ linux_ppc64_xlf_bigred           \                              (set NETCDF_ROOT)
+ linux_ppc64_xlf_ncar+mth          }  --> linux_ppc64_xlf  (-omp, set NETCDF_ROOT)
+ linux_ppc64_xlf_ncar             /                              (set NETCDF_ROOT)
+ linux_ppc64_xlf+mth             /                         (-omp)
+ linux_ppc_xlf_bigred+mth         \                        (-omp, set NETCDF_ROOT)
+ linux_ppc_xlf_bigred              }  --> linux_ppc_xlf          (set NETCDF_ROOT)
+ linux_ppc_xlf+mth                /                        (-omp)
+
+ linux_alpha_g77+mpi                  --> linux_alpha_g77            (-mpi)
+ osf1_alpha_f77+mpi                   --> osf1_alpha_f77             (-mpi)
+
+ sp6+mpi_ncar                         --> sp6_ncar                   (-mpi)
+ sp4-32bit                            --> sp4
+ sp4+mpi                              --> sp4-64bit                  (-mpi)
+
+ sunos_sparc_sunf90+mpi_generic        \                             (-mpi)
+ sunos_sparc_sunf90+mpi_generic+mth     } --> sunos_sparc_sunf90     (-mpi -omp)
+ sunos_sparc_sunf90+mth                /                             (-omp)
+ sunos_sparc_sunf90_m64+mpi_generic    \                             (-mpi)
+ sunos_sparc_sunf90_m64+mpi_generic+mth } --> sunos_sparc_sunf90_m64 (-mpi -omp)
+ sunos_sparc_sunf90_m64+mth            /                             (-omp)
+
+ SUPER-UX_SX-6_sxmpif90+mpi_dkrz      --> SUPER-UX_SX-6_sx90_dkrz    (-mpi)
+ SUPER-UX_SX-8_sxf90+mpi_awi          --> SUPER-UX_SX-8_sxf90_awi    (-mpi)
+
+=====================================================================================
+
+_______________________________________________
+MITgcm-support mailing list
+MITgcm-support@mitgcm.org
+http://mitgcm.org/mailman/listinfo/mitgcm-support
+
