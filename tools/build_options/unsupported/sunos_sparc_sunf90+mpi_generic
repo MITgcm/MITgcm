@@ -1,23 +1,28 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sunos_sparc_sunf90+mth,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sunos_sparc_sunf90+mpi_generic,v 1.1 2011/09/29 16:25:55 jmc Exp $
 # $Name:  $
 
-FC=f77
-F90C=f90
-CC=cc
+#  Build options for the Sun fortran compiler with a generic MPI
+# DON'T FORGET to set environment variable MPI_INC_DIR to the include
+# directory of your MPI implementation
+
+FC=${FC:=mpif77}
+F90C=${F90C:=mpif90}
+CC=${CC:=mpicc}
 LINK=${F90C}
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
+DEFINES='-DWORDLENGTH=4'
 CPP='/usr/ccs/lib/cpp -P'
-NOOPTFLAGS='-O0 -g -m32 -u -r8const -xopenmp=noopt'
+NOOPTFLAGS='-O0 -g -m32 -u -r8const'
 NOOPTFILES=''
 EXTENDED_SRC_FLAG='-e'
+OMPFLAG='-xopenmp'
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover -xopenmp=noopt'
+    FFLAGS='-u -r8const -g -xs -C -xcommonchk -xcheck=init_local -fpover'
 else
-    FFLAGS='-u -r8const -xopenmp'
+    FFLAGS='-u -r8const'
 fi
 
 if test "x$IEEE" = x ; then
@@ -31,7 +36,7 @@ else
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m32 -xopenmp'
+CFLAGS='-O3 -m32'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -64,4 +69,10 @@ elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib'
 fi
+
+INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+MPIINCLUDEDIR="$MPI_INC_DIR"
+MPI_HEADER_FILES=${MPI_HEADER_FILES:='mpif.h mpiof.h'}
+MPI_HEADER_FILES_INC=${MPI_HEADER_FILES_INC:='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'}
 
