@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort10.1+mpi_generic,v 1.2 2010/03/21 17:59:13 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_ifort10.1+mpi_generic,v 1.1 2011/09/29 16:14:21 jmc Exp $
 #  $Name:  $
 #
 #  Constantinos Evangelinos
