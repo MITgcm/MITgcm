@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_ia32_gfortran+mpi,v 1.2 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/darwin_ia32_gfortran+mpi,v 1.1 2011/09/29 16:04:17 jmc Exp $
 # $Name:  $
 
 # tested on MacBook Pro with Leopard
