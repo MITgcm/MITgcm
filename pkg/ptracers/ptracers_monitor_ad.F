@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.4 2011/08/29 19:18:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.5 2011/09/30 18:43:57 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -9,7 +9,7 @@ C !ROUTINE: ADPTRACERS_MONITOR
 
 C !INTERFACE: ==========================================================
       SUBROUTINE ADPTRACERS_MONITOR(
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C writes out ptracer statistics
