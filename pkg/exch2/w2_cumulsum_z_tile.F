@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.2 2011/09/21 16:27:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.3 2011/10/03 12:45:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -37,6 +37,7 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_PARAMS.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "CUMULSUM.h"
 
@@ -61,6 +62,12 @@ C         all 4 needs to have the same length as MPI_DOUBLE_PRECISION
       INTEGER bi,bj
       INTEGER tN, tS
       Real*8  globalBuf(3,W2_maxNbTiles)
+#ifndef W2_CUMSUM_USE_MATRIX
+      Real*8 facetXYSum(2,W2_maxNbFacets)
+      Real*8 facet_CSum(  W2_maxNbFacets)
+      INTEGER fNx, fNy, nbTx, nbTy
+      INTEGER i, j
+#endif
 #ifdef ALLOW_USE_MPI
       INTEGER npe, np1
       INTEGER lbuf1, lbuf2, idest, itag, ready_to_receive
@@ -159,6 +166,7 @@ C--   Process 0 fills-in its local data
 
 C--   Cumulate Sum over all tiles:
 #ifdef W2_CUMSUM_USE_MATRIX
+C-    Using tile x tile matrix:
          DO tN = 1,exch2_nTiles
            globalBuf(3,tN) = 0.
            DO tS = 1,exch2_nTiles
@@ -168,7 +176,63 @@ C--   Cumulate Sum over all tiles:
            ENDDO
          ENDDO
 #else /* W2_CUMSUM_USE_MATRIX */
-         STOP 'ABNORMAL END: missing code in S/R W2_CUMULSUM_Z_TILE'
+C-    Cumulate per facet and then use facet x facet matrix:
+
+         DO j=1,W2_maxNbFacets
+           facetXYSum(1,j) = 0
+           facetXYSum(2,j) = 0
+           facet_CSum(j) = 0
+         ENDDO
+
+C-    First within each face:
+         DO j=1,nFacets
+          fNx = facet_dims(2*j-1)
+          fNy = facet_dims( 2*j )
+          IF ( fNx*fNy .GE. 1 ) THEN
+           nbTx = fNx/sNx
+           nbTy = fNy/sNy
+
+           DO bi=1,nbTx-1
+             tN = facet_owns(1,j) + bi-1
+             globalBuf(3,tN+1) = globalBuf(3,tN) + globalBuf(1,tN)
+           ENDDO
+           DO bj=1,nbTy-1
+            tS = facet_owns(1,j) - 1 + (bj-1)*nbTx
+            DO bi=1,nbTx
+             tN = tS + bi
+             globalBuf(3,tN+nbTx) = globalBuf(3,tN) + globalBuf(2,tN)
+            ENDDO
+           ENDDO
+
+C-    facet increment in X & Y dir
+           DO bi=1,nbTx
+            tN = facet_owns(1,j) + bi-1
+            facetXYSum(1,j) = facetXYSum(1,j) + globalBuf(1,tN)
+           ENDDO
+           DO bj=1,nbTy
+            tN = facet_owns(1,j) + (bj-1)*nbTx
+            facetXYSum(2,j) = facetXYSum(2,j) + globalBuf(2,tN)
+           ENDDO
+
+          ENDIF
+         ENDDO
+
+C-    Calculate cumulated sum at facet origin using facet matrix:
+         DO j=1,nFacets
+          DO i=1,nFacets
+           facet_CSum(j) = facet_CSum(j)
+     &                   + W2_cumSum_facet(1,i,j)*facetXYSum(1,i)
+     &                   + W2_cumSum_facet(2,i,j)*facetXYSum(2,i)
+          ENDDO
+         ENDDO
+
+C-    Finally, add cumulated sum at facet origin:
+         DO tN = 1,exch2_nTiles
+          j = exch2_myFace(tN)
+          IF ( j.NE.0 ) THEN
+            globalBuf(3,tN) = globalBuf(3,tN) + facet_CSum(j)
+          ENDIF
+         ENDDO
 #endif /* W2_CUMSUM_USE_MATRIX */
 
 C-    Value at Special location (e.g., Missing-Corner values)

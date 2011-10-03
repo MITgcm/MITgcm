@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_OPTIONS.h,v 1.5 2011/09/21 16:27:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_OPTIONS.h,v 1.6 2011/10/03 12:45:41 jmc Exp $
 C $Name:  $
 
 C CPP options file for EXCH2 package
@@ -22,6 +22,6 @@ C notes: for testing (allow to check that results are not affected)
 C Process Global Cumulated-Sum using a Tile x Tile (x 2) Matrix
 C notes: should be faster (vectorise) but storage of this matrix might
 C        become an issue on large set-up (with many tiles)
-#define W2_CUMSUM_USE_MATRIX
+#undef W2_CUMSUM_USE_MATRIX
 
 #endif /* W2_OPTIONS_H */
