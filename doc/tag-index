@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1508 2011/09/29 17:31:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1509 2011/10/03 12:48:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - alternative code (without tile x tile matrix) for cumulated (global) sum;
+    used as default; keep using matrix version in adjustment.cs-32x32x1.
 o tools/build_options:
   - after merging some MPI and/or multi-threads specific optfiles so that
     the modified default optfile support both built (using genmake2 -mpi
