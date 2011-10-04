@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.4 2011/04/20 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.5 2011/10/04 13:53:56 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -90,7 +90,7 @@ c        IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
          IF     ( fldName.EQ.'siTICE  '
      &                      .AND. tIceFlag.LE.1 ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+           WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &      ' restart with Tice from 1rst category'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
@@ -98,7 +98,7 @@ c        IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
      &                      .AND. tIceFlag.LE.2 ) THEN
 #ifdef SEAICE_MULTICATEGORY
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+           WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &      ' restart from single category Tice (copied to TICES)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 C      copy TICE -> TICES
@@ -120,7 +120,7 @@ C- Note: try to restart without Sigma1,2,12 (as if SEAICEuseEVPpickup=F)
 C        An alternative would be to restart only if SEAICEuseEVPpickup=F:
 C        if SEAICEuseEVPpickup then stop / else warning / endif
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+           WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &      ' restart without "',fldName,'" (set to zero)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
@@ -139,7 +139,7 @@ C        if SEAICEuseEVPpickup then stop / else warning / endif
 #ifdef SEAICE_AGE
          ELSEIF ( fldName.EQ.'siAGEt01' ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+           WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &                  ' restart without "',fldName,'" (set to zero)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
@@ -156,7 +156,7 @@ C        if SEAICEuseEVPpickup then stop / else warning / endif
              CALL PRINT_ERROR( msgBuf, myThid )
            ELSEIF ( .NOT.pickupStrictlyMatch ) THEN
              WRITE(msgBuf,'(2A,I3,A)')
-     &        '** WARNINGS ** SEAICE_CHECK_PICKUP:',
+     &        '** WARNING ** SEAICE_CHECK_PICKUP:',
      &        ' restart siTr=', siTrac,
      &        ' from IceAge (siTr=1 copied to IceAgeTr)'
              CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -191,7 +191,7 @@ C-    end nj loop
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK_PICKUP'
         ELSEIF ( warnCnts .GT. 0 ) THEN
-         WRITE(msgBuf,'(4A)') '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
+         WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP: ',
      &     'Will get only an approximated Restart'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
