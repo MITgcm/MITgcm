@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.62 2011/09/22 19:39:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.63 2011/10/04 13:53:18 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -899,11 +899,18 @@ C ITERATION END -----------------------------------------------------
      &        'Vice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
       ENDIF
-      IF ( doIterate4u )
-     &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (uIce)'
-      IF ( doIterate4v )
-     &   STOP 'ABNORMAL END: S/R SEAICE_LSR did not converge (vIce)'
 #endif /* ALLOW_DEBUG */
+      IF ( doIterate4u .OR. doIterate4v ) THEN
+        WRITE(msgBuf,'(2A,I10,A,I4,A)') '** WARNING ** SEAICE_LSR ',
+     &    '(it=', myIter, ',', ilcall,') did not converge :'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2(A,I6,0PF6.3,1PE14.6))')
+     &      ' nIt,wFU,dU=', ICOUNT1, WFAU, S1,
+     &    ' ; nIt,wFV,dV=', ICOUNT2, WFAV, S2
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 C     APPLY MASKS
       DO bj=myByLo(myThid),myByHi(myThid)
