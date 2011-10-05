@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1509 2011/10/03 12:48:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1510 2011/10/05 18:35:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - allow to specify initial seaice velocity from files (uIceFile,vIceFile)
 o pkg/exch2:
   - alternative code (without tile x tile matrix) for cumulated (global) sum;
     used as default; keep using matrix version in adjustment.cs-32x32x1.
