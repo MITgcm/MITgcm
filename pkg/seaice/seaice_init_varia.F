@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.61 2011/06/09 19:37:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.62 2011/10/05 18:33:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -33,12 +33,12 @@ C     === Global variables ===
 #endif
 
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
+C     myThid :: Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,k,bi,bj :: Loop counters
 
       INTEGER i, j, bi, bj
       _RL PSTAR
@@ -338,6 +338,27 @@ C--   Set model variables to initial/restart conditions
          ENDDO
         ENDDO
        ENDDO
+
+C--   Read initial sea-ice velocity from file (if available)
+       IF ( uIceFile .NE. ' ' )
+     &  CALL READ_FLD_XY_RL( uIceFile, ' ', uIce, 0, myThid )
+       IF ( vIceFile .NE. ' ' )
+     &  CALL READ_FLD_XY_RL( vIceFile, ' ', vIce, 0, myThid )
+       IF ( uIceFile .NE. ' ' .OR. vIceFile .NE. ' ' ) THEN
+#ifdef SEAICE_CGRID
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            uIce(i,j,bi,bj) = uIce(i,j,bi,bj)*seaiceMaskU(i,j,bi,bj)
+            vIce(i,j,bi,bj) = vIce(i,j,bi,bj)*seaiceMaskV(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* SEAICE_CGRID */
+        CALL EXCH_UV_XY_RL( uIce, vIce, .TRUE., myThid )
+       ENDIF
 
 C--   Read initial sea-ice thickness from file if available.
        IF ( HeffFile .NE. ' ' ) THEN

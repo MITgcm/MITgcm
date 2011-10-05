@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.99 2011/06/19 02:31:40 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.100 2011/10/05 18:33:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -101,10 +101,10 @@ C--   SEAICE parameters
      & SIsalFRAC, SIsal0, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     & AreaFile, HeffFile, HsnowFile, HsaltFile,
+     & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
-     & SEAICE_area_reg, SEAICE_hice_reg, 
+     & SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
@@ -282,6 +282,8 @@ C     to be consistent
       HsnowFile  = ' '
       HsaltFile  = ' '
       HeffFile   = ' '
+      uIceFile   = ' '
+      vIceFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
       SOLV_MAX_ITERS = 1500
@@ -593,7 +595,7 @@ C     retired parameter
      &  'S/R SEAICE_READPARMS: replaced by ',
      &  '"IceAgeTrFile(SEAICE_num)" array '
        CALL PRINT_ERROR( msgBuf, myThid )
-      ENDIF 
+      ENDIF
       IF ( areaMax .NE. UNSET_RL ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)')
@@ -636,7 +638,7 @@ C     retired parameter
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: replaced by ',
-     &  '"SEAICE_area_reg" for regularization' 
+     &  '"SEAICE_area_reg" for regularization'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( hiceMin .NE. UNSET_RL ) THEN
@@ -647,7 +649,7 @@ C     retired parameter
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: replaced by ',
-     &  '"SEAICE_hice_reg" for regularization' 
+     &  '"SEAICE_hice_reg" for regularization'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 

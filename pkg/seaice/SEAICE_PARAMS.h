@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.75 2011/06/19 02:31:40 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.76 2011/10/05 18:33:49 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -8,16 +8,16 @@ C     \==========================================================/
 
 C--   COMMON /SEAICE_PARM_L/ Logical parameters of sea ice model.
 C
-C     SEAICEwriteState  - If true, write sea ice state to file;
-C                         default is false.
-C     SEAICEuseDYNAMICS - If false, do not use dynamics;
-C                         default is to use dynamics.
-C     SEAICEuseTEM      - to use truncated ellipse method (see Geiger et al.
-C                         1998) set this parameter to true, default is false
-C     SEAICEuseEVP      - If false, use Zhangs LSR solver for VP equations
-C                         if true use elastic viscous plastic solver  
-C     SEAICEuseFREEDRIFT - If True use free drift velocity instead of EVP or LSR
-C     SEAICEuseEVPpickup - Set to false in order to start EVP solver with
+C     SEAICEwriteState  :: If true, write sea ice state to file;
+C                          default is false.
+C     SEAICEuseDYNAMICS :: If false, do not use dynamics;
+C                          default is to use dynamics.
+C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
+C                          1998) set this parameter to true, default is false
+C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
+C                          if true use elastic viscous plastic solver
+C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP or LSR
+C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
@@ -25,7 +25,7 @@ C                          of seaice
 C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
 C                          (default = .true. )
 C     SEAICEuseFlooding :: turn on scheme to convert submerged snow into ice
-C     SEAICEadvHeff     :: turn on advection of effective thickness 
+C     SEAICEadvHeff     :: turn on advection of effective thickness
 C                          (default = .true.)
 C     SEAICEadvArea     :: turn on advection of fraction area
 C                          (default = .true.)
@@ -55,7 +55,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
      &     SEAICEuseMetricTerms,
-     &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
+     &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
@@ -67,7 +67,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
      &     SEAICEuseMetricTerms,
-     &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
+     &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
@@ -77,22 +77,23 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
-C     LAD        - time stepping used for sea-ice advection:
-C                  1 = LEAPFROG,  2 = BACKWARD EULER.
-C     IMAX_TICE  - number of iterations for ice heat budget   10
-C     SOLV_MAX_ITERS   - maximum number of allowed solver iterations
-C     SOLV_NCHECK      - iteration interval for solver convergence test
-C     NPSEUDOTIMESTEPS - number of extra pseudo time steps (default = 0)
-C     SEAICEadvScheme  - sets the advection scheme for thickness and area
-C     SEAICEadvSchArea - sets the advection scheme for area
-C     SEAICEadvSchHeff - sets the advection scheme for effective thickness 
-C                        (=volume), snow thickness, and salt if available
-C     SEAICEadvSchSnow - sets the advection scheme for snow on sea-ice
-C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
-C     SEAICEadvSchAge  - sets the advection scheme for sea ice age
-C     SEAICEareaFormula - sets the formula used to increment area as 
-C                         a function of heff increment
-C     SEAICE_debugPointI - I,J index for seaice-specific debuggin
+C     LAD               :: time stepping used for sea-ice advection:
+C                          1 = LEAPFROG,  2 = BACKWARD EULER.
+C     IMAX_TICE         :: number of iterations for ice heat budget   10
+C     SOLV_MAX_ITERS    :: maximum number of allowed solver iterations
+C     SOLV_NCHECK       :: iteration interval for solver convergence test
+C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (default = 0)
+C     SEAICEadvScheme   :: sets the advection scheme for thickness and area
+C     SEAICEadvSchArea  :: sets the advection scheme for area
+C     SEAICEadvSchHeff  :: sets the advection scheme for effective thickness
+C                         (=volume), snow thickness, and salt if available
+C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
+C     SEAICEadvSchSalt  :: sets the advection scheme for sea ice salinity
+C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
+C     SEAICEadvSchAge   :: sets the advection scheme for sea ice age
+C     SEAICEareaFormula :: sets the formula used to increment area as
+C                          a function of heff increment
+C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
       INTEGER LAD, IMAX_TICE
@@ -108,7 +109,7 @@ C
       INTEGER SEAICEareaFormula
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
-      COMMON /SEAICE_PARM_I/ 
+      COMMON /SEAICE_PARM_I/
      &     LAD, IMAX_TICE,
      &     SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      &     SEAICEadvScheme,
@@ -124,10 +125,12 @@ C
       PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
-C     AreaFile        - File containing initial sea-ice concentration
-C     HsnowFile       - File containing initial snow thickness
-C     HsaltFile       - File containing initial sea ice salt content
-C     HeffFile        - File containing initial sea-ice thickness
+C     AreaFile          :: File containing initial sea-ice concentration
+C     HsnowFile         :: File containing initial snow thickness
+C     HsaltFile         :: File containing initial sea ice salt content
+C     HeffFile          :: File containing initial sea-ice thickness
+C     uIceFile          :: File containing initial sea-ice U comp. velocity
+C     vIceFile          :: File containing initial sea-ice V comp. velocity
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
 C        can mean large artificial fluxes of heat and freshwater in
@@ -137,93 +140,96 @@ C
       CHARACTER*(MAX_LEN_FNAM) HsnowFile
       CHARACTER*(MAX_LEN_FNAM) HsaltFile
       CHARACTER*(MAX_LEN_FNAM) HeffFile
+      CHARACTER*(MAX_LEN_FNAM) uIceFile
+      CHARACTER*(MAX_LEN_FNAM) vIceFile
       COMMON /SEAICE_PARM_C/
-     &   AreaFile, HsnowFile, HsaltFile, HeffFile
+     &   AreaFile, HsnowFile, HsaltFile, HeffFile,
+     &   uIceFile, vIceFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
-C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)
-C     SEAICE_deltaTdyn   - Seaice timestep for dynamic solver          (s)
-C     SEAICE_deltaTevp   - Seaice timestep for EVP solver              (s)
-C     SEAICE_elasticParm - parameter that sets relaxation timescale
-C                          tau = SEAICE_elasticParm * SEAICE_deltaTdyn
-C     SEAICE_evpTauRelax - relaxation timescale tau                    (s)
-C     SEAICE_evpDampC    - evp daming constant                         (kg/m^2)
-C     SEAICE_zetaMaxFac  - factor detrmining the maximum viscosity     (s)
+C     SEAICE_deltaTtherm :: Seaice timestep for thermodynamic equations (s)
+C     SEAICE_deltaTdyn   :: Seaice timestep for dynamic solver          (s)
+C     SEAICE_deltaTevp   :: Seaice timestep for EVP solver              (s)
+C     SEAICE_elasticParm :: parameter that sets relaxation timescale
+C                           tau = SEAICE_elasticParm * SEAICE_deltaTdyn
+C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
+C     SEAICE_evpDampC    :: evp daming constant                         (kg/m^2)
+C     SEAICE_zetaMaxFac  :: factor detrmining the maximum viscosity     (s)
 C                          (default = 5.e+12/2.e4 = 2.5e8)
-C     SEAICE_zetaMin     - lower bound for viscosity (default = 0)     (N s/m^2)
-C     SEAICE_monFreq     - SEAICE monitor frequency.                   (s)
-C     SEAICE_dumpFreq    - SEAICE dump frequency.                      (s)
-C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
-C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
-C     SEAICE_rhoAir      - density of air                              (kg/m^3)
-C     SEAICE_rhoIce      - density of sea ice                          (kg/m^3)
-C     SEAICE_rhoSnow     - density of snow                             (kg/m^3)
-C     ICE2WATR           - ratio of sea ice density to water density
-C     OCEAN_drag         - air-ocean drag coefficient
-C     SEAICE_cpAir       - specific heat of air                        (J/kg/K)
+C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)     (N s/m^2)
+C     SEAICE_monFreq     :: SEAICE monitor frequency.                   (s)
+C     SEAICE_dumpFreq    :: SEAICE dump frequency.                      (s)
+C     SEAICE_taveFreq    :: SEAICE time-averaging frequency.            (s)
+C     SEAICE_initialHEFF :: initial sea-ice thickness                   (m)
+C     SEAICE_rhoAir      :: density of air                              (kg/m^3)
+C     SEAICE_rhoIce      :: density of sea ice                          (kg/m^3)
+C     SEAICE_rhoSnow     :: density of snow                             (kg/m^3)
+C     ICE2WATR           :: ratio of sea ice density to water density
+C     OCEAN_drag         :: air-ocean drag coefficient
+C     SEAICE_cpAir       :: specific heat of air                        (J/kg/K)
 C
-C     SEAICE_drag        - air-ice drag coefficient
-C     SEAICE_waterDrag   - water-ice drag coefficient * water density
-C     SEAICE_dryIceAlb   - winter albedo
-C     SEAICE_wetIceAlb   - summer albedo
-C     SEAICE_drySnowAlb  - dry snow albedo
-C     SEAICE_wetSnowAlb  - wet snow albedo
-C     HO                 - demarcation thickness between thin and
-C                          thick ice: HO is a key ice-growth parameter
+C     SEAICE_drag        :: air-ice drag coefficient
+C     SEAICE_waterDrag   :: water-ice drag coefficient * water density
+C     SEAICE_dryIceAlb   :: winter albedo
+C     SEAICE_wetIceAlb   :: summer albedo
+C     SEAICE_drySnowAlb  :: dry snow albedo
+C     SEAICE_wetSnowAlb  :: wet snow albedo
+C     HO                 :: demarcation thickness between thin and
+C                           thick ice: HO is a key ice-growth parameter
 C
-C     SEAICE_drag_south       - Southern Ocean SEAICE_drag
-C     SEAICE_waterDrag_south  - Southern Ocean SEAICE_waterDrag
-C     SEAICE_dryIceAlb_south  - Southern Ocean SEAICE_dryIceAlb
-C     SEAICE_wetIceAlb_south  - Southern Ocean SEAICE_wetIceAlb
-C     SEAICE_drySnowAlb_south - Southern Ocean SEAICE_drySnowAlb
-C     SEAICE_wetSnowAlb_south - Southern Ocean SEAICE_wetSnowAlb
-C     HO_south                - Southern Ocean HO
+C     SEAICE_drag_south       :: Southern Ocean SEAICE_drag
+C     SEAICE_waterDrag_south  :: Southern Ocean SEAICE_waterDrag
+C     SEAICE_dryIceAlb_south  :: Southern Ocean SEAICE_dryIceAlb
+C     SEAICE_wetIceAlb_south  :: Southern Ocean SEAICE_wetIceAlb
+C     SEAICE_drySnowAlb_south :: Southern Ocean SEAICE_drySnowAlb
+C     SEAICE_wetSnowAlb_south :: Southern Ocean SEAICE_wetSnowAlb
+C     HO_south                :: Southern Ocean HO
 C
-C     SEAICE_waterAlbedo - water albedo
-C     SEAICE_strength    - sea-ice strength Pstar
-C     SEAICE_eccen       - sea-ice eccentricity of the elliptical yield curve
-C     SEAICE_lhFusion    - latent heat of fusion for ice and snow (J/kg)
-C     SEAICE_lhEvap      - latent heat of evaporation for water (J/kg)
-C     SEAICE_dalton      - Dalton number (= sensible heat transfer coefficient)
-C     SEAICE_iceConduct  - sea-ice conductivity
-C     SEAICE_snowConduct - snow conductivity
-C     SEAICE_emissivity  - Stefan-Boltzman constant * emissivity
-C     SEAICE_snowThick   - cutoff snow thickness
-C     SEAICE_shortwave   - penetration shortwave radiation factor
-C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
-C     SIsalFRAC          - initial salinity of sea ice defined as a
-C                          fraction of the model surface level salinity at the 
-C                          tiem of freezing
-C     SIsal0             - prescribed salinity of seaice (in g/kg).
-C     SEAICE_gamma_t     - timescale for melting ice from a warm mixed layer (s),
-C                          3d = 259200s is a reasonable value, default=unset
-C     SEAICE_gamma_t_frz - timescale for freezing ice from a cold mixed layer (s),
-C                          3h = 10800s is a reasonable value, default=SEAICE_gamma_t
-C     SEAICE_availHeatFrac - Fraction of surface level heat content used to
+C     SEAICE_waterAlbedo :: water albedo
+C     SEAICE_strength    :: sea-ice strength Pstar
+C     SEAICE_eccen       :: sea-ice eccentricity of the elliptical yield curve
+C     SEAICE_lhFusion    :: latent heat of fusion for ice and snow (J/kg)
+C     SEAICE_lhEvap      :: latent heat of evaporation for water (J/kg)
+C     SEAICE_dalton      :: Dalton number (= sensible heat transfer coefficient)
+C     SEAICE_iceConduct  :: sea-ice conductivity
+C     SEAICE_snowConduct :: snow conductivity
+C     SEAICE_emissivity  :: Stefan-Boltzman constant * emissivity
+C     SEAICE_snowThick   :: cutoff snow thickness
+C     SEAICE_shortwave   :: penetration shortwave radiation factor
+C     SEAICE_freeze      :: FREEZING TEMP. OF SEA WATER
+C     SIsalFRAC          :: salinity of newly formed sea ice defined as a
+C                           fraction of the model surface level salinity
+C                           at the time of freezing
+C     SIsal0             :: prescribed salinity of seaice (in g/kg).
+C     SEAICE_gamma_t     :: timescale for melting ice from a warm mixed layer (s),
+C                           3d = 259200s is a reasonable value, default=unset
+C     SEAICE_gamma_t_frz :: timescale for freezing ice from a cold mixed layer (s),
+C                           3h = 10800s is a reasonable value, default=SEAICE_gamma_t
+C     SEAICE_availHeatFrac :: Fraction of surface level heat content used to
 C                          melt ice; default=1 if SEAICE_gamma_t is unset, otherwise
 C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t
-C     SEAICE_availHeatFracFrz - Fraction of surface level heat content used to
+C     SEAICE_availHeatFracFrz :: Fraction of surface level heat content used to
 C                          freeze ice; default=SEAICE_availHeatFrac
 C                          if SEAICE_gamma_t_frz is unset, otherwise
 C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t_frz
-C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
-C     LSR_ERROR          - sets accuracy of LSR solver
-C     DIFF1              - parameter used in advect.F
-C     SEAICE_area_max    - usually set to 1. Seeting areaMax below 1. specifies 
-C                          the minimun amount of leads (1-areaMax) in the ice pack.
-C     SEAICE_area_floor  - usually set to 1x10^-5. Specifies 
-C                          a minimun ice fraction in the ice pack.
-C     SEAICE_area_reg    - usually set to 1x10^-5. Specifies  
-C                          a minimun ice fraction for the purposes of regularization
-C     SEAICE_hice_reg    - usually set to 5 cm. Specifies  
-C                          a minimun ice thickness for the purposes of regularization
-C     SEAICEdiffKhArea - sets the diffusivity for area (m^2/s)
-C     SEAICEdiffKhHeff - sets the diffusivity for effective thickness (m^2/s)
-C     SEAICEdiffKhSnow - sets the diffusivity for snow on sea-ice (m^2/s)
-C     SEAICEdiffKhSalt - sets the diffusivity for sea ice salinity (m^2/s)
-C     SEAICEdiffKhAge  - sets the diffusivity for sea ice age (m^2/s)
-C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
-C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
+C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
+C     LSR_ERROR          :: sets accuracy of LSR solver
+C     DIFF1              :: parameter used in advect.F
+C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1. specifies
+C                           the minimun amount of leads (1-areaMax) in the ice pack.
+C     SEAICE_area_floor  :: usually set to 1x10^-5. Specifies a minimun
+C                           ice fraction in the ice pack.
+C     SEAICE_area_reg    :: usually set to 1x10^-5. Specifies a minimun
+C                           ice fraction for the purposes of regularization
+C     SEAICE_hice_reg    :: usually set to 5 cm. Specifies a minimun
+C                           ice thickness for the purposes of regularization
+C     SEAICEdiffKhArea   :: sets the diffusivity for area (m^2/s)
+C     SEAICEdiffKhHeff   :: sets the diffusivity for effective thickness (m^2/s)
+C     SEAICEdiffKhSnow   :: sets the diffusivity for snow on sea-ice (m^2/s)
+C     SEAICEdiffKhSalt   :: sets the diffusivity for sea ice salinity (m^2/s)
+C     SEAICEdiffKhAge    :: sets the diffusivity for sea ice age (m^2/s)
+C     SEAICE_airTurnAngle   :: turning angles of air-ice interfacial stress
+C     SEAICE_waterTurnAngle :: and ice-water interfacial stress (in degrees)
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
@@ -244,7 +250,7 @@ C
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
       _RL OCEAN_drag, LSR_ERROR, DIFF1
-      _RL SEAICE_area_reg, SEAICE_hice_reg 
+      _RL SEAICE_area_reg, SEAICE_hice_reg
       _RL SEAICE_area_floor, SEAICE_area_max
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
@@ -265,27 +271,28 @@ C
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
-     &    SEAICE_lhFusion, SEAICE_lhEvap, 
+     &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SIsalFRAC, SIsal0, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     &    OCEAN_drag, LSR_ERROR, DIFF1, 
-     &    SEAICE_area_reg, SEAICE_hice_reg, 
+     &    OCEAN_drag, LSR_ERROR, DIFF1,
+     &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt, SEAICEdiffKhAge,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
-C     MAX_HEFF   - maximum ice thickness     (m)
-C     MIN_ATEMP  - minimum air temperature   (deg C)
-C     MIN_LWDOWN - minimum downward longwave (W/m^2)
-C     MAX_TICE   - maximum ice temperature   (deg C)
-C     MIN_TICE   - minimum ice temperature   (deg C)
-C     SEAICE_EPS, SEAICE_EPS_SQ - used to reduce derivative singularities
+C     MAX_HEFF          :: maximum ice thickness     (m)
+C     MIN_ATEMP         :: minimum air temperature   (deg C)
+C     MIN_LWDOWN        :: minimum downward longwave (W/m^2)
+C     MAX_TICE          :: maximum ice temperature   (deg C)
+C     MIN_TICE          :: minimum ice temperature   (deg C)
+C     SEAICE_EPS        :: small number used to reduce derivative singularities
+C     SEAICE_EPS_SQ     :: small number square
 C
       _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
       _RL SEAICE_EPS, SEAICE_EPS_SQ
@@ -297,14 +304,14 @@ C--   Constants used by sea-ice model
       _RL         ZERO           , ONE           , TWO
       parameter ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
       _RL         QUART            , HALF
-      parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
+      parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 )
       _RL siEps
       parameter ( siEps = 1. _d -5 )
 
 C--   identifiers for advected properties
       INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW
       INTEGER GAD_SALT,GAD_SITR
-      PARAMETER ( GAD_HEFF  = 1, 
+      PARAMETER ( GAD_HEFF  = 1,
      &            GAD_AREA  = 2,
      &            GAD_SNOW  = 3,
      &            GAD_SALT  = 4,
