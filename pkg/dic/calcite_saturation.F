@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.10 2010/04/12 20:07:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.11 2011/10/07 21:36:39 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -105,14 +105,15 @@ CMICK - SO NOW WE ITERATE, UPDATING THE ESTIMATE OF pH and CO3--
 CMICK - SINCE WE CALL THIS FOR DEEP OCEAN INFREQUENTLY (MONTHLY?)
 CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
              DO CO3iter = 1, CO3itermax
-               CALL CALC_PCO2_APPROX_CO3(
+               CALL CALC_PCO2_APPROX(
      I          theta(i,j,k,bi,bj),salt(i,j,k,bi,bj),
      I          diclocal, po4local,
      I          silicaTEST,alklocal,
      I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I          ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
      I          aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I          aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
+     I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
+     I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj,myIter,myThid )

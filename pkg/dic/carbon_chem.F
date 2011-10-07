@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.22 2011/05/05 22:23:27 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.23 2011/10/07 21:36:39 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -6,7 +6,6 @@ C $Name:  $
 C--  File carbon_chem.F:
 C--   Contents
 C--   o CALC_PCO2
-C--   o CALC_PCO2_APPROX_CO3
 C--   o CALC_PCO2_APPROX
 C--   o CARBON_COEFFS
 C--   o CARBON_COEFFS_PRESSURE_DEP
@@ -332,155 +331,6 @@ c       Reconvert from mol/kg -> mol/m^3
         END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C !ROUTINE: CALC_PCO2_APPROX_CO3
-
-C !INTERFACE: ==========================================================
-       SUBROUTINE CALC_PCO2_APPROX_CO3(
-     I                       t,s,diclocal,pt,sit,ta,
-     I                       k1local,k2local,
-     I                       k1plocal,k2plocal,k3plocal,
-     I                       kslocal,kblocal,kwlocal,
-     I                       ksilocal,kflocal,
-     I                       fflocal,btlocal,stlocal,ftlocal,
-     U                       pHlocal,pCO2surfloc,co3local,
-     I                       i,j,k,bi,bj,myIter,myThid )
-
-C !DESCRIPTION:
-C     *==========================================================*
-C     | SUBROUTINE CALC_PCO2_APPROX_CO3                          |
-C     *==========================================================*
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-CC  New efficient pCO2 solver, Mick Follows         CC
-CC                             Taka Ito             CC
-CC                             Stephanie Dutkiewicz CC
-CC  20 April 2003                                   CC
-CC  ADD CO3 ESTIMATION AND PASS OUT                 CC
-CC  Karsten Friis, Mick Follows                     CC
-CC  1 sep 04                                        CC
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-
-C !USES: ===============================================================
-      IMPLICIT NONE
-
-C     == GLobal variables ==
-#include "SIZE.h"
-#include "DYNVARS.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
-#include "DIC_VARS.h"
-
-C     == Routine arguments ==
-C       diclocal = total inorganic carbon (mol/m^3)
-C             where 1 T = 1 metric ton = 1000 kg
-C       ta  = total alkalinity (eq/m^3)
-C       pt  = inorganic phosphate (mol/^3)
-C       sit = inorganic silicate (mol/^3)
-C       t   = temperature (degrees C)
-C       s   = salinity (PSU)
-        _RL  t, s, pt, sit, ta
-        _RL  pCO2surfloc, diclocal, pHlocal
-        _RL  fflocal, btlocal, stlocal, ftlocal
-        _RL  k1local, k2local
-        _RL  k1plocal, k2plocal, k3plocal
-        _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
-        INTEGER i,j,k,bi,bj,myIter
-        INTEGER myThid
-CEOP
-
-C     == Local variables ==
-        _RL  phguess
-        _RL  cag
-        _RL  bohg
-        _RL  hguess
-        _RL  stuff
-        _RL  gamm
-        _RL  hnew
-        _RL  co2s
-        _RL  h3po4g, h2po4g, hpo4g, po4g
-        _RL  siooh3g
-c carbonate
-        _RL  co3local
-
-
-c ---------------------------------------------------------------------
-C Change units from the input of mol/m^3 -> mol/kg:
-c (1 mol/m^3)  x (1 m^3/1024.5 kg)
-c where the ocean mean surface density is 1024.5 kg/m^3
-c Note: mol/kg are actually what the body of this routine uses
-c for calculations.  Units are reconverted back to mol/m^3 at the
-c end of this routine.
-c To convert input in mol/m^3 -> mol/kg
-        pt=pt*permil
-        sit=sit*permil
-        ta=ta*permil
-        diclocal=diclocal*permil
-c ---------------------------------------------------------------------
-c set first guess and brackets for [H+] solvers
-c first guess (for newton-raphson)
-        phguess = phlocal
-cmick - new approx method
-cmick - make estimate of htotal (hydrogen ion conc) using
-cmick   appromate estimate of CA, carbonate alkalinity
-        hguess = 10.0**(-phguess)
-cmick - first estimate borate contribution using guess for [H+]
-        bohg = btlocal*kblocal/(hguess+kblocal)
-
-cmick - first estimate of contribution from phosphate
-cmick based on Dickson and Goyet
-        stuff = hguess*hguess*hguess
-     &           + (k1plocal*hguess*hguess)
-     &           + (k1plocal*k2plocal*hguess)
-     &           + (k1plocal*k2plocal*k3plocal)
-        h3po4g = (pt*hguess*hguess*hguess) / stuff
-        h2po4g = (pt*k1plocal*hguess*hguess) / stuff
-        hpo4g  = (pt*k1plocal*k2plocal*hguess) / stuff
-        po4g   = (pt*k1plocal*k2plocal*k3plocal) / stuff
-
-cmick - estimate contribution from silicate
-cmick based on Dickson and Goyet
-        siooh3g = sit*ksilocal / (ksilocal + hguess)
-
-cmick - now estimate carbonate alkalinity
-        cag = ta - bohg - (kwlocal/hguess) + hguess
-     &           - hpo4g - 2.0*po4g + h3po4g
-     &           - siooh3g
-
-cmick - now evaluate better guess of hydrogen ion conc
-cmick   htotal = [H+], hydrogen ion conc
-        gamm  = diclocal/cag
-        stuff = (1.0-gamm)*(1.0-gamm)*k1local*k1local
-     &          - 4.0*k1local*k2local*(1.0-2.0*gamm)
-        hnew  = 0.5*( (gamm-1.0)*k1local + sqrt(stuff) )
-cmick - now determine [CO2*]
-        co2s  = diclocal/
-     &   (1.0 + (k1local/hnew) + (k1local*k2local/(hnew*hnew)))
-cmick - return update pH to main routine
-        phlocal = -log10(hnew)
-
-c NOW EVALUATE CO32-, carbonate ion concentration
-c used in determination of calcite compensation depth
-c Karsten Friis & Mick - Sep 2004
-        co3local = k1local*k2local*diclocal /
-     &         (hnew*hnew + k1local*hnew + k1local*k2local)
-
-c ---------------------------------------------------------------
-c surface pCO2 (following Dickson and Goyet, DOE...)
-        pCO2surfloc = co2s/fflocal
-
-C ----------------------------------------------------------------
-c Reconvert from mol/kg -> mol/m^3
-        pt=pt/permil
-        sit=sit/permil
-        ta=ta/permil
-        diclocal=diclocal/permil
-
-        RETURN
-        END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C !ROUTINE: CALC_PCO2_APPROX
@@ -494,20 +344,21 @@ C !INTERFACE: ==========================================================
      I                       ksilocal,kflocal,
      I                       k0local, fugflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
-     U                       pHlocal,pCO2surfloc,
+     U                       pHlocal,pCO2surfloc,co3local,
      I                       i,j,k,bi,bj,myIter,myThid )
 
 C !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE CALC_PCO2_APPROX                              |
 C     *==========================================================*
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-CC  New efficient pCO2 solver, Mick Follows         CC
-CC                             Taka Ito             CC
-CC                             Stephanie Dutkiewicz CC
-CC  20 April 2003                                   CC
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C Apr 2011: fix vapour bug (following Bennington)
+C     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C     C  New efficient pCO2 solver, Mick Follows         CC
+C     C                             Taka Ito             CC
+C     C                             Stephanie Dutkiewicz CC
+C     C  20 April 2003                                   CC
+C     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C      Apr 2011: fix vapour bug (following Bennington)
+C      Oct 2011: add CO3 extimation and pass out
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -536,6 +387,7 @@ C       s   = salinity (PSU)
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
         _RL  k0local, fugflocal
+        _RL  co3local
         INTEGER i,j,k,bi,bj,myIter
         INTEGER myThid
 CEOP
@@ -552,8 +404,6 @@ C     == Local variables ==
         _RL  h3po4g, h2po4g, hpo4g, po4g
         _RL  siooh3g
         _RL  fco2
-c carbonate
-c       _RL  co3local
 
 
 c ---------------------------------------------------------------------
@@ -614,8 +464,8 @@ cmick - return update pH to main routine
 c NOW EVALUATE CO32-, carbonate ion concentration
 c used in determination of calcite compensation depth
 c Karsten Friis & Mick - Sep 2004
-c       co3local = k1local*k2local*diclocal /
-c    &         (hnew*hnew + k1local*hnew + k1local*k2local)
+        co3local = k1local*k2local*diclocal /
+     &         (hnew*hnew + k1local*hnew + k1local*k2local)
 
 c ---------------------------------------------------------------
 c surface pCO2 (following Dickson and Goyet, DOE...)

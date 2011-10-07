@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.25 2010/01/02 22:59:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.26 2011/10/07 21:36:39 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -188,7 +188,7 @@ C- Carbonate sink
 C carbonate
 #ifdef CAR_DISS
 C dissolution only below saturation horizon
-C code following methid by Karsten Friis
+C code following method by Karsten Friis
          nCALCITEstep = 3600
          IF(myIter .lt. (nIter0+5) .or.
      &               mod(myIter,nCALCITEstep) .eq. 0)THEN

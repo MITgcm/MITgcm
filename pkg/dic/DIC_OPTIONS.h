@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.7 2011/04/20 20:35:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.8 2011/10/07 21:36:39 dfer Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -23,6 +23,9 @@ c atmospheric model
 
 C put back bugs related to Water-Vapour in carbonate chemistry & air-sea fluxes
 #undef WATERVAP_BUG
+
+C dissolution only below saturation horizon following method by Karsten Friis
+#undef CAR_DISS
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */
