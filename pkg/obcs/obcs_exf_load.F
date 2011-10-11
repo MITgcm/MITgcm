@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.4 2011/09/02 18:23:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.5 2011/10/11 02:04:14 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -168,7 +168,7 @@ C     == end of interface ==
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-C     !ROUTINE: OBCS_EXF_LOAD
+C     !ROUTINE: OBCS_EXF_READ_XZ
 C     !INTERFACE:
       SUBROUTINE OBCS_EXF_READ_XZ (
      I     obcsstartdate, obcsperiod,
@@ -401,7 +401,7 @@ c     get record numbers and interpolation factor
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-C     !ROUTINE: OBCS_EXF_LOAD
+C     !ROUTINE: OBCS_EXF_READ_YZ
 C     !INTERFACE:
       SUBROUTINE OBCS_EXF_READ_YZ (
      I     obcsstartdate, obcsperiod,

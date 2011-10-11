@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_obcs_output.F,v 1.2 2011/05/24 20:27:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_obcs_output.F,v 1.3 2011/10/11 02:05:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
 #endif
 
 CBOP
-C     !ROUTINE: OBCS_OUTPUT
+C     !ROUTINE: SEAICE_OBCS_OUTPUT
 
 C     !INTERFACE:
       SUBROUTINE SEAICE_OBCS_OUTPUT( myTime, myIter, myThid )
