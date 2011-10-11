@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.9 2006/03/20 15:14:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.10 2011/10/11 23:02:39 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
 
-      subroutine cal_readparms( mythid )
+      SUBROUTINE CAL_READPARMS( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cal_readparms
@@ -56,15 +56,17 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "cal.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+C     myThid       :: my Thread Id number
+      INTEGER myThid
 
+c     == local variables ==
 c     modstart        - start time of the model integration
 c     modend          - end time of the model integration
 c     moditerini      - initial iteration number of the model
 c     moditerend      - last iteration number of the model
 c     modstep         - timestep of the numerical model
 c     modintsteps     - number of timesteps that are to be performed.
-c     mythid          - number of this instance of the subrotuine.
 
       _RL     modstart
       _RL     modend
@@ -72,9 +74,6 @@ c     mythid          - number of this instance of the subrotuine.
       integer moditerini
       integer moditerend
       integer modintsteps
-      integer mythid
-
-c     == local variables ==
 
       integer errio
       integer ierr
@@ -86,7 +85,7 @@ c     Variables related to the calendar tool.
       character*(9) TheCalendar
       integer       iUnit
 
-      character*(max_len_mbuf) msgbuf
+      character*(max_len_mbuf) msgBuf
       character*(max_len_prec) record
 
 c     == external ==
@@ -106,6 +105,9 @@ c     (version 0.1.3 >> START << )
 
 c     (version 0.1.3 >> END << )
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CAL_READPARMS',myThid)
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -129,7 +131,7 @@ c       Next, read the calendar data file.
 
         READ(unit = iUnit, nml = cal_nml)
 
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &     'CAL_READPARMS: finished reading data.cal'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                SQUEEZE_RIGHT , 1)
@@ -159,15 +161,19 @@ c       parameters.
      I                moditerini,
      I                moditerend,
      I                modintsteps,
-     I                mythid
+     I                myThid
      &              )
 
-        call cal_Summary( mythid )
+        call cal_Summary( myThid )
 
       _END_MASTER(myThid)
 
 c     Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-      return
-      end
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CAL_READPARMS',myThid)
+#endif
+
+      RETURN
+      END
