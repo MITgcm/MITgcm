@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.17 2011/05/25 00:48:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.18 2011/10/12 02:53:58 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -40,18 +40,25 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER date_array(4), difftime(4), yearStartDate(4)
 
-c     Complete the start date specifications for the forcing
-c     fields to get a complete calendar date array.
-c     FLDstartdate, for FLD = { uwind, vwind, wspeed, etc. },
-c     returns time in seconds of first FLD record from the
-c     beginning of the model integration or, if useYearlyFields,
-c     from the beginning of the year.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('EXF_INIT_FIXED',myThid)
+#endif
+
+C     Complete the start date specifications for the forcing
+C     fields to get a complete calendar date array.
+C     FLDstartdate, for FLD = { uwind, vwind, wspeed, etc. },
+C     returns time in seconds of first FLD record from the
+C     beginning of the model integration or, if useYearlyFields,
+C     from the beginning of the year.
 
       _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_ATM_WIND
       IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( uwindstartdate1, uwindstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE uwind',myThid)
+# endif
+       CALL CAL_FULLDATE  ( uwindstartdate1, uwindstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -67,7 +74,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( vwindfile .NE. ' ' .AND. vwindperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( vwindstartdate1, vwindstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE vwind',myThid)
+# endif
+       CALL CAL_FULLDATE  ( vwindstartdate1, vwindstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -84,7 +94,10 @@ c     from the beginning of the year.
       ENDIF
 #endif /* ALLOW_ATM_WIND */
       IF ( wspeedfile .NE. ' ' .AND. wspeedperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( wspeedstartdate1, wspeedstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE wspeed',myThid)
+# endif
+       CALL CAL_FULLDATE  ( wspeedstartdate1, wspeedstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -100,7 +113,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( ustressfile .NE. ' ' .AND. ustressperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( ustressstartdate1, ustressstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE ustress',myThid)
+# endif
+       CALL CAL_FULLDATE  ( ustressstartdate1, ustressstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -116,7 +132,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( vstressfile .NE. ' ' .AND. vstressperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( vstressstartdate1, vstressstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE vstress',myThid)
+# endif
+       CALL CAL_FULLDATE  ( vstressstartdate1, vstressstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -134,7 +153,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_ATM_TEMP
       IF ( atempfile .NE. ' ' .AND. atempperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( atempstartdate1, atempstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE atemp',myThid)
+# endif
+       CALL CAL_FULLDATE  ( atempstartdate1, atempstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -150,7 +172,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( aqhfile .NE. ' ' .AND. aqhperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( aqhstartdate1, aqhstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE aqh',myThid)
+# endif
+       CALL CAL_FULLDATE  ( aqhstartdate1, aqhstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -166,7 +191,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( lwfluxfile .NE. ' ' .AND. lwfluxperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( lwfluxstartdate1, lwfluxstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE lwflux',myThid)
+# endif
+       CALL CAL_FULLDATE  ( lwfluxstartdate1, lwfluxstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -182,7 +210,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( precipfile .NE. ' ' .AND. precipperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( precipstartdate1, precipstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE precip',myThid)
+# endif
+       CALL CAL_FULLDATE  ( precipstartdate1, precipstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -198,7 +229,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( snowprecipfile .NE. ' ' .AND. snowprecipperiod .GT. 0. ) THEN
-       CALL cal_FullDate( snowprecipstartdate1, snowprecipstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE snowprecip',myThid)
+# endif
+       CALL CAL_FULLDATE( snowprecipstartdate1, snowprecipstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -215,7 +249,10 @@ c     from the beginning of the year.
       ENDIF
 #else /* ifndef ALLOW_ATM_TEMP */
       IF ( hfluxfile .NE. ' ' .AND. hfluxperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( hfluxstartdate1, hfluxstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE hflux',myThid)
+# endif
+       CALL CAL_FULLDATE  ( hfluxstartdate1, hfluxstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -231,7 +268,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( sfluxfile .NE. ' ' .AND. sfluxperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( sfluxstartdate1, sfluxstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE sflux',myThid)
+# endif
+       CALL CAL_FULLDATE  ( sfluxstartdate1, sfluxstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -250,7 +290,10 @@ c     from the beginning of the year.
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
       IF ( swfluxfile .NE. ' ' .AND. swfluxperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( swfluxstartdate1, swfluxstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE swflux',myThid)
+# endif
+       CALL CAL_FULLDATE  ( swfluxstartdate1, swfluxstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -269,7 +312,10 @@ c     from the beginning of the year.
 
 #ifdef EXF_READ_EVAP
       IF ( evapfile .NE. ' ' .AND. evapperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( evapstartdate1, evapstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE evap',myThid)
+# endif
+       CALL CAL_FULLDATE  ( evapstartdate1, evapstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -288,7 +334,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_RUNOFF
       IF ( runofffile .NE. ' ' .AND. runoffperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( runoffstartdate1, runoffstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE runoff',myThid)
+# endif
+       CALL CAL_FULLDATE  ( runoffstartdate1, runoffstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -307,7 +356,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_ICEFRONT
       IF ( sgrunofffile .NE. ' ' .AND. sgrunoffperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( sgrunoffstartdate1, sgrunoffstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE sgrunoff',myThid)
+# endif
+       CALL CAL_FULLDATE  ( sgrunoffstartdate1, sgrunoffstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -326,7 +378,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( swdownstartdate1, swdownstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE swdown',myThid)
+# endif
+       CALL CAL_FULLDATE  ( swdownstartdate1, swdownstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -342,7 +397,10 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
       IF ( lwdownfile .NE. ' ' .AND. lwdownperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( lwdownstartdate1, lwdownstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE lwdown',myThid)
+# endif
+       CALL CAL_FULLDATE  ( lwdownstartdate1, lwdownstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -361,7 +419,10 @@ c     from the beginning of the year.
 
 #ifdef ATMOSPHERIC_LOADING
       IF ( apressurefile .NE. ' ' .AND. apressureperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( apressurestartdate1,  apressurestartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE apressure',myThid)
+# endif
+       CALL CAL_FULLDATE  ( apressurestartdate1,  apressurestartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -380,7 +441,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_ICE_AREAMASK
       IF ( areamaskfile .NE. ' ' .AND. areamaskperiod .GT. 0. ) THEN
-       CALL cal_FullDate  ( areamaskstartdate1,  areamaskstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE areamask',myThid)
+# endif
+       CALL CAL_FULLDATE  ( areamaskstartdate1,  areamaskstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -398,8 +462,11 @@ c     from the beginning of the year.
 #endif /* ALLOW_ICE_AREAMASK */
 
 #ifdef ALLOW_OBCS
-      IF ( obcsNperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( obcsNstartdate1, obcsNstartdate2,
+      IF ( obcsNperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsN',myThid)
+# endif
+       CALL CAL_FULLDATE  ( obcsNstartdate1, obcsNstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -414,8 +481,11 @@ c     from the beginning of the year.
         obcsNstartdate   =  modelstart + obcsNstartdate
        ENDIF
       ENDIF
-      IF ( obcsSperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( obcsSstartdate1, obcsSstartdate2,
+      IF ( obcsSperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsS',myThid)
+# endif
+       CALL CAL_FULLDATE  ( obcsSstartdate1, obcsSstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -430,8 +500,11 @@ c     from the beginning of the year.
         obcsSstartdate   =  modelstart + obcsSstartdate
        ENDIF
       ENDIF
-      IF ( obcsEperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( obcsEstartdate1, obcsEstartdate2,
+      IF ( obcsEperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsE',myThid)
+# endif
+       CALL CAL_FULLDATE  ( obcsEstartdate1, obcsEstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -446,8 +519,11 @@ c     from the beginning of the year.
         obcsEstartdate   =  modelstart + obcsEstartdate
        ENDIF
       ENDIF
-      IF ( obcsWperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( obcsWstartdate1, obcsWstartdate2,
+      IF ( obcsWperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsW',myThid)
+# endif
+       CALL CAL_FULLDATE  ( obcsWstartdate1, obcsWstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -463,8 +539,11 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
 # ifdef ALLOW_SEAICE
-      IF ( siobNperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( siobNstartdate1, siobNstartdate2,
+      IF ( siobNperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobN',myThid)
+# endif
+       CALL CAL_FULLDATE  ( siobNstartdate1, siobNstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -479,8 +558,11 @@ c     from the beginning of the year.
         siobNstartdate   =  modelstart + siobNstartdate
        ENDIF
       ENDIF
-      IF ( siobSperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( siobSstartdate1, siobSstartdate2,
+      IF ( siobSperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobS',myThid)
+# endif
+       CALL CAL_FULLDATE  ( siobSstartdate1, siobSstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -495,8 +577,11 @@ c     from the beginning of the year.
         siobSstartdate   =  modelstart + siobSstartdate
        ENDIF
       ENDIF
-      IF ( siobEperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( siobEstartdate1, siobEstartdate2,
+      IF ( siobEperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobE',myThid)
+# endif
+       CALL CAL_FULLDATE  ( siobEstartdate1, siobEstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -511,8 +596,11 @@ c     from the beginning of the year.
         siobEstartdate   =  modelstart + siobEstartdate
        ENDIF
       ENDIF
-      IF ( siobWperiod .GT. 0 ) THEN
-       CALL cal_FullDate  ( siobWstartdate1, siobWstartdate2,
+      IF ( siobWperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobW',myThid)
+# endif
+       CALL CAL_FULLDATE  ( siobWstartdate1, siobWstartdate2,
      &      date_array, myThid )
        IF ( useOBCSYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -532,7 +620,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_CLIMSST_RELAXATION
       IF ( climsstfile .NE. ' ' .AND. climsstperiod .GT. 0. ) THEN
-       CALL cal_FullDate( climsststartdate1, climsststartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climsst',myThid)
+# endif
+       CALL CAL_FULLDATE( climsststartdate1, climsststartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -551,7 +642,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
       IF ( climsssfile .NE. ' ' .AND. climsssperiod .GT. 0. ) THEN
-       CALL cal_FullDate( climsssstartdate1, climsssstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climsss',myThid)
+# endif
+       CALL CAL_FULLDATE( climsssstartdate1, climsssstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -570,7 +664,10 @@ c     from the beginning of the year.
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
       IF ( climustrfile .NE. ' ' .AND. climustrperiod .GT. 0. ) THEN
-       CALL cal_FullDate( climustrstartdate1, climustrstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climustr',myThid)
+# endif
+       CALL CAL_FULLDATE( climustrstartdate1, climustrstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -585,9 +682,12 @@ c     from the beginning of the year.
         climustrstartdate =  modelstart + climustrstartdate
        ENDIF
       ENDIF
-c
+
       IF ( climvstrfile .NE. ' ' .AND. climvstrperiod .GT. 0. ) THEN
-       CALL cal_FullDate( climvstrstartdate1, climvstrstartdate2,
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climvstr',myThid)
+# endif
+       CALL CAL_FULLDATE( climvstrstartdate1, climvstrstartdate2,
      &      date_array, myThid )
        IF ( useExfYearlyFields ) THEN
         yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
@@ -609,17 +709,30 @@ c
 
 #if defined(ALLOW_ZENITHANGLE) && defined(SHORTWAVE_HEATING)
       IF ( useExfZenAlbedo .OR. useExfZenIncoming ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('EXF_ZENITHANGLE_TABLE',myThid)
+# endif
        CALL EXF_ZENITHANGLE_TABLE(myThid)
       ENDIF
 #endif
 
 C--   Summarize the External forcing setup.
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('EXF_SUMMARY',myThid)
+# endif
       CALL EXF_SUMMARY( myThid )
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('EXF_DIAGNOSTICS_INIT',myThid)
+# endif
         CALL EXF_DIAGNOSTICS_INIT( myThid )
       ENDIF
+#endif
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('EXF_INIT_FIXED',myThid)
 #endif
 
       RETURN
