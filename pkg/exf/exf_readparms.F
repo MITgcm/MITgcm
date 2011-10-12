@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.66 2011/07/27 15:00:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.67 2011/10/12 02:58:34 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -817,6 +817,7 @@ c     Next, read the forcing data file.
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , 1)
        READ(  iUnit, nml = EXF_NML_OBCS )
+      ENDIF
        IF(siobNstartdate1.EQ.UNSET_I ) siobNstartdate1=obcsNstartdate1
        IF(siobNstartdate2.EQ.UNSET_I ) siobNstartdate2=obcsNstartdate2
        IF(siobNperiod    .EQ.UNSET_RL) siobNperiod    =obcsNperiod
@@ -831,7 +832,6 @@ c     Next, read the forcing data file.
        IF(siobWperiod    .EQ.UNSET_RL) siobWperiod    =obcsWperiod
 
        IF(exf_iprec_obcs .EQ. UNSET_I) exf_iprec_obcs =exf_iprec
-      ENDIF
 #endif /* ALLOW_OBCS */
 
       WRITE(msgBuf,'(A)')
