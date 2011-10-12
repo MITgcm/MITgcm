@@ -1,13 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1511 2011/10/11 14:36:28 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1512 2011/10/12 03:05:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - fix previous modif in exf_readparms.F (revision 1.66: treatment of
+    optional namelist EXF_NML_OBCS).
+  - add many debug-print (to trace down where pkg/cal error msg comes from)
 o pkg/mom_vecinv/mom_vi_hdissip.F
   - rearrange loops so that vectorization is improved and in particular
-    the adjoint routine vectorizes. The code is a little longer now, but I 
-    think easier to read. 
+    the adjoint routine vectorizes. The code is a little longer now, but I
+    think easier to read.
     Note: CPP-flag MOM_VI_ORIGINAL_VISCA4 is not tested.
 o pkg/seaice:
   - allow to specify initial seaice velocity from files (uIceFile,vIceFile)
