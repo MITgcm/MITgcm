@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.74 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.75 2011/10/12 01:58:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,7 +24,7 @@ C       |
 C       |-- DIAGNOSTICS_INIT_EARLY
 C       |-- DIAGNOSTICS_MAIN_INIT
 C       |
-C       |-- GAD_INIT
+C       |-- GAD_INIT_FIXED
 C       |
 C       |-- MOM_INIT_FIXED
 C       |
@@ -114,8 +114,15 @@ C     myThid :: my Thread Id Number
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('PACKAGES_INIT_FIXED',myThid)
+#endif
+
 #ifdef ALLOW_RUNCLOCK
       IF ( useRunClock ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('RUNCLOCK_INIT',myThid)
+# endif
         CALL RUNCLOCK_INIT( myThid )
       ENDIF
 #endif
@@ -123,149 +130,228 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 C-    needs to call DIAGNOSTICS_INIT_EARLY before all package-diag-init calls
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('DIAGNOSTICS_INIT_EARLY',myThid)
+# endif
         CALL DIAGNOSTICS_INIT_EARLY( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('DIAGNOSTICS_MAIN_INIT',myThid)
+# endif
         CALL DIAGNOSTICS_MAIN_INIT( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C--   Initialize fixed params for GAD
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GAD_INIT_FIXED',myThid)
+# endif
       CALL GAD_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_MOM_COMMON
 C--   Initialize fixed params for Momentum pkgs (common, fluxform, vecinv)
       IF ( momStepping ) THEN
-       CALL MOM_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('MOM_INIT_FIXED',myThid)
+# endif
+        CALL MOM_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_CD_CODE
       IF (useCDscheme) THEN
-       CALL CD_CODE_INIT_FIXED(myThid)
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CD_CODE_INIT_FIXED',myThid)
+# endif
+        CALL CD_CODE_INIT_FIXED(myThid)
       ENDIF
 #endif
 
 #ifdef ALLOW_EXF
 C--   Initialize fixed arrays for EXF
       IF ( useEXF ) THEN
-       CALL EXF_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('EXF_INIT_FIXED',myThid)
+# endif
+        CALL EXF_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_CHEAPAML
-      IF ( useCheapAML ) CALL CHEAPAML_INIT_FIXED( myThid )
+      IF ( useCheapAML ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CHEAPAML_INIT_FIXED',myThid)
+# endif
+        CALL CHEAPAML_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_GMREDI
 C--   Initialize fixed arrays for GM-Redi
       IF ( useGMRedi ) THEN
-       CALL GMREDI_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT_FIXED',myThid)
+# endif
+        CALL GMREDI_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_DOWN_SLOPE
 C--   Initialize fixed arrays for Down-Slope pkg
       IF ( useDOWN_SLOPE ) THEN
-       CALL DWNSLP_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('DWNSLP_INIT_FIXED',myThid)
+# endif
+        CALL DWNSLP_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_BBL
 C--   Initialize fixed arrays for BBL pkg
       IF ( useBBL ) THEN
-       CALL BBL_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('BBL_INIT_FIXED',myThid)
+# endif
+        CALL BBL_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_KPP
 C--   Initialize fixed arrays for KPP
       IF ( useKPP ) THEN
-       CALL KPP_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('KPP_INIT_FIXED',myThid)
+# endif
+        CALL KPP_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_MY82
 C--   Initialize fixed arrays for MY82
       IF ( useMY82 ) THEN
-       CALL MY82_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('MY82_INIT_FIXED',myThid)
+# endif
+        CALL MY82_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_GGL90
 C--   Initialize fixed arrays for GGL90
       IF ( useGGL90 ) THEN
-       CALL GGL90_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GGL90_INIT_FIXED',myThid)
+# endif
+        CALL GGL90_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_OPPS
-      IF (useOPPS) CALL OPPS_INIT( myThid )
+      IF (useOPPS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OPPS_INIT',myThid)
+# endif
+        CALL OPPS_INIT( myThid )
+      ENDIF
 #endif /* ALLOW_OPPS */
 
 C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
-       CALL OBCS_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OBCS_INIT_FIXED',myThid)
+# endif
+        CALL OBCS_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_TIMEAVE
 C     IF (useTIMEAVE) THEN
       IF ( taveFreq.GT.0. ) THEN
-       CALL TIMEAVE_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('TIMEAVE_INIT_FIXED',myThid)
+# endif
+        CALL TIMEAVE_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_SHAP_FILT
 C--   Shapiro filter initialisation
       IF (useSHAP_FILT) THEN
-       CALL SHAP_FILT_INIT_FIXED( myThid )
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SHAP_FILT_INIT_FIXED',myThid)
+# endif
+        CALL SHAP_FILT_INIT_FIXED( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_ZONAL_FILT
 C--   Latitude circle filter initialisation
       IF (useZONAL_FILT) THEN
-       CALL ZONAL_FILT_INIT(myThid)
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ZONAL_FILT_INIT',myThid)
+# endif
+        CALL ZONAL_FILT_INIT(myThid)
       ENDIF
 #endif
 
 #ifdef ALLOW_AIM
 C--   Initialise & Read AIM physical parameters
-      IF (useAIM) CALL AIM_INITIALISE( myThid )
+      IF (useAIM) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('AIM_INITIALISE',myThid)
+# endif
+        CALL AIM_INITIALISE( myThid )
+      ENDIF
 #endif
 
-C AMM
 #ifdef ALLOW_GRIDALT
 C--   Initialise GRIDALT parameters - the alternative grid
       IF (useGRIDALT) then
-       CALL TIMER_START('GRIDALT_INITIALISE  [PACKAGES_INIT_F]',myThid)
-       CALL GRIDALT_INITIALISE( myThid )
-       CALL TIMER_STOP ('GRIDALT_INITIALISE  [PACKAGES_INIT_F]',myThid)
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GRIDALT_INITIALISE',myThid)
+# endif
+        CALL GRIDALT_INITIALISE( myThid )
       ENDIF
-
 #endif
 
 #ifdef ALLOW_FIZHI
 C--   Initialise & Read FIZHI physical parameters
-      IF (useFIZHI) CALL FIZHI_INIT_FIXED( myThid )
+      IF (useFIZHI) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('FIZHI_INIT_FIXED',myThid)
+# endif
+        CALL FIZHI_INIT_FIXED( myThid )
+      ENDIF
 #endif
-C AMM
 
 #ifdef ALLOW_LAND
 C--   Initialise & Read Land package parameters
-      IF (useLand) CALL LAND_INITIALISE( myThid )
+      IF (useLand) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('LAND_INITIALISE',myThid)
+# endif
+        CALL LAND_INITIALISE( myThid )
+      ENDIF
 #endif
 
 #if (defined (ALLOW_SEAICE) && defined (ALLOW_COST))
 C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
-      IF (useSEAICE) CALL SEAICE_COST_INIT_FIXED( myThid )
+      IF (useSEAICE) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SEAICE_COST_INIT_FIXED',myThid)
+# endif
+        CALL SEAICE_COST_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_SMOOTH
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SMOOTH_INIT_FIXED',myThid)
+# endif
       CALL SMOOTH_INIT_FIXED(myThid)
 #endif /* ALLOW_SMOOTH */
 
@@ -273,96 +359,202 @@ C--   in order to provide the weight files
 C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ECCO_COST_INIT_FIXED',myThid)
+# endif
       CALL ECCO_COST_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('PROFILES_INIT_FIXED',myThid)
+# endif
       CALL PROFILES_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF
 C--   Initialise the control variables
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CTRL_INIT',myThid)
+# endif
       CALL CTRL_INIT( myThid )
 #endif
 
 #ifdef ALLOW_ADMTLM
 C--   Initialise ADMTLM
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CTRL_ADMTLM',myThid)
+# endif
       CALL CTRL_ADMTLM( myThid )
 #endif
 
 #ifdef ALLOW_FLT
 C--   Initialise fixed array for Float pkg
-      IF ( useFLT ) CALL FLT_INIT_FIXED( myThid )
+      IF ( useFLT ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('FLT_INIT_FIXED',myThid)
+# endif
+        CALL FLT_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_LONGSTEP
-      IF (usePTRACERS) CALL LONGSTEP_INIT_FIXED(myThid)
+      IF (usePTRACERS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('LONGSTEP_INIT_FIXED',myThid)
+# endif
+        CALL LONGSTEP_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_PTRACERS
-      IF (usePTRACERS) CALL PTRACERS_INIT_FIXED(myThid)
+      IF (usePTRACERS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('PTRACERS_INIT_FIXED',myThid)
+# endif
+        CALL PTRACERS_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_GCHEM
-      IF (useGCHEM) CALL GCHEM_INIT_FIXED(myThid)
+      IF (useGCHEM) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GCHEM_INIT_FIXED',myThid)
+# endif
+        CALL GCHEM_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_RBCS
-      IF (useRBCS) CALL RBCS_INIT_FIXED(myThid)
+      IF (useRBCS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('RBCS_INIT_FIXED',myThid)
+# endif
+        CALL RBCS_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_INIT_FIXED(myThid)
+      IF (useThSIce) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('THSICE_INIT_FIXED',myThid)
+# endif
+        CALL THSICE_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_INIT_FIXED(myThid)
+      IF (useSEAICE) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_FIXED',myThid)
+# endif
+        CALL SEAICE_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_SHELFICE
-      IF (useShelfIce) CALL SHELFICE_INIT_FIXED( myThid )
+      IF (useShelfIce) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_FIXED',myThid)
+# endif
+        CALL SHELFICE_INIT_FIXED( myThid )
+      ENDIF
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
-      IF (useICEFRONT) CALL ICEFRONT_INIT_FIXED( myThid )
+      IF (useICEFRONT) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_FIXED',myThid)
+# endif
+        CALL ICEFRONT_INIT_FIXED( myThid )
+      ENDIF
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_EMBED_FILES
-      IF ( useEMBED_FILES ) CALL EMBED_FILES_INIT( myThid )
+      IF ( useEMBED_FILES ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('EMBED_FILES_INIT',myThid)
+# endif
+        CALL EMBED_FILES_INIT( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_REGRID
-      IF ( useREGRID ) CALL REGRID_INIT_FIXED( myThid )
+      IF ( useREGRID ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('REGRID_INIT_FIXED',myThid)
+# endif
+        CALL REGRID_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_LAYERS
-      IF ( useLayers ) CALL LAYERS_INIT_FIXED( myThid )
+      IF ( useLayers ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('LAYERS_INIT_FIXED',myThid)
+# endif
+        CALL LAYERS_INIT_FIXED( myThid )
+      ENDIF
 #endif /* ALLOW_LAYERS */
 
 #ifdef COMPONENT_MODULE
-      IF ( useCoupler ) CALL CPL_INIT_FIXED( myThid )
+      IF ( useCoupler ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CPL_INIT_FIXED',myThid)
+# endif
+        CALL CPL_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_ATM2D
-      IF ( useAtm2d ) CALL ATM2D_INIT_FIXED( myThid )
+      IF ( useAtm2d ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ATM2D_INIT_FIXED',myThid)
+# endif
+        CALL ATM2D_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_SALT_PLUME
-      IF (useSALT_PLUME) CALL SALT_PLUME_INIT_FIXED(myThid)
+      IF (useSALT_PLUME) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SALT_PLUME_INIT_FIXED',myThid)
+# endif
+        CALL SALT_PLUME_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_OASIS
 C--   needs to be called after the OASIS_INIT
-      IF (useOASIS) CALL OASIS_INIT_FIXED(myThid)
+      IF (useOASIS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OASIS_INIT_FIXED',myThid)
+# endif
+        CALL OASIS_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_MYPACKAGE
-      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_FIXED(myThid)
+      IF (useMYPACKAGE) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('MYPACKAGE_INIT_FIXED',myThid)
+# endif
+        CALL MYPACKAGE_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
 C-    needs to call DIAGNOSTICS_INIT_FIXED after all package-diag-init calls
-      IF ( useDiagnostics ) CALL DIAGNOSTICS_INIT_FIXED( myThid )
+      IF ( useDiagnostics ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('DIAGNOSTICS_INIT_FIXED',myThid)
+# endif
+        CALL DIAGNOSTICS_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('PACKAGES_INIT_FIXED',myThid)
 #endif
 
       RETURN

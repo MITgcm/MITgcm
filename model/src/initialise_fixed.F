@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.52 2011/06/08 01:45:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.53 2011/10/12 01:58:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -104,82 +104,151 @@ C--   Check barrier synchronization:
 C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_PARMS',myThid)
+#endif
       CALL INI_PARMS( myThid )
 
 C--   Configure packages
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PACKAGES_BOOT',myThid)
+#endif
       CALL PACKAGES_BOOT( myThid )
 
 C--   Read configuration parameters for packages
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PACKAGES_READPARMS',myThid)
+#endif
       CALL PACKAGES_READPARMS( myThid )
 
 C--   Set (or reset) parameters (at this point, know which packages are used);
 C     after this call, main model parameters are not supposed to be modified.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('SET_PARMS',myThid)
+#endif
       CALL SET_PARMS( myThid )
 
 C--   Write units/set precision/etc for I/O (pickup, MDS/RW, MNC, MONITOR):
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_MODEL_IO',myThid)
+#endif
       CALL INI_MODEL_IO( myThid )
 
 C--   Set model grid.
 C     Variables defining model grid spacing are defined.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_GRID',myThid)
+#endif
       CALL INI_GRID( myThid )
 
 C--   Load reference profiles from files
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('LOAD_REF_FILES',myThid)
+#endif
       CALL LOAD_REF_FILES( myThid )
 
 C--   Set equation of state parameters.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_EOS',myThid)
+#endif
       CALL INI_EOS( myThid )
 
 C--   Set reference state (vertical reference profiles)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('SET_REF_STATE',myThid)
+#endif
       CALL SET_REF_STATE( myThid )
 
 C--   Set remaining grid factors
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('SET_GRID_FACTORS',myThid)
+#endif
       CALL SET_GRID_FACTORS( myThid )
 
 C--   Initialise map of depths
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_DEPTHS',myThid)
+#endif
       CALL INI_DEPTHS( myThid )
 
 C--   Derive masks, lopping factors and recipricols of quantities.
 C     Volumes and areas are set according to grid and depth map.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_MASKS_ETC',myThid)
+#endif
       CALL INI_MASKS_ETC( myThid )
 
 C--   Synchronize all threads after setting masks and before pkgs init.
       _BARRIER
 
 C--   Call fixed data initialization phase of packages
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PACKAGES_INIT_FIXED',myThid)
+#endif
       CALL PACKAGES_INIT_FIXED( myThid )
 
 C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
+#endif
       CALL INI_LINEAR_PHISURF( myThid )
 
 C--   Set coriolis operators
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_CORI',myThid)
+#endif
       CALL INI_CORI( myThid )
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_CG2D',myThid)
+#endif
       CALL INI_CG2D( myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_CG3D',myThid)
+#endif
       CALL INI_CG3D( myThid )
 #endif
 
 C--   Finally summarise the model configuration
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CONFIG_SUMMARY',myThid)
+#endif
       CALL CONFIG_SUMMARY( myThid )
 
 C--   Check packages configuration (& print summary)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PACKAGES_CHECK',myThid)
+#endif
       CALL PACKAGES_CHECK( myThid )
 
 C--   Check parameters and model configuration
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CONFIG_CHECK',myThid)
+#endif
       CALL CONFIG_CHECK( myThid )
 
 C--   Write grid data and geometry arrays
-      IF ( debugLevel.GE.debLevA .OR.
-     &     startTime.EQ.baseTime ) CALL WRITE_GRID( myThid )
+      IF ( debugLevel.GE.debLevA .OR. startTime.EQ.baseTime ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('WRITE_GRID',myThid)
+#endif
+        CALL WRITE_GRID( myThid )
+      ENDIF
 
 #ifdef COMPONENT_MODULE
 C--   Post component-model configuration information to coupler
 C     and get config. info for other component(s).
-      IF ( useCoupler ) CALL CPL_EXCH_CONFIGS( myThid )
-#endif
+      IF ( useCoupler ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CPL_EXCH_CONFIGS',myThid)
+# endif
+        CALL CPL_EXCH_CONFIGS( myThid )
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
 C--   Check barrier synchronization:
       CALL BAR_CHECK( 3, myThid )
