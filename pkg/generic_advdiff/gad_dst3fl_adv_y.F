@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.13 2007/04/04 01:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.14 2011/10/13 15:10:32 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -45,6 +45,11 @@ C     == Local variables ==
       ENDDO
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     These lines make TAF create vectorizable code
+        thetaP = 0. _d 0
+        thetaM = 0. _d 0
+#endif
         Rjp=(tracer(i,j+1)-tracer(i, j ))*maskLocS(i,j+1)
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)

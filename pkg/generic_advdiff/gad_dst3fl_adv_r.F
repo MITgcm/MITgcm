@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.9 2006/12/05 22:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.10 2011/10/13 15:10:32 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -65,6 +65,11 @@ C  wCFL              :: Courant-Friedrich-Levy number
 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     These lines make TAF create vectorizable code
+        thetaP = 0. _d 0
+        thetaM = 0. _d 0
+#endif
         Rjp=(tracer(i,j,k)-tracer(i,j,kp1))
      &         *maskC(i,j,kp1,bi,bj)
         Rj =(tracer(i,j,km1)-tracer(i,j,k))

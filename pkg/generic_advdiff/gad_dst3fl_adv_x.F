@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.14 2008/02/28 23:15:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.15 2011/10/13 15:10:32 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -49,6 +49,11 @@ C       with no need to compute thetaM (might be easier to differentiate)
       ENDDO
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx+2,sNx+Olx-1
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     These lines make TAF create vectorizable code
+        thetaP = 0. _d 0
+        thetaM = 0. _d 0
+#endif
         Rjp=(tracer(i+1,j)-tracer( i ,j))*maskLocW(i+1,j)
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
