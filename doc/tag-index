@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1512 2011/10/12 03:05:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1513 2011/10/13 14:54:44 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: 
+  - improve vectorization also for adjoint code of 
+    solve_tridiagonal and solve_pentadiagonal. As this requires up to
+    5 new 3D-fields, this code is only turned on for the combination of
+    ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX.
+  - remove hard-wiring of CPP-flag ALLOW_SOLVERS_KLOOPINSIDE to
+    ALLOW_AUTODIFF. This flag now needs to be set outside of 
+    solve_tri/pentadiagonal.F
 o pkg/exf:
   - fix previous modif in exf_readparms.F (revision 1.66: treatment of
     optional namelist EXF_NML_OBCS).
