@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.3 2010/08/10 17:58:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.4 2011/10/13 14:48:44 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-C o Switch to code that has the k-loop inside the 
-C   ij-loops, which matters in adjoint mode.
-#ifdef ALLOW_AUTODIFF 
-#define ALLOW_SOLVERS_KLOOPINSIDE
-#endif
+CMLC o Switch to code that has the k-loop inside the 
+CMLC   ij-loops, which matters in adjoint mode.
+CML#ifdef ALLOW_AUTODIFF 
+CML#define ALLOW_SOLVERS_KLOOPINSIDE
+CML#endif
 
 CBOP
 C     !ROUTINE: SOLVE_TRIDIAGONAL
@@ -54,6 +54,12 @@ C     == Local variables ==
       _RL tmpvar
 #ifndef ALLOW_SOLVERS_KLOOPINSIDE
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     This field is required for efficient adjoint vector code
+C     The extra storage that is involved is avoided in the case
+C     of forward simulations at the cost of even uglier code.
+      _RL y3dloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+# endif 
 #else
       _RL c3d_prime(Nr), y3d_prime(Nr),y3d_update(Nr)
       _RL c3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -65,9 +71,24 @@ CEOP
 
       errCode = 0
 
+# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         y3dloc(i,j,k)       = y3d(i,j,k,bi,bj)
+         y3d   (i,j,k,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX */
 C--   Beginning of forward sweep (top level)
+# ifdef TARGET_NEC_SX
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+# else
       DO j=jMin,jMax
        DO i=iMin,iMax
+# endif 
          IF ( b3d(i,j,1).NE.0. _d 0 ) THEN 
            bet(i,j,1) = 1. _d 0 / b3d(i,j,1)
          ELSE
@@ -78,9 +99,15 @@ C--   Beginning of forward sweep (top level)
       ENDDO
 
 C--   Middle of forward sweep
+CADJ loop = sequential
       DO k=2,Nr
+# ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+# else
        DO j=jMin,jMax
         DO i=iMin,iMax
+# endif
          tmpvar = b3d(i,j,k) - a3d(i,j,k)*c3d(i,j,k-1)*bet(i,j,k-1)
          IF ( tmpvar .NE. 0. _d 0 ) THEN
            bet(i,j,k) = 1. _d 0 / tmpvar
@@ -92,15 +119,33 @@ C--   Middle of forward sweep
        ENDDO
       ENDDO
 
+# ifdef TARGET_NEC_SX
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+# else
       DO j=jMin,jMax
        DO i=iMin,iMax
+# endif
+# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+         y3d(i,j,1,bi,bj) = y3dloc(i,j,1)*bet(i,j,1)
+# else
          y3d(i,j,1,bi,bj) = y3d(i,j,1,bi,bj)*bet(i,j,1)
+# endif 
        ENDDO
       ENDDO
       DO k=2,Nr
+# ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+# else
        DO j=jMin,jMax
         DO i=iMin,iMax
+# endif
+# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+         y3d(i,j,k,bi,bj) = ( y3dloc(i,j,k) 
+# else
          y3d(i,j,k,bi,bj) = ( y3d(i,j,k,bi,bj) 
+# endif
      &                      - a3d(i,j,k)*y3d(i,j,k-1,bi,bj)
      &                      )*bet(i,j,k) 
         ENDDO
@@ -110,8 +155,13 @@ C--   Middle of forward sweep
 C--    Backward sweep
 CADJ loop = sequential
       DO k=Nr-1,1,-1
+# ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+# else
        DO j=jMin,jMax
         DO i=iMin,iMax
+# endif
           y3d(i,j,k,bi,bj) = y3d(i,j,k,bi,bj)
      &         - c3d(i,j,k)*bet(i,j,k)*y3d(i,j,k+1,bi,bj)
         ENDDO
