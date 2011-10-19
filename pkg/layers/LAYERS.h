@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.6 2010/12/16 00:56:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.7 2011/10/19 01:28:45 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -8,11 +8,11 @@ C--   For computing volume fluxes in isopyncal layers
 
 C --  Parms
       LOGICAL layers_MNC, layers_MDSIO, useBOLUS
-      INTEGER LAYER_nb
+      INTEGER LAYER_nb, layers_kref
       _RL layers_taveFreq, layers_diagFreq
       COMMON /LAYERS_PARMS/ layers_MNC, layers_MDSIO,
      &                      layers_taveFreq, layers_diagFreq,
-     &                      LAYER_nb, useBOLUS
+     &                      LAYER_nb, layers_kref, useBOLUS
 
 C     3D Layers fields. The vertical dimension in these fields is nLayers,
 C     i.e. the isopycnal coordinate.
@@ -44,6 +44,11 @@ C      layers_HV    :: Layer thickness at the V point (m)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
+#ifdef LAYERS_PRHO_REF
+      _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /LAYERS_PRHO/ prho
+#endif
+
 #ifdef ALLOW_TIMEAVE
 C-- The same variables, time-averaged
 
@@ -72,6 +77,11 @@ C     Keep track of time
      &  , layers_HV_T
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
+
+#ifdef LAYERS_PRHO_REF
+      _RL prho_tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /LAYERS_RPHO_TAVE/ prho_tave
+#endif
 
 #endif /* ALLOW_TIMEAVE */
 

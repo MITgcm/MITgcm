@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.4 2009/12/28 02:37:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.5 2011/10/19 01:28:45 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -74,7 +74,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
             CALL WRITE_FLD_3D_RL( 'layers_HU.', suff, Nlayers,
      &                             layers_HU, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
-#endif /* LAYESR_UFLUX */
+#endif /* LAYERS_UFLUX */
 #ifdef LAYERS_VFLUX
             CALL WRITE_FLD_3D_RL( 'layers_VFlux.', suff, Nlayers,
      &                             layers_VFlux, myIter, myThid )
@@ -82,7 +82,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
             CALL WRITE_FLD_3D_RL( 'layers_HV.', suff, Nlayers,
      &                             layers_HV, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
-#endif /* LAYESR_VFLUX */
+#endif /* LAYERS_VFLUX */
+#ifdef LAYERS_PRHO_REF
+            CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
+     &                             prho, myIter, myThid )
+#endif /* LAYERS_PRHO_REF */
           ENDIF
         ENDIF
 
@@ -146,6 +150,11 @@ C      Normalize by integrated time
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
+#ifdef LAYERS_PRHO_REF
+          CALL TIMEAVE_NORMALIZE( prho_tave, layers_timeave,
+     &                            Nr, bi, bj, myThid )
+#endif /* LAYERS_PRHO_REF */
+
          ENDDO
         ENDDO
 
@@ -167,6 +176,12 @@ C      Normalize by integrated time
      &                          layers_HV_T, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
+
+#ifdef LAYERS_PRHO_REF
+         CALL WRITE_FLD_3D_RL( 'layers_prho-tave.', suff, Nr,
+     &                          prho_tave, myIter, myThid )
+#endif /* LAYERS_PRHO_REF */
+
         ENDIF
 
 #ifdef ALLOW_MNC
@@ -189,6 +204,11 @@ C      Reset averages to zero
           CALL TIMEAVE_RESET(layers_HV_T,Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
+
+#ifdef LAYERS_PRHO_REF
+          CALL TIMEAVE_RESET(prho_tave,Nr,bi,bj,myThid)
+#endif /* LAYERS_PRHO_REF */
+
           layers_TimeAve(bi,bj) = 0.
          ENDDO
         ENDDO

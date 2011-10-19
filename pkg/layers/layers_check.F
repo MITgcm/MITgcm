@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.5 2010/12/04 23:50:32 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.6 2011/10/19 01:28:45 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -41,6 +41,12 @@ C--  Print out some key parameters :
 
        CALL WRITE_1D_RL(layers_G,Nlayers+1, INDEX_K,'layers_G =',
      &  ' /* boundaries of isopycnal-averaging bins */')
+
+       CALL WRITE_0D_I( layers_kref, INDEX_NONE, 'layers_kref =',
+     &  ' /* model level to reference potential density to */' )
+
+       CALL WRITE_0D_I( LAYER_nb, INDEX_NONE, 'LAYER_nb =',
+     &  '/* (1) theta; (2) salt; (3) prho; as averaging field */' )
 
 C--  Check parameters:
 

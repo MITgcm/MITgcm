@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.4 2010/12/16 00:56:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.5 2011/10/19 01:28:45 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -23,7 +23,7 @@ C     INPUT PARAMETERS:
 
       NAMELIST /LAYERS_PARM01/
      &       layers_G, layers_taveFreq, layers_diagFreq,
-     &       LAYER_nb, useBOLUS
+     &       LAYER_nb, layers_kref, useBOLUS
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -46,6 +46,7 @@ C     The MNC stuff is not working yet
       layers_taveFreq = taveFreq
       layers_diagFreq = dumpFreq
       LAYER_nb = 1
+      layers_kref = 1
       useBOLUS = .TRUE.
 
       WRITE(msgBuf,'(A)') 'LAYERS_READPARMS: opening data.layers'

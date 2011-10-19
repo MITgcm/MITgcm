@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.1 2009/09/16 21:25:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.2 2011/10/19 01:28:45 dfer Exp $
 C $Name:  $
 
 C
@@ -22,6 +22,9 @@ C Keep track of layer thicknesses?
 
 C The MNC stuff is too complicated
 #undef LAYERS_MNC
+
+C Allow use of potential density as a layering field.
+#define LAYERS_PRHO_REF
 
 #endif /* ALLOW_LAYERS */
 #endif /* LAYERS_OPTIONS_H */
