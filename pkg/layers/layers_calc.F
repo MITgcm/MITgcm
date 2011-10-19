@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.10 2011/10/19 01:28:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.11 2011/10/19 15:00:15 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -51,14 +51,12 @@ C     kci      :: index from CellIndex
 C     kg       :: index for looping though layers_G
 C     kk       :: vertical index for ZZ (fine) grid
 C     kgu,kgv  :: vertical index for isopycnal grid
-C     level    :: counter for vertical level in prho calculation
 C     prho     :: potential density referenced to layers_kref pressure
 C     TatV     :: temperature at U point
 C     TatV     :: temperature at V point
 
       INTEGER bi, bj
       INTEGER i,j,k,kk,kg,kci,kp1
-      INTEGER level
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU, TatV
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -108,17 +106,19 @@ C     Reset the arrays
 C     For LAYER_nb = 3, calculate the potential density referenced to
 C     the model level given by layers_kref.
       IF (LAYER_nb .EQ. 3) THEN
-       DO level = 1,Nr
+       DO k = 1,Nr
         CALL FIND_RHO_2D( 1-OLx, sNx+OLx, 1-OLy, sNy+OLy,
      &     layers_kref,
-     &     theta(1-OLx,1-OLy,level,bi,bj),
-     &     salt(1-OLx,1-OLy,level,bi,bj),
-     &     prho(1-OLx,1-OLy,level,bi,bj),
-     &     level, bi, bj, myThid )
-        prho(1-OLx:sNx+OLy,1-OLy:sNy+OLy,level,bi,bj) = rhoConst
-     &   + prho(1-OLx:sNx+OLy,1-OLy:sNy+OLy,level,bi,bj)
+     &     theta(1-OLx,1-OLy,k,bi,bj),
+     &     salt(1-OLx,1-OLy,k,bi,bj),
+     &     prho(1-OLx,1-OLy,k,bi,bj),
+     &     k, bi, bj, myThid )
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+           prho(i,j,k,bi,bj) = rhoConst + prho(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
        ENDDO
-      ELSE
       ENDIF
 #endif
 
@@ -188,7 +188,7 @@ C        that should have covered all the options
      &     TatU
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
-         END IF
+         ENDIF
 
 C ------ Augment the bin values
          layers_UFlux(i,j,kgu(i,j),bi,bj) =
@@ -281,7 +281,7 @@ C         that should have covered all the options
      &     TatV
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
-         END IF
+         ENDIF
 
 C ------ Augment the bin values
          layers_VFlux(i,j,kgv(i,j),bi,bj) =
