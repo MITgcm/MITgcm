@@ -1,19 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.37 2011/03/05 18:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.38 2011/10/20 15:02:17 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_EVP
+C     !INTERFACE:
       SUBROUTINE SEAICE_EVP( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_EVP                                    |
-C     | o Ice dynamics using an EVP solver following             |
-C     |   E. C. Hunke and J. K. Dukowicz. An                     |
-C     |   Elastic-Viscous-Plastic Model for Sea Ice Dynamics,    |
-C     |   J. Phys. Oceanogr., 27, 1849-1867 (1997).              |
-C     |==========================================================|
-C     | written by Martin Losch, March 2006                      |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_EVP
+C     | o Ice dynamics using an EVP solver following
+C     |   E. C. Hunke and J. K. Dukowicz. An
+C     |   Elastic-Viscous-Plastic Model for Sea Ice Dynamics,
+C     |   J. Phys. Oceanogr., 27, 1849-1867 (1997).
+C     *==========================================================*
+C     | written by Martin Losch, March 2006
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -30,44 +37,44 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-C     myThid - Thread no. that called this routine.
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #if ( defined (SEAICE_CGRID) && \
       defined (SEAICE_ALLOW_EVP) && \
       defined (SEAICE_ALLOW_DYNAMICS) )
 
 C     === Local variables ===
-C     i,j,bi,bj     - Loop counters
-C     kSrf          - vertical index of surface layer
-C     nEVPstep      - number of timesteps within the EVP solver
-C     iEVPstep      - Loop counter
-C     SIN/COSWAT    - sine/cosine of turning angle
-C     recip_evp_tau - inverse of EVP relaxation/damping timescale
-C     ecc2          - eccentricity squared
-C     e11,e12,e22   - components of strain rate tensor
-C     seaice_div    - divergence strain rates at C-points times P
-C                     /divided by Delta minus 1
-C     seaice_tension- tension    strain rates at C-points times P
-C                     /divided by Delta
-C     seaice_shear  - shear      strain rates, defined at Z-points times P
-C                     /divided by Delta
-C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
+C     i,j,bi,bj      :: Loop counters
+C     kSrf           :: vertical index of surface layer
+C     nEVPstep       :: number of timesteps within the EVP solver
+C     iEVPstep       :: Loop counter
+C     SIN/COSWAT     :: sine/cosine of turning angle
+C     recip_evp_tau  :: inverse of EVP relaxation/damping timescale
+C     ecc2           :: eccentricity squared
+C     e11,e12,e22    :: components of strain rate tensor
+C     seaice_div     :: divergence strain rates at C-points times P
+C                       /divided by Delta minus 1
+C     seaice_tension :: tension    strain rates at C-points times P
+C                       /divided by Delta
+C     seaice_shear   :: shear      strain rates, defined at Z-points times P
+C                       /divided by Delta
+C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
 
       INTEGER i, j, bi, bj
       INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ikeyloc
-#endif
-#ifndef ALLOW_AUTODIFF_TAMC
-      integer nEVPstepMax
+#else
+      INTEGER nEVPstepMax
 #endif
 
       _RL COSWAT
@@ -96,7 +103,7 @@ C     auxilliary variables
 #endif /* SEAICE_ALLOW_CLIPZETA */
       _RL denom1, denom2, facZ
 
-C     surrface level
+C     surface level
       kSrf = 1
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -106,7 +113,7 @@ C     abbreviation eccentricity squared
       ecc2=SEAICE_eccen**2
       recip_ecc2 = 0. _d 0
       IF ( ecc2 .NE. 0. _d 0 ) recip_ecc2=ONE/ecc2
-C     determine number of interal time steps
+C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
 C     inverse relaxation/damping time scale
       recip_evp_tau = 0. _d 0
@@ -127,7 +134,7 @@ C     inverse relaxation/damping time scale
 C     use u/vIceC as work arrays: copy previous time step to u/vIceC
           uIceC(I,J,bi,bj)   = uIce(I,J,bi,bj)
           vIceC(I,J,bi,bj)   = vIce(I,J,bi,bj)
-c     initialise strain rates
+C     initialise strain rates
           e11  (I,J,bi,bj)   = 0. _d 0
           e22  (I,J,bi,bj)   = 0. _d 0
           e12  (I,J,bi,bj)   = 0. _d 0
@@ -215,16 +222,16 @@ CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
 CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
 C     Averaging the squares gives more accurate viscous-plastic behavior
 C     than squaring the averages
-            deltaC(I,J) = 
+            deltaC(I,J) =
      &           ep(I,J)**2 + recip_ecc2*em(I,J)**2
      &           + recip_ecc2*
-     &               ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2 
+     &               ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2
      &               + e12(I+1,J,bi,bj)**2 + e12(I,  J+1,bi,bj)**2 )
             deltaZ(I,J) = facZ *
      &           ( ep(I,J  )**2 + ep(I-1,J  )**2
      &           + ep(I,J-1)**2 + ep(I-1,J-1)**2
      &           +(em(I,J  )**2 + em(I-1,J  )**2
-     &            +em(I,J-1)**2 + em(I-1,J-1)**2)*recip_ecc2 
+     &            +em(I,J-1)**2 + em(I-1,J-1)**2)*recip_ecc2
      &           )
      &           + 4. _d 0*recip_ecc2*e12(I,J,bi,bj)**2
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -255,7 +262,7 @@ CADJ STORE zetaz  = comlev1_evp,key = ikeyloc, byte = isbyte
 C     regularize zeta if necessary
           DO j=0,sNy+1
            DO i=0,sNx+1
-            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),MIN(zMax(I,J,bi,bj) 
+            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),MIN(zMax(I,J,bi,bj)
      &           ,zetaC(I,J)))
 CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj)
 C
@@ -307,16 +314,16 @@ CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
 C     Averaging the squares gives more accurate viscous-plastic behavior
 C     than squaring the averages
              etaDenC   = em(I,J)**2 +
-     &            ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2 
+     &            ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2
      &            + e12(I+1,J,bi,bj)**2 + e12(I,  J+1,bi,bj)**2 )
              etaDenC  = SQRT(MAX(SEAICE_EPS_SQ,etaDenC))
              zetaMaxC = ecc2*zetaC(I,J)*(deltaC(I,J)-ep(I,J))/etaDenC
-             etaDenZ  = 
+             etaDenZ  =
      &            facZ * ( em(I,  J  )**2 + em(I-1,J-1)**2
      &                   + em(I-1,J  )**2 + em(I,  J-1)**2 )
      &            + 4. _d 0*e12(I,J,bi,bj)**2
              etaDenZ  = SQRT(MAX(SEAICE_EPS_SQ,etaDenZ))
-             zetaMaxZ = ecc2*zetaZ(I,J) * ( deltaZ(I,J) 
+             zetaMaxZ = ecc2*zetaZ(I,J) * ( deltaZ(I,J)
      &            - facZ * ( ep(I,J  ) + ep(I-1,J  )
      &                     + ep(I,J-1) + ep(I-1,J-1) )
      &            )/etaDenZ
@@ -324,7 +331,7 @@ C     than squaring the averages
 C     save new eta for diagnostics
              eta(I,J,bi,bj) = MIN(zetaC(I,J),zetaMaxC)*recip_ecc2
 #endif /* ALLOW_DIAGNOSTICS */
-             seaice_div    (I,J) = 
+             seaice_div    (I,J) =
      &            ( 2. _d 0 *zetaC(I,J)*ep(I,J) - pressC(I,J)
      &            ) * hEffM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*MIN(zetaC(I,J),zetaMaxC)
@@ -339,12 +346,12 @@ C     save new eta for diagnostics
 #endif /* SEAICE_ALLOW_TEM */
            DO j=0,sNy+1
             DO i=0,sNx+1
-             seaice_div    (I,J) = 
+             seaice_div    (I,J) =
      &            ( 2. _d 0 *zetaC(I,J)*ep(I,J) - pressC(I,J)
      &            ) * hEffM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*zetaC(I,J)
      &            * em(I,J) * hEffM(I,J,bi,bj)
-             seaice_shear  (I,J) = 
+             seaice_shear  (I,J) =
      &            2. _d 0*zetaZ(I,J)*2. _d 0*e12(I,J,bi,bj)
             ENDDO
            ENDDO
@@ -414,7 +421,7 @@ CADJ &     key = ikeyloc, byte = isbyte
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef SEAICE_DYN_STABLE_ADJOINT
-cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
+Cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
       CALL ZERO_ADJ( 1, stressDivergenceX, myThid)
       CALL ZERO_ADJ( 1, stressDivergenceY, myThid)
 #endif
@@ -429,10 +436,12 @@ C
            DO I=0,sNx
 C     set up non-linear water drag, forcex, forcey
             TEMPVAR = QUART*(
-     &           ( uIceC(I  ,J,bi,bj)-uVel(I  ,J,kSrf,bi,bj)
-     &           + uIceC(I+1,J,bi,bj)-uVel(I+1,J,kSrf,bi,bj))**2
-     &           +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,kSrf,bi,bj)
-     &           + vIceC(I,J+1,bi,bj)-vVel(I,J+1,kSrf,bi,bj))**2)
+     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
+     &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
+     &            )**2
+     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
+     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
+     &            )**2 )
             IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
              IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
               DWATN(I,J,bi,bj)=QUART
@@ -514,6 +523,11 @@ C
      &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
      &           + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
      &           + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) ) )
+C--   to change results  of lab_sea.hb87 test exp. (only preserve 2 digits for cg2d)
+c           uIceC(i,j,bi,bj) = uIce(i,j,bi,bj)
+c    &                       +( uIceC(i,j,bi,bj) - uIce(i,j,bi,bj) )
+c           vIceC(i,j,bi,bj) = vIce(i,j,bi,bj)
+c    &                       +( vIceC(i,j,bi,bj) - vIce(i,j,bi,bj) )
            ENDDO
           ENDDO
          ENDDO
