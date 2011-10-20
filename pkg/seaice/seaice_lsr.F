@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.63 2011/10/04 13:53:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.64 2011/10/20 20:23:05 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: SEAICE_CHECK
+C     !ROUTINE: SEAICE_LSR
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR( myTime, myIter, myThid )
 
@@ -264,18 +264,24 @@ CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
          DO i=0,sNx+1
 C     set up non-linear water drag
           TEMPVAR = QUART*(
-     &          (uIceC(I  ,J,bi,bj)-uVel(I  ,J,kSrf,bi,bj)
-     &          +uIceC(I+1,J,bi,bj)-uVel(I+1,J,kSrf,bi,bj))**2
-     &         +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,kSrf,bi,bj)
-     &          +vIceC(I,J+1,bi,bj)-vVel(I,J+1,kSrf,bi,bj))**2)
+     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
+     &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
+     &            )**2
+     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
+     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
+     &            )**2 )
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
+           IF ( SEAICE_waterDrag_south.LE.0. ) THEN
+            DWATN(I,J,bi,bj)=0.
+           ELSEIF ( TEMPVAR.LE.(QUART/SEAICE_waterDrag_south)**2 ) THEN
             DWATN(I,J,bi,bj)=QUART
            ELSE
             DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
            ENDIF
           ELSE
-           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+           IF ( SEAICE_waterDrag.LE.0. ) THEN
+            DWATN(I,J,bi,bj)=0.
+           ELSEIF ( TEMPVAR.LE.(QUART/SEAICE_waterDrag)**2 ) THEN
             DWATN(I,J,bi,bj)=QUART
            ELSE
             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
@@ -473,12 +479,6 @@ C     and the symmetric drag term; must be done after normalizing
          ENDDO
         ENDDO
 
-        DO J=1,sNy
-         AU(1,J,bi,bj)=ZERO
-         CU(sNx,J,bi,bj)=ZERO
-         CU(1,J,bi,bj)=CU(1,J,bi,bj)/BU(1,J,bi,bj)
-        ENDDO
-
 C     now set up right-hand side
 C     contribution of sigma11 to rhs
         DO J=1,sNy
@@ -600,12 +600,6 @@ C     and the symmetric drag term; must be done after normalizing
          ENDDO
         ENDDO
 
-        DO I=1,sNx
-         AV(I,1,bi,bj)=ZERO
-         CV(I,sNy,bi,bj)=ZERO
-         CV(I,1,bi,bj)=CV(I,1,bi,bj)/BV(I,1,bi,bj)
-        ENDDO
-
 C     now set up right-hand-side
 C     contribution of sigma22 to rhs
         DO J=0,sNy
@@ -714,17 +708,12 @@ C     save vIce prior to iteration, NOW SET V(3)=V(1)
 C Solve for uIce :
            DO J=1,sNy
             DO I=1,sNx
-             IF(I.EQ.1) THEN
-              AA3=( UXX(I-1,J,bi,bj) - UXM(I-1,J,bi,bj) )
-     &             * uIce(I-1,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
-             ELSEIF(I.EQ.sNx) THEN
-              AA3=( UXX(I  ,J,bi,bj) + UXM(I  ,J,bi,bj) )
-     &             * uIce(I+1,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
-             ELSE
-              AA3=ZERO
-             ENDIF
+             AA3 = ZERO
+             IF (I.EQ.1)   AA3 = AA3 - AU(I,J,bi,bj)*uIce(I-1,J,bi,bj)
+             IF (I.EQ.sNx) AA3 = AA3 - CU(I,J,bi,bj)*uIce(I+1,J,bi,bj)
+
              URT(I,J)=rhsU(I,J,bi,bj)
-     &            + AA3 * recip_rAw(I,J,bi,bj)
+     &            + AA3
 #ifdef SEAICE_VECTORIZE_LSR
      &            + uRt1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
      &            + uRt2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
@@ -738,6 +727,7 @@ C Solve for uIce :
             DO I=1,sNx
              CUU(I,J)=CU(I,J,bi,bj)
             ENDDO
+            CUU(1,J)=CUU(1,J)/BU(1,J,bi,bj)
             URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
 #ifdef SEAICE_VECTORIZE_LSR
            ENDDO
@@ -775,18 +765,12 @@ C--   end doIterate4u
 C Solve for vIce
            DO I=1,sNx
             DO J=1,sNy
-             IF(J.EQ.1) THEN
-              AA3=( VYY(I,J-1,bi,bj) - VYM(I,J-1,bi,bj)
-     &             ) * vIce(I,J-1,bi,bj) * seaiceMaskV(I,J,bi,bj)
-             ELSEIF(J.EQ.sNy) THEN
-              AA3=( VYY(I,J  ,bi,bj) + VYM(I,J  ,bi,bj)
-     &             ) * vIce(I,J+1,bi,bj) * seaiceMaskV(I,J,bi,bj)
-             ELSE
-              AA3=ZERO
-             ENDIF
+             AA3 = ZERO
+             IF (J.EQ.1)   AA3 = AA3 - AV(I,J,bi,bj)*vIce(I,J-1,bi,bj)
+             IF (J.EQ.sNy) AA3 = AA3 - CV(I,J,bi,bj)*vIce(I,J+1,bi,bj)
 
              VRT(I,J)=rhsV(I,J,bi,bj)
-     &            + AA3 * recip_rAs(I,J,bi,bj)
+     &            + AA3
 #ifdef SEAICE_VECTORIZE_LSR
      &            + vRt1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
      &            + vRt2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
@@ -800,6 +784,7 @@ C Solve for vIce
             DO J=1,sNy
              CVV(I,J)=CV(I,J,bi,bj)
             ENDDO
+            CVV(I,1)=CVV(I,1)/BV(I,1,bi,bj)
             VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
             DO J=2,sNy
              JM=J-1
