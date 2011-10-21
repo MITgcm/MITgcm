@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.48 2011/06/19 02:31:40 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.49 2011/10/21 17:25:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SEAICE_CHECK
@@ -28,9 +31,6 @@ C     === Global variables ===
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #include "GAD.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -249,6 +249,11 @@ C--
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+      IF ( SEAICE_maskRHS ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_maskRHS not allowed'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 #endif
 
 C--   LAD has been retired
@@ -329,31 +334,31 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
            STOP 'ABNORMAL END: S/R SEAICE_CHECK'
          ENDIF
 #ifndef ALLOW_ATM_TEMP
-         WRITE(msgBuf,'(A)')
+         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_ATM_TEMP'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #ifndef ALLOW_DOWNWARD_RADIATION
-         WRITE(msgBuf,'(A)')
+         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_DOWNWARD_RADIATION'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #ifndef ALLOW_RUNOFF
-         WRITE(msgBuf,'(A)')
+         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_RUNOFF'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
-         WRITE(msgBuf,'(A)')
+         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf '
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #if !defined(ALLOW_ATM_WIND) && !defined(SEAICE_CGRID)
-         WRITE(msgBuf,'(A)')
+         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_ATM_WIND'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
@@ -440,7 +445,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
       ENDIF
 #endif
 
-#if !defined(SEAICE_CGRID)
+#ifndef SEAICE_CGRID
 #ifdef SEAICE_TEST_ICE_STRESS_1
        WRITE(msgBuf,'(A)')
      &  'SEAICE_CHECK: Only relevant for B-grid:'
@@ -453,7 +458,19 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_TEST_ICE_STRESS_1 */
-#endif /* SEAICE_CGRID not defined */
+      IF ( SEAICEuseDYNAMICS.AND.useCubedSphereExchange ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'B-grid dynamics not working on Cubed-Sphere grid'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ( SEAICEuseDYNAMICS.AND.useOBCS ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'Open-Boundaries not implemented in B-grid dynamics'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* ndef SEAICE_CGRID */
 
 C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 #ifndef SEAICE_ALLOW_FREEDRIFT
