@@ -1,19 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.17 2010/11/05 08:13:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.18 2011/10/21 17:32:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#else
+# define OBCS_UVICE_OLD
+#endif
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_CALC_STRAINRATES
+C     !INTERFACE:
       SUBROUTINE SEAICE_CALC_STRAINRATES(
      I     uFld, vFld,
      O     e11Loc, e22Loc, e12Loc,
      I     iStep, myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE  SEAICE_CALC_STRAINRATES                      |
-C     | o compute strain rates from ice velocities               |
-C     |==========================================================|
-C     | written by Martin Losch, Apr 2007                        |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE  SEAICE_CALC_STRAINRATES
+C     | o compute strain rates from ice velocities
+C     *==========================================================*
+C     | written by Martin Losch, Apr 2007
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -28,30 +40,35 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
+C     uFld   :: ice velocity, u-component
+C     vFld   :: ice velocity, v-component
+C     e11Loc :: strain rate tensor, component 1,1
+C     e22Loc :: strain rate tensor, component 2,2
+C     e12Loc :: strain rate tensor, component 1,2
 C     iStep  :: Sub-time-step number
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
 C     myThid :: My Thread Id. number
+      _RL uFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL e11Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e22Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e12Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iStep
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-C     ice velocities
-      _RL uFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-C     strain rate tensor
-      _RL e11Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e22Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e12Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-CEndOfInterface
+CEOP
 
 #ifdef SEAICE_CGRID
 #ifdef SEAICE_ALLOW_DYNAMICS
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     i,j,bi,bj - Loop counters
+C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
-C     hFacU, hFacV - determine the no-slip boundary condition
+C     hFacU, hFacV :: determine the no-slip boundary condition
       INTEGER k
       _RS hFacU, hFacV, noSlipFac
 C     auxillary variables that help writing code that
@@ -73,39 +90,49 @@ C     abbreviations on C-points, need to do them in separate loops
 C     for vectorization
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          dudx(I,J) = _recip_dxF(I,J,bi,bj) *
-     &         (uFld(I+1,J,bi,bj)-uFld(I,J,bi,bj))
-          uave(I,J) = 0.5 _d 0 * (uFld(I,J,bi,bj)+uFld(I+1,J,bi,bj))
+          dudx(i,j) = _recip_dxF(i,j,bi,bj) *
+     &         (uFld(i+1,j,bi,bj)-uFld(i,j,bi,bj))
+          uave(i,j) = 0.5 _d 0 * (uFld(i,j,bi,bj)+uFld(i+1,j,bi,bj))
          ENDDO
         ENDDO
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          dvdy(I,J) = _recip_dyF(I,J,bi,bj) *
-     &         (vFld(I,J+1,bi,bj)-vFld(I,J,bi,bj))
-          vave(I,J) = 0.5 _d 0 * (vFld(I,J,bi,bj)+vFld(I,J+1,bi,bj))
+          dvdy(i,j) = _recip_dyF(i,j,bi,bj) *
+     &         (vFld(i,j+1,bi,bj)-vFld(i,j,bi,bj))
+          vave(i,j) = 0.5 _d 0 * (vFld(i,j,bi,bj)+vFld(i,j+1,bi,bj))
          ENDDO
         ENDDO
 C     evaluate strain rates at C-points
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          e11Loc(I,J,bi,bj) = dudx(I,J) + vave(I,J) * k2AtC(I,J,bi,bj)
-          e22Loc(I,J,bi,bj) = dvdy(I,J) + uave(I,J) * k1AtC(I,J,bi,bj)
+          e11Loc(i,j,bi,bj) = dudx(i,j) + vave(i,j) * k2AtC(i,j,bi,bj)
+          e22Loc(i,j,bi,bj) = dvdy(i,j) + uave(i,j) * k1AtC(i,j,bi,bj)
          ENDDO
         ENDDO
+#ifndef OBCS_UVICE_OLD
+C--     for OBCS: assume no gradient beyong OB
+        DO j=1-Oly,sNy+Oly-1
+         DO i=1-Olx,sNx+Olx-1
+          e11Loc(i,j,bi,bj) = e11Loc(i,j,bi,bj)*maskInC(i,j,bi,bj)
+          e22Loc(i,j,bi,bj) = e22Loc(i,j,bi,bj)*maskInC(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#endif /* OBCS_UVICE_OLD */
+
 C     abbreviations at Z-points, need to do them in separate loops
 C     for vectorization
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          dudy(I,J) = ( uFld(I,J,bi,bj) - uFld(I  ,J-1,bi,bj) )
-     &         * _recip_dyU(I,J,bi,bj)
-          uave(I,J) = 0.5 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
+          dudy(i,j) = ( uFld(i,j,bi,bj) - uFld(i  ,j-1,bi,bj) )
+     &         * _recip_dyU(i,j,bi,bj)
+          uave(i,j) = 0.5 _d 0 * (uFld(i,j,bi,bj)+uFld(i  ,j-1,bi,bj))
          ENDDO
         ENDDO
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          dvdx(I,J) = ( vFld(I,J,bi,bj) - vFld(I-1,J  ,bi,bj) )
-     &         * _recip_dxV(I,J,bi,bj) 
-          vave(I,J) = 0.5 _d 0 * (vFld(I,J,bi,bj)+vFld(I-1,J  ,bi,bj))
+          dvdx(i,j) = ( vFld(i,j,bi,bj) - vFld(i-1,j  ,bi,bj) )
+     &         * _recip_dxV(i,j,bi,bj)
+          vave(i,j) = 0.5 _d 0 * (vFld(i,j,bi,bj)+vFld(i-1,j  ,bi,bj))
          ENDDO
         ENDDO
 C     evaluate strain rates at Z-points
@@ -113,22 +140,22 @@ C     evaluate strain rates at Z-points
          DO i=1-Olx+1,sNx+Olx
           hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
           hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
-          e12Loc(I,J,bi,bj) = 0.5 _d 0 * (
-     &         dudy(I,J) + dvdx(I,J)
-     &         - k1AtZ(I,J,bi,bj) * vave(I,J)
-     &         - k2AtZ(I,J,bi,bj) * uave(I,J)
+          e12Loc(i,j,bi,bj) = 0.5 _d 0 * (
+     &         dudy(i,j) + dvdx(i,j)
+     &         - k1AtZ(i,j,bi,bj) * vave(i,j)
+     &         - k2AtZ(i,j,bi,bj) * uave(i,j)
      &         )
-     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+     &         *maskC(i  ,j  ,k,bi,bj)*maskC(i-1,j  ,k,bi,bj)
+     &         *maskC(i  ,j-1,k,bi,bj)*maskC(i-1,j-1,k,bi,bj)
      &         + 2.0 _d 0 * noSlipFac * (
-     &           2.0 _d 0 * uave(I,J) * _recip_dyU(I,J,bi,bj) * hFacU
-     &         + 2.0 _d 0 * vave(I,J) * _recip_dxV(I,J,bi,bj) * hFacV
+     &           2.0 _d 0 * uave(i,j) * _recip_dyU(i,j,bi,bj) * hFacU
+     &         + 2.0 _d 0 * vave(i,j) * _recip_dxV(i,j,bi,bj) * hFacV
      &         )
 C     no slip at the boundary implies u(j)+u(j-1)=0 and v(i)+v(i-1)=0
 C     accross the boundary; this is already accomplished by masking so
 C     that the following lines are not necessary
-c$$$     &         - hFacV * k1AtZ(I,J,bi,bj) * vave(I,J)
-c$$$     &         - hFacU * k2AtZ(I,J,bi,bj) * uave(I,J)
+c$$$     &         - hFacV * k1AtZ(i,j,bi,bj) * vave(i,j)
+c$$$     &         - hFacU * k2AtZ(i,j,bi,bj) * uave(i,j)
          ENDDO
         ENDDO
 

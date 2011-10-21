@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.64 2011/10/20 20:23:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.65 2011/10/21 17:32:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#else
+# define OBCS_UVICE_OLD
+#endif
 
 CBOP
 C     !ROUTINE: SEAICE_LSR
@@ -263,6 +268,7 @@ CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
         DO j=0,sNy+1
          DO i=0,sNx+1
 C     set up non-linear water drag
+#ifdef OBCS_UVICE_OLD
           TEMPVAR = QUART*(
      &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
      &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
@@ -270,6 +276,17 @@ C     set up non-linear water drag
      &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
      &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
      &            )**2 )
+#else /* OBCS_UVICE_OLD */
+          TEMPVAR = QUART*(
+     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
+     &             *maskInW( i ,j,bi,bj)
+     &             +( uIceC(i+1,J,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
+     &             *maskInW(i+1,j,bi,bj) )**2
+     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
+     &             *maskInS(i, j ,bi,bj)
+     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
+     &             *maskInS(i,j+1,bi,bj) )**2 )
+#endif /* OBCS_UVICE_OLD */
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            IF ( SEAICE_waterDrag_south.LE.0. ) THEN
             DWATN(I,J,bi,bj)=0.
@@ -531,6 +548,22 @@ C     contribution to the rhs part of grad(sigma)_x
          ENDDO
         ENDDO
 
+#ifndef OBCS_UVICE_OLD
+C--     prevent tri-diagonal solver to modify OB values:
+        DO J=1,sNy
+         DO I=1,sNx
+          IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
+            AU(I,J,bi,bj) = ZERO
+            BU(I,J,bi,bj) = ONE
+            CU(I,J,bi,bj) = ZERO
+            uRt1(I,J,bi,bj) = ZERO
+            uRt2(I,J,bi,bj) = ZERO
+            rhsU(I,J,bi,bj) = uIce(I,J,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+#endif /* OBCS_UVICE_OLD */
+
        ENDDO
       ENDDO
 
@@ -651,6 +684,22 @@ C     contribution to the rhs part of grad(sigma)_y
      &         - _dxF(I  ,J-1,bi,bj) * sig22(I  ,J-1) )
          ENDDO
         ENDDO
+
+#ifndef OBCS_UVICE_OLD
+C--     prevent tri-diagonal solver to modify OB values:
+        DO J=1,sNy
+         DO I=1,sNx
+          IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
+            AV(I,J,bi,bj) = ZERO
+            BV(I,J,bi,bj) = ONE
+            CV(I,J,bi,bj) = ZERO
+            vRt1(I,J,bi,bj) = ZERO
+            vRt2(I,J,bi,bj) = ZERO
+            rhsV(I,J,bi,bj) = vIce(I,J,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+#endif /* OBCS_UVICE_OLD */
 
        ENDDO
       ENDDO

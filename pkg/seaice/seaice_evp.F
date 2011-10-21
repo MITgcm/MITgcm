@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.38 2011/10/20 15:02:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.39 2011/10/21 17:32:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#else
+# define OBCS_UVICE_OLD
+#endif
 
 CBOP
 C     !ROUTINE: SEAICE_EVP
@@ -102,6 +107,9 @@ C     auxilliary variables
       _RL zMaxZ, zMinZ, fac
 #endif /* SEAICE_ALLOW_CLIPZETA */
       _RL denom1, denom2, facZ
+#ifndef OBCS_UVICE_OLD
+      _RL locMaskU, locMaskV
+#endif
 
 C     surface level
       kSrf = 1
@@ -435,6 +443,7 @@ C
           DO J=0,sNy
            DO I=0,sNx
 C     set up non-linear water drag, forcex, forcey
+#ifdef OBCS_UVICE_OLD
             TEMPVAR = QUART*(
      &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
      &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
@@ -442,6 +451,17 @@ C     set up non-linear water drag, forcex, forcey
      &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
      &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
      &            )**2 )
+#else /* OBCS_UVICE_OLD */
+            TEMPVAR = QUART*(
+     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
+     &             *maskInW( i ,j,bi,bj)
+     &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
+     &             *maskInW(i+1,j,bi,bj) )**2
+     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
+     &             *maskInS(i, j ,bi,bj)
+     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
+     &             *maskInS(i,j+1,bi,bj) )**2 )
+#endif /* OBCS_UVICE_OLD */
             IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
              IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
               DWATN(I,J,bi,bj)=QUART
@@ -530,6 +550,18 @@ c           vIceC(i,j,bi,bj) = vIce(i,j,bi,bj)
 c    &                       +( vIceC(i,j,bi,bj) - vIce(i,j,bi,bj) )
            ENDDO
           ENDDO
+#ifndef OBCS_UVICE_OLD
+          DO j=1,sNy
+           DO i=1,sNx
+            locMaskU = maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+            locMaskV = maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+            uIceC(i,j,bi,bj) = uIceC(i,j,bi,bj)*locMaskU
+     &                       + uIce(i,j,bi,bj)*(ONE-locMaskU)
+            vIceC(i,j,bi,bj) = vIceC(i,j,bi,bj)*locMaskV
+     &                       + vIce(i,j,bi,bj)*(ONE-locMaskV)
+           ENDDO
+          ENDDO
+#endif /* OBCS_UVICE_OLD */
          ENDDO
         ENDDO
 
