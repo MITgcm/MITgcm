@@ -1,18 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.14 2011/09/02 14:19:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.15 2011/10/21 17:11:45 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+#include "SEAICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: OBCS_APPLY_UVICE
 C     !INTERFACE:
       SUBROUTINE OBCS_APPLY_UVICE(
-     U                          uFld, vFld,
-     I                          myThid )
+     U                             uFld, vFld,
+     I                             myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | S/R OBCS_APPLY_UVICE
+C     |   Apply OB values to corresponding field array
 C     *==========================================================*
 
 C     !USES:
@@ -21,216 +25,187 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
+c#include "GRID.h"
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_SEAICE.h"
+#ifdef ALLOW_SEAICE
+#include "SEAICE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C    uFld     :: horizontal velocity field, 1rst component (zonal)
+C    vFld     :: horizontal velocity field, 2nd  component (meridional)
 C    myThid   :: my Thread Id number
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
+#ifdef ALLOW_SEAICE
+#ifdef SEAICE_CGRID
+#ifndef OBCS_UVICE_OLD
 
 C     !LOCAL VARIABLES:
-C     I,J,K,bi,bj :: Loop counters
-      INTEGER I,J,K,bi,bj
+C    bi, bj   :: indices of current tile
+C    i, j     :: Loop counters
+      INTEGER bi, bj
+      INTEGER i, j
+      INTEGER Iobc, Jobc
+      _RL uvIceApplyFac
 CEOP
 
-      K = 1
+C--   Set model variables to OB values on North/South Boundaries:
+C     2 steps: 1) set tangential component ; 2) set normal component.
+C     This ensures that the normal component is set correctly even
+C     when it conficts with tangential setting from an other OB.
+
+      uvIceApplyFac = OBCS_uvApplyFac
+c     IF ( OBCS_monitorFreq.EQ.1. ) uvIceApplyFac =  -1.
+c     IF ( OBCS_monitorFreq.EQ.deltaTmom*0.5 ) uvIceApplyFac = 0.
+c     IF ( OBCS_monitorFreq.EQ.deltaTmom ) uvIceApplyFac = 1.
+c     WRITE(standardMessageUnit,*)
+c          'OBCS_APPLY_UVICE: uvIceApplyFac=', uvIceApplyFac
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+C--   Set Tangential component first:
+
 C     Set model variables to OB values on North/South Boundaries
 # ifdef ALLOW_OBCS_NORTH
-      IF ( tileHasOBN(bi,bj) ) THEN
-      DO I=1-Olx,sNx+Olx
+        IF ( tileHasOBN(bi,bj) ) THEN
 C     Northern boundary
-       IF (OB_Jn(I,bi,bj).NE.0) THEN
-#  ifdef OBCS_SEAICE_COMPUTE_UVICE
-        uFld(I,OB_Jn(I,bi,bj)  ,bi,bj) =
-     &       _maskW(I,OB_Jn(I,bi,bj),K,bi,bj) *
-     &       uFld(I,OB_Jn(I,bi,bj)-1,bi,bj)
-        vFld(I,OB_Jn(I,bi,bj)  ,bi,bj) =
-     &       _maskS(I,OB_Jn(I,bi,bj),K,bi,bj) *
-     &       vFld(I,OB_Jn(I,bi,bj)-1,bi,bj)
-#  else /* OBCS_SEAICE_COMPUTE_UVICE */
-#   ifdef OBCS_SEAICE_AVOID_CONVERGENCE
-        vFld(I,OB_Jn(I,bi,bj),bi,bj) =
-     &       max(OBNvice(I,bi,bj),vFld(I,OB_Jn(I,bi,bj),bi,bj)) *
-     &       _maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
-#   else /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        vFld(I,OB_Jn(I,bi,bj),bi,bj) = OBNvice(I,bi,bj) *
-     &       _maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
-#   endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        uFld(I,OB_Jn(I,bi,bj),bi,bj) = OBNuice(I,bi,bj) *
-     &       _maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
-        if ( _maskS(I,OB_Jn(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
-     &       _maskS(I,OB_Jn(I,bi,bj)-2,K,bi,bj) .NE. 0. )
-     &       vFld(I,OB_Jn(I,bi,bj)-1,bi,bj) = 0.5 _d 0 *
-     &       ( vFld(I,OB_Jn(I,bi,bj)  ,bi,bj) +
-     &       vFld(I,OB_Jn(I,bi,bj)-2,bi,bj) ) *
-     &       _maskS(I,OB_Jn(I,bi,bj)-1,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
-        if ( _maskW(I,OB_Jn(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
-     &       _maskW(I,OB_Jn(I,bi,bj)-2,K,bi,bj) .NE. 0. )
-     &       uFld(I,OB_Jn(I,bi,bj)-1,bi,bj) = 0.5 _d 0 *
-     &       ( uFld(I,OB_Jn(I,bi,bj)  ,bi,bj) +
-     &       uFld(I,OB_Jn(I,bi,bj)-2,bi,bj) ) *
-     &       _maskW(I,OB_Jn(I,bi,bj)-1,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
-#  endif /* OBCS_SEAICE_COMPUTE_UVICE */
-       ENDIF
-      ENDDO
-      ENDIF
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           uFld(i,Jobc,bi,bj) = OBNuice(i,bi,bj)
+     &                        *seaiceMaskU(i,Jobc,bi,bj)
+          ENDIF
+         ENDDO
+        ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 
 # ifdef ALLOW_OBCS_SOUTH
-      IF ( tileHasOBS(bi,bj) ) THEN
-      DO I=1-Olx,sNx+Olx
+        IF ( tileHasOBS(bi,bj) ) THEN
 C     Southern boundary
-       IF (OB_Js(I,bi,bj).NE.0) THEN
-#  ifdef OBCS_SEAICE_COMPUTE_UVICE
-        uFld(I,OB_Js(I,bi,bj)+1,bi,bj) =
-     &         _maskW(I,OB_Js(I,bi,bj)+1,K,bi,bj) *
-     &         uFld(I,OB_Js(I,bi,bj)+2,bi,bj)
-        vFld(I,OB_Js(I,bi,bj)+1,bi,bj) =
-     &         _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj) *
-     &         vFld(I,OB_Js(I,bi,bj)+2,bi,bj)
-#  else /* OBCS_SEAICE_COMPUTE_UVICE */
-#   ifdef OBCS_SEAICE_AVOID_CONVERGENCE
-        vFld(I,OB_Js(I,bi,bj)+1,bi,bj)=
-     &       min(OBSvice(I,bi,bj),vFld(I,OB_Js(I,bi,bj)+1,bi,bj))
-     &       * _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
-#   else /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        vFld(I,OB_Js(I,bi,bj)+1,bi,bj)=OBSvice(I,bi,bj)
-     &       * _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
-#   endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        uFld(I,OB_Js(I,bi,bj),bi,bj)=OBSuice(I,bi,bj)
-     &       * _maskW(I,OB_Js(I,bi,bj),K,bi,bj)
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
-        if ( _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj) .NE. 0. .AND.
-     &       _maskS(I,OB_Js(I,bi,bj)+3,K,bi,bj) .NE. 0. )
-     &       vFld(I,OB_Js(I,bi,bj)+2,bi,bj) = 0.5 _d 0 *
-     &       ( vFld(I,OB_Js(I,bi,bj)+1,bi,bj) +
-     &       vFld(I,OB_Js(I,bi,bj)+3,bi,bj) ) *
-     &       _maskS(I,OB_Js(I,bi,bj)+2,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
-        if ( _maskW(I,OB_Js(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
-     &       _maskW(I,OB_Js(I,bi,bj)+2,K,bi,bj) .NE. 0. )
-     &       uFld(I,OB_Js(I,bi,bj)+1,bi,bj) = 0.5 _d 0 *
-     &       ( uFld(I,OB_Js(I,bi,bj)  ,bi,bj) +
-     &       uFld(I,OB_Js(I,bi,bj)+2,bi,bj) ) *
-     &       _maskW(I,OB_Js(I,bi,bj)+1,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
-#  endif /* OBCS_SEAICE_COMPUTE_UVICE */
-       ENDIF
-      ENDDO
-      ENDIF
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           uFld(i,Jobc,bi,bj) = OBSuice(i,bi,bj)
+     &                        *seaiceMaskU(i,Jobc,bi,bj)
+          ENDIF
+         ENDDO
+        ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
 
 C     Set model variables to OB values on East/West Boundaries
 # ifdef ALLOW_OBCS_EAST
-      IF ( tileHasOBE(bi,bj) ) THEN
-      DO J=1-Oly,sNy+Oly
+        IF ( tileHasOBE(bi,bj) ) THEN
 C     Eastern boundary
-       IF (OB_Ie(J,bi,bj).NE.0) THEN
-#  ifdef OBCS_SEAICE_COMPUTE_UVICE
-        uFld(OB_Ie(J,bi,bj),J,bi,bj) =
-     &         _maskW(OB_Ie(J,bi,bj),J,K,bi,bj) *
-     &         uFld(OB_Ie(J,bi,bj)-1,J,bi,bj)
-        vFld(OB_Ie(J,bi,bj),J,bi,bj) =
-     &         _maskS(OB_Ie(J,bi,bj),J,K,bi,bj) *
-     &         vFld(OB_Ie(J,bi,bj)-1,J,bi,bj)
-#  else /* OBCS_SEAICE_COMPUTE_UVICE */
-#   ifdef OBCS_SEAICE_AVOID_CONVERGENCE
-        uFld(OB_Ie(J,bi,bj),J,bi,bj)=
-     &       max(OBEuice(J,bi,bj),uFld(OB_Ie(J,bi,bj),J,bi,bj))
-     &       * _maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
-#   else /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        uFld(OB_Ie(J,bi,bj),J,bi,bj)=OBEuice(J,bi,bj)
-     &       * _maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
-#   endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        vFld(OB_Ie(J,bi,bj),J,bi,bj)=OBEvice(J,bi,bj)
-     &       * _maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
-        if ( _maskW(OB_Ie(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
-     &       _maskW(OB_Ie(J,bi,bj)-2,J,K,bi,bj) .NE. 0. )
-     &       uFld(OB_Ie(J,bi,bj)-1,J,bi,bj) = 0.5 _d 0 *
-     &       ( uFld(OB_Ie(J,bi,bj)  ,J,bi,bj) +
-     &       uFld(OB_Ie(J,bi,bj)-2,J,bi,bj) ) *
-     &       _maskW(OB_Ie(J,bi,bj)-1,J,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
-        if ( _maskS(OB_Ie(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
-     &       _maskS(OB_Ie(J,bi,bj)-2,J,K,bi,bj) .NE. 0. )
-     &       vFld(OB_Ie(J,bi,bj)-1,J,bi,bj) = 0.5 _d 0 *
-     &       ( vFld(OB_Ie(J,bi,bj)  ,J,bi,bj) +
-     &       vFld(OB_Ie(J,bi,bj)-2,J,bi,bj) ) *
-     &       _maskS(OB_Ie(J,bi,bj)-1,J,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
-#  endif /* OBCS_SEAICE_COMPUTE_UVICE */
-       ENDIF
-      ENDDO
-      ENDIF
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           vFld(Iobc,j,bi,bj) = OBEvice(j,bi,bj)
+     &                        *seaiceMaskV(Iobc,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDIF
 # endif /* ALLOW_OBCS_EAST */
 
 # ifdef ALLOW_OBCS_WEST
-      IF ( tileHasOBW(bi,bj) ) THEN
-      DO J=1-Oly,sNy+Oly
+        IF ( tileHasOBW(bi,bj) ) THEN
 C     Western boundary
-       IF (OB_Iw(J,bi,bj).NE.0) THEN
-#  ifdef OBCS_SEAICE_COMPUTE_UVICE
-        uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=
-     &         _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj) *
-     &         uFld(OB_Iw(J,bi,bj)+2,J,bi,bj)
-        vFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=
-     &         _maskS(OB_Iw(J,bi,bj)+1,J,K,bi,bj) *
-     &         vFld(OB_Iw(J,bi,bj)+2,J,bi,bj)
-#  else /* OBCS_SEAICE_COMPUTE_UVICE */
-#   ifdef OBCS_SEAICE_AVOID_CONVERGENCE
-        uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=
-     &       min(OBWuice(J,bi,bj),uFld(OB_Iw(J,bi,bj)+1,J,bi,bj))
-     &       * _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
-#   else /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=OBWuice(J,bi,bj)
-     &       * _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
-#   endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
-        vFld(OB_Iw(J,bi,bj),J,bi,bj)=OBWvice(J,bi,bj)
-     &       * _maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
-        if ( _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj) .NE. 0. .AND.
-     &       _maskW(OB_Iw(J,bi,bj)+3,J,K,bi,bj) .NE. 0. )
-     &       uFld(OB_Iw(J,bi,bj)+2,J,bi,bj) = 0.5 _d 0 *
-     &       ( uFld(OB_Iw(J,bi,bj)+1,J,bi,bj) +
-     &       uFld(OB_Iw(J,bi,bj)+3,J,bi,bj) ) *
-     &       _maskW(OB_Iw(J,bi,bj)+2,J,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
-#   ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
-        if ( _maskS(OB_Iw(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
-     &       _maskS(OB_Iw(J,bi,bj)+2,J,K,bi,bj) .NE. 0. )
-     &       vFld(OB_Iw(J,bi,bj)+1,J,bi,bj) = 0.5 _d 0 *
-     &       ( vFld(OB_Iw(J,bi,bj)  ,J,bi,bj) +
-     &       vFld(OB_Iw(J,bi,bj)+2,J,bi,bj) ) *
-     &       _maskS(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
-#   endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
-#  endif /* OBCS_SEAICE_COMPUTE_UVICE */
-       ENDIF
-      ENDDO
-      ENDIF
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Iw(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           vFld(Iobc,j,bi,bj) = OBWvice(j,bi,bj)
+     &                        *seaiceMaskV(Iobc,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDIF
+# endif /* ALLOW_OBCS_WEST */
+
+C--   Then set Normal component:
+
+C     Set model variables to OB values on North/South Boundaries
+# ifdef ALLOW_OBCS_NORTH
+        IF ( tileHasOBN(bi,bj) ) THEN
+C     Northern boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           vFld(i,Jobc,bi,bj)   = OBNvice(i,bi,bj)
+     &                          *seaiceMaskV(i,Jobc,bi,bj)
+           IF ( uvIceApplyFac.GE.0. )
+     &     vFld(i,Jobc+1,bi,bj) = OBNvice(i,bi,bj)
+     &                          *seaiceMaskV(i,Jobc,bi,bj)
+     &                          *uvIceApplyFac
+          ENDIF
+         ENDDO
+        ENDIF
+# endif /* ALLOW_OBCS_NORTH */
+
+# ifdef ALLOW_OBCS_SOUTH
+        IF ( tileHasOBS(bi,bj) ) THEN
+C     Southern boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           vFld(i,Jobc+1,bi,bj) = OBSvice(i,bi,bj)
+     &                          *seaiceMaskV(i,Jobc+1,bi,bj)
+           IF ( uvIceApplyFac.GE.0. )
+     &     vFld(i,Jobc,bi,bj)   = OBSvice(i,bi,bj)
+     &                          *seaiceMaskV(i,Jobc+1,bi,bj)
+     &                          *uvIceApplyFac
+          ENDIF
+         ENDDO
+        ENDIF
+# endif /* ALLOW_OBCS_SOUTH */
+
+C     Set model variables to OB values on East/West Boundaries
+# ifdef ALLOW_OBCS_EAST
+        IF ( tileHasOBE(bi,bj) ) THEN
+C     Eastern boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           uFld(Iobc,j,bi,bj)   = OBEuice(j,bi,bj)
+     &                          *seaiceMaskU(Iobc,j,bi,bj)
+           IF ( uvIceApplyFac.GE.0. )
+     &     uFld(Iobc+1,j,bi,bj) = OBEuice(j,bi,bj)
+     &                          *seaiceMaskU(Iobc,j,bi,bj)
+     &                          *uvIceApplyFac
+          ENDIF
+         ENDDO
+        ENDIF
+# endif /* ALLOW_OBCS_EAST */
+
+# ifdef ALLOW_OBCS_WEST
+        IF ( tileHasOBW(bi,bj) ) THEN
+C     Western boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Iw(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           uFld(Iobc+1,j,bi,bj) = OBWuice(j,bi,bj)
+     &                          *seaiceMaskU(Iobc+1,j,bi,bj)
+           IF ( uvIceApplyFac.GE.0. )
+     &     uFld(Iobc,j,bi,bj)   = OBWuice(j,bi,bj)
+     &                          *seaiceMaskU(Iobc+1,j,bi,bj)
+     &                          *uvIceApplyFac
+          ENDIF
+         ENDDO
+        ENDIF
 # endif /* ALLOW_OBCS_WEST */
 
        ENDDO
       ENDDO
 
-      CALL EXCH_UV_XY_RL( uFld, vFld, .TRUE., myThid )
+      CALL EXCH_UV_XY_RL( uFld, vFld,.TRUE.,myThid)
 
-#endif /* defined (ALLOW_OBCS) && defined (ALLOW_SEAICE) */
+#endif /* ndef OBCS_UVICE_OLD */
+#endif /* SEAICE_CGRID */
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END
