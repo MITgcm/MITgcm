@@ -1,12 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1515 2011/10/21 14:20:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1516 2011/10/21 18:33:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs + seaice-dynamics:
+  - new implementation calls OBCS_APPLY_UVICE (in seaice_dynsolver.F) before
+    solving for uIce,vIce and prevent SEAICE_LSR or SEAICE_EVP to modify OB
+    values (consistent with an implicit method).
+  - add option OBCS_UVICE_OLD (in OBCS_OPTIONS.h, defined by default) to
+    return to older implementation (same results as before); note that none of
+    the "experimental" OBCS_SEAICE options are implemented in the new version.
 o pkg/seaice:
-  - add parenthesis in Water-Ice drag calculations (evp & lsr); 
-  - in seaice_lsr.F, simplify and fix AA3 setting in case sNx or sNy=1; 
+  - add few stop (B-grid & CS-exch, B-grid & obcs, AUTODIFF & SEAICE_maskRHS)
+  - add parenthesis in Water-Ice drag calculations (evp & lsr);
+  - in seaice_lsr.F, simplify and fix AA3 setting in case sNx or sNy=1;
     and fix case SEAICE_waterDrag=0 (but unstable if no or little seaice)
   - update output of test exp lab_sea that uses evp or lsr (fwd+ad)
     and global_ocean.cs32x15 (icedyn & seaice fwd+ad).
@@ -15,13 +23,13 @@ o pkg/layers:
 o pkg/dic:
   - Remove subroutine CALC_PCO2_APPROX_CO3 from carbon_chem.F and add
     carbonate computation/output to CALC_PCO2_APPROX
-o model/src: 
-  - improve vectorization also for adjoint code of 
+o model/src:
+  - improve vectorization also for adjoint code of
     solve_tridiagonal and solve_pentadiagonal. As this requires up to
     5 new 3D-fields, this code is only turned on for the combination of
     ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX.
   - remove hard-wiring of CPP-flag ALLOW_SOLVERS_KLOOPINSIDE to
-    ALLOW_AUTODIFF. This flag now needs to be set outside of 
+    ALLOW_AUTODIFF. This flag now needs to be set outside of
     solve_tri/pentadiagonal.F
 o pkg/exf:
   - fix previous modif in exf_readparms.F (revision 1.66: treatment of
