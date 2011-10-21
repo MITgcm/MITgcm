@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1514 2011/10/19 01:41:20 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1515 2011/10/21 14:20:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - add parenthesis in Water-Ice drag calculations (evp & lsr); 
+  - in seaice_lsr.F, simplify and fix AA3 setting in case sNx or sNy=1; 
+    and fix case SEAICE_waterDrag=0 (but unstable if no or little seaice)
+  - update output of test exp lab_sea that uses evp or lsr (fwd+ad)
+    and global_ocean.cs32x15 (icedyn & seaice fwd+ad).
 o pkg/layers:
   - Include potential density as new coordinate (Thanks to David Munday)
 o pkg/dic:
