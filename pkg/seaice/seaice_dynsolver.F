@@ -1,19 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.43 2011/01/12 00:06:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.44 2011/10/21 17:29:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_DYNSOLVER
+C     !INTERFACE:
       SUBROUTINE SEAICE_DYNSOLVER( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_DYNSOLVER                              |
-C     | o Ice dynamics using LSR solver                          |
-C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997          |
-C     |   or EVP explicit solver by Hunke and Dukowicz, JPO 27,  |
-C     |   1849-1867 (1997)                                       |
-C     |==========================================================|
-C     | written by Martin Losch, March 2006                      |
-C     \==========================================================/
+
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_DYNSOLVER
+C     | o Ice dynamics using LSR solver
+C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997
+C     |   or EVP explicit solver by Hunke and Dukowicz, JPO 27,
+C     |   1849-1867 (1997)
+C     *==========================================================*
+C     | written by Martin Losch, March 2006
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -31,25 +37,28 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-C     myThid - Thread no. that called this routine.
+C     myTime     :: Simulation time
+C     myIter     :: Simulation timestep number
+C     myThid     :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef SEAICE_CGRID
 
-C     === Local variables ===
-C     i,j,bi,bj - Loop counters
-      INTEGER i, j, bi, bj
-      _RL PSTAR
-      _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     i,j,bi,bj :: Loop counters
+      INTEGER i, j, bi, bj
+      _RL PSTAR
+      _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL  mask_uice, mask_vice
 
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -107,6 +116,7 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        ENDDO
       ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF ( SEAICE_maskRHS ) THEN
 C     dynamic masking of areas with no ice
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -135,6 +145,7 @@ C     dynamic masking of areas with no ice
        ENDDO
        CALL EXCH_UV_XY_RL( seaiceMaskU, seaiceMaskV, .FALSE., myThid )
       ENDIF
+#endif /* ndef ALLOW_AUTODIFF_TAMC */
 
 C--   NOW SET UP FORCING FIELDS
 
@@ -225,8 +236,13 @@ C--   now set up ice pressure and viscosities
 #endif
 
 #ifdef SEAICE_ALLOW_DYNAMICS
-
       IF ( SEAICEuseDYNAMICS ) THEN
+
+#ifdef ALLOW_OBCS
+       IF ( useOBCS ) THEN
+         CALL OBCS_APPLY_UVICE( uIce, vIce, myThid )
+       ENDIF
+#endif /* ALLOW_OBCS */
 
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -257,7 +273,7 @@ CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
            ENDDO
           ENDDO
          ENDDO
-        ENDDO        
+        ENDDO
 #endif
 #if defined(SEAICE_ALLOW_EVP)||defined(SEAICE_ALLOW_FREEDRIFT)
        ELSE
@@ -278,9 +294,9 @@ C End of IF (DIFFERENT_MULTIPLE ...
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE stressDivergenceX  = comlev1, 
+CADJ STORE stressDivergenceX  = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE stressDivergenceY  = comlev1, 
+CADJ STORE stressDivergenceY  = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
 CADJ STORE DWATN  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
