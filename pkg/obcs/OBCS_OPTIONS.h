@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.11 2011/10/21 17:08:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.12 2011/10/21 18:42:15 jmc Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -56,12 +56,12 @@ C     Smooth the component of sea-ice velocity perpendicular to the edge.
 C     Smooth the component of sea ice velocity parallel to the edge.
 #undef OBCS_SEAICE_SMOOTH_UVICE_PAR
 
-C     Smooth the tracer sea-ice variables near the edges.
-#undef OBCS_SEAICE_SMOOTH_EDGE
-
 C     Compute rather than specify seaice velocities at the edges.
 #undef OBCS_SEAICE_COMPUTE_UVICE
 #endif /* OBCS_UVICE_OLD */
+
+C     Smooth the tracer sea-ice variables near the edges.
+#undef OBCS_SEAICE_SMOOTH_EDGE
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */
