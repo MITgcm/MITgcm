@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.51 2011/06/09 20:34:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.52 2011/10/21 15:33:25 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -13,6 +13,7 @@ C     *==========================================================*
 #define SEAICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_SEAICE
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
@@ -128,6 +129,7 @@ C--   not recommended
 C     enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
 
+#endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
 
 CEH3 ;;; Local Variables: ***
