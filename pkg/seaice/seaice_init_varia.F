@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.62 2011/10/05 18:33:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.63 2011/10/21 17:24:02 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 CStartOfInterface
       SUBROUTINE SEAICE_INIT_VARIA( myThid )
@@ -24,11 +27,7 @@ C     === Global variables ===
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #include "SEAICE_TAVE.h"
-#ifdef ALLOW_EXCH2
-# include "W2_EXCH2_SIZE.h"
-# include "W2_EXCH2_TOPOLOGY.h"
-#endif
-#ifdef ALLOW_OBCS
+#ifdef OBCS_UVICE_OLD
 # include "OBCS_GRID.h"
 #endif
 
@@ -55,14 +54,9 @@ C     i,j,k,bi,bj :: Loop counters
 #ifdef SEAICE_AGE
       INTEGER iTracer
 #endif
-#ifdef ALLOW_OBCS
+#ifdef OBCS_UVICE_OLD
       INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
-#ifdef ALLOW_EXCH2
-# ifndef SEAICE_CGRID
-      INTEGER myTile
-# endif
-#endif
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface = Nr
@@ -215,65 +209,29 @@ C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifdef ALLOW_OBCS
+#ifdef OBCS_UVICE_OLD
+#ifdef SEAICE_CGRID
         IF (useOBCS) THEN
 C--   If OBCS is turned on, close southern and western boundaries
          DO i=1-Olx,sNx+Olx
 C Southern boundary
           J_obc = OB_Js(i,bi,bj)
           IF (J_obc.NE.0) THEN
-#ifdef SEAICE_CGRID
            seaiceMaskU(i,J_obc,bi,bj)=   0.0 _d 0
            seaiceMaskV(i,J_obc,bi,bj)=   0.0 _d 0
-#else
-           UVM(i,J_obc,bi,bj)=0. _d 0
-#endif /* SEAICE_CGRID */
           ENDIF
          ENDDO
          DO j=1-Oly,sNy+Oly
 C Western boundary
           I_obc=OB_Iw(j,bi,bj)
           IF (I_obc.NE.0) THEN
-#ifdef SEAICE_CGRID
            seaiceMaskU(I_obc,j,bi,bj)=   0.0 _d 0
            seaiceMaskV(I_obc,j,bi,bj)=   0.0 _d 0
-#else
-           UVM(I_obc,j,bi,bj)=0. _d 0
-#endif /* SEAICE_CGRID */
           ENDIF
          ENDDO
         ENDIF
-#endif /* ALLOW_OBCS */
-
-#ifdef ALLOW_EXCH2
-#ifndef SEAICE_CGRID
-C--   Special stuff for cubed sphere: assume grid is rectangular and
-C     set UV mask to zero except for Arctic and Antarctic cube faces.
-        IF (useCubedSphereExchange) THEN
-         myTile = W2_myTileList(bi,bj)
-         IF ( exch2_myFace(myTile) .EQ. 1 .OR.
-     &        exch2_myFace(myTile) .EQ. 2 .OR.
-     &        exch2_myFace(myTile) .EQ. 4 .OR.
-     &        exch2_myFace(myTile) .EQ. 5 ) THEN
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            UVM(i,j,bi,bj)=0. _d 0
-           ENDDO
-          ENDDO
-         ELSEIF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
-          i=1
-          DO j=1-OLy,sNy+OLy
-           UVM(i,j,bi,bj)=0. _d 0
-          ENDDO
-         ELSEIF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
-          j=1
-          DO i=1-OLx,sNx+OLx
-           UVM(i,j,bi,bj)=0. _d 0
-          ENDDO
-         ENDIF
-        ENDIF
 #endif /* SEAICE_CGRID */
-#endif /* ALLOW_EXCH2 */
+#endif /* OBCS_UVICE_OLD */
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
