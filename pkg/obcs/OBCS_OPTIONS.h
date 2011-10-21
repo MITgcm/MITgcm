@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.10 2011/02/28 15:31:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.11 2011/10/21 17:08:00 jmc Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -36,6 +36,12 @@ C This includes hooks to sponge layer treatment of uvel, vvel
 C balance barotropic velocity
 #define ALLOW_OBCS_BALANCE
 
+C Use older implementation of obcs in seaice-dynamics
+C note: most of the "experimental" options listed below have not yet
+C       been implementated in new version.
+#define OBCS_UVICE_OLD
+
+#ifdef OBCS_UVICE_OLD
 C     The following five CPP options are experimental and aim to deal
 C     with artifacts due to the low-frequency specification of sea-ice
 C     boundary conditions compared to the model forcing frequency.
@@ -55,6 +61,7 @@ C     Smooth the tracer sea-ice variables near the edges.
 
 C     Compute rather than specify seaice velocities at the edges.
 #undef OBCS_SEAICE_COMPUTE_UVICE
+#endif /* OBCS_UVICE_OLD */
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */
