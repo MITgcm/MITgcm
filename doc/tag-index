@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1516 2011/10/21 18:33:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1517 2011/10/22 14:11:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,6 +11,7 @@ o pkg/obcs + seaice-dynamics:
   - add option OBCS_UVICE_OLD (in OBCS_OPTIONS.h, defined by default) to
     return to older implementation (same results as before); note that none of
     the "experimental" OBCS_SEAICE options are implemented in the new version.
+  - switch test exp. seaice_obcs to use new version (update output).
 o pkg/seaice:
   - add few stop (B-grid & CS-exch, B-grid & obcs, AUTODIFF & SEAICE_maskRHS)
   - add parenthesis in Water-Ice drag calculations (evp & lsr);
