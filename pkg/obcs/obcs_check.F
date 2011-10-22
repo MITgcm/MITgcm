@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.22 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.23 2011/10/22 13:49:27 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
-c#include "OBCS_SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -384,6 +383,23 @@ CML       ENDIF
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
+#ifndef OBCS_UVICE_OLD
+c     IF ( useSEAICE .AND. SEAICEuseDYNAMICS ) THEN
+      IF ( useSEAICE ) THEN
+#if ( defined (OBCS_SEAICE_COMPUTE_UVICE)     || \
+      defined (OBCS_SEAICE_AVOID_CONVERGENCE) || \
+      defined (OBCS_SEAICE_SMOOTH_UVICE_PERP) || \
+      defined (OBCS_SEAICE_SMOOTH_UVICE_PAR) )
+       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      'needs to define OBCS_UVICE_OLD in OBCS_OPTIONS.h'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      'to activate such OBCS_SEAICE_[] option'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+#endif
+      ENDIF
+#endif /* ndef OBCS_UVICE_OLD */
 
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: set-up OK'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
