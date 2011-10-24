@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1517 2011/10/22 14:11:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1518 2011/10/24 16:12:39 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -24,11 +24,15 @@ o pkg/layers:
 o pkg/dic:
   - Remove subroutine CALC_PCO2_APPROX_CO3 from carbon_chem.F and add
     carbonate computation/output to CALC_PCO2_APPROX
-o model/src:
-  - improve vectorization also for adjoint code of
+o pkg/generic_advdiff
+  - make TAF generate code that vectorizes: 
+    gad_dst3fl_adv_*.F, gad_u3c4_impl_r.F
+o model/src: 
+  - improve vectorization also for adjoint code of 
     solve_tridiagonal and solve_pentadiagonal. As this requires up to
     5 new 3D-fields, this code is only turned on for the combination of
-    ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX.
+    ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX. Also remove error message
+    for singular matrix check (only for TARGET_NEC_SX).
   - remove hard-wiring of CPP-flag ALLOW_SOLVERS_KLOOPINSIDE to
     ALLOW_AUTODIFF. This flag now needs to be set outside of
     solve_tri/pentadiagonal.F
