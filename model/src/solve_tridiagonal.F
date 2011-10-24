@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.4 2011/10/13 14:48:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.5 2011/10/24 16:11:26 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -93,7 +93,10 @@ C--   Beginning of forward sweep (top level)
            bet(i,j,1) = 1. _d 0 / b3d(i,j,1)
          ELSE
            bet(i,j,1) = 0. _d 0
+# ifndef TARGET_NEC_SX
+C     keep your fingers crossed and enjoy the better performance
            errCode = 1
+# endif
          ENDIF
        ENDDO
       ENDDO
@@ -113,7 +116,10 @@ CADJ loop = sequential
            bet(i,j,k) = 1. _d 0 / tmpvar
          ELSE
            bet(i,j,k) = 0. _d 0
+# ifndef TARGET_NEC_SX
+C     keep your fingers crossed and enjoy the better performance
            errCode = 1
+# endif
          ENDIF
         ENDDO
        ENDDO

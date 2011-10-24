@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.5 2011/10/13 14:48:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.6 2011/10/24 16:11:19 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -123,7 +123,10 @@ CADJ loop = sequential
            c5d(i,j,k) = 1. _d 0 / c5dloc(i,j,k)
           ELSE
            c5d(i,j,k) = 0. _d 0
+# ifndef TARGET_NEC_SX
+C     keep your fingers crossed and enjoy the better performance
            errCode = 1
+# endif
           ENDIF
           d5d(i,j,k)       = d5dloc(i,j,k)
           y5d(i,j,k,bi,bj) = y5dloc(i,j,k)
@@ -132,7 +135,10 @@ CADJ loop = sequential
            c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
           ELSE
            c5d(i,j,k) = 0. _d 0
+# ifndef TARGET_NEC_SX
+C     keep your fingers crossed and enjoy the better performance
            errCode = 1
+# endif
           ENDIF
 # endif
          ENDDO
@@ -164,7 +170,10 @@ C--       [k] <- [k] - b_k/c_k-1 * [k-1]
            c5d(i,j,k) = 1. _d 0 / c5dtmp
           ELSE
            c5d(i,j,k) = 0. _d 0
+# ifndef TARGET_NEC_SX
+C     keep your fingers crossed and enjoy the better performance
            errCode = 1
+# endif
           ENDIF
          ENDDO
         ENDDO
@@ -207,7 +216,10 @@ C--       [k] <- [k] - b_k/c_k-1 * [k-1]
            c5d(i,j,k) = 1. _d 0 / c5dtmp
           ELSE
            c5d(i,j,k) = 0. _d 0
+# ifndef TARGET_NEC_SX
+C     keep your fingers crossed and enjoy the better performance
            errCode = 1
+# endif
           ENDIF
          ENDDO
         ENDDO
