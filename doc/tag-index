@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1518 2011/10/24 16:12:39 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1519 2011/10/25 12:35:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63d (2011/10/25)
 o pkg/obcs + seaice-dynamics:
   - new implementation calls OBCS_APPLY_UVICE (in seaice_dynsolver.F) before
     solving for uIce,vIce and prevent SEAICE_LSR or SEAICE_EVP to modify OB
@@ -25,10 +26,10 @@ o pkg/dic:
   - Remove subroutine CALC_PCO2_APPROX_CO3 from carbon_chem.F and add
     carbonate computation/output to CALC_PCO2_APPROX
 o pkg/generic_advdiff
-  - make TAF generate code that vectorizes: 
+  - make TAF generate code that vectorizes:
     gad_dst3fl_adv_*.F, gad_u3c4_impl_r.F
-o model/src: 
-  - improve vectorization also for adjoint code of 
+o model/src:
+  - improve vectorization also for adjoint code of
     solve_tridiagonal and solve_pentadiagonal. As this requires up to
     5 new 3D-fields, this code is only turned on for the combination of
     ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX. Also remove error message
