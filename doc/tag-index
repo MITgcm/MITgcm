@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1519 2011/10/25 12:35:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1520 2011/10/25 13:10:24 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o make gluemnc/xplodemnc work with (moron) non-GNU shell tools
 
 checkpoint63d (2011/10/25)
 o pkg/obcs + seaice-dynamics:
