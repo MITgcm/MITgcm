@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.158 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.159 2011/10/25 15:09:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -402,6 +402,17 @@ CADJ STORE KappaRV(:,:,:)
 CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_OBCS
+C--   For Stevens boundary conditions velocities need to be extrapolated
+C     (copied) to a narrow strip outside the domain
+         IF ( useOBCS ) THEN
+          CALL OBCS_COPY_UV_N( 
+     U         uVel(1-Olx,1-Oly,1,bi,bj),
+     U         vVel(1-Olx,1-Oly,1,bi,bj),
+     I         Nr, bi, bj, myThid )
+         ENDIF
+#endif /* ALLOW_OBCS */
+
 C--     Start of dynamics loop
         DO k=1,Nr
 
@@ -597,12 +608,17 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
      I         myThid )
         ENDIF
 
-#ifdef   ALLOW_OBCS
+#ifdef ALLOW_OBCS
 C--      Apply open boundary conditions
         IF ( useOBCS ) THEN
+C--      but first save intermediate velocities to be used in the 
+C        next time step for the Stevens boundary conditions
+          CALL OBCS_SAVE_UV_N( 
+     I        bi, bj, iMin, iMax, jMin, jMax, 0, 
+     I        gU, gV, myThid )
           CALL OBCS_APPLY_UV( bi, bj, 0, gU, gV, myThid )
         ENDIF
-#endif   /* ALLOW_OBCS */
+#endif /* ALLOW_OBCS */
 
 #ifdef    ALLOW_CD_CODE
         IF (implicitViscosity.AND.useCDscheme) THEN
