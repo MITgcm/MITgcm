@@ -1,0 +1,76 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef= 0.696834, 0.497738, 0.298643, 0.0995477, -0.0995477, -0.298643, -0.497738, -0.696834,
+ sRef= 8*35.,
+ viscAr=1.E-3,
+ viscAh=1.E3,
+#- put small value (<< stab.limit ~ 3.e10) only to test biharmonic-viscosity
+ viscA4=1.E8,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ bottomDragLinear = 1.e-2,
+ diffKhT=1.E3,
+ diffKrT=1.E-5,
+ diffKhS=1.E3,
+ diffKrS=1.E-5,
+ saltAdvScheme=4,
+ eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ gravity=9.81,
+ f0=1.e-4,
+ beta=0.E-11,
+ nonHydrostatic=.TRUE.,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ hFacMin=0.2,
+ readBinaryPrec=64,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
+#useSingleCpuIO=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=400,
+ cg3dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+ nTimeSteps=10,
+ baseTime=10800.,
+ deltaT=600.0,
+ abEps=0.1,
+ momDissip_In_AB=.FALSE.,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=10800.0,
+ monitorSelect=2,
+ monitorFreq=1.,
+# for time dependent open boundary conditions, activate the following 3 lines:
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=21600.,
+ externForcingCycle =43200.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delX=80*5.e3,
+ delY=42*5.e3,
+ delR= 8*562.5,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='topog.bump',
+ &
