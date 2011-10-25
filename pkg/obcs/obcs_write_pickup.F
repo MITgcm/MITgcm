@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_write_pickup.F,v 1.4 2011/10/05 14:55:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_write_pickup.F,v 1.5 2011/10/25 15:09:18 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -37,7 +37,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_ORLANSKI
+#if (defined ALLOW_ORLANSKI) || (defined ALLOW_OBCS_STEVENS)
 
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
@@ -57,6 +57,7 @@ C     done within  Vertical Section IO routines. Since only thread one is
 C     doing IO, we need a barrier here to wait for every one to finish.
       _BARRIER
 
+#ifdef ALLOW_ORLANSKI
 C     Write N and S OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_NORTH
       IF ( useOrlanskiNorth ) THEN
@@ -202,10 +203,41 @@ C     Write E and W OB storage and phase speed arrays
 #endif
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
+#endif /* ALLOW_ORLANSKI */
+
+#ifdef ALLOW_OBCS_STEVENS
+#ifdef ALLOW_OBCS_NORTH
+      IF ( useStevensNorth ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensN.',suff(1:iL)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNvStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+
+#ifdef ALLOW_OBCS_SOUTH
+      IF ( useStevensSouth ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensS.',suff(1:iL)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSvStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+
+#ifdef ALLOW_OBCS_EAST
+      IF ( useStevensEast ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensE.',suff(1:iL)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_EAST */
+
+#ifdef ALLOW_OBCS_WEST
+      IF ( useStevensWest ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensW.',suff(1:iL)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_WEST */
+#endif /* ALLOW_OBCS_STEVENS */
 
 C--   Every one wait for thread 1 to finish (see comment @ the top)
       _BARRIER
 
-#endif /* ALLOW_ORLANSKI */
+#endif /* ALLOW_ORLANSKI or ALLOW_OBCS_STEVENS */
       RETURN
       END

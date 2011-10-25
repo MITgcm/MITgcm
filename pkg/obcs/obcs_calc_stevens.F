@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.4 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.5 2011/10/25 15:09:18 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -6,12 +6,11 @@ C $Name:  $
 
 CBOP
 C     !ROUTINE: OBCS_CALC_STEVENS
-
 C     !INTERFACE:
       SUBROUTINE OBCS_CALC_STEVENS(
      I     futureTime, futureIter,
      I     myThid )
-C     !DESCRIPTION:
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_CALC_STEVENS
 C     | o Calculate future boundary data at open boundaries
@@ -26,8 +25,13 @@ C     |    OBE/W/N/Su/v (normal) when this routine is entered
 C     |  - the vertically averaged velocity is corrected
 C     |    by the "baroclinic" (= deviation from vertically
 C     |    averaged velocity) velocity to give a new OB?u/v;
-C     |    the "barolinic" velocity is simply copied from the model
-C     |    interior to the boundary
+C     |    the "barolinic" velocity is estimated from the previous
+C     |    time step which makes this boundary condition depend on
+C     |    a restart file. If OBCS_STEVENS_USE_INTERIOR_VELOCITY
+C     |    is defined the velocity is simply copied from the model
+C     |    interior to the boundary, thereby avoiding a restart
+C     |    file or complicated reconstruction, but this solution
+C     |    can give unexpected results.
 C     |    (Note: in this context the terms barotropic and baroclinic
 C     |    are MOM jargon and --- to my mind ---- should not be used)
 C     |  - a wave phase speed is estimated from temporal and
@@ -45,7 +49,7 @@ C     |
 C     *==========================================================*
 C     | Feb, 2009: started by Martin Losch (Martin.Losch@awi.de)
 C     *==========================================================*
-
+C     \ev
 C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
@@ -89,7 +93,7 @@ C     auxillary variables
 C     clf          :: ratio of grid spacing and time step
 C     dtracSpace   :: horizontal difference of tracer
 C     aFac         :: switch (0 or 1) that turns on advective contribution
-C     gFac         :: switch (0 or 1) that turns on restoring boundary condition
+C     gFacM/Z      :: switch (0 or 1) that turns on restoring boundary condition
 C     pFac         :: switch that turns on/off phase velocity contribution
       INTEGER bi, bj
       INTEGER I, J, K
@@ -97,14 +101,16 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL uPhase
 c     _RL vPhase
       _RL dtracSpace
-      _RL cflMer(1-OLy:sNy+OLy,Nr)
-      _RL cflZon(1-OLx:sNx+OLx,Nr)
+      _RL cflMer (1-OLy:sNy+OLy,Nr)
+      _RL gFacM  (1-OLy:sNy+OLy,Nr)
+c     _RL cflZon (1-OLx:sNx+OLx,Nr)
+c     _RL gFacZ  (1-OLy:sNy+OLy,Nr)
       _RL uMerPri(1-OLy:sNy+OLy,Nr)
 c     _RL vZonPri(1-OLx:sNx+OLx,Nr)
       _RL uMerBar(1-OLy:sNy+OLy)
 c     _RL vZonBar(1-OLx:sNx+OLx)
-      _RL drFBar(1-OLy:sNy+OLy)
-      _RL gammat, gammas, gFac, pFac, aFac
+      _RL drFBar (1-OLy:sNy+OLy)
+      _RL gammat, gammas, pFac, aFac
 #ifdef ALLOW_PTRACERS
 c     INTEGER iTracer
 #endif /* ALLOW_PTRACERS */
@@ -171,7 +177,11 @@ C     first initialize some fields
           DO J=1-Oly,sNy+Oly
            I=OB_Ie(J,bi,bj)
            IF (I.NE.0) THEN
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
             uMerBar(J) = uMerBar(J) + uVel(I-1,J,K,bi,bj)
+#else
+            uMerBar(J) = uMerBar(J) + OBEuStevens(J,K,bi,bj)
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           *drF(K)* _hFacW(I,J,K,bi,bj)
             drFBar(J) = drFBar(J) + drF(K)* _hFacW(I,J,K,bi,bj)
            ENDIF
@@ -184,7 +194,12 @@ C     first initialize some fields
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) uMerPri(J,K) = (uVel(I-1,J,K,bi,bj)-uMerBar(J))
+           IF (I.NE.0) 
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
+     &          uMerPri(J,K) = (uVel(I-1,J,K,bi,bj)-uMerBar(J))
+#else
+     &          uMerPri(J,K) = (OBEuStevens(J,K,bi,bj)-uMerBar(J))
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &          * _maskW(I,J,K,bi,bj)
           ENDDO
          ENDDO
@@ -222,19 +237,43 @@ CML         OBEv(J,K,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
+#ifdef NONLIN_FRSURF
+C     this is a bit of a hack
+         IF ( nonlinFreeSurf.GT.0 ) THEN
+          DO J=1-Oly,sNy+Oly
+           I=OB_Ie(J,bi,bj)
+           IF (I.ne.0) THEN
+            OBEeta(J,bi,bj) = etaN(I-1,J,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+#endif /* NONLIN_FRSURF */
 C     Next, we compute the phase speed correction, which depends on the
-C     tracer! Theta first:
+C     tracer!
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Ie(J,bi,bj)
-           cflMer(J,K) = 0. _d 0
            IF (I.NE.0) THEN
+            cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
+CML         gFacM(J,K)  = 0. _d 0
+CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
+            gFacM(J,K)   = ABS(MIN(SIGN(1.D0,uVel(I,J,K,bi,bj)),0.D0))
+           ELSE
+            cflMer(J,K) = 0. _d 0
+            gFacM(J,K)  = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+         DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+           I=OB_Ie(J,bi,bj)
+           IF (I.NE.0) THEN
+C     Theta first:
             dTracSpace = (theta(I-1,J,K,bi,bj)-theta(I-2,J,K,bi,bj))
      &           * _maskW(I-1,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
-             uPhase = MIN( cflMer(J,K),
+             uPhase = MIN( cflMer(J,K), 
 #ifdef ALLOW_ADAMSBASHFORTH_3
      &        MAX( 0.D0, -cflMer(J,K)*gtNm(I-1,J,K,bi,bj,1)/dTracSpace )
 #else
@@ -244,30 +283,19 @@ C     tracer! Theta first:
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
 C     sure if this will be stable
-CML         gFac = 0. _d 0
-CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFac = 1. _d 0
-            gFac = ABS(MIN(SIGN(1.D0,uVel(I,J,K,bi,bj)),0.D0))
             OBEt(J,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
      &          * _maskW(I,J,K,bi,bj)
      &          * (
      &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &          *(theta(I,J,K,bi,bj)-theta(I-1,J,K,bi,bj))
      &          * _recip_dxC(I,J,bi,bj)
-     &          - gFac * gammat * (theta(I,J,K,bi,bj)-OBEt(J,K,bi,bj)) )
-           ENDIF
-          ENDDO
-         ENDDO
+     &          - gFacM(J,K) * gammat 
+     &           * (theta(I,J,K,bi,bj)-OBEt(J,K,bi,bj)) )
 C     Now salinity:
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           cflMer(J,K) = 0. _d 0
-           IF (I.NE.0) THEN
             dTracSpace = (salt(I-1,J,K,bi,bj)-salt(I-2,J,K,bi,bj))
      &          * _maskW(I-1,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
              uPhase = MIN( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
      &        MAX( 0.D0, -cflMer(J,K)*gsNm(I-1,J,K,bi,bj,1)/dTracSpace )
@@ -278,16 +306,14 @@ C     Now salinity:
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
 C     sure if this will be stable
-CML         gFac = 0. _d 0
-CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFac = 1. _d 0
-            gFac = ABS(MIN(SIGN(1.D0,uVel(I,J,K,bi,bj)),0.D0))
             OBEs(J,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
      &          * _maskW(I,J,K,bi,bj)
      &          * (
      &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &          *(salt(I,J,K,bi,bj)-salt(I-1,J,K,bi,bj))
      &          * _recip_dxC(I,J,bi,bj)
-     &          - gFac * gammas * (salt(I,J,K,bi,bj)-OBEs(J,K,bi,bj)) )
+     &          - gFacM(J,K) * gammas 
+     &           * (salt(I,J,K,bi,bj)-OBEs(J,K,bi,bj)) )
            ENDIF
           ENDDO
          ENDDO
@@ -325,7 +351,11 @@ C     first initialize some fields
           DO J=1-Oly,sNy+Oly
            I=OB_Iw(J,bi,bj)
            IF (I.NE.0) THEN
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
             uMerBar(J) = uMerBar(J) + uVel(I+2,J,K,bi,bj)
+#else
+            uMerBar(J) = uMerBar(J) + OBWuStevens(J,K,bi,bj)
+#endif /* OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &        *drF(K)* _hFacW(I+1,J,K,bi,bj)
             drFBar(J) = drFBar(J) + drF(K)* _hFacW(I+1,J,K,bi,bj)
            ENDIF
@@ -338,7 +368,12 @@ C     first initialize some fields
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) uMerPri(J,K) = (uVel(I+2,J,K,bi,bj)-uMerBar(J))
+           IF (I.NE.0) 
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
+     &          uMerPri(J,K) = (uVel(I+2,J,K,bi,bj)-uMerBar(J))
+#else
+     &          uMerPri(J,K) = (OBWuStevens(J,K,bi,bj)-uMerBar(J))
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &       * _maskW(I+1,J,K,bi,bj)
           ENDDO
          ENDDO
@@ -376,18 +411,42 @@ CML         OBWv(J,K,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
+#ifdef NONLIN_FRSURF
+C     this is a bit of a hack
+         IF ( nonlinFreeSurf.GT.0 ) THEN
+          DO J=1-Oly,sNy+Oly
+           I=OB_Iw(J,bi,bj)
+           IF (I.ne.0) THEN
+            OBWeta(J,bi,bj) = etaN(I+1,J,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+#endif /* NONLIN_FRSURF */
 C     Next, we compute the phase speed correction, which depends on the
-C     tracer! Theta first:
+C     tracer! 
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            I=OB_Iw(J,bi,bj)
-           cflMer(J,K) = 0. _d 0
            IF (I.NE.0) THEN
+            cflMer(J,K) = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
+CML         gFacM = 0. _d 0
+CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
+            gFacM(J,K)  = ABS(MAX(SIGN(1.D0,uVel(I+1,J,K,bi,bj)),0.D0))
+           ELSE
+            cflMer(J,K) = 0. _d 0
+            gFacM (J,K) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+         DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+           I=OB_Iw(J,bi,bj)
+           IF (I.NE.0) THEN
+C     Theta first:
             dTracSpace = (theta(I+2,J,K,bi,bj)-theta(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cflMer(J,K) = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
              uPhase = MAX( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
      &       MIN( 0.D0, -cflMer(J,K)*gtNm(I+1,J,K,bi,bj,1)/dTracSpace )
@@ -398,30 +457,19 @@ C     tracer! Theta first:
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
 C     sure if this will be stable
-CML         gFac = 0. _d 0
-CML         IF ( uVel(I,J,K,bi,bj) .GT. 0. _d 0 ) gFac = 1. _d 0
-            gFac = ABS(MAX(SIGN(1.D0,uVel(I+1,J,K,bi,bj)),0.D0))
             OBWt(J,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
      &        * _maskW(I+1,J,K,bi,bj)
      &        * (
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(theta(I+1,J,K,bi,bj)-theta(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
-     &        - gFac * gammat * (theta(I,J,K,bi,bj)-OBWt(J,K,bi,bj)) )
-           ENDIF
-          ENDDO
-         ENDDO
+     &        - gFacM(J,K) * gammat 
+     &           * (theta(I,J,K,bi,bj)-OBWt(J,K,bi,bj)) )
 C     Now salinity:
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           cflMer(J,K) = 0. _d 0
-           IF (I.NE.0) THEN
             dTracSpace = (salt(I+2,J,K,bi,bj)-salt(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
             uPhase = 0. _d 0
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             cflMer(J,K) = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
              uPhase = MAX( cflMer(J,K),
 #ifdef ALLOW_ADAMSBASHFORTH_3
      &       MIN( 0.D0, -cflMer(J,K)*gsNm(I+1,J,K,bi,bj,1)/dTracSpace )
@@ -432,16 +480,14 @@ C     Now salinity:
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
 C     sure if this will be stable
-CML         gFac = 0. _d 0
-CML         IF ( uVel(I,J,K,bi,bj) .GT. 0. _d 0 ) gFac = 1. _d 0
-            gFac = ABS(MAX(SIGN(1.D0,uVel(I+1,J,K,bi,bj)),0.D0))
             OBWs(J,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
      &        * _maskW(I+1,J,K,bi,bj)
      &        * (
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(salt(I+1,J,K,bi,bj)-salt(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
-     &        - gFac * gammas * (salt(I,J,K,bi,bj)-OBWs(J,K,bi,bj)) )
+     &        - gFacM(J,K) * gammas 
+     &           * (salt(I,J,K,bi,bj)-OBWs(J,K,bi,bj)) )
            ENDIF
           ENDDO
          ENDDO

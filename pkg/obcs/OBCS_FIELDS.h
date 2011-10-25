@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_FIELDS.h,v 1.1 2011/05/24 14:22:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_FIELDS.h,v 1.2 2011/10/25 15:09:18 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -62,6 +62,10 @@ C     etc
       _RL OBNt1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBNs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_OBCS_STEVENS
+      COMMON /OBCS_FIELDS_STEVENS_N/ OBNvStevens 
+      _RL OBNvStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
+#endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
@@ -84,6 +88,10 @@ C     etc
       _RL OBSt1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_OBCS_STEVENS
+      COMMON /OBCS_FIELDS_STEVENS_S/ OBSvStevens 
+      _RL OBSvStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
+#endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_SOUTH */
 
 #ifdef ALLOW_OBCS_EAST
@@ -106,6 +114,10 @@ C     etc
       _RL OBEt1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBEs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_OBCS_STEVENS
+      COMMON /OBCS_FIELDS_STEVENS_E/ OBEuStevens 
+      _RL OBEuStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
+#endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
@@ -128,6 +140,10 @@ C     etc
       _RL OBWt1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_OBCS_STEVENS
+      COMMON /OBCS_FIELDS_STEVENS_W/ OBWuStevens 
+      _RL OBWuStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
+#endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_WEST */
 
 #ifdef ALLOW_NONHYDROSTATIC

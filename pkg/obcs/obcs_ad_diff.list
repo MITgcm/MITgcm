@@ -9,6 +9,8 @@ obcs_apply_w.f
 obcs_apply_ptracer.f
 obcs_calc.f	
 obcs_calc_stevens.f
+obcs_copy_uv_n.f
+obcs_save_uv_n.f
 obcs_copy_tracer.f
 obcs_exchanges.f
 obcs_exf_load.f

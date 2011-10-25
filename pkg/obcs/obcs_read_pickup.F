@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.3 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.4 2011/10/25 15:09:18 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -33,7 +33,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_ORLANSKI
+#if (defined ALLOW_ORLANSKI) || (defined ALLOW_OBCS_STEVENS)
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -52,6 +52,7 @@ C     done within  Vertical Section IO routines. Since only thread one is
 C     doing IO, we need a barrier here to wait for every one to finish.
       _BARRIER
 
+#ifdef ALLOW_ORLANSKI
 #ifdef ALLOW_OBCS_NORTH
       IF ( useOrlanskiNorth ) THEN
 C     READ N and S OB storage and phase speed arrays
@@ -214,10 +215,41 @@ C      same with WE_STORE_n, WE_STORE_n, WW_STORE_n, with n=1,2,3,4
 c      _EXCH_XZ_RL(CVEL_WN , myThid)
 C      same with CVEL_WS,  CVEL_WE,  CVEL_WW
 c#endif
+#endif /* ALLOW_ORLANSKI */
+
+#ifdef ALLOW_OBCS_STEVENS
+#ifdef ALLOW_OBCS_NORTH
+      IF ( useStevensNorth ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensN.',suff
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNvStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+
+#ifdef ALLOW_OBCS_SOUTH
+      IF ( useStevensSouth ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensS.',suff
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBSvStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+
+#ifdef ALLOW_OBCS_EAST
+      IF ( useStevensEast ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensE.',suff
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_EAST */
+
+#ifdef ALLOW_OBCS_WEST
+      IF ( useStevensWest ) THEN
+        WRITE(fn,'(2A)') 'pickup_stevensW.',suff
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_OBCS_WEST */
+#endif /* ALLOW_OBCS_STEVENS */
 
 C--   Every one wait for thread 1 to finish (see comment @ the top)
       _BARRIER
 
-#endif /* ALLOW_ORLANSKI */
+#endif /* ALLOW_ORLANSKI or ALLOW_OBCS_STEVENS */
       RETURN
       END
