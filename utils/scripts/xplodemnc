@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/xplodemnc,v 1.4 2009/08/14 21:07:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/scripts/xplodemnc,v 1.5 2011/10/25 13:07:16 mlosch Exp $
 # $Name:  $
 
 # This is a shell script to separate an MITgcm mnc output file into
@@ -22,7 +22,7 @@ do
   fi
 
 # Finding all the multidimensional variables
-  varls=$(ncdump -h $somefile | grep "double\|float" | grep , )
+  varls=$(ncdump -h $somefile | egrep "double|float" | egrep , )
   IFS=';'
   vars=
   for somevar in ${varls}
