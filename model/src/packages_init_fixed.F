@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.75 2011/10/12 01:58:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.76 2011/10/26 09:30:17 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,6 +41,8 @@ C       |
 C       |-- BBL_INIT_FIXED
 C       |
 C       |-- KPP_INIT_FIXED
+C       |
+C       |-- PP81_INIT_FIXED
 C       |
 C       |-- MY82_INIT_FIXED
 C       |
@@ -224,6 +226,16 @@ C--   Initialize fixed arrays for KPP
         IF (debugMode) CALL DEBUG_CALL('KPP_INIT_FIXED',myThid)
 # endif
         CALL KPP_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_PP81
+C--   Initialize fixed arrays for PP81
+      IF ( usePP81 ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('PP81_INIT_FIXED',myThid)
+# endif
+        CALL PP81_INIT_FIXED( myThid )
       ENDIF
 #endif
 
