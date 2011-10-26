@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1521 2011/10/25 15:24:54 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1522 2011/10/26 09:30:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/pp81: add diagnostics for vertical eddy viscosity and diffusivity
+  (requires new subroutines pp81_init_fixed.F/pp81_diagnostics_init.F)
 o pkg/obcs: Stevens BCs (still only for east and west)
   - fix Stevens BCs by using intermediate velocities of previous
     time step as "baroclinic" contribution rather velocity of one grid cell
