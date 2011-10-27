@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.50 2011/10/27 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.51 2011/10/27 21:13:36 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -480,7 +480,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-      IF ( LSR_mixIniGuess.LE.0 ) THEN
+      IF ( LSR_mixIniGuess.GE.0 ) THEN
         WRITE(msgBuf,'(A)')
      &   'need to #define SEAICE_ALLOW_FREEDRIFT to use LSR_mixIniGuess'
         CALL PRINT_ERROR( msgBuf, myThid )
