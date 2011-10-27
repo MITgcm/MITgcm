@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.65 2011/10/21 17:32:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.66 2011/10/27 20:44:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,6 +7,11 @@ C $Name:  $
 #else
 # define OBCS_UVICE_OLD
 #endif
+
+C--  File seaice_lsr.F: seaice LSR dynamical solver S/R:
+C--   Contents
+C--   o SEAICE_LSR
+C--   o SEAICE_RESIDUAL
 
 CBOP
 C     !ROUTINE: SEAICE_LSR
@@ -21,11 +26,11 @@ C     |   (see Zhang and Hibler,   JGR, 102, 8691-8702, 1997
 C     |    and Zhang and Rothrock, MWR, 131,  845- 861, 2003)
 C     |   Written by Jinlun Zhang, PSC/UW, Feb-2001
 C     |                     zhang@apl.washington.edu
-C     |==========================================================*
+C     *==========================================================*
 C     | C-grid version by Martin Losch
 C     |   Since 2009/03/18: finite-Volume discretization of
 C     |   stress divergence that includes all metric terms
-C     \==========================================================*
+C     *==========================================================*
 C     \ev
 
 C     !USES:
@@ -126,17 +131,26 @@ C
       _RS SINWAT
       _RL TEMPVAR
       _RL UERR
-      INTEGER iMin, iMax, jMin, jMax
-#ifdef SEAICE_VECTORIZE_LSR
-C     in this case, the copy of u(3)=u(1)/v(3)=v(1) needs to include
-C     part of the overlap, because the overlap of u/vTmp is used
-      PARAMETER ( iMin = 0, iMax = sNx+1, jMin = 0, jMax = sNy+1 )
-#else
-      PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
-#endif
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
+      LOGICAL printResidual
+      _RL massU, massV
+      _RL residUini, residVini, residUend, residVend
+#ifdef SEAICE_ALLOW_FREEDRIFT
+      _RL uRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL errIni, errFD, errSum
+      _RL residU_fd, residV_fd
+      _RL residUmix, residVmix
+#endif /* SEAICE_ALLOW_FREEDRIFT */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      printResidual = debugLevel.GE.debLevA
+     &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
+      massU = -1. _d 0
+      massV = -1. _d 0
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph break artificial dependencies
@@ -305,14 +319,14 @@ C     set up non-linear water drag
            ENDIF
           ENDIF
           DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
-C     set up symmettric drag
+C     set up symmetric drag
           DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
          ENDDO
         ENDDO
 C
         DO J=1,sNy
          DO I=1,sNx
-C     set up anti symmettric drag force and add in current force
+C     set up anti symmetric drag force and add in current force
 C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
@@ -338,6 +352,21 @@ C     ( remember to average to correct velocity points )
      &         )
          ENDDO
         ENDDO
+        DO j=1,sNy
+         DO i=1,sNx
+C-    add Coriolis term
+          FORCEX(I,J,bi,bj) = FORCEX(I,J,bi,bj) + HALF*
+     &         ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
+     &          *0.5 _d 0*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
+     &         + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
+     &          *0.5 _d 0*( vIceC(i-1,j,bi,bj)+vIceC(i-1,j+1,bi,bj) ) )
+          FORCEY(I,J,bi,bj) = FORCEY(I,J,bi,bj) - HALF*
+     &         ( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
+     &         *0.5 _d 0*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
+     &         + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
+     &         *0.5 _d 0*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
+         ENDDO
+        ENDDO
 C      this is the rhs contribution of the time derivative
         DO j=1,sNy
          DO i=1,sNx
@@ -351,6 +380,24 @@ C      this is the rhs contribution of the time derivative
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
         ENDDO
+#ifdef SEAICE_ALLOW_FREEDRIFT
+        IF ( LSR_mixIniGuess.GE.1 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+          uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
+     &       / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
+     &         + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
+     &         + HALF*( DRAGS(i,j,bi,bj) + DRAGS(i-1,j,bi,bj) )
+     &         )
+          vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
+     &       / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
+     &         + seaiceMassV(i,j,bi,bj)/SEAICE_deltaTdyn
+     &         + HALF*( DRAGS(i,j,bi,bj) + DRAGS(i,j-1,bi,bj) )
+     &         )
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_ALLOW_FREEDRIFT */
        ENDDO
       ENDDO
 C
@@ -532,14 +579,8 @@ C     only need to deal with v(i)-v(i-1)
 
         DO J=1,sNy
          DO I=1,sNx
-C     coriolis and other forcing
-          rhsU(I,J,bi,bj)=0.5 _d 0 *
-     &         ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
-     &          *0.5 _d 0*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
-     &         + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
-     &          *0.5 _d 0*( vIceC(i-1,j,bi,bj)+vIceC(i-1,j+1,bi,bj) ) )
-     &         +FORCEX(I,J,bi,bj)
 C     contribution to the rhs part of grad(sigma)_x
+          rhsU(I,J,bi,bj) = FORCEX(I,J,bi,bj)
      &         + recip_rAw(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj) *
      &         ( _dyF(I  ,J  ,bi,bj)*sig11(I  ,J  )
      &         - _dyF(I-1,J  ,bi,bj)*sig11(I-1,J  )
@@ -669,14 +710,8 @@ C     only need to deal with u(j)-u(j-1)
 
         DO J=1,sNy
          DO I=1,sNx
-C     coriols and other foring
-          rhsV(I,J,bi,bj)= - 0.5 _d 0 *
-     &         ( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
-     &         *0.5 _d 0*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
-     &         + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
-     &         *0.5 _d 0*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
-     &         + FORCEY(I,J,bi,bj)
 C     contribution to the rhs part of grad(sigma)_y
+          rhsV(I,J,bi,bj) = FORCEY(I,J,bi,bj)
      &         + recip_rAs(I,J,bi,bj) * seaiceMaskV(I,J,bi,bj) *
      &         ( _dyU(I+1,J  ,bi,bj) * sig12(I+1,J  )
      &         - _dyU(I  ,J  ,bi,bj) * sig12(I  ,J  )
@@ -717,6 +752,76 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif /* ALLOW_DEBUG */
 
+C--   Calculate initial residual of the linearised system
+      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 ) THEN
+#ifdef SEAICE_ALLOW_FREEDRIFT
+        IF ( LSR_mixIniGuess.GE.1 )
+     &  CALL EXCH_UV_XY_RL( uIce_fd, vIce_fd, .TRUE., myThid )
+        IF ( LSR_mixIniGuess.GE.0 )
+     &  CALL SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uIce_fd, vIce_fd,
+     U                  massU, massV,
+     O                  residU_fd, residV_fd, uRes, vRes,
+     I                  printResidual, myIter, myThid )
+#endif /* SEAICE_ALLOW_FREEDRIFT */
+        CALL SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
+     U                  massU, massV,
+     O                  residUini, residVini, uTmp, vTmp,
+     I                  printResidual, myIter, myThid )
+      ENDIF
+#ifdef SEAICE_ALLOW_FREEDRIFT
+      IF ( LSR_mixIniGuess.GE.2 ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+             errIni = uTmp(i,j,bi,bj)*uTmp(i,j,bi,bj)
+             errFD  = uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
+             IF ( LSR_mixIniGuess.GE.4 ) THEN
+               errIni = errIni*errIni
+               errFD  = errFD *errFD
+             ENDIF
+             errSum = ( errIni + errFD )
+     &               *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+             IF ( errSum.GT.0. ) THEN
+               uIce(i,j,bi,bj) = ( errFD *uIce(i,j,bi,bj)
+     &                           + errIni*uIce_fd(i,j,bi,bj)
+     &                           )/errSum
+             ENDIF
+             errIni = vTmp(i,j,bi,bj)*vTmp(i,j,bi,bj)
+             errFD  = vRes(i,j,bi,bj)*vRes(i,j,bi,bj)
+             IF ( LSR_mixIniGuess.GE.4 ) THEN
+               errIni = errIni*errIni
+               errFD  = errFD *errFD
+             ENDIF
+             errSum = ( errIni + errFD )
+     &               *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+             IF ( errSum.GT.0. ) THEN
+               vIce(i,j,bi,bj) = ( errFD *vIce(i,j,bi,bj)
+     &                           + errIni*vIce_fd(i,j,bi,bj)
+     &                           )/errSum
+             ENDIF
+           ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL EXCH_UV_XY_RL( uIce, vIce, .TRUE., myThid )
+       IF ( printResidual ) THEN
+        CALL SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
+     U                  massU, massV,
+     O                  residUmix, residVmix, uTmp, vTmp,
+     I                  printResidual, myIter, myThid )
+       ENDIF
+      ENDIF
+#endif /* SEAICE_ALLOW_FREEDRIFT */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C NOW DO ITERATION
 
 cph--- iteration starts here
@@ -741,14 +846,14 @@ CADJ LOOP = iteration uice
 
 C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
 C     save uIce prior to iteration, NOW SET U(3)=U(1)
-          DO J=jMin,jMax
-           DO I=1,sNx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             uTmp(I,J,bi,bj)=uIce(I,J,bi,bj)
            ENDDO
           ENDDO
 C     save vIce prior to iteration, NOW SET V(3)=V(1)
-          DO J=1,sNy
-           DO I=iMin,iMax
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             vTmp(I,J,bi,bj)=vIce(I,J,bi,bj)
            ENDDO
           ENDDO
@@ -913,18 +1018,39 @@ C--    end doIterate4u or doIterate4v
       ENDDO
 C ITERATION END -----------------------------------------------------
 
-#ifdef ALLOW_DEBUG
-      IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
-     &     .AND. debugLevel.GE.debLevA ) THEN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( printResidual ) THEN
+C--   Calculate final residual of the linearised system
+        CALL SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
+     U                  massU, massV,
+     O                  residUend, residVend, uTmp, vTmp,
+     I                  printResidual, myIter, myThid )
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E22.14)')
-     &    ' SEAICE_LSR (ipass=',ilcall,' ) Uice: lsr iters,error=',
-     &      ICOUNT1, S1
-        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E22.14)')
-     &    ' SEAICE_LSR (ipass=',ilcall,' ) Vice: lsr iters,error=',
-     &      ICOUNT2, S2
+        WRITE(standardMessageUnit,'(A,1P3E16.8)')
+     &    ' SEAICE_LSR: Residual Initial Uice,Vice=',
+     &        residUini, residVini
+#ifdef SEAICE_ALLOW_FREEDRIFT
+        IF ( LSR_mixIniGuess.GE.0 )
+     &  WRITE(standardMessageUnit,'(A,1P3E16.8)')
+     &    ' SEAICE_LSR: Residual FrDrift U_fd,V_fd=',
+     &        residU_fd, residV_fd
+        IF ( LSR_mixIniGuess.GE.2 )
+     &  WRITE(standardMessageUnit,'(A,1P3E16.8)')
+     &    ' SEAICE_LSR: Residual Mix-ini Uice,Vice=',
+     &        residUmix, residVmix
+#endif /* SEAICE_ALLOW_FREEDRIFT */
+        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E16.8)')
+     &    ' SEAICE_LSR (ipass=',ilcall,') iters,dU,Resid=',
+     &      ICOUNT1, S1, residUend
+        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E16.8)')
+     &    ' SEAICE_LSR (ipass=',ilcall,') iters,dV,Resid=',
+     &      ICOUNT2, S2, residVend
         _END_MASTER( myThid )
       ENDIF
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevD ) THEN
         WRITE(msgBuf,'(A,I3,A)')
      &        'Uice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
@@ -1056,6 +1182,159 @@ C     evaluate divergence of stress and apply to forcing
         ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
+
+#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_CGRID */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: SEAICE_RESIDUAL
+C     !INTERFACE:
+      SUBROUTINE SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uFld, vFld,
+     U                  massU, massV,
+     O                  residU, residV, uRes, vRes,
+     I                  calcMeanResid, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SEAICE_RESIDUAL
+C     | o Compute Linear solver residual
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "GRID.h"
+#include "SEAICE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     calcMeanResid :: also compute mean residual (=RMS)
+C     myIter        :: Simulation timestep number
+C     myThid        :: my Thread Id. number
+C--   RHS
+      _RL rhsU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL rhsV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C-    coefficients for lateral points, u(j+/-1)
+      _RL uRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C-    coefficients for lateral points, v(i+/-1)
+      _RL vRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C-    diagonals of coefficient matrices
+      _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL BU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL CU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL AV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL BV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C--   seaice velocity
+      _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C-    Integrated seaice mass (input-output)
+      _RL massU, massV
+C-    residual (output)
+      _RL residU, residV
+      _RL uRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      LOGICAL calcMeanResid
+      INTEGER myIter
+      INTEGER myThid
+CEOP
+
+#ifdef SEAICE_CGRID
+#ifdef SEAICE_ALLOW_DYNAMICS
+
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     i,j,bi,bj  :: Loop counters
+
+      INTEGER i, j, bi, bj
+      LOGICAL sumMass
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Calculate residual of the linearised system
+#ifdef ALLOW_AUTODIFF_TAMC
+      sumMass = calcMeanResid
+      massU = 0.
+      massV = 0.
+#else /* ALLOW_AUTODIFF_TAMC */
+      sumMass = calcMeanResid .AND. ( massU.LT.0. .OR. massV.LT.0. )
+      IF ( sumMass ) THEN
+       massU = 0.
+       massV = 0.
+      ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
+      residU = 0.
+      residV = 0.
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           uRes(i,j,bi,bj) = rhsU(i,j,bi,bj)
+     &            + uRt1(i,j,bi,bj)*uFld(i,j-1,bi,bj)
+     &            + uRt2(i,j,bi,bj)*uFld(i,j+1,bi,bj)
+     &            - ( AU(i,j,bi,bj)*uFld(i-1,j,bi,bj)
+     &              + BU(i,j,bi,bj)*uFld( i ,j,bi,bj)
+     &              + CU(i,j,bi,bj)*uFld(i+1,j,bi,bj)
+     &              )
+           vRes(i,j,bi,bj) = rhsV(i,j,bi,bj)
+     &            + vRt1(i,j,bi,bj)*vFld(i-1,j,bi,bj)
+     &            + vRt2(i,j,bi,bj)*vFld(i+1,j,bi,bj)
+     &            - ( AV(i,j,bi,bj)*vFld(i,j-1,bi,bj)
+     &              + BV(i,j,bi,bj)*vFld(i, j ,bi,bj)
+     &              + CV(i,j,bi,bj)*vFld(i,j+1,bi,bj)
+     &              )
+          ENDDO
+         ENDDO
+        IF ( sumMass ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            massU  = massU  + seaiceMassU(i,j,bi,bj)
+     &                       *rAw(i,j,bi,bj)*maskInW(i,j,bi,bj)
+            massV  = massV  + seaiceMassV(i,j,bi,bj)
+     &                       *rAs(i,j,bi,bj)*maskInS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+        IF ( calcMeanResid ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            residU = residU + uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
+     &                       *seaiceMassU(i,j,bi,bj)
+     &                       *rAw(i,j,bi,bj)*maskInW(i,j,bi,bj)
+            residV = residV + vRes(i,j,bi,bj)*vRes(i,j,bi,bj)
+     &                       *seaiceMassV(i,j,bi,bj)
+     &                       *rAs(i,j,bi,bj)*maskInS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( sumMass ) THEN
+        _GLOBAL_SUM_RL( massU, myThid )
+        _GLOBAL_SUM_RL( massV, myThid )
+      ENDIF
+      IF ( calcMeanResid ) THEN
+        _GLOBAL_SUM_RL( residU, myThid )
+        _GLOBAL_SUM_RL( residV, myThid )
+        IF ( massU.GT.0. ) residU = residU / massU
+        IF ( massV.GT.0. ) residV = residV / massV
+        IF ( residU.GT.0. ) residU = SQRT(residU)
+        IF ( residV.GT.0. ) residV = SQRT(residV)
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
