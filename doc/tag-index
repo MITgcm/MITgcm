@@ -1,20 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1522 2011/10/26 09:30:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1523 2011/10/27 22:40:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice (lsr solver):
+  - put coriolis term into FORCEX,Y (as in seaice_evp.F; previously in rhsU,V only);
+    update output (change truncation) of FWD test exp lab_sea & global_ocean.cs32x15
+  - fix SEAICEuseFREEDRIFT for new OBCS version (ndef OBCS_UVICE_OLD)
+  - new parameter "LSR_mixIniGuess" allows (if=2,4) to mix free-drift solution
+    into initial guess for linearised solver; use weight ~ (1/err)^2,4.
+  - compute (with new S/R) and print initial (+ free-driff sol. if available)
+    and final residual of linearised system.
 o pkg/pp81: add diagnostics for vertical eddy viscosity and diffusivity
   (requires new subroutines pp81_init_fixed.F/pp81_diagnostics_init.F)
 o pkg/obcs: Stevens BCs (still only for east and west)
   - fix Stevens BCs by using intermediate velocities of previous
     time step as "baroclinic" contribution rather velocity of one grid cell
     inside the boundaries; more consistent but makes the entire treatment
-    more complicated, requires new pickup files and two new S/Rs: 
+    more complicated, requires new pickup files and two new S/Rs:
     obcs_copy_uv_n and obcs_save_uv_n
-    keep old version with flag OBCS_STEVENS_USE_INTERIOR_VELOCITY 
+    keep old version with flag OBCS_STEVENS_USE_INTERIOR_VELOCITY
     (undefined by default)
-  - silently move computation of some grid factors into separate loops to 
+  - silently move computation of some grid factors into separate loops to
     save some recomputations
   - add a hack for non-linear free surface
   - add a verification experiment to exp4 that tests this code
