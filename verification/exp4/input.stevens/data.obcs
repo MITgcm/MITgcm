@@ -24,10 +24,10 @@
  &
 
 # Orlanski parameters
- &OBCS_PARM02
+#&OBCS_PARM02
 #Cmax=0.45,
 #cVelTimeScale=1000.,
- &
+#&
 
 # Stevens parameters
  &OBCS_PARM04
