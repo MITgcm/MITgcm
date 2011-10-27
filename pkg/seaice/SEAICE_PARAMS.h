@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.76 2011/10/05 18:33:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.77 2011/10/27 20:40:31 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -82,7 +82,9 @@ C                          1 = LEAPFROG,  2 = BACKWARD EULER.
 C     IMAX_TICE         :: number of iterations for ice heat budget   10
 C     SOLV_MAX_ITERS    :: maximum number of allowed solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
-C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (default = 0)
+C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
+C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial guess
+C                       :: =0 : no mix ; =2,4 : mix with (1/err)^2,4 factor
 C     SEAICEadvScheme   :: sets the advection scheme for thickness and area
 C     SEAICEadvSchArea  :: sets the advection scheme for area
 C     SEAICEadvSchHeff  :: sets the advection scheme for effective thickness
@@ -98,7 +100,8 @@ C     SEAICE_debugPointJ
 C
       INTEGER LAD, IMAX_TICE
       INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
-      INTEGER MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS
+      INTEGER NPSEUDOTIMESTEPS
+      INTEGER LSR_mixIniGuess
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -111,7 +114,9 @@ C
       INTEGER SEAICE_debugPointJ
       COMMON /SEAICE_PARM_I/
      &     LAD, IMAX_TICE,
-     &     SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
+     &     SOLV_MAX_ITERS, SOLV_NCHECK,
+     &     NPSEUDOTIMESTEPS,
+     &     LSR_mixIniGuess,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
@@ -122,7 +127,6 @@ C
      &     SEAICEareaFormula,
      &     SEAICE_debugPointI,
      &     SEAICE_debugPointJ
-      PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     AreaFile          :: File containing initial sea-ice concentration
@@ -153,8 +157,8 @@ C     SEAICE_deltaTevp   :: Seaice timestep for EVP solver              (s)
 C     SEAICE_elasticParm :: parameter that sets relaxation timescale
 C                           tau = SEAICE_elasticParm * SEAICE_deltaTdyn
 C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
-C     SEAICE_evpDampC    :: evp daming constant                         (kg/m^2)
-C     SEAICE_zetaMaxFac  :: factor detrmining the maximum viscosity     (s)
+C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
+C     SEAICE_zetaMaxFac  :: factor determining the maximum viscosity    (s)
 C                          (default = 5.e+12/2.e4 = 2.5e8)
 C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)     (N s/m^2)
 C     SEAICE_monFreq     :: SEAICE monitor frequency.                   (s)
@@ -302,11 +306,13 @@ C
 
 C--   Constants used by sea-ice model
       _RL         ZERO           , ONE           , TWO
-      parameter ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
+      PARAMETER ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
       _RL         QUART            , HALF
-      parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 )
+      PARAMETER ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 )
       _RL siEps
-      parameter ( siEps = 1. _d -5 )
+      PARAMETER ( siEps = 1. _d -5 )
+      INTEGER MPSEUDOTIMESTEPS
+      PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   identifiers for advected properties
       INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW

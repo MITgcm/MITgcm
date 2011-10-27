@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.100 2011/10/05 18:33:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.101 2011/10/27 20:40:31 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,7 +102,7 @@ C--   SEAICE parameters
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
-     & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
+     & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS, LSR_mixIniGuess,
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
      & SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max,
@@ -291,6 +291,11 @@ C     to be consistent
 C     two pseudo time steps correspond to the original modified
 C     Euler time stepping scheme of Zhang+Hibler (1997)
       NPSEUDOTIMESTEPS = 2
+#ifdef SEAICE_ALLOW_FREEDRIFT
+      LSR_mixIniGuess =  0
+#else
+      LSR_mixIniGuess = -1
+#endif
       LSR_ERROR  = 0.0001    _d 0
       DIFF1      = UNSET_RL
 C--   old DIFF1 default:
