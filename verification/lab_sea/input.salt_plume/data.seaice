@@ -5,6 +5,8 @@
  SEAICE_initialHEFF = 1.0,
  SEAICE_deltaTtherm = 3600.,
  SEAICE_deltaTdyn   = 3600.,
+# LSR_mixIniGuess=1 : compute free-drift residual; =2,4 mix into initial guess
+ LSR_mixIniGuess    = 1,
  LSR_ERROR          = 1.E-12,
 #SEAICE_deltaTevp   = 30.,
  SEAICE_dryIceAlb   = 0.8756,
