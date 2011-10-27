@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.44 2011/10/21 17:29:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.45 2011/10/27 20:41:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -231,12 +231,29 @@ C--   now set up ice pressure and viscosities
        ENDDO
       ENDDO
 
-#ifdef SEAICE_ALLOW_FREEDRIFT
-        CALL SEAICE_FREEDRIFT( myTime, myIter, myThid )
-#endif
-
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDYNAMICS ) THEN
+
+#ifdef SEAICE_ALLOW_FREEDRIFT
+       IF ( SEAICEuseFREEDRIFT .OR. SEAICEuseEVP
+     &                         .OR. LSR_mixIniGuess.EQ.0 ) THEN
+        CALL SEAICE_FREEDRIFT( myTime, myIter, myThid )
+       ENDIF
+       IF ( SEAICEuseFREEDRIFT ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            uIce(i,j,bi,bj) = uIce_fd(i,j,bi,bj)
+            vIce(i,j,bi,bj) = vIce_fd(i,j,bi,bj)
+            stressDivergenceX(i,j,bi,bj) = 0. _d 0
+            stressDivergenceY(i,j,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* SEAICE_ALLOW_FREEDRIFT */
 
 #ifdef ALLOW_OBCS
        IF ( useOBCS ) THEN
@@ -253,36 +270,17 @@ CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
         CALL SEAICE_EVP( myTime, myIter, myThid )
-# ifdef SEAICE_ALLOW_FREEDRIFT
-       ELSEIF ( SEAICEuseFREEDRIFT ) THEN
-# endif
-#else
-# ifdef SEAICE_ALLOW_FREEDRIFT
-       IF ( SEAICEuseFREEDRIFT ) THEN
-# endif
-#endif /* SEAICE_ALLOW_EVP */
-#ifdef SEAICE_ALLOW_FREEDRIFT
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy+2,sNy+OLy-2
-           DO i=1-OLx+2,sNx+OLx-2
-            uice(i,j,bi,bj)=uice_fd(i,j,bi,bj)
-            vice(i,j,bi,bj)=vice_fd(i,j,bi,bj)
-            stressDivergenceX(I,J,bi,bj) = 0. _d 0
-            stressDivergenceY(I,J,bi,bj) = 0. _d 0
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-#endif
-#if defined(SEAICE_ALLOW_EVP)||defined(SEAICE_ALLOW_FREEDRIFT)
-       ELSE
-#endif /* SEAICE_ALLOW_EVP */
-C     LSR SCHEME (ZHANG-J/HIBLER 1997), PORTED ON A C-GRID
-          CALL SEAICE_LSR( myTime, myIter, myThid )
-#if defined(SEAICE_ALLOW_EVP)||defined(SEAICE_ALLOW_FREEDRIFT)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
+
+#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_FREEDRIFT)
+       IF ( .NOT.SEAICEuseFREEDRIFT .AND. .NOT.SEAICEuseEVP ) THEN
+#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_FREEDRIFT */
+C     LSR SCHEME (ZHANG-J/HIBLER 1997), PORTED ON A C-GRID
+          CALL SEAICE_LSR( myTime, myIter, myThid )
+#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_FREEDRIFT)
+       ENDIF
+#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_FREEDRIFT */
 
 C End of IF (SEAICEuseDYNAMICS ...
       ENDIF
