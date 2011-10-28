@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_mnc_init.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_mnc_init.F,v 1.2 2011/10/28 11:42:14 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -28,7 +28,7 @@ CEOP
       IF (useMNC) THEN
 
         CALL MNC_CW_ADD_VNAME('fwFlux','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('fwFlux','units','m/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('fwFlux','units','kg/m^2/s', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('fwFlux','description',
      &       'Net fresh water flux into shelfice',myThid)
 
@@ -42,7 +42,7 @@ C       Time averages
         CALL MNC_CW_ADD_VNAME(
      &       'fwFluxtave','Cen_xy_Hn__-__t',3,4,myThid)
         CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'fwFluxtave','units','m/s',myThid)
+     &       'fwFluxtave','units','kg/m^2/s',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('fwFluxtave','description',
      &       'Time-averaged net freshwater flux into shelfice', myThid)
 
