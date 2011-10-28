@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.4 2009/12/11 13:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.5 2011/10/28 21:20:17 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
@@ -68,7 +68,7 @@ C      start-AB parameters:
        ENDIF
        IF ( selectNHfreeSurf.GE.1 ) THEN
          IF ( nbFields.EQ.0 ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart like hydrostatic free-surf (dPhiNH missing)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          ELSE
@@ -108,7 +108,7 @@ C         <- present code might be wrong if usePickupBeforeC54 and LinFS
 C     * synchronousTimeStep & nonlinFreeSurf > 0 => needs PmEpR for surf-forcing
 C     * select_rStar <> 0 => needs dEtaHdt for 1rst Integr_continuity
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart as before C54 without "dEtaHdt "'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
@@ -118,27 +118,27 @@ C     (no serious problems expected if missing, but get a non-perfect restart)
          ELSEIF ( missFldList(j).EQ.'EtaN    '
      &                          .AND. rigidLid ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart with 1rst guess == 0 for CG2D solver'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
          ELSEIF ( missFldList(j).EQ.'Phi_NHyd' ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart with 1rst guess == 0 for CG3D solver'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
          ELSEIF ( missFldList(j).EQ.'dPhiNH  ' ) THEN
           dPhiNHstatus = 0
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart like hydrostatic free-surf (dPhiNH missing)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
          ELSEIF ( missFldList(j).EQ.'AddMass '
      &               .AND. selectAddFluid.EQ.2 ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart with AddMass == 0'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
@@ -207,7 +207,7 @@ C-    not recognized fields:
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R CHECK_PICKUP'
         ELSEIF ( warnCnts .GT. 0 ) THEN
-         WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+         WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &     'Will get only an approximated Restart'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          IF ( mom_StartAB.LT.nIter0 .OR.

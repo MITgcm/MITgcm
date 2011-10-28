@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.6 2009/06/28 01:00:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.7 2011/10/28 21:21:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,7 +36,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     rLow    :: Lower  "r" boundary
 C     rHigh   :: Higher "r" boundary
-C     myThid :: my Thread Id number
+C     myThid  :: my Thread Id number
       _RS     rLow (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS     rHigh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
@@ -108,7 +108,7 @@ C- West :
 
          IF ( errN+errS+errW+errE .GE. 1 ) THEN
           WRITE(msgBuf,'(2A,I6,A,2(I4,A))')
-     &        '** WARNINGS ** EXCH2_CHECK_DEPTHS: ',
+     &        '** WARNING ** EXCH2_CHECK_DEPTHS: ',
      &        'tile #', tId, ' (bi,bj=', bi, ',', bj, ' ):'
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
@@ -149,11 +149,11 @@ c     CALL STOP_IF_ERROR( errFlag, msgBuf, myThid )
 c     IF ( errFlag ) STOP 'ABNORMAL END: S/R EXCH2_CHECK_DEPTHS'
 #endif /* USE_ERROR_STOP */
       IF ( errFlag ) THEN
-          WRITE( msgBuf,'(2A)') '** WARNINGS ** EXCH2_CHECK_DEPTHS:',
+          WRITE( msgBuf,'(2A)') '** WARNING ** EXCH2_CHECK_DEPTHS:',
      &        ' some algorithm implementation might not be'
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
-          WRITE( msgBuf,'(2A)') '** WARNINGS ** EXCH2_CHECK_DEPTHS:',
+          WRITE( msgBuf,'(2A)') '** WARNING ** EXCH2_CHECK_DEPTHS:',
      &        ' safe with non-zero depth next to blank-tile'
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
