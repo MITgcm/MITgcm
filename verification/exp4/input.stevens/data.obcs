@@ -1,6 +1,6 @@
 # Open-boundaries
  &OBCS_PARM01
-# This flag turns off checking and fixing problematic topography across 
+# This flag turns off checking and fixing problematic topography across
 # open boundaries.
  OBCSfixTopo=.FALSE.,
  OB_Jnorth= 80*-1,
@@ -16,9 +16,9 @@
 #OBEuFile = 'OBzonalU.bin',
  OBWuFile = 'OB_WestU.bin',
  OBEuFile = 'OB_EastU.bin',
- OBWwFile = 'OBzonalW.bin',
+#OBWwFile = 'OBzonalW.bin',
  OBWsFile = 'OBzonalS.bin',
- OBWptrFile(1) = 'OBzonalS.bin',
+#OBWptrFile(1) = 'OBzonalS.bin',
  OBCS_monitorFreq= 1200.,
  OBCS_monSelect = 1,
  &

@@ -24,7 +24,7 @@
  gravity=9.81,
  f0=1.e-4,
  beta=0.E-11,
- nonHydrostatic=.TRUE.,
+#nonHydrostatic=.TRUE.,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
