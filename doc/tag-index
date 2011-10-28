@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1523 2011/10/27 22:40:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1524 2011/10/28 19:44:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o test-exp. exp4+stevens:
+  - switch off pTracers and nonHydrostatic (restart problems with NH); update output
 o pkg/seaice (lsr solver):
   - put coriolis term into FORCEX,Y (as in seaice_evp.F; previously in rhsU,V only);
     update output (change truncation) of FWD test exp lab_sea & global_ocean.cs32x15
