@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.23 2011/10/22 13:49:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.24 2011/10/28 21:27:07 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -176,14 +176,8 @@ C--   Check OBCS set-up
 
 #ifdef ALLOW_CD_CODE
       IF ( useCDscheme ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: useCDscheme = .TRUE.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: The CD-scheme does not work with OBCS.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: Sorry, not yet implemented.'
+       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      'OBCS not yet implemented in CD-Scheme (useCDscheme=T)'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
@@ -196,10 +190,10 @@ C--   Check OBCS set-up
       IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
      &    useOrlanskiEast.OR.useOrlanskiWest) THEN
         WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: #undef OBCS_RADIATE_ORLANSKI  and'
+     &  'OBCS_CHECK: #undef ALLOW_ORLANSKI  and'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: one of useOrlanski* logicals is true'
+     &  'OBCS_CHECK: one of useOrlanski* logicals is true'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
@@ -208,29 +202,20 @@ C--   Check OBCS set-up
       IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
      &    useOrlanskiEast.OR.useOrlanskiWest) THEN
        IF (nonlinFreeSurf.GT.0) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      'nonlinFreeSurf not yet implemented in Orlanski OBC'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (usePTracers) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: pTracers not yet implemented'
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      ' useOrlanski* OBC not yet implemented for pTracers'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (useSEAICE) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: SEAICE not yet implemented'
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &      ' useOrlanski* OBC not yet implemented for SEAICE'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
@@ -245,75 +230,67 @@ C     check compatibility with Orlanski
      &     .OR. (  useStevensEast.AND.useOrlanskiEast )
      &     .OR. (  useStevensWest.AND.useOrlanskiWest ) ) THEN
        WRITE(msgBuf,'(A)')
-     & 'OBCS_CHECK: ERROR: both useOrlanski* and useStevens* logicals'
+     & 'OBCS_CHECK: both useOrlanski* and useStevens* logicals'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
-     &      'OBCS_CHECK: ERROR: are true for at least one boundary'
+     &      'OBCS_CHECK: are true for at least one boundary'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
       IF (useStevensNorth.OR.useStevensSouth.OR.
      &    useStevensEast.OR.useStevensWest) THEN
        IF (nonlinFreeSurf.GT.0) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
-         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
+c       WRITE(msgBuf,'(A)')
+c    &  'OBCS_CHECK: ERROR: useStevens* OBC with'
+c        CALL PRINT_ERROR( msgBuf, myThid )
+c       WRITE(msgBuf,'(A)')
+c    &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &    'useStevens OBC with nonlinFreeSurf not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (usePTracers) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: WARNING: useStevens* OBC with'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: WARNING: pTracers not yet implemented'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: WARNING: therefore expect the unexpected'
-        CALL PRINT_ERROR( msgBuf, myThid )
-CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
+     &    'useStevens OBC with pTracers not yet implemented'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
+     &    'therefore expect the unexpected'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
        ENDIF
        IF (useSEAICE) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: WARNING: useStevens* OBC with'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: WARNING: SEAICE not yet implemented'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: WARNING: therefore expect the unexpected'
-        CALL PRINT_ERROR( msgBuf, myThid )
-CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
+     &    'useStevens OBC with SEAICE not yet implemented'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
+     &    'therefore expect the unexpected'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
        ENDIF
 CML       IF (usePTracers) THEN
-CML        WRITE(msgBuf,'(A)')
-CML     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
+CML        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+CML     &  'useStevens* OBC with pTracers not yet implemented'
 CML        CALL PRINT_ERROR( msgBuf, myThid )
-CML        WRITE(msgBuf,'(A)')
-CML     &  'OBCS_CHECK: ERROR: pTracers not yet implemented'
-CML         CALL PRINT_ERROR( msgBuf, myThid )
-CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+CML        STOP 'ABNORMAL END: S/R OBCS_CHECK'
 CML       ENDIF
 CML       IF (useSEAICE) THEN
-CML        WRITE(msgBuf,'(A)')
-CML     &  'OBCS_CHECK: ERROR: useStevens* OBC with'
-CML         CALL PRINT_ERROR( msgBuf, myThid )
-CML        WRITE(msgBuf,'(A)')
-CML     &  'OBCS_CHECK: ERROR: SEAICE not yet implemented'
-CML         CALL PRINT_ERROR( msgBuf, myThid )
-CML         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+CML        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+CML     &  'useStevens* OBC with SEAICE not yet implemented'
+CML        CALL PRINT_ERROR( msgBuf, myThid )
+CML        STOP 'ABNORMAL END: S/R OBCS_CHECK'
 CML       ENDIF
       ENDIF
 #else
       IF (useStevensNorth.OR.useStevensSouth.OR.
      &    useStevensEast.OR.useStevensWest) THEN
         WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: #undef OBCS_ALLOW_STEVENS  and'
+     &  'OBCS_CHECK: #undef OBCS_ALLOW_STEVENS  and'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: one of useStevens* logicals is true'
+     &  'OBCS_CHECK: one of useStevens* logicals is true'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
@@ -322,7 +299,7 @@ CML       ENDIF
 #ifndef ALLOW_OBCS_PRESCRIBE
       IF (useOBCSprescribe) THEN
        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: useOBCSprescribe = .TRUE. for'
+     &  'OBCS_CHECK: useOBCSprescribe = .TRUE. for'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE'
@@ -376,7 +353,7 @@ CML       ENDIF
 
       IF (useSEAICE .AND. .NOT. useEXF) THEN
        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ERROR: for SEAICE OBCS, use'
+     &  'OBCS_CHECK: for SEAICE OBCS, use'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: pkg/exf to read input files'
