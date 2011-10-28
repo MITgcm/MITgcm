@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.24 2011/10/28 21:27:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.25 2011/10/28 21:28:16 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -240,11 +240,6 @@ C     check compatibility with Orlanski
       IF (useStevensNorth.OR.useStevensSouth.OR.
      &    useStevensEast.OR.useStevensWest) THEN
        IF (nonlinFreeSurf.GT.0) THEN
-c       WRITE(msgBuf,'(A)')
-c    &  'OBCS_CHECK: ERROR: useStevens* OBC with'
-c        CALL PRINT_ERROR( msgBuf, myThid )
-c       WRITE(msgBuf,'(A)')
-c    &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
         WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &    'useStevens OBC with nonlinFreeSurf not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
