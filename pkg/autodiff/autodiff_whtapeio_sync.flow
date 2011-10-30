@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.flow,v 1.1 2011/01/21 01:19:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.flow,v 1.2 2011/10/30 22:48:10 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -10,4 +10,4 @@ cadj SUBROUTINE autodiff_whtapeio_sync ACTIVE  =
 cadj SUBROUTINE autodiff_whtapeio_sync DEPEND  = 1, 2, 3
 cadj SUBROUTINE autodiff_whtapeio_sync REQUIRED
 cadj SUBROUTINE autodiff_whtapeio_sync INFLUENCED
-
+cadj SUBROUTINE autodiff_whtapeio_sync FTLNAME = autodiff_whtapeio_sync
