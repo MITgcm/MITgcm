@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_SIZE.h,v 1.2 2011/06/07 03:58:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_SIZE.h,v 1.3 2011/10/30 19:12:48 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -23,9 +23,11 @@ C     Number of tracers
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER iicekey
       INTEGER nEVPstepMax
-      PARAMETER ( nEVPstepMax=60 )
+      PARAMETER ( nEVPstepMax=180 )
       INTEGER NMAX_TICE
       PARAMETER ( NMAX_TICE=10 )
+      INTEGER SOLV_MAX_FIXED
+      PARAMETER ( SOLV_MAX_FIXED=500 )
 #endif
 
 CEOP
