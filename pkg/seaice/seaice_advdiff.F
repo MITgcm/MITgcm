@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.53 2011/06/27 13:14:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.54 2011/10/30 22:20:02 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,6 +64,7 @@ C     gFld      :: tendency of seaice field
 C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER i, j, bi, bj
       INTEGER ks
+      INTEGER itmpkey
       LOGICAL SEAICEmultiDimAdvection
 #ifdef ALLOW_SITRACER
       INTEGER iTr, SEAICEadvSchSItr, SEAICEdiffKhSItr
@@ -142,13 +143,7 @@ C     Do we need this? I am afraid so.
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area   = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE heff   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE heffm  = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE hsnow  = comlev1, key = ikey_dynamics, kind=isbyte
-# ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE hsalt   = comlev1, key = ikey_dynamics, kind=isbyte
-# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEmultiDimAdvection ) THEN
 C     This has to be done to comply with the time stepping in advect.F:
@@ -179,6 +174,26 @@ c         iceFld(i,j)     = 0. _d 0
           gFld(i,j)       = 0. _d 0
          ENDDO
         ENDDO
+C
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        itmpkey = (act1 + 1) + act2*max1
+     &                       + act3*max1*max2
+     &                       + act4*max1*max2*max3
+C
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &     key = itmpkey, kind=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &     key = itmpkey, kind=isbyte
+CADJ STORE heffm(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &     key = itmpkey, kind=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &     key = itmpkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO j=1-OLy,sNy+OLy
@@ -497,6 +512,9 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        IF ( SEAICEadvHEff ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff = comlev1, key = ikey_dynamics, kind=isbyte
+#endif
         CALL ADVECT( uc, vc, hEff, hEffNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -513,6 +531,9 @@ C-    Add tendency due to diffusion
         ENDIF
        ENDIF
        IF ( SEAICEadvArea ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area = comlev1, key = ikey_dynamics, kind=isbyte
+#endif
         CALL ADVECT( uc, vc, area, areaNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -529,6 +550,9 @@ C-    Add tendency due to diffusion
         ENDIF
        ENDIF
        IF ( SEAICEadvSnow ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsnow = comlev1, key = ikey_dynamics, kind=isbyte
+#endif
         CALL ADVECT( uc, vc, HSNOW, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhSnow .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -547,6 +571,9 @@ C-    Add tendency due to diffusion
 
 #ifdef SEAICE_VARIABLE_SALINITY
        IF ( SEAICEadvSalt ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsalt = comlev1, key = ikey_dynamics, kind=isbyte
+#endif
         CALL ADVECT( uc, vc, HSALT, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhSalt .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
