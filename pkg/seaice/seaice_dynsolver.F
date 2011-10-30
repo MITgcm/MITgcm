@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.45 2011/10/27 20:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.46 2011/10/30 16:14:16 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,6 +76,8 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
           TAUX(i,j,bi,bj)   = 0. _d 0
           TAUY(i,j,bi,bj)   = 0. _d 0
+          uice_fd(i,j,bi,bj)= 0. _d 0
+          vice_fd(i,j,bi,bj)= 0. _d 0
          ENDDO
         ENDDO
        ENDDO

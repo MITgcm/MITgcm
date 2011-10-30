@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.63 2011/10/21 17:24:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.64 2011/10/30 16:14:16 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -73,6 +73,8 @@ C--   Initialise all variables in common blocks:
           AREA(i,j,bi,bj)=0. _d 0
           UICE(i,j,bi,bj)=0. _d 0
           VICE(i,j,bi,bj)=0. _d 0
+          uice_fd(i,j,bi,bj)=0. _d 0
+          vice_fd(i,j,bi,bj)=0. _d 0
 C
           uIceNm1(i,j,bi,bj)=0. _d 0
           vIceNm1(i,j,bi,bj)=0. _d 0
