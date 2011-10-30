@@ -2,7 +2,7 @@
  &SEAICE_PARM01
  LSR_ERROR             = 1.E-12,
 #SEAICE_deltaTevp = 60.,
-#SEAICEuseDynamics = .FALSE.,
+ SEAICEuseDynamics = .FALSE.,
 # for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
 #
