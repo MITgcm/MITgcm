@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1525 2011/10/31 03:30:19 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1526 2011/10/31 03:41:38 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,6 +9,9 @@ o pkg/seaice adjoint of LSR:
   - add new flag SEAICE_LSR_ADJOINT_ITER and parameter SOLV_MAX_FIXED
     this flag will do SOLV_MAX_ITERS but only store SOLV_MAX_FIXED fields
     and only perform SOLV_MAX_FIXED adjoint iters.
+    If flag SEAICE_LSR_ADJOINT_ITER is undef-ined, the store in the iteration
+    always goes to same record, meaning that the last forward field will be
+    the one used in the adjoint - an approximation.
   - now produces non-zero LSR-related gradients, and acceptable gradients for
     An's zonal (x-z) test case (to be checked in)
   - lab_sea: produces acceptable gradients for lab_sea with forward/backward LSR
