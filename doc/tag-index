@@ -1,9 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1524 2011/10/28 19:44:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1525 2011/10/31 03:30:19 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice adjoint of LSR:
+  - substantially rework STORE dirs.
+  - add new flag SEAICE_LSR_ADJOINT_ITER and parameter SOLV_MAX_FIXED
+    this flag will do SOLV_MAX_ITERS but only store SOLV_MAX_FIXED fields
+    and only perform SOLV_MAX_FIXED adjoint iters.
+  - now produces non-zero LSR-related gradients, and acceptable gradients for
+    An's zonal (x-z) test case (to be checked in)
+  - lab_sea: produces acceptable gradients for lab_sea with forward/backward LSR
+    (but these are screwed up by the thermodynamics in the first place);
+    reduce from 4 to 3 timesteps to avoid t.d. issue as temporary solution;
+    output_adm.txt also reflects changes to seaice_lsr
+  - global_ocean.cs32x15: 
+    * the "default" input_ad.seaice has been re-defined to always exclude dynamics
+      (output_adm.seaice.txt was updated)
+    * new input_ad.seaice_dynmix tests a forward LSR / backward free-drift
+      (output_adm.seaice_dynmix.txt)
 o test-exp. exp4+stevens:
   - switch off pTracers and nonHydrostatic (restart problems with NH); update output
 o pkg/seaice (lsr solver):
