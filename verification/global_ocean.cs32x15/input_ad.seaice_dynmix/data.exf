@@ -1,0 +1,104 @@
+# *********************
+# External Forcing Data
+# *********************
+ &EXF_NML_01
+#exf_verbose       = .TRUE.,
+#useExfCheckRange  = .TRUE.,
+#useStabilityFct_overIce=.TRUE.,
+#snow_emissivity   = 0.98,
+#ice_emissivity    = 0.98,
+ ocean_emissivity  = 1.,
+ atmrho            = 1.22,
+ humid_fac         = .608,
+ ht                = 10.,
+ exf_albedo        = 0.066,
+#readStressOnAgrid = .TRUE.,
+ readStressOnCgrid = .TRUE.,
+ exf_monFreq       = 0.,
+ repeatPeriod      = 31104000.,
+ exf_iprec         = 64,
+ &
+
+# *********************
+ &EXF_NML_02
+#
+ atempstartdate1   = 00010115,
+#atempstartdate2   = 180000,
+ atempperiod       = 2592000.0,
+#
+ aqhstartdate1     = 00010115,
+#aqhstartdate2     = 180000,
+ aqhperiod         = 2592000.0,
+#
+ precipstartdate1  = 00010115,
+#precipstartdate2  = 180000,
+ precipperiod      = 2592000.0,
+#
+ snowprecipstartdate1= 00010115,
+#snowprecipstartdate2= 180000,
+ snowprecipperiod    = 2592000.,
+#
+ runoffstartdate1  = 00010115,
+#runoffstartdate2  = 180000,
+ runoffperiod      = 2592000.0,
+#
+ uwindstartdate1   = 00010115,
+#uwindstartdate2   = 180000,
+ uwindperiod       = 2592000.0,
+#
+ vwindstartdate1   = 00010115,
+#vwindstartdate2   = 180000,
+ vwindperiod       = 2592000.0,
+#
+ ustressstartdate1 = 00010115,
+#ustressstartdate2 = 180000,
+ ustressperiod     = 2592000.0,
+#
+ vstressstartdate1 = 00010115,
+#vstressstartdate2 = 180000,
+ vstressperiod     = 2592000.0,
+#
+ wspeedstartdate1  = 00010115,
+#wspeedstartdate2  = 180000,
+ wspeedperiod      = 2592000.0,
+#
+ swdownstartdate1  = 00010115,
+#swdownstartdate2  = 180000,
+ swdownperiod      = 2592000.0,
+#
+ lwdownstartdate1  = 00010115,
+#lwdownstartdate2  = 180000,
+ lwdownperiod      = 2592000.0,
+#
+ climsssstartdate1  = 00010115,
+#climsssstartdate2  = 180000,
+ climsssperiod      = 2592000.0,
+#
+ climsststartdate1  = 00010115,
+#climsststartdate2  = 180000,
+ climsstperiod      = 2592000.0,
+#
+ atempfile         = 'core_t_Air_cs32.bin',
+ aqhfile           = 'core_q_air_cs32.bin',
+ ustressfile       = 'trenberth_taux.bin',
+ vstressfile       = 'trenberth_tauy.bin',
+#uwindfile         = 'core_u_wind_cs32.bin',
+#vwindfile         = 'core_v_wind_cs32.bin',
+ wspeedfile        = 'core_wndSpd_cs32.bin',
+ precipfile        = 'core_prec_1_cs32.bin',
+ snowprecipfile    = 'core_snwP_1_cs32.bin',
+ lwdownfile        = 'core_dwnLw_cs32.bin',
+ swdownfile        = 'core_dwnSw_cs32.bin',
+ runoffFile        = 'core_rnof_1_cs32.bin'
+ climsstfile       = 'lev_surfT_cs_12m.bin',
+ climsssfile       = 'lev_surfS_cs_12m.bin',
+#
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
+ &
