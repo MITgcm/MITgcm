@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.5 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.6 2011/10/31 15:19:05 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -89,6 +89,13 @@ if test -e $gcmDIR/verification ; then
 else
   echo "no dir: $gcmDIR/verification => exit"
   exit
+fi
+
+#-- in case 1 proc get stuck, run this script in background to check
+if test -x $HERE/check_aces_$sfx ; then
+   echo "start check_aces_$sfx in background"
+   mv -f $HERE/check_aces_${sfx}.log $HERE/check_aces_${sfx}.log_bak
+   ( cd $HERE ; ./check_aces_$sfx > check_aces_${sfx}.log 2>&1 ) &
 fi
 
 # avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
