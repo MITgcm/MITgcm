@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.67 2011/10/31 02:45:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.68 2011/10/31 03:32:28 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -864,10 +864,10 @@ CADJ LOOP = iteration uice, vice
       SOLV_MAX_TMP = SOLV_MAX_ITERS
 #endif
 
-      DO m = 1, SOLV_MAX_TMP
+      ICOUNT1 = SOLV_MAX_TMP
+      ICOUNT2 = SOLV_MAX_TMP
 
-       ICOUNT1 = SOLV_MAX_TMP
-       ICOUNT2 = SOLV_MAX_TMP
+      DO m = 1, SOLV_MAX_TMP
 
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef SEAICE_LSR_ADJOINT_ITER
