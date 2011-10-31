@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.91 2011/10/21 17:14:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.92 2011/10/31 02:45:28 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -199,18 +199,6 @@ C NOW DO ADVECTION and DIFFUSION
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
-cph-test(
-cphCADJ STORE heff   = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE hsnow  = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE qnet   = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE qsw    = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE tice   = comlev1, key=ikey_dynamics, kind=isbyte
-cph-test)
-# ifdef SEAICE_ALLOW_DYNAMICS
-cphCADJ STORE uice   = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE vice   = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifndef DISABLE_SEAICE_GROWTH

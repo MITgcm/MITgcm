@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.66 2011/10/27 20:44:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.67 2011/10/31 02:45:28 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,6 +43,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -73,6 +74,8 @@ C     i,j,bi,bj  :: Loop counters
       INTEGER i, j, k, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2
       INTEGER kSrf
+      INTEGER itmpkey, itmpkey2
+      INTEGER SOLV_MAX_TMP
       LOGICAL doIterate4u, doIterate4v
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -169,19 +172,32 @@ cph break artificial dependencies
 
 #ifdef ALLOW_AUTODIFF_TAMC
         DO ilcall=1,MPSEUDOTIMESTEPS
+         itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ilcall
 #else
         DO ilcall=1,NPSEUDOTIMESTEPS
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_ALLOW_FREEDRIFT
+CADJ STORE uice_fd, vice_fd = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+CADJ STORE ures,vres = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+# endif
+CADJ STORE utmp,vtmp = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+#endif /* ALLOW_AUTODIFF_TAMC */
+
          IF ( ilcall .LE. NPSEUDOTIMESTEPS ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ &     key = itmpkey
 CADJ STORE vice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ &     key = itmpkey
 CADJ STORE uicenm1 = comlev1_dynsol, kind=isbyte,
-CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ &     key = itmpkey
 CADJ STORE vicenm1 = comlev1_dynsol, kind=isbyte,
-CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     surface level
@@ -201,8 +217,6 @@ C SET SOME VALUES
       WFAU=WFAU1
       WFAV=WFAV1
 
-      ICOUNT1 = SOLV_MAX_ITERS
-      ICOUNT2 = SOLV_MAX_ITERS
       S1 = 0.
       S2 = 0.
 
@@ -224,9 +238,9 @@ C NOW DO PREDICTOR TIME STEP
        ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 cphCADJ STORE uicec = comlev1_dynsol, kind=isbyte,
-cphCADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+cphCADJ &     key = itmpkey
 cphCADJ STORE vicec = comlev1_dynsol, kind=isbyte,
-cphCADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+cphCADJ &     key = itmpkey
 #endif
       ELSE
 C NOW DO MODIFIED EULER STEP
@@ -262,9 +276,9 @@ cph That is an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ &     key = itmpkey
 CADJ STORE vice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL SEAICE_CALC_STRAINRATES(
@@ -774,6 +788,12 @@ C--   Calculate initial residual of the linearised system
       ENDIF
 #ifdef SEAICE_ALLOW_FREEDRIFT
       IF ( LSR_mixIniGuess.GE.2 ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice, vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+CADJ STORE utmp, vtmp = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+# endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
@@ -831,15 +851,52 @@ cph--- need to kick out goto
 
 C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ LOOP = iteration uice
+CADJ LOOP = iteration uice, vice
 #endif /* ALLOW_AUTODIFF_TAMC */
-      DO m = 1,SOLV_MAX_ITERS
+
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (SEAICE_LSR_ADJOINT_ITER))
+      IF ( inAdmode ) THEN
+        SOLV_MAX_TMP = SOLV_MAX_FIXED
+      ELSE
+        SOLV_MAX_TMP = SOLV_MAX_ITERS
+      END IF
+#else
+      SOLV_MAX_TMP = SOLV_MAX_ITERS
+#endif
+
+      DO m = 1, SOLV_MAX_TMP
+
+       ICOUNT1 = SOLV_MAX_TMP
+       ICOUNT2 = SOLV_MAX_TMP
+
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef SEAICE_LSR_ADJOINT_ITER
+         itmpkey2 = (itmpkey-1)*SOLV_MAX_FIXED + 
+     &              MIN(m,SOLV_MAX_FIXED)
+CADJ STORE utmp, vtmp = comlev1_dyniter, kind=isbyte,
+CADJ &     key = itmpkey2
+#  else
+CADJ STORE utmp, vtmp = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
+
        IF ( doIterate4u .OR. doIterate4v ) THEN
 
         IF ( useCubedSphereExchange ) THEN
           doIterate4u = .TRUE.
           doIterate4v = .TRUE.
         ENDIF
+
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef SEAICE_LSR_ADJOINT_ITER
+CADJ STORE uice, vice = comlev1_dyniter, kind=isbyte,
+CADJ &     key = itmpkey2
+#  else
+CADJ STORE uice, vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -1123,7 +1180,7 @@ C--   Compute residual norm and print
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
       ENDIF
-C     end outer pseudo-time stepping loop
+C     end outer ilcall pseudo-time stepping loop
       ENDDO
 
       IF ( useHB87StressCoupling ) THEN
