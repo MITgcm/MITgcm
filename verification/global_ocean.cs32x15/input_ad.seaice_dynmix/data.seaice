@@ -1,0 +1,32 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ LSR_ERROR             = 1.E-12,
+#SEAICE_deltaTevp = 60.,
+ SEAICEuseDynamics = .TRUE.,
+ SEAICEuseFREEDRIFT = .FALSE.,
+# for backward compatibility only
+ SEAICE_clipVelocities = .TRUE.,
+#
+ SIsal0                = 4.,
+ SEAICEadvHeff         = .TRUE.,
+ SEAICEadvArea         = .TRUE.,
+ SEAICEadvSnow         = .TRUE.,
+ SEAICEadvScheme       = 30,
+#SEAICE_monFreq        = 2592000.,
+#SEAICEwriteState      = .TRUE.,
+ &
+#
+ &SEAICE_PARM02
+ mult_ice   = 1.,
+# choose which seaice cost term you want
+ cost_ice_flag = 1,
+# the following timings are obsolete;
+# replaced by lastinterval
+ costIceStart1        = 20000101,
+ costIceStart2        = 00000,
+ costIceEnd1        = 20000201,
+ costIceEnd2        = 00000,
+ &
+
+ &SEAICE_PARM03
+ &
