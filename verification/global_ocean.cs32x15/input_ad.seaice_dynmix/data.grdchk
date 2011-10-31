@@ -1,0 +1,13 @@
+# *******************
+# ECCO gradient check
+# *******************
+ &GRDCHK_NML
+ grdchk_eps       = 1.d-2,
+#  iglopos         = 6,
+#  jglopos         = 17,
+#  kglopos         = 1,
+ nbeg             = 1,
+ nstep            = 1,
+ nend             = 4,
+ grdchkvarindex   = 1,
+ &
