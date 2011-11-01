@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.7 2011/09/26 23:08:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.8 2011/11/01 21:11:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,7 +44,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_AUTODIFF_OPENAD
 
 c These includes are needed for
@@ -69,10 +69,11 @@ c They provide the fields to be stored.
 #  endif
 #  ifdef ALLOW_PTRACERS
 #   include "PTRACERS_SIZE.h"
-#   include "PTRACERS.h"
+#   include "PTRACERS_FIELDS.h"
 #  endif
 #  ifdef ALLOW_OBCS
-#   include "OBCS.h"
+#   include "OBCS_FIELDS.h"
+#   include "OBCS_SEAICE.h"
 #   ifdef ALLOW_PTRACERS
 #    include "OBCS_PTRACERS.h"
 #   endif
@@ -84,19 +85,24 @@ c They provide the fields to be stored.
 #   endif
 #  endif /* ALLOW_EXF */
 #  ifdef ALLOW_SEAICE
+#   include "SEAICE_SIZE.h"
 #   include "SEAICE.h"
+#   include "SEAICE_PARAMS.h"
 #   include "SEAICE_COST.h"
+#  endif
+#  ifdef ALLOW_SALT_PLUME
+#   include "SALT_PLUME.h"
 #  endif
 #  ifdef ALLOW_THSICE
 #   include "THSICE_SIZE.h"
-#   include "THSICE_PARAMS.h"
 #   include "THSICE_VARS.h"
 #  endif
 #  ifdef ALLOW_EBM
 #   include "EBM.h"
 #  endif
 #  ifdef ALLOW_RBCS
-#   include "RBCS.h"
+#   include "RBCS_SIZE.h"
+#   include "RBCS_FIELDS.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT_MPI
 #   include "mpif.h"
@@ -109,7 +115,7 @@ c They provide the fields to be stored.
 # include "ctrl_dummy.h"
 # include "cost.h"
 
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -119,18 +125,20 @@ C           mytime are local variables passed around as routine
 C           arguments. Although this is fiddly it saves the need to
 C           impose additional synchronisation points when they are
 C           updated.
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - thread number for this instance of the routine.
-      INTEGER myThid
-      INTEGER myIter
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: thread number for this instance of the routine.
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C     !FUNCTIONS:
 C     == Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     modelEnd  :: true if reaching the end of the run
+      LOGICAL modelEnd
       integer iloop
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_AUTODIFF_OPENAD
@@ -139,7 +147,6 @@ C     == Local variables ==
       integer theCurrentStep
 # endif
 #endif
-
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -150,8 +157,10 @@ CEOP
 c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
-CADJ  INIT tapelev_ini_bibj_k   = USER
 CADJ  INIT tapelev_init   = USER
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
+CADJ  INIT tapelev_ini_bibj_k   = USER
+#endif
 c
 # if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
@@ -171,11 +180,6 @@ CADJ  INIT tapelev3 = USER
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC = tapelev_init, key = 1
 # endif
-#endif
-
-#ifdef ALLOW_AUTODIFF_OPENAD
-c$openad INDEPENDENT(xx_theta)
-c$openad INDEPENDENT(xx_salt)
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -202,7 +206,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef ALLOW_AUTODIFF_OPENAD
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
 #  ifdef ALLOW_TAMC_CHECKPOINTING
 
       max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
@@ -274,10 +278,10 @@ CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num*nr
 #   endif /* ALLOW_PTRACERS */
 c--
 #   ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_k_gad
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
-CADJ INIT comlev1_bibj_k_gad_pass
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
+CADJ INIT comlev1_bibj_k_gad = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxpass
 #   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
@@ -289,11 +293,19 @@ CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 c--
 #   ifdef ALLOW_SEAICE
 #    ifdef SEAICE_ALLOW_DYNAMICS
-CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
+CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
+#    ifdef SEAICE_LSR_ADJOINT_ITER
+CADJ INIT comlev1_dyniter =
+CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 #    endif
-#    ifdef SEAICE_ALLOW_EVP
-CADJ INIT comlev1_evp = COMMON,nchklev_1
 #    endif
+#   ifdef SEAICE_ALLOW_EVP
+CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
+#   endif
+#   ifdef SEAICE_MULTICATEGORY
+CADJ INIT comlev1_multdim
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
+#   endif
 #     ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_k_gadice = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
@@ -359,7 +371,7 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
       DO iloop = 1, nTimeSteps
 
 #  endif /* ALLOW_TAMC_CHECKPOINTING */
-# endif /* ALLOW_AUTODIFF_TAMC */
+# endif /* ALLOW_AUTODIFF */
 
 #endif /* undef ALLOW_AUTODIFF_OPENAD */
 
@@ -386,20 +398,19 @@ c--   NOT enabled.
 
 c--     >>> Loop body start <<<
 
-#ifdef ALLOW_AUTODIFF_TAMC
-        nIter0 = NINT( (startTime-baseTime)/deltaTClock )
-        ikey_dynamics = ilev_1
-c--
-        CALL AUTODIFF_INADMODE_UNSET( myThid )
-#endif
-
-c--     Set the model iteration counter and the model time.
-        myIter = nIter0 + (iloop-1)
-        myTime = startTime + float(iloop-1)*deltaTclock
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+        nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+        ikey_dynamics = ilev_1
+        CALL AUTODIFF_INADMODE_UNSET( myThid )
+#endif
+
+C--     Set the model iteration counter and the model time.
+        myIter = nIter0 + (iloop-1)
+        myTime = startTime + float(iloop-1)*deltaTclock
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
@@ -448,10 +459,8 @@ c--   Add control vector for forcing and parameter fields
      &     CALL CTRL_MAP_FORCING (myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# if (defined (ALLOW_AUTODIFF_MONITOR))
-        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
-# endif
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_AUTODIFF_MONITOR))
+      CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -468,7 +477,7 @@ CADJ STORE pmepr    = comlev1, key = ikey_dynamics
 # endif
 #endif
 
-c--     Set the model iteration counter and the model time.
+C--     Set the model iteration counter and the model time.
         myIter = nIter0 + iloop
         myTime = startTime + float(iloop)*deltaTclock
 
@@ -500,9 +509,17 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
 
+C--   Check if it has reached the end of simulation
+      modelEnd = myTime.EQ.endTime .OR. myIter.EQ.nEndIter
+
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO( .FALSE.,  myTime, myIter, myThid )
+      CALL DO_THE_MODEL_IO( modelEnd,  myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+
+C--   Save state for restarts
+      CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
+      CALL DO_WRITE_PICKUP( modelEnd, myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
         CALL AUTODIFF_INADMODE_SET( myThid )
@@ -512,6 +529,10 @@ C--   Check status of solution (statistics, cfl, etc...)
         CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
         CALL SHOWFLOPS_INLOOP( iloop, mythid )
         CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
+#endif
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif
 
 c--     >>> Loop body end <<<
@@ -568,5 +589,5 @@ c$openad DEPENDENT(fc)
       IF (debugMode) CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
 #endif
 
+      RETURN
       END
-
