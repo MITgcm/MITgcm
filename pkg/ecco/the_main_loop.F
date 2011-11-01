@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.107 2011/10/30 20:32:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.108 2011/11/01 22:17:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -198,7 +198,8 @@ c     mythid - thread number for this instance of the routine.
       _RL     mytime
 
 c     == local variables ==
-
+C     modelEnd  :: true if reaching the end of the run
+      LOGICAL modelEnd
       integer bi,bj
       integer iloop
       integer mydate(4)
@@ -397,7 +398,7 @@ c--
 #  ifdef SEAICE_ALLOW_DYNAMICS
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #   ifdef SEAICE_LSR_ADJOINT_ITER
-CADJ INIT comlev1_dyniter = 
+CADJ INIT comlev1_dyniter =
 CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 #   endif
 #  endif
@@ -1112,36 +1113,39 @@ C--   Check status of solution (statistics, cfl, etc...)
 #endif /* ALLOW_MONITOR */
 #endif
 
+C--   Check if it has reached the end of simulation
+      modelEnd = myTime.EQ.endTime .OR. myIter.EQ.nEndIter
+#ifdef HAVE_SIGREG
+      IF ( useSIGREG ) THEN
+        modelEnd = modelEnd .OR. ( i_got_signal.GT.0 )
+      ENDIF
+#endif /* HAVE_SIGREG */
+
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
 #endif /* ALLOW_DEBUG */
 C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO( .FALSE., myTime, myIter, myThid )
+      CALL DO_THE_MODEL_IO( modelEnd, myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 
 #ifndef ALLOW_DIVIDED_ADJOINT
-# ifdef HAVE_SIGREG
-      IF ( useSIGREG ) THEN
-        IF ( i_got_signal .GT. 0 ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
-#endif /* ALLOW_DEBUG */
-          CALL DO_WRITE_PICKUP(
-     I                .TRUE., myTime, myIter, myThid )
-          STOP 'Checkpoint completed -- killed by signal handler'
-        ENDIF
-      ENDIF
-# endif /* HAVE_SIGREG */
 C--   Save state for restarts
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
 #endif /* ALLOW_DEBUG */
       CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
-      CALL DO_WRITE_PICKUP(
-     I               .FALSE., myTime, myIter, myThid )
+      CALL DO_WRITE_PICKUP( modelEnd, myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
 #endif /* ALLOW_DIVIDED_ADJOINT */
+
+#ifdef HAVE_SIGREG
+      IF ( useSIGREG ) THEN
+        IF ( modelEnd .AND. i_got_signal .GT. 0 ) THEN
+          STOP 'Checkpoint completed -- killed by signal handler'
+        ENDIF
+      ENDIF
+#endif /* HAVE_SIGREG */
 
 #ifdef ALLOW_SHOWFLOPS
         CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
