@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.27 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.28 2011/11/03 00:27:05 heimbach Exp $
 C $Name:  $
 
 CADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -62,3 +62,30 @@ CADJ STORE objf_ice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uHeffExportCell = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vHeffExportCell = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
+
+#ifdef ALLOW_OBCS
+# ifdef ALLOW_OBCS_EAST
+CADJ STORE obeuice,obeuice0,obeuice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+CADJ STORE obevice,obevice0,obevice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef ALLOW_OBCS_NORTH
+CADJ STORE obnuice,obnuice0,obnuice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+CADJ STORE obnvice,obnvice0,obnvice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+CADJ STORE obsuice,obsuice0,obsuice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+CADJ STORE obsvice,obsvice0,obsvice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef ALLOW_OBCS_WEST
+CADJ STORE obwuice,obwuice0,obwuice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+CADJ STORE obwvice,obwvice0,obwvice1 = comlev1, 
+CADJ &     key=ikey_dynamics, kind=isbyte
+# endif
+#endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.16 2011/01/14 01:34:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.17 2011/11/03 00:27:05 heimbach Exp $
 C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev3, key = ilev_3
@@ -20,4 +20,23 @@ CADJ STORE objf_ice = tapelev3, key = ilev_3
 #ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = tapelev3, key = ilev_3
 CADJ STORE vHeffExportCell = tapelev3, key = ilev_3
+#endif
+
+#ifdef ALLOW_OBCS
+# ifdef ALLOW_OBCS_EAST
+CADJ STORE obeuice,obeuice0,obeuice1 = tapelev3, key = ilev_3
+CADJ STORE obevice,obevice0,obevice1 = tapelev3, key = ilev_3
+# endif
+# ifdef ALLOW_OBCS_NORTH
+CADJ STORE obnuice,obnuice0,obnuice1 = tapelev3, key = ilev_3
+CADJ STORE obnvice,obnvice0,obnvice1 = tapelev3, key = ilev_3
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+CADJ STORE obsuice,obsuice0,obsuice1 = tapelev3, key = ilev_3
+CADJ STORE obsvice,obsvice0,obsvice1 = tapelev3, key = ilev_3
+# endif
+# ifdef ALLOW_OBCS_WEST
+CADJ STORE obwuice,obwuice0,obwuice1 = tapelev3, key = ilev_3
+CADJ STORE obwvice,obwvice0,obwvice1 = tapelev3, key = ilev_3
+# endif
 #endif
