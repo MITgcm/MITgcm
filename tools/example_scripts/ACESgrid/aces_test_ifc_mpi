@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_ifc.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.20 2011/09/08 13:39:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.21 2011/11/03 17:36:33 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI test using ifort (default=v8) & mpich
@@ -17,14 +17,15 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
+dNam='aces'
+TST_DIR="$HOME/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-TST_DIR="/home/jmc/test_ACES"
 HERE=$TST_DIR/output
-#cd $HERE
-
 sfx='ifc'
  module add mpich/intel
  module add netcdf/3.6.1/icc
@@ -44,15 +45,17 @@ checkOut=1
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
-dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
-if [ $dsp -gt 99 ] ; then
+#dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+#if [ $dsp -gt 99 ] ; then
+dsp=`df -P . | tail -1 | awk '{print $4}'`
+if [ $dsp -le 3200000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
@@ -86,10 +89,10 @@ else
   exit
 fi
 
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
-./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
+echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
+./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
 
 echo ''
-echo ../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe \"$EXE\" -o aces-$sfx -a NONE
-../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe "$EXE" -o aces-$sfx -a NONE
+echo ../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
+../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe "$EXE" -o ${dNam}-$sfx -a NONE
 

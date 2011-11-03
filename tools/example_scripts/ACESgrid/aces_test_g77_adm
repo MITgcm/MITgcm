@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_g77.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.6 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.7 2011/11/03 17:36:33 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -15,13 +15,15 @@ if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
 
+dNam='aces'
+TST_DIR="$HOME/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-TST_DIR="/home/jmc/test_ACES"
 HERE=$TST_DIR/output
-
 sfx='g77'
 #module add gnu
 #module add netcdf/3.6.1/icc
@@ -41,15 +43,17 @@ checkOut=1
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
-dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
-if [ $dsp -gt 99 ] ; then
+#dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+#if [ $dsp -gt 99 ] ; then
+dsp=`df -P . | tail -1 | awk '{print $4}'`
+if [ $dsp -le 3200000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/tr_${dNam}-${sfx}_????????_?
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
@@ -83,8 +87,8 @@ else
   exit
 fi
 
-echo ./testreport $options -of $OPTFILE -odir aces-$sfx
-./testreport $options -of $OPTFILE -odir aces-$sfx
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
 
 #echo -n 'run ./testreport -clean ...'
 #./testreport $options -clean > /dev/null 2>&1

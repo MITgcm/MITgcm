@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.11 2011/09/08 13:39:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.12 2011/11/03 17:36:33 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -17,14 +17,15 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
+dNam='aces'
+TST_DIR="$HOME/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-TST_DIR="/home/jmc/test_ACES"
 HERE=$TST_DIR/output
-#cd $HERE
-
 sfx='mp2'
 #- to build:
  module add ifc/9.0.021 icc/9.0.021 intel/9.0
@@ -36,6 +37,7 @@ sfx='mp2'
  OPTFILE="../tools/build_options/linux_ia32_ifort"
 #OPTFILE="$HERE/linux_ia32_ifort+mpi_aces"
  options="-j 2 -MPI 3 -mth -mf $PBS_NODEFILE -devel"
+#options="-do $options"
  export OMP_NUM_THREADS=2
  EXE="mpiexec -pernode -comm pmi -np TR_NPROC ./mitgcmuv"
 #export KMP_STACKSIZE=400m  <-- added in file "~/.bashrc"
@@ -50,15 +52,17 @@ checkOut=1
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
-dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
-if [ $dsp -gt 99 ] ; then
+#dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+#if [ $dsp -gt 99 ] ; then
+dsp=`df -P . | tail -1 | awk '{print $4}'`
+if [ $dsp -le 3200000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
@@ -92,16 +96,17 @@ else
 fi
 
 #-- in case mpiexec get stuck, run this script in background to check
-if test -x $HERE/check_$sfx ; then
-   echo "start check_$sfx in background"
-   mv -f $HERE/check_${sfx}.log $HERE/check_${sfx}.log_bak
-   ( cd $HERE ; ./check_$sfx > check_${sfx}.log 2>&1 ) &
+check_sh=${dNam}_check_$sfx
+if test -x $HERE/$check_sh ; then
+   echo "start $check_sh in background"
+   mv -f $HERE/${check_sh}.log $HERE/${check_sh}.log_bak
+   ( cd $HERE ; ./$check_sh > ${check_sh}.log 2>&1 ) &
 fi
 
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
-./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
+echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
+./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
 
 #echo ''
-#echo ../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe \"$EXE\" -o aces-$sfx -a NONE
-#../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe "$EXE" -o aces-$sfx -a NONE
+#echo ../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
+#../tools/do_tst_2+2 -mpi -mf $PBS_NODEFILE -exe "$EXE" -o ${dNam}-$sfx -a NONE
 
