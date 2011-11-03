@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.6 2011/10/31 15:19:05 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.7 2011/11/03 17:37:58 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -15,15 +15,15 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.tcshrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
+dNam='acesgrid'
+TST_DIR="$HOME/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-#TST_DIR="/home/jmc/test_ACES"
-TST_DIR="/mit/jm_c/test_acesgrid"
 HERE=$TST_DIR/output
-#cd $HERE
-
 sfx='mp2'
  module add gcc
  module add mvapich2
@@ -57,7 +57,7 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_acesgrid-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
@@ -92,17 +92,18 @@ else
 fi
 
 #-- in case 1 proc get stuck, run this script in background to check
-if test -x $HERE/check_aces_$sfx ; then
-   echo "start check_aces_$sfx in background"
-   mv -f $HERE/check_aces_${sfx}.log $HERE/check_aces_${sfx}.log_bak
-   ( cd $HERE ; ./check_aces_$sfx > check_aces_${sfx}.log 2>&1 ) &
+check_sh=check_aces_$sfx
+if test -x $HERE/$check_sh ; then
+   echo "start $check_sh in background"
+   mv -f $HERE/${check_sh}.log $HERE/${check_sh}.log_bak
+   ( cd $HERE ; ./$check_sh > ${check_sh}.log 2>&1 ) &
 fi
 
 # avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir acesgrid-$sfx
-./testreport $options -of $OPTFILE -command "$EXE" -odir acesgrid-$sfx
+echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
+./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
 
 echo ''
-echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o acesgrid-$sfx -a NONE
-../tools/do_tst_2+2 -mpi -exe "$EXE" -o acesgrid-$sfx -a NONE
+echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
+../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx -a NONE
 

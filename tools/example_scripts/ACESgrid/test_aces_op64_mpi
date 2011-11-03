@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_op64.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_op64.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_mpi,v 1.3 2011/09/27 18:42:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_mpi,v 1.4 2011/11/03 17:37:58 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -15,15 +15,15 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.tcshrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
+dNam='acesgrid'
+TST_DIR="$HOME/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-#TST_DIR="/home/jmc/test_ACES"
-TST_DIR="/mit/jm_c/test_acesgrid"
 HERE=$TST_DIR/output
-#cd $HERE
-
 sfx='op64'
  module add open64
  module add mvapich
@@ -54,7 +54,7 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_acesgrid-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
@@ -89,12 +89,12 @@ else
 fi
 
 # avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir acesgrid-$sfx \
+echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
  -skd fizhi-cs-32x32x40
-./testreport $options -of $OPTFILE -command "$EXE" -odir acesgrid-$sfx \
+./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
  -skd fizhi-cs-32x32x40
 
 echo ''
-echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o acesgrid-$sfx -a NONE
-../tools/do_tst_2+2 -mpi -exe "$EXE" -o acesgrid-$sfx -a NONE
+echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
+../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx -a NONE
 

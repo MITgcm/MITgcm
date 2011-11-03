@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_tuv.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.4 2011/09/01 23:05:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.5 2011/11/03 17:37:58 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -15,15 +15,15 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.tcshrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
+dNam='acesgrid'
+TST_DIR="$HOME/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
 
-#TST_DIR="/home/jmc/test_ACES"
-TST_DIR="/mit/jm_c/test_acesgrid"
 HERE=$TST_DIR/output
-#cd $HERE
-
 sfx='tuv'
  module add open64
  OPTFILE="../tools/build_options/linux_amd64_open64"
@@ -55,7 +55,7 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_acesgrid-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
@@ -89,10 +89,10 @@ else
   exit
 fi
 
-echo ./testreport $options -of $OPTFILE -odir acesgrid-$sfx
-./testreport $options -of $OPTFILE -odir acesgrid-$sfx
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
 
 #echo ''
-#echo ../tools/do_tst_2+2 -o acesgrid-$sfx -a NONE
-#../tools/do_tst_2+2 -o acesgrid-$sfx -a NONE
+#echo ../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
+#../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
 
