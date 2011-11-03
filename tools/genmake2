@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.226 2011/09/30 20:03:10 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.227 2011/11/03 22:46:47 utke Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -3175,7 +3175,7 @@ postProcess.tag: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 postProcess.py \$
 	# this step also creates the file postProcess.make but we cannot
 	# name it as the target or else make will try to remake it for
 	# the include directive above for any rule, e.g. make clean
-	./postProcess.py --progress --timing --outputFormat=fixed -m r -i ../OAD_support/ad_inline.f --width 4 \$<
+	./postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed -m r -i ../OAD_support/ad_inline.f --width 4 \$<
 
 # setup some links
 %.xsd:
