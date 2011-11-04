@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.9 2010/12/08 16:47:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.10 2011/11/04 17:42:32 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -49,7 +49,7 @@ move_outp()
 # 4 -> pickup*.data (written at the end of 2+2 & 4 it run) are different
 # 5 -> pickup*.meta (written at the end of 2+2 & 4 it run) are different
 # 6 -> missing 'data.tst' file (removed or not yet generated ?)
-# 7 -> missing standard output from previous run
+# 7 -> missing executable or standard output from previous run
 # 8 -> missing information (in standard output of previous run) about pickup
 # 9 -> error in argument list
 
@@ -119,6 +119,11 @@ echo "cmdEXE='$cmdEXE'"
 
 if test $flag = '0' -o $Multi = '1' ; then
 #----------------------------------------------------------------------
+# check for executable:
+if test ! -x $gcmEXE
+  echo "file '$gcmEXE' does not exist or is not executable"
+  exit 7
+fi
 # last pickup written (from previous run):
 if [ $mpi -ge 1 ]
 then outpRun='STDOUT.0000'
@@ -210,7 +215,7 @@ fi
 #-------------------------
 #-- link back pickup files
  listS=`ls $tmpDir/pickup*.${sufx}* 2> /dev/null | head -1`
- if test "x$listS" != x ; then 
+ if test "x$listS" != x ; then
    if [ $prt -ge 1 ] ; then echo ' link back:' $tmpDir'/pickup*.'${sufx}'*' ; fi
    if test $action = 1 ; then ln -s $tmpDir/pickup*.${sufx}* . ; fi
  fi
@@ -285,7 +290,7 @@ rm -f STDERR.0000
 cp -p data.tst data
 echo '==> START RUN 2 x' $Nit 'it'
 if [ $mpi -ge 1 ]
-then 
+then
      sleep $wait2run
      $cmdEXE > TTT.out.2it 2>&1
      mv STDOUT.0000 std_outp.2it
@@ -312,7 +317,7 @@ sed "s/^ nTimeSteps=$Dbl/ nTimeSteps=$Nit/g" data.tst > data.tmp
 mv -f data.tmp data
 echo '==> START RUN 1iA'
 if [ $mpi -ge 1 ]
-then 
+then
      sleep $wait2run
      $cmdEXE > TTT.out.1iA 2>&1
      mv STDOUT.0000 std_outp.1iA
@@ -338,7 +343,7 @@ sed "s/^ nIter0=$num0/ nIter0=$num1/g" data > data.tmp
 mv -f data.tmp data
 echo '==> START RUN 1iB'
 if [ $mpi -ge 1 ]
-then 
+then
      sleep $wait2run
      $cmdEXE > TTT.out.1iB 2>&1
      mv STDOUT.0000 std_outp.1iB
@@ -369,7 +374,7 @@ if test $flag = '2' -o $Multi = '1' ; then
 listCGini="2"
 #-- check if using 3-D solver
   nn=`grep -i -c "^ *nonHydrostatic *= *\.TRUE\." data.tst`
- if [ $nn -eq 0 ] ; then 
+ if [ $nn -eq 0 ] ; then
   nn=`grep -i -c "^ *implicitIntGravWave *= *\.TRUE\." data.tst`
  fi
 if [ $nn -ge 1 ] ; then listCGini="$listCGini 3"; fi
