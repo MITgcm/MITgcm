@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.10 2011/11/04 17:42:32 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.11 2011/11/05 13:32:53 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -120,7 +120,7 @@ echo "cmdEXE='$cmdEXE'"
 if test $flag = '0' -o $Multi = '1' ; then
 #----------------------------------------------------------------------
 # check for executable:
-if test ! -x $gcmEXE
+if test ! -x $gcmEXE ; then
   echo "file '$gcmEXE' does not exist or is not executable"
   exit 7
 fi
