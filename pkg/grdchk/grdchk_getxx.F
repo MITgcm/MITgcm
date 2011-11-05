@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.28 2011/05/24 22:41:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.29 2011/11/05 22:39:29 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -216,7 +216,7 @@ c--   == end of interface ==
      &                         mythid, dummy)
 #endif /* ALLOW_SFLUX_CONTROL */
 
-#ifdef ALLOW_USTRESS_CONTROL
+#if (defined (ALLOW_USTRESS_CONTROL) || defined (ALLOW_TAUU0_CONTROL))
       else if ( grdchkvarindex .eq. 5 ) then
          il=ilnblnk( xx_tauu_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
@@ -237,7 +237,7 @@ c--   == end of interface ==
      &                         mythid, dummy)
 #endif /* ALLOW_USTRESS_CONTROL */
 
-#ifdef ALLOW_VSTRESS_CONTROL
+#if (defined (ALLOW_VSTRESS_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
       else if ( grdchkvarindex .eq. 6 ) then
          il=ilnblnk( xx_tauv_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
@@ -657,6 +657,27 @@ c--   == end of interface ==
      &                          mythid, dummy)
 
 #endif /* ALLOW_EFLUXP0_CONTROL */
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+      else if ( grdchkvarindex .eq. 23 ) then
+         il=ilnblnk( xx_bottomdrag_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_bottomdrag_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_bottomdrag_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_BOTTOMDRAG_CONTROL */
 
 #ifdef ALLOW_HFLUXM_CONTROL
       else if ( grdchkvarindex .eq. 24 ) then
