@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_g.F,v 1.5 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_g.F,v 1.6 2011/11/05 19:20:42 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -21,13 +21,6 @@ c    o  g_active_write_xyz       - Write an active 3D variable to a file.
 c    o  g_active_write_xz        - Write an active 2D xz-slice to a file.
 c    o  g_active_write_yz        - Write an active 2D yz-slice to a file.
 c
-c    o  g_active_read_tile_xy    - Read  an active 2D variable from file.
-c    o  g_active_read_tile_xyz   - Read  an active 3D variable from file.
-c
-c    o  g_active_write_tile_xy   - Write an active 2D variable to a file.
-c    o  g_active_write_tile_xyz  - Write an active 3D variable to a file.
-c
-c
 c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 c                 - Added routines that do active writes on tiles
 c                   instead of a whole thread.
@@ -43,13 +36,14 @@ C     !INTERFACE:
       subroutine g_active_read_xy_loc(
      I                           active_var_file,
      O                           active_var,
+     I                           g_active_var,
      I                           irec,
      I                           doglobalread,
      I                           lAdInit,
      I                           myOptimIter,
      I                           mythid,
      I                           dummy,
-     I                           g_active_var
+     I                           g_dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -87,7 +81,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -126,13 +120,14 @@ C     !INTERFACE:
       subroutine g_active_read_xyz_loc(
      I                            active_var_file,
      O                            active_var,
+     I                            g_active_var,
      I                            irec,
      I                            doglobalread,
      I                            lAdInit,
      I                            myOptimIter,
      I                            mythid,
      I                            dummy,
-     I                            g_active_var
+     I                            g_dummy
      &                           )
 
 C     !DESCRIPTION: \bv
@@ -170,7 +165,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -210,13 +205,14 @@ C     !INTERFACE:
       subroutine g_active_read_xz_loc(
      I                           active_var_file,
      O                           active_var,
+     I                           g_active_var,
      I                           irec,
      I                           doglobalread,
      I                           lAdInit,
      I                           myOptimIter,
      I                           mythid,
      I                           dummy,
-     I                           g_active_var
+     I                           g_dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -254,7 +250,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -294,13 +290,14 @@ C     !INTERFACE:
        subroutine g_active_read_yz_loc(
      I                           active_var_file,
      O                           active_var,
+     I                           g_active_var,
      I                           irec,
      I                           doglobalread,
      I                           lAdInit,
      I                           myOptimIter,
      I                           mythid,
      I                           dummy,
-     I                           g_active_var
+     I                           g_dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -338,7 +335,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -377,11 +374,11 @@ C     !INTERFACE:
       subroutine g_active_write_xy_loc(
      I                            active_var_file,
      I                            active_var,
+     I                            g_active_var,
      I                            irec,
      I                            myOptimIter,
      I                            mythid,
      I                            dummy,
-     I                            g_active_var,
      I                            g_dummy
      &                          )
 
@@ -455,11 +452,11 @@ C     !INTERFACE:
       subroutine g_active_write_xyz_loc(
      I                             active_var_file,
      I                             active_var,
+     I                             g_active_var,
      I                             irec,
      I                             myOptimIter,
      I                             mythid,
      I                             dummy,
-     I                             g_active_var,
      I                             g_dummy
      &                           )
 
@@ -533,11 +530,11 @@ C     !INTERFACE:
       subroutine g_active_write_xz_loc(
      I                            active_var_file,
      I                            active_var,
+     I                            g_active_var,
      I                            irec,
      I                            myOptimIter,
      I                            mythid,
      I                            dummy,
-     I                            g_active_var,
      I                            g_dummy
      &                          )
 
@@ -611,11 +608,11 @@ C     !INTERFACE:
       subroutine g_active_write_yz_loc(
      I                            active_var_file,
      I                            active_var,
+     I                            g_active_var,
      I                            irec,
      I                            myOptimIter,
      I                            mythid,
      I                            dummy,
-     I                            g_active_var,
      I                            g_dummy
      &                          )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_g.F,v 1.8 2009/10/10 18:07:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_g.F,v 1.9 2011/11/05 19:20:42 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -21,12 +21,6 @@ c    o  g_active_write_xyz       - Write an active 3D variable to a file.
 c    o  g_active_write_xz        - Write an active 2D xz-slice to a file.
 c    o  g_active_write_yz        - Write an active 2D yz-slice to a file.
 c
-c    o  g_active_read_tile_xy    - Read  an active 2D variable from file.
-c    o  g_active_read_tile_xyz   - Read  an active 3D variable from file.
-c
-c    o  g_active_write_tile_xy   - Write an active 2D variable to a file.
-c    o  g_active_write_tile_xyz  - Write an active 3D variable to a file.
-c
 c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 c                 - Added routines that do active writes on tiles
 c                   instead of a whole thread.
@@ -48,7 +42,8 @@ C     !INTERFACE:
      I                           lAdInit,
      I                           myOptimIter,
      I                           mythid,
-     I                           dummy
+     I                           dummy,
+     I                           g_dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -88,7 +83,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -133,7 +128,8 @@ C     !INTERFACE:
      I                            lAdInit,
      I                            myOptimIter,
      I                            mythid,
-     I                            dummy
+     I                            dummy,
+     I                            g_dummy
      &                           )
 
 C     !DESCRIPTION: \bv
@@ -173,7 +169,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -219,7 +215,8 @@ C     !INTERFACE:
      I                           lAdInit,
      I                           myOptimIter,
      I                           mythid,
-     I                           dummy
+     I                           dummy,
+     I                           g_dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -259,7 +256,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -305,7 +302,8 @@ C     !INTERFACE:
      I                           lAdInit,
      I                           myOptimIter,
      I                           mythid,
-     I                           dummy
+     I                           dummy,
+     I                           g_dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -345,7 +343,7 @@ c                      variable and write to active file
       integer mythid
       logical doglobalread
       logical lAdInit
-      _RL     dummy
+      _RL     dummy, g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -692,315 +690,6 @@ CEOP
       call active_write_yz_rl( fname, g_active_var, globalfile,
      &                      irec, mynr,
      &                      TANGENT_SIMULATION, myOptimIter, mythid )
-
-      return
-      end
-
-c     ==================================================================
-
-      subroutine g_active_read_tile_xy(
-     I                                active_var_file,
-     O                                active_var,
-     I                                irec,
-     I                                doglobalread,
-     I                                bi,
-     I                                bj,
-     I                                lAdInit,
-     I                                myOptimIter,
-     I                                mythid
-     &                              )
-
-c     ==================================================================
-c     SUBROUTINE g_active_read_tile_xy
-c     ==================================================================
-c
-c     o Read an active 2D variable from file.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.c
-c
-c     changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c
-c              - Added routines that do active writes on tiles
-c                instead of a whole thread.
-c
-c     ==================================================================
-c     SUBROUTINE g_active_read_tile_xy
-c     ==================================================================
-
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-
-      character*(*) active_var_file
-      _RL     active_var(1-olx:snx+olx,1-oly:sny+oly)
-      integer irec
-      integer myOptimIter
-      integer mythid
-      integer bi
-      integer bj
-      logical doglobalread
-      logical lAdInit
-
-c     == local variables ==
-
-      integer mynr
-
-c     == end of interface ==
-
-      mynr = 1
-      call active_read_tile_rl(
-     I                          active_var_file,
-     I                          active_var,
-     I                          doglobalread,
-     I                          lAdInit,
-     I                          irec,
-     I                          mynr,
-     I                          bi,
-     I                          bj,
-     I                          TANGENT_SIMULATION,
-     I                          myOptimIter,
-     I                          mythid
-     &                        )
-
-      return
-      end
-
-
-      subroutine g_active_read_tile_xyz(
-     I                                 active_var_file,
-     O                                 active_var,
-     I                                 irec,
-     I                                 doglobalread,
-     I                                 bi,
-     I                                 bj,
-     I                                 lAdInit,
-     I                                 myOptimIter,
-     I                                 mythid
-     &                               )
-
-c     ==================================================================
-c     SUBROUTINE g_active_read_tile_xyz
-c     ==================================================================
-c
-c     o Read an active 3D variable from file.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.c
-c
-c     changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c
-c              - Added routines that do active writes on tiles
-c                instead of a whole thread.
-c
-c     ==================================================================
-c     SUBROUTINE g_active_read_tile_xyz
-c     ==================================================================
-
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-
-      character*(*) active_var_file
-      _RL active_var(1-olx:snx+olx,1-oly:sny+oly,nr)
-      integer irec
-      integer myOptimIter
-      integer mythid
-      logical doglobalread
-      integer bi
-      integer bj
-      logical lAdInit
-
-c     == local variables ==
-
-      integer mynr
-
-c     == end of interface ==
-
-      mynr = nr
-
-      call active_read_tile_rl(
-     I                          active_var_file,
-     I                          active_var,
-     I                          doglobalread,
-     I                          lAdInit,
-     I                          irec,
-     I                          mynr,
-     I                          bi,
-     I                          bj,
-     I                          TANGENT_SIMULATION,
-     I                          myOptimIter,
-     I                          mythid
-     &                        )
-
-      return
-      end
-
-
-      subroutine g_active_write_tile_xy(
-     I                                 active_var_file,
-     I                                 active_var,
-     I                                 irec,
-     I                                 bi,
-     I                                 bj,
-     I                                 myOptimIter,
-     I                                 mythid
-     &                               )
-
-c     ==================================================================
-c     SUBROUTINE g_active_write_tile_xy
-c     ==================================================================
-c
-c     o Write an active 2D variable to a file.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.c
-c
-c     changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c
-c              - Added routines that do active writes on tiles
-c                instead of a whole thread.
-c
-c     ==================================================================
-c     SUBROUTINE g_active_write_tile_xy
-c     ==================================================================
-
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-
-      character*(*) active_var_file
-      _RL     active_var(1-olx:snx+olx,1-oly:sny+oly)
-      integer irec
-      integer bi
-      integer bj
-      integer myOptimIter
-      integer mythid
-
-c     == local variables ==
-
-      integer mynr
-      logical globalfile
-
-c     == end of interface ==
-
-      mynr = 1
-      globalfile = .false.
-
-      call active_write_tile_rl(
-     I                           active_var_file,
-     I                           active_var,
-     I                           globalfile,
-     I                           irec,
-     I                           mynr,
-     I                           bi,
-     I                           bj,
-     I                           TANGENT_SIMULATION,
-     I                           myOptimIter,
-     I                           mythid
-     &                         )
-
-      return
-      end
-
-
-      subroutine g_active_write_tile_xyz(
-     I                                  active_var_file,
-     I                                  active_var,
-     I                                  irec,
-     I                                  bi,
-     I                                  bj,
-     I                                  myOptimIter,
-     I                                  mythid
-     &                                )
-
-c     ==================================================================
-c     SUBROUTINE g_active_write_tile_xyz
-c     ==================================================================
-c
-c     o Write an active 3D variable to a file.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.c
-c
-c     changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c
-c              - Added routines that do active writes on tiles
-c                instead of a whole thread.
-c
-c     ==================================================================
-c     SUBROUTINE g_active_write_tile_xyz
-c     ==================================================================
-
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-
-      character*(*) active_var_file
-      _RL active_var(1-olx:snx+olx,1-oly:sny+oly,nr)
-      integer irec
-      integer bi
-      integer bj
-      integer myOptimIter
-      integer mythid
-
-c     == local variables ==
-
-      integer mynr
-      logical globalfile
-
-c     == end of interface ==
-
-      mynr = nr
-      globalfile = .false.
-      call active_write_tile_rl(
-     I                           active_var_file,
-     I                           active_var,
-     I                           globalfile,
-     I                           irec,
-     I                           mynr,
-     I                           bi,
-     I                           bj,
-     I                           TANGENT_SIMULATION,
-     I                           myOptimIter,
-     I                           mythid
-     &                         )
 
       return
       end

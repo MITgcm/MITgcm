@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_ad.F,v 1.6 2008/08/02 23:16:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_ad.F,v 1.7 2011/11/05 19:20:42 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -53,7 +53,9 @@ C     !INTERFACE:
      I                             doglobalread,
      I                             lAdInit,
      I                             myiter,
-     I                             mythid
+     I                             mythid,
+     I                             dummy,
+     O                             addummy 
      &                           )
 #endif
 
@@ -90,6 +92,7 @@ c                      variable and write to active file
       integer myiter,mythid
       logical doglobalread
       logical lAdInit
+      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -141,7 +144,9 @@ C     !INTERFACE:
      I                              doglobalread,
      I                              lAdInit,
      I                              myiter,
-     I                              mythid
+     I                              mythid,
+     I                              dummy,
+     I                              addummy
      &                            )
 #endif
 
@@ -177,6 +182,7 @@ c                      variable and write to active file
       integer myiter,mythid
       logical doglobalread
       logical lAdInit
+      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -228,7 +234,9 @@ C     !INTERFACE:
      I                              doglobalread,
      I                              lAdInit,
      I                              myiter,
-     I                              mythid
+     I                              mythid,
+     I                              dummy,
+     O                              addummy 
      &                            )
 #endif
 
@@ -264,6 +272,7 @@ c                      variable and write to active file
       integer myiter,mythid
       logical doglobalread
       logical lAdInit
+      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -315,7 +324,9 @@ C     !INTERFACE:
      I                              doglobalread,
      I                              lAdInit,
      I                              myiter,
-     I                              mythid
+     I                              mythid,
+     I                              dummy,
+     O                              addummy
      &                            )
 #endif
 
@@ -351,6 +362,7 @@ c                      variable and write to active file
       integer myiter,mythid
       logical doglobalread
       logical lAdInit
+      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
