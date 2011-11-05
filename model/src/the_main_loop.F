@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.119 2011/10/30 19:09:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.120 2011/11/05 15:49:27 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,16 +184,18 @@ c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
 CADJ  INIT tapelev_init   = USER
-#ifndef ALLOW_AUTODIFF_WHTAPEIO
+# ifndef ALLOW_AUTODIFF_WHTAPEIO
 CADJ  INIT tapelev_ini_bibj_k   = USER
-#endif
+# endif
 c
-# if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
+# ifdef ALLOW_TAMC_CHECKPOINTING
+#  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
-# elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
+#  elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev4 = USER
-# else
+#  else
 CADJ  INIT tapelev3 = USER
+#  endif
 # endif
 #endif
 
@@ -321,6 +323,8 @@ c**************************************
 #endif
 c**************************************
 
+# endif /* ALLOW_TAMC_CHECKPOINTING */
+
 c**************************************
 c--
 c--       Initialize storage for the innermost loop.
@@ -420,12 +424,14 @@ c**************************************
           ENDDO
 #endif /* STORE_LOADEDREC_TEST */
 
+#ifdef ALLOW_TAMC_CHECKPOINTING
+
           do ilev_1 = 1,nchklev_1
 
 c--         The if-statement below introduces a some flexibility in the
 c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 
-            iloop = (ilev_2 - 1)*nchklev_1                     + ilev_1
+            iloop = (ilev_2 - 1)*nchklev_1 + ilev_1
 #    ifndef AUTODIFF_2_LEVEL_CHECKPOINT
      &            + (ilev_3 - 1)*nchklev_2*nchklev_1
 #    endif
@@ -436,23 +442,6 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
             if ( iloop .le. nTimeSteps ) then
 
 #  else /* ALLOW_TAMC_CHECKPOINTING  undefined */
-c--   Initialise storage for reference trajectory without TAMC check-
-c--   pointing.
-CADJ INIT history        = USER
-CADJ INIT comlev1_bibj   = COMMON,nchklev_0*nsx*nsy*nthreads_chkpt
-CADJ INIT comlev1_bibj_k = COMMON,nchklev_0*nsx*nsy*nr*nthreads_chkpt
-CADJ INIT comlev1_kpp    = COMMON,nchklev_0*nsx*nsy
-
-c--   Check the choice of the checkpointing parameters in relation
-c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
-      if (nchklev_0 .lt. nTimeSteps) then
-        print*
-        print*, ' the_main_loop: TAMC checkpointing parameter ',
-     &       'nchklev_0 = ',       nchklev_0
-        print*, '                 not consistent with nTimeSteps = ', 
-     &       nTimeSteps
-        stop    ' ... stopped in the_main_loop.'
-      endif
 
       DO iloop = 1, nTimeSteps
 
