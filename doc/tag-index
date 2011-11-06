@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1526 2011/10/31 03:41:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1527 2011/11/06 20:09:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63e (2011/11/06)
 o pkg/seaice adjoint of LSR:
   - substantially rework STORE dirs.
   - add new flag SEAICE_LSR_ADJOINT_ITER and parameter SOLV_MAX_FIXED
@@ -18,7 +19,7 @@ o pkg/seaice adjoint of LSR:
     (but these are screwed up by the thermodynamics in the first place);
     reduce from 4 to 3 timesteps to avoid t.d. issue as temporary solution;
     output_adm.txt also reflects changes to seaice_lsr
-  - global_ocean.cs32x15: 
+  - global_ocean.cs32x15:
     * the "default" input_ad.seaice has been re-defined to always exclude dynamics
       (output_adm.seaice.txt was updated)
     * new input_ad.seaice_dynmix tests a forward LSR / backward free-drift
