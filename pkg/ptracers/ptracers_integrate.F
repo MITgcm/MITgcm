@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.43 2011/05/23 00:34:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.44 2011/11/07 20:23:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -88,6 +88,14 @@ C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       INTEGER GAD_TR
       LOGICAL calcAdvection
       INTEGER iterNb
+      _RL gTr_AB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*8 diagName
+      CHARACTER*4 diagSufx
+C-    Functions:
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+#endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 C Loop ranges for daughter routines
@@ -122,7 +130,7 @@ C Loop over tracers
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      rFlx(1,1,kDown,iTracer) = rFlx(1,1,kDown,iTracer)
+       rFlx(1,1,kDown,iTracer) = rFlx(1,1,kDown,iTracer)
 c
 CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
@@ -170,12 +178,14 @@ C External forcing term(s)
 
 C If using Adams-Bashforth II, then extrapolate tendencies
 C gPtr is now the tracer tendency for explicit advection/diffusion
-      IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
 #ifdef ALLOW_MATRIX
-C  If matrix is being computed, block call to S/R ADAMS_BASHFORTH2 to
+C  If matrix is being computed, skip call to S/R ADAMS_BASHFORTH2 to
 C  prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
-        IF (.NOT.useMATRIX) THEN
-#endif
+       IF ( .NOT.useMATRIX .AND.
+     &      PTRACERS_AdamsBashGtr(iTracer) ) THEN
+#else /* ALLOW_MATRIX */
+       IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
+#endif /* ALLOW_MATRIX */
 C       compute iter at beginning of ptracer time step
 #ifdef ALLOW_LONGSTEP
         iterNb = myIter - LS_nIter + 1
@@ -185,14 +195,19 @@ C       compute iter at beginning of ptracer time step
         IF (staggerTimeStep) iterNb = myIter - 1
 #endif
         CALL ADAMS_BASHFORTH2(
-     I                      bi,bj,K,
+     I                      bi,bj,k,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      U                      gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     U                      gTr_AB,
      I                      PTRACERS_startAB(iTracer), iterNb, myThid )
-#ifdef ALLOW_MATRIX
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          diagSufx = GAD_DIAG_SUFX( GAD_TR, myThid )
+          diagName = 'AB_g'//diagSufx
+          CALL DIAGNOSTICS_FILL(gTr_AB,diagName,k,1,2,bi,bj,myThid)
         ENDIF
-#endif
-      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+       ENDIF
 
 C External forcing term(s)
        IF ( tracForcingOutAB.EQ.1 )
@@ -206,12 +221,12 @@ C External forcing term(s)
 C Account for change in level thickness
       IF (nonlinFreeSurf.GT.0) THEN
         CALL FREESURF_RESCALE_G(
-     I                          bi,bj,K,
+     I                          bi,bj,k,
      U                          gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                          myThid )
         IF ( PTRACERS_AdamsBashGtr(iTracer) )
      &  CALL FREESURF_RESCALE_G(
-     I                          bi,bj,K,
+     I                          bi,bj,k,
      U                          gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                          myThid )
       ENDIF
