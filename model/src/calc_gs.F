@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.52 2010/09/15 03:41:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.53 2011/11/07 20:21:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,9 +103,10 @@ C     myThid    :: my Thread Id. number
 CEOP
 
 #ifdef ALLOW_GENERIC_ADVDIFF
-C     === Local variables ===
+C     !LOCAL VARIABLES:
       LOGICAL calcAdvection
       INTEGER iterNb
+      _RL gs_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m1, m2
 #endif
@@ -193,14 +194,19 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
-     U                        gS, gsNm,
+     U                        gS, gsNm, gs_AB,
      I                        saltStartAB, iterNb, myThid )
 #else
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
-     U                        gS, gsNm1,
+     U                        gS, gsNm1, gs_AB,
      I                        saltStartAB, iterNb, myThid )
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(gs_AB,'AB_dS   ',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C--   External salinity forcing term(s) outside Adams-Bashforth:

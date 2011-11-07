@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.45 2011/05/03 19:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.46 2011/11/07 20:21:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,6 +70,7 @@ C     flxDisUp      :: vertical mom. dissipation flux, vertical direction (@ lev
 C     flx_Dn        :: vertical momentum flux, vertical direction (@ level k)
 C     gwDiss        :: vertical momentum dissipation tendency
 C     gwAdd         :: other tendencies (Coriolis, Metric-terms)
+C     gw_AB         :: tendency increment from Adams-Bashforth
 C     del2w         :: laplacian of wVel
 C     wFld          :: local copy of wVel
 C     i,j,k         :: Loop counters
@@ -87,6 +88,7 @@ C     i,j,k         :: Loop counters
       _RL    flxDisUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    gwDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    gwAdd (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    gw_AB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    del2w (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,k, km1, kp1
@@ -102,7 +104,7 @@ C     i,j,k         :: Loop counters
       PARAMETER( jMin = 1 , jMax = sNy )
 CEOP
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL diagDiss, diagAdvec
+      LOGICAL diagDiss, diagAdvec, diag_AB
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
@@ -113,9 +115,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useDiagnostics ) THEN
         diagDiss  = DIAGNOSTICS_IS_ON( 'Wm_Diss ', myThid )
         diagAdvec = DIAGNOSTICS_IS_ON( 'Wm_Advec', myThid )
+        diag_AB   = DIAGNOSTICS_IS_ON( 'AB_dW   ', myThid )
       ELSE
         diagDiss  = .FALSE.
         diagAdvec = .FALSE.
+        diag_AB   = .FALSE.
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -603,14 +607,19 @@ C     and save gW_[n] into gwNm1 for the next time step.
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
      I                         bi, bj, k,
-     U                         gW, gwNm,
+     U                         gW, gwNm, gw_AB,
      I                         nHydStartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL ADAMS_BASHFORTH2(
      I                         bi, bj, k,
-     U                         gW, gwNm1,
+     U                         gW, gwNm1, gw_AB,
      I                         nHydStartAB, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( diag_AB ) THEN
+          CALL DIAGNOSTICS_FILL(gw_AB,'AB_dW   ',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Dissipation term outside the Adams-Bashforth:
         IF ( momViscosity .AND. .NOT.momDissip_In_AB ) THEN

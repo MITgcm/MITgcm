@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.56 2010/09/15 03:41:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.57 2011/11/07 20:21:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -102,9 +102,10 @@ C     myThid    :: my Thread Id. number
 CEOP
 
 #ifdef ALLOW_GENERIC_ADVDIFF
-C     === Local variables ===
+C     !LOCAL VARIABLES:
       LOGICAL calcAdvection
       INTEGER iterNb
+      _RL gt_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m1, m2
 #endif
@@ -192,14 +193,19 @@ C--   External thermal forcing term(s) inside Adams-Bashforth:
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
-     U                        gT, gtNm,
+     U                        gT, gtNm, gt_AB,
      I                        tempStartAB, iterNb, myThid )
 #else
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
-     U                        gT, gtNm1,
+     U                        gT, gtNm1, gt_AB,
      I                        tempStartAB, iterNb, myThid )
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(gt_AB,'AB_dT   ',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C--   External thermal forcing term(s) outside Adams-Bashforth:

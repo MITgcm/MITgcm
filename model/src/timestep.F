@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.52 2010/09/11 21:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.53 2011/11/07 20:21:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,6 +60,8 @@ C     == Local variables ==
       _RL phxFac,phyFac, psFac
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     gu_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     gv_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_NONHYDROSTATIC
       _RL     nhFac
 #endif
@@ -182,22 +184,28 @@ C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
 #ifdef ALLOW_ADAMSBASHFORTH_3
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
-     U                        gU, guNm,
+     U                        gU, guNm, gu_AB,
      I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
-     U                        gV, gvNm,
+     U                        gV, gvNm, gv_AB,
      I                        mom_StartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
-     U                        gU, guNm1,
+     U                        gU, guNm1, gu_AB,
      I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
-     U                        gV, gvNm1,
+     U                        gV, gvNm1, gv_AB,
      I                        mom_StartAB, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(gu_AB,'AB_dU   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gv_AB,'AB_dV   ',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Forcing term outside the Adams-Bashforth:
       IF ( momForcing .AND. momForcingOutAB.EQ.1 ) THEN
