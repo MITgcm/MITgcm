@@ -3,10 +3,10 @@
 #PBS -q four-twelve
 #PBS -N tst_g77
 #PBS -l nodes=1:ppn=2
-#PBS -e /home/jmc/test_ACES/output/tst_g77.stderr
-#PBS -o /home/jmc/test_ACES/output/tst_g77.stdout
+#PBS -e /home/jmc/test_aces/output/tst_g77.stderr
+#PBS -o /home/jmc/test_aces/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.7 2011/11/03 17:36:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.8 2011/11/07 15:27:12 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -46,7 +46,7 @@ cd $TST_DIR
 #dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 #if [ $dsp -gt 99 ] ; then
 dsp=`df -P . | tail -1 | awk '{print $4}'`
-if [ $dsp -le 3200000 ] ; then
+if [ $dsp -le 1000000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit

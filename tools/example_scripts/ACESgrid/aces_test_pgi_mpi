@@ -3,10 +3,10 @@
 #PBS -q four-twelve
 #PBS -N tst_pgi
 #PBS -l nodes=3:ppn=2
-#PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
-#PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
+#PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
+#PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.19 2011/11/03 17:36:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.20 2011/11/07 15:27:12 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -46,7 +46,7 @@ cd $TST_DIR
 #dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 #if [ $dsp -gt 99 ] ; then
 dsp=`df -P . | tail -1 | awk '{print $4}'`
-if [ $dsp -le 3200000 ] ; then
+if [ $dsp -le 1000000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit
