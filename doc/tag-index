@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1528 2011/11/07 09:21:02 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1529 2011/11/07 22:28:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - re-arrange extrapolation calculation in Adams-Bashforth S/R (affects machine
+    truncation) and add diagnostics for Adams-Bashforth tendency increment.
+  - update test-exp. AD output:
+    1D_ocean_ice_column, bottom_ctrl_5x5, lab_sea.noseaicedyn, obcs_ctrl;
+  and FWD output: exp4 (x3), fizhi-cs-32x32x40, fizhi-cs-aqualev20,
+    front_relax (x3), global_ocean.90x40x15 (x2), global_ocean.cs32x15 (x5),
+    global_ocean_ebm, ideal_2D_oce, internal_wave, isomip (x3), lab_sea (x4),
+    matrix_example, MLAdjust (x5), natl_box (x2), tutorial_advection_in_gyre,
+    tutorial_global_oce_in_p, tutorial_global_oce_latlon and
+    tutorial_plume_on_slope.
 o pkg/diagnostics/diagstats_calc.F: add special code for TARGET_NEC_SX
   that vectorises. This code uses 3 extra 2D fields, F90 array assignments
   and F90 intrinsic routines SUM, MINVAL, MAXVAL, but since TARGET_NEC_SX
