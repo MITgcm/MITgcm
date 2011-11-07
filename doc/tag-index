@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1527 2011/11/06 20:09:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1528 2011/11/07 09:21:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/diagnostics/diagstats_calc.F: add special code for TARGET_NEC_SX
+  that vectorises. This code uses 3 extra 2D fields, F90 array assignments
+  and F90 intrinsic routines SUM, MINVAL, MAXVAL, but since TARGET_NEC_SX
+  does not even come with an F77 compiler anymore, this should not be
+  a limitation
 
 checkpoint63e (2011/11/06)
 o pkg/seaice adjoint of LSR:
