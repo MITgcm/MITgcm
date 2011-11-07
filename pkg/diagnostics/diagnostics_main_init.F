@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.40 2011/07/19 23:51:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.41 2011/11/07 15:53:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -746,6 +746,47 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'AB_gU   '
+      diagTitle = 'U momentum tendency from Adams-Bashforth'
+      diagUnits = 'm/s^2           '
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'AB_gV   '
+      diagTitle = 'V momentum tendency from Adams-Bashforth'
+      diagUnits = 'm/s^2           '
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+#ifdef ALLOW_NONHYDROSTATIC
+      diagName  = 'AB_gW   '
+      diagTitle = 'W momentum tendency from Adams-Bashforth'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c//'/s^2', myThid )
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* ALLOW_NONHYDROSTATIC */
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+      diagName  = 'AB_gT   '
+      diagTitle = 'Potential Temp. tendency from Adams-Bashforth'
+      diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'AB_gS   '
+      diagTitle = DIAGS_MK_TITLE(
+     &            sTitle//'tendency from Adams-Bashforth', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END
