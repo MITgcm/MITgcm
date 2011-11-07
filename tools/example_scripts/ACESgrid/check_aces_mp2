@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/check_aces_mp2,v 1.1 2011/11/07 15:36:21 jmc Exp $
+# $Name:  $
+
+sfx='mp2'
+#EXE="mpiexec -pernode -comm pmi -np $NCPU ./mitgcmuv"
+longChk=300
+shortChk=60
+pNam='mitgcmuv'
+uNam=$USER
+HERE=`pwd`
+pLog="kill_$sfx.log"
+
+echo "start $0 from $HERE at:" `date` "by user: $uNam"
+#uNam='jmc' ; HERE='/home/jmc/test_ACES/output' ; cd $HERE
+
+while test ! -f stop_check_$sfx
+do
+  # check for defunct proc
+  nZ=`ps -f -u $uNam | grep $pNam | grep '<defunct>' | wc -l`
+  if [ $nZ -ge 1 ] ; then
+    echo "found $nZ $pNam zombie processes at:" `date`
+    listZ=`ps -f -u $uNam | grep $pNam | grep '<defunct>' | awk '{print $2}'`
+    sleep $shortChk
+    for p1Z in $listZ ; do
+      p2Z=`ps -f -p $p1Z | grep '<defunct>' | awk '{print $2}'`
+      if test "x$p2Z" = "x$p1Z" ; then
+        #-- report to permanent log file
+        date >> $pLog ; uname -a >> $pLog
+        ps -f -p $p1Z | tee -a $pLog
+        ppZ=`ps -f -p $p1Z | grep $pNam | awk '{print $3}'`
+#--- version-1 : try to kill parent of Zombie proc
+#       echo " try to kill parent proc: $ppZ at:" `date` | tee -a $pLog
+#       kill -9 $ppZ
+#       out=$?
+#       echo " return code: $out" | tee -a $pLog
+#--- version-2 : try to kill other pNam child proc from same parent
+        echo " list of $pNam proc at:" `date`
+        ps -f -u $uNam | grep $pNam
+        listP=`ps -f -u $uNam | grep $pNam | awk '{print $2 "p" $3}'`
+        echo " try to kill proc from same parent=$ppZ" | tee -a $pLog
+        ps -f -p $ppZ
+       #echo " listP='$listP'"
+        for xx in $listP
+        do
+          pc=`echo $xx | sed 's/p/ /' | awk '{print $1}'`
+          pp=`echo $xx | sed 's/p/ /' | awk '{print $2}'`
+         #echo " xx='$xx' ; child=$pc ; parent=$pp"
+          if test "x$pp" = "x$ppZ" -a "x$pc" != "x$p1Z" ; then
+            ps -f -p $pc | tee -a $pLog
+            echo " killing proc: $pc" | tee -a $pLog
+            kill -9 $ppZ
+            out=$?
+            echo " return code: $out" | tee -a $pLog
+          fi
+        done
+#---
+        echo " list of remaining $pNam proc:" | tee -a $pLog
+        ps -f -u $uNam | grep $pNam | tee -a $pLog
+        echo '--------------------' >> $pLog
+      else
+        echo " proc: $p1Z no more Zombie at:" `date`
+      fi
+    done
+    nZ=`ps -f -u $uNam | grep $pNam | grep '<defunct>' | wc -l`
+    echo " $nZ $pNam zombie process remain at:" `date`
+    echo '--------------------'
+  fi
+  sleep $longChk
+done
+ls -l stop_check_$sfx
+exit
