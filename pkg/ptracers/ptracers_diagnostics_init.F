@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.9 2010/09/05 22:28:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.10 2011/11/07 20:22:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -178,6 +178,15 @@ C-     Diffusive flux:
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+C--    add diagnostics for Adams-Bashforth tendency increment
+       diagName  = 'AB_g'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                   ' tendency from Adams-Bashforth'
+       diagCode  = 'SMR     MR      '
+       diagUnits = trcUnits//'/s       '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    add diagnostics for other pkg contribution to ptracer solution
        IF ( useKPP ) THEN
@@ -185,6 +194,7 @@ C--    add diagnostics for other pkg contribution to ptracer solution
         WRITE(diagTitle,'(2A)') 'KPP non-local Flux of ',
      &                 locName(1:ilnb)
         diagCode  = 'WM      LR      '
+        diagUnits = trcUnits//flxUnits
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        ENDIF
@@ -193,7 +203,7 @@ C--    add diagnostics for other pkg contribution to ptracer solution
         diagName  = 'DSLP'//diagSufx
         WRITE(diagTitle,'(2A)') locName(1:ilnb),
      &                   ' tendency from Down-Slope package'
-        diagCode  = 'SM      MR      '
+        diagCode  = 'SMR     MR      '
         diagUnits = trcUnits//'/s       '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
