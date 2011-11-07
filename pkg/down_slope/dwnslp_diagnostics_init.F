@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_diagnostics_init.F,v 1.1 2008/08/17 02:01:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_diagnostics_init.F,v 1.2 2011/11/07 15:48:14 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -60,7 +60,7 @@ c     IF ( useDiagnotics ) THEN
 c       diagName  = 'RHOAnExt'
 c       diagTitle = 'Density Anomaly (=Rho-rhoConst) + extended inland'
 c       diagUnits = 'kg/m^3          '
-c       diagCode  = 'SM      MR      '
+c       diagCode  = 'SMR     MR      '
 c       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -87,7 +87,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'DSLP'//diagSufx
         diagTitle = ' Pot.Temp. tendency from Down-Slope package'
         diagUnits = 'K/s             '
-        diagCode  = 'SM      MR      '
+        diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -97,7 +97,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'DSLP'//diagSufx
         diagTitle = ' Salinity  tendency from Down-Slope package'
         diagUnits = 'psu/s           '
-        diagCode  = 'SM      MR      '
+        diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
