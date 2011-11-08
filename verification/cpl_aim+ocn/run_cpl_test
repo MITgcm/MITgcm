@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.17 2010/12/06 02:52:40 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.18 2011/11/08 22:56:52 jmc Exp $
 # $Name:  $
 
 #- default:
@@ -9,6 +9,7 @@
 MTH=
 MTHo=
 MTHa=
+#GMKopt='-devel'
 GMKopt='-ieee'
 #GMKopt=
 rnkO=1 ; rnkA=`expr $rnkO + $NpOc`
@@ -202,6 +203,10 @@ then
     if [ $nc -le $NpOc ] ; then dd1=ocn ; else dd1=atm ; fi
     nn=1
   done
+  NpAt=`expr $Npr - 1 - $NpOc`
+  RunOpt="-np 1 ./build_cpl/mitgcmuv"
+  RunOpt="$RunOpt : -np $NpOc ./build_ocn/mitgcmuv"
+  RunOpt="$RunOpt : -np $NpAt ./build_atm/mitgcmuv"
 
   cd $ROOTDIR
   if test "x$MTH" != x ; then
@@ -214,11 +219,25 @@ then
     fi
     echo ""
   fi
-# /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
-#- with mpich-1 (on danton, ACES):
-  mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
-#- with mpich-mx (on beagle):
-# mpirun -pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
+  mpich=`which mpirun`
+  echo $mpich | grep 'mpich-mx' > /dev/null 2>&1
+  mpichmx=$?
+  echo $mpich | grep 'mpich2' > /dev/null 2>&1
+  mpich2=$?
+  if test $mpich2 == 0 ; then
+  #- with Hydra mpich2 (on baudelaire):
+    echo "execute 'mpirun $RunOpt' :"
+    mpirun $RunOpt  > std_outp 2>&1
+  elif test $mpichmx == 0 ; then
+  #- with mpich-mx (on beagle):
+    echo "execute 'mpirun -pg pr_group -v ./build_cpl/mitgcmuv' :"
+    mpirun -pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
+  else
+  # /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+  #- with mpich-1 (on danton, ACES):
+    echo "execute 'mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv' :"
+    mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
+  fi
   tail -20 std_outp
   ls -l rank_$rnkO/pickup*.ckptA.001.001.data
   ls -l rank_$rnkA/pickup*.ckptA.001.001.data
@@ -227,10 +246,11 @@ fi
 
 if test $kpr = 4
 then
+ CompRes="$HOME/bin/comp_res"
 
  if test -f rank_$rnkO/STDOUT.0000
  then echo '==> check Ocean output:'
-    /home/jmc/bin/comp_res rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.0000
+    $CompRes rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.0000
     mv -f comp_res.log comp_res.ocn
     echo ' '
  else echo "No Ocean output file in rank_$rnkO" ; fi
@@ -238,13 +258,13 @@ then
  if test -f rank_$rnkA/STDOUT.0000
  then
     echo '==> check Atmos output:'
-    /home/jmc/bin/comp_res rank_$rnkA/STDOUT.0000 results/atmSTDOUT.0000
+    $CompRes rank_$rnkA/STDOUT.0000 results/atmSTDOUT.0000
     mv -f comp_res.log comp_res.atm
     echo '==> check Land output:'
-    /home/jmc/bin/comp_res rank_$rnkA/STDOUT.0000 results/atmSTDOUT.0000 L
+    $CompRes rank_$rnkA/STDOUT.0000 results/atmSTDOUT.0000 L
     mv -f comp_res.log comp_res.land
     echo '==> check thSIce output:'
-    /home/jmc/bin/comp_res rank_$rnkA/STDOUT.0000 results/atmSTDOUT.0000 I
+    $CompRes rank_$rnkA/STDOUT.0000 results/atmSTDOUT.0000 I
     mv -f comp_res.log comp_res.sice
     echo ' '
  else echo "No Atmos output file in rank_$rnkA" ; fi
