@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.5 2011/10/25 15:09:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.6 2011/11/08 17:00:25 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -99,17 +99,17 @@ C     pFac         :: switch that turns on/off phase velocity contribution
       INTEGER I, J, K
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL uPhase
-c     _RL vPhase
+      _RL vPhase
       _RL dtracSpace
       _RL cflMer (1-OLy:sNy+OLy,Nr)
       _RL gFacM  (1-OLy:sNy+OLy,Nr)
-c     _RL cflZon (1-OLx:sNx+OLx,Nr)
-c     _RL gFacZ  (1-OLy:sNy+OLy,Nr)
+      _RL cflZon (1-OLx:sNx+OLx,Nr)
+      _RL gFacZ  (1-OLy:sNy+OLy,Nr)
       _RL uMerPri(1-OLy:sNy+OLy,Nr)
-c     _RL vZonPri(1-OLx:sNx+OLx,Nr)
+      _RL vZonPri(1-OLx:sNx+OLx,Nr)
       _RL uMerBar(1-OLy:sNy+OLy)
-c     _RL vZonBar(1-OLx:sNx+OLx)
-      _RL drFBar (1-OLy:sNy+OLy)
+      _RL vZonBar(1-OLx:sNx+OLx)
+      _RL drFBar 
       _RL gammat, gammas, pFac, aFac
 #ifdef ALLOW_PTRACERS
 c     INTEGER iTracer
@@ -162,80 +162,75 @@ C     Eastern OB
      &        CALL DEBUG_MSG('OBCS_CALC_STEVENS: East',myThid)
 #endif
 C     compute vertical average and deviation from vertical
-C     average for I_obe-1
+C     average for I_obe
 C     first initialize some fields
          DO J=1-Oly,sNy+Oly
           uMerBar(J) = 0. _d 0
-          drFBar(J)  = 0. _d 0
          ENDDO
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            uMerPri(J,K) = 0. _d 0
           ENDDO
          ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) THEN
+         DO J=1-Oly,sNy+Oly
+          I=OB_Ie(J,bi,bj)
+          IF (I.NE.0) THEN
+           drFbar = 0. _d 0
+           DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
             uMerBar(J) = uMerBar(J) + uVel(I-1,J,K,bi,bj)
 #else
             uMerBar(J) = uMerBar(J) + OBEuStevens(J,K,bi,bj)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           *drF(K)* _hFacW(I,J,K,bi,bj)
-            drFBar(J) = drFBar(J) + drF(K)* _hFacW(I,J,K,bi,bj)
-           ENDIF
-          ENDDO
+            drFBar = drFBar + drF(K)* _hFacW(I,J,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
+          ENDIF
          ENDDO
          DO J=1-Oly,sNy+Oly
-          IF ( drFBar(J) .GT. 0. _d 0 )
-     &         uMerBar(J) = uMerBar(J)/drFBar(J)
-         ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) 
+          I=OB_Ie(J,bi,bj)
+          IF (I.NE.0) THEN
+           DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-     &          uMerPri(J,K) = (uVel(I-1,J,K,bi,bj)-uMerBar(J))
-#else
-     &          uMerPri(J,K) = (OBEuStevens(J,K,bi,bj)-uMerBar(J))
+            uMerPri(J,K) = (uVel(I-1,J,K,bi,bj)-uMerBar(J))
+#else 
+            uMerPri(J,K) = (OBEuStevens(J,K,bi,bj)-uMerBar(J))
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
-     &          * _maskW(I,J,K,bi,bj)
-          ENDDO
+     &           * _maskW(I,J,K,bi,bj)
+           ENDDO
+          ENDIF
          ENDDO
 C     vertical average of input field
          DO J=1-Oly,sNy+Oly
           uMerBar(J) = 0. _d 0
-          drFBar(J)  = 0. _d 0
-         ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) THEN
-            uMerBar(J) = uMerBar(J) + OBEu(J,K,bi,bj)
-     &           *drF(K)* _hFacW(I,J,K,bi,bj)
-            drFBar(J) = drFBar(J) + drF(K)* _hFacW(I,J,K,bi,bj)
-           ENDIF
-          ENDDO
          ENDDO
          DO J=1-Oly,sNy+Oly
-          IF ( drFBar(J) .GT. 0. _d 0 )
-     &         uMerBar(J) = uMerBar(J)/drFBar(J)
+          I=OB_Ie(J,bi,bj)
+          IF (I.NE.0) THEN
+           drFbar = 0. _d 0
+           DO K=1,Nr
+            uMerBar(J) = uMerBar(J) + OBEu(J,K,bi,bj)
+     &           *drF(K)* _hFacW(I,J,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacW(I,J,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
+          ENDIF
          ENDDO
 C     Now the absolute velocity normal to the boundary is
 C     uMerBar(J) + uMerPri(J,K).
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) THEN
+         DO J=1-Oly,sNy+Oly
+          I=OB_Ie(J,bi,bj)
+          IF (I.NE.0) THEN
+           DO K=1,Nr
             OBEu(J,K,bi,bj) = (uMerBar(J) + uMerPri(J,K))
      &           * _maskW(I,J,K,bi,bj)
-CML         OBEv(J,K,bi,bj) = 0. _d 0
+CML            OBEv(J,K,bi,bj) = 0. _d 0
 #ifdef ALLOW_NONHYDROSTATIC
             OBEw(J,K,bi,bj)=0.
 #endif
-           ENDIF
-          ENDDO
+           ENDDO
+          ENDIF
          ENDDO
 #ifdef NONLIN_FRSURF
 C     this is a bit of a hack
@@ -257,10 +252,10 @@ C     tracer!
             cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
 CML         gFacM(J,K)  = 0. _d 0
 CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
-            gFacM(J,K)   = ABS(MIN(SIGN(1.D0,uVel(I,J,K,bi,bj)),0.D0))
+            gFacM(J,K)  = ABS(MIN(SIGN(1.D0,uVel(I,J,K,bi,bj)),0.D0))
            ELSE
             cflMer(J,K) = 0. _d 0
-            gFacM(J,K)  = 0. _d 0
+            gFacM (J,K) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
@@ -336,80 +331,75 @@ C     Western OB
      &        CALL DEBUG_MSG('OBCS_CALC_STEVENS: West',myThid)
 #endif
 C     compute vertical average and deviation from vertical
-C     average for I_obw+2
+C     average for I_obw+1
 C     first initialize some fields
          DO J=1-Oly,sNy+Oly
           uMerBar(J) = 0. _d 0
-          drFBar(J)  = 0. _d 0
          ENDDO
          DO K=1,Nr
           DO J=1-Oly,sNy+Oly
            uMerPri(J,K) = 0. _d 0
           ENDDO
          ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) THEN
+         DO J=1-Oly,sNy+Oly
+          I=OB_Iw(J,bi,bj)
+          IF (I.NE.0) THEN
+           drFBar = 0. _d 0
+           DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
             uMerBar(J) = uMerBar(J) + uVel(I+2,J,K,bi,bj)
 #else
             uMerBar(J) = uMerBar(J) + OBWuStevens(J,K,bi,bj)
 #endif /* OBCS_STEVENS_USE_INTERIOR_VELOCITY */
-     &        *drF(K)* _hFacW(I+1,J,K,bi,bj)
-            drFBar(J) = drFBar(J) + drF(K)* _hFacW(I+1,J,K,bi,bj)
-           ENDIF
-          ENDDO
+     &           *drF(K)* _hFacW(I+1,J,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacW(I+1,J,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
+          ENDIF
          ENDDO
          DO J=1-Oly,sNy+Oly
-          IF ( drFBar(J) .GT. 0. _d 0 )
-     &         uMerBar(J) = uMerBar(J)/drFBar(J)
-         ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) 
+          I=OB_Iw(J,bi,bj)
+          IF (I.NE.0) THEN
+           DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-     &          uMerPri(J,K) = (uVel(I+2,J,K,bi,bj)-uMerBar(J))
+            uMerPri(J,K) = (uVel(I+2,J,K,bi,bj)-uMerBar(J))
 #else
-     &          uMerPri(J,K) = (OBWuStevens(J,K,bi,bj)-uMerBar(J))
+            uMerPri(J,K) = (OBWuStevens(J,K,bi,bj)-uMerBar(J))
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
-     &       * _maskW(I+1,J,K,bi,bj)
-          ENDDO
+     &           * _maskW(I+1,J,K,bi,bj)
+           ENDDO
+          ENDIF
          ENDDO
 C     vertical average of input field
          DO J=1-Oly,sNy+Oly
           uMerBar(J) = 0. _d 0
-          drFBar(J)  = 0. _d 0
-         ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) THEN
-            uMerBar(J) = uMerBar(J) + OBWu(J,K,bi,bj)
-     &           *drF(K)* _hFacW(I+1,J,K,bi,bj)
-            drFBar(J) = drFBar(J) + drF(K)* _hFacW(I+1,J,K,bi,bj)
-           ENDIF
-          ENDDO
          ENDDO
          DO J=1-Oly,sNy+Oly
-          IF ( drFBar(J) .GT. 0. _d 0 )
-     &         uMerBar(J) = uMerBar(J)/drFBar(J)
+          I=OB_Iw(J,bi,bj)
+          IF (I.NE.0) THEN
+           drFBar  = 0. _d 0
+           DO K=1,Nr
+            uMerBar(J) = uMerBar(J) + OBWu(J,K,bi,bj)
+     &           *drF(K)* _hFacW(I+1,J,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacW(I+1,J,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
+          ENDIF
          ENDDO
 C     Now the absolute velocity normal to the boundary is
 C     uMerBar(J) + uMerPri(J,K).
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) THEN
+         DO J=1-Oly,sNy+Oly
+          I=OB_Iw(J,bi,bj)
+          IF (I.NE.0) THEN
+           DO K=1,Nr
             OBWu(J,K,bi,bj) = (uMerBar(J) + uMerPri(J,K))
      &          * _maskW(I+1,J,K,bi,bj)
-CML         OBWv(J,K,bi,bj) = 0. _d 0
+CML            OBWv(J,K,bi,bj) = 0. _d 0
 #ifdef ALLOW_NONHYDROSTATIC
             OBWw(J,K,bi,bj)=0.
 #endif
-           ENDIF
-          ENDDO
+           ENDDO
+          ENDIF
          ENDDO
 #ifdef NONLIN_FRSURF
 C     this is a bit of a hack
@@ -498,32 +488,164 @@ C      IF ( useStevensWest ) THEN
 C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_NORTH
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE OBNt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBNs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+# endif
         IF ( useStevensNorth ) THEN
 C         Northern OB
 #ifdef ALLOW_DEBUG
          IF (debugMode)
      &        CALL DEBUG_MSG('OBCS_CALC_STEVENS: North',myThid)
 #endif
-         STOP 'OBCS_NORTH Stevens not yet implemented'
-CML      DO K=1,Nr
-CML       DO I=1-Olx,sNx+Olx
-CML        vZonPri(I,K) = 0. _d 0
-CML       ENDDO
-CML      ENDDO
+C     compute vertical average and deviation from vertical
+C     average for J_obn
+C     first initialize some fields
+         DO I=1-Olx,sNx+Olx
+          vZonBar(I) = 0. _d 0
+         ENDDO
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+           vZonPri(I,K) = 0. _d 0
+          ENDDO
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+          J=OB_Jn(I,bi,bj)
+          IF (J.NE.0) THEN
+           drFBar  = 0. _d 0
+           DO K=1,Nr
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
+            vZonBar(I) = vZonBar(I) + vVel(I,J-1,K,bi,bj)
+#else
+            vZonBar(I) = vZonBar(I) + OBNvStevens(I,K,bi,bj)
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
+     &           *drF(K)* _hFacS(I,J,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacS(I,J,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
+          ENDIF
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+          J=OB_Js(I,bi,bj)
+          IF (J.NE.0) THEN
+           DO K=1,Nr
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
+            vZonPri(I,K) = (vVel(I,J-1,K,bi,bj)-vZonBar(I))
+#else
+            vZonPri(I,K) = (OBNvStevens(I,K,bi,bj)-vZonBar(I))
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
+     &           * _maskS(I,J,K,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+C     vertical average of input field
+         DO I=1-Olx,sNx+Olx
+          vZonBar(I) = 0. _d 0
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+          J=OB_Js(I,bi,bj)
+          IF (J.NE.0) THEN
+           drFBar  = 0. _d 0
+           DO K=1,Nr
+            vZonBar(I) = vZonBar(I) + OBNv(I,K,bi,bj)
+     &           *drF(K)* _hFacS(I,J,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacS(I,J,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
+          ENDIF
+         ENDDO
+C     Now the absolute velocity normal to the boundary is
+C     vZonBar(I) + vZonPri(J,K).
+         DO I=1-Olx,sNx+Olx
+          J=OB_Jn(I,bi,bj)
+          IF (J.NE.0) THEN
+           DO K=1,Nr
+            OBNv(I,K,bi,bj) = (vZonBar(I) + vZonPri(I,K))
+     &          * _maskS(I,J,K,bi,bj)
+CML            OBNu(I,K,bi,bj) = 0. _d 0
+#ifdef ALLOW_NONHYDROSTATIC
+            OBNw(I,K,bi,bj)=0.
+#endif
+           ENDDO
+          ENDIF
+         ENDDO
+#ifdef NONLIN_FRSURF
+C     this is a bit of a hack
+         IF ( nonlinFreeSurf.GT.0 ) THEN
+          DO I=1-Olx,sNx+Olx
+           J=OB_Jn(I,bi,bj)
+           IF (J.ne.0) THEN
+            OBNeta(I,bi,bj) = etaN(I,J-1,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+#endif /* NONLIN_FRSURF */
+C     Next, we compute the phase speed correction, which depends on the
+C     tracer! 
          DO K=1,Nr
           DO I=1-Olx,sNx+Olx
            J=OB_Jn(I,bi,bj)
            IF (J.NE.0) THEN
-            OBNv(I,K,bi,bj)=0.
-            OBNu(I,K,bi,bj)=0.
-            OBNt(I,K,bi,bj)=tRef(K)
-            OBNs(I,K,bi,bj)=sRef(K)
-#ifdef ALLOW_NONHYDROSTATIC
-            OBNw(I,K,bi,bj)=0.
+            cflZon(I,K) = 0.5 _d 0 * _dyC(I,J-1,bi,bj)/deltaTmom
+CML         gFacZ(I,K) = 0. _d 0
+CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
+            gFacZ(I,K)  = ABS(MIN(SIGN(1.D0,vVel(I,J,K,bi,bj)),0.D0))
+           ELSE
+            cflZon(I,K) = 0. _d 0
+            gFacZ (I,K) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+           J=OB_Jn(I,bi,bj)
+           IF (J.NE.0) THEN
+C     Theta first:
+            dTracSpace = (theta(I,J-1,K,bi,bj)-theta(I,J-2,K,bi,bj))
+     &        * _maskS(I,J-1,K,bi,bj)
+            vPhase = 0. _d 0
+            IF ( dTracSpace .NE. 0. _d 0 ) THEN
+             vPhase = MIN( cflZon(I,K),
+#ifdef ALLOW_ADAMSBASHFORTH_3
+     &       MAX( 0.D0, -cflZon(I,K)*gtNm(I,J-1,K,bi,bj,1)/dTracSpace )
+#else
+     &       MAX( 0.D0, -cflZon(I,K)*gtNm1(I,J-1,K,bi,bj)/dTracSpace )
 #endif
-#ifdef NONLIN_FRSURF
-            OBNeta(I,bi,bj)=0.
+     &         ) * pFac
+            ENDIF
+C     Update the tracer here with a simple Euler forward step; not
+C     sure if this will be stable
+            OBNt(I,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
+     &        * _maskS(I,J,K,bi,bj)
+     &        * (
+     &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
+     &        *(theta(I,J,K,bi,bj)-theta(I,J-1,K,bi,bj))
+     &        * _recip_dyC(I,J,bi,bj)
+     &        - gFacZ(I,K) * gammat 
+     &           * (theta(I,J,K,bi,bj)-OBNt(I,K,bi,bj)) )
+C     Now salinity:
+            dTracSpace = (salt(I,J-1,K,bi,bj)-salt(I,J-2,K,bi,bj))
+     &        * _maskS(I,J-1,K,bi,bj)
+            vPhase = 0. _d 0
+            IF ( dTracSpace .NE. 0. _d 0 ) THEN
+             vPhase = MIN( cflZon(I,K),
+#ifdef ALLOW_ADAMSBASHFORTH_3
+     &       MAX( 0.D0, -cflZon(I,K)*gsNm(I,J-1,K,bi,bj,1)/dTracSpace )
+#else
+     &       MAX( 0.D0, -cflZon(I,K)*gsNm1(I,J-1,K,bi,bj)/dTracSpace )
 #endif
+     &         ) * pFac
+            ENDIF
+C     Update the tracer here with a simple Euler forward step; not
+C     sure if this will be stable
+            OBNs(I,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
+     &        * _maskS(I,J,K,bi,bj)
+     &        * (
+     &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
+     &        *(salt(I,J,K,bi,bj)-salt(I,J-1,K,bi,bj))
+     &        * _recip_dyC(I,J,bi,bj)
+     &        - gFacZ(I,K) * gammat 
+     &           * (salt(I,J,K,bi,bj)-OBNs(I,K,bi,bj)) )
            ENDIF
           ENDDO
          ENDDO
@@ -534,139 +656,171 @@ C      IF ( useStevensNorth ) THEN
 C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_SOUTH
+
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE OBSt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBSs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+# endif
         IF ( useStevensSouth ) THEN
 C         Southern OB
 #ifdef ALLOW_DEBUG
          IF (debugMode)
      &        CALL DEBUG_MSG('OBCS_CALC_STEVENS: South',myThid)
 #endif
-         STOP 'OBCS_SOUTH Stevens not yet implemented'
-CML      DO K=1,Nr
-CML       DO I=1-Olx,sNx+Olx
-CML        vZonPri(I,K) = 0. _d 0
-CML       ENDDO
-CML      ENDDO
+C     compute vertical average and deviation from vertical
+C     average for J_obs+1
+C     first initialize some fields
+         DO I=1-Olx,sNx+Olx
+          vZonBar(I) = 0. _d 0
+         ENDDO
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+           vZonPri(I,K) = 0. _d 0
+          ENDDO
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+          J=OB_Js(I,bi,bj)
+          IF (J.NE.0) THEN
+           drFBar  = 0. _d 0
+           DO K=1,Nr
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
+            vZonBar(I) = vZonBar(I) + vVel(I,J+2,K,bi,bj)
+#else
+            vZonBar(I) = vZonBar(I) + OBSvStevens(I,K,bi,bj)
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
+     &           *drF(K)* _hFacS(I,J+1,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacS(I,J+1,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
+          ENDIF
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+          J=OB_Js(I,bi,bj)
+          IF (J.NE.0) THEN
+           DO K=1,Nr
+#ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
+            vZonPri(I,K) = (vVel(I,J+2,K,bi,bj)-vZonBar(I))
+#else
+            vZonPri(I,K) = (OBSvStevens(I,K,bi,bj)-vZonBar(I))
+#endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
+     &           * _maskS(I,J+1,K,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+C     vertical average of input field
+         DO I=1-Olx,sNx+Olx
+          vZonBar(I) = 0. _d 0
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+          J=OB_Js(I,bi,bj)
+          IF (J.NE.0) THEN
+           drFBar  = 0. _d 0
+           DO K=1,Nr
+            vZonBar(I) = vZonBar(I) + OBSv(I,K,bi,bj)
+     &           *drF(K)* _hFacS(I,J+1,K,bi,bj)
+            drFBar = drFBar + drF(K)* _hFacS(I,J+1,K,bi,bj)
+           ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
+          ENDIF
+         ENDDO
+C     Now the absolute velocity normal to the boundary is
+C     vZonBar(I) + vZonPri(I,K).
+         DO I=1-Olx,sNx+Olx
+          J=OB_Js(I,bi,bj)
+          IF (J.NE.0) THEN
+           DO K=1,Nr
+            OBSv(I,K,bi,bj) = (vZonBar(I) + vZonPri(I,K))
+     &          * _maskS(I,J+1,K,bi,bj)
+CML            OBSu(I,K,bi,bj) = 0. _d 0
+#ifdef ALLOW_NONHYDROSTATIC
+            OBSw(I,K,bi,bj)=0.
+#endif
+           ENDDO
+          ENDIF
+         ENDDO
+#ifdef NONLIN_FRSURF
+C     this is a bit of a hack
+         IF ( nonlinFreeSurf.GT.0 ) THEN
+          DO I=1-Olx,sNx+Olx
+           J=OB_Js(I,bi,bj)
+           IF (J.ne.0) THEN
+            OBSeta(I,bi,bj) = etaN(I,J+1,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+#endif /* NONLIN_FRSURF */
+C     Next, we compute the phase speed correction, which depends on the
+C     tracer! 
          DO K=1,Nr
           DO I=1-Olx,sNx+Olx
            J=OB_Js(I,bi,bj)
            IF (J.NE.0) THEN
-            OBSu(I,K,bi,bj)=0.
-            OBSv(I,K,bi,bj)=0.
-            OBSt(I,K,bi,bj)=tRef(K)
-            OBSs(I,K,bi,bj)=sRef(K)
-#ifdef ALLOW_NONHYDROSTATIC
-            OBSw(I,K,bi,bj)=0.
-#endif
-#ifdef NONLIN_FRSURF
-            OBSeta(I,bi,bj)=0.
-#endif
+            cflZon(I,K) = - 0.5 _d 0 * _dyC(I,J+2,bi,bj)/deltaTmom
+CML         gFacZ = 0. _d 0
+CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
+            gFacZ(I,K)  = ABS(MAX(SIGN(1.D0,vVel(I,J+1,K,bi,bj)),0.D0))
+           ELSE
+            cflZon(I,K) = 0. _d 0
+            gFacZ (I,K) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
-C      IF ( useStevensSouth ) THEN
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+           J=OB_Js(I,bi,bj)
+           IF (J.NE.0) THEN
+C     Theta first:
+            dTracSpace = (theta(I,J+2,K,bi,bj)-theta(I,J+1,K,bi,bj))
+     &        * _maskS(I,J+2,K,bi,bj)
+            vPhase = 0. _d 0
+            IF ( dTracSpace .NE. 0. _d 0 ) THEN
+             vPhase = MAX( cflZon(I,K),
+#ifdef ALLOW_ADAMSBASHFORTH_3
+     &       MIN( 0.D0, -cflZon(I,K)*gtNm(I,J+1,K,bi,bj,1)/dTracSpace )
+#else
+     &       MIN( 0.D0, -cflZon(I,K)*gtNm1(I,J+1,K,bi,bj)/dTracSpace )
+#endif
+     &         ) * pFac
+            ENDIF
+C     Update the tracer here with a simple Euler forward step; not
+C     sure if this will be stable
+            OBSt(I,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
+     &        * _maskS(I,J+1,K,bi,bj)
+     &        * (
+     &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
+     &        *(theta(I,J+1,K,bi,bj)-theta(I,J,K,bi,bj))
+     &        * _recip_dyC(I,J+1,bi,bj)
+     &        - gFacZ(I,K) * gammat 
+     &           * (theta(I,J,K,bi,bj)-OBSt(I,K,bi,bj)) )
+C     Now salinity:
+            dTracSpace = (salt(I,J+2,K,bi,bj)-salt(I,J+1,K,bi,bj))
+     &        * _maskS(I,J+2,K,bi,bj)
+            vPhase = 0. _d 0
+            IF ( dTracSpace .NE. 0. _d 0 ) THEN
+             vPhase = MAX( cflZon(I,K),
+#ifdef ALLOW_ADAMSBASHFORTH_3
+     &       MIN( 0.D0, -cflZon(I,K)*gsNm(I,J+1,K,bi,bj,1)/dTracSpace )
+#else
+     &       MIN( 0.D0, -cflZon(I,K)*gsNm1(I,J+1,K,bi,bj)/dTracSpace )
+#endif
+     &         ) * pFac
+            ENDIF
+C     Update the tracer here with a simple Euler forward step; not
+C     sure if this will be stable
+            OBSs(I,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
+     &        * _maskS(I,J+1,K,bi,bj)
+     &        * (
+     &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
+     &        *(salt(I,J+1,K,bi,bj)-salt(I,J,K,bi,bj))
+     &        * _recip_dyC(I,J+1,bi,bj)
+     &        - gFacZ(I,K) * gammat 
+     &           * (salt(I,J,K,bi,bj)-OBSs(I,K,bi,bj)) )
+           ENDIF
+          ENDDO
+         ENDDO
+C     IF ( useStevensSouth ) THEN
         ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
-
-CML#ifdef ALLOW_PTRACERS
-CML      IF ( usePTRACERS ) THEN
-CMLC
-CMLC     Calculate some default open boundary conditions for passive tracers:
-CMLC     The default is a homogeneous v.Neumann conditions, that is, the
-CMLC     tracer gradient across the open boundary is nearly zero;
-CMLC     only nearly, because the boundary conditions are applied throughout
-CMLC     the time step during which the interior field does change; therefore
-CMLC     we have to use the values from the previous time step here. If you
-CMLC     really want exact v.Neumann conditions, you have to modify
-CMLC     obcs_apply_ptracer directly.
-CMLC
-CML# ifdef ALLOW_OBCS_EAST
-CMLC     Eastern OB
-CML#  ifdef ALLOW_DEBUG
-CML       IF (debugMode)
-CML     &      CALL DEBUG_MSG('OBCS_CALC_STEVENS: East, pTracers',myThid)
-CML#  endif
-CML       DO iTracer=1,PTRACERS_numInUse
-CML        DO K=1,Nr
-CML         DO J=1-Oly,sNy+Oly
-CML          I=OB_Ie(J,bi,bj)
-CML          IF (I.NE.0) THEN
-CML           OBEptr(J,K,bi,bj,iTracer) =
-CML     &          pTracer(I-1,J,K,bi,bj,iTracer)
-CML     &          *_maskW(I,J,K,bi,bj)
-CML          ENDIF
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML# endif /* ALLOW_OBCS_EAST */
-CML
-CMLC ------------------------------------------------------------------------------
-CML
-CML# ifdef ALLOW_OBCS_WEST
-CMLC     Western OB
-CML#  ifdef ALLOW_DEBUG
-CML       IF (debugMode)
-CML     &      CALL DEBUG_MSG('OBCS_CALC_STEVENS: West, pTracers',myThid)
-CML#  endif
-CML       DO iTracer=1,PTRACERS_numInUse
-CML        DO K=1,Nr
-CML         DO J=1-Oly,sNy+Oly
-CML          I=OB_Iw(J,bi,bj)
-CML          IF (I.NE.0) THEN
-CML           OBWptr(J,K,bi,bj,iTracer) =
-CML     &          pTracer(I+1,J,K,bi,bj,iTracer)
-CML     &          *_maskW(I+1,J,K,bi,bj)
-CML          ENDIF
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML# endif /* ALLOW_OBCS_WEST */
-CML
-CMLC ------------------------------------------------------------------------------
-CML
-CML# ifdef ALLOW_OBCS_NORTH
-CMLC         Northern OB
-CML#  ifdef ALLOW_DEBUG
-CML       IF (debugMode)
-CML     &     CALL DEBUG_MSG('OBCS_CALC_STEVENS: North, pTracers',myThid)
-CML#  endif
-CML       DO iTracer=1,PTRACERS_numInUse
-CML        DO K=1,Nr
-CML         DO I=1-Olx,sNx+Olx
-CML          J=OB_Jn(I,bi,bj)
-CML          IF (J.NE.0) THEN
-CML           OBNptr(I,K,bi,bj,iTracer) =
-CML     &          pTracer(I,J-1,K,bi,bj,iTracer)
-CML     &          *_maskS(I,J,K,bi,bj)
-CML          ENDIF
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML# endif /* ALLOW_OBCS_NORTH */
-CML
-CMLC ------------------------------------------------------------------------------
-CML
-CML# ifdef ALLOW_OBCS_SOUTH
-CMLC         Southern OB
-CML# ifdef ALLOW_DEBUG
-CML       IF (debugMode)
-CML     &      CALL DEBUG_MSG('OBCS_CALC_STEVENS: South, pTracers',myThid)
-CML#endif
-CML       DO iTracer=1,PTRACERS_numInUse
-CML        DO K=1,Nr
-CML         DO I=1-Olx,sNx+Olx
-CML          J=OB_Js(I,bi,bj)
-CML          IF (J.NE.0) THEN
-CML           OBSptr(I,K,bi,bj,iTracer) =
-CML     &          pTracer(I,J+1,K,bi,bj,iTracer)
-CML     &          *_maskS(I,J+1,K,bi,bj)
-CML          ENDIF
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML# endif /* ALLOW_OBCS_SOUTH */
-CMLC     end if (usePTracers)
-CML      ENDIF
-CML#endif /* ALLOW_PTRACERS */
 
 C     end bi/bj-loops
        ENDDO
