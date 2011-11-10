@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.14 2011/10/25 15:40:19 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.15 2011/11/10 14:20:12 mlosch Exp $
 # $Name:  $
 
 # This is a shell script to combine multiple MITgcm mnc output files from
@@ -338,11 +338,11 @@ echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFI
       echo Changing T to record variable in $somevar.$somepre.glob.nc
       ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
     fi
-    ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
+    ncks $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
 #   rm $somevar.$somepre.glob.nc
   done
   if [ -f iter.$somepre.glob.nc ]; then
-    ncrcat $DEBUG -A iter.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
+    ncks $DEBUG -A iter.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
   fi
 # rm iter.$somepre.glob.nc
 
