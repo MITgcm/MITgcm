@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.15 2011/11/10 14:20:12 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.16 2011/11/10 14:26:16 mlosch Exp $
 # $Name:  $
 
 # This is a shell script to combine multiple MITgcm mnc output files from
@@ -60,6 +60,9 @@ if [ -f xplodemnc ]; then
 else
  cp `which xplodemnc` $DIRNAME
 fi
+
+# find an unambiguous name for a new record dimension
+myrecname=record`echo $DIRNAME | awk -F. '{print $NF}'`
 
 cd $DIRNAME
 
@@ -225,16 +228,22 @@ do
           fi
           for somesplit in $(ls *.$somefile)
           do
-            # added by rpa to account for grid files with no T dimension defined
-            hasT=$(ncdump -h $somesplit | grep "T =")
-            if [[ -z "$hasT" ]]; then
-               echo "No T record dimension found, adding one now"
-               ncecat $DEBUG -O -u T $somesplit $somesplit > $LOGFILE
+            # Added to account for grid files with no T dimension defined:
+            # Search for the unlimited dimension and get its name, assuming
+            # that its first character is a letter from the alphabet, the "tr"
+            # removes the blank characters
+            recname=$(ncdump -h $somesplit \
+                      | sed -n 's/\([a-z,A-Z]*\) = \(UNLIMITED\) .*/\1/p' \
+                      | tr -d ' \t' )
+            if [[ -z "$recname" ]]; then
+               echo "No record dimension found, adding one now: "$myrecname
+               ncecat $DEBUG -O -u $myrecname $somesplit $somesplit > $LOGFILE
+	       recname=$myrecname
             fi
             withY=$(ncdump -h $somesplit | grep "Y =")
             if [ ${#withY} -gt 1 ]; then
               echo Changing Y to record variable in $somesplit
-              ncpdq $DEBUG -O -a Y,T $somesplit $somesplit > $LOGFILE
+              ncpdq $DEBUG -O -a Y,$recname $somesplit $somesplit > $LOGFILE
               mv $somesplit i$countxx.$somesplit
             fi
 
@@ -245,7 +254,7 @@ do
                 Yp1len=$((${Yp1len% ;}-1))
                 #  Strip off the repeated value in Yp1
                 echo Changing Yp1 to record variable in $somesplit
-                ncpdq $DEBUG -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit > $LOGFILE
+                ncpdq $DEBUG -O -a Yp1,$recname -F -d Yp1,1,$Yp1len $somesplit $somesplit > $LOGFILE
                 mv $somesplit i$countxx.$somesplit
               fi
             fi
@@ -290,14 +299,23 @@ do
       echo Just combined $countxx.$somevar
       rm i$countxx.$somevar.$somepre.t???.nc
 
+      # Recover the name of the record variable, there are two possibilities:
+      # T (MITgcm convention) and $myrecname.
+      # I must admit that this could be more elegant.
+      recname=$(ncdump -h $somevar.$somepre.gloy.$countxx.nc | grep $myrecname)
+      if [[ -z $recname ]]; then
+       recname=T
+      else
+       recname=$myrecname
+      fi
       if [ ${#withY} -gt 1 ]; then
-        echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
-        ncpdq $DEBUG -O -a T,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
+        echo Changing $recname to record variable in $somevar.$somepre.gloy.$countxx.nc
+        ncpdq $DEBUG -O -a $recname,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
       fi
 
       if [ ${#withYp1} -gt 1 ]; then
-        echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
-        ncpdq $DEBUG -O -a T,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
+        echo Changing $recname to record variable in $somevar.$somepre.gloy.$countxx.nc
+        ncpdq $DEBUG -O -a $recname,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
       fi
     done
   done
@@ -310,10 +328,13 @@ do
     do
       withX=$(ncdump -h $somegloy | grep "X =")
       withXp1=$(ncdump -h $somegloy | grep "Xp1 =")
+      recname=$(ncdump -h $somegloy \
+                      | sed -n 's/\([a-z,A-Z]*\) = \(UNLIMITED\) .*/\1/p' \
+                      | tr -d ' \t' )
 
       if [ ${#withX} -gt 1 ]; then
         echo Changing X to record variable in $somegloy
-        ncpdq $DEBUG -O -a X,T $somegloy $somegloy > $LOGFILE
+        ncpdq $DEBUG -O -a X,$recname $somegloy $somegloy > $LOGFILE
       fi
 
       if [ ${#withXp1} -gt 1 ]; then
@@ -321,22 +342,28 @@ do
         Xp1len=$((${Xp1len% ;}-1))
         #  Strip off the repeated value in Xp1
         echo Changing Xp1 to record variable in $somegloy
-echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFILE
-        ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFILE
+echo    ncpdq $DEBUG -O -a Xp1,$recname -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFILE
+        ncpdq $DEBUG -O -a Xp1,$recname -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFILE
       fi
     done
     echo Combining $somevar.gloy files...
     ncrcat $DEBUG $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc > $LOGFILE
 #    rm $somevar.$somepre.gloy.*.nc
 
+    # recname is still valid, so change back to it without testing for it again
     if [ ${#withX} -gt 1 ]; then
-      echo Changing T to record variable in $somevar.$somepre.glob.nc
-      ncpdq $DEBUG -O -a T,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
+      echo Changing $recname to record variable in $somevar.$somepre.glob.nc
+      ncpdq $DEBUG -O -a $recname,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
     fi
 
     if [ ${#withXp1} -gt 1 ]; then
-      echo Changing T to record variable in $somevar.$somepre.glob.nc
-      ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
+      echo Changing $recname to record variable in $somevar.$somepre.glob.nc
+      ncpdq $DEBUG -O -a $recname,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
+    fi
+    if [ "$recname" = "$myrecname" ]; then
+     # only for variables that did not have a record dimension to begin with
+     echo "removing record dimension $recname from $somevar.$somepre.glob.nc"
+     ncwa $DEBUG -O -a $recname $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
     fi
     ncks $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
 #   rm $somevar.$somepre.glob.nc
@@ -346,17 +373,13 @@ echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFI
   fi
 # rm iter.$somepre.glob.nc
 
-  # remove the dummy T dimension if it was added
-  if [[ -z "$hasT" ]]; then
-    ncwa $DEBUG -O -a T $somepre.glob.nc $somepre.glob.nc
-  fi
-
   # another hack by rpa to accomodate grid.nc files
   # (there are several variables with just Z dimension that we want to keep)
 #  varsz=$( ncdump -h $somepre.t001.nc | sed -n 's/^\s*\(double\|float\).* \(\w*\)(Z\w*).*/\2/p' )
-# The OR ("\|") and "\s", "\w" only works for GNU-sed, but not for
-# BSD-sed or SunOS-sed, therefore we need to use some work-arounds:
-  varsz=$( ncdump -h $somepre.t001.nc | egrep "double|float" | grep -v , | sed -n 's/.* \(.*\)(Z.*).*/\1/p' )
+  # The OR ("\|") and "\s", "\w" only work for GNU-sed, but not for
+  # BSD-sed or SunOS-sed, therefore we need to use some work-arounds:
+  varsz=$( ncdump -h $somepre.t001.nc | egrep "double|float" \
+           | grep -v , | sed -n 's/.* \(.*\)(Z.*).*/\1/p' )
   fixed=
   for varz in $varsz
   do
