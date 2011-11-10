@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1532 2011/11/10 14:26:41 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1533 2011/11/10 21:04:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/do_oceanic_phys.F:
+  - reset addMass to zero only if useICEFRONT ;
+  - separated k-loop for rhoInSitu calculation ;
+  - add 2 diagnostics for wVel*delta^k(Rho) at constant pressure (= WdRHO_P)
+    and at constant T,S (= WdRHOdP);
+  NOTE: change diagnostics WRHOMASS : this is now simply the Vertical transport
+    of In-Situ Density (Anomaly) (=wVel*rho^bar-k) (previously was Vertical
+    transport of locally-referenced potential density);
+    to recover old diag: (WRHOMASS)_old = (WRHOMASS)_new -1/2 * (WdRHOdP)
 o gluemnc:
   - replace ncrcat with ncks when adding variables to *.glob.nc
   - change the way variables without record dimensions are handled so that
