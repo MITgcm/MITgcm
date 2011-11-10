@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.109 2011/08/08 18:10:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.110 2011/11/10 21:03:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,12 +127,14 @@ C--   dummy statement to end declaration part
       doDiagsRho = 0
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND. fluidIsWater ) THEN
-        IF ( DIAGNOSTICS_IS_ON('WRHOMASS',myThid) )
+        IF ( DIAGNOSTICS_IS_ON('MXLDEPTH',myThid) )
      &       doDiagsRho = doDiagsRho + 1
         IF ( DIAGNOSTICS_IS_ON('DRHODR  ',myThid) )
      &       doDiagsRho = doDiagsRho + 2
-        IF ( DIAGNOSTICS_IS_ON('MXLDEPTH',myThid) )
+        IF ( DIAGNOSTICS_IS_ON('WdRHO_P ',myThid) )
      &       doDiagsRho = doDiagsRho + 4
+        IF ( DIAGNOSTICS_IS_ON('WdRHOdP ',myThid) )
+     &       doDiagsRho = doDiagsRho + 8
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -153,7 +155,8 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_ADDFLUID
-      IF ( fluidIsWater ) THEN
+c     IF ( fluidIsWater ) THEN
+      IF ( useICEFRONT ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,Nr
@@ -475,6 +478,61 @@ CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C--   Always compute density (stored in common block) here; even when it is not
+C     needed here, will be used anyway in calc_phi_hyd (data flow easier this way)
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('FIND_RHO_2D (xNr)',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+        IF ( fluidIsWater ) THEN
+#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_DOWN_SLOPE
+         IF ( useDOWN_SLOPE ) THEN
+           DO k=1,Nr
+            CALL DWNSLP_CALC_RHO(
+     I                  theta, salt,
+     O                  rhoInSitu(1-OLx,1-OLy,k,bi,bj),
+     I                  k, bi, bj, myTime, myIter, myThid )
+           ENDDO
+         ENDIF
+#endif /* ALLOW_DOWN_SLOPE */
+#ifdef ALLOW_BBL
+         IF ( useBBL ) THEN
+C     pkg/bbl requires in-situ bbl density for depths equal to and deeper than the bbl.
+C     To reduce computation and storage requirement, these densities are stored in the
+C     dry grid boxes of rhoInSitu.  See BBL_CALC_RHO for details.
+           DO k=Nr,1,-1
+            CALL BBL_CALC_RHO(
+     I                  theta, salt,
+     O                  rhoInSitu,
+     I                  k, bi, bj, myTime, myIter, myThid )
+
+           ENDDO
+         ENDIF
+#endif /* ALLOW_BBL */
+         IF ( .NOT. ( useDOWN_SLOPE .OR. useBBL ) ) THEN
+           DO k=1,Nr
+            CALL FIND_RHO_2D(
+     I                iMin, iMax, jMin, jMax, k,
+     I                theta(1-OLx,1-OLy,k,bi,bj),
+     I                salt (1-OLx,1-OLy,k,bi,bj),
+     O                rhoInSitu(1-OLx,1-OLy,k,bi,bj),
+     I                k, bi, bj, myThid )
+           ENDDO
+         ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+C-        fluid is not water:
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              rhoInSitu(i,j,k,bi,bj) = 0.
+            ENDDO
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
 #endif
@@ -490,56 +548,12 @@ cph Needed for rhoK, rhoKm1, in the case useGMREDI.
           kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Always compute density (stored in common block) here; even when it is not
-C     needed here, will be used anyway in calc_phi_hyd (data flow easier this way)
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('FIND_RHO_2D',myThid)
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-          IF ( fluidIsWater ) THEN
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
-CADJ &     kind = isbyte
-CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey,
-CADJ &     kind = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef ALLOW_DOWN_SLOPE
-           IF ( useDOWN_SLOPE ) THEN
-            CALL DWNSLP_CALC_RHO(
-     I                  theta, salt,
-     O                  rhoInSitu(1-OLx,1-OLy,k,bi,bj),
-     I                  k, bi, bj, myTime, myIter, myThid )
-           ENDIF
-#endif /* ALLOW_DOWN_SLOPE */
-#ifdef ALLOW_BBL
-           IF ( useBBL ) THEN
-C     pkg/bbl requires in-situ bbl density for depths equal to and deeper than the bbl.
-C     To reduce computation and storage requirement, these densities are stored in the
-C     dry grid boxes of rhoInSitu.  See BBL_CALC_RHO for details.
-            CALL BBL_CALC_RHO(
-     I                  theta, salt,
-     O                  rhoInSitu,
-     I                  k, bi, bj, myTime, myIter, myThid )
-
-           ENDIF
-#endif /* ALLOW_BBL */
-           IF ( .NOT. ( useDOWN_SLOPE .OR. useBBL ) ) THEN
-            CALL FIND_RHO_2D(
-     I                iMin, iMax, jMin, jMax, k,
-     I                theta(1-OLx,1-OLy,k,bi,bj),
-     I                salt (1-OLx,1-OLy,k,bi,bj),
-     O                rhoInSitu(1-OLx,1-OLy,k,bi,bj),
-     I                k, bi, bj, myThid )
-           ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
-          ELSE
-C-        fluid is not water:
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              rhoInSitu(i,j,k,bi,bj) = 0.
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
+cCADJ &     kind = isbyte
+cCADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey,
+cCADJ &     kind = isbyte
+c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
@@ -599,9 +613,9 @@ c ==> should use sigmaR !!!
           ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
-          IF ( MOD(doDiagsRho,2).EQ.1 ) THEN
-            CALL DIAGS_RHO_L( k, bi, bj,
-     I                        rhoInSitu(1-OLx,1-OLy,k,bi,bj),
+          IF ( doDiagsRho.GE.4 ) THEN
+            CALL DIAGS_RHO_L( doDiagsRho, k, bi, bj,
+     I                        rhoInSitu(1-OLx,1-OLy,1,bi,bj),
      I                        rhoKm1, wVel,
      I                        myTime, myIter, myThid )
           ENDIF
@@ -617,7 +631,7 @@ CADJ &     kind = isbyte
 #endif
 
 C--     Diagnose Mixed Layer Depth:
-        IF ( useGMRedi .OR. doDiagsRho.GE.4 ) THEN
+        IF ( useGMRedi .OR. MOD(doDiagsRho,2).EQ.1 ) THEN
           CALL CALC_OCE_MXLAYER(
      I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
      I              bi, bj, myTime, myIter, myThid )
@@ -854,7 +868,7 @@ C---  if fluid Is Water: end
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
         CALL DIAGS_RHO_G(
-     I                    rhoInSitu, uVel, vVel,
+     I                    rhoInSitu, uVel, vVel, wVel,
      I                    myTime, myIter, myThid )
         CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
       ENDIF
