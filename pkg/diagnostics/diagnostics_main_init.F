@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.41 2011/11/07 15:53:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.42 2011/11/10 22:28:36 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -501,7 +501,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'WRHOMASS'
-      diagTitle = 'Vertical Transport of Potential Density'
+      diagTitle = 'Vertical Transport of Density'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'WdRHO_P '
+      diagTitle = 'Vertical velocity times delta^k(Rho)_at-const-P'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'WdRHOdP '
+      diagTitle = 'Vertical velocity times delta^k(Rho)_at-const-T,S'
       diagUnits = 'kg/m^2/s        '
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
