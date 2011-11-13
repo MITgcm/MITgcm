@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.68 2011/03/15 00:23:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.69 2011/11/13 01:44:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,8 +69,6 @@ C       |
 C       |-- UPDATE_CG2D
 C       |
 C       |-- INTEGR_CONTINUITY
-C       |
-C       |-- UPDATE_ETAH
 C       |
 C       |-- CALC_R_STAR
 C       |-- CALC_SURF_DR
@@ -248,7 +246,7 @@ C     and modify hFac(C,W,S) accordingly :
        ELSEIF ( selectSigmaCoord.NE.0 ) THEN
 # ifndef DISABLE_SIGMA_CODE
         CALL UPDATE_SIGMA( etaH, startTime, nIter0, myThid )
-# endif /* DISABLE_RSTAR_CODE */
+# endif /* DISABLE_SIGMA_CODE */
        ELSE
         CALL CALC_SURF_DR(etaH, startTime, -1 , myThid )
         CALL UPDATE_SURF_DR( .TRUE., startTime, nIter0, myThid )
@@ -263,25 +261,9 @@ C-    update also CG2D matrix (and preconditioner)
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INTEGR_CONTINUITY',myThid)
 #endif
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
 C--   Integrate continuity vertically for vertical velocity
-        CALL INTEGR_CONTINUITY( bi, bj, uVel, vVel,
-     I                          startTime, nIter0, myThid )
-
-       ENDDO
-      ENDDO
-
-#ifdef EXACT_CONSERV
-      IF ( exactConserv ) THEN
-#ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
-#endif
-C--   Update etaH(n) :
-         CALL UPDATE_ETAH( startTime, nIter0, myThid )
-      ENDIF
-#endif /* EXACT_CONSERV */
+      CALL INTEGR_CONTINUITY( uVel, vVel,
+     I                        startTime, nIter0, myThid )
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
@@ -317,9 +299,6 @@ c     ENDIF
          CALL TIMER_STOP ('GRIDALT_UPDATE  [INITIALISE_VARIA]',myThid)
       ENDIF
 #endif
-
-C--   Fill in overlap regions for wVel :
-      _EXCH_XYZ_RL(wVel,myThid)
 
 C--   Finally summarise the model state
 #ifdef ALLOW_DEBUG

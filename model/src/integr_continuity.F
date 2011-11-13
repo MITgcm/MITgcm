@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.25 2011/05/23 00:39:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.26 2011/11/13 01:44:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,14 +8,14 @@ CBOP
 C     !ROUTINE: INTEGR_CONTINUITY
 C     !INTERFACE:
       SUBROUTINE INTEGR_CONTINUITY(
-     I                             bi, bj, uFld, vFld,
+     I                             uFld, vFld,
      I                             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INTEGR_CONTINUITY
 C     | o Integrate the continuity Eq : compute vertical velocity
-C     |   and free surface "r-anomaly" (etaN) to satisfy
-C     |   exactly the convervation of the Total Volume
+C     |   and free surface "r-anomaly" (etaN,etaH) to satisfy
+C     |   exactly the conservation of the Total Volume
 C     *==========================================================*
 C     \ev
 
@@ -32,16 +32,14 @@ C     == Global variables
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     uFld    :: Zonal velocity ( m/s )
-C     vFld    :: Meridional velocity ( m/s )
-C     bi,bj   :: tile index
-C     myTime  :: Current time in simulation
-C     myIter  :: Current iteration number in simulation
-C     myThid  :: Thread number for this instance of the routine.
+C     uFld     :: Zonal velocity ( m/s )
+C     vFld     :: Meridional velocity ( m/s )
+C     myTime   :: Current time in simulation
+C     myIter   :: Current iteration number in simulation
+C     myThid   :: my Thread Id. number
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-      INTEGER bi,bj
       _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
@@ -49,10 +47,12 @@ C     !LOCAL VARIABLES:
 C     Local variables in common block
 
 C     Local variables
-C     i,j,k  :: Loop counters
-C     uTrans :: Volume transports ( uVel.xA )
-C     vTrans :: Volume transports ( vVel.yA )
+C     bi,bj    :: tile index
+C     i,j,k    :: Loop counters
+C     uTrans   :: Volume transports ( uVel.xA )
+C     vTrans   :: Volume transports ( vVel.yA )
 C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
+      INTEGER bi,bj
       INTEGER i,j,k
 #ifdef EXACT_CONSERV
       INTEGER ks
@@ -70,6 +70,10 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
       _RL rStarDhDt(1)
 #endif
 CEOP
+
+C--   Start bi,bj loops
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -125,8 +129,8 @@ C-    End DO k=1,Nr
 C------------------------------------
 C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
 C       anelastic: always assumes that rhoFacF(1) = 1
-       IF ( myTime.EQ.startTime .AND. myTime.NE.baseTime
-     &       .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
+       IF ( myIter.EQ.nIter0 .AND. myIter.NE.0
+     &    .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
 C     needs previous time-step value of E-P-R, that has not been loaded
 C     and was not in old pickup-file ; try to use etaN & etaH instead.
@@ -147,7 +151,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
             PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)*rUnit2mass
           ENDDO
          ENDDO
-       ELSEIF ( myTime.EQ.startTime ) THEN
+       ELSEIF ( myIter.EQ.nIter0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
             ks = kSurfC(I,J,bi,bj)
@@ -191,7 +195,7 @@ C-- end if exactConserv block
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF (exactConserv .AND. myTime.NE.startTime) THEN
+      IF ( exactConserv .AND. myIter.NE.nIter0 ) THEN
 C--   Update etaN at the end of the time step :
 C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
 
@@ -218,6 +222,7 @@ C      leave it commented out in case we would implement an aternative scheme.
 c      IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
 #endif /* ALLOW_OBCS */
 
+C-- end if exactConserv and not myIter=nIter0 block
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -253,8 +258,8 @@ C--    Integrate continuity vertically for vertical velocity
      I                       myThid )
 
 #ifdef EXACT_CONSERV
-       IF ( k.EQ.Nr .AND. myTime.NE.baseTime .AND. usingPCoords
-     &       .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
+       IF ( k.EQ.Nr .AND. myIter.NE.0 .AND. usingPCoords
+     &      .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
          DO j=1,sNy
           DO i=1,sNx
@@ -284,6 +289,26 @@ C-    End DO k=Nr,1,-1
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   End bi,bj loops
+       ENDDO
+      ENDDO
+
+      IF ( exactConserv .AND. myIter.NE.nIter0
+     &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
+     & _EXCH_XY_RL( etaN , myThid )
+      IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
+     & _EXCH_XYZ_RL( wVel , myThid )
+
+#ifdef EXACT_CONSERV
+C--   Update etaH (from etaN and dEtaHdt):
+      IF (exactConserv) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
+#endif
+        CALL UPDATE_ETAH( myTime, myIter, myThid )
+      ENDIF
+#endif /* EXACT_CONSERV */
 
       RETURN
       END

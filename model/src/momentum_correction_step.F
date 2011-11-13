@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.9 2011/05/23 00:41:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.10 2011/11/13 01:44:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: MOMENTUM_CORRECTION_STEP
 C     !INTERFACE:
-      SUBROUTINE MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
+      SUBROUTINE MOMENTUM_CORRECTION_STEP( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE MOMENTUM_CORRECTION_STEP
@@ -25,8 +25,6 @@ C     |     in U,V (contained in uVel, vVel)
 C     |
 C     |part2: Adjustments
 C     |   o Filter  U,V (Shapiro Filter, Zonal_Filter)
-C     |   o Compute again Eta (exact volume conservation)
-C     |   o Compute vertical velocity
 C     *==========================================================*
 C     \ev
 
@@ -44,19 +42,12 @@ C     == Global variables ===
 #ifdef ALLOW_ZONAL_FILT
 #include "ZONAL_FILT.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-# ifdef NONLIN_FRSURF
-#  include "SURFACE.h"
-# endif
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
-C     myThid :: Thread number for this instance of the routine.
+C     myThid :: my Thread Id. number
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -137,46 +128,6 @@ C--   Filter (and exchange)
        ENDIF
       ENDIF
 #endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
-CADJ STORE uvel, vvel  = comlev1, key = ikey_dynamics, byte = isbyte
-# endif
-#endif
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          idynkey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
-# ifdef NONLIN_FRSURF
-#  ifndef DISABLE_RSTAR_CODE
-CADJ STORE detahdt(:,:,bi,bj)    = comlev1_bibj, key = idynkey, byte = isbyte
-CADJ STORE etan(:,:,bi,bj)       = comlev1_bibj, key = idynkey, byte = isbyte
-#  endif
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-C--     Integrate continuity vertically
-C--     for vertical velocity and "etaN" (exact volume conservation) :
-        CALL INTEGR_CONTINUITY( bi, bj, uVel, vVel,
-     I                          myTime, myIter, myThid )
-
-C--    End of 2nd bi,bj loop
-       ENDDO
-      ENDDO
-
-      IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
-     & _EXCH_XY_RL( etaN , myThid )
-      IF ( implicitIntGravWave )
-     & _EXCH_XYZ_RL( wVel , myThid )
 
       RETURN
       END

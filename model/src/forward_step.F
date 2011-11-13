@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.196 2011/10/04 00:33:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.197 2011/11/13 01:44:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -601,7 +601,7 @@ C      Read in coupling data that I import.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE etaN = comlev1, key = ikey_dynamics, kind = isbyte
-# if (defined ALLOW_DEPTH_CONTROL)
+# ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
@@ -617,9 +617,9 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE rstarexpc,rstarexps,rstarexpw
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-#  endif
-# endif
-#endif
+#  endif /* ndef DISABLE_RSTAR_CODE */
+# endif /* ALLOW_DEPTH_CONTROL */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifndef ALLOW_OFFLINE
 C--   Step forward fields and calculate time tendency terms.
@@ -746,7 +746,7 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
       IF ( momStepping ) THEN
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined ALLOW_DEPTH_CONTROL)
+# ifdef ALLOW_DEPTH_CONTROL
 #  ifndef DISABLE_RSTAR_CODE
 cph-test
 cph not clear, why this one
@@ -755,8 +755,8 @@ CADJ &     kind = isbyte
 #  endif
 CADJ STORE etan, uvel,vvel
 CADJ &     = comlev1, key = ikey_dynamics
-# endif
-#endif
+# endif /* ALLOW_DEPTH_CONTROL */
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
@@ -765,14 +765,21 @@ CADJ &     = comlev1, key = ikey_dynamics
 #endif
 #endif /* ndfef ALLOW_OFFLINE */
 
-#ifdef EXACT_CONSERV
-      IF (exactConserv) THEN
-C--   Update etaH(n+1) :
-        CALL TIMER_START('UPDATE_ETAH         [FORWARD_STEP]',myThid)
-        CALL UPDATE_ETAH( myTime, myIter, myThid )
-        CALL TIMER_STOP ('UPDATE_ETAH         [FORWARD_STEP]',myThid)
+#ifndef ALLOW_OFFLINE
+      IF ( calc_wVelocity ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE detahdt, etan = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+#endif
+C--     Integrate continuity vertically for vertical velocity
+C       (+ update "etaN" & "etaH", exact volume conservation):
+        CALL TIMER_START('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
+        CALL INTEGR_CONTINUITY( uVel, vVel, myTime, myIter, myThid)
+        CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
       ENDIF
-#endif /* EXACT_CONSERV */
+#endif /* ndfef ALLOW_OFFLINE */
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
