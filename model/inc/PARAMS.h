@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.253 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.254 2011/11/13 00:47:23 jmc Exp $
 C $Name:  $
 C
 
@@ -282,6 +282,7 @@ C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advect
 C     useAbsVorticity :: work with f+zeta in Coriolis terms
 C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advection)
 C     momStepping    :: Turns momentum equation time-stepping off
+C     calc_wVelocity :: Turns of vertical velocity calculation off
 C- Temp. & Salt params:
 C     tempStepping   :: Turns temperature equation time-stepping off
 C     saltStepping   :: Turns salinity equation time-stepping off
@@ -375,7 +376,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
      & upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
-     & momStepping, tempStepping, saltStepping,
+     & momStepping, calc_wVelocity, tempStepping, saltStepping,
      & tempAdvection, tempIsActiveTr, tempForcing,
      & saltAdvection, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
@@ -448,6 +449,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL implicitIntGravWave
       LOGICAL staggerTimeStep
       LOGICAL momStepping
+      LOGICAL calc_wVelocity
       LOGICAL tempStepping
       LOGICAL saltStepping
       LOGICAL metricTerms
