@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.9 2011/08/28 12:47:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.10 2011/11/13 00:48:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,7 @@ C--   On/Off flags for each terms of the momentum equation
       momImplVertAdv   = momAdvection .AND. momImplVertAdv
       implicitViscosity= momViscosity .AND. implicitViscosity
       use3Dsolver      = nonHydrostatic.OR. implicitIntGravWave
+      calc_wVelocity   = momStepping .OR. exactConserv
 
 C--   Free-surface & pressure method
       IF ( selectNHfreeSurf.NE.0 .AND.

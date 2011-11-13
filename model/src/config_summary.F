@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.130 2011/06/08 13:46:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.131 2011/11/13 00:48:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -322,6 +322,8 @@ C     i, k   :: Loop counters.
      & ' /* Non-Hyd (free-)Surface option */')
       CALL WRITE_0D_L( quasiHydrostatic, INDEX_NONE,
      & 'quasiHydrostatic =', ' /* Quasi-Hydrostatic on/off flag */')
+      CALL WRITE_0D_L( calc_wVelocity, INDEX_NONE, 'calc_wVelocity =',
+     &             ' /* vertical velocity calculation on/off flag */')
       CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
       CALL WRITE_0D_L( vectorInvariantMomentum,  INDEX_NONE,
