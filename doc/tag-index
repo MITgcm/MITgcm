@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1533 2011/11/10 21:04:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1534 2011/11/13 04:03:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - move bi,bj loops inside INTEGR_CONTINUITY ;
+  - call INTEGR_CONTINUITY directly from forward_step.F
+    (previously called from momentum_correction_step.F)
+  - call UPDATE_ETAH from integr_continuity.F and update initialise_varia.F,
+    forward_step.F and pkg/ecco/the_main_loop.F
 o model/src/do_oceanic_phys.F:
   - reset addMass to zero only if useICEFRONT ;
   - separated k-loop for rhoInSitu calculation ;
