@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.108 2011/11/01 22:17:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.109 2011/11/13 01:47:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -943,27 +943,25 @@ c     IF ( momStepping ) THEN
         IF (debugMode)
      &    CALL DEBUG_CALL('MOMENTUM_CORRECTION_STEP',myThid)
 #endif
-        CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
-        CALL TIMER_STOP ('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
 #endif
 c     ENDIF
 
-#ifdef EXACT_CONSERV
-      IF (exactConserv) THEN
+c     IF ( calc_wVelocity ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-cph-test
-cphCADJ STORE etaH          = comlev1, key=ikey_dynamics, kind=isbyte
+# ifdef NONLIN_FRSURF
+CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE detahdt, etan = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif
-#ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
-#endif
-C--   Update etaH(n+1) :
-        CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
-        CALL UPDATE_ETAH( myTime, myIter, myThid )
-        CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
-      ENDIF
-#endif /* EXACT_CONSERV */
+C--     Integrate continuity vertically for vertical velocity
+C       (+ update "etaN" & "etaH", exact volume conservation):
+        CALL TIMER_START('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
+        CALL INTEGR_CONTINUITY( uVel, vVel, myTime, myIter, myThid)
+        CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
+c     ENDIF
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
