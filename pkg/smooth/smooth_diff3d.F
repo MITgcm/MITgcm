@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.3 2011/05/27 23:39:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.4 2011/11/15 23:44:41 mmazloff Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -34,6 +34,7 @@ c#include "optim.h"
       _RL fld_tmp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL gT_in(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL gTm1_in(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL gt_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       integer nbt_in
       integer ii, jj, kk
       integer iloop, ilev_1, ilev_2, ilev_3
@@ -140,7 +141,7 @@ c adams bashfort on gT_in:
         DO k=1,Nr
         CALL ADAMS_BASHFORTH2(
      &                        bi, bj, k,
-     &                        gT_in, gTm1_in, .FALSE.,
+     &                        gT_in, gTm1_in, gt_AB, .FALSE.,
      &                        myIter(bi,bj) , myThid )
         ENDDO
 c time stepping:
