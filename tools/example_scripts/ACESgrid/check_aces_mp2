@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/check_aces_mp2,v 1.1 2011/11/07 15:36:21 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/check_aces_mp2,v 1.2 2011/11/15 02:27:27 jmc Exp $
 # $Name:  $
 
 sfx='mp2'
@@ -12,7 +12,8 @@ uNam=$USER
 HERE=`pwd`
 pLog="kill_$sfx.log"
 
-echo "start $0 from $HERE at:" `date` "by user: $uNam"
+echo "start $0 +from dir: $HERE +by user: $uNam"
+echo " on: "`hostname`" +at:" `date`
 #uNam='jmc' ; HERE='/home/jmc/test_ACES/output' ; cd $HERE
 
 while test ! -f stop_check_$sfx
@@ -20,7 +21,7 @@ do
   # check for defunct proc
   nZ=`ps -f -u $uNam | grep $pNam | grep '<defunct>' | wc -l`
   if [ $nZ -ge 1 ] ; then
-    echo "found $nZ $pNam zombie processes at:" `date`
+    echo "===> found $nZ $pNam zombie processes at:" `date`
     listZ=`ps -f -u $uNam | grep $pNam | grep '<defunct>' | awk '{print $2}'`
     sleep $shortChk
     for p1Z in $listZ ; do
@@ -58,14 +59,13 @@ do
 #---
         echo " list of remaining $pNam proc:" | tee -a $pLog
         ps -f -u $uNam | grep $pNam | tee -a $pLog
-        echo '--------------------' >> $pLog
+        echo '--------------------' | tee -a $pLog
       else
         echo " proc: $p1Z no more Zombie at:" `date`
       fi
     done
     nZ=`ps -f -u $uNam | grep $pNam | grep '<defunct>' | wc -l`
-    echo " $nZ $pNam zombie process remain at:" `date`
-    echo '--------------------'
+    echo " -->  $nZ $pNam zombie process remain at:" `date`
   fi
   sleep $longChk
 done
