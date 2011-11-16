@@ -1,12 +1,14 @@
 /*
- * $Header: /u/gcmpack/MITgcm/pkg/compon_communic/Attic/setdir.c,v 1.1 2004/11/07 23:17:00 jmc Exp $
+ * $Header: /u/gcmpack/MITgcm/pkg/compon_communic/Attic/setdir.c,v 1.2 2011/11/16 17:00:04 jmc Exp $
  * $Name:  $
 */
 
 #include <stdlib.h>
 #include <unistd.h>
-                                                                                
-void setdir_(int *myPEListId )
+/*  Here, we get the definition of the FC_NAMEMANGLE() macro. */
+#include "FC_NAMEMANGLE.h"
+
+void FC_NAMEMANGLE(setdir) (int *myPEListId )
 {
    char RUN_DIR[1024];
    char *rundirsetting;
