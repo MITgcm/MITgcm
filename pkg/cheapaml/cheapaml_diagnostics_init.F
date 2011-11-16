@@ -1,8 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.3 2011/06/24 01:24:07 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
-
 CBOP
 C     !ROUTINE: CHEAPAML_DIAGNOSTICS_INIT
 C     !INTERFACE:
@@ -89,7 +85,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'cheapAML Zonal Wind      '
       diagUnits = 'm/s           '
       diagCode  = 'UU      L1      '
-      diagmate  = diagNum + 2
+      diagmate  = diagNum + 2 
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagmate, myThid )
 
@@ -101,6 +97,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagmate, myThid )
 
+      diagName  = 'CH_LH   '
+      diagTitle = 'cheapAML latent heat     '
+      diagUnits = 'W/m2            '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'CH_SH   '
+      diagTitle = 'cheapAML sensible heat     '
+      diagUnits = 'W/m2            '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 

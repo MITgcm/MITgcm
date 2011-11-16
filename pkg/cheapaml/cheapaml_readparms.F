@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.6 2011/03/03 17:52:10 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.7 2011/11/16 20:00:31 wienders Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,11 +29,12 @@ C--   Bulk Formula parameter
       NAMELIST /CHEAPAML_CONST/
      &  cheapaml_ntim, cheapaml_mask_width,
      &  cheapaml_h, cheapaml_kdiff, 
-     &  cheapaml_taurelax2, 
+     &  cheapaml_taurelax, 
      &  cdrag_1,cdrag_2,cdrag_3,
      &  rhoa, cpair, stefan, gasR,xkar,
-     &       dsolms,dsolmn,zu,zt,zq,
-     &       xphaseinit,gamma_blk,humid_fac,p0
+     &   dsolms,dsolmn,zu,zt,zq,
+     &   xphaseinit,gamma_blk,humid_fac,p0,
+     &   cheap_pr1,cheap_pr2
       NAMELIST /CHEAPAML_PARM01/
      &         AirTempFile, 
      &         SolarFile, 
@@ -45,15 +46,20 @@ C--   Bulk Formula parameter
      &         UStressFile, VStressFile,
      &         WaveHFile,WavePFile,
      &         TracerFile,TracerRfile, 
+     &         CheapMaskFile,Cheap_hFile,
+     &         cheap_clfile,
      &         periodicExternalForcing_cheap,
      &         externForcingPeriod_cheap,
-     &         externForcingCycle_cheap  
+     &         externForcingCycle_cheap,
+     &         Cheap_prFile
       NAMELIST /CHEAPAML_PARM02/
      &         useFreshwaterFlux,
      &         useFluxLimit,
      &         FluxFormula,WaveModel,
      &         useStressOption,
-     &         useCheapTracer 
+     &         useCheapTracer ,
+     &         usetimevarblh,
+     &         useclouds
 
 
       _BEGIN_MASTER(myThid)
@@ -75,7 +81,7 @@ C-    Physical constant :
       cheapaml_ntim = 5
       cheapaml_h=1000. _d 0
       cheapaml_kdiff=1.d4
-      cheapaml_taurelax2 = .1 _d 0
+      cheapaml_taurelax = .1 _d 0
       cheapaml_mask_width = 0
       rhoa   = 1.3 _d 0
       cpair  = 1004. _d 0
@@ -108,6 +114,9 @@ c periodic forcing
         periodicExternalForcing_cheap = periodicExternalForcing
         externForcingPeriod_cheap = externForcingPeriod    
         externForcingCycle_cheap = externForcingCycle     
+C precipitation time constant
+        cheap_pr1 = 12*3600.0 _d 0
+        cheap_pr2 = 120*3600.0 _d 0
 
 C-    Input data files names :
       AirTempFile=' '
@@ -121,6 +130,10 @@ C-    Input data files names :
       WavePFile=' '
       TracerFile=' '
       TracerRFile=' '
+      CheapMaskFile=' '
+      Cheap_hFile =' ' 
+      Cheap_prFile =' ' 
+      Cheap_clFile =' ' 
       FluxFormula='LANL'
       WaveModel='Smith'
 
@@ -134,7 +147,14 @@ C-    turn off stress option by default
         useStressOption=.FALSE.
 
 C-    turn off passive tracer option by default
-        useCheapTracer=.FALSE.        
+        useCheapTracer=.FALSE.    
+
+
+C-    turn off time varying BL height option by default
+        usetimevarblh=.FALSE.        
+
+C-    turn off clouds option by default
+        useclouds=.FALSE.        
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)
@@ -161,8 +181,6 @@ C--   Read parameters from open data file
 C--   Close the open data file
       CLOSE(iUnit)
 c compute derivative values
-c relaxation time scale factor
-        xgs=1. _d 0/cheapaml_taurelax2/8.64 _d 4
 c energy flux conversion factor
         xef=1. _d 0 /rhoa/cpair
 c inverse of layer thickness
@@ -174,7 +192,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: mask_w   =',cheapaml_mask_width
       WRITE(iUnit,*) 'Caml: h        =',cheapaml_h
       WRITE(iUnit,*) 'Caml: kdiff    =',cheapaml_kdiff
-      WRITE(iUnit,*) 'Caml: tau2     =',cheapaml_taurelax2
+      WRITE(iUnit,*) 'Caml: tau2     =',cheapaml_taurelax
       WRITE(iUnit,*) 'Caml: rhoa     =',rhoa
       WRITE(iUnit,*) 'Caml: cpair    =',cpair
       WRITE(iUnit,*) 'Caml: stefan   =',stefan
@@ -182,6 +200,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       Write(iUnit,*) 'Caml: useFluxLimit       =',useFluxLimit
       Write(iUnit,*) 'Caml: useStressOption    =',useStressOption
       Write(iUnit,*) 'Caml: useCheapTracer     =',useCheapTracer
+      Write(iUnit,*) 'Caml: usetimevarblh      =',usetimevarblh
+      Write(iUnit,*) 'Caml: useclouds          =',usetimevarblh
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)

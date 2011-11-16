@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.4 2011/03/16 13:00:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.5 2011/11/16 20:00:31 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -57,7 +57,7 @@ c variables to include seaice effect
 #ifdef ALLOW_THSICE
       _RL     tmp
       _RL     albedo
-#endif
+#endif      
       integer iceornot
 
 C     == Local variables ==
@@ -141,12 +141,15 @@ c diabatic and freshwater flux forcing
         toa=to+Celsius2K
         tta=t+Celsius2K
         ttas=tta+gamma_blk*zref
-        ttt=tta-(cheapaml_h - zref)*gamma_blk
-        pt=p0*(1-gamma_blk*cheapaml_h/ttas)**(gravity/gamma_blk/gasR)
+        ttt=tta-( cheaphgrid(i,j,bi,bj)- zref)*gamma_blk
+        pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ttas)
+     $     **(gravity/gamma_blk/gasR)
 
 c specific humidities
-              ssq = ssq0*exp( lath*(ssq1-ssq2/toa) ) / p0
+              ssq= ssq0*exp( lath*(ssq1-ssq2/toa) ) / p0
               ssqt = ssq0*exp( lath*(ssq1-ssq2/ttt) ) / pt
+C     sturation no more at the top:
+              ssqt = 0.7*ssq
 
             if (useFreshwaterFlux) then
             q=qair(i,j,bi,bj)
@@ -222,7 +225,7 @@ c compute specific humidity at 100m
                  xsq = max(sqrt(abs(1. _d 0 - 16. _d 0*z100ol)),1. _d 0)
                  x      = sqrt(xsq)
                  psx100  = -5. _d 0*z100ol*stable + (1. _d 0-stable)*
-     &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))
+     &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))  
                  q100=ssq+qstar*(dlog(100. _d 0/zice)-psx100)
 
       RETURN

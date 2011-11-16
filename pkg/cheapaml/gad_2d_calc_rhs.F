@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.6 2011/02/24 20:11:44 wienders Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.7 2011/11/16 20:00:31 wienders Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,6 +11,7 @@ C !INTERFACE: ==========================================================
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           uTrans,vTrans,
      I           uVel, vVel, 
+     O           wvel,  
      I           diffKh, Tracer, zu,
      U           gTracer,deltaTtracer,useFluxLimit,
      I           myTime, myIter, myThid )
@@ -62,6 +63,7 @@ C myThid           :: thread number
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL diffKh,deltaTtracer,zu
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     myTime
@@ -115,6 +117,7 @@ c--   and compute w
      &(uVel(i+1,j,bi,bj)-uVel(i,j,bi,bj))+
      &(vVel(i,j+1,bi,bj)-vVel(i,j,bi,bj))*
      &recip_dyC(i,j,bi,bj))*2. _d 0 *zu
+      wvel(i,j,bi,bj) = localW(i,j)/2. _d 0 /zu
         ENDDO
       ENDDO
       
