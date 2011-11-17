@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1535 2011/11/17 12:52:17 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1536 2011/11/17 13:17:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_init_varia.F
+  - undo resetting UVM=0 that has slipped in unnoticed in r1.49 and 
+    caused zero ice-velocities for the B-grid code
 o pkg/seaice/seaice_init_fixed.F
   - fix a bug in the initialisation of the second metric terms 
     k2AtC and k2AtZ: k2AtC was set to the value of k2AtZ and k2AtZ was 0.
