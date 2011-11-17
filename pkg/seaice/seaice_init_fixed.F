@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.8 2010/03/16 00:23:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.9 2011/11/17 12:50:55 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -151,7 +151,7 @@ C     compute metric term coefficients from finite difference approximation
          ENDDO
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxV(I,J,bi,bj)
+           k2AtZ(I,J,bi,bj) = _recip_dxV(I,J,bi,bj)
      &          * ( _dxC(I,J,bi,bj) - _dxC(I,J-1,bi,bj) )
      &          * _recip_dyU(I,J,bi,bj)
           ENDDO
