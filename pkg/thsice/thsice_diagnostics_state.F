@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_state.F,v 1.2 2007/08/27 13:23:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_state.F,v 1.3 2011/11/17 12:44:20 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -72,8 +72,15 @@ C-     Ice-fraction weighted quantities:
 C-     Ice-Volume weighted quantities:
        IF ( DIAGNOSTICS_IS_ON('SI_Qice1',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SI_Qice2',myThid) ) THEN
+#ifdef TARGET_NEC_SX
+C     Initialise the entire tmpFld to avoid surprises in
+C     S/R diagstats_calc
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+#else
         DO j=1,sNy
          DO i=1,sNx
+#endif
           tmpFld(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
          ENDDO
         ENDDO
