@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1534 2011/11/13 04:03:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1535 2011/11/17 12:52:17 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_init_fixed.F
+  - fix a bug in the initialisation of the second metric terms 
+    k2AtC and k2AtZ: k2AtC was set to the value of k2AtZ and k2AtZ was 0.
+  - this affects all seaice configurations with useCurviLinearGrid = .true.
+    and SEAICEuseDynamics = .true. (default) and SEAICEuseMetricTerms
+    = .true. (default)
+  - the only verification experiment affected is global_ocean.cs32x15:
+    icedyn, seaice, and seaice_dynmix (AD)
+o pkg/thsice/thsice_diagnostics_state.F
+  - only for TARGET_NEC_SX: initialise all of tmpFld, so that overlap does
+    not contain garbage that can lead to surprises in diagstats_calc.F
 o model/src:
   - move bi,bj loops inside INTEGR_CONTINUITY ;
   - call INTEGR_CONTINUITY directly from forward_step.F
