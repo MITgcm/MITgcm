@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_calc.F,v 1.2 2011/11/07 09:20:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_calc.F,v 1.3 2011/11/21 09:37:10 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -353,9 +353,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea*frcArr
+        tmpVol = arrhFac*arrArea*frcArr
        ELSE
-        tmpVol = arrDr*arrArea*frcArr
+        tmpVol = arrArea*frcArr
        ENDIF
 
       ELSEIF ( regId.EQ.0 .AND. useFract ) THEN
@@ -367,9 +367,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea*frcArr
+        tmpVol = arrhFac*arrArea*frcArr
        ELSE
-        tmpVol = arrDr*arrArea*frcArr
+        tmpVol = arrArea*frcArr
        ENDIF
 
       ELSEIF ( regId.EQ.0 .AND. exclSpVal ) THEN
@@ -381,9 +381,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea
+        tmpVol = arrhFac*arrArea
        ELSE
-        tmpVol = arrDr*arrArea
+        tmpVol = arrArea
        ENDIF
 
       ELSEIF ( regId.EQ.0 ) THEN
@@ -394,9 +394,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea
+        tmpVol = arrhFac*arrArea
        ELSE
-        tmpVol = arrDr*arrArea
+        tmpVol = arrArea
        ENDIF
 
       ELSEIF ( useFract .AND. exclSpVal ) THEN
@@ -410,9 +410,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea*frcArr
+        tmpVol = arrhFac*arrArea*frcArr
        ELSE
-        tmpVol = arrDr*arrArea*frcArr
+        tmpVol = arrArea*frcArr
        ENDIF
 
       ELSEIF ( useFract ) THEN
@@ -425,9 +425,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea*frcArr
+        tmpVol = arrhFac*arrArea*frcArr
        ELSE
-        tmpVol = arrDr*arrArea*frcArr
+        tmpVol = arrArea*frcArr
        ENDIF
 
       ELSEIF ( exclSpVal ) THEN
@@ -441,9 +441,9 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea
+        tmpVol = arrhFac*arrArea
        ELSE
-        tmpVol = arrDr*arrArea
+        tmpVol = arrArea
        ENDIF
 
       ELSE
@@ -456,28 +456,28 @@ C     and thus will not compile with a F77 compiler.
         ENDDO
        ENDDO
        IF ( useWeight ) THEN
-        tmpVol = arrDr*arrhFac*arrArea
+        tmpVol = arrhFac*arrArea
        ELSE
-        tmpVol = arrDr*arrArea
+        tmpVol = arrArea
        ENDIF
 
       ENDIF
       IF ( power.EQ.2) THEN
-       tmpFld = tmpFac*inpArr*inpArr
+       tmpFld = inpArr*inpArr
       ELSE
-       tmpFld = tmpFac*inpArr
+       tmpFld = inpArr
       ENDIF
 C     sum up the volume
       tmpVol = tmpVol*arrMaskL
-      statArr(0)  = SUM(tmpVol)
+      statArr(0)  = SUM(tmpVol)*arrDr
 C     compute and sum up volume*field
       tmpVol = tmpVol*tmpFld
-      statArr(1)  = SUM(tmpVol)
+      statArr(1)  = SUM(tmpVol)*tmpFac*arrDr
 C     compute and sum up volume*field**2
       tmpVol = tmpVol*tmpFld
-      statArr(2)  = SUM(tmpVol)
-      statArr(im) = MINVAL(tmpFld, MASK = arrMaskL>0.)
-      statArr(ix) = MAXVAL(tmpFld, MASK = arrMaskL>0.)
+      statArr(2)  = SUM(tmpVol)*tmpFac*tmpFac*arrDr
+      statArr(im) = MINVAL(tmpFld, MASK = arrMaskL>0.)*tmpFac
+      statArr(ix) = MAXVAL(tmpFld, MASK = arrMaskL>0.)*tmpFac
 
 #endif /* TARGET_NEC_SX */
 
