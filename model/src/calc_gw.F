@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.46 2011/11/07 20:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.47 2011/11/23 09:29:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,7 +115,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useDiagnostics ) THEN
         diagDiss  = DIAGNOSTICS_IS_ON( 'Wm_Diss ', myThid )
         diagAdvec = DIAGNOSTICS_IS_ON( 'Wm_Advec', myThid )
-        diag_AB   = DIAGNOSTICS_IS_ON( 'AB_dW   ', myThid )
+        diag_AB   = DIAGNOSTICS_IS_ON( 'AB_gW   ', myThid )
       ELSE
         diagDiss  = .FALSE.
         diagAdvec = .FALSE.
@@ -617,7 +617,7 @@ C     and save gW_[n] into gwNm1 for the next time step.
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 #ifdef ALLOW_DIAGNOSTICS
         IF ( diag_AB ) THEN
-          CALL DIAGNOSTICS_FILL(gw_AB,'AB_dW   ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(gw_AB,'AB_gW   ',k,1,2,bi,bj,myThid)
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

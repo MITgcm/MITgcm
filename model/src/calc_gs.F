@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.53 2011/11/07 20:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.54 2011/11/23 09:29:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -204,7 +204,7 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
 #endif
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL(gs_AB,'AB_dS   ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(gs_AB,'AB_gS   ',k,1,2,bi,bj,myThid)
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       ENDIF
