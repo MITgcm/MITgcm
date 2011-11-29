@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1536 2011/11/17 13:17:41 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1537 2011/11/29 10:56:03 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs/obcs_calc_stevens.F:
+  - fix a bug in code for northern and southern boundaries.
 o pkg/seaice/seaice_init_varia.F
   - undo resetting UVM=0 that has slipped in unnoticed in r1.49 and 
     caused zero ice-velocities for the B-grid code
