@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.8 2011/11/29 11:28:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.9 2011/11/29 17:41:46 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -103,12 +103,12 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dtracSpace
       _RL cflMer (1-OLy:sNy+OLy,Nr)
       _RL gFacM  (1-OLy:sNy+OLy,Nr)
-      _RL uMerPri(1-OLy:sNy+OLy,Nr)
-      _RL uMerBar(1-OLy:sNy+OLy)
+      _RL uMerPri(Nr)
+      _RL uMerBar
       _RL cflZon (1-OLx:sNx+OLx,Nr)
       _RL gFacZ  (1-OLx:sNx+OLx,Nr)
-      _RL vZonPri(1-OLx:sNx+OLx,Nr)
-      _RL vZonBar(1-OLx:sNx+OLx)
+      _RL vZonPri(Nr)
+      _RL vZonBar
       _RL drFBar 
       _RL gammat, gammas, pFac, aFac
 #ifdef ALLOW_PTRACERS
@@ -163,67 +163,46 @@ C     Eastern OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for I_obe
-C     first initialize some fields
-         DO J=1-Oly,sNy+Oly
-          uMerBar(J) = 0. _d 0
-         ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           uMerPri(J,K) = 0. _d 0
-          ENDDO
-         ENDDO
          DO J=1-Oly,sNy+Oly
           I=OB_Ie(J,bi,bj)
           IF (I.NE.0) THEN
-           drFbar = 0. _d 0
+C     first initialize some fields
+           drFbar  = 0. _d 0
+           uMerBar = 0. _d 0
+           DO K=1,Nr
+            uMerPri(K) = 0. _d 0
+           ENDDO
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            uMerBar(J) = uMerBar(J) + uVel(I-1,J,K,bi,bj)
+            uMerBar = uMerBar + uVel(I-1,J,K,bi,bj)
 #else
-            uMerBar(J) = uMerBar(J) + OBEuStevens(J,K,bi,bj)
+            uMerBar = uMerBar + OBEuStevens(J,K,bi,bj)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           *drF(K)* _hFacW(I,J,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacW(I,J,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
-          ENDIF
-         ENDDO
-         DO J=1-Oly,sNy+Oly
-          I=OB_Ie(J,bi,bj)
-          IF (I.NE.0) THEN
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar = uMerBar/drFBar
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            uMerPri(J,K) = (uVel(I-1,J,K,bi,bj)-uMerBar(J))
+            uMerPri(K) = (uVel(I-1,J,K,bi,bj)-uMerBar)
 #else 
-            uMerPri(J,K) = (OBEuStevens(J,K,bi,bj)-uMerBar(J))
+            uMerPri(K) = (OBEuStevens(J,K,bi,bj)-uMerBar)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           * _maskW(I,J,K,bi,bj)
            ENDDO
-          ENDIF
-         ENDDO
 C     vertical average of input field
-         DO J=1-Oly,sNy+Oly
-          uMerBar(J) = 0. _d 0
-         ENDDO
-         DO J=1-Oly,sNy+Oly
-          I=OB_Ie(J,bi,bj)
-          IF (I.NE.0) THEN
-           drFbar = 0. _d 0
+           drFbar  = 0. _d 0
+           uMerBar = 0. _d 0
            DO K=1,Nr
-            uMerBar(J) = uMerBar(J) + OBEu(J,K,bi,bj)
+            uMerBar = uMerBar + OBEu(J,K,bi,bj)
      &           *drF(K)* _hFacW(I,J,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacW(I,J,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
-          ENDIF
-         ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar = uMerBar/drFBar
 C     Now the absolute velocity normal to the boundary is
-C     uMerBar(J) + uMerPri(J,K).
-         DO J=1-Oly,sNy+Oly
-          I=OB_Ie(J,bi,bj)
-          IF (I.NE.0) THEN
+C     uMerBar + uMerPri(K).
            DO K=1,Nr
-            OBEu(J,K,bi,bj) = (uMerBar(J) + uMerPri(J,K))
+            OBEu(J,K,bi,bj) = (uMerBar + uMerPri(K))
      &           * _maskW(I,J,K,bi,bj)
 CML            OBEv(J,K,bi,bj) = 0. _d 0
 #ifdef ALLOW_NONHYDROSTATIC
@@ -332,67 +311,46 @@ C     Western OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for I_obw+1
-C     first initialize some fields
-         DO J=1-Oly,sNy+Oly
-          uMerBar(J) = 0. _d 0
-         ENDDO
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           uMerPri(J,K) = 0. _d 0
-          ENDDO
-         ENDDO
          DO J=1-Oly,sNy+Oly
           I=OB_Iw(J,bi,bj)
           IF (I.NE.0) THEN
-           drFBar = 0. _d 0
+C     first initialize some fields
+           drFBar  = 0. _d 0
+           uMerBar = 0. _d 0
+           DO K=1,Nr
+            uMerPri(K) = 0. _d 0
+           ENDDO
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            uMerBar(J) = uMerBar(J) + uVel(I+2,J,K,bi,bj)
+            uMerBar = uMerBar + uVel(I+2,J,K,bi,bj)
 #else
-            uMerBar(J) = uMerBar(J) + OBWuStevens(J,K,bi,bj)
+            uMerBar = uMerBar + OBWuStevens(J,K,bi,bj)
 #endif /* OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           *drF(K)* _hFacW(I+1,J,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacW(I+1,J,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
-          ENDIF
-         ENDDO
-         DO J=1-Oly,sNy+Oly
-          I=OB_Iw(J,bi,bj)
-          IF (I.NE.0) THEN
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar = uMerBar/drFBar
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            uMerPri(J,K) = (uVel(I+2,J,K,bi,bj)-uMerBar(J))
+            uMerPri(K) = (uVel(I+2,J,K,bi,bj)-uMerBar)
 #else
-            uMerPri(J,K) = (OBWuStevens(J,K,bi,bj)-uMerBar(J))
+            uMerPri(K) = (OBWuStevens(J,K,bi,bj)-uMerBar)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           * _maskW(I+1,J,K,bi,bj)
            ENDDO
-          ENDIF
-         ENDDO
 C     vertical average of input field
-         DO J=1-Oly,sNy+Oly
-          uMerBar(J) = 0. _d 0
-         ENDDO
-         DO J=1-Oly,sNy+Oly
-          I=OB_Iw(J,bi,bj)
-          IF (I.NE.0) THEN
            drFBar  = 0. _d 0
+           uMerBar = 0. _d 0
            DO K=1,Nr
-            uMerBar(J) = uMerBar(J) + OBWu(J,K,bi,bj)
+            uMerBar = uMerBar + OBWu(J,K,bi,bj)
      &           *drF(K)* _hFacW(I+1,J,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacW(I+1,J,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) uMerBar(J) = uMerBar(J)/drFBar
-          ENDIF
-         ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) uMerBar = uMerBar/drFBar
 C     Now the absolute velocity normal to the boundary is
-C     uMerBar(J) + uMerPri(J,K).
-         DO J=1-Oly,sNy+Oly
-          I=OB_Iw(J,bi,bj)
-          IF (I.NE.0) THEN
+C     uMerBar + uMerPri(K).
            DO K=1,Nr
-            OBWu(J,K,bi,bj) = (uMerBar(J) + uMerPri(J,K))
+            OBWu(J,K,bi,bj) = (uMerBar + uMerPri(K))
      &          * _maskW(I+1,J,K,bi,bj)
 CML            OBWv(J,K,bi,bj) = 0. _d 0
 #ifdef ALLOW_NONHYDROSTATIC
@@ -500,68 +458,47 @@ C         Northern OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for J_obn
-C     first initialize some fields
-         DO I=1-Olx,sNx+Olx
-          vZonBar(I) = 0. _d 0
-         ENDDO
-         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           vZonPri(I,K) = 0. _d 0
-          ENDDO
-         ENDDO
          DO I=1-Olx,sNx+Olx
           J=OB_Jn(I,bi,bj)
           IF (J.NE.0) THEN
+C     first initialize some fields
            drFBar  = 0. _d 0
+           vZonBar = 0. _d 0
+           DO K=1,Nr
+            vZonPri(K) = 0. _d 0
+           ENDDO
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            vZonBar(I) = vZonBar(I) + vVel(I,J-1,K,bi,bj)
+            vZonBar = vZonBar + vVel(I,J-1,K,bi,bj)
 #else
-            vZonBar(I) = vZonBar(I) + OBNvStevens(I,K,bi,bj)
+            vZonBar = vZonBar + OBNvStevens(I,K,bi,bj)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           *drF(K)* _hFacS(I,J,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacS(I,J,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
-          ENDIF
-         ENDDO
-         DO I=1-Olx,sNx+Olx
-          J=OB_Js(I,bi,bj)
-          IF (J.NE.0) THEN
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar = vZonBar/drFBar
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            vZonPri(I,K) = (vVel(I,J-1,K,bi,bj)-vZonBar(I))
+            vZonPri(K) = (vVel(I,J-1,K,bi,bj)-vZonBar)
 #else
-            vZonPri(I,K) = (OBNvStevens(I,K,bi,bj)-vZonBar(I))
+            vZonPri(K) = (OBNvStevens(I,K,bi,bj)-vZonBar)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           * _maskS(I,J,K,bi,bj)
            ENDDO
-          ENDIF
-         ENDDO
 C     vertical average of input field
-         DO I=1-Olx,sNx+Olx
-          vZonBar(I) = 0. _d 0
-         ENDDO
-         DO I=1-Olx,sNx+Olx
-          J=OB_Js(I,bi,bj)
-          IF (J.NE.0) THEN
            drFBar  = 0. _d 0
+           vZonBar = 0. _d 0
            DO K=1,Nr
-            vZonBar(I) = vZonBar(I) + OBNv(I,K,bi,bj)
+            vZonBar = vZonBar + OBNv(I,K,bi,bj)
      &           *drF(K)* _hFacS(I,J,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacS(I,J,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
-          ENDIF
-         ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar = vZonBar/drFBar
 C     Now the absolute velocity normal to the boundary is
-C     vZonBar(I) + vZonPri(J,K).
-         DO I=1-Olx,sNx+Olx
-          J=OB_Jn(I,bi,bj)
-          IF (J.NE.0) THEN
+C     vZonBar + vZonPri(K).
            DO K=1,Nr
-            OBNv(I,K,bi,bj) = (vZonBar(I) + vZonPri(I,K))
-     &          * _maskS(I,J,K,bi,bj)
+            OBNv(I,K,bi,bj) = (vZonBar + vZonPri(K))
+     &           * _maskS(I,J,K,bi,bj)
 CML            OBNu(I,K,bi,bj) = 0. _d 0
 #ifdef ALLOW_NONHYDROSTATIC
             OBNw(I,K,bi,bj)=0.
@@ -669,67 +606,46 @@ C         Southern OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for J_obs+1
-C     first initialize some fields
-         DO I=1-Olx,sNx+Olx
-          vZonBar(I) = 0. _d 0
-         ENDDO
-         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           vZonPri(I,K) = 0. _d 0
-          ENDDO
-         ENDDO
          DO I=1-Olx,sNx+Olx
           J=OB_Js(I,bi,bj)
           IF (J.NE.0) THEN
+C     first initialize some fields
            drFBar  = 0. _d 0
+           vZonBar = 0. _d 0
+           DO K=1,Nr
+            vZonPri(K) = 0. _d 0
+           ENDDO
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            vZonBar(I) = vZonBar(I) + vVel(I,J+2,K,bi,bj)
+            vZonBar = vZonBar + vVel(I,J+2,K,bi,bj)
 #else
-            vZonBar(I) = vZonBar(I) + OBSvStevens(I,K,bi,bj)
+            vZonBar = vZonBar + OBSvStevens(I,K,bi,bj)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           *drF(K)* _hFacS(I,J+1,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacS(I,J+1,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
-          ENDIF
-         ENDDO
-         DO I=1-Olx,sNx+Olx
-          J=OB_Js(I,bi,bj)
-          IF (J.NE.0) THEN
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar = vZonBar/drFBar
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
-            vZonPri(I,K) = (vVel(I,J+2,K,bi,bj)-vZonBar(I))
+            vZonPri(K) = (vVel(I,J+2,K,bi,bj)-vZonBar)
 #else
-            vZonPri(I,K) = (OBSvStevens(I,K,bi,bj)-vZonBar(I))
+            vZonPri(K) = (OBSvStevens(I,K,bi,bj)-vZonBar)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           * _maskS(I,J+1,K,bi,bj)
            ENDDO
-          ENDIF
-         ENDDO
 C     vertical average of input field
-         DO I=1-Olx,sNx+Olx
-          vZonBar(I) = 0. _d 0
-         ENDDO
-         DO I=1-Olx,sNx+Olx
-          J=OB_Js(I,bi,bj)
-          IF (J.NE.0) THEN
            drFBar  = 0. _d 0
+           vZonBar = 0. _d 0
            DO K=1,Nr
-            vZonBar(I) = vZonBar(I) + OBSv(I,K,bi,bj)
+            vZonBar = vZonBar + OBSv(I,K,bi,bj)
      &           *drF(K)* _hFacS(I,J+1,K,bi,bj)
             drFBar = drFBar + drF(K)* _hFacS(I,J+1,K,bi,bj)
            ENDDO
-           IF ( drFBar .GT. 0. _d 0 ) vZonBar(I) = vZonBar(I)/drFBar
-          ENDIF
-         ENDDO
+           IF ( drFBar .GT. 0. _d 0 ) vZonBar = vZonBar/drFBar
 C     Now the absolute velocity normal to the boundary is
-C     vZonBar(I) + vZonPri(I,K).
-         DO I=1-Olx,sNx+Olx
-          J=OB_Js(I,bi,bj)
-          IF (J.NE.0) THEN
+C     vZonBar + vZonPri(K).
            DO K=1,Nr
-            OBSv(I,K,bi,bj) = (vZonBar(I) + vZonPri(I,K))
+            OBSv(I,K,bi,bj) = (vZonBar + vZonPri(K))
      &          * _maskS(I,J+1,K,bi,bj)
 CML            OBSu(I,K,bi,bj) = 0. _d 0
 #ifdef ALLOW_NONHYDROSTATIC
@@ -835,38 +751,30 @@ C ------------------------------------------------------------------------------
         vPhase=0.
         uVelLoc = 0.
         DO J=1-Oly,sNy+Oly
-         uMerBar(J)=0. _d 0
-        ENDDO
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
+         uMerBar=0. _d 0
+         DO K=1,Nr
           I=OB_Ie(J,bi,bj)
           uPhase = uPhase + OBEu(J,K,bi,bj)
      &         *drF(k)* _hFacW(I,J,K,bi,bj)*dyG(I,J,bi,bj)
           I=OB_Iw(J,bi,bj)
           vPhase = vPhase + OBWu(J,K,bi,bj)
      &         *drF(k)* _hFacW(I+1,J,K,bi,bj)*dyG(I+1,J,bi,bj)
-          uVelLoc = uVelLoc + uMerPri(J,K)
-     &         *drF(k)* _hFacW(I+1,J,K,bi,bj)*dyG(I+1,J,bi,bj)
-          uMerBar(J)=uMerBar(J) + uMerPri(J,K)
-     &         *drF(k)* _hFacW(I+1,J,K,bi,bj)
+CML          uVelLoc = uVelLoc + uMerPri(J,K)
+CML     &         *drF(k)* _hFacW(I+1,J,K,bi,bj)*dyG(I+1,J,bi,bj)
+CML          uMerBar(J)=uMerBar(J) + uMerPri(J,K)
+CML     &         *drF(k)* _hFacW(I+1,J,K,bi,bj)
          ENDDO
+CML         print *, 'ml-obcs: uBar = ', j,uMerBar(J)
         ENDDO
 C     end bi/bj-loops
        ENDDO
       ENDDO
       _GLOBAL_SUM_RL( uPhase, myThid )
       _GLOBAL_SUM_RL( vPhase, myThid )
-      _GLOBAL_SUM_RL( uVelLoc, myThid )
+CML      _GLOBAL_SUM_RL( uVelLoc, myThid )
       print *, 'ml-obcs: OBE  = ',  uPhase*1 _d -6, ' Sv'
       print *, 'ml-obcs: OBW  = ',  vPhase*1 _d -6, ' Sv'
-      print *, 'ml-obcs: OBWp = ', uVelLoc*1 _d -6, ' Sv'
-      print *, 'ml-obcs: uBar = ', (j,uMerBar(J),J=1,sNy)
-CML      DO K=1,5
-CML      print '(I2,5E12.4)',K, (umerpri(J,K),J=21,25)
-CML      ENDDO
-CML      DO K=1,5
-CML      print '(I2,5E12.4)',K, (hFacW(2,J,K)*drF(K),J=21,25)
-CML      ENDDO
+CML      print *, 'ml-obcs: OBWp = ', uVelLoc*1 _d -6, ' Sv'
 #endif /* CHECK_BALANCE */
 
 #ifdef ALLOW_DEBUG
