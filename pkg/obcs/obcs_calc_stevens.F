@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.7 2011/11/29 10:55:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.8 2011/11/29 11:28:04 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -106,7 +106,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL uMerPri(1-OLy:sNy+OLy,Nr)
       _RL uMerBar(1-OLy:sNy+OLy)
       _RL cflZon (1-OLx:sNx+OLx,Nr)
-      _RL gFacZ  (1-OLx:sNy+OLy,Nr)
+      _RL gFacZ  (1-OLx:sNx+OLx,Nr)
       _RL vZonPri(1-OLx:sNx+OLx,Nr)
       _RL vZonBar(1-OLx:sNx+OLx)
       _RL drFBar 
