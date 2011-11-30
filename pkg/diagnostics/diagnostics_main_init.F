@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.42 2011/11/10 22:28:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.43 2011/11/30 20:58:35 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -796,6 +796,21 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagName  = 'AB_gS   '
       diagTitle = DIAGS_MK_TITLE(
      &            sTitle//'tendency from Adams-Bashforth', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'gTinAB  '
+      diagTitle = 'Potential Temp. tendency going in Adams-Bashforth'
+      diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'gSinAB  '
+      diagTitle = DIAGS_MK_TITLE(
+     &            sTitle//'tendency going in Adams-Bashforth', myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
