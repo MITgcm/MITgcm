@@ -1,17 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1538 2011/11/29 17:43:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1539 2011/11/30 15:43:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63f (2011/11/30)
 o pkg/obcs/obcs_calc_stevens.F:
   - join some loops to reduce number of if-statements
   - fix a bug in code for northern and southern boundaries.
 o pkg/seaice/seaice_init_varia.F
-  - undo resetting UVM=0 that has slipped in unnoticed in r1.49 and 
+  - undo resetting UVM=0 that has slipped in unnoticed in r1.49 and
     caused zero ice-velocities for the B-grid code
 o pkg/seaice/seaice_init_fixed.F
-  - fix a bug in the initialisation of the second metric terms 
+  - fix a bug in the initialisation of the second metric terms
     k2AtC and k2AtZ: k2AtC was set to the value of k2AtZ and k2AtZ was 0.
   - this affects all seaice configurations with useCurviLinearGrid = .true.
     and SEAICEuseDynamics = .true. (default) and SEAICEuseMetricTerms
