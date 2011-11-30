@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.15 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.16 2011/11/30 21:00:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,7 +36,7 @@ C             :: =0 called from the beginning of forward_step
 C             :: =1 called from the middle of forward_step
 C             :: =2 called from the end of forward_step
 C     myIter  :: Iteration number
-C     myThid  :: Thread number for this instance of the routine.
+C     myThid  :: my Thread Id number
       _RL     myTime
       INTEGER seqFlag
       INTEGER myIter
@@ -71,7 +71,7 @@ C                    and stagger/synchronous TimeStep
           IF ( seqFlag.EQ.0 ) selectVars = 3
         ENDIF
         IF ( seqFlag.EQ.2 ) selectVars = 4
-        CALL DIAGNOSTICS_FILL_STATE(selectVars, myThid)
+        CALL DIAGNOSTICS_FILL_STATE( selectVars, myIter, myThid )
 
 #ifdef ALLOW_GENERIC_ADVDIFF
         IF ( seqFlag.EQ.0 .AND. useGAD ) THEN
@@ -84,13 +84,13 @@ C                    and stagger/synchronous TimeStep
      &      .AND. usePTRACERS ) THEN
           CALL PTRACERS_DIAGNOSTICS_STATE( myTime, myIter, myThid )
         ENDIF
-#endif
+#endif /* ALLOW_PTRACERS */
 
 #ifdef ALLOW_BBL
        IF ( seqFlag.EQ.0 .AND. useBBL ) THEN
          CALL BBL_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
-#endif /* ALLOW_MYPACKAGE */
+#endif /* ALLOW_BBL */
 
 #ifdef ALLOW_SEAICE
        IF ( seqFlag.EQ.0 .AND. useSEAICE ) THEN
