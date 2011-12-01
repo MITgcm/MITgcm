@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_impl_r.F,v 1.3 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_impl_r.F,v 1.4 2011/12/01 14:14:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: GAD_DST3FL_IMPL_R
 C     !INTERFACE:
       SUBROUTINE GAD_DST3FL_IMPL_R(
      I           bi,bj,k, iMin,iMax,jMin,jMax,
-     I           deltaTarg, rTrans, tFld,
+     I           deltaTarg, rTrans, recip_hFac, tFld,
      O           a5d, b5d, c5d, d5d, e5d,
      I           myThid )
 
@@ -33,41 +33,43 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj           :: tile indices
-C     k               :: vertical level
-C     iMin,iMax       :: computation domain
-C     jMin,jMax       :: computation domain
-C     deltaTarg       :: time step
-C     rTrans          :: vertical volume transport
-C     tFld            :: tracer field
-C     a5d             :: 2nd  lower diag of pentadiagonal matrix
-C     b5d             :: 1rst lower diag of pentadiagonal matrix
-C     c5d             :: main diag       of pentadiagonal matrix
-C     d5d             :: 1rst upper diag of pentadiagonal matrix
-C     e5d             :: 2nd  upper diag of pentadiagonal matrix
-C     myThid          :: thread number
+C     bi,bj        :: tile indices
+C     k            :: vertical level
+C     iMin,iMax    :: computation domain
+C     jMin,jMax    :: computation domain
+C     deltaTarg    :: time step
+C     rTrans       :: vertical volume transport
+C     recip_hFac   :: inverse of cell open-depth factor
+C     tFld         :: tracer field
+C     a5d          :: 2nd  lower diag of pentadiagonal matrix
+C     b5d          :: 1rst lower diag of pentadiagonal matrix
+C     c5d          :: main diag       of pentadiagonal matrix
+C     d5d          :: 1rst upper diag of pentadiagonal matrix
+C     e5d          :: 2nd  upper diag of pentadiagonal matrix
+C     myThid       :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
-      _RL deltaTarg(Nr)
-      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL a5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL b5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL c5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL d5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL e5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     deltaTarg(Nr)
+      _RL     rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     tFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     a5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     b5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     c5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     d5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     e5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C     == Local Variables ==
-C     i,j             :: loop indices
-C     kp1             :: =min( k+1 , Nr )
-C     km2             :: =max( k-2 , 1 )
-C     wCFL            :: Courant-Friedrich-Levy number
-C     lowFac          :: low  order term factor
-C     highFac         :: high order term factor
-C     rCenter         :: centered contribution
-C     rUpwind         :: upwind   contribution
-C     rC4km, rC4kp    :: high order contributions
+C     i,j          :: loop indices
+C     kp1          :: =min( k+1 , Nr )
+C     km2          :: =max( k-2 , 1 )
+C     wCFL         :: Courant-Friedrich-Levy number
+C     lowFac       :: low  order term factor
+C     highFac      :: high order term factor
+C     rCenter      :: centered contribution
+C     rUpwind      :: upwind   contribution
+C     rC4km, rC4kp :: high order contributions
       INTEGER i,j,kp1,km2
       _RL wCFL, rCenter, rUpwind
       _RL lowFac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -149,35 +151,35 @@ C--    Add centered & upwind contributions
            a5d(i,j,k)   = a5d(i,j,k)
      &                  + rC4km
      &                   *deltaTarg(k)
-     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            b5d(i,j,k)   = b5d(i,j,k)
      &                  - ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k)
-     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            c5d(i,j,k)   = c5d(i,j,k)
      &                  - ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k)
-     &                    *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            d5d(i,j,k)   = d5d(i,j,k)
      &                  + rC4kp
      &                   *deltaTarg(k)
-     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            b5d(i,j,k-1) = b5d(i,j,k-1)
      &                  - rC4km
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
            c5d(i,j,k-1) = c5d(i,j,k-1)
      &                  + ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
            d5d(i,j,k-1) = d5d(i,j,k-1)
      &                  + ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
            e5d(i,j,k-1) = e5d(i,j,k-1)
      &                  - rC4kp
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO
 

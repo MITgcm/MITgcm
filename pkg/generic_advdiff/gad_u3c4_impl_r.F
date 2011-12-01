@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.9 2011/10/13 15:09:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.10 2011/12/01 14:14:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: GAD_U3C4_IMPL_R
 C     !INTERFACE:
       SUBROUTINE GAD_U3C4_IMPL_R(
      I           bi,bj,k, iMin,iMax,jMin,jMax,
-     I           advectionScheme, deltaTarg, rTrans,
+     I           advectionScheme, deltaTarg, rTrans, recip_hFac,
      O           a5d, b5d, c5d, d5d, e5d,
      I           myThid )
 
@@ -33,43 +33,45 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj           :: tile indices
-C     k               :: vertical level
-C     iMin,iMax       :: computation domain
-C     jMin,jMax       :: computation domain
-C     advectionScheme :: advection scheme to use
-C     deltaTarg       :: time step
-C     rTrans          :: vertical volume transport
-C     a5d             :: 2nd  lower diag of pentadiagonal matrix 
-C     b5d             :: 1rst lower diag of pentadiagonal matrix 
-C     c5d             :: main diag       of pentadiagonal matrix 
-C     d5d             :: 1rst upper diag of pentadiagonal matrix 
-C     e5d             :: 2nd  upper diag of pentadiagonal matrix 
-C     myThid          :: thread number
+C     bi,bj        :: tile indices
+C     k            :: vertical level
+C     iMin,iMax    :: computation domain
+C     jMin,jMax    :: computation domain
+C  advectionScheme :: advection scheme to use
+C     deltaTarg    :: time step
+C     rTrans       :: vertical volume transport
+C     recip_hFac   :: inverse of cell open-depth factor
+C     a5d          :: 2nd  lower diag of pentadiagonal matrix
+C     b5d          :: 1rst lower diag of pentadiagonal matrix
+C     c5d          :: main diag       of pentadiagonal matrix
+C     d5d          :: 1rst upper diag of pentadiagonal matrix
+C     e5d          :: 2nd  upper diag of pentadiagonal matrix
+C     myThid       :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
       INTEGER advectionScheme
-      _RL deltaTarg(Nr)
-      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL a5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL b5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL c5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL d5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL e5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     deltaTarg(Nr)
+      _RL     rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     a5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     b5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     c5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     d5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     e5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C     == Local Variables ==
-C     i,j             :: loop indices
-C     kp1             :: =min( k+1 , Nr )
-C     km2             :: =max( k-2 , 1 )
-C     rCenter         :: centered contribution
-C     rUpwind         :: upwind   contribution
-C     rC4km, rC4kp    :: high order contribution
-C     rHigh           :: high order term factor
+C     i,j          :: loop indices
+C     kp1          :: =min( k+1 , Nr )
+C     km2          :: =max( k-2 , 1 )
+C     rCenter      :: centered contribution
+C     rUpwind      :: upwind   contribution
+C     rC4km, rC4kp :: high order contribution
+C     rHigh        :: high order term factor
       LOGICAL flagC4
       INTEGER i,j,kp1,km2
 #if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
-      _RL rC4km2D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RL rC4km2D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rC4kp2D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rUpwind2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -97,7 +99,7 @@ C--    Add centered, upwind and high-order contributions
 #if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rCenter2D(i,j) = 
+         rCenter2D(i,j) =
      &        0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkSign
          mskM   = maskC(i,j,km2,bi,bj)*maskM2
          mskP   = maskC(i,j,kp1,bi,bj)*maskP1
@@ -153,35 +155,35 @@ c           rUpwind= (2. _d 0*rHigh - wCFL)*ABS(rCenter)
            a5d(i,j,k)   = a5d(i,j,k)
      &                  + rC4km
      &                   *deltaTarg(k)
-     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            b5d(i,j,k)   = b5d(i,j,k)
      &                  - ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k)
-     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            c5d(i,j,k)   = c5d(i,j,k)
      &                  - ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k)
-     &                    *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            d5d(i,j,k)   = d5d(i,j,k)
      &                  + rC4kp
      &                   *deltaTarg(k)
-     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *recip_hFac(i,j,k)*recip_drF(k)
            b5d(i,j,k-1) = b5d(i,j,k-1)
      &                  - rC4km
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
            c5d(i,j,k-1) = c5d(i,j,k-1)
      &                  + ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
            d5d(i,j,k-1) = d5d(i,j,k-1)
      &                  + ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
            e5d(i,j,k-1) = e5d(i,j,k-1)
      &                  - rC4kp
      &                   *deltaTarg(k-1)
-     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
          ENDDO
        ENDDO
 
