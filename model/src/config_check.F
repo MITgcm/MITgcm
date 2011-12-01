@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.58 2011/03/15 00:15:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.59 2011/12/01 14:30:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,6 +134,12 @@ C       code is being compiled
 #endif
 
 #ifdef ALLOW_DEPTH_CONTROL
+      IF ( implicitDiffusion ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &       'implicitDiffusion not available with DEPTH_CONTROL'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
       IF ( useOBCS ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: DEPTH_CONTROL code not compatible with OBCS'
@@ -283,22 +289,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Check parameter consistency :
 
-      IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
+      IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
      &     ( viscC4leithD.NE.0.  .OR. viscC4leith.NE.0.
      &     .OR. viscC4smag.NE.0. .OR. viscA4Grid.NE.0.
      &     .OR. viscA4D.NE.0.    .OR. viscA4Z.NE.0. ) ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Biharmonic Visc. (viscA4) with',
-     &  ' overlap (Olx,Oly) smaller than 3'
+     &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
-      IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
+      IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
      &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. )
      &   ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Leith Visc.(div.part) with',
-     &  ' overlap (Olx,Oly) smaller than 3'
+     &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
