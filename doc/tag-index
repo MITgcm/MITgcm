@@ -1,8 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1539 2011/11/30 15:43:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1540 2011/12/01 19:33:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/generic_advdiff (implicit_r):
+  - fix implicit vertical advection conservation with AB and/or NonLin-FreeSurf
+    (remove Tr*d/dz(w) in gad_implicit_r.F and add it in gad_calc_rhs.F);
+  - fix implicit vertical diffusion or advection with NonLin FreeSurf
+    (was using current recip_hFacC instead of future recip_hFacC): set future
+    recip_hFac in thermodynamics.F and pass & use it in all vertical implicit
+    solver S/R ;
+  - fill diagnostics of vertical advective fluxes (computed from tendency)
+    when using implicit vert. advection;
+  - update output of exp that uses NonLin-FreeSurf & implicit vertical diffusion:
+     global_ocean.90x40x15 (fwd+AD), global_ocean.cs32x15 (4 fwd +4 AD),
+     tutorial_global_oce_in_p (fwd), tutorial_tracer_adjsens (AD)
+     and cpl_aim+ocn (used in ocean); to be fixed: bottom_ctrl_5x5.
+o pkg/diagnostics:
+  - add diags for T & S tendency which goes through Adams-Bashforth.
 
 checkpoint63f (2011/11/30)
 o pkg/obcs/obcs_calc_stevens.F:
