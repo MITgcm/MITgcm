@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.138 2011/11/07 20:21:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.139 2011/12/01 14:25:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,6 +84,7 @@ C     == Global variables ===
 #include "RESTART.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 # include "GAD_SOM_VARS.h"
@@ -103,7 +104,6 @@ C     == Global variables ===
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "FFIELDS.h"
-# include "SURFACE.h"
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -167,15 +167,16 @@ C                      index into fVerTerm.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL kappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL kappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL kappaRT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL kappaRS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_PTRACERS
 #ifndef ALLOW_LONGSTEP
       _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
-      _RL kappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
+      _RL kappaRTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
 #endif
 #endif
-      _RL kappaRk (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL kappaRk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS recip_hFacNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
@@ -476,14 +477,14 @@ C--       kDown  Cycles through 2,1 to point to current layer
           jMax = sNy+OLy
 
           IF (k.EQ.Nr) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              rTransKp1(i,j) = 0. _d 0
             ENDDO
            ENDDO
           ELSE
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              rTransKp1(i,j) = rTrans(i,j)
             ENDDO
            ENDDO
@@ -503,8 +504,8 @@ C         anelastic: uTrans,vTrans are scaled by rhoFacC (~ mass transport)
 C-        Calculate vertical "volume transport" through tracer cell face
           IF (k.EQ.1) THEN
 C-         Surface interface :
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              wFld(i,j)   = 0. _d 0
              maskUp(i,j) = 0. _d 0
              rTrans(i,j) = 0. _d 0
@@ -513,8 +514,8 @@ C-         Surface interface :
           ELSE
 C-         Interior interface :
 C          anelastic: rTrans is scaled by rhoFacF (~ mass transport)
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              wFld(i,j)   = wVel(i,j,k,bi,bj)
              maskUp(i,j) = maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
              rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)*maskUp(i,j)
@@ -633,7 +634,7 @@ CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
           IF ( AdamsBashforth_T ) THEN
            CALL TIMESTEP_TRACER(
      I         bi, bj, k, dTtracerLev(k),
-     I         gtNm(1-Olx,1-Oly,1,1,1,m2),
+     I         gtNm(1-OLx,1-OLy,1,1,1,m2),
      U         gT,
      I         myIter, myThid )
           ELSE
@@ -683,7 +684,7 @@ CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
           IF ( AdamsBashforth_S ) THEN
            CALL TIMESTEP_TRACER(
      I         bi, bj, k, dTtracerLev(k),
-     I         gsNm(1-Olx,1-Oly,1,1,1,m2),
+     I         gsNm(1-OLx,1-OLy,1,1,1,m2),
      U         gS,
      I         myIter, myThid )
           ELSE
@@ -736,6 +737,60 @@ CADJ &   , key = kkey, byte = isbyte
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
+
+C--     Compute new reciprocal hFac for implicit calculation
+#ifdef NONLIN_FRSURF
+        IF ( nonlinFreeSurf.GT.0 ) THEN
+         IF ( select_rStar.GT.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             recip_hFacNew(i,j,k) = recip_hFacC(i,j,k,bi,bj)
+     &                            / rStarExpC(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+# endif /* DISABLE_RSTAR_CODE */
+         ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+# ifndef DISABLE_SIGMA_CODE
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             recip_hFacNew(i,j,k) = recip_hFacC(i,j,k,bi,bj)
+     &        /( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &                    *dBHybSigF(k)*recip_drF(k)
+     &                    *recip_hFacC(i,j,k,bi,bj)
+     &         )
+            ENDDO
+           ENDDO
+          ENDDO
+# endif /* DISABLE_RSTAR_CODE */
+         ELSE
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF ( k.EQ.kSurfC(i,j,bi,bj) ) THEN
+              recip_hFacNew(i,j,k) = 1. _d 0 / hFac_surfC(i,j,bi,bj)
+             ELSE
+              recip_hFacNew(i,j,k) = recip_hFacC(i,j,k,bi,bj)
+             ENDIF
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
+        ELSE
+#endif /* NONLIN_FRSURF */
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             recip_hFacNew(i,j,k) = _recip_hFacC(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+#ifdef NONLIN_FRSURF
+        ENDIF
+#endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_DOWN_SLOPE
         IF ( tempStepping .AND. useDOWN_SLOPE ) THEN
@@ -802,6 +857,7 @@ C       field for implicit matrix calculation
         jMax = sNy
 
 C--     Implicit vertical advection & diffusion
+#ifndef ALLOW_DEPTH_CONTROL
         IF ( tempStepping .AND. implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
      I         bi,bj,iMin,iMax,jMin,jMax,
@@ -820,7 +876,7 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
      I         dTtracerLev,
-     I         kappaRk, wVel, theta,
+     I         kappaRk, recip_hFacNew, wVel, theta,
      U         gT,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( tempStepping .AND. implicitDiffusion ) THEN
@@ -833,7 +889,7 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_TEMPERATURE, kappaRk, recip_hFacC,
+     I         GAD_TEMPERATURE, kappaRk, recip_hFacNew,
      U         gT,
      I         myThid )
         ENDIF
@@ -871,7 +927,7 @@ CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
      I         dTtracerLev,
-     I         kappaRk, wVel, salt,
+     I         kappaRk, recip_hFacNew, wVel, salt,
      U         gS,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( saltStepping .AND. implicitDiffusion ) THEN
@@ -884,10 +940,11 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_SALINITY, kappaRk, recip_hFacC,
+     I         GAD_SALINITY, kappaRk, recip_hFacNew,
      U         gS,
      I         myThid )
         ENDIF
+#endif /* ndef ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_PTRACERS
 #ifndef ALLOW_LONGSTEP
@@ -896,6 +953,7 @@ C--     Vertical advection/diffusion (implicit) for passive tracers
 C       Also apply open boundary conditions for each passive tracer
            CALL PTRACERS_IMPLICIT(
      U                             kappaRk,
+     I                             recip_hFacNew,
      I                             bi, bj, myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_LONGSTEP */
