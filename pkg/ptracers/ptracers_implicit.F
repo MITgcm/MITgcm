@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.8 2010/11/14 23:32:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.9 2011/12/01 14:27:53 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -9,6 +9,7 @@ C !ROUTINE: PTRACERS_IMPLICIT
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_IMPLICIT(
      U                              kappaRk,
+     I                              recip_hFac,
      I                              bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION:
@@ -40,18 +41,20 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj   :: tile indices
-C  myTime  :: time in simulation
-C  myIter  :: iteration number in simulation
-C  myThid  :: thread number
+C  recip_hFac :: Inverse of cell open-depth factor
+C  bi,bj      :: tile indices
+C  myTime     :: time in simulation
+C  myIter     :: iteration number in simulation
+C  myThid     :: thread number
+      _RS     recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi,bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  KappaRk :: vertical diffusion coefficient
-      _RL kappaRk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C  KappaRk    :: vertical diffusion coefficient
+      _RL     kappaRk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_PTRACERS
 
@@ -110,14 +113,14 @@ CADJ &     key=iptrkey, byte=isbyte
           CALL GAD_IMPLICIT_R(
      I         PTRACERS_ImplVertAdv(iTracer),
      I         PTRACERS_advScheme(iTracer), GAD_TR,
-     I         PTRACERS_dTLev, kappaRk,
+     I         PTRACERS_dTLev, kappaRk, recip_hFac,
 #ifdef ALLOW_LONGSTEP
      I         LS_wVel,
 #else
      I         wVel,
 #endif
-     I         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I         bi, bj, myTime, myIter, myThid )
 
         ELSEIF ( implicitDiffusion ) THEN
@@ -127,8 +130,8 @@ CADJ &     key=iptrkey, byte=isbyte
 
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_TR, kappaRk, recip_HFacC,
-     U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I         GAD_TR, kappaRk, recip_hFac,
+     U         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I         myThid )
         ENDIF
 
@@ -137,7 +140,7 @@ C--     Apply open boundary conditions
         IF ( useOBCS ) THEN
           CALL OBCS_APPLY_PTRACER(
      I         bi, bj, 0, iTracer,
-     U         gPtr(1-Olx,1-Oly,1,bi,bj,iTracer),
+     U         gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
      I         myThid )
         ENDIF
 #endif /* ALLOW_OBCS */
