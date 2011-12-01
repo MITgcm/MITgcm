@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.14 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.15 2011/12/01 14:20:25 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE GAD_IMPLICIT_R(
      I      implicitAdvection, advectionScheme, tracerIdentity,
      I      deltaTLev,
-     I      kappaRX, wVel, tracer,
+     I      kappaRX, recip_hFac, wVel, tracer,
      U      gTracer,
      I      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION:
@@ -22,6 +22,7 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "GAD.h"
 
 C !INPUT/OUTPUT PARAMETERS:
@@ -30,6 +31,7 @@ C implicitAdvection :: if True, treat vertical advection implicitly
 C advectionScheme   :: advection scheme to use
 C tracerIdentity    :: Identifier for the tracer
 C kappaRX           :: 3-D array for vertical diffusion coefficient
+C recip_hFac        :: inverse of cell open-depth factor
 C wVel              :: vertical component of the velcity field
 C tracer            :: tracer field at current time step
 C gTracer           :: future tracer field
@@ -41,7 +43,8 @@ C myThid            :: thread number
       INTEGER advectionScheme
       INTEGER tracerIdentity
       _RL     deltaTLev(Nr)
-      _RL kappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL kappaRX   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL wVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -49,21 +52,30 @@ C myThid            :: thread number
       _RL myTime
       INTEGER myIter, myThid
 
+#ifdef ALLOW_DIAGNOSTICS
+C !FUNCTIONS:
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+      LOGICAL     DIAGNOSTICS_IS_ON
+      EXTERNAL    DIAGNOSTICS_IS_ON
+#endif
+
 C !LOCAL VARIABLES:
 C == Local variables ==
-C iMin,iMax,jMin,jMax  :: computational domain
-C i,j,k  :: loop indices
-C a5d    :: 2nd  lower diagonal of the pentadiagonal matrix
-C b5d    :: 1rst lower diagonal of the pentadiagonal matrix
-C c5d    :: main diagonal       of the pentadiagonal matrix
-C d5d    :: 1rst upper diagonal of the pentadiagonal matrix
-C e5d    :: 2nd  upper diagonal of the pentadiagonal matrix
-C rTrans    :: vertical volume transport at inteface k
-C rTransKp1 :: vertical volume transport at inteface k+1
+C iMin,iMax,jMin,jMax :: computational domain
+C i,j,k     :: loop indices
+C a5d       :: 2nd  lower diagonal of the pentadiagonal matrix
+C b5d       :: 1rst lower diagonal of the pentadiagonal matrix
+C c5d       :: main diagonal       of the pentadiagonal matrix
+C d5d       :: 1rst upper diagonal of the pentadiagonal matrix
+C e5d       :: 2nd  upper diagonal of the pentadiagonal matrix
+C rTrans    :: vertical volume transport at interface k
 C localTijk :: local copy of tracer (for Non-Lin Adv.Scheme)
 C diagonalNumber :: number of non-zero diagonals in the matrix
 C errCode   :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
+      PARAMETER( iMin = 1, iMax = sNx )
+      PARAMETER( jMin = 1, jMax = sNy )
       INTEGER i,j,k
       INTEGER diagonalNumber, errCode
       _RL a5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -73,15 +85,15 @@ C errCode   :: > 0 if singular matrix
       _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL wFld     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rTrans   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rTransKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
-      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
-      EXTERNAL    GAD_DIAG_SUFX
-      LOGICAL     DIAGNOSTICS_IS_ON
-      EXTERNAL    DIAGNOSTICS_IS_ON
+      CHARACTER*4 diagSufx
+      LOGICAL     diagDif, diagAdv
+      INTEGER km1, km2, kp1, kp2
       _RL df (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL af (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL div(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
 CEOP
 
@@ -89,10 +101,6 @@ C--   no need to solve anything with only 1 level:
       IF (Nr.GT.1) THEN
 
 C--   Initialise
-      iMin = 1
-      jMin = 1
-      iMax = sNx
-      jMax = sNy
       DO k=1,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -136,7 +144,7 @@ C-     1rst lower diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
            b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
-     &                  *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_hFac(i,j,k)*recip_drF(k)
      &                  *kappaRX(i,j, k )*recip_drC( k )
          ENDDO
         ENDDO
@@ -146,7 +154,7 @@ C-     1rst upper diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
            d5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k+1,bi,bj)
-     &                 *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                 *recip_hFac(i,j,k)*recip_drF(k)
      &                 *KappaRX(i,j,k+1)*recip_drC(k+1)
          ENDDO
         ENDDO
@@ -168,20 +176,6 @@ C--   end if implicitDiffusion
        DO k=Nr,1,-1
 
 C--    Compute transport
-        IF (k.EQ.Nr) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            rTransKp1(i,j) = 0.
-          ENDDO
-         ENDDO
-        ELSE
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            rTransKp1(i,j) = rTrans(i,j)
-          ENDDO
-         ENDDO
-        ENDIF
-
         IF (k.EQ.1) THEN
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
@@ -204,42 +198,34 @@ C--   Residual transp = Bolus transp + Eulerian transp
      I                 k, bi, bj, myThid )
 #endif /* ALLOW_GMREDI */
         ENDIF
-        DO j=jMin,jMax
-          DO i=iMin,iMax
-c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj)
-           gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-     &      + deltaTLev(1)*recip_rA(i,j,bi,bj)
-     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))*rkSign
-          ENDDO
-        ENDDO
 
 #ifdef ALLOW_AIM
 C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
-        IF ( K.GE.2 .AND.
-     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.K.LT.Nr)
+        IF ( k.GE.2 .AND.
+     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.k.LT.Nr)
      &              ) THEN
 #else
-        IF ( K.GE.2 ) THEN
+        IF ( k.GE.2 ) THEN
 #endif
 
          IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
           diagonalNumber = 3
           CALL GAD_C2_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        deltaTLev, rTrans,
+     I                        deltaTLev, rTrans, recip_hFac,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &       .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           diagonalNumber = 3
           CALL GAD_DST2U1_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        advectionScheme, deltaTLev, rTrans,
+     I                        advectionScheme, deltaTLev,
+     I                        rTrans, recip_hFac,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           diagonalNumber = 3
           CALL GAD_FLUXLIMIT_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        deltaTLev, rTrans, localTijk,
+     I                        deltaTLev, rTrans, recip_hFac, localTijk,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_3RD
@@ -247,13 +233,14 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
      &       .OR. advectionScheme.EQ.ENUM_DST3 ) THEN
           diagonalNumber = 5
           CALL GAD_U3C4_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        advectionScheme, deltaTLev, rTrans,
+     I                        advectionScheme, deltaTLev,
+     I                        rTrans, recip_hFac,
      U                        a5d, b5d, c5d, d5d, e5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           diagonalNumber = 5
           CALL GAD_DST3FL_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        deltaTLev, rTrans, localTijk,
+     I                        deltaTLev, rTrans, recip_hFac, localTijk,
      U                        a5d, b5d, c5d, d5d, e5d,
      I                        myThid )
          ELSE
@@ -294,30 +281,121 @@ C--   Solve penta-diagonal system :
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostic suffix for the current tracer
-      IF ( useDiagnostics .AND. implicitDiffusion ) THEN
+      IF ( useDiagnostics ) THEN
         diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
         diagName = 'DFrI'//diagSufx
-        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
-         DO k= 1,Nr
-          IF ( k.EQ.1 ) THEN
-C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
-C         otherwise counter is not incremented !!
+        diagDif = implicitDiffusion
+        IF ( diagDif ) diagDif = DIAGNOSTICS_IS_ON(diagName,myThid)
+        diagName = 'ADVr'//diagSufx
+        diagAdv = implicitAdvection
+        IF ( diagAdv ) diagAdv = DIAGNOSTICS_IS_ON(diagName,myThid)
+
+        IF ( diagDif .OR. diagAdv ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            af(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
+         DO k= Nr,1,-1
+          IF ( implicitDiffusion .AND. k.GE.2 ) THEN
+            DO j=jMin,jMax
+             DO i=iMin,iMax
+               df(i,j) =
+     &             -rA(i,j,bi,bj)
+     &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
+     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+     &            * maskC(i,j,k,bi,bj)
+     &            * maskC(i,j,k-1,bi,bj)
+             ENDDO
+            ENDDO
+          ELSE
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
                df(i,j) = 0. _d 0
              ENDDO
             ENDDO
-          ELSE
-            DO j=1,sNy
-             DO i=1,sNx
-               df(i,j) =
-     &              rA(i,j,bi,bj)
-     &            * KappaRX(i,j,k)*recip_drC(k)
-     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+          ENDIF
+C-  Note: Needs to explicitly increment counter (call DIAGNOSTICS_COUNT)
+C         since skipping k=1 DIAGNOSTICS_FILL call.
+          IF ( diagDif .AND. k.GE.2 ) THEN
+           diagName = 'DFrI'//diagSufx
+           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
+           IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
+          ENDIF
+          IF ( diagAdv ) THEN
+           km1=MAX(1,k-1)
+           km2=MAX(1,k-2)
+           kp1=MIN(Nr,k+1)
+           kp2=MIN(Nr,k+2)
+C--   Flux_divergence*deltaT = Tr^n - Tr^n+1 = [A-I](Tr^n+1)
+C                            = deltaT*rkSign*[ Flx_k+1 - Flx_k ]/dz
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+              div(i,j) = gTracer(i,j,k,bi,bj)*( c5d(i,j,k) - 1. _d 0 )
+     &                 + gTracer(i,j,km1,bi,bj)*b5d(i,j,k)
+     &                 + gTracer(i,j,kp1,bi,bj)*d5d(i,j,k)
+            ENDDO
+           ENDDO
+           IF ( diagonalNumber .EQ. 5 ) THEN
+            DO j=jMin,jMax
+             DO i=iMin,iMax
+              div(i,j) = div(i,j)
+     &                 + gTracer(i,j,km2,bi,bj)*a5d(i,j,k)
+     &                 + gTracer(i,j,kp2,bi,bj)*e5d(i,j,k)
              ENDDO
             ENDDO
+           ENDIF
+#ifdef NONLIN_FRSURF
+           IF ( nonlinFreeSurf.GT.0 ) THEN
+C--    use future hFac to stay consistent with solver matrix
+            IF ( select_rStar.GT.0 ) THEN
+             DO j=jMin,jMax
+              DO i=iMin,iMax
+               div(i,j) = div(i,j)*h0FacC(i,j,k,bi,bj)*drF(k)
+     &                            *rStarFacC(i,j,bi,bj)
+              ENDDO
+             ENDDO
+            ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+             DO j=jMin,jMax
+              DO i=iMin,iMax
+               div(i,j) = div(i,j)*(
+     &               _hFacC(i,j,k,bi,bj)*drF(k)
+     &              + dBHybSigF(k)*dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &                             )
+              ENDDO
+             ENDDO
+            ELSE
+             DO j=jMin,jMax
+              DO i=iMin,iMax
+               IF ( k.EQ.kSurfC(i,j,bi,bj) ) THEN
+                div(i,j) = div(i,j)*hFac_surfC(i,j,bi,bj)*drF(k)
+               ELSE
+                div(i,j) = div(i,j)*_hFacC(i,j,k,bi,bj)*drF(k)
+               ENDIF
+              ENDDO
+             ENDDO
+            ENDIF
+           ELSE
+#else /* NONLIN_FRSURF */
+           IF ( .TRUE. ) THEN
+#endif /* NONLIN_FRSURF */
+C--    use current hFac (consistent with solver matrix)
+             DO j=jMin,jMax
+              DO i=iMin,iMax
+               div(i,j) = div(i,j)*_hFacC(i,j,k,bi,bj)*drF(k)
+              ENDDO
+             ENDDO
+           ENDIF
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+              af(i,j) = af(i,j)
+     &                - rkSign*div(i,j)*rA(i,j,bi,bj)/deltaTLev(k)
+     &                - df(i,j)
+            ENDDO
+           ENDDO
+           diagName = 'ADVr'//diagSufx
+           CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
           ENDIF
-          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
          ENDDO
         ENDIF
       ENDIF
