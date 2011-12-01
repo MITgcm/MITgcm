@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.159 2011/10/25 15:09:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.160 2011/12/01 14:22:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -406,7 +406,7 @@ CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 C--   For Stevens boundary conditions velocities need to be extrapolated
 C     (copied) to a narrow strip outside the domain
          IF ( useOBCS ) THEN
-          CALL OBCS_COPY_UV_N( 
+          CALL OBCS_COPY_UV_N(
      U         uVel(1-Olx,1-Oly,1,bi,bj),
      U         vVel(1-Olx,1-Oly,1,bi,bj),
      I         Nr, bi, bj, myThid )
@@ -594,7 +594,7 @@ CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         -1, KappaRU,recip_HFacW,
+     I         -1, KappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
      U         gU,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
@@ -603,7 +603,7 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         -2, KappaRV,recip_HFacS,
+     I         -2, KappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
      U         gV,
      I         myThid )
         ENDIF
@@ -611,10 +611,10 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #ifdef ALLOW_OBCS
 C--      Apply open boundary conditions
         IF ( useOBCS ) THEN
-C--      but first save intermediate velocities to be used in the 
+C--      but first save intermediate velocities to be used in the
 C        next time step for the Stevens boundary conditions
-          CALL OBCS_SAVE_UV_N( 
-     I        bi, bj, iMin, iMax, jMin, jMax, 0, 
+          CALL OBCS_SAVE_UV_N(
+     I        bi, bj, iMin, iMax, jMin, jMax, 0,
      I        gU, gV, myThid )
           CALL OBCS_APPLY_UV( bi, bj, 0, gU, gV, myThid )
         ENDIF
@@ -627,7 +627,7 @@ CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         0, KappaRU,recip_HFacW,
+     I         0, KappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
      U         vVelD,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
@@ -635,7 +635,7 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         0, KappaRV,recip_HFacS,
+     I         0, KappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
      U         uVelD,
      I         myThid )
         ENDIF

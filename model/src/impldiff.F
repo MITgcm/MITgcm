@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.28 2010/08/03 12:46:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.29 2011/12/01 14:22:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,17 +9,17 @@ C     !ROUTINE: IMPLDIFF
 C     !INTERFACE:
       SUBROUTINE IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
      I                     tracerId, KappaRX, recip_hFac,
-     U                     gXNm1,
+     U                     gTracer,
      I                     myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R IMPLDIFF                                              
-C     | o Solve implicit diffusion equation for vertical          
-C     |   diffusivity.                                            
+C     | S/R IMPLDIFF
+C     | o Solve implicit diffusion equation for vertical
+C     |   diffusivity.
 C     *==========================================================*
-C     | o Recoded from 2d intermediate fields to 3d to reduce     
-C     |   TAMC storage                                            
-C     | o Fixed missing masks for fields a(), c()                 
+C     | o Recoded from 2d intermediate fields to 3d to reduce
+C     |   TAMC storage
+C     | o Fixed missing masks for fields a(), c()
 C     *==========================================================*
 C     \ev
 
@@ -47,25 +47,28 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     tracerId :: tracer Identificator (if > 0) ; 
-C      = 0 or < 0 when solving vertical viscosity implicitly for U or V
+C     tracerId   :: tracer Identificator (if > 0) ; = -1 or -2 when
+C                   solving vertical viscosity implicitly for U or V
+C     KappaRk    :: vertical diffusion coefficient
+C     recip_hFac :: Inverse of cell open-depth factor
+C     gTracer    :: future tracer field
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER tracerId
-      _RL KappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL gXnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL KappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
       _RL deltaTX(Nr)
-      _RL gYnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL a(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL locTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL bet(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL gam(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
@@ -75,7 +78,7 @@ C     == Local variables ==
 #endif
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
-      _RL df (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL df (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -111,7 +114,7 @@ C--   Initialise
        DO j=jMin,jMax
         DO i=iMin,iMax
 #endif
-         gYNm1(i,j,k,bi,bj) = 0. _d 0
+         locTr(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -124,7 +127,7 @@ C--   Old aLower
       DO j=jMin,jMax
        DO i=iMin,iMax
 #endif
-         a(i,j,1) = 0. _d 0 
+         a(i,j,1) = 0. _d 0
        ENDDO
       ENDDO
       DO k=2,Nr
@@ -135,11 +138,11 @@ C--   Old aLower
        DO j=jMin,jMax
         DO i=iMin,iMax
 #endif
-          a(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+          a(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k)*recip_drF(k)
      &               *recip_deepFac2C(k)*recip_rhoFacC(k)
      &               *KappaRX(i,j, k )*recip_drC( k )
      &               *deepFac2F(k)*rhoFacF(k)
-          IF (recip_hFac(i,j,k-1,bi,bj).EQ.0.) a(i,j,k)=0.
+          IF (recip_hFac(i,j,k-1).EQ.0.) a(i,j,k)=0.
         ENDDO
        ENDDO
       ENDDO
@@ -153,11 +156,11 @@ C--   Old aUpper
        DO j=jMin,jMax
         DO i=iMin,iMax
 #endif
-          c(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+          c(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k)*recip_drF(k)
      &               *recip_deepFac2C(k)*recip_rhoFacC(k)
      &               *KappaRX(i,j,k+1)*recip_drC(k+1)
      &               *deepFac2F(k+1)*rhoFacF(k+1)
-          IF (recip_hFac(i,j,k+1,bi,bj).EQ.0.) c(i,j,k)=0.
+          IF (recip_hFac(i,j,k+1).EQ.0.) c(i,j,k)=0.
         ENDDO
        ENDDO
       ENDDO
@@ -233,7 +236,7 @@ CADJ loop = sequential
          DO i=iMin,iMax
 #endif
           gam(i,j,k) = c(i,j,k-1)*bet(i,j,k-1)
-          IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.) 
+          IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.)
      &        bet(i,j,k) = 1. _d 0 / ( b(i,j,k) - a(i,j,k)*gam(i,j,k) )
          ENDDO
         ENDDO
@@ -250,7 +253,7 @@ CADJ loop = sequential
       DO j=jMin,jMax
        DO i=iMin,iMax
 #endif
-        gYNm1(i,j,1,bi,bj) = gXNm1(i,j,1,bi,bj)*bet(i,j,1)
+        locTr(i,j,1) = gTracer(i,j,1,bi,bj)*bet(i,j,1)
        ENDDO
       ENDDO
       DO k=2,Nr
@@ -261,8 +264,8 @@ CADJ loop = sequential
        DO j=jMin,jMax
         DO i=iMin,iMax
 #endif
-         gYnm1(i,j,k,bi,bj) = bet(i,j,k)*
-     &        (gXnm1(i,j,k,bi,bj) - a(i,j,k)*gYnm1(i,j,k-1,bi,bj))
+         locTr(i,j,k) = bet(i,j,k)*
+     &        (gTracer(i,j,k,bi,bj) - a(i,j,k)*locTr(i,j,k-1))
         ENDDO
        ENDDO
       ENDDO
@@ -278,8 +281,7 @@ CADJ loop = sequential
         DO j=jMin,jMax
          DO i=iMin,iMax
 #endif
-          gYnm1(i,j,k,bi,bj)=gYnm1(i,j,k,bi,bj)
-     &              -gam(i,j,k+1)*gYnm1(i,j,k+1,bi,bj)
+          locTr(i,j,k) = locTr(i,j,k) - gam(i,j,k+1)*locTr(i,j,k+1)
          ENDDO
         ENDDO
        ENDDO
@@ -292,7 +294,7 @@ CADJ loop = sequential
         DO j=jMin,jMax
          DO i=iMin,iMax
 #endif
-          gXnm1(i,j,k,bi,bj)=gYnm1(i,j,k,bi,bj)
+          gTracer(i,j,k,bi,bj) = locTr(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -334,8 +336,10 @@ C         otherwise counter is not incremented !!
 #endif
                df(i,j) =
      &             -rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
-     &            * KappaRX(i,j,k)*recip_drC(k)
-     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
+     &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
+     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+     &            * maskC(i,j,k,bi,bj)
+     &            * maskC(i,j,k-1,bi,bj)
              ENDDO
             ENDDO
           ELSEIF ( tracerId.EQ.-1 ) THEN
@@ -348,8 +352,8 @@ C         otherwise counter is not incremented !!
 #endif
                df(i,j) =
      &             -rAw(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
-     &            * KappaRX(i,j,k)*recip_drC(k)
-     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
+     &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
+     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
      &            * _maskW(i,j,k,bi,bj)
      &            * _maskW(i,j,k-1,bi,bj)
              ENDDO
@@ -364,8 +368,8 @@ C         otherwise counter is not incremented !!
 #endif
                df(i,j) =
      &             -rAs(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
-     &            * KappaRX(i,j,k)*recip_drC(k)
-     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
+     &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
+     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
      &            * _maskS(i,j,k,bi,bj)
      &            * _maskS(i,j,k-1,bi,bj)
              ENDDO
