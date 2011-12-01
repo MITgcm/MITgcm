@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.57 2011/06/06 15:44:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.58 2011/12/01 14:16:30 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -161,7 +161,7 @@ C--   Set diagnostic suffix for the current tracer
       advFac  = 0. _d 0
       IF (calcAdvection) advFac = 1. _d 0
       rAdvFac = rkSign*advFac
-      IF (implicitAdvection) rAdvFac = 0. _d 0
+      IF (implicitAdvection) rAdvFac = rkSign
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -724,10 +724,10 @@ C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unc
      &   *( (fZon(i+1,j)-fZon(i,j))
      &     +(fMer(i,j+1)-fMer(i,j))
      &     +(fVerT(i,j,kDown)-fVerT(i,j,kUp))*rkSign
-     &     -localT(i,j)*( (uTrans(i+1,j)-uTrans(i,j))
-     &                   +(vTrans(i,j+1)-vTrans(i,j))
+     &     -localT(i,j)*( (uTrans(i+1,j)-uTrans(i,j))*advFac
+     &                   +(vTrans(i,j+1)-vTrans(i,j))*advFac
      &                   +(rTransKp1(i,j)-rTrans(i,j))*rAdvFac
-     &                  )*advFac
+     &                  )
      &    )
        ENDDO
       ENDDO
