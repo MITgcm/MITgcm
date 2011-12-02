@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_fname.F,v 1.8 2004/11/16 05:42:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_fname.F,v 1.9 2011/12/02 18:43:03 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -32,7 +32,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       character*(MAX_LEN_FNAM) xx_fname
-      character*( 80)   fname(2)
+      character*( 80)   fname(3)
       integer mythid
 
 c     == local variables ==
@@ -54,12 +54,15 @@ c--   Only the master thread will do I/O.
 
       write(fname(1)(1:80),'(80a)') ' '
       write(fname(2)(1:80),'(80a)') ' '
+      write(fname(3)(1:80),'(80a)') ' '
 
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          write(fname(1)(1:80),'(2a,i10.10)')
      &        xx_fname(1:il) ,'.', optimcycle
          write(fname(2)(1:80),'(3a,i10.10)')
      &        yadprefix, xx_fname(1:il), '.', optimcycle
+         write(fname(3)(1:80),'(3a,i10.10)')
+     &        'hn', xx_fname(1:il), '.', optimcycle
       endif
 
       _END_MASTER( mythid )

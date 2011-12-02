@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.8 2010/05/09 16:24:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.9 2011/12/02 18:43:03 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -54,7 +54,7 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-      character*( 80) fname(2)
+      character*( 80) fname(3)
       logical  exst
 
 c     _BEGIN_MASTER( mythid )

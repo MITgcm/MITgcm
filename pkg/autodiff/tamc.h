@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc.h,v 1.9 2008/04/24 21:39:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc.h,v 1.10 2011/12/02 18:43:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,6 +82,8 @@ c--   Note always check for the correct sizes of the common blocks!
 
       integer    nchklev_0
       parameter( nchklev_0      =  64800 )
+      integer    nchklev_1
+      parameter( nchklev_1      =    5 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
