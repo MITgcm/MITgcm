@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_FIELDS.h,v 1.2 2011/10/25 15:09:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_FIELDS.h,v 1.3 2011/12/02 15:27:02 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -63,8 +63,11 @@ C     etc
       _RL OBNs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_OBCS_STEVENS
-      COMMON /OBCS_FIELDS_STEVENS_N/ OBNvStevens 
+      COMMON /OBCS_FIELDS_STEVENS_N/ 
+     &     OBNvStevens, OBNtStevens, OBNsStevens 
       _RL OBNvStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBNtStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBNsStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -89,8 +92,11 @@ C     etc
       _RL OBSs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_OBCS_STEVENS
-      COMMON /OBCS_FIELDS_STEVENS_S/ OBSvStevens 
+      COMMON /OBCS_FIELDS_STEVENS_S/ 
+     &     OBSvStevens, OBStStevens, OBSsStevens
       _RL OBSvStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBStStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBSsStevens (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_SOUTH */
 
@@ -115,8 +121,11 @@ C     etc
       _RL OBEs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_OBCS_STEVENS
-      COMMON /OBCS_FIELDS_STEVENS_E/ OBEuStevens 
+      COMMON /OBCS_FIELDS_STEVENS_E/
+     &     OBEuStevens, OBEtStevens, OBEsStevens
       _RL OBEuStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBEtStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBEsStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_EAST */
 
@@ -141,8 +150,11 @@ C     etc
       _RL OBWs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_OBCS_STEVENS
-      COMMON /OBCS_FIELDS_STEVENS_W/ OBWuStevens 
+      COMMON /OBCS_FIELDS_STEVENS_W/
+     &     OBWuStevens, OBWtStevens, OBWsStevens
       _RL OBWuStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBWtStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBWsStevens (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_WEST */
 

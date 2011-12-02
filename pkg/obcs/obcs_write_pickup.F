@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_write_pickup.F,v 1.5 2011/10/25 15:09:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_write_pickup.F,v 1.6 2011/12/02 15:27:02 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -210,6 +210,8 @@ C     Write E and W OB storage and phase speed arrays
       IF ( useStevensNorth ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensN.',suff(1:iL)
         CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNvStevens, 1,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNtStevens, 2,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -217,6 +219,8 @@ C     Write E and W OB storage and phase speed arrays
       IF ( useStevensSouth ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensS.',suff(1:iL)
         CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSvStevens, 1,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBStStevens, 2,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
@@ -224,6 +228,8 @@ C     Write E and W OB storage and phase speed arrays
       IF ( useStevensEast ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensE.',suff(1:iL)
         CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEtStevens, 2,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
@@ -231,6 +237,8 @@ C     Write E and W OB storage and phase speed arrays
       IF ( useStevensWest ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensW.',suff(1:iL)
         CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWtStevens, 2,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS_STEVENS */

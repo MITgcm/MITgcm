@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.4 2011/10/25 15:09:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.5 2011/12/02 15:27:02 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -222,6 +222,8 @@ c#endif
       IF ( useStevensNorth ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensN.',suff
         CALL READ_REC_XZ_RL(fn,prec,Nr,OBNvStevens, 1,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNtStevens, 2,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -229,6 +231,8 @@ c#endif
       IF ( useStevensSouth ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensS.',suff
         CALL READ_REC_XZ_RL(fn,prec,Nr,OBSvStevens, 1,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBStStevens, 2,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBSsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
@@ -236,6 +240,8 @@ c#endif
       IF ( useStevensEast ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensE.',suff
         CALL READ_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEtStevens, 2,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
@@ -243,6 +249,8 @@ c#endif
       IF ( useStevensWest ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensW.',suff
         CALL READ_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWtStevens, 2,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWsStevens, 3,myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS_STEVENS */

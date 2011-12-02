@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.9 2011/11/29 17:41:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.10 2011/12/02 15:27:02 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -36,7 +36,11 @@ C     |    (Note: in this context the terms barotropic and baroclinic
 C     |    are MOM jargon and --- to my mind ---- should not be used)
 C     |  - a wave phase speed is estimated from temporal and
 C     |    horizontal variations of the tracer fields for each
-C     |    tracer individually, this similar to Orlanski BCs
+C     |    tracer individually, this similar to Orlanski BCs,
+C     |    but for simplicity the fields of the previous time step 
+C     |    are used, and the time derivative is estimated 
+C     |    independently of the time stepping procedure by simple
+C     |    differencing
 C     |  - velocity tangential to the boundary is always zero
 C     |    (although this could be changed)
 C     |  - a new tracer is computed from local advection equation
@@ -90,8 +94,9 @@ C     uMer/vZonPri :: velocity anomalies applied to the open boundaries
 C     gammat/s     :: restoring parameters (1./(T/SrelaxStevens - time scale))
 C     u/vPhase     :: estimate of phase velocity for radiation condition
 C     auxillary variables
-C     clf          :: ratio of grid spacing and time step
+C     cflMer/Zon   :: ratio of grid spacing and time step
 C     dtracSpace   :: horizontal difference of tracer
+C     dtracTime    :: temporal difference of tracer
 C     aFac         :: switch (0 or 1) that turns on advective contribution
 C     gFacM/Z      :: switch (0 or 1) that turns on restoring boundary condition
 C     pFac         :: switch that turns on/off phase velocity contribution
@@ -101,6 +106,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL uPhase
       _RL vPhase
       _RL dtracSpace
+      _RL dTracTime
       _RL cflMer (1-OLy:sNy+OLy,Nr)
       _RL gFacM  (1-OLy:sNy+OLy,Nr)
       _RL uMerPri(Nr)
@@ -228,7 +234,7 @@ C     tracer!
           DO J=1-Oly,sNy+Oly
            I=OB_Ie(J,bi,bj)
            IF (I.NE.0) THEN
-            cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/deltaTmom
+            cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/dTtracerLev(K)
 CML         gFacM(J,K)  = 0. _d 0
 CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
             gFacM(J,K)  = ABS(MIN(SIGN(1.D0,uVel(I,J,K,bi,bj)),0.D0))
@@ -245,14 +251,11 @@ CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
 C     Theta first:
             dTracSpace = (theta(I-1,J,K,bi,bj)-theta(I-2,J,K,bi,bj))
      &           * _maskW(I-1,J,K,bi,bj)
-            uPhase = 0. _d 0
+            dTracTime  = (theta(I-1,J,K,bi,bj)-OBEtStevens(J,K,bi,bj))
+            uPhase = cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              uPhase = MIN( cflMer(J,K), 
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &        MAX( 0.D0, -cflMer(J,K)*gtNm(I-1,J,K,bi,bj,1)/dTracSpace )
-#else
-     &        MAX( 0.D0, -cflMer(J,K)*gtNm1(I-1,J,K,bi,bj)/dTracSpace )
-#endif
+     &        MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &            ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -268,14 +271,11 @@ C     sure if this will be stable
 C     Now salinity:
             dTracSpace = (salt(I-1,J,K,bi,bj)-salt(I-2,J,K,bi,bj))
      &          * _maskW(I-1,J,K,bi,bj)
-            uPhase = 0. _d 0
+            dTracTime  = (salt(I-1,J,K,bi,bj)-OBEsStevens(J,K,bi,bj))
+            uPhase = cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              uPhase = MIN( cflMer(J,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &        MAX( 0.D0, -cflMer(J,K)*gsNm(I-1,J,K,bi,bj,1)/dTracSpace )
-#else
-     &        MAX( 0.D0, -cflMer(J,K)*gsNm1(I-1,J,K,bi,bj)/dTracSpace )
-#endif
+     &            MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &           ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -376,7 +376,7 @@ C     tracer!
           DO J=1-Oly,sNy+Oly
            I=OB_Iw(J,bi,bj)
            IF (I.NE.0) THEN
-            cflMer(J,K) = - 0.5 _d 0 * _dxC(I+2,J,bi,bj)/deltaTmom
+            cflMer(J,K) = 0.5 _d 0 * _dxC(I+2,J,bi,bj)/dTtracerLev(K)
 CML         gFacM = 0. _d 0
 CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
             gFacM(J,K)  = ABS(MAX(SIGN(1.D0,uVel(I+1,J,K,bi,bj)),0.D0))
@@ -393,14 +393,11 @@ CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
 C     Theta first:
             dTracSpace = (theta(I+2,J,K,bi,bj)-theta(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
-            uPhase = 0. _d 0
+            dTracTime  = (theta(I+1,J,K,bi,bj)-OBWtStevens(J,K,bi,bj))
+            uPhase = -cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MAX( cflMer(J,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &       MIN( 0.D0, -cflMer(J,K)*gtNm(I+1,J,K,bi,bj,1)/dTracSpace )
-#else
-     &       MIN( 0.D0, -cflMer(J,K)*gtNm1(I+1,J,K,bi,bj)/dTracSpace )
-#endif
+             uPhase = MAX( -cflMer(J,K),
+     &            MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &         ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -416,14 +413,11 @@ C     sure if this will be stable
 C     Now salinity:
             dTracSpace = (salt(I+2,J,K,bi,bj)-salt(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
-            uPhase = 0. _d 0
+            dTracTime  = (salt(I+1,J,K,bi,bj)-OBWsStevens(J,K,bi,bj))
+            uPhase = -cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MAX( cflMer(J,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &       MIN( 0.D0, -cflMer(J,K)*gsNm(I+1,J,K,bi,bj,1)/dTracSpace )
-#else
-     &       MIN( 0.D0, -cflMer(J,K)*gsNm1(I+1,J,K,bi,bj)/dTracSpace )
-#endif
+             uPhase = MAX( -cflMer(J,K),
+     &            MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &         ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -523,7 +517,7 @@ C     tracer!
           DO I=1-Olx,sNx+Olx
            J=OB_Jn(I,bi,bj)
            IF (J.NE.0) THEN
-            cflZon(I,K) = 0.5 _d 0 * _dyC(I,J-1,bi,bj)/deltaTmom
+            cflZon(I,K) = 0.5 _d 0 * _dyC(I,J-1,bi,bj)/dTtracerLev(K)
 CML         gFacZ(I,K) = 0. _d 0
 CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
             gFacZ(I,K)  = ABS(MIN(SIGN(1.D0,vVel(I,J,K,bi,bj)),0.D0))
@@ -540,14 +534,11 @@ CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
 C     Theta first:
             dTracSpace = (theta(I,J-1,K,bi,bj)-theta(I,J-2,K,bi,bj))
      &        * _maskS(I,J-1,K,bi,bj)
-            vPhase = 0. _d 0
+            dTracTime  = (theta(I,J-1,K,bi,bj)-OBNtStevens(I,K,bi,bj))
+            vPhase = cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              vPhase = MIN( cflZon(I,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &       MAX( 0.D0, -cflZon(I,K)*gtNm(I,J-1,K,bi,bj,1)/dTracSpace )
-#else
-     &       MAX( 0.D0, -cflZon(I,K)*gtNm1(I,J-1,K,bi,bj)/dTracSpace )
-#endif
+     &            MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
      &         ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -563,14 +554,11 @@ C     sure if this will be stable
 C     Now salinity:
             dTracSpace = (salt(I,J-1,K,bi,bj)-salt(I,J-2,K,bi,bj))
      &        * _maskS(I,J-1,K,bi,bj)
-            vPhase = 0. _d 0
+            dTracTime  = (salt(I,J-1,K,bi,bj)-OBNsStevens(I,K,bi,bj))
+            vPhase = cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              vPhase = MIN( cflZon(I,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &       MAX( 0.D0, -cflZon(I,K)*gsNm(I,J-1,K,bi,bj,1)/dTracSpace )
-#else
-     &       MAX( 0.D0, -cflZon(I,K)*gsNm1(I,J-1,K,bi,bj)/dTracSpace )
-#endif
+     &            MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
      &         ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -671,7 +659,7 @@ C     tracer!
           DO I=1-Olx,sNx+Olx
            J=OB_Js(I,bi,bj)
            IF (J.NE.0) THEN
-            cflZon(I,K) = - 0.5 _d 0 * _dyC(I,J+2,bi,bj)/deltaTmom
+            cflZon(I,K) = 0.5 _d 0 * _dyC(I,J+2,bi,bj)/dTtracerLev(K)
 CML         gFacZ = 0. _d 0
 CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
             gFacZ(I,K)  = ABS(MAX(SIGN(1.D0,vVel(I,J+1,K,bi,bj)),0.D0))
@@ -688,14 +676,11 @@ CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
 C     Theta first:
             dTracSpace = (theta(I,J+2,K,bi,bj)-theta(I,J+1,K,bi,bj))
      &        * _maskS(I,J+2,K,bi,bj)
-            vPhase = 0. _d 0
+            dTracTime  = (theta(I,J+1,K,bi,bj)-OBStStevens(I,K,bi,bj))
+            vPhase = -cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             vPhase = MAX( cflZon(I,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &       MIN( 0.D0, -cflZon(I,K)*gtNm(I,J+1,K,bi,bj,1)/dTracSpace )
-#else
-     &       MIN( 0.D0, -cflZon(I,K)*gtNm1(I,J+1,K,bi,bj)/dTracSpace )
-#endif
+             vPhase = MAX( -cflZon(I,K),
+     &       MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
      &         ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -711,14 +696,11 @@ C     sure if this will be stable
 C     Now salinity:
             dTracSpace = (salt(I,J+2,K,bi,bj)-salt(I,J+1,K,bi,bj))
      &        * _maskS(I,J+2,K,bi,bj)
-            vPhase = 0. _d 0
+            dTracTime  = (salt(I,J+1,K,bi,bj)-OBSsStevens(I,K,bi,bj))
+            vPhase = -cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             vPhase = MAX( cflZon(I,K),
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     &       MIN( 0.D0, -cflZon(I,K)*gsNm(I,J+1,K,bi,bj,1)/dTracSpace )
-#else
-     &       MIN( 0.D0, -cflZon(I,K)*gsNm1(I,J+1,K,bi,bj)/dTracSpace )
-#endif
+             vPhase = MAX( -cflZon(I,K),
+     &       MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
      &         ) * pFac
             ENDIF
 C     Update the tracer here with a simple Euler forward step; not
@@ -742,6 +724,10 @@ C     end bi/bj-loops
        ENDDO
       ENDDO
 
+C     save the tracer fields of the previous time step for the next time step
+      CALL OBCS_STEVENS_SAVE_TRACERS(
+     I     futureTime, futureIter,
+     I     myThid )
 C ------------------------------------------------------------------------------
 
 #ifdef CHECK_BALANCE
@@ -781,6 +767,124 @@ CML      print *, 'ml-obcs: OBWp = ', uVelLoc*1 _d -6, ' Sv'
          IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC_STEVENS',myThid)
 #endif
 
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_SAVE_TRACERS
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_SAVE_TRACERS(
+     I     futureTime, futureIter,
+     I     myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_SAVE_TRACERS
+C     | Save tracers (of previous time step) at the OB location 
+C     | to be used in the next time step for Stevens boundary 
+C     | conditions
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "GRID.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
+#include "DYNVARS.h"
+CML#ifdef ALLOW_PTRACERS
+CML#include "PTRACERS_SIZE.h"
+CML#include "PTRACERS_PARAMS.h"
+CML#include "PTRACERS_FIELDS.h"
+CML#include "OBCS_PTRACERS.h"
+CML#endif /* ALLOW_PTRACERS */
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C    myThid    :: my Thread Id number
+      _RL futureTime
+      INTEGER futureIter
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C    bi, bj    :: indices of current tile
+C    i,j,k     :: loop indices
+C    Iobc,Jobc :: position-index of open boundary
+      INTEGER bi,bj,i,j,k,Iobc,Jobc
+CEOP
+
+#ifdef ALLOW_OBCS_STEVENS
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef ALLOW_OBCS_NORTH
+        IF ( tileHasOBN(bi,bj) .AND. useStevensNorth ) THEN
+C Northern boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Jn(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           DO k = 1,Nr
+            OBNtStevens(i,k,bi,bj) = theta(i,Jobc-1,k,bi,bj)
+     &           *maskC(i,Jobc+1,k,bi,bj)
+            OBNsStevens(i,k,bi,bj) = salt(i,Jobc-1,k,bi,bj)
+     &           *maskC(i,Jobc+1,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_SOUTH
+        IF ( tileHasOBS(bi,bj) .AND. useStevensSouth ) THEN
+C Southern boundary
+         DO i=1-Olx,sNx+Olx
+          Jobc = OB_Js(i,bi,bj)
+          IF ( Jobc.NE.0 ) THEN
+           DO k = 1,Nr
+            OBStStevens(i,k,bi,bj) = theta(i,Jobc+1,k,bi,bj)
+     &           *maskC(i,Jobc+1,k,bi,bj)
+            OBSsStevens(i,k,bi,bj) = salt(i,Jobc+1,k,bi,bj)
+     &           *maskC(i,Jobc+1,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_EAST
+        IF ( tileHasOBE(bi,bj) .AND. useStevensEast ) THEN
+C Eastern boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Ie(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           DO k = 1,Nr
+            OBEtStevens(j,k,bi,bj) = theta(Iobc-1,j,k,bi,bj)
+     &           *maskC(Iobc-1,j,k,bi,bj)
+            OBEsStevens(j,k,bi,bj) = salt(Iobc-1,j,k,bi,bj)
+     &           *maskC(Iobc-1,j,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+        IF ( tileHasOBW(bi,bj) .AND. useStevensWest ) THEN
+C Western boundary
+         DO j=1-Oly,sNy+Oly
+          Iobc = OB_Iw(j,bi,bj)
+          IF ( Iobc.NE.0 ) THEN
+           DO k = 1,Nr
+            OBWtStevens(j,k,bi,bj) = theta(Iobc+1,j,k,bi,bj)
+     &           *maskC(Iobc+1,j,k,bi,bj)
+            OBWsStevens(j,k,bi,bj) = salt(Iobc+1,j,k,bi,bj)
+     &           *maskC(Iobc+1,j,k,bi,bj)
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS_WEST */
+       ENDDO
+      ENDDO
 #endif /* ALLOW_OBCS_STEVENS */
       RETURN
       END

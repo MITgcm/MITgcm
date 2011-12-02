@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.41 2011/10/25 15:21:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.42 2011/12/02 15:27:02 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -78,6 +78,8 @@ C     == Local variables ==
 # endif
 # ifdef ALLOW_OBCS_STEVENS
           OBNvStevens(i,k,bi,bj)=0. _d 0
+          OBNtStevens(i,k,bi,bj)=0. _d 0
+          OBNsStevens(i,k,bi,bj)=0. _d 0
 # endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -98,6 +100,8 @@ C     == Local variables ==
 # endif
 # ifdef ALLOW_OBCS_STEVENS
           OBSvStevens(i,k,bi,bj)=0. _d 0
+          OBStStevens(i,k,bi,bj)=0. _d 0
+          OBSsStevens(i,k,bi,bj)=0. _d 0
 # endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_SOUTH */
          ENDDO
@@ -120,6 +124,8 @@ C     == Local variables ==
 # endif
 # ifdef ALLOW_OBCS_STEVENS
           OBEuStevens(j,k,bi,bj)=0. _d 0
+          OBEtStevens(j,k,bi,bj)=0. _d 0
+          OBEsStevens(j,k,bi,bj)=0. _d 0
 # endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_EAST */
 
@@ -140,6 +146,8 @@ C     == Local variables ==
 # endif
 # ifdef ALLOW_OBCS_STEVENS
           OBWuStevens(j,k,bi,bj)=0. _d 0
+          OBWtStevens(j,k,bi,bj)=0. _d 0
+          OBWsStevens(j,k,bi,bj)=0. _d 0
 # endif /* ALLOW_OBCS_STEVENS */
 #endif /* ALLOW_OBCS_WEST */
          ENDDO
