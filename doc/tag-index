@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1540 2011/12/01 19:33:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1541 2011/12/02 15:29:07 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs (Stevens BCs):
+  - fix various problems in the phase speed computations of the Stevens 
+    boundary conditions:
+    - sign error for western and southern boundaries,
+    - time tendencies were underestimated by factor of dTracerLev and some just 
+      zero (for multidim advection schemes) -> now estimate time tendencies
+      from difference between previous (n) time level and the one before (n-1);
+      this requires storing a field per tracer per boundary, also in the pickup 
+      files.
+    - replace deltaTmom in cflMer/Zon computation with dTracerLev
+    - set default phase velocity to cflMer/Zon
+  - update verification experiment exp4.stevens
 o pkg/generic_advdiff (implicit_r):
   - fix implicit vertical advection conservation with AB and/or NonLin-FreeSurf
     (remove Tr*d/dz(w) in gad_implicit_r.F and add it in gad_calc_rhs.F);
