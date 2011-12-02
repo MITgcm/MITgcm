@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.24 2011/05/10 07:31:42 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.25 2011/12/02 19:24:41 heimbach Exp $
 #  $Name:  $
 #
 
@@ -16,11 +16,11 @@ TAF=staf
 TAMC=tamc
 
 AD_TAMC_FLAGS="-reverse -admark ad -i4 -r4 -l tamc_ad.log $AD_TAMC_FLAGS"
-AD_TAF_FLAGS="-v1 -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log $AD_TAF_FLAGS"
+AD_TAF_FLAGS="-v1 -reverse -admark ad -i4 -r4 -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAMC_FLAGS="-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log $FTL_TAMC_FLAGS"
-FTL_TAF_FLAGS="-v1 -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log $FTL_TAF_FLAGS"
+FTL_TAF_FLAGS="-v1 -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAMC_FLAGS="-reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_FLAGS"
-SVD_TAF_FLAGS="-v1 -reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log $SVD_TAF_FLAGS"
+SVD_TAF_FLAGS="-v1 -reverse -forward -pure -i4 -r4 -l taf_svd.log $SVD_TAF_FLAGS"
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_theta_dummy       \
