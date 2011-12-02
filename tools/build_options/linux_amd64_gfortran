@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.15 2011/09/26 19:32:32 utke Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.16 2011/12/02 15:19:38 mlosch Exp $
 #  $Name:  $
 
 # Build options for gfortran compiler (GNU) on Linux AMD64 platform
@@ -127,6 +127,9 @@ elif test -d /usr/local/netcdf ; then
 elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
+elif test -d /usr/include/netcdf.inc ; then
+    INCLUDES='-I/usr/include'
+    LIBS='-L/usr/lib64'
 fi
 
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
