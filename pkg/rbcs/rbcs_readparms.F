@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.8 2011/05/14 19:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.9 2011/12/05 22:33:03 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -54,6 +54,8 @@ C--   RBCS parameters:
      &          relaxMaskUFile,
      &          relaxMaskVFile,
      &          relaxMaskFile,
+     &          relaxUFile,
+     &          relaxVFile,
      &          relaxTFile,
      &          relaxSFile,
      &          useRBCuVel,
