@@ -1,4 +1,4 @@
-% $Header: /u/gcmpack/MITgcm/verification/advect_xz/input/gendata.m,v 1.1 2006/01/03 19:04:51 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/advect_xz/input/gendata.m,v 1.2 2011/12/05 22:03:52 jmc Exp $
 % $Name:  $
 
 % This is a matlab script that generates the input data
@@ -12,7 +12,7 @@ ny=1;
 nz=20;
 
 %- Horizontal & vertical resolution (m):
-dx=1.e4; dy=dx; dz=1.e4;
+dx=1.e4; dy=dx; dz=1.e2;
 % full size of the domain:
 Lx=nx*dx;
 H=nz*dz ;
@@ -46,20 +46,29 @@ rhFc=reshape(rhFc,[nx nz]);
 
 %- horizontal flow field is defined from stream-function psi :
 psi=zeros(nx+1,nz+1);
-psi1=Lx*sin(pi*xf'/Lx)*ones(1,nz+1);
+psi1=sin(pi*xf'/Lx)*ones(1,nz+1);
 zu=zeros(nx+1,1); zu(2:nx)=max(zb(2:nx),zb(1:nx-1));
 rHu=zeros(nx+1,1); rHu(2:nx)=-1./zu(2:nx);
 psi2=max( ones(nx+1,1)*zf, zu*ones(1,nz+1) );
 psi2=psi2.*(rHu*ones(1,nz+1));
 psi2=sin(pi*psi2);
-psi=psi1.*psi2;
+psi=H*psi1.*psi2;
 
 uTrans=psi(:,[1:nz])-psi(:,[2:nz+1]);
 u0=uTrans(1:nx,:).*rhFc/dz;
 
+%- add small, vertically uniform, divergent component:
+ud=psi1(:,1).*rHu;
+ud=ud*H/160.;
+u1=ud(1:nx,1)*ones(1,nz);
+u1(find(hFac==0.))=0.;
+
 if w2file,
  uname='Uvel.bin';
  fid=fopen(uname,'w',ieee); fwrite(fid,u0,prec); fclose(fid); 
+ fprintf([wf,uname,'\n']);
+ uname='Udiv.bin';
+ fid=fopen(uname,'w',ieee); fwrite(fid,u0+u1,prec); fclose(fid); 
  fprintf([wf,uname,'\n']);
 end
 
@@ -88,10 +97,12 @@ end
 %- make plots to check:
 figure(1);clf;
  subplot(211)
+%imagesc(xf,zf,psi1'); set(gca,'YDir','normal'); colorbar;
  imagesc(xf,zf,psi'); set(gca,'YDir','normal'); colorbar;
  hold on ; plot(xc,zb,'b-'); hold off ; grid
  title('Stream-Function [m^2/s]');
  subplot(212)
+%imagesc(xf(1:nx),zc,u1'); set(gca,'YDir','normal'); colorbar;
  imagesc(xf(1:nx),zc,u0'); set(gca,'YDir','normal'); colorbar;
  hold on ; plot(xc,zb,'r-'); hold off ; grid
  title('U velocity [m/s]');

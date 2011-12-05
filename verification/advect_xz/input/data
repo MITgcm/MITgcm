@@ -6,8 +6,6 @@
  &PARM01
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- f0=0.,
- beta=0.,
  tAlpha=0.,
  sBeta= 0.,
  momStepping=.FALSE.,
@@ -26,13 +24,13 @@
 
 # Time stepping parameters
  &PARM03
- startTime=0,
- endTime=240000,
- deltaT=1200.0,
+ startTime=0.,
+ endTime=240000.,
+ deltaT=1200.,
  abEps=0.1,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=24000.0,
+ pChkptFreq=0.,
+ chkptFreq= 0.,
+ dumpFreq =24000.,
  monitorSelect=1,
  monitorFreq=12000.,
  &
@@ -40,7 +38,7 @@
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- delZ=20*10.E3,
+ delR=20*100.,
  dXspacing=10.E3,
  dYspacing=10.E3,
  &
