@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.55 2011/06/19 21:38:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.56 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -43,7 +43,7 @@ c--   Read the namelist input.
       namelist /ecco_cost_nml/
      &                   data_errfile,
      &                   tbarfile, sbarfile,sstbarfile,
-     &                   psbarfile, bpbarfile,
+     &                   psbarfile, bpbarfile,iestaubarfile,
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
      &                   hfluxmeanbarfile, sfluxmeanbarfile,
@@ -68,6 +68,7 @@ c--   Read the namelist input.
      &                   sststartdate1, sststartdate2, sstdatfile,
      &                   sssstartdate1, sssstartdate2, sssdatfile,
      &                   bpstartdate1, bpstartdate2, bpdatfile,
+     &                   iesstartdate1, iesstartdate2, iesdatfile,
      &                   tdatfile, sdatfile, ctdtfile, ctdsfile,
      &                   ctdtclimfile, ctdsclimfile, xbtfile,
      &                   argotstartdate1, argotstartdate2, argotfile,
@@ -78,7 +79,7 @@ c--   Read the namelist input.
      &                   salterrfile, temperrfile, velerrfile,
      &                   salt0errfile, temp0errfile, vel0errfile,
      &                   etan0errfile, uvel0errfile, vvel0errfile,
-     &                   ssterrfile, ssserrfile, bperrfile,
+     &                   ssterrfile, ssserrfile, bperrfile,ieserrfile,
      &                   hflux_errfile, sflux_errfile,
      &                   tauu_errfile, tauv_errfile,
      &                   atemp_errfile, aqh_errfile,
@@ -101,7 +102,7 @@ c--   Read the namelist input.
      &                   mult_tp, mult_ers, mult_gfo,
      &                   mult_temp, mult_salt,
      &                   mult_tmi, mult_sst, mult_sss, mult_bp,
-     &                   mult_ctdt, mult_ctds,
+     &                   mult_ctdt, mult_ctds, mult_ies,
      &                   mult_ctdtclim, mult_ctdsclim,
      &                   mult_xbt, mult_drift,
      &                   mult_argot, mult_argos,
@@ -153,6 +154,7 @@ c--     Set default values.
         sstbarfile            =    'sstbar'
         psbarfile             =    'psbar'
         bpbarfile             =    'bpbar'
+        iestaubarfile         =    'iestaubar'
         ubarfile              =    'ubar'
         vbarfile              =    'vbar'
         wbarfile              =    'wbar'
@@ -206,6 +208,9 @@ c--     Set default values.
         bpstartdate1          =      0
         bpstartdate2          =      0
         bpdatfile             =    ' '
+        iesstartdate1         =      0
+        iesstartdate2         =      0
+        iesdatfile            =    ' '
         tdatfile              =    ' '
         sdatfile              =    ' '
         ctdtfile              =    ' '
@@ -237,6 +242,7 @@ c--     Set default values.
         ssterrfile            =    ' '
         ssserrfile            =    ' '
         bperrfile             =    ' '
+        ieserrfile            =    ' '
         hflux_errfile         =    ' '
         sflux_errfile         =    ' '
         tauu_errfile          =    ' '
@@ -307,6 +313,7 @@ c--     Set default values.
         mult_sst              =      0. _d 0
         mult_sss              =      0. _d 0
         mult_bp               =      0. _d 0
+        mult_ies              =      0. _d 0
         mult_ctdt             =      0. _d 0
         mult_ctds             =      0. _d 0
         mult_ctdtclim         =      0. _d 0
@@ -421,6 +428,10 @@ c--     ... BP data.
         if ( bpdatfile .ne. ' ' )
      &   call cal_FullDate( bpstartdate1,   bpstartdate2,
      &                      bpstartdate,    mythid )
+c--     ... IES data.
+        if ( iesdatfile .ne. ' ' )
+     &   call cal_FullDate( iesstartdate1,   iesstartdate2,
+     &                      iesstartdate,    mythid )
 c--     ... T/P data.
         if ( topexfile .ne. ' ' )
      &  call cal_FullDate( topexstartdate1, topexstartdate2,

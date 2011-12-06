@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.13 2011/07/28 18:43:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.14 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -98,6 +98,16 @@ c--       Initialise surface pressure average.
           enddo
 
           xx_bpbar_mean_dummy = 0. _d 0
+#endif
+
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+c--       Initialize roundtrip travel time average
+          do j = jmin,jmax
+            do i =  imin,imax
+              iestaubar(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+          xx_iestaubar_mean_dummy = 0. _d 0
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \

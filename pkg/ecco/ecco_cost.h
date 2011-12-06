@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.55 2011/07/28 18:43:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.56 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -139,6 +139,7 @@ c             intantaneous field.
      &                    sstbar,
      &                    psbar,
      &                    bpbar,
+     &                    iestaubar,
      &                    ubar,
      &                    vbar,
      &                    wbar,
@@ -208,6 +209,12 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       _RL bpbar
 #endif
 
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+      _RL iestaubar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
+#else
+      _RL iestaubar
+#endif
+
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
       _RL ubar  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -271,6 +278,7 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
      &                    sstbarfile,
      &                    psbarfile,
      &                    bpbarfile,
+     &                    iestaubarfile,
      &                    ubarfile,
      &                    vbarfile,
      &                    wbarfile,
@@ -284,6 +292,7 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       character*(MAX_LEN_FNAM) sstbarfile
       character*(MAX_LEN_FNAM) psbarfile
       character*(MAX_LEN_FNAM) bpbarfile
+      character*(MAX_LEN_FNAM) iestaubarfile
       character*(MAX_LEN_FNAM) ubarfile
       character*(MAX_LEN_FNAM) vbarfile
       character*(MAX_LEN_FNAM) wbarfile
@@ -405,7 +414,7 @@ c                  function contributions.
      &     objf_temp0smoo, objf_salt0smoo,
      &     objf_etan0, objf_uvel0, objf_vvel0,
      &     objf_sst, objf_tmi, objf_sss,
-     &     objf_bp,
+     &     objf_bp, objf_ies,
      &     objf_usercost,
      &     objf_ctdt,      objf_ctds,
      &     objf_ctdtclim,  objf_ctdsclim,
@@ -470,6 +479,7 @@ c                  function contributions.
       _RL  objf_tmi  (nsx,nsy)
       _RL  objf_sss  (nsx,nsy)
       _RL  objf_bp   (nsx,nsy)
+      _RL  objf_ies  (nsx,nsy)
       _RL  objf_ctdt (nsx,nsy)
       _RL  objf_ctds (nsx,nsy)
       _RL  objf_ctdtclim (nsx,nsy)
@@ -569,6 +579,7 @@ c                  function contributions.
      &                num_tmi,
      &                num_sss,
      &                num_bp,
+     &                num_ies,
      &                num_ctdt,
      &                num_ctds,
      &                num_ctdtclim,
@@ -654,6 +665,7 @@ c                  function contributions.
       _RL  num_tmi  (nsx,nsy)
       _RL  num_sss  (nsx,nsy)
       _RL  num_bp   (nsx,nsy)
+      _RL  num_ies  (nsx,nsy)
       _RL  num_ctdt (nsx,nsy)
       _RL  num_ctds (nsx,nsy)
       _RL  num_ctdtclim (nsx,nsy)
@@ -736,6 +748,7 @@ c                  function contributions.
      &                    mult_tmi,
      &                    mult_sss,
      &                    mult_bp,
+     &                    mult_ies,
      &                    mult_ctdt,
      &                    mult_ctds,
      &                    mult_ctdtclim,
@@ -802,6 +815,7 @@ c                  function contributions.
       _RL  mult_tmi
       _RL  mult_sss
       _RL  mult_bp
+      _RL  mult_ies
       _RL  mult_ctdt
       _RL  mult_ctds
       _RL  mult_ctdtclim
@@ -928,6 +942,7 @@ c     velerrfile            - representation error
      &                ssterrfile,
      &                ssserrfile,
      &                bperrfile,
+     &                ieserrfile,
      &                atemp_errfile,
      &                aqh_errfile,
      &                precip_errfile,
@@ -983,6 +998,7 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) ssterrfile
       character*(MAX_LEN_FNAM) ssserrfile
       character*(MAX_LEN_FNAM) bperrfile
+      character*(MAX_LEN_FNAM) ieserrfile
       character*(MAX_LEN_FNAM) atemp_errfile
       character*(MAX_LEN_FNAM) aqh_errfile
       character*(MAX_LEN_FNAM) precip_errfile
@@ -1046,7 +1062,7 @@ c     wetan      - weight for etan0
      &                      wkapredi,wkapredi2,wkaprediFld,
      &                      wedtaux,wedtaux2,wedtauxFld,
      &                      wedtauy,wedtauy2,wedtauyFld,
-     &                      wsst,wsss,wbp,
+     &                      wsst,wsss,wbp, wies,
      &                      wtp,wers,wgfo,
      &                      wp,wsshv4,
      &                      wctdt,wctds,
@@ -1095,6 +1111,7 @@ c     wetan      - weight for etan0
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wbp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wies     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wsshv4  (1-olx:snx+olx,1-oly:sny+oly,NSSHV4COST,nsx,nsy)
       _RL wers    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1234,6 +1251,7 @@ c     sstdat     - reference sea surface temperature data.
 c     tmidat     - reference TMI sea surface temperature data.
 c     sssdat     - reference sea surface temperature data.
 c     bpdat      - bottom pressure from time-varying GRACE.
+c     iesdat     - roundtrip travel time from IES
 c     tauxmask   - mask for reference wind stress data.
 c     tauymask   - mask for reference wind stress data.
 c     scatxmask  - mask for scat wind stress data.
@@ -1261,10 +1279,12 @@ c     vdriftdat  - drifters meridional velocities
      &                     scatxdat,
      &                     scatydat,
      &                     bpdat,
+     &                     iesdat,
      &                     sstmask,
      &                     tmimask,
      &                     sssmask,
      &                     bpmask,
+     &                     iesmask,
      &                     tauxmask,
      &                     tauymask,
      &                     scatxmask,
@@ -1292,6 +1312,7 @@ c     vdriftdat  - drifters meridional velocities
       _RL scatxdat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL scatydat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL bpdat     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL iesdat     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tauxmask  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tauymask  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL scatxmask (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1300,6 +1321,7 @@ c     vdriftdat  - drifters meridional velocities
       _RL tmimask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL sssmask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL bpmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL iesmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL sdat      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL tpmean    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tpmeanmask(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1352,6 +1374,7 @@ c     driftfile     - reference data file for drifter mean velocities
      &                     tmidatfile,
      &                     sssdatfile,
      &                     bpdatfile,
+     &                     iesdatfile,
      &                     topexmeanfile,
      &                     topexfile,
      &                     ersfile,
@@ -1377,6 +1400,7 @@ c     driftfile     - reference data file for drifter mean velocities
       character*(MAX_LEN_FNAM) tmidatfile
       character*(MAX_LEN_FNAM) sssdatfile
       character*(MAX_LEN_FNAM) bpdatfile
+      character*(MAX_LEN_FNAM) iesdatfile
       character*(MAX_LEN_FNAM) topexmeanfile
       character*(MAX_LEN_FNAM) topexfile
       character*(MAX_LEN_FNAM) ersfile
@@ -1427,6 +1451,7 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           tmistartdate,
      &                           sssstartdate,
      &                           bpstartdate,
+     &                           iesstartdate,
      &                           topexstartdate,
      &                           ersstartdate,
      &                           gfostartdate
@@ -1438,6 +1463,7 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer tmistartdate(4)
       integer sssstartdate(4)
       integer bpstartdate(4)
+      integer iesstartdate(4)
       integer topexstartdate(4)
       integer ersstartdate(4)
       integer gfostartdate(4)
@@ -1451,6 +1477,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           sssstartdate2,
      &                           bpstartdate1,
      &                           bpstartdate2,
+     &                           iesstartdate1,
+     &                           iesstartdate2,
      &                           argotstartdate1,
      &                           argotstartdate2,
      &                           argosstartdate1,
@@ -1472,6 +1500,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer sssstartdate2
       integer bpstartdate1
       integer bpstartdate2
+      integer iesstartdate1
+      integer iesstartdate2
       integer argotstartdate1
       integer argotstartdate2
       integer argosstartdate1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.45 2011/07/28 18:43:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.46 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -808,6 +808,26 @@ c--   convert to units of meters
       enddo
 
       call active_write_xy_loc( 'wbp', wbp, 1, 0, mythid, dummy)
+#endif
+
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+      if ( ieserrfile .NE. ' ' )
+     &   call mdsreadfield( ieserrfile, 32, 'RL', 1, wies, 1,
+     &                      mythid)
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+                if (wies(i,j,bi,bj).ne.0)
+     &               wies(i,j,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
+     &                  ( wies(i,j,bi,bj)* wies(i,j,bi,bj) )
+            enddo
+          enddo
+        enddo
+      enddo
+
+      call active_write_xy_loc( 'wies', wies, 1, 0, mythid, dummy)
 #endif
 
 c--   Read zonal wind stress variance.

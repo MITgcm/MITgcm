@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.54 2011/05/20 22:22:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.55 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -84,7 +84,7 @@ c     == local variables ==
       _RL f_gencost(NGENCOST)
       _RL f_usercost(NUSERCOST)
       _RL f_sshv4cost(NSSHV4COST)
-      _RL f_transp
+      _RL f_transp, f_ies
 
       _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_etan0, no_uvel0, no_vvel0 
@@ -110,7 +110,7 @@ c     == local variables ==
       _RL no_gencost(NGENCOST)
       _RL no_usercost(NUSERCOST)
       _RL no_sshv4cost(NSSHV4COST)
-      _RL no_transp
+      _RL no_transp, no_ies
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -213,6 +213,7 @@ c     == end of interface ==
       f_eddytau = 0. _d 0
       f_bottomdrag = 0. _d 0
       f_transp  = 0. _d 0
+      f_ies = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -304,6 +305,7 @@ c     == end of interface ==
       no_eddytau = 0. _d 0
       no_bottomdrag = 0. _d 0
       no_transp  = 0. _d 0
+      no_ies = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -345,6 +347,7 @@ c--   Sum up all contributions.
      &         + mult_tmi     * objf_tmi(bi,bj)
      &         + mult_sss     * objf_sss(bi,bj)
      &         + mult_bp      * objf_bp(bi,bj)
+     &         + mult_ies     * objf_ies(bi,bj)
      &         + mult_tauu    * ( objf_tauu(bi,bj)+objf_tauum(bi,bj)
      &                         +mult_smooth_bc*objf_tauusmoo(bi,bj) )
      &         + mult_tauv    * ( objf_tauv(bi,bj)+objf_tauvm(bi,bj)
@@ -477,6 +480,7 @@ c--   Sum up all contributions.
           f_tmi  = f_tmi + objf_tmi(bi,bj)
           f_sss  = f_sss + objf_sss(bi,bj)
           f_bp   = f_bp  + objf_bp(bi,bj)
+          f_ies  = f_ies + objf_ies(bi,bj)
           f_atl  = f_atl + objf_atl(bi,bj)
           f_ctdt = f_ctdt + objf_ctdt(bi,bj)
           f_ctds = f_ctds + objf_ctds(bi,bj)
@@ -569,6 +573,7 @@ c--   Sum up all contributions.
           no_tmi  = no_tmi + num_tmi(bi,bj)
           no_sss  = no_sss + num_sss(bi,bj)
           no_bp   = no_bp  + num_bp(bi,bj)
+          no_ies  = no_ies + num_ies(bi,bj)
           no_ctdt = no_ctdt + num_ctdt(bi,bj)
           no_ctds = no_ctds + num_ctds(bi,bj)
           no_ctdtclim = no_ctdtclim + num_ctdtclim(bi,bj)
@@ -682,6 +687,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_tmi , myThid )
       _GLOBAL_SUM_RL( f_sss , myThid )
       _GLOBAL_SUM_RL( f_bp , myThid )
+      _GLOBAL_SUM_RL( f_ies , myThid )
       _GLOBAL_SUM_RL( f_atl , myThid )
       _GLOBAL_SUM_RL( f_ctdt , myThid )
       _GLOBAL_SUM_RL( f_ctds , myThid )
@@ -769,6 +775,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_tmi , myThid )
       _GLOBAL_SUM_RL( no_sss , myThid )
       _GLOBAL_SUM_RL( no_bp , myThid )
+      _GLOBAL_SUM_RL( no_ies , myThid )
       _GLOBAL_SUM_RL( no_atl , myThid )
       _GLOBAL_SUM_RL( no_ctdt , myThid )
       _GLOBAL_SUM_RL( no_ctds , myThid )
@@ -846,6 +853,8 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_sss     =',f_sss
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_bp      =',f_bp
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ies      =',f_ies
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_ssh       =',f_ssh
       write(standardmessageunit,'(A,D22.15)')
@@ -1167,6 +1176,8 @@ C     only master thread of master CPU open and write to file
      &       'f_sss =', f_sss, no_sss
         write(ifc,'(A,2D22.15)')
      &       'f_bp =', f_bp, no_bp
+        write(ifc,'(A,2D22.15)')
+     &       'f_ies =', f_ies, no_ies
         write(ifc,'(A,2D22.15)')
      &       'f_atl =', f_atl, no_atl
         write(ifc,'(A,2D22.15)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.33 2011/06/07 22:11:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.34 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -105,10 +105,20 @@ c     == local variables ==
 
       _RL  etanLeads (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+      _RL iestau(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL c0mm,prmm,salmm,vtmm,tmpmm,vsmm,vpmm,vstpmm
+      _RL csmm(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nr,nsx,nsy)
+      _RL SW_TEMP
+#endif
+
 c     == external functions ==
 
       integer  ilnblnk
       external ilnblnk
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+      external SW_TEMP
+#endif
 
 c     == end of interface ==
 
@@ -498,8 +508,106 @@ c
       endif
 #endif /* ALLOW_SEAICE */
 
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+cmm  First need to determine sound speed for each cell
+       c0mm=1402.392
+       prmm = 0.0
+       salmm = 0.0
+       vtmm = 0.0
+       tmpmm = 0.0
+       vsmm = 0.0
+       vpmm = 0.0
+       vstpmm = 0.0
+       do bj = jtlo,jthi
+         do bi = itlo,ithi
+            do j = jmin,jmax
+              do i =  imin,imax
+                iestau(i,j,bi,bj) = 0.0
+              enddo
+            enddo
+         enddo
+       enddo
+       do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = jmin,jmax
+                do i =  imin,imax
+                 csmm(i,j,k,bi,bj) = 0.0
+                enddo
+              enddo
+            enddo
+          enddo
+        enddo
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = jmin,jmax
+                do i =  imin,imax
+                 if (hFacC(i,j,k,bi,bj).gt.0.0) then
+                  prmm = totPhiHyd(i,j,k,bi,bj)/gravity
+     &                  -rC(k)
+                  tmpmm = SW_TEMP(SALT(i,j,k,bi,bj),
+     &            THETA(i,j,k,bi,bj),prmm,0. _d 0)
+                  prmm = rhoConst*(
+     &                   totPhiHyd(i,j,k,bi,bj)
+     &                  -rC(k)*gravity )
+cmm convert pressure to kg/cm^2 for compliance with aog_vsdg script
+                  prmm = prmm*0.0001/gravity
+                  salmm = SALT(i,j,k,bi,bj)
+                  vtmm = (5.01109398873-(0.0550946843172
+     &            - 0.000221535969240*tmpmm)*tmpmm)*tmpmm
+                  vsmm=(1.32952290781 + 0.000128955756844*salmm)*salmm
+                  vpmm=(0.156059257041 + (0.0000244998688441
+     &             - 0.00000000883392332513*prmm)*prmm)*prmm
+                  vstpmm=-0.0127562783426*tmpmm*salmm
+     &             + 0.00635191613389*tmpmm*prmm
+     &             + 0.0000000265484716608*tmpmm*tmpmm*prmm*prmm
+     &             - 0.00000159349479045*tmpmm*prmm*prmm
+     &             + 0.000000000522116437235*tmpmm*prmm*prmm*prmm
+     &             - 0.000000438031096213*tmpmm*tmpmm*tmpmm*prmm
+     &             - 0.00000000161674495909*salmm*salmm*prmm*prmm
+     &             + 0.0000968403156410*tmpmm*tmpmm*salmm
+     &             + 0.00000485639620015*tmpmm*salmm*salmm*prmm
+     &             - 0.000340597039004*tmpmm*salmm*prmm
+                  csmm(i,j,k,bi,bj) = c0mm+vtmm+vsmm+vpmm+vstpmm
+                 endif
+                enddo
+              enddo
+            enddo
+          enddo
+        enddo
+CMM  now integrate to get round trip travel time
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = jmin,jmax
+                do i =  imin,imax
+                  if (csmm(i,j,k,bi,bj).ne.0.0) then
+                    iestau(i,j,bi,bj) = iestau(i,j,bi,bj)
+     &                   + 2*drF(k)*hFacC(i,j,k,bi,bj)
+     &                              /csmm(i,j,k,bi,bj)
+                    if (k.eq.1) then
+                      iestau(i,j,bi,bj) = iestau(i,j,bi,bj)
+     &                   + 2*etaN(i,j,bi,j)
+     &                              /csmm(i,j,k,bi,bj)
+                    endif
+                  endif
+               enddo
+              enddo
+            enddo
+          enddo
+        enddo
+cmm   accumulate averate   
+      call cost_averagesgeneric(
+     &     iestaubarfile,
+     &     iestaubar, iestau(1-Olx,1-Oly,1,1),
+     &     xx_iestaubar_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
+#endif
+
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-cph currently all assumed to be surface fields, i.e. 2-d
+	cph currently all assumed to be surface fields, i.e. 2-d
       do num_var = 1, NGENCOST
       if ( gencost_barfile(num_var) .ne. ' ' ) then
       call cost_averagesgeneric(

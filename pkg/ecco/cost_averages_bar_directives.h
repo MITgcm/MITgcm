@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.6 2009/11/20 22:29:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.7 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 c
@@ -30,6 +30,7 @@ CADJ STORE xx_vwind_mean_dummy = onetape
 CADJ STORE xx_smrareabar_mean_dummy = onetape
 CADJ STORE xx_smrsstbar_mean_dummy = onetape
 CADJ STORE xx_smrsssbar_mean_dummy = onetape
+CADJ STORE xx_iestaubar_mean_dummy = onetape
 #ifdef ALLOW_PROFILES
 CADJ STORE profiles_dummy = tapelev_init, key = 1
 #endif

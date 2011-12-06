@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.109 2011/11/13 01:47:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.110 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -516,6 +516,13 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 #endif
 
 #ifdef ALLOW_COST
+
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+CADJ STORE etaN           = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE theta  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE totphihyd  = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
@@ -1276,6 +1283,14 @@ c--   Compute bottom pressure cost
       call timer_start('cost_bp    [ECCO SPIN-DOWN]', mythid)
       call cost_bp( myiter, mytime, mythid )
       call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', mythid)
+#endif
+
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+c--   Compute inverted echo sounder cost
+      IF (debugMode) CALL DEBUG_CALL('cost_ies',myThid)
+      call timer_start('cost_ies    [ECCO SPIN-DOWN]', mythid)
+      call cost_ies( myiter, mytime, mythid )
+      call timer_stop ('cost_ies    [ECCO SPIN-DOWN]', mythid)
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.

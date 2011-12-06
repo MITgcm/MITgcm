@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.21 2011/03/07 08:22:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.22 2011/12/06 04:14:04 mmazloff Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,6 +68,7 @@ c     == local variables ==
       character*(128) fnamesmrareabar
       character*(128) fnamesmrsstbar
       character*(128) fnamesmrsssbar
+      character*(128) fnameiestaubar
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       character*(128) fname_gencostbar(NGENCOST)
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
@@ -90,6 +91,7 @@ c
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       character*(128) adfname_gencostbar(NGENCOST)
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
+      character*(128) adfnameiestaubar
 
 c     == external functions ==
 
@@ -410,6 +412,20 @@ c--   Save gencost_barfile on file.
       enddo 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+      ilps=ilnblnk( iestaubarfile )
+      write(fnameiestaubar,'(2a,i10.10)')
+     &     iestaubarfile(1:ilps), '.', optimcycle
+      write(adfnameiestaubar,'(3a,i10.10)')
+     &     yadprefix, iestaubarfile(1:ilps), '.', optimcycle
+      do irec = 1, ndaysrec
+#ifndef ALLOW_TANGENTLINEAR_RUN
+        call active_write_xy( adfnameiestaubar, tmpfld2d, irec,
+     &        optimcycle,mythid, xx_iestaubar_mean_dummy )
+#endif
+      enddo
+
+#endif 
 
 #endif /* ALLOW_COST */
 
