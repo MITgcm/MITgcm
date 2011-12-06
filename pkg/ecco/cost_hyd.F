@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.22 2011/09/08 19:55:54 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.23 2011/12/06 01:36:03 mmazloff Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -257,7 +257,7 @@ cph and extended using I. Fenty SST, SSS extensions
       call seaice_cost_areasst(
      &     nnzbar, smrareabarfile, smrareabar, xx_smrareabar_mean_dummy,
      &     nnzobs, smrareadatfile, smrareadat, mult_smrarea,
-     &     nrecloc, modelstartdate, localperiod,
+     &     nrecloc, smrareastartdate, localperiod,
      &     maskC, wsmrarea,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_smrarea, num_smrarea,
