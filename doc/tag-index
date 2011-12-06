@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1543 2011/12/06 04:19:24 mmazloff Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1544 2011/12/06 19:31:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,6 +9,8 @@ o pkg/ecco
 o verification/advect_xz
   - scale down the depth by 1/100 (from 200 km to just 2.km)
   - add secondary test using divergent flow, r-star and implicit vertical advection.
+  - add note (check_conserve_TS.txt) and matlab script to check global
+    conservation of T & S with NonLin-FreeSurf and Adams-Bashforth.
 o pkg/rbcs:
   - add missing relaxUFile & relaxVFile in namelist (in rbcs_readparms.F).
 o pkg/obcs (Stevens BCs):
