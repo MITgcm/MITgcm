@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1542 2011/12/06 00:42:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1543 2011/12/06 04:19:24 mmazloff Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco
+  - added IES cost term
 o verification/advect_xz
   - scale down the depth by 1/100 (from 200 km to just 2.km)
   - add secondary test using divergent flow, r-star and implicit vertical advection.
