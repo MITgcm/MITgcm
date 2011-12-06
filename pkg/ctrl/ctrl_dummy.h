@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.25 2011/05/10 07:30:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.26 2011/12/06 04:14:18 mmazloff Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -87,6 +87,7 @@ c     ==================================================================
      &                  , xx_smrareabar_mean_dummy
      &                  , xx_smrsstbar_mean_dummy
      &                  , xx_smrsssbar_mean_dummy
+     &                  , xx_iestaubar_mean_dummy
      &                  , xx_gen2d_dummy
      &                  , xx_gen3d_dummy
 cHFLUXM_CONTROL
@@ -173,6 +174,7 @@ c
       _RL xx_smrareabar_mean_dummy
       _RL xx_smrsstbar_mean_dummy
       _RL xx_smrsssbar_mean_dummy
+      _RL xx_iestaubar_mean_dummy
 cHFLUXM_CONTROL
       _RL xx_hfluxm_dummy
 cHFLUXM_CONTROL
