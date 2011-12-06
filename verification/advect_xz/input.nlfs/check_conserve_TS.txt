@@ -1,0 +1,44 @@
+To check tracer conservation in advect_xz/input.nlfs set-up,
+and in general when
+- using NonLin FreeSurf
+- using or not Adams-Bashforth (used here for Salinity)
+- without thermal/salt/fresh-water forcing
+
+From a standard run with input.nlfs parameter files:
+> cd advect_xz/tr_run.nlfs
+
+Download (using cvs):
+> cvs co -d tmp MITgcm_contrib/jmc_script/extract_StD
+> mv tmp/extract_StD .
+> rm -rf tmp
+> cvs co -d tmp MITgcm_contrib/jmc_script/read_StD.m
+> mv tmp/read_StD.m .
+> rm -rf tmp
+
+Split multi-variable stats-diags file into variable specific files:
+> ./extract_StD dynStDiag.0000000000.txt dynStD std
+
+Plot global stats evolution using matlab:
+>> grph_StD_AB
+
+figure-3, top-panel: "Avr T"
+evolution of global averaged (potential) Temperature.
+ (should be flat if conserving)
+
+figure-4, top-panel: "Avr S"
+evolution of global averaged Salinity
+
+Since Adams-Bashforth is used (alphAB= 0.6 = 0.5+abEps) for Salt
+with NonLin-FreeSurf, we don't expect to exactly conserve Salt,
+but should not drift and exactly conserve a slightly modified
+quantity: S_ab = S - alphAB*deltaT*gSnm1
+
+After editing grph_StD_AB.m (commenting out the 2nd spec of alphAB):
+>> grph_StD_AB
+
+figure-3 is unchanged but top-panel on figure-4, now plot
+the evolution of global averaged S_ab.
+ (should be flat if conserving)
+Note a problem of conservation at the very 1rst iteration,
+but later on the curve is flat. This problem is not seen
+after a restart.
