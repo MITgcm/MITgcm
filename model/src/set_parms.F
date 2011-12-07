@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.10 2011/11/13 00:48:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.11 2011/12/07 23:31:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -76,6 +76,12 @@ C--   Free-surface & pressure method
      &                      SQUEEZE_RIGHT, myThid )
         selectNHfreeSurf = 0
       ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+      doResetHFactors = .TRUE.
+#endif
+#ifndef NONLIN_FRSURF
+      doResetHFactors = .FALSE.
+#endif
 C--   Set default Vorticity-Term Scheme:
       IF ( vectorInvariantMomentum ) THEN
         IF ( selectVortScheme.EQ.UNSET_I ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.131 2011/11/13 00:48:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.132 2011/12/07 23:31:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -411,11 +411,14 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &  'implicitIntGravWave=',
      &  ' /* Implicit Internal Gravity Wave flag */')
       CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
-     &                 'staggerTimeStep =',
-     &'   /* Stagger time stepping on/off flag */')
+     & 'staggerTimeStep = ',
+     & '   /* Stagger time stepping on/off flag */')
+      CALL WRITE_0D_L( doResetHFactors, INDEX_NONE,
+     & 'doResetHFactors =',
+     & ' /* reset thickness factors @ each time-step */')
       CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE,
      & 'multiDimAdvection =',
-     &'   /* enable/disable Multi-Dim Advection */')
+     & '  /* enable/disable Multi-Dim Advection */')
       CALL WRITE_0D_L( useMultiDimAdvec, INDEX_NONE,
      & 'useMultiDimAdvec =',
      &'   /* Multi-Dim Advection is/is-not used */')

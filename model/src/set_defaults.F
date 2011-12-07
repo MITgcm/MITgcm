@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.155 2011/06/08 01:41:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.156 2011/12/07 23:31:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -150,6 +150,7 @@ Cml      sBeta               = 7.4 _d -4
       hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.
       staggerTimeStep     = .FALSE.
+      doResetHFactors     = .FALSE.
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
       momForcing          = .TRUE.

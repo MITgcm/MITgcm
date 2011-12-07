@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.241 2011/08/28 12:47:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.242 2011/12/07 23:31:15 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -185,7 +185,7 @@ C--   Continuous equation parameters
      & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
      & nonlinFreeSurf, hFacInf, hFacSup, select_rStar,
      & nonHydrostatic, selectNHfreeSurf, quasiHydrostatic,
-     & implicitIntGravWave, staggerTimeStep,
+     & implicitIntGravWave, staggerTimeStep, doResetHFactors,
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
