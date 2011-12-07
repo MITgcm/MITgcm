@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.254 2011/11/13 00:47:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.255 2011/12/07 22:08:12 jmc Exp $
 C $Name:  $
 C
 
@@ -318,6 +318,7 @@ C     nonHydrostatic   :: Using non-hydrostatic algorithm
 C     use3Dsolver      :: set to true to use 3-D pressure solver
 C     implicitIntGravWave :: treat Internal Gravity Wave implicitly
 C     staggerTimeStep   :: enable a Stagger time stepping U,V (& W) then T,S
+C     doResetHFactors   :: Do reset thickness factors @ beginning of each time-step
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
 C     tempImplVertAdv :: Turns on implicit vertical advection for Temperature
@@ -383,8 +384,8 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & useRealFreshWaterFlux, useSRCGSolver,
      & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
      & uniformLin_PhiSurf,
-     & quasiHydrostatic, nonHydrostatic,
-     & use3Dsolver, implicitIntGravWave, staggerTimeStep,
+     & quasiHydrostatic, nonHydrostatic, use3Dsolver,
+     & implicitIntGravWave, staggerTimeStep, doResetHFactors,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
@@ -448,6 +449,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL use3Dsolver
       LOGICAL implicitIntGravWave
       LOGICAL staggerTimeStep
+      LOGICAL doResetHFactors
       LOGICAL momStepping
       LOGICAL calc_wVelocity
       LOGICAL tempStepping
