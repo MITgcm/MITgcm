@@ -25,6 +25,8 @@
  selectKEscheme=3,
 #staggerTimeStep=.TRUE.,
  implicitIntGravWave=.TRUE.,
+#- to check that it has no impact:
+ doResetHFactors=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  useSingleCpuIO=.TRUE.,

@@ -32,6 +32,8 @@
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
+#- to check that it has no impact:
+ doResetHFactors=.TRUE.,
 # set precision of data files
  readBinaryPrec=32,
 #writeBinaryPrec=64,

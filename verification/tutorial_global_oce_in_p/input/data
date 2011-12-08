@@ -34,6 +34,8 @@
  nonlinFreeSurf=4,
  hFacInf=0.2,
  hFacSup=2.0,
+#- to check that it has no impact:
+ doResetHFactors=.TRUE.,
 #useRealFreshWaterFlux=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,

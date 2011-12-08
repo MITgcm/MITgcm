@@ -31,6 +31,8 @@
  useRealFreshWaterFlux=.TRUE.,
  hFacMin=.1,
  hFacMinDr=20.,
+#- to check that it has no impact:
+ doResetHFactors=.TRUE.,
 #tempAdvScheme=77,
 #saltAdvScheme=77,
  readBinaryPrec=64,
