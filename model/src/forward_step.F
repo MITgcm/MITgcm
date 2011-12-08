@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.197 2011/11/13 01:44:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.198 2011/12/08 03:36:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -207,10 +207,12 @@ c**************************************
 c**************************************
 #endif
 
-C--   Reset geometric factors to their current values
-Cgf   (only has an impact for the adjoint)
+C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
+C     added to simplify adjoint derivation - no effect in forward run
 #ifdef NONLIN_FRSURF
-C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
+#ifndef ALLOW_AUTODIFF_TAMC
+      IF ( doResetHFactors ) THEN
+#endif
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -230,12 +232,14 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL UPDATE_SURF_DR( .FALSE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
        ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-# endif
+#else
+      ENDIF
+#endif
 #endif /* NONLIN_FRSURF */
 
 C--   Switch on/off diagnostics for snap-shot output:
@@ -390,11 +394,8 @@ CADJ STORE gtnm1              = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE ptracer               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif /* ALLOW_PTRACERS */
-# if (defined ALLOW_DEPTH_CONTROL)
+# ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
-#  ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarexpc = comlev1, key = ikey_dynamics, kind = isbyte
-#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -420,7 +421,7 @@ CADJ &     kind = isbyte
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined ALLOW_DEPTH_CONTROL)
+# ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
@@ -606,18 +607,6 @@ CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-c
-#  ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarFacC, rstarFacS, rstarFacW =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-c
-CADJ STORE h0facc,h0facs,h0facw
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE rstarexpc,rstarexps,rstarexpw
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-#  endif /* ndef DISABLE_RSTAR_CODE */
 # endif /* ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -747,12 +736,6 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_DEPTH_CONTROL
-#  ifndef DISABLE_RSTAR_CODE
-cph-test
-cph not clear, why this one
-CADJ STORE h0facc = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#  endif
 CADJ STORE etan, uvel,vvel
 CADJ &     = comlev1, key = ikey_dynamics
 # endif /* ALLOW_DEPTH_CONTROL */
