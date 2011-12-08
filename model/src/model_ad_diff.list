@@ -11,6 +11,7 @@ calc_gs.f
 calc_gt.f	
 calc_ivdc.f	
 calc_phi_hyd.f
+calc_r_star.f
 calc_surf_dr.f
 calc_viscosity.f	
 calc_wsurf_tr.f
@@ -92,9 +93,9 @@ timestep_tracer.f
 tracers_correction_step.f
 update_cg2d.f
 update_etah.f	
+update_etaws.f	
 update_masks_etc.f
+update_r_star.f
 update_surf_dr.f
 swfrac.f
-calc_r_star.f
-update_r_star.f
 

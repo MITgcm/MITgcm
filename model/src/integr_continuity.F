@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.26 2011/11/13 01:44:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.27 2011/12/08 22:35:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -296,18 +296,30 @@ C--   End bi,bj loops
 
       IF ( exactConserv .AND. myIter.NE.nIter0
      &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
-     & _EXCH_XY_RL( etaN , myThid )
+     &    _EXCH_XY_RL( etaN , myThid )
       IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
-     & _EXCH_XYZ_RL( wVel , myThid )
+     &    _EXCH_XYZ_RL( wVel , myThid )
 
 #ifdef EXACT_CONSERV
 C--   Update etaH (from etaN and dEtaHdt):
       IF (exactConserv) THEN
+c       IF ( useRealFreshWaterFlux .AND. myIter.EQ.nIter0 )
+c    &    _EXCH_XY_RL( PmEpR, myThid )
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
 #endif
         CALL UPDATE_ETAH( myTime, myIter, myThid )
       ENDIF
+
+#ifdef NONLIN_FRSURF
+# ifndef DISABLE_SIGMA_CODE
+      IF ( nonlinFreeSurf.GT.0 .AND. selectSigmaCoord.NE.0 ) THEN
+        CALL EXCH_XY_RL( dEtaHdt, myThid )
+        CALL UPDATE_ETAWS( myTime, myIter, myThid )
+      ENDIF
+# endif /* DISABLE_SIGMA_CODE */
+#endif /* NONLIN_FRSURF */
+
 #endif /* EXACT_CONSERV */
 
       RETURN
