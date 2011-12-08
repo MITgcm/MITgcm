@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1544 2011/12/06 19:31:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1545 2011/12/08 03:49:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+ - improve Gael's changes from Jan 14, 2011 "addition of an 'update' of hfacc etc.    
+   to their current value at the beginning of forward_step.F": add a new run-time 
+   switch "doResetHFactors" (default=false) and use it to do (or not) the resetting.
+ - set doResetHFactors=T in the following test exp:
+    global_ocean.90x40x15/input (rStar) & input.dwnslp (linFS),
+    global_ocean.cs32x15/input.seaice (rStar), hs94.cs-32x32x5/input.impIGW (linFS)
+    and tutorial_global_oce_in_p (nonLinFS in p)
 o pkg/ecco
   - added IES cost term
 o verification/advect_xz
