@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.5 2011/03/15 00:21:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.6 2011/12/08 22:36:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,22 +23,21 @@ C     == Global variables
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid :: my Thread Id. number
       INTEGER myThid
 
-#ifdef NONLIN_FRSURF
 
 C     !LOCAL VARIABLES:
 C     Local variables
 C     i,j,k,bi,bj  :: loop counter
-      INTEGER i,j,k,bi,bj
-      INTEGER ks
+      INTEGER i,j,bi,bj
+#ifdef NONLIN_FRSURF
+      INTEGER k, ks
       _RL hFacInfMOM, Rmin_tmp
-c     CHARACTER*(MAX_LEN_MBUF) suff
+#endif /* NONLIN_FRSURF */
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -47,12 +46,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (debugMode) CALL DEBUG_ENTER('INI_NLFS_VARS',myThid)
 #endif
 
-      hFacInfMOM = hFacInf
-
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
 C-    1rst bi,bj loop :
 
+#ifdef EXACT_CONSERV
+C-- Initialise arrays (defined within ifdef EXACT_CONSERV):
+C   note: should be done elsewhere, outside ifdef NONLIN_FRSURF bloc
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            etaHnm1(i,j,bi,bj) = 0.
+            dEtaHdt(i,j,bi,bj) = 0.
+            PmEpR  (i,j,bi,bj) = 0.
+          ENDDO
+         ENDDO
+#endif /* EXACT_CONSERV */
+
+#ifdef NONLIN_FRSURF
 C-- Initialise arrays (NLFS using r-coordinate):
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
@@ -62,7 +72,6 @@ C-- Initialise arrays (NLFS using r-coordinate):
            hFac_surfNm1C(i,j,bi,bj) = 0.
            hFac_surfNm1W(i,j,bi,bj) = 0.
            hFac_surfNm1S(i,j,bi,bj) = 0.
-           PmEpR(i,j,bi,bj) = 0.
            Rmin_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -82,9 +91,19 @@ C-- Initialise arrays (NLFS using r* coordinate):
             rStarDhCDt(i,j,bi,bj) = 0.
             rStarDhWDt(i,j,bi,bj) = 0.
             rStarDhSDt(i,j,bi,bj) = 0.
-            PmEpR(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
+
+C-- Initialise arrays (NLFS using hybrid sigma-coordinate):
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            etaHw  (i,j,bi,bj) = 0.
+            etaHs  (i,j,bi,bj) = 0.
+            dEtaWdt(i,j,bi,bj) = 0.
+            dEtaSdt(i,j,bi,bj) = 0.
+          ENDDO
+         ENDDO
+
 C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phisurf)
          DO k=1,Nr
           DO j=1-Oly,sNy+Oly
@@ -95,12 +114,16 @@ C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phis
            ENDDO
           ENDDO
          ENDDO
+#endif /* NONLIN_FRSURF */
 
 C-    end 1rst bi,bj loop.
        ENDDO
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef NONLIN_FRSURF
+
+      hFacInfMOM = hFacInf
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -128,38 +151,18 @@ C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
           ENDDO
          ENDDO
 
-C-- Set etaH @ column lateral edges
-         DO j=2-Oly,sNy+Oly
-          DO i=2-Olx,sNx+Olx
-            etaHw(i,j,bi,bj) = 0.5 _d 0
-     &                       *( etaH(i-1,j,bi,bj) + etaH(i,j,bi,bj) )
-            etaHs(i,j,bi,bj) = 0.5 _d 0
-     &                       *( etaH(i,j-1,bi,bj) + etaH(i,j,bi,bj) )
-c           etaHw(i,j,bi,bj) = 0.5 _d 0
-c    &                       *( etaH (i-1,j,bi,bj)*rA(i-1,j,bi,bj)
-c    &                        + etaH ( i ,j,bi,bj)*rA( i ,j,bi,bj)
-c    &                        )*recip_rAw(i,j,bi,bj)
-c           etaHs(i,j,bi,bj) = 0.5 _d 0
-c    &                       *( etaH (i,j-1,bi,bj)*rA(i,j-1,bi,bj)
-c    &                        + etaH (i, j ,bi,bj)*rA(i, j ,bi,bj)
-c    &                        )*recip_rAs(i,j,bi,bj)
-          ENDDO
-         ENDDO
-
 C-    end bi,bj loop.
        ENDDO
       ENDDO
 
-      CALL EXCH_UV_XY_RL( etaHw, etaHs, .FALSE., myThid )
       CALL EXCH_XY_RL( Rmin_surf, myThid )
 
+#endif /* NONLIN_FRSURF */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('INI_NLFS_VARS',myThid)
 #endif
-
-#endif /* NONLIN_FRSURF */
 
       RETURN
       END

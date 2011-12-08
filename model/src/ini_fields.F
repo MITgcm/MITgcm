@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.24 2009/12/11 13:56:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.25 2011/12/08 22:36:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,6 +52,14 @@ c       ENDIF
         CALL INI_NH_FIELDS( myThid )
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+
+#ifdef NONLIN_FRSURF
+# ifndef DISABLE_SIGMA_CODE
+      IF ( selectSigmaCoord.NE.0 ) THEN
+        CALL UPDATE_ETAWS( startTime, nIter0, myThid )
+      ENDIF
+# endif /* DISABLE_SIGMA_CODE */
+#endif /* NONLIN_FRSURF */
 
       RETURN
       END
