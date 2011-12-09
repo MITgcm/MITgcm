@@ -1,12 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1545 2011/12/08 03:49:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1546 2011/12/09 01:01:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o model/src:
- - improve Gael's changes from Jan 14, 2011 "addition of an 'update' of hfacc etc.    
-   to their current value at the beginning of forward_step.F": add a new run-time 
+  - take sigma-coords related code out of update_etah.F into new S/R UPDATE_ETAWS
+    and fix initialisation when using sigma-coords.
+o model/src:
+ - improve Gael's changes from Jan 14, 2011 "addition of an 'update' of hfacc etc.
+   to their current value at the beginning of forward_step.F": add a new run-time
    switch "doResetHFactors" (default=false) and use it to do (or not) the resetting.
  - set doResetHFactors=T in the following test exp:
     global_ocean.90x40x15/input (rStar) & input.dwnslp (linFS),
