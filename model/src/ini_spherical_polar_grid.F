@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.27 2010/04/17 18:25:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.28 2011/12/11 21:58:02 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-#undef  USE_BACKWARD_COMPATIBLE_GRID
+#undef USE_BACKWARD_COMPATIBLE_GRID
 
 CBOP
 C     !ROUTINE: INI_SPHERICAL_POLAR_GRID
@@ -170,11 +170,7 @@ C         by formula
           lat = yC(i,j,bi,bj)
           dlon = delX( iGl(i,bi) )
           dlat = delY( jGl(j,bj) )
-          dxF(i,j,bi,bj) = rSphere*COS(deg2rad*lat)*dlon*deg2rad
-#ifdef    USE_BACKWARD_COMPATIBLE_GRID
-          dxF(i,j,bi,bj) = delX(iGl(i,bi))*deg2rad*rSphere*
-     &                     COS(yC(i,j,bi,bj)*deg2rad)
-#endif    /* USE_BACKWARD_COMPATIBLE_GRID */
+          dxF(i,j,bi,bj) = rSphere*COS(lat*deg2rad)*dlon*deg2rad
           dyF(i,j,bi,bj) = rSphere*dlat*deg2rad
          ENDDO
         ENDDO
@@ -190,7 +186,7 @@ C         by formula
           dlon = delX( iGl(i,bi) )
           dlat = delY( jGl(j,bj) )
           dxG(i,j,bi,bj) = rSphere*COS(deg2rad*lat)*dlon*deg2rad
-          if (dxG(i,j,bi,bj).LT.1.) dxG(i,j,bi,bj)=0.
+          IF (dxG(i,j,bi,bj).LT.1.) dxG(i,j,bi,bj)=0.
           dyG(i,j,bi,bj) = rSphere*dlat*deg2rad
          ENDDO
         ENDDO
@@ -259,12 +255,12 @@ C--     Calculate vertical face area (tracer cells)
           dlat=delY( jGl(j,bj) )
           rA(i,j,bi,bj) = rSphere*rSphere*dlon*deg2rad
      &        *ABS( SIN((lat+dlat)*deg2rad)-SIN(lat*deg2rad) )
-#ifdef    USE_BACKWARD_COMPATIBLE_GRID
-          lat=yC(i,j,bi,bj)-delY( jGl(j,bj) )*0.5 _d 0
-          lon=yC(i,j,bi,bj)+delY( jGl(j,bj) )*0.5 _d 0
+#ifdef USE_BACKWARD_COMPATIBLE_GRID
+          lat = yC(i,j,bi,bj)-delY( jGl(j,bj) )*0.5 _d 0
+          dlat= yC(i,j,bi,bj)+delY( jGl(j,bj) )*0.5 _d 0
           rA(i,j,bi,bj) = dyF(i,j,bi,bj)
-     &    *rSphere*(SIN(lon*deg2rad)-SIN(lat*deg2rad))
-#endif    /* USE_BACKWARD_COMPATIBLE_GRID */
+     &    *rSphere*(SIN(dlat*deg2rad)-SIN(lat*deg2rad))
+#endif /* USE_BACKWARD_COMPATIBLE_GRID */
          ENDDO
         ENDDO
 
@@ -289,14 +285,11 @@ C         by formula
           lat=yC(i,j,bi,bj)
           dlon=delX( iGl(i,bi) )
           dlat=0.5 _d 0*( delY( jGl(j,bj) ) + delY( jGl(j-1,bj) ) )
+#ifdef USE_BACKWARD_COMPATIBLE_GRID
+          dlat= delY( jGl(j,bj) )
+#endif /* USE_BACKWARD_COMPATIBLE_GRID */
           rAs(i,j,bi,bj) = rSphere*rSphere*dlon*deg2rad
      &        *ABS( SIN(lat*deg2rad)-SIN((lat-dlat)*deg2rad) )
-#ifdef    USE_BACKWARD_COMPATIBLE_GRID
-          lon=yC(i,j,bi,bj)-delY( jGl(j,bj) )
-          lat=yC(i,j,bi,bj)
-          rAs(i,j,bi,bj) = rSphere*delX(iGl(i,bi))*deg2rad
-     &    *rSphere*(SIN(lat*deg2rad)-SIN(lon*deg2rad))
-#endif    /* USE_BACKWARD_COMPATIBLE_GRID */
           IF (ABS(lat).GT.90..OR.ABS(lat-dlat).GT.90.) rAs(i,j,bi,bj)=0.
          ENDDO
         ENDDO
@@ -328,27 +321,25 @@ C--     Calculate trigonometric terms & grid orientation:
 
 C--     Cosine(lat) scaling
         DO j=1-OLy,sNy+OLy
-         jG = myYGlobalLo + (bj-1)*sNy + j-1
-         jG = MIN(MAX(1,jG),Ny)
+         i = 1
          IF (cosPower.NE.0.) THEN
-          cosFacU(j,bi,bj)=COS(yC(1,j,bi,bj)*deg2rad)
-     &                    **cosPower
-          cosFacV(j,bi,bj)=COS((yC(1,j,bi,bj)-0.5*delY(jG))*deg2rad)
-     &                    **cosPower
-          cosFacU(j,bi,bj)=ABS(cosFacU(j,bi,bj))
-          cosFacV(j,bi,bj)=ABS(cosFacV(j,bi,bj))
-          sqcosFacU(j,bi,bj)=SQRT(cosFacU(j,bi,bj))
-          sqcosFacV(j,bi,bj)=SQRT(cosFacV(j,bi,bj))
+          lat = 0.5 _d 0*(yGloc(i,j)+yGloc(i,j+1))
+          cosFacU(j,bi,bj) = ABS( COS(lat*deg2rad) )**cosPower
+          lat = 0.5 _d 0*(yGloc(i,j)+yGloc(i+1,j))
+          cosFacV(j,bi,bj) = ABS( COS(lat*deg2rad) )**cosPower
+          sqcosFacU(j,bi,bj) = SQRT(cosFacU(j,bi,bj))
+          sqcosFacV(j,bi,bj) = SQRT(cosFacV(j,bi,bj))
          ELSE
-          cosFacU(j,bi,bj)=1.
-          cosFacV(j,bi,bj)=1.
+          cosFacU(j,bi,bj) = 1.
+          cosFacV(j,bi,bj) = 1.
           sqcosFacU(j,bi,bj)=1.
           sqcosFacV(j,bi,bj)=1.
          ENDIF
         ENDDO
 
-       ENDDO ! bi
-      ENDDO ! bj
+C--   end bi,bj loops
+       ENDDO
+      ENDDO
 
       IF ( rotateGrid ) THEN
        CALL ROTATE_SPHERICAL_POLAR_GRID( xC, yC, myThid )
