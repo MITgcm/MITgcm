@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.8 2010/01/21 00:13:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.9 2011/12/12 19:05:41 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -35,8 +35,14 @@ C-- size for MITgcm & Physics package :
 C-- MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "DYNVARS.h"
+C_EqCh: start
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+#endif /* ALLOW_EXCH2 */
+#include "SET_GRID.h"
+C_EqCh: end
 #include "GRID.h"
+c #include "DYNVARS.h"
 c #include "SURFACE.h"
 
 C-- Physics package
@@ -218,9 +224,15 @@ C-    Surface Albedo : (from F.M. FORDATE S/R)
 c_FM    DALB=ALBICE-ALBSEA
         RSD=1. _d 0/SDALB
         ALPHA= 2. _d 0*PI*(TYEAR+10. _d 0/365. _d 0)
+#ifdef ALLOW_INSOLATION
+        ZS = - SIN(OBLIQ * deg2rad) * COS(ALPHA)
+        ZC =   ASIN( ZS )
+        ZC =   COS(ZC)
+#else /* ALLOW_INSOLATION */
         RZEN = COS(ALPHA) * ( -23.45 _d 0 * deg2rad)
         ZC = COS(RZEN)
         ZS = SIN(RZEN)
+#endif /* ALLOW_INSOLATION */
         DO j=1,sNy
          DO i=1,sNx
 c_FM      SNOWC=MIN(1.,RSD*SNOW1(I,J))
