@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.255 2011/12/07 22:08:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.256 2011/12/12 18:58:51 jmc Exp $
 C $Name:  $
 C
 
@@ -518,7 +518,7 @@ C           defaults to 0.51 but can be set at runtime.
 C     delR      :: Vertical grid spacing ( units of r ).
 C     delRc     :: Vertical grid spacing between cell centers (r unit).
 C     delX      :: Separation between cell faces (m) or (deg), depending
-C     delY        on input flags.
+C     delY         on input flags. Note: moved to header file SET_GRID.h
 C     xgOrigin   :: Origin of the X-axis (Cartesian Grid) / Longitude of Western
 C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
 C                :: parameter but it makes geographical references simple.)
@@ -720,7 +720,7 @@ C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
-     & delR, delRc, delX, delY, xgOrigin, ygOrigin,
+     & delR, delRc, xgOrigin, ygOrigin,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
      & rSphere, recip_rSphere, radius_fromHorizGrid,
@@ -769,8 +769,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL cg2dpcOffDFac
       _RL delR(Nr)
       _RL delRc(Nr+1)
-      _RL delX(Nx)
-      _RL delY(Ny)
       _RL xgOrigin
       _RL ygOrigin
       _RL deltaT
