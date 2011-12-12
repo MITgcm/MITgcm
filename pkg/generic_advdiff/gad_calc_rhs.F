@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.58 2011/12/01 14:16:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.59 2011/12/12 15:33:53 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -519,7 +519,7 @@ cph with limiters in forward, but without limiters in reverse.
 C-     add the advective flux to fVerT
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)
+          fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)*maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
@@ -716,18 +716,19 @@ coj   ... and reapply
 
 C--   Divergence of fluxes
 C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unchanged
+C     for Stevens OBC: keep only vertical diffusive contribution on boundaries
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         gTracer(i,j,k,bi,bj)=gTracer(i,j,k,bi,bj)
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
-     &   *( (fZon(i+1,j)-fZon(i,j))
-     &     +(fMer(i,j+1)-fMer(i,j))
+     &   *( (fZon(i+1,j)-fZon(i,j))*maskInC(i,j,bi,bj)
+     &     +(fMer(i,j+1)-fMer(i,j))*maskInC(i,j,bi,bj)
      &     +(fVerT(i,j,kDown)-fVerT(i,j,kUp))*rkSign
      &     -localT(i,j)*( (uTrans(i+1,j)-uTrans(i,j))*advFac
      &                   +(vTrans(i,j+1)-vTrans(i,j))*advFac
      &                   +(rTransKp1(i,j)-rTrans(i,j))*rAdvFac
-     &                  )
+     &                  )*maskInC(i,j,bi,bj)
      &    )
        ENDDO
       ENDDO

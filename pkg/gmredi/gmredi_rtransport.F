@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.16 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.17 2011/12/12 15:34:08 mlosch Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -130,11 +130,11 @@ C-      Off-diagonal components of vertical flux
        DO i=iMin,iMax
         IF ( tracerIdentity .LT. GAD_TR1 ) THEN
          df(i,j) = df(i,j)
-     &      - _rA(i,j,bi,bj)
+     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
      &        *( Kwx(i,j,k,bi,bj)*dTdx(i,j)+Kwy(i,j,k,bi,bj)*dTdy(i,j) )
         ELSE
          df(i,j) = df(i,j)
-     &      - _rA(i,j,bi,bj)
+     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
 #ifdef ALLOW_LONGSTEP
      &    *(LS_Kwx(i,j,k,bi,bj)*dTdx(i,j)+LS_Kwy(i,j,k,bi,bj)*dTdy(i,j))
 #else
@@ -165,6 +165,7 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
          df(i,j) = df(i,j)
      &    +rTrans(i,j)*op5
      &                *(Tracer(i,j,k,bi,bj)+Tracer(i,j,k-1,bi,bj))
+     &        *maskInC(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -182,6 +183,7 @@ c        df(i,j) = df(i,j) - _rA(i,j,bi,bj)
 c    &    *maskUp(i,j)*VisbeckK(i,j,bi,bj)*Kwz(i,j,k,bi,bj)
 c    &    *recip_drC(k)*rkfac
 c    &    *(Tracer(i,j,k-1,bi,bj)-Tracer(i,j,k,bi,bj))
+c    &    *maskInC(i,j,bi,bj)
 c       ENDDO
 c      ENDDO
 c     ENDIF

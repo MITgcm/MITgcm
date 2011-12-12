@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.69 2011/06/24 22:18:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.70 2011/12/12 15:33:53 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -807,7 +807,7 @@ C--   Divergence of vertical fluxes
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
      &         -tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))
-     &        )*rkSign
+     &        )*rkSign*maskInC(i,j,bi,bj)
           gTracer(i,j,k,bi,bj)=
      &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
          ENDDO
