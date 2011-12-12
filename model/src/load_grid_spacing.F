@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.7 2010/12/27 23:26:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.8 2011/12/12 19:00:10 jmc Exp $
 C $Name:  $
 
-c #include "PACKAGES_CONFIG.h"
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif /* ALLOW_EXCH2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -18,7 +21,12 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+#endif /* ALLOW_EXCH2 */
 #include "GRID.h"
+#include "SET_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid    :: my Thread Id. number
@@ -31,18 +39,29 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     msgBuf    :: Informational/error message buffer
+C     delYsum   :: delY full-domain sum
       INTEGER iLen
       INTEGER i, j, n
+      INTEGER gridNx, gridNy
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL delYsum
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_EXCH2
+      gridNx = exch2_mydNx(1)
+      gridNy = exch2_mydNy(1)
+#else /* ALLOW_EXCH2 */
+      gridNx = Nx
+      gridNy = Ny
+#endif /* ALLOW_EXCH2 */
 
       _BEGIN_MASTER( myThid )
 
 C--   X coordinate
       IF ( delXFile .NE. ' ' ) THEN
         iLen = ILNBLNK(delXFile)
-        CALL READ_GLVEC_RL( delXFile, ' ', delX, Nx, 1, myThid )
+        CALL READ_GLVEC_RL( delXFile, ' ', delX, gridNx, 1, myThid )
         WRITE(msgBuf,'(3A)') 'S/R LOAD_GRID_SPACING:',
      &    ' delX loaded from file: ', delXFile(1:iLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -52,7 +71,7 @@ C--   X coordinate
 C--   Y coordinate
       IF ( delYFile .NE. ' ' ) THEN
         iLen = ILNBLNK(delYFile)
-        CALL READ_GLVEC_RL( delYFile, ' ', delY, Ny, 1, myThid )
+        CALL READ_GLVEC_RL( delYFile, ' ', delY, gridNy, 1, myThid )
         WRITE(msgBuf,'(3A)') 'S/R LOAD_GRID_SPACING:',
      &    ' delY loaded from file: ', delYFile(1:iLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -97,7 +116,7 @@ C       loading delX,delY (and before calling any of these S/R).
 
 C--   Check delX grid-spacing:
        n = 0
-       DO i=1,Nx
+       DO i=1,gridNx
 C-    check that delX has been set
         IF ( delX(i).EQ.UNSET_RL ) THEN
          n = n+1
@@ -122,7 +141,7 @@ C-    check that delX is > 0
 
 C--   Check delY grid-spacing:
        n = 0
-       DO j=1,Ny
+       DO j=1,gridNy
 C-    check that delY has been set
         IF ( delY(j).EQ.UNSET_RL ) THEN
          n = n+1
@@ -145,6 +164,17 @@ C-    check that delY is > 0
          STOP 'ABNORMAL END: S/R LOAD_GRID_SPACING'
        ENDIF
 C--   end of grid-spacing check (not usingCurvilinearGrid)
+      ENDIF
+
+C--   Set default (=whole domain) for where relaxation to climatology applies
+      IF ( usingCartesianGrid .OR. usingSphericalPolarGrid ) THEN
+        delYsum = 0.
+        DO j=1,gridNy
+          delYsum = delYsum + delY(j)
+        ENDDO
+        IF ( latBandClimRelax.EQ.UNSET_RL ) THEN
+          latBandClimRelax = delYsum*3. _d 0
+        ENDIF
       ENDIF
 
       _END_MASTER(myThid)
