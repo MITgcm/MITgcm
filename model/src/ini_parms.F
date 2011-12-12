@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.242 2011/12/07 23:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.243 2011/12/12 18:59:27 jmc Exp $
 C $Name:  $
 
-c #include "PACKAGES_CONFIG.h"
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif /* ALLOW_EXCH2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -18,6 +21,11 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+#endif /* ALLOW_EXCH2 */
+#include "SET_GRID.h"
 #include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -46,6 +54,7 @@ C     xxxDefault :: Default value for variable xxx
       LOGICAL SadournyCoriolis
       LOGICAL forcing_In_AB
       INTEGER goptCount
+      INTEGER gridNx, gridNy
       INTEGER k, i, j, iUnit
       INTEGER errIO
 C     Default values for variables which have vertical coordinate system
@@ -267,6 +276,14 @@ C--   Input files
      & mdsioLocalDir, adTapeDir,
      & the_run_name
 CEOP
+
+#ifdef ALLOW_EXCH2
+      gridNx = exch2_mydNx(1)
+      gridNy = exch2_mydNy(1)
+#else /* ALLOW_EXCH2 */
+      gridNx = Nx
+      gridNy = Ny
+#endif /* ALLOW_EXCH2 */
 
       _BEGIN_MASTER(myThid)
 
@@ -1032,7 +1049,7 @@ C     X coordinate : Check for multiple definitions
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( dxSpacing .NE. UNSET_RL ) THEN
-       DO i=1,Nx
+       DO i=1,gridNx
         delX(i) = dxSpacing
        ENDDO
       ENDIF
@@ -1048,7 +1065,7 @@ C     Y coordinate : Check for multiple definitions
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( dySpacing .NE. UNSET_RL ) THEN
-       DO j=1,Ny
+       DO j=1,gridNy
         delY(j) = dySpacing
        ENDDO
       ENDIF

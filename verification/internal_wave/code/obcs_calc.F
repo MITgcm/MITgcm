@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.8 2011/05/24 20:34:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.9 2011/12/12 19:04:25 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -17,6 +17,10 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+#endif /* ALLOW_EXCH2 */
+#include "SET_GRID.h"
 #include "GRID.h"
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"

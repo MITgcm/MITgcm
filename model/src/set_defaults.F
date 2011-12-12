@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.156 2011/12/07 23:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.157 2011/12/12 18:59:27 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -20,8 +21,10 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-Cml#include "EOS.h"
-c#include "GRID.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+#endif /* ALLOW_EXCH2 */
+#include "SET_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id. Number
@@ -63,10 +66,10 @@ C-    Horizontal gridding
       deepAtmosphere      = .FALSE.
       xgOrigin            = UNSET_RL
       ygOrigin            = UNSET_RL
-      DO i=1,Nx
+      DO i=1,grid_maxNx
        delX(i)            = UNSET_RL
       ENDDO
-      DO j=1,Ny
+      DO j=1,grid_maxNy
        delY(j)            = UNSET_RL
       ENDDO
 C     In cartesian coords distances are in metres

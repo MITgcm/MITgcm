@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.6 2011/08/28 21:47:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.7 2011/12/12 19:03:09 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif /* ALLOW_EXCH2 */
 
 CBOP 0
 C !ROUTINE: EBM_LOAD_CLIMATOLOGY
@@ -18,9 +21,14 @@ C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+#endif /* ALLOW_EXCH2 */
+#include "GRID.h"
+#include "SET_GRID.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_EBM
 # include "EBM.h"
@@ -33,8 +41,15 @@ CEOP
 
 #ifdef ALLOW_EBM
 C     !LOCAL VARIABLES:
+      INTEGER gridNy
       INTEGER bi,bj,i,j
       _RL distY,tauX,tauMax,lY
+
+#ifdef ALLOW_EXCH2
+      gridNy = exch2_mydNy(1)
+#else /* ALLOW_EXCH2 */
+      gridNy = Ny
+#endif /* ALLOW_EXCH2 */
 
       IF ( RunoffFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RS( RunoffFile, ' ', Run, 0, myThid )
@@ -46,7 +61,7 @@ C      In spherical polar yc, delY and ly are degrees
        tauMax = 0.1 _d 0
        tauMax = 1.0 * 1./(delR(1)*rhonil)
        lY = 0. _d 0
-       DO j=1,Ny-1
+       DO j=1,gridNy-1
         lY = lY + delY(j)
        ENDDO
        DO bj = myByLo(myThid), myByHi(myThid)

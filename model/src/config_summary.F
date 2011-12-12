@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.132 2011/12/07 23:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.133 2011/12/12 18:59:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif /* ALLOW_EXCH2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -25,8 +28,13 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+#endif /* ALLOW_EXCH2 */
 #include "EOS.h"
 #include "GRID.h"
+#include "SET_GRID.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -54,7 +62,7 @@ C     i, k   :: Loop counters.
       INTEGER buffI(1)
       INTEGER coordLine
       INTEGER tileLine
-
+      INTEGER gridNx, gridNy
 
       _BARRIER
       _BEGIN_MASTER(myThid)
@@ -63,6 +71,13 @@ C     i, k   :: Loop counters.
       rUnits = ' m'
       endList = '    ;     '
       IF ( usingPCoords ) rUnits = 'Pa'
+#ifdef ALLOW_EXCH2
+      gridNx = exch2_mydNx(1)
+      gridNy = exch2_mydNy(1)
+#else /* ALLOW_EXCH2 */
+      gridNx = Nx
+      gridNy = Ny
+#endif /* ALLOW_EXCH2 */
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
@@ -666,9 +681,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &  ' /* vertical increment of Hybrid-sigma Coeff. (-) */')
       ENDIF
       IF ( .NOT.usingCurvilinearGrid ) THEN
-       CALL WRITE_1D_RL( delX, Nx, INDEX_I, 'delX = ',
+       CALL WRITE_1D_RL( delX, gridNx, INDEX_I, 'delX = ',
      &  ' /* U spacing ( m - cartesian, degrees - spherical ) */')
-       CALL WRITE_1D_RL( delY, Ny, INDEX_J, 'delY = ',
+       CALL WRITE_1D_RL( delY, gridNy, INDEX_J, 'delY = ',
      &  ' /* V spacing ( m - cartesian, degrees - spherical ) */')
       ENDIF
       CALL WRITE_0D_RL( xgOrigin, INDEX_NONE,'xgOrigin = ',

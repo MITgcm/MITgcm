@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.67 2011/10/12 02:58:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.68 2011/12/12 19:02:45 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif /* ALLOW_EXCH2 */
 
       SUBROUTINE EXF_READPARMS( myThid )
 
@@ -46,6 +49,13 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef USE_EXF_INTERPOLATION
+# ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+# endif /* ALLOW_EXCH2 */
+# include "SET_GRID.h"
+#endif /* USE_EXF_INTERPOLATION */
 c#include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
@@ -57,11 +67,12 @@ c     == routine arguments ==
 c     == local variables ==
 
 #ifdef USE_EXF_INTERPOLATION
+      INTEGER gridNx, gridNy
       integer i
-#endif
+#endif /* USE_EXF_INTERPOLATION */
       integer iUnit
 
-      character*(max_len_mbuf) msgbuf
+      character*(max_len_mbuf) msgBuf
 
 c     == end of interface ==
 
@@ -224,6 +235,16 @@ c     Surface flux data.
      &    siobEstartdate1,    siobEstartdate2,   siobEperiod,
      &    siobWstartdate1,    siobWstartdate2,   siobWperiod
 #endif /* ALLOW_OBCS */
+
+#ifdef USE_EXF_INTERPOLATION
+# ifdef ALLOW_EXCH2
+      gridNx = exch2_mydNx(1)
+      gridNy = exch2_mydNy(1)
+# else /* ALLOW_EXCH2 */
+      gridNx = Nx
+      gridNy = Ny
+# endif /* ALLOW_EXCH2 */
+#endif /* USE_EXF_INTERPOLATION */
 
       _BEGIN_MASTER(mythid)
 
@@ -636,44 +657,44 @@ c     Output scaling factors.
       lwdown_lat0    = ygOrigin + delY(1)*exf_half
       apressure_lat0 = ygOrigin + delY(1)*exf_half
       areamask_lat0  = ygOrigin + delY(1)*exf_half
-      ustress_nlon   = Nx
-      ustress_nlat   = Ny
-      vstress_nlon   = Nx
-      vstress_nlat   = Ny
-      hflux_nlon     = Nx
-      hflux_nlat     = Ny
-      sflux_nlon     = Nx
-      sflux_nlat     = Ny
-      swflux_nlon    = Nx
-      swflux_nlat    = Ny
-      runoff_nlon    = Nx
-      runoff_nlat    = Ny
-      atemp_nlon     = Nx
-      atemp_nlat     = Ny
-      aqh_nlon       = Nx
-      aqh_nlat       = Ny
-      evap_nlon      = Nx
-      evap_nlat      = Ny
-      precip_nlon    = Nx
-      snowprecip_nlon= Nx
-      precip_nlat    = Ny
-      snowprecip_nlat= Ny
-      uwind_nlon     = Nx
-      uwind_nlat     = Ny
-      vwind_nlon     = Nx
-      vwind_nlat     = Ny
-      wspeed_nlon    = Nx
-      wspeed_nlat    = Ny
-      lwflux_nlon    = Nx
-      lwflux_nlat    = Ny
-      swdown_nlon    = Nx
-      swdown_nlat    = Ny
-      lwdown_nlon    = Nx
-      lwdown_nlat    = Ny
-      apressure_nlon = Nx
-      apressure_nlat = Ny
-      areamask_nlon  = Nx
-      areamask_nlat  = Ny
+      ustress_nlon   = gridNx
+      ustress_nlat   = gridNy
+      vstress_nlon   = gridNx
+      vstress_nlat   = gridNy
+      hflux_nlon     = gridNx
+      hflux_nlat     = gridNy
+      sflux_nlon     = gridNx
+      sflux_nlat     = gridNy
+      swflux_nlon    = gridNx
+      swflux_nlat    = gridNy
+      runoff_nlon    = gridNx
+      runoff_nlat    = gridNy
+      atemp_nlon     = gridNx
+      atemp_nlat     = gridNy
+      aqh_nlon       = gridNx
+      aqh_nlat       = gridNy
+      evap_nlon      = gridNx
+      evap_nlat      = gridNy
+      precip_nlon    = gridNx
+      snowprecip_nlon= gridNx
+      precip_nlat    = gridNy
+      snowprecip_nlat= gridNy
+      uwind_nlon     = gridNx
+      uwind_nlat     = gridNy
+      vwind_nlon     = gridNx
+      vwind_nlat     = gridNy
+      wspeed_nlon    = gridNx
+      wspeed_nlat    = gridNy
+      lwflux_nlon    = gridNx
+      lwflux_nlat    = gridNy
+      swdown_nlon    = gridNx
+      swdown_nlat    = gridNy
+      lwdown_nlon    = gridNx
+      lwdown_nlat    = gridNy
+      apressure_nlon = gridNx
+      apressure_nlat = gridNy
+      areamask_nlon  = gridNx
+      areamask_nlat  = gridNy
       ustress_lon_inc   = delX(1)
       vstress_lon_inc   = delX(1)
       hflux_lon_inc     = delX(1)
@@ -697,25 +718,25 @@ c     Output scaling factors.
       climsss_lon0    = xgOrigin + delX(1)*exf_half
       climsst_lat0    = ygOrigin + delY(1)*exf_half
       climsss_lat0    = ygOrigin + delY(1)*exf_half
-      climsst_nlon    = Nx
-      climsst_nlat    = Ny
-      climsss_nlon    = Nx
-      climsss_nlat    = Ny
+      climsst_nlon    = gridNx
+      climsst_nlat    = gridNy
+      climsss_nlon    = gridNx
+      climsss_nlat    = gridNy
       climsst_lon_inc = delX(1)
       climsss_lon_inc = delX(1)
       climustr_lon0   = xgOrigin
       climvstr_lon0   = xgOrigin + delX(1)*exf_half
       climustr_lat0   = ygOrigin + delY(1)*exf_half
       climvstr_lat0   = ygOrigin
-      climustr_nlon   = Nx
-      climustr_nlat   = Ny
-      climvstr_nlon   = Nx
-      climvstr_nlat   = Ny
+      climustr_nlon   = gridNx
+      climustr_nlat   = gridNy
+      climvstr_nlon   = gridNx
+      climvstr_nlat   = gridNy
       climustr_lon_inc   = delX(1)
       climvstr_lon_inc   = delX(1)
 
       DO i=1,MAX_LAT_INC
-         IF (i.LT.Ny) THEN
+         IF (i.LT.gridNy) THEN
             vstress_lat_inc(i)   =  delY(i)
             vwind_lat_inc(i)     =  delY(i)
             wspeed_lat_inc(i)    =  delY(i)
