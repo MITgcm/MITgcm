@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.28 2010/04/27 18:41:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.29 2011/12/13 20:57:45 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -88,6 +88,11 @@ c find global surface averages
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 ccccccccccccccccccccccccccccccccccccccccccc
 
+#ifdef ALLOW_DARWIN
+       IF ( useDARWIN ) THEN
+         CALL DARWIN_cons( myIter, myTime, myThid )
+       ENDIF
+#endif
 
 ccccccccccccccccccccccccc
 c chemical forcing      c
@@ -153,21 +158,25 @@ c articficial supply of nutrients
      &                          myIter,myTime,myThid)
 #endif
 ccccccccccccccc
-          call DARWIN_cons(myIter,myTime,myThid)
 C darwin_forcing operates on bi,bj part only, but needs to get full
 C array because of last (iPtr) index
           call DARWIN_Forcing(  Ptracer(1-Olx,1-Oly,1,1,1,1),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-          call DARWIN_cons(myIter,myTime,myThid)
-#ifdef ALLOW_CARBON
-       CALL DIC_ATMOS( 1, myTime, myIter, myThid )
-#endif
         ENDIF
-#endif
+#endif /* ALLOW_DARWIN */
 
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DARWIN
+       IF ( useDARWIN ) THEN
+         CALL DARWIN_cons( myIter, myTime, myThid )
+#ifdef ALLOW_CARBON
+         CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+#endif
+       ENDIF
+#endif /* ALLOW_DARWIN */
 
 #ifdef ALLOW_DIC
        CALL DIC_ATMOS( 1, myTime, myIter, myThid )
