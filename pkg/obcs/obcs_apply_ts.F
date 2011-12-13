@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.7 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.8 2011/12/13 15:15:28 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -23,17 +23,20 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_OBCS_STEVENS
+#include "OBCS_PARAMS.h"
+#endif /* ALLOW_OBCS_STEVENS */
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C    bi, bj   :: indices of current tile
-C    kArg     :: index of current level which OBC apply to
-C                or if zeros, apply to all levels
-C    tFld     :: temperature field
-C    sFld     :: salinity field
-C    myThid   :: my Thread Id number
+C     bi, bj   :: indices of current tile
+C     kArg     :: index of current level which OBC apply to
+C                 or if zeros, apply to all levels
+C     tFld     :: temperature field
+C     sFld     :: salinity field
+C     myThid   :: my Thread Id number
 c     INTEGER biArg, bjArg
       INTEGER bi, bj
       INTEGER kArg
@@ -75,30 +78,68 @@ C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-         DO i=1-Olx,sNx+Olx
-          Jobc = OB_Jn(i,bi,bj)
-          IF (Jobc.NE.0) THEN
-           DO k = kLo,kHi
-            tFld(i,Jobc,k,bi,bj) = OBNt(i,k,bi,bj)
-            sFld(i,Jobc,k,bi,bj) = OBNs(i,k,bi,bj)
-           ENDDO
-          ENDIF
-         ENDDO
+# ifdef ALLOW_OBCS_STEVENS	
+         IF ( useStevensNorth ) THEN
+          DO i=1-Olx,sNx+Olx
+C     add tendency term instead of overwriting field with boundary value
+           Jobc = OB_Jn(i,bi,bj)
+           IF (Jobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(i,Jobc,k,bi,bj) = tFld(i,Jobc,k,bi,bj) 
+     &            + dTtracerLev(k)*OBNt(i,k,bi,bj)
+             sFld(i,Jobc,k,bi,bj) = sFld(i,Jobc,k,bi,bj) 
+     &            + dTtracerLev(k)*OBNs(i,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ELSE
+# else
+         IF ( .TRUE. ) THEN
+# endif /* ALLOW_OBCS_STEVENS */
+          DO i=1-Olx,sNx+Olx
+           Jobc = OB_Jn(i,bi,bj)
+           IF (Jobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(i,Jobc,k,bi,bj) = OBNt(i,k,bi,bj)
+             sFld(i,Jobc,k,bi,bj) = OBNs(i,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ENDIF
         ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-         DO i=1-Olx,sNx+Olx
-          Jobc = OB_Js(i,bi,bj)
-          IF (Jobc.NE.0) THEN
-           DO k = kLo,kHi
-            tFld(i,Jobc,k,bi,bj) = OBSt(i,k,bi,bj)
-            sFld(i,Jobc,k,bi,bj) = OBSs(i,k,bi,bj)
-           ENDDO
-          ENDIF
-         ENDDO
+# ifdef ALLOW_OBCS_STEVENS	
+         IF ( useStevensSouth ) THEN
+C     add tendency term instead of overwriting field with boundary value
+          DO i=1-Olx,sNx+Olx
+           Jobc = OB_Js(i,bi,bj)
+           IF (Jobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(i,Jobc,k,bi,bj) = tFld(i,Jobc,k,bi,bj) 
+     &            + dTtracerLev(k)*OBSt(i,k,bi,bj)
+             sFld(i,Jobc,k,bi,bj) = sFld(i,Jobc,k,bi,bj) 
+     &            + dTtracerLev(k)*OBSs(i,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ELSE
+# else
+         IF ( .TRUE. ) THEN
+# endif /* ALLOW_OBCS_STEVENS */
+          DO i=1-Olx,sNx+Olx
+           Jobc = OB_Js(i,bi,bj)
+           IF (Jobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(i,Jobc,k,bi,bj) = OBSt(i,k,bi,bj)
+             sFld(i,Jobc,k,bi,bj) = OBSs(i,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ENDIF
         ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
@@ -106,30 +147,68 @@ C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-         DO j=1-Oly,sNy+Oly
-          Iobc = OB_Ie(j,bi,bj)
-          IF (Iobc.NE.0) THEN
-           DO k = kLo,kHi
-            tFld(Iobc,j,k,bi,bj) = OBEt(j,k,bi,bj)
-            sFld(Iobc,j,k,bi,bj) = OBEs(j,k,bi,bj)
-           ENDDO
-          ENDIF
-         ENDDO
+# ifdef ALLOW_OBCS_STEVENS	
+         IF ( useStevensEast ) THEN
+C     add tendency term instead of overwriting field with boundary value
+          DO j=1-Oly,sNy+Oly
+           Iobc = OB_Ie(j,bi,bj)
+           IF (Iobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(Iobc,j,k,bi,bj) = tFld(Iobc,j,k,bi,bj) 
+     &            + dTtracerLev(k)*OBEt(j,k,bi,bj)
+             sFld(Iobc,j,k,bi,bj) = sFld(Iobc,j,k,bi,bj) 
+     &            + dTtracerLev(k)*OBEs(j,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ELSE
+# else
+         IF ( .TRUE. ) THEN
+# endif /* ALLOW_OBCS_STEVENS */
+          DO j=1-Oly,sNy+Oly
+           Iobc = OB_Ie(j,bi,bj)
+           IF (Iobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(Iobc,j,k,bi,bj) = OBEt(j,k,bi,bj)
+             sFld(Iobc,j,k,bi,bj) = OBEs(j,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ENDIF
         ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-         DO j=1-Oly,sNy+Oly
-          Iobc = OB_Iw(j,bi,bj)
-          IF (Iobc.NE.0) THEN
-           DO k = kLo,kHi
-            tFld(Iobc,j,k,bi,bj) = OBWt(j,k,bi,bj)
-            sFld(Iobc,j,k,bi,bj) = OBWs(j,k,bi,bj)
-           ENDDO
-          ENDIF
-         ENDDO
+# ifdef ALLOW_OBCS_STEVENS	
+         IF ( useStevensWest ) THEN
+C     add tendency term instead of overwriting field with boundary value
+          DO j=1-Oly,sNy+Oly
+           Iobc = OB_Iw(j,bi,bj)
+           IF (Iobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(Iobc,j,k,bi,bj) = tFld(Iobc,j,k,bi,bj) 
+     &            + dTtracerLev(k)*OBWt(j,k,bi,bj)
+             sFld(Iobc,j,k,bi,bj) = sFld(Iobc,j,k,bi,bj) 
+     &            + dTtracerLev(k)*OBWs(j,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ELSE
+# else
+         IF ( .TRUE. ) THEN
+# endif /* ALLOW_OBCS_STEVENS */
+          DO j=1-Oly,sNy+Oly
+           Iobc = OB_Iw(j,bi,bj)
+           IF (Iobc.NE.0) THEN
+            DO k = kLo,kHi
+             tFld(Iobc,j,k,bi,bj) = OBWt(j,k,bi,bj)
+             sFld(Iobc,j,k,bi,bj) = OBWs(j,k,bi,bj)
+            ENDDO
+           ENDIF
+          ENDDO
+         ENDIF
         ENDIF
 #endif /* ALLOW_OBCS_WEST */
 

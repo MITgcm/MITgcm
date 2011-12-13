@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.10 2011/12/02 15:27:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.11 2011/12/13 15:15:28 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -258,11 +258,9 @@ C     Theta first:
      &        MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBEt(J,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
-     &          * _maskW(I,J,K,bi,bj)
-     &          * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBEt(J,K,bi,bj) = _maskW(I,J,K,bi,bj) * (
      &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &          *(theta(I,J,K,bi,bj)-theta(I-1,J,K,bi,bj))
      &          * _recip_dxC(I,J,bi,bj)
@@ -275,14 +273,12 @@ C     Now salinity:
             uPhase = cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              uPhase = MIN( cflMer(J,K),
-     &            MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &           ) * pFac
+     &        MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBEs(J,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
-     &          * _maskW(I,J,K,bi,bj)
-     &          * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBEs(J,K,bi,bj) = _maskW(I,J,K,bi,bj) * (
      &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &          *(salt(I,J,K,bi,bj)-salt(I-1,J,K,bi,bj))
      &          * _recip_dxC(I,J,bi,bj)
@@ -397,14 +393,12 @@ C     Theta first:
             uPhase = -cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              uPhase = MAX( -cflMer(J,K),
-     &            MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &         ) * pFac
+     &        MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBWt(J,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
-     &        * _maskW(I+1,J,K,bi,bj)
-     &        * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBWt(J,K,bi,bj) = _maskW(I+1,J,K,bi,bj) * (
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(theta(I+1,J,K,bi,bj)-theta(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
@@ -417,14 +411,12 @@ C     Now salinity:
             uPhase = -cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              uPhase = MAX( -cflMer(J,K),
-     &            MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &         ) * pFac
+     &        MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBWs(J,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
-     &        * _maskW(I+1,J,K,bi,bj)
-     &        * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBWs(J,K,bi,bj) = _maskW(I+1,J,K,bi,bj) * (
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(salt(I+1,J,K,bi,bj)-salt(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
@@ -538,14 +530,12 @@ C     Theta first:
             vPhase = cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              vPhase = MIN( cflZon(I,K),
-     &            MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &         ) * pFac
+     &        MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBNt(I,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
-     &        * _maskS(I,J,K,bi,bj)
-     &        * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBNt(I,K,bi,bj) = _maskS(I,J,K,bi,bj) * (
      &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
      &        *(theta(I,J,K,bi,bj)-theta(I,J-1,K,bi,bj))
      &        * _recip_dyC(I,J,bi,bj)
@@ -558,14 +548,12 @@ C     Now salinity:
             vPhase = cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              vPhase = MIN( cflZon(I,K),
-     &            MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &         ) * pFac
+     &        MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBNs(I,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
-     &        * _maskS(I,J,K,bi,bj)
-     &        * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBNs(I,K,bi,bj) = _maskS(I,J,K,bi,bj) * (
      &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
      &        *(salt(I,J,K,bi,bj)-salt(I,J-1,K,bi,bj))
      &        * _recip_dyC(I,J,bi,bj)
@@ -680,14 +668,12 @@ C     Theta first:
             vPhase = -cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              vPhase = MAX( -cflZon(I,K),
-     &       MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &         ) * pFac
+     &        MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBSt(I,K,bi,bj) = theta(I,J,K,bi,bj) + dTtracerLev(K)
-     &        * _maskS(I,J+1,K,bi,bj)
-     &        * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBSt(I,K,bi,bj) = _maskS(I,J+1,K,bi,bj) * (
      &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
      &        *(theta(I,J+1,K,bi,bj)-theta(I,J,K,bi,bj))
      &        * _recip_dyC(I,J+1,bi,bj)
@@ -700,14 +686,12 @@ C     Now salinity:
             vPhase = -cflZon(I,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
              vPhase = MAX( -cflZon(I,K),
-     &       MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &         ) * pFac
+     &        MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
+     &            ) * pFac
             ENDIF
-C     Update the tracer here with a simple Euler forward step; not
-C     sure if this will be stable
-            OBSs(I,K,bi,bj) = salt(I,J,K,bi,bj) + dTtracerLev(K)
-     &        * _maskS(I,J+1,K,bi,bj)
-     &        * (
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+            OBSs(I,K,bi,bj) = _maskS(I,J+1,K,bi,bj) * (
      &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
      &        *(salt(I,J+1,K,bi,bj)-salt(I,J,K,bi,bj))
      &        * _recip_dyC(I,J+1,bi,bj)
@@ -809,6 +793,7 @@ C    myThid    :: my Thread Id number
       INTEGER futureIter
       INTEGER myThid
 
+#ifdef ALLOW_OBCS_STEVENS
 C     !LOCAL VARIABLES:
 C    bi, bj    :: indices of current tile
 C    i,j,k     :: loop indices
@@ -816,7 +801,6 @@ C    Iobc,Jobc :: position-index of open boundary
       INTEGER bi,bj,i,j,k,Iobc,Jobc
 CEOP
 
-#ifdef ALLOW_OBCS_STEVENS
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_OBCS_NORTH
