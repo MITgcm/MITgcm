@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1546 2011/12/09 01:01:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1547 2011/12/13 00:12:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  change non-curvilinear grid setting to also work with exch2 + blank tiles:
+  - move delX,delY to new header file (SET_GRID.h) and adjust length to 1rst
+    face dimensions.
+  - new S/R INI_LOCAL_GRID to define model tile-local grid (using same units
+    as delX,delY) and called from S/R INI_CARTESIAN_GRID, INI_CYLINDER_GRID
+    and INI_SPHERICAL_POLAR_GRID.
+  change test-experiment global_ocean.90x40x15:
+  - split the domain in many more tiles (9x4 tiles of 10x10 each);
+  - switch to exch2 and remove 1 blank-tile (but only for MPI test).
+  - update results of both test (std & dwnslp).
 o model/src:
   - take sigma-coords related code out of update_etah.F into new S/R UPDATE_ETAWS
     and fix initialisation when using sigma-coords.
