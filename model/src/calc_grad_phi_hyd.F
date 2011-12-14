@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.13 2010/09/10 17:23:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.14 2011/12/14 01:12:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,8 +46,8 @@ C     myThid :: Instance number for this call of the routine.
       _RL alphRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL myTime
       INTEGER myIter, myThid
 
@@ -57,7 +57,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j
-      _RL varLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL varLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef NONLIN_FRSURF
       _RL factorZ, factorP, conv_theta2T
       _RL factPI
@@ -228,6 +228,14 @@ C--    p* coordinate slope term: alpha_prime * Grad_r( p )
        ENDIF
       ENDIF
 #endif /* NONLIN_FRSURF */
+
+C--   Apply mask:
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         dPhiHydX(i,j) = dPhiHydX(i,j)*_maskW(i,j,k,bi,bj)
+         dPhiHydY(i,j) = dPhiHydY(i,j)*_maskS(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
 
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
 
