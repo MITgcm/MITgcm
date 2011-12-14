@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.92 2011/10/31 02:45:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.93 2011/12/14 23:00:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -81,6 +81,7 @@ C--   Map thSice-variables to HEFF and AREA
       ENDIF
 #endif /* ALLOW_THSICE */
 
+#ifdef SEAICE_GROWTH_LEGACY
       IF ( .NOT.useThSice ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
@@ -112,6 +113,7 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
        ENDDO
       ENDDO
       ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c
