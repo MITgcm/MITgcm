@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.53 2011/08/28 21:57:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.54 2011/12/15 22:45:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -279,19 +279,12 @@ C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Fresh-water flux
 
-C-    Apply mask on Fresh-Water flux
-C      (needed for SSH forcing, whether or not exactConserv is used)
-      IF ( useRealFreshWaterFlux ) THEN
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key=ikey, kind = isbyte
-# endif
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskInC(i,j,bi,bj)
-         ENDDO
-        ENDDO
-      ENDIF
+C-    Apply mask on Fresh-Water flux (if useRealFreshWaterFlux)
+C     <== removed: maskInC is applied directly in S/R SOLVE_FOR_PRESSURE
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
+cCADJ &     key=ikey, kind = isbyte
+c#endif
 
 #ifdef EXACT_CONSERV
 C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR

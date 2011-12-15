@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.3 2011/05/18 23:41:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.4 2011/12/15 22:45:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,10 +59,10 @@ c     CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     tmpFac, tmpSurf
       _RL     wFacKm, wFacKp
-      _RL     uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL     vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     uf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     vf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef NONLIN_FRSURF
-      _RL     tmpVar(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
@@ -76,15 +76,14 @@ C     see CG3D.h for the interface to this routine.
 C--   Add EmPmR contribution to top level cg3d_b:
 C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
         IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
-          tmpFac = freeSurfFac*mass2rUnit
-          IF (exactConserv)
-     &     tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
+          tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
           ks = 1
           IF ( usingPCoords ) ks = Nr
           DO j=1,sNy
            DO i=1,sNx
             cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &        + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
+     &                               *maskInC(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
@@ -107,7 +106,7 @@ c    &                                    *(wVel(i,j,1,bi,bj)+PmE)
               ELSE
                tmpSurf = etaN(i,j,bi,bj)-etaH(i,j,bi,bj)
               ENDIF
-              ks = ksurfC(i,j,bi,bj)
+              ks = kSurfC(i,j,bi,bj)
               IF ( ks.LE.Nr ) THEN
                cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &                  +freeSurfFac*tmpSurf
@@ -122,7 +121,7 @@ c    &                  +freeSurfFac*(etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
            tmpFac = 0.
            DO j=1,sNy
             DO i=1,sNx
-              ks = ksurfC(i,j,bi,bj)
+              ks = kSurfC(i,j,bi,bj)
               tmpVar(i,j) = freeSurfFac
      &                    *( etaN(i,j,bi,bj) - etaH(i,j,bi,bj) )
      &                    *_rA(i,j,bi,bj)*deepFac2F(ks)
@@ -147,7 +146,7 @@ C-       Other than Z coordinate: no assumption on surface level index
            tmpFac = 0.
            DO j=1,sNy
             DO i=1,sNx
-              ks = ksurfC(i,j,bi,bj)
+              ks = kSurfC(i,j,bi,bj)
               IF ( ks.LE.Nr ) THEN
                cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &              +freeSurfFac*etaN(i,j,bi,bj)/deltaTfreesurf

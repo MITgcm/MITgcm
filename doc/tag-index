@@ -1,17 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1548 2011/12/13 15:22:02 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1549 2011/12/15 22:45:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/obcs: modify Stevens boundary conditions so that S/R obcs_calc_stevens 
-  computes tendency for temperature and salinity that is then applied to update 
-  theta and salt in S/R obcs_apply_ts; this requires proper masking of all 
-  horizontal advection and diffusion contributions on the boundary (in 
-  S/Rs gad_advection, gad_calc_rhs, gmredi_rtransport, gmredi_calc_diff), and 
-  removing the mask in S/R timestep_tracer. The advantage of this approach is 
-  that the updated tracer values include contributions from the surface 
-  forcing and vertical diffusion. 
+o model/src:
+  useRealFreshWaterFlux: remove masking of EmPmP (using maskInC) in
+  external_forcing_surf.F and apply mask directly in S/R SOLVE_FOR_PRESSURE.
+o pkg/obcs:
+  modify Stevens boundary conditions so that S/R obcs_calc_stevens computes
+  tendency for temperature and salinity that is then applied to update
+  theta and salt in S/R obcs_apply_ts; this requires proper masking of all
+  horizontal advection and diffusion contributions on the boundary (in
+  S/Rs gad_advection, gad_calc_rhs, gmredi_rtransport, gmredi_calc_diff), and
+  removing the mask in S/R timestep_tracer. The advantage of this approach is
+  that the updated tracer values include contributions from the surface
+  forcing and vertical diffusion.
   This modification changes exp4.stevens because of vertical diffusion.
 o model/src:
   change non-curvilinear grid setting to also work with exch2 + blank tiles:
@@ -24,7 +28,7 @@ o model/src:
   - split the domain in many more tiles (9x4 tiles of 10x10 each);
   - switch to exch2 and remove 1 blank-tile (but only for MPI test).
   - update results of both test (std & dwnslp).
-o pkg/diagnostics/diagstat_calc.F: fix problem with non-initialised halos in 
+o pkg/diagnostics/diagstat_calc.F: fix problem with non-initialised halos in
    tmp-fields for TARGET_NEC_SX at the cost of extra loops and less vectorisation
 o model/src:
   - take sigma-coords related code out of update_etah.F into new S/R UPDATE_ETAWS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.77 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.78 2011/12/15 22:45:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,13 +127,12 @@ C--   Save previous solution & Initialise Vector solution and source term :
          ENDDO
         ENDDO
         IF (useRealFreshWaterFlux.AND.fluidIsWater) THEN
-         tmpFac = freeSurfFac*mass2rUnit
-         IF (exactConserv)
-     &        tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
+         tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
          DO j=1,sNy
           DO i=1,sNx
            cg2d_b(i,j,bi,bj) =
      &       tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
+     &                            *maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
