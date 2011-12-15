@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.141 2011/12/14 23:03:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.142 2011/12/15 22:30:17 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1583,6 +1583,47 @@ C ======================================================
          ENDDO
         ENDDO
 
+#ifdef SEAICE_HEAT_CONSERV_FIX
+#ifndef SEAICE_GROWTH_LEGACY
+c Unlike for evap and precip, the temperature of gained/lost 
+c ocean liquid water due to melt/freeze of solid water cannot be chosen
+c to be e.g. the ocean SST. It must be done at 0degC. The fix below anticipates 
+c on external_forcing_surf.F and applies the correction to QNET.
+      IF ((convertFW2Salt.EQ.-1.).OR.(temp_EvPrRn.EQ.UNSET_RL)) THEN
+c I leave alone the exotic case when onvertFW2Salt.NE.-1 and temp_EvPrRn.NE.UNSET_RL and
+c the small error of the synchronous time stepping case (see external_forcing_surf.F).
+        DO J=1,sNy
+         DO I=1,sNx
+c store unaltered QNET for diagnostic purposes
+           DIAGarrayA(I,J)=-QNET(I,J,bi,bj)
+c compute the ocean water going to ice/snow, in precip units
+           tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
+     &       ( d_HSNWbyATMonSNW(I,J)/ICE2SNOW
+     &       + d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
+     &       + d_HEFFbyOCNonICE(I,J) + d_HEFFbyATMonOCN(I,J)
+     &       + d_HEFFbyNEG(I,J) + d_HSNWbyNEG(I,J)/ICE2SNOW )
+     &       * convertHI2PRECIP
+c factor in the heat content that external_forcing_surf.F
+c will associate with EMPMR, and remove it from QNET, so that
+c melt/freez water is in effect consistently gained/lost at 0degC
+           IF (temp_EvPrRn.NE.UNSET_RL) THEN
+             QNET(I,J,bi,bj)=QNET(I,J,bi,bj) - tmpscal3*
+     &         HeatCapacity_Cp * temp_EvPrRn
+           ELSE
+             QNET(I,J,bi,bj)=QNET(I,J,bi,bj) - tmpscal3*
+     &         HeatCapacity_Cp * theta(I,J,kSurface,bi,bj)
+           ENDIF
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+c temporary (?) output of unaltered QNET using SDIAG6
+         CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &      'SDIAG6  ',0,1,3,bi,bj,myThid)
+#endif
+      ENDIF
+#endif
+#endif
+
 C compute net fresh water flux leaving/entering
 C the ocean, accounting for fresh/salt water stocks.
 C ==================================================
@@ -1772,9 +1813,47 @@ C the latent heat flux
          CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIacSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIrsSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIhl    ',0,1,3,bi,bj,myThid)
+
+#ifdef SEAICE_HEAT_CONSERV_FIX
+         DO J=1,sNy
+          DO I=1,sNx
+c compute ice/snow water going to atm, in precip units
+           tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
+     &       * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)/ICE2SNOW
+     &       + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
+c compute ocean water going to atm, in precip units
+           tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
+     &       ( ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
+     &         * ( ONE - AREApreTH(I,J) ) - RUNOFF(I,J,bi,bj)
+     &         + ( d_HFRWbyRAIN(I,J) + r_FWbySublim(I,J) )
+     &         *convertHI2PRECIP )
+c factor in the advected specific energy (referenced to 0 for 0deC liquid water)
+           tmpscal1= - tmpscal1*
+     &       ( -SEAICE_lhFusion + HeatCapacity_Cp * ZERO )
+           IF (temp_EvPrRn.NE.UNSET_RL) THEN
+           tmpscal2= - tmpscal2*
+     &       ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
+           ELSE
+           tmpscal2= - tmpscal2*
+     &       ( ZERO + HeatCapacity_Cp * theta(I,J,kSurface,bi,bj) )
+           ENDIF
+c add to SIatmQnt, leading to SItflux, which is analogous to TFLUX
+           DIAGarrayA(I,J)=maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
+#ifndef SEAICE_GROWTH_LEGACY
+     &            a_QSWbyATM_cover(I,J) +
+#endif
+     &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
+     &            -tmpscal1-tmpscal2
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(DIAGarrayA,
+c until SItflux is added to diags, output it using SDIAG5
+     &      'SDIAG5  ',0,1,3,bi,bj,myThid)
+#endif
+
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-        
+
 C close bi,bj loops
        ENDDO
       ENDDO
