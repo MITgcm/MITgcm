@@ -1,22 +1,42 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev3_dir.h,v 1.7 2011/03/14 17:31:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev3_dir.h,v 1.8 2011/12/16 14:58:53 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
 #
 # ifdef ALLOW_OBCS_NORTH
 CADJ STORE StoreOBCSN     = tapelev3, key = ilev_3
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBNtStevens    = tapelev3, key = ilev_3
+CADJ STORE OBNsStevens    = tapelev3, key = ilev_3
+CADJ STORE OBNvStevens    = tapelev3, key = ilev_3
+# endif /* ALLOW_OBCS_STEVENS */
 # endif /* ALLOW_OBCS_NORTH */
 #
 # ifdef ALLOW_OBCS_SOUTH
 CADJ STORE StoreOBCSS     = tapelev3, key = ilev_3
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBStStevens    = tapelev3, key = ilev_3
+CADJ STORE OBSsStevens    = tapelev3, key = ilev_3
+CADJ STORE OBSvStevens    = tapelev3, key = ilev_3
+# endif /* ALLOW_OBCS_STEVENS */
 # endif /* ALLOW_OBCS_SOUTH */
 #
 # ifdef ALLOW_OBCS_EAST
 CADJ STORE StoreOBCSE     = tapelev3, key = ilev_3
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBEtStevens    = tapelev3, key = ilev_3
+CADJ STORE OBEsStevens    = tapelev3, key = ilev_3
+CADJ STORE OBEuStevens    = tapelev3, key = ilev_3
+# endif /* ALLOW_OBCS_STEVENS */
 # endif /* ALLOW_OBCS_EAST */
 #
 # ifdef ALLOW_OBCS_WEST
 CADJ STORE StoreOBCSW     = tapelev3, key = ilev_3
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBWtStevens    = tapelev3, key = ilev_3
+CADJ STORE OBWsStevens    = tapelev3, key = ilev_3
+CADJ STORE OBWuStevens    = tapelev3, key = ilev_3
+# endif /* ALLOW_OBCS_STEVENS */
 # endif /* ALLOW_OBCS_WEST */
 #
 # ifdef ALLOW_PTRACERS

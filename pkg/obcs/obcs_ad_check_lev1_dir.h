@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.9 2011/05/18 02:34:17 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.10 2011/12/16 14:58:53 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -13,6 +13,11 @@ CADJ STORE obnv0,obnv1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obneta0,obneta1 = comlev1, key = ikey_dynamics
 #endif
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBNtStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBNsStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBNvStevens = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_STEVENS */
 # ifdef ALLOW_OBCSN_CONTROL
 CADJ STORE xx_obcsn0,xx_obcsn1 = comlev1, key = ikey_dynamics
 # endif
@@ -28,6 +33,11 @@ CADJ STORE obsv0,obsv1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obseta0,obseta1 = comlev1, key = ikey_dynamics
 #endif
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBStStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBSsStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBSvStevens = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_STEVENS */
 # ifdef ALLOW_OBCSS_CONTROL
 CADJ STORE xx_obcss0,xx_obcss1 = comlev1, key = ikey_dynamics
 # endif
@@ -43,6 +53,11 @@ CADJ STORE obev0,obev1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obeeta0,obeeta1 = comlev1, key = ikey_dynamics
 #endif
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBEtStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBEsStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBEuStevens = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_STEVENS */
 # ifdef ALLOW_OBCSE_CONTROL
 CADJ STORE xx_obcse0,xx_obcse1 = comlev1, key = ikey_dynamics
 # endif
@@ -58,6 +73,11 @@ CADJ STORE obwv0,obwv1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obweta0,obweta1 = comlev1, key = ikey_dynamics
 #endif
+# ifdef ALLOW_OBCS_STEVENS
+CADJ STORE OBWtStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBWsStevens = comlev1, key = ikey_dynamics
+CADJ STORE OBWuStevens = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_STEVENS */
 # ifdef ALLOW_OBCSW_CONTROL
 CADJ STORE xx_obcsw0,xx_obcsw1 = comlev1, key = ikey_dynamics
 # endif
