@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.101 2011/10/27 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.102 2011/12/19 11:49:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -256,6 +256,7 @@ C     to be consistent
        SEAICE_cpAir      = atmcp
        SEAICE_lhEvap     = flamb
        SEAICE_lhFusion   = flami
+       SEAICE_emissivity = ocean_emissivity*stefanBoltzmann
       ELSE
 #else
       IF ( .TRUE. ) THEN
@@ -264,10 +265,10 @@ C     to be consistent
        SEAICE_cpAir      = 1004.  _d 0
        SEAICE_lhEvap     = 2.50   _d 6
        SEAICE_lhFusion   = 3.34   _d 5
+       SEAICE_emissivity = 5.5    _d -08
       ENDIF
       SEAICE_iceConduct  = 2.1656 _d +00
       SEAICE_snowConduct = 3.1    _d -01
-      SEAICE_emissivity  = 5.5    _d -08
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
