@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.9 2011/11/17 12:50:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.10 2011/12/19 16:25:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,10 +102,10 @@ C--   Initialize grid info
        ENDDO
       ENDDO
 
-#ifdef SEAICE_CGRID
 C     coefficients for metric terms
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef SEAICE_CGRID
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           k1AtC(I,J,bi,bj) = 0.0 _d 0
@@ -157,9 +157,78 @@ C     compute metric term coefficients from finite difference approximation
           ENDDO
          ENDDO
         ENDIF
+#else /* not SEAICE_CGRID */
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          k1AtC(I,J,bi,bj) = 0.0 _d 0
+          k1AtU(I,J,bi,bj) = 0.0 _d 0
+          k1AtV(I,J,bi,bj) = 0.0 _d 0
+          k2AtC(I,J,bi,bj) = 0.0 _d 0
+          k2AtU(I,J,bi,bj) = 0.0 _d 0
+          k2AtV(I,J,bi,bj) = 0.0 _d 0
+         ENDDO
+        ENDDO
+        IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
+C     This is the only case where tan(phi) is not zero. In this case
+C     C and U points, and Z and V points have the same phi, so that we
+C     only need a copy here. Do not use tan(YC) and tan(YG), because these
+C     can be the geographical coordinates and not the correct grid
+C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
+           k2AtU(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
+           k2AtV(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
+          ENDDO
+         ENDDO
+        ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
+C     compute metric term coefficients from finite difference approximation
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx-1
+           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
+     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
+     &          * _recip_dxF(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
+           k1AtU(I,J,bi,bj) = _recip_dyG(I,J,bi,bj)
+     &          * ( _dyF(I,J,bi,bj) - _dyF(I-1,J,bi,bj) )
+     &          * _recip_dxC(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx-1
+           k1AtV(I,J,bi,bj) = _recip_dyC(I,J,bi,bj)
+     &          * ( _dyU(I+1,J,bi,bj) - _dyU(I,J,bi,bj) )
+     &          * _recip_dxG(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy,sNy+OLy-1
+          DO i=1-OLx,sNx+OLx
+           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
+     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
+     &          * _recip_dyF(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy,sNy+OLy-1
+          DO i=1-OLx,sNx+OLx
+           k2AtU(I,J,bi,bj) = _recip_dxC(I,J,bi,bj)
+     &          * ( _dxV(I,J+1,bi,bj) - _dxV(I,J,bi,bj) )
+     &          * _recip_dyG(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           k2AtV(I,J,bi,bj) = _recip_dxG(I,J,bi,bj)
+     &          * ( _dxF(I,J,bi,bj) - _dxF(I,J-1,bi,bj) )
+     &          * _recip_dyC(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* not SEAICE_CGRID */
        ENDDO
       ENDDO
-#endif /* SEAICE_CGRID */
 
 #ifndef SEAICE_CGRID
 C--   Choose a proxy level for geostrophic velocity,
