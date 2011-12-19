@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.37 2009/11/10 09:33:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.38 2011/12/19 16:22:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,8 +202,8 @@ C NOW KEEP FORCEX0
          ENDDO
         ENDDO
 #endif /* EXPLICIT_SSH_SLOPE */
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 #ifndef EXPLICIT_SSH_SLOPE
 C--   NOW ADD IN TILT
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
@@ -256,104 +256,6 @@ C NOW DO PREDICTOR TIME STEP
        ENDDO
       ENDDO
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)=HALF* _recip_dxF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,bi,bj)+UICE(I+1,J,bi,bj)
-     &                -UICE(I,  J+1,bi,bj)-UICE(I,  J,bi,bj))
-     &                -QUART*
-     &                (VICE(I+1,J+1,bi,bj)+VICE(I,  J+1,bi,bj)
-     &                +VICE(I,  J, bi,bj)+VICE(I+1,J,bi,bj))
-     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-          E22(I,J,bi,bj)=HALF* _recip_dyF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,bi,bj)+VICE(I,J+1,bi,bj)
-     &                -VICE(I+1,J, bi,bj)-VICE(I,J, bi,bj))
-          E12(I,J,bi,bj)=HALF*(HALF * _recip_dyF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,bi,bj)+UICE(I,J+1,bi,bj)
-     &                -UICE(I+1,J, bi,bj)-UICE(I,J, bi,bj))
-     &                +HALF * _recip_dxF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,bi,bj)+VICE(I+1,J,bi,bj)
-     &                -VICE(I,  J+1,bi,bj)-VICE(I,  J,bi,bj))
-     &                +QUART*
-     &                (UICE(I+1,J+1,bi,bj)+UICE(I,  J+1,bi,bj)
-     &                +UICE(I,  J, bi,bj)+UICE(I+1,J, bi,bj))
-     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
-C  NOW EVALUATE VISCOSITIES
-          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
-     &        +4.0 _d 0*ECM2*E12(I,J,bi,bj)**2
-     1        +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
-          IF ( DELT1 .LE. SEAICE_EPS_SQ ) THEN
-             DELT2=SEAICE_EPS
-          ELSE
-             DELT2=SQRT(DELT1)
-          ENDIF
-          ZETA(I,J,bi,bj)=HALF*PRESS0(I,J,bi,bj)/DELT2
-C NOW PUT MIN AND MAX VISCOSITIES IN
-          ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
-          ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
-C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
-          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
-          ETA(I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
-          PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-C--   Update overlap regions
-      _EXCH_XY_RL(ETA, myThid)
-      _EXCH_XY_RL(ZETA, myThid)
-      _EXCH_XY_RL(PRESS, myThid)
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
-          TEMPVAR=(UICE(I,J,bi,bj)-GWATX(I,J,bi,bj))**2
-     &           +(VICE(I,J,bi,bj)-GWATY(I,J,bi,bj))**2
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
-            DWATN(I,J,bi,bj)=QUART
-           ELSE
-            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
-           ENDIF
-          ELSE
-           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-            DWATN(I,J,bi,bj)=QUART
-           ELSE
-            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-           ENDIF
-          ENDIF
-C NOW SET UP SYMMETTRIC DRAG
-          DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
-C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
-          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)
-     &         *SIGN(SINWAT, _fCori(I,J,bi,bj))+COR_ICE(I,J,bi,bj)
-C NOW ADD IN CURRENT FORCE
-          FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &         *(COSWAT*GWATX(I,J,bi,bj)
-     &         -SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATY(I,J,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &         *(SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATX(I,J,bi,bj)
-     &         +COSWAT*GWATY(I,J,bi,bj))
-C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &          -QUART * _recip_dxV(I,J,bi,bj)
-     &          *(PRESS(I,  J,bi,bj) + PRESS(I,  J-1,bi,bj)
-     &          - PRESS(I-1,J,bi,bj) - PRESS(I-1,J-1,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &         -QUART * _recip_dyU(I,J,bi,bj)
-     &          *(PRESS(I,J,  bi,bj) + PRESS(I-1,J,  bi,bj)
-     &          - PRESS(I,J-1,bi,bj) - PRESS(I-1,J-1,bi,bj))
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
@@ -370,104 +272,6 @@ C NOW DO MODIFIED EULER STEP
           VICE(I,J,bi,bj)=HALF*(VICE(I,J,bi,bj)+VICENM1(I,J,bi,bj))
           UICEC(I,J,bi,bj)=UICE(I,J,bi,bj)
           VICEC(I,J,bi,bj)=VICE(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)=HALF * _recip_dxF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,bi,bj)+UICE(I+1,J,bi,bj)
-     &                -UICE(I,  J+1,bi,bj)-UICE(I,  J,bi,bj))
-     &                -QUART*
-     &                (VICE(I+1,J+1,bi,bj)+VICE(I,  J+1,bi,bj)
-     &                +VICE(I,  J,  bi,bj)+VICE(I+1,J,  bi,bj))
-     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-          E22(I,J,bi,bj)=HALF * _recip_dyF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,bi,bj)+VICE(I,J+1,bi,bj)
-     &                -VICE(I+1,J,  bi,bj)-VICE(I,J,  bi,bj))
-          E12(I,J,bi,bj)=HALF*(HALF * _recip_dyF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,bi,bj)+UICE(I,J+1,bi,bj)
-     &                -UICE(I+1,J,  bi,bj)-UICE(I,J,  bi,bj))
-     &                +HALF * _recip_dxF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,bi,bj)+VICE(I+1,J,bi,bj)
-     &                -VICE(I,  J+1,bi,bj)-VICE(I,  J,bi,bj))
-     &                +QUART*
-     &                (UICE(I+1,J+1,bi,bj)+UICE(I,  J+1,bi,bj)
-     &                +UICE(I,  J,  bi,bj)+UICE(I+1,J,  bi,bj))
-     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
-C  NOW EVALUATE VISCOSITIES
-          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
-     &        +4. _d 0*ECM2*E12(I,J,bi,bj)**2
-     1        +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
-          IF ( DELT1 .LE. SEAICE_EPS_SQ ) THEN
-             DELT2=SEAICE_EPS
-          ELSE
-             DELT2=SQRT(DELT1)
-          ENDIF
-          ZETA(I,J,bi,bj)=HALF*PRESS0(I,J,bi,bj)/DELT2
-C NOW PUT MIN AND MAX VISCOSITIES IN
-          ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
-          ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
-C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
-          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
-          ETA(I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
-          PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-C--   Update overlap regions
-      _EXCH_XY_RL(ETA, myThid)
-      _EXCH_XY_RL(ZETA, myThid)
-      _EXCH_XY_RL(PRESS, myThid)
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
-          TEMPVAR=(UICE(I,J,bi,bj)-GWATX(I,J,bi,bj))**2
-     &           +(VICE(I,J,bi,bj)-GWATY(I,J,bi,bj))**2
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
-            DWATN(I,J,bi,bj)=QUART
-           ELSE
-            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
-           ENDIF
-          ELSE
-           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-            DWATN(I,J,bi,bj)=QUART
-           ELSE
-            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-           ENDIF
-          ENDIF
-C NOW SET UP SYMMETTRIC DRAG
-          DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
-C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
-          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)
-     &         *SIGN(SINWAT, _fCori(I,J,bi,bj))+COR_ICE(I,J,bi,bj)
-C NOW ADD IN CURRENT FORCE
-          FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &         *(COSWAT*GWATX(I,J,bi,bj)
-     &         -SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATY(I,J,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &         *(SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATX(I,J,bi,bj)
-     &         +COSWAT*GWATY(I,J,bi,bj))
-C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &          -QUART * _recip_dxV(I,J,bi,bj)
-     &          *(PRESS(I,  J,bi,bj) + PRESS(I,  J-1,bi,bj)
-     &          - PRESS(I-1,J,bi,bj) - PRESS(I-1,J-1,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &         -QUART * _recip_dyU(I,J,bi,bj)
-     &          *(PRESS(I,J,  bi,bj) + PRESS(I-1,J,  bi,bj)
-     &          - PRESS(I,J-1,bi,bj) - PRESS(I-1,J-1,bi,bj))
          ENDDO
         ENDDO
        ENDDO

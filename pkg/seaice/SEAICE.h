@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.57 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.58 2011/12/19 16:22:26 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -54,6 +54,16 @@ C     k1/2AtC    for metric terms in U/V ice equations.
 #else
       COMMON/ARRAYB/ UVM
       _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     k1/2AtC/U/V :: coefficients at C, U, and V points
+C                    for metric terms in U/V ice equations.
+      COMMON/ARRAYBMETRIC/  
+     &     k1AtC, k1AtU, k1AtV, k2AtC, k2AtU, k2AtV
+      _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k1AtU      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS k1AtV      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k2AtU      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS k2AtV      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif /* SEAICE_CGRID */
 
 C--   Dynamical variables
