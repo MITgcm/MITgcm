@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1553 2011/12/19 12:09:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1554 2011/12/19 16:33:53 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - sort out emissivity and long wave radiation, step 1: make SEAICE_emissivity
+    what the name implies (and not emissivity*BoltzmannConstant), this means
+    the old default value of 5.5e-8 now means 
+    5.5e-8/5.670e-8 = 0.97001763668430343479 as ocean_emissivity in 
+    S/R exf_readparms
+  - FV-discretization of the B-grid LSOR solver, turn on with
+  SEAICE_LSRBNEW. This new solver also involves a slight re-organization
+  of the calling routine dynsolver, so that B and C-grid code look a
+  little more alike.
 o pkg/seaice/seaice_ocean_budget.F: change (unused) code to make it look better
 o pkg/seaice/seaice_readparms.F: make ocean_emissivity*stefanBoltzmann the
   default for SEAICE_emissivity, if useEXF; requires setting a wrong
