@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.110 2011/11/10 21:03:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.111 2011/12/19 11:47:04 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -601,14 +601,13 @@ cgf -> cuts adjoint dependency from slope to state
           ENDIF
 
 C--       Implicit Vertical Diffusion for Convection
-c ==> should use sigmaR !!!
           IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
 #ifdef ALLOW_DEBUG
             IF (debugMode) CALL DEBUG_CALL('CALC_IVDC',myThid)
 #endif
             CALL CALC_IVDC(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
-     I        rhoKm1, rhoInSitu(1-OLx,1-OLy,k,bi,bj),
+     I        sigmaR,
      I        myTime, myIter, myThid)
           ENDIF
 
