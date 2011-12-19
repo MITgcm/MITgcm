@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.77 2011/10/27 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.78 2011/12/19 16:30:09 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -198,6 +198,7 @@ C     SEAICE_dalton      :: Dalton number (= sensible heat transfer coefficient)
 C     SEAICE_iceConduct  :: sea-ice conductivity
 C     SEAICE_snowConduct :: snow conductivity
 C     SEAICE_emissivity  :: Stefan-Boltzman constant * emissivity
+C     SEAICE_boltzmann   :: Stefan-Boltzman constant (not a run time parameter)
 C     SEAICE_snowThick   :: cutoff snow thickness
 C     SEAICE_shortwave   :: penetration shortwave radiation factor
 C     SEAICE_freeze      :: FREEZING TEMP. OF SEA WATER
@@ -249,6 +250,7 @@ C
       _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
+      _RL SEAICE_boltzmann
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
       _RL SIsalFRAC, SIsal0, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
@@ -278,6 +280,7 @@ C
      &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
+     &    SEAICE_boltzmann,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SIsalFRAC, SIsal0, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,

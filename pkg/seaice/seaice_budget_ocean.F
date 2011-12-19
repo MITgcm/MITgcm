@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.12 2011/12/19 12:08:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.13 2011/12/19 16:30:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -75,8 +75,8 @@ C SENSIBLE HEAT CONSTANT
       D1=SEAICE_dalton*SEAICE_cpAir*SEAICE_rhoAir
 C WATER LATENT HEAT CONSTANT
       D1W=SEAICE_dalton*SEAICE_lhEvap*SEAICE_rhoAir
-C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
-      D3=SEAICE_emissivity
+C STEFAN BOLTZMAN CONSTANT TIMES EMISSIVITY
+      D3=SEAICE_emissivity*SEAICE_boltzmann
 C MELTING TEMPERATURE OF ICE
       TMELT=273.16 _d +00
 C     
@@ -112,8 +112,10 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
 C     net upward short wave heat flux
         SWHeatFlux(I,J) = (SEAICE_waterAlbedo - 1. _d 0)
      &       *swdown(I,J,bi,bj)
-C     net upward long wave heat flux
-        lwNetLoc(I,J) = - lwdownLoc(I,J)*0.97 _d 0
+C     lwup = emissivity*stefanBoltzmann*Tsrf^4 + (1-emissivity)*lwdown
+C     the second terms is the reflected incoming long wave radiation
+C     so that the net upward long wave heat flux is:
+        lwNetLoc(I,J) = - lwdownLoc(I,J)*SEAICE_emissivity
      &       + D3*tsurfLoc(I,J)**4
         sstdegC = tsurfLoc(I,J) - TMELT
 C     downward sensible heat

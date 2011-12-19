@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.16 2011/06/29 21:39:06 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.17 2011/12/19 16:30:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -187,8 +187,8 @@ C     ICE LATENT HEAT CONSTANT
       lhSublim = SEAICE_lhEvap + SEAICE_lhFusion
       D1I=SEAICE_dalton*lhSublim*SEAICE_rhoAir
 
-C     STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
-      D3=SEAICE_emissivity
+C     STEFAN BOLTZMAN CONSTANT TIMES EMISSIVITY
+      D3=SEAICE_emissivity*SEAICE_boltzmann
 
 C     MELTING TEMPERATURE OF ICE
 #ifdef SEAICE_SOLVE4TEMP_LEGACY

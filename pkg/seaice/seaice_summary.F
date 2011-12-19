@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.36 2011/10/27 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.37 2011/12/19 16:30:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -221,7 +221,7 @@ c    & 'LAD               =', ' /* time stepping scheme */')
       CALL WRITE_0D_RL( SEAICE_snowConduct,INDEX_NONE,
      & 'SEAICE_snowConduct=', ' /* snow conductivity */')
       CALL WRITE_0D_RL( SEAICE_emissivity ,INDEX_NONE,
-     & 'SEAICE_emissivity =', ' /* Stefan-Boltzman * emissivity */')
+     & 'SEAICE_emissivity =', ' /* emissivity */')
       CALL WRITE_0D_RL( SEAICE_snowThick  ,INDEX_NONE,
      & 'SEAICE_snowThick  =', ' /* cutoff snow thickness */')
       CALL WRITE_0D_RL( SEAICE_shortwave  ,INDEX_NONE,
