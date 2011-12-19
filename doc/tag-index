@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1552 2011/12/19 11:51:22 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1553 2011/12/19 12:09:25 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_ocean_budget.F: change (unused) code to make it look better
 o pkg/seaice/seaice_readparms.F: make ocean_emissivity*stefanBoltzmann the
   default for SEAICE_emissivity, if useEXF; requires setting a wrong
   parameter value in global_ocean.cs32x15/input.seaice/data.seaice for
