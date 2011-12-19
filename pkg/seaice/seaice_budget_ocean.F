@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.11 2010/11/19 16:21:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.12 2011/12/19 12:08:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,12 +58,15 @@ C     local copies of global variables
       _RL tsurfLoc   (1:sNx,1:sNy)
       _RL atempLoc   (1:sNx,1:sNy)
       _RL lwdownLoc  (1:sNx,1:sNy)
-      _RL ALB        (1:sNx,1:sNy)
-C     coefficients of Hibler (1980), appendix B
-      _RL A1         (1:sNx,1:sNy)
-      _RL A2         (1:sNx,1:sNy)
+
+C     local heat fluxes components
+      _RL hsLoc      (1:sNx,1:sNy)
+      _RL hlLoc      (1:sNx,1:sNy)
+      _RL lwNetLoc   (1:sNx,1:sNy)
+
 C     auxiliary variable
-      _RL B          (1:sNx,1:sNy)
+      _RL ssq, sstdegC
+      _RL recip_rhoConstFresh, recip_lhEvap
 
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
@@ -76,6 +79,9 @@ C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
       D3=SEAICE_emissivity
 C MELTING TEMPERATURE OF ICE
       TMELT=273.16 _d +00
+C     
+      recip_lhEvap = 1./SEAICE_lhEvap
+      recip_rhoConstFresh = 1./rhoConstFresh
 
       DO J=1,sNy
        DO I=1,sNx
@@ -102,18 +108,28 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
         netHeatFlux(I,J) = Qnet(I,J,bi,bj)
         SWHeatFlux (I,J) =  Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
-        ALB(I,J)=SEAICE_waterAlbedo                                
 # ifdef ALLOW_DOWNWARD_RADIATION
-        A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &       +lwdownLoc(I,J)*0.97 _d 0
-     &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*AQH(I,J,bi,bj)
-        B(I,J)=QS1*6.11 _d +00*EXP(17.2694 _d +00
-     &       *(tsurfLoc(I,J)-TMELT)
-     &       /(tsurfLoc(I,J)-TMELT+237.3 _d +00))
-        A2(I,J)=-D1*UG(I,J)*tsurfLoc(I,J)-D1W*UG(I,J)*B(I,J)
-     &       -D3*(tsurfLoc(I,J)**4)
-        netHeatFlux(I,J)=-A1(I,J)-A2(I,J)    
-        SWHeatFlux (I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+C     net upward short wave heat flux
+        SWHeatFlux(I,J) = (SEAICE_waterAlbedo - 1. _d 0)
+     &       *swdown(I,J,bi,bj)
+C     net upward long wave heat flux
+        lwNetLoc(I,J) = - lwdownLoc(I,J)*0.97 _d 0
+     &       + D3*tsurfLoc(I,J)**4
+        sstdegC = tsurfLoc(I,J) - TMELT
+C     downward sensible heat
+        hsLoc(I,J) = D1*UG(I,J)*(atempLoc(I,J)-tsurfLoc(I,J))
+C     saturation humidity
+        ssq = QS1*6.11 _d +00*EXP(17.2694 _d +00
+     &       *sstdegC/(sstdegC+237.3 _d +00))
+C     downward latent heat
+        hlLoc(I,J) = D1W*UG(I,J)*(AQH(I,J,bi,bj)-ssq)
+C     net heat is positive upward
+        netHeatFlux(I,J)=SWHeatFlux(I,J)
+     &       + lwNetLoc(I,J)
+     &       - hsLoc(I,J) - hlLoc(I,J)
+C     compute evaporation here again because latent heat is different 
+C     from its previous value
+        evap(i,j,bi,bj) = -hlloc(I,J)*recip_lhEvap*recip_rhoConstFresh
 # endif /* ALLOW_DOWNWARD_RADIATION */
 #endif /* SEAICE_EXTERNAL_FLUXES */
        ENDDO
