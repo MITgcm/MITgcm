@@ -5,6 +5,8 @@
  SEAICEuseDynamics = .FALSE.,
 # for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
+# ocean_emissivity=1. in data.exf, so that this value is inconsistent
+ SEAICE_emissivity     = 0.97001763668430343479,
 #
  SIsal0                = 4.,
  SEAICEadvHeff         = .TRUE.,
