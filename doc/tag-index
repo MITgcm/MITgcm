@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1554 2011/12/19 16:33:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1555 2011/12/20 10:06:51 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf/exf_radiation.F: add the factor ocean_emissivity to lwdown, for 
+   within #ifdef EXF_LWDOWN_WITH_EMISSIVITY/#endif. Unless ocean_emissivity=1.
+   this factor is absolutely required, because the lw exitance (= out-going 
+   long wave radiation) is emissivity*stefanBoltzmann*T^4 + rho*lwdown, 
+   where the reflectivity rho = 1-emissivity for conservation reasons. Once
+   this is established, we can remove the CPP-Flag (if we want to).
 o pkg/seaice: 
   - sort out emissivity and long wave radiation, step 1: make SEAICE_emissivity
     what the name implies (and not emissivity*BoltzmannConstant), this means
@@ -11,9 +17,9 @@ o pkg/seaice:
     5.5e-8/5.670e-8 = 0.97001763668430343479 as ocean_emissivity in 
     S/R exf_readparms
   - FV-discretization of the B-grid LSOR solver, turn on with
-  SEAICE_LSRBNEW. This new solver also involves a slight re-organization
-  of the calling routine dynsolver, so that B and C-grid code look a
-  little more alike.
+    SEAICE_LSRBNEW. This new solver also involves a slight re-organization
+    of the calling routine dynsolver, so that B and C-grid code look a
+    little more alike.
 o pkg/seaice/seaice_ocean_budget.F: change (unused) code to make it look better
 o pkg/seaice/seaice_readparms.F: make ocean_emissivity*stefanBoltzmann the
   default for SEAICE_emissivity, if useEXF; requires setting a wrong
