@@ -1,22 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1556 2011/12/21 12:59:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1557 2011/12/21 17:31:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/exf/exf_radiation.F: add the factor ocean_emissivity to lwdown, for 
+o pkg/exf (interpolation):
+  - add a set of run-time param ({inputfield}_interpMethod), one for
+    each interpolated input field, to select the interpolation method
+    with a value of zero switching off the interpolation;
+  - print interpolation parameters to standard output;
+  - refine exf_check.F accordingly ; stop if USE_NO_INTERP_RUNOFF is defined
+    (to use instead runoff_interpMethod=0 in data.exf).
+o pkg/exf/exf_radiation.F: add the factor ocean_emissivity to lwdown, for
    within #ifdef EXF_LWDOWN_WITH_EMISSIVITY/#endif. Unless ocean_emissivity=1.
-   this factor is absolutely required, because the lw exitance (= out-going 
-   long wave radiation) is emissivity*stefanBoltzmann*T^4 + rho*lwdown, 
+   this factor is absolutely required, because the lw exitance (= out-going
+   long wave radiation) is emissivity*stefanBoltzmann*T^4 + rho*lwdown,
    where the reflectivity rho = 1-emissivity for conservation reasons. Once
    this is established, we can remove the CPP-Flag (if we want to).
-o pkg/seaice: 
+o pkg/seaice:
   - qualify a stop statement in S/R seaice_check: EXF_READ_EVAP and
     ALLOW_BULKFORMULAE are only required if SEAICE_EXTERNAL_FLUXES is defined
   - sort out emissivity and long wave radiation, step 1: make SEAICE_emissivity
     what the name implies (and not emissivity*BoltzmannConstant), this means
-    the old default value of 5.5e-8 now means 
-    5.5e-8/5.670e-8 = 0.97001763668430343479 as ocean_emissivity in 
+    the old default value of 5.5e-8 now means
+    5.5e-8/5.670e-8 = 0.97001763668430343479 as ocean_emissivity in
     S/R exf_readparms
   - FV-discretization of the B-grid LSOR solver, turn on with
     SEAICE_LSRBNEW. This new solver also involves a slight re-organization
@@ -40,8 +47,8 @@ o pkg/seaice/seaice_growth.F:
 o pkg/seaice/seaice_model.F:
   Remove this patholigical case treatment in evolution branch,
   where it is un-necessary and breaks conservation.
-  Update global_ocean.cs32x15/results accordingly for 
-  output.seaice.txt output_adm.seaice.txt and output_adm.seaice_dynmix.txt 
+  Update global_ocean.cs32x15/results accordingly for
+  output.seaice.txt output_adm.seaice.txt and output_adm.seaice_dynmix.txt
 o model/src:
   useRealFreshWaterFlux: remove masking of EmPmP (using maskInC) in
   external_forcing_surf.F and apply mask directly in S/R SOLVE_FOR_PRESSURE.
