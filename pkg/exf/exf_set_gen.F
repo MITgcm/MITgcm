@@ -1,7 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.28 2009/09/02 19:18:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.29 2011/12/21 17:19:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+
+C--  File exf_set_gen.F: General routines to load-in an input field
+C--   Contents
+C--   o EXF_SET_GEN
+C--   o EXF_INIT_GEN
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine exf_set_gen(
      &     genfile, genstartdate, genperiod,
@@ -131,28 +138,22 @@ c     get record numbers and interpolation factor for gen
      I         mytime, myiter, mythid )
 
 #ifdef USE_EXF_INTERPOLATION
-            call exf_interp( genfile0, exf_iprec
-     &           , gen1, count0, gen_xout, gen_yout
-     &           , gen_lon0,gen_lon_inc
-     &           , gen_lat0,gen_lat_inc
-     &           , gen_nlon,gen_nlat,interp_method,mythid
-     &           )
-#else
-            IF (exf_yftype .EQ. 'RL') THEN
+            IF ( interp_method.GE.1 ) THEN
+              call exf_interp(
+     I             genfile0, exf_iprec,
+     O             gen1,
+     I             count0, gen_xout, gen_yout,
+     I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     I             gen_nlon, gen_nlat, interp_method, mythid )
+            ELSE
+#endif /* USE_EXF_INTERPOLATION */
               CALL READ_REC_3D_RL( genfile0, exf_iprec, 1,
      &                             gen1, count0, myIter, myThid )
-            ELSE
-c             CALL READ_REC_3D_RS( genfile0, exf_iprec, 1,
-c    &                             gen1, count0, myIter, myThid )
-              STOP 'S/R EXF_SET_GEN: invalid exf_yftype'
+#ifdef USE_EXF_INTERPOLATION
             ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
-            if (exf_yftype .eq. 'RL') then
-               call exf_filter_rl( gen1, genmask, mythid )
-c           else
-c              call exf_filter_rs( gen1, genmask, mythid )
-            end if
+            call exf_filter_rl( gen1, genmask, mythid )
          endif
 
          if (( first ) .or. ( changed )) then
@@ -165,28 +166,22 @@ c              call exf_filter_rs( gen1, genmask, mythid )
      I         mytime, myiter, mythid )
 
 #ifdef USE_EXF_INTERPOLATION
-            call exf_interp( genfile1, exf_iprec
-     &           , gen1, count1, gen_xout, gen_yout
-     &           , gen_lon0,gen_lon_inc
-     &           , gen_lat0,gen_lat_inc
-     &           , gen_nlon,gen_nlat,interp_method,mythid
-     &           )
-#else
-            IF (exf_yftype .EQ. 'RL') THEN
+            IF ( interp_method.GE.1 ) THEN
+              call exf_interp(
+     I             genfile1, exf_iprec,
+     O             gen1,
+     I             count1, gen_xout, gen_yout,
+     I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     I             gen_nlon, gen_nlat, interp_method, mythid )
+            ELSE
+#endif /* USE_EXF_INTERPOLATION */
               CALL READ_REC_3D_RL( genfile1, exf_iprec, 1,
      &                             gen1, count1, myIter, myThid )
-            ELSE
-c             CALL READ_REC_3D_RS( genfile1, exf_iprec, 1,
-c    &                             gen1, count1, myIter, myThid )
-              STOP 'S/R EXF_SET_GEN: invalid exf_yftype'
+#ifdef USE_EXF_INTERPOLATION
             ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
-            if (exf_yftype .eq. 'RL') then
-               call exf_filter_rl( gen1, genmask, mythid )
-c           else
-c              call exf_filter_rs( gen1, genmask, mythid )
-            end if
+            call exf_filter_rl( gen1, genmask, mythid )
          endif
 
 c     Loop over tiles.
@@ -212,8 +207,7 @@ c     Interpolate linearly onto the  time.
       RETURN
       END
 
-C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine exf_init_gen (
      &     genfile, genperiod, exf_inscal_gen, genmask,
@@ -296,28 +290,22 @@ c     == end of interface ==
          count = 1
 
 #ifdef USE_EXF_INTERPOLATION
-         call exf_interp( genfile, exf_iprec
-     &        , genfld, count, gen_xout, gen_yout
-     &        , gen_lon0,gen_lon_inc
-     &        , gen_lat0,gen_lat_inc
-     &        , gen_nlon,gen_nlat,interp_method,mythid
-     &        )
-#else
-         IF (exf_yftype .EQ. 'RL') THEN
+         IF ( interp_method.GE.1 ) THEN
+              call exf_interp(
+     I             genfile, exf_iprec,
+     O             genfld,
+     I             count, gen_xout, gen_yout,
+     I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     I             gen_nlon, gen_nlat, interp_method, mythid )
+         ELSE
+#endif /* USE_EXF_INTERPOLATION */
             CALL READ_REC_3D_RL( genfile, exf_iprec, 1,
      &                             genfld, count, 0, myThid )
-         ELSE
-c           CALL READ_REC_3D_RS( genfile, exf_iprec, 1,
-c    &                             genfld, count, 0, myThid )
-            STOP 'S/R EXF_INIT_GEN: invalid exf_yftype'
+#ifdef USE_EXF_INTERPOLATION
          ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
-         if (exf_yftype .eq. 'RL') then
-            call exf_filter_rl( genfld, genmask, mythid )
-c        else
-c           call exf_filter_rs( genfld, genmask, mythid )
-         end if
+         call exf_filter_rl( genfld, genmask, mythid )
 
 c     Loop over tiles and scale genfld
          do bj = mybylo(mythid),mybyhi(mythid)

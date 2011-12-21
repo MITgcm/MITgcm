@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.23 2011/05/25 00:33:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.24 2011/12/21 17:19:08 jmc Exp $
 C $Name:  $
 c
 c
@@ -686,159 +686,172 @@ c     exf_outscale_*    output scaling factors
 c-- set dummy dimension 1
       INTEGER    exf_interp_bufferSize
       PARAMETER( exf_interp_bufferSize = 1 )
-       integer MAX_LAT_INC
-       parameter(MAX_LAT_INC = 1)
-#else
+      INTEGER MAX_LAT_INC
+      PARAMETER(MAX_LAT_INC = 1)
+#else /* USE_EXF_INTERPOLATION */
 C  To read input data without dynamical allocation (EXF_INTERP_USE_DYNALLOC undef),
 C  buffer size currently set to 65000 (allows to read-in a 1x1 global data set)
 C  Increase to 140000 to accommodate for ECMWF-INTERIM
       INTEGER    exf_interp_bufferSize
       PARAMETER( exf_interp_bufferSize = 140000 )
 c for lat interpolation, arraysize currently set to 2176 max data values
-       integer MAX_LAT_INC
-       parameter(MAX_LAT_INC = 2176)
+      INTEGER MAX_LAT_INC
+      PARAMETER(MAX_LAT_INC = 2176)
+
+C-- Interpolation parameters (for each input field):
+C  {inputField}_lon0    :: longitude of the 1rst point (South-East corner)
+C  {inputField}_lon_inc :: longitude increment (uniform)
+C  {inputField}_lat0    :: latitude  of the 1rst point (South-East corner)
+C  {inputField}_lat_inc :: latitude  increment (vector, fct of latitude only)
+C  {inputField}_nlon    :: input filed 1rst dim, longitudinal direction
+C  {inputField}_nlat    :: input filed 2nd  dim, latitudinal  direction
+C  {inputField}_interpMethod :: interpolation method: =0 : no interpolation ;
+C                            :: =1,11,21 : bilinear ; =2,12,22 : bicubic ;
+C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
       _RL ustress_lon0, ustress_lon_inc
       _RL ustress_lat0, ustress_lat_inc(MAX_LAT_INC)
-      INTEGER ustress_nlon, ustress_nlat
+      INTEGER ustress_nlon, ustress_nlat, ustress_interpMethod
       _RL vstress_lon0, vstress_lon_inc
       _RL vstress_lat0, vstress_lat_inc(MAX_LAT_INC)
-      INTEGER vstress_nlon, vstress_nlat
+      INTEGER vstress_nlon, vstress_nlat, vstress_interpMethod
       _RL hflux_lon0, hflux_lon_inc
       _RL hflux_lat0, hflux_lat_inc(MAX_LAT_INC)
-      INTEGER hflux_nlon, hflux_nlat
+      INTEGER hflux_nlon, hflux_nlat, hflux_interpMethod
       _RL sflux_lon0, sflux_lon_inc
       _RL sflux_lat0, sflux_lat_inc(MAX_LAT_INC)
-      INTEGER sflux_nlon, sflux_nlat
+      INTEGER sflux_nlon, sflux_nlat, sflux_interpMethod
       _RL swflux_lon0, swflux_lon_inc
       _RL swflux_lat0, swflux_lat_inc(MAX_LAT_INC)
-      INTEGER swflux_nlon, swflux_nlat
+      INTEGER swflux_nlon, swflux_nlat, swflux_interpMethod
       _RL runoff_lon0, runoff_lon_inc
       _RL runoff_lat0, runoff_lat_inc(MAX_LAT_INC)
-      INTEGER runoff_nlon, runoff_nlat
+      INTEGER runoff_nlon, runoff_nlat, runoff_interpMethod
       _RL atemp_lon0, atemp_lon_inc
       _RL atemp_lat0, atemp_lat_inc(MAX_LAT_INC)
-      INTEGER atemp_nlon, atemp_nlat
+      INTEGER atemp_nlon, atemp_nlat, atemp_interpMethod
       _RL aqh_lon0, aqh_lon_inc
       _RL aqh_lat0, aqh_lat_inc(MAX_LAT_INC)
-      INTEGER aqh_nlon, aqh_nlat
+      INTEGER aqh_nlon, aqh_nlat, aqh_interpMethod
       _RL evap_lon0, evap_lon_inc
       _RL evap_lat0, evap_lat_inc(MAX_LAT_INC)
-      INTEGER evap_nlon, evap_nlat
+      INTEGER evap_nlon, evap_nlat, evap_interpMethod
       _RL precip_lon0, precip_lon_inc
       _RL precip_lat0, precip_lat_inc(MAX_LAT_INC)
-      INTEGER precip_nlon, precip_nlat
+      INTEGER precip_nlon, precip_nlat, precip_interpMethod
       _RL snowprecip_lon0, snowprecip_lon_inc
       _RL snowprecip_lat0, snowprecip_lat_inc(MAX_LAT_INC)
-      INTEGER snowprecip_nlon, snowprecip_nlat
+      INTEGER snowprecip_nlon, snowprecip_nlat, snowprecip_interpMethod
       _RL uwind_lon0, uwind_lon_inc
       _RL uwind_lat0, uwind_lat_inc(MAX_LAT_INC)
-      INTEGER uwind_nlon, uwind_nlat
+      INTEGER uwind_nlon, uwind_nlat, uwind_interpMethod
       _RL vwind_lon0, vwind_lon_inc
       _RL vwind_lat0, vwind_lat_inc(MAX_LAT_INC)
-      INTEGER vwind_nlon, vwind_nlat
+      INTEGER vwind_nlon, vwind_nlat, vwind_interpMethod
       _RL wspeed_lon0, wspeed_lon_inc
       _RL wspeed_lat0, wspeed_lat_inc(MAX_LAT_INC)
-      INTEGER wspeed_nlon, wspeed_nlat
+      INTEGER wspeed_nlon, wspeed_nlat, wspeed_interpMethod
       _RL lwflux_lon0, lwflux_lon_inc
       _RL lwflux_lat0, lwflux_lat_inc(MAX_LAT_INC)
-      INTEGER lwflux_nlon, lwflux_nlat
+      INTEGER lwflux_nlon, lwflux_nlat, lwflux_interpMethod
       _RL swdown_lon0, swdown_lon_inc
       _RL swdown_lat0, swdown_lat_inc(MAX_LAT_INC)
-      INTEGER swdown_nlon, swdown_nlat
+      INTEGER swdown_nlon, swdown_nlat, swdown_interpMethod
       _RL lwdown_lon0, lwdown_lon_inc
       _RL lwdown_lat0, lwdown_lat_inc(MAX_LAT_INC)
-      INTEGER lwdown_nlon, lwdown_nlat
+      INTEGER lwdown_nlon, lwdown_nlat, lwdown_interpMethod
       _RL apressure_lon0,apressure_lon_inc
       _RL apressure_lat0,apressure_lat_inc(MAX_LAT_INC)
-      INTEGER apressure_nlon,apressure_nlat
+      INTEGER apressure_nlon,apressure_nlat,apressure_interpMethod
       _RL areamask_lon0,areamask_lon_inc
       _RL areamask_lat0,areamask_lat_inc(MAX_LAT_INC)
-      INTEGER areamask_nlon,areamask_nlat
+      INTEGER areamask_nlon,areamask_nlat,areamask_interpMethod
 
-      common /exf_interpolation/
+      common /exf_interpolation_rl/
      & ustress_lon0, ustress_lon_inc,
      & ustress_lat0, ustress_lat_inc,
-     & ustress_nlon, ustress_nlat,
      & vstress_lon0, vstress_lon_inc,
      & vstress_lat0, vstress_lat_inc,
-     & vstress_nlon, vstress_nlat,
      & hflux_lon0, hflux_lon_inc,
      & hflux_lat0, hflux_lat_inc,
-     & hflux_nlon, hflux_nlat,
      & sflux_lon0, sflux_lon_inc,
      & sflux_lat0, sflux_lat_inc,
-     & sflux_nlon, sflux_nlat,
      & swflux_lon0, swflux_lon_inc,
      & swflux_lat0, swflux_lat_inc,
-     & swflux_nlon, swflux_nlat,
      & runoff_lon0, runoff_lon_inc,
      & runoff_lat0, runoff_lat_inc,
-     & runoff_nlon, runoff_nlat,
      & atemp_lon0, atemp_lon_inc,
      & atemp_lat0, atemp_lat_inc,
-     & atemp_nlon, atemp_nlat,
      & aqh_lon0, aqh_lon_inc,
      & aqh_lat0, aqh_lat_inc,
-     & aqh_nlon, aqh_nlat,
      & evap_lon0, evap_lon_inc,
      & evap_lat0, evap_lat_inc,
-     & evap_nlon, evap_nlat,
      & precip_lon0, precip_lon_inc,
      & precip_lat0, precip_lat_inc,
-     & precip_nlon, precip_nlat,
      & snowprecip_lon0, snowprecip_lon_inc,
      & snowprecip_lat0, snowprecip_lat_inc,
-     & snowprecip_nlon, snowprecip_nlat,
      & uwind_lon0, uwind_lon_inc,
      & uwind_lat0, uwind_lat_inc,
-     & uwind_nlon, uwind_nlat,
      & vwind_lon0, vwind_lon_inc,
      & vwind_lat0, vwind_lat_inc,
-     & vwind_nlon, vwind_nlat,
      & wspeed_lon0, wspeed_lon_inc,
      & wspeed_lat0, wspeed_lat_inc,
-     & wspeed_nlon, wspeed_nlat,
      & lwflux_lon0, lwflux_lon_inc,
      & lwflux_lat0, lwflux_lat_inc,
-     & lwflux_nlon, lwflux_nlat,
      & swdown_lon0, swdown_lon_inc,
      & swdown_lat0, swdown_lat_inc,
-     & swdown_nlon, swdown_nlat,
      & lwdown_lon0, lwdown_lon_inc,
      & lwdown_lat0, lwdown_lat_inc,
-     & lwdown_nlon, lwdown_nlat,
      & apressure_lon0,apressure_lon_inc,
      & apressure_lat0,apressure_lat_inc,
-     & apressure_nlon,apressure_nlat,
      & areamask_lon0,areamask_lon_inc,
-     & areamask_lat0,areamask_lat_inc,
-     & areamask_nlon,areamask_nlat
+     & areamask_lat0,areamask_lat_inc
+
+      common /exf_interpolation_i/
+     & ustress_nlon, ustress_nlat, ustress_interpMethod,
+     & vstress_nlon, vstress_nlat, vstress_interpMethod,
+     & hflux_nlon, hflux_nlat, hflux_interpMethod,
+     & sflux_nlon, sflux_nlat, sflux_interpMethod,
+     & swflux_nlon, swflux_nlat, swflux_interpMethod,
+     & runoff_nlon, runoff_nlat, runoff_interpMethod,
+     & atemp_nlon, atemp_nlat, atemp_interpMethod,
+     & aqh_nlon, aqh_nlat, aqh_interpMethod,
+     & evap_nlon, evap_nlat, evap_interpMethod,
+     & precip_nlon, precip_nlat, precip_interpMethod,
+     & snowprecip_nlon, snowprecip_nlat, snowprecip_interpMethod,
+     & uwind_nlon, uwind_nlat, uwind_interpMethod,
+     & vwind_nlon, vwind_nlat, vwind_interpMethod,
+     & wspeed_nlon, wspeed_nlat, wspeed_interpMethod,
+     & lwflux_nlon, lwflux_nlat, lwflux_interpMethod,
+     & swdown_nlon, swdown_nlat, swdown_interpMethod,
+     & lwdown_nlon, lwdown_nlat, lwdown_interpMethod,
+     & apressure_nlon,apressure_nlat,apressure_interpMethod,
+     & areamask_nlon,areamask_nlat,areamask_interpMethod
 
       _RL climsst_lon0, climsst_lon_inc
       _RL climsst_lat0, climsst_lat_inc(MAX_LAT_INC)
-      INTEGER climsst_nlon, climsst_nlat
+      INTEGER climsst_nlon, climsst_nlat, climsst_interpMethod
       _RL climsss_lon0, climsss_lon_inc
       _RL climsss_lat0, climsss_lat_inc(MAX_LAT_INC)
-      INTEGER climsss_nlon, climsss_nlat
+      INTEGER climsss_nlon, climsss_nlat, climsss_interpMethod
       _RL climustr_lon0, climustr_lon_inc
       _RL climustr_lat0, climustr_lat_inc(MAX_LAT_INC)
-      INTEGER climustr_nlon, climustr_nlat
+      INTEGER climustr_nlon, climustr_nlat, climustr_interpMethod
       _RL climvstr_lon0, climvstr_lon_inc
       _RL climvstr_lat0, climvstr_lat_inc(MAX_LAT_INC)
-      INTEGER climvstr_nlon, climvstr_nlat
+      INTEGER climvstr_nlon, climvstr_nlat, climvstr_interpMethod
 
       common /exf_clim_interpolation/
      & climsst_lon0, climsst_lon_inc,
      & climsst_lat0, climsst_lat_inc,
-     & climsst_nlon, climsst_nlat,
      & climsss_lon0, climsss_lon_inc,
      & climsss_lat0, climsss_lat_inc,
-     & climsss_nlon, climsss_nlat,
      & climustr_lon0, climustr_lon_inc,
      & climustr_lat0, climustr_lat_inc,
-     & climustr_nlon, climustr_nlat,
      & climvstr_lon0, climvstr_lon_inc,
      & climvstr_lat0, climvstr_lat_inc,
-     & climvstr_nlon, climvstr_nlat
+     & climsst_nlon, climsst_nlat, climsst_interpMethod,
+     & climsss_nlon, climsss_nlat, climsss_interpMethod,
+     & climustr_nlon, climustr_nlat, climustr_interpMethod,
+     & climvstr_nlon, climvstr_nlat, climvstr_interpMethod
 
-#endif
+#endif /* USE_EXF_INTERPOLATION */

@@ -1,37 +1,39 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.21 2009/09/02 19:18:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.22 2011/12/21 17:19:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_set_uv(
-     &     uvecfile, uvecstartdate, uvecperiod,
-     &     exf_inscal_uvec, uvec, uvec0, uvec1, uvecmask,
-     &     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     &     uvec_nlon, uvec_nlat,
-     &     uvec_remove_intercept, uvec_remove_slope,
-     &     vvecfile, vvecstartdate, vvecperiod,
-     &     exf_inscal_vvec, vvec, vvec0, vvec1, vvecmask,
-     &     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     &     vvec_nlon, vvec_nlat,
-     &     vvec_remove_intercept, vvec_remove_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+      SUBROUTINE EXF_SET_UV(
+     I     uvecfile, uvecstartdate, uvecperiod,
+     I     exf_inscal_uvec, uvec_remove_intercept, uvec_remove_slope,
+     U     uvec, uvec0, uvec1, uvecmask,
+     I     vvecfile, vvecstartdate, vvecperiod,
+     I     exf_inscal_vvec, vvec_remove_intercept, vvec_remove_slope,
+     U     vvec, vvec0, vvec1, vvecmask,
+#ifdef USE_EXF_INTERPOLATION
+     I     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
+     I     uvec_nlon, uvec_nlat, u_interp_method,
+     I     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
+     I     vvec_nlon, vvec_nlat, v_interp_method,
+#endif /* USE_EXF_INTERPOLATION */
+     I     myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_set_uv
-c     ==================================================================
-c
-c     o Read-in, interpolate, and rotate wind or wind stress vectors
-c       from a spherical-polar input grid to an arbitrary output grid.
-c
-c       menemenlis@jpl.nasa.gov, 8-Dec-2003
-c
-c     ==================================================================
-c     SUBROUTINE exf_set_uv
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE EXF_SET_UV
+C     ==================================================================
+C
+C     o Read-in, interpolate, and rotate wind or wind stress vectors
+C       from a spherical-polar input grid to an arbitrary output grid.
+C
+C       menemenlis@jpl.nasa.gov, 8-Dec-2003
+C
+C     ==================================================================
+C     SUBROUTINE EXF_SET_UV
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -48,115 +50,112 @@ c     == global variables ==
 # include "ctrl_dummy.h"
 #endif
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-c     *vec_lon_0,          :: longitude and latitude of SouthWest
-c         *vec_lat_0          corner of global input grid for *vec
-c     *vec_nlon, *vec_nlat :: input x-grid and y-grid size for *vec
-c     *vec_lon_inc         :: scalar x-grid increment for *vec
-c     *vec_lat_inc         :: vector y-grid increments for *vec
+C     *vec_lon_0,          :: longitude and latitude of SouthWest
+C     *vec_lat_0              corner of global input grid for *vec
+C     *vec_nlon, *vec_nlat :: input x-grid and y-grid size for *vec
+C     *vec_lon_inc         :: scalar x-grid increment for *vec
+C     *vec_lat_inc         :: vector y-grid increments for *vec
 
-      character*(128) uvecfile, uvecfile0, uvecfile1
+      CHARACTER*(128) uvecfile
       _RL     uvecstartdate, uvecperiod
       _RL     exf_inscal_uvec
       _RL     uvec_remove_intercept, uvec_remove_slope
-      _RL     uvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     uvec0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     uvec1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      character*1 uvecmask
-      _RL uvec_lon0, uvec_lon_inc
-      _RL uvec_lat0, uvec_lat_inc(MAX_LAT_INC)
-      INTEGER uvec_nlon, uvec_nlat
-      character*(128) vvecfile, vvecfile0, vvecfile1
+      _RL     uvec  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     uvec0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     uvec1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      CHARACTER*1 uvecmask
+      CHARACTER*(128) vvecfile
       _RL     vvecstartdate, vvecperiod
       _RL     exf_inscal_vvec
       _RL     vvec_remove_intercept, vvec_remove_slope
-      _RL     vvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     vvec0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     vvec1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      character*1 vvecmask
+      _RL     vvec  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     vvec0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     vvec1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      CHARACTER*1 vvecmask
+#ifdef USE_EXF_INTERPOLATION
+      _RL uvec_lon0, uvec_lon_inc
+      _RL uvec_lat0, uvec_lat_inc(MAX_LAT_INC)
+      INTEGER uvec_nlon, uvec_nlat, u_interp_method
       _RL vvec_lon0, vvec_lon_inc
       _RL vvec_lat0, vvec_lat_inc(MAX_LAT_INC)
-      INTEGER vvec_nlon, vvec_nlat
-      _RL     mycurrenttime
-      integer mycurrentiter
-      integer mythid
+      INTEGER vvec_nlon, vvec_nlat, v_interp_method
+#endif /* USE_EXF_INTERPOLATION */
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+
+C     == local variables ==
 
 #ifdef USE_EXF_INTERPOLATION
-c     == local variables ==
-
-      logical first, changed
+      CHARACTER*(128) uvecfile0, uvecfile1
+      CHARACTER*(128) vvecfile0, vvecfile1
+      LOGICAL first, changed
       _RL     fac, x1, x2, x3, x4, y1, y2, y3, y4, dx, dy
-      _RL     tmp_u (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     tmp_v (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      integer count0, count1
-      integer i, j, bi, bj
-      integer   il, interp_method
-      integer year0, year1
+      _RL     tmp_u (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     tmp_v (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER count0, count1
+      INTEGER i, j, bi, bj
+      INTEGER year0, year1
+#endif /* USE_EXF_INTERPOLATION */
 
-c     == external ==
+C     == end of interface ==
 
-      integer  ilnblnk
-      external ilnblnk
+#ifdef USE_EXF_INTERPOLATION
+      IF ( u_interp_method.GE.1 .AND. v_interp_method.GE.1
+     &   .AND.  uvecfile.NE.' ' .AND. vvecfile.NE.' '
+     &   .AND. ( usingCurvilinearGrid .OR. rotateGrid ) ) THEN
 
-c     == end of interface ==
+C     get record numbers and interpolation factor
+        CALL exf_GetFFieldRec(
+     I           uvecstartdate, uvecperiod,
+     I           useExfYearlyFields,
+     O           fac, first, changed,
+     O           count0, count1, year0, year1,
+     I           myTime, myIter, myThid )
 
-      IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+        IF ( first ) THEN
 
-        if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
-
-c     get record numbers and interpolation factor
-          call exf_GetFFieldRec(
-     I        uvecstartdate, uvecperiod
-     I        , useExfYearlyFields
-     O        , fac, first, changed
-     O        , count0, count1, year0, year1
-     I        , mycurrenttime, mycurrentiter, mythid
-     &        )
-
-          if ( first ) then
-
-            call exf_GetYearlyFieldName(
+          CALL exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, uvecperiod, year0,
      I         uvecfile,
      O         uvecfile0,
-     I         mycurrenttime, mycurrentiter, mythid )
-            call exf_GetYearlyFieldName(
+     I         myTime, myIter, myThid )
+          CALL exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, vvecperiod, year0,
      I         vvecfile,
      O         vvecfile0,
-     I         mycurrenttime, mycurrentiter, mythid )
+     I         myTime, myIter, myThid )
 
-c     scalar interpolation to (xC,yC) locations
-            interp_method=12
-            call exf_interp( uvecfile0, exf_iprec
-     &          , tmp_u, count0, xC, yC
-     &          , uvec_lon0,uvec_lon_inc
-     &          , uvec_lat0,uvec_lat_inc
-     &          , uvec_nlon,uvec_nlat,interp_method,mythid
-     &          )
-            interp_method=22
-            call exf_interp( vvecfile0, exf_iprec
-     &          , tmp_v, count0, xC, yC
-     &          , vvec_lon0,vvec_lon_inc
-     &          , vvec_lat0,vvec_lat_inc
-     &          , vvec_nlon,vvec_nlat,interp_method,mythid
-     &          )
-c     vector rotation
-            do bj = mybylo(mythid),mybyhi(mythid)
-              do bi = mybxlo(mythid),mybxhi(mythid)
-                do j = 1,sny
-                  do i = 1,snx
+C     scalar interpolation to (xC,yC) locations
+          CALL EXF_INTERP(
+     I             uvecfile0, exf_iprec,
+     O             tmp_u,
+     I             count0, xC, yC,
+     I             uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
+     I             uvec_nlon, uvec_nlat, u_interp_method, myThid )
+          CALL EXF_INTERP(
+     I             vvecfile0, exf_iprec,
+     O             tmp_v,
+     I             count0, xC, yC,
+     I             vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
+     I             vvec_nlon, vvec_nlat, v_interp_method, myThid )
+C     vector rotation
+          DO bj = myByLo(myThid),myByHi(myThid)
+            DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+                DO i = 1,sNx
                     x1=xG(i,j,bi,bj)
                     x2=xG(i+1,j,bi,bj)
                     x3=xG(i,j+1,bi,bj)
                     x4=xG(i+1,j+1,bi,bj)
-                    if ((x2-x1).gt.180) x2=x2-360
-                    if ((x1-x2).gt.180) x2=x2+360
-                    if ((x3-x1).gt.180) x3=x3-360
-                    if ((x1-x3).gt.180) x3=x3+360
-                    if ((x4-x1).gt.180) x4=x4-360
-                    if ((x1-x4).gt.180) x4=x4+360
+                    IF ((x2-x1).GT.180) x2=x2-360
+                    IF ((x1-x2).GT.180) x2=x2+360
+                    IF ((x3-x1).GT.180) x3=x3-360
+                    IF ((x1-x3).GT.180) x3=x3+360
+                    IF ((x4-x1).GT.180) x4=x4-360
+                    IF ((x1-x4).GT.180) x4=x4+360
                     y1=yG(i,j,bi,bj)
                     y2=yG(i+1,j,bi,bj)
                     y3=yG(i,j+1,bi,bj)
@@ -168,7 +167,7 @@ c     vector rotation
                     vvec1(i,j,bi,bj)=
      &                  (tmp_u(i,j,bi,bj)*dx+
      &                  tmp_v(i,j,bi,bj)*dy)/
-     &                  sqrt(dx*dx+dy*dy)
+     &                  SQRT(dx*dx+dy*dy)
                     dx=0.5*(x2+x4-x1-x3)
                     dx=dx*
      &                  cos(deg2rad*yC(i,j,bi,bj))
@@ -176,67 +175,59 @@ c     vector rotation
                     uvec1(i,j,bi,bj)=
      &                  (tmp_u(i,j,bi,bj)*dx+
      &                  tmp_v(i,j,bi,bj)*dy)/
-     &                  sqrt(dx*dx+dy*dy)
-                  enddo
-                enddo
-              enddo
-            enddo
-c     apply mask
-            if (exf_yftype .eq. 'RL') then
-              call exf_filter_rl( uvec1, uvecmask, mythid )
-              call exf_filter_rl( vvec1, vvecmask, mythid )
-            else
-c             call exf_filter_rs( uvec1, uvecmask, mythid )
-c             call exf_filter_rs( vvec1, vvecmask, mythid )
-              STOP 'S/R EXF_SET_UV: invalid exf_yftype'
-            end if
-          endif
+     &                  SQRT(dx*dx+dy*dy)
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+C     apply mask
+          CALL EXF_FILTER_RL( uvec1, uvecmask, myThid )
+          CALL EXF_FILTER_RL( vvec1, vvecmask, myThid )
+        ENDIF
 
-          if (( first ) .or. ( changed )) then
-            call exf_SwapFFields( uvec0, uvec1, mythid )
-            call exf_SwapFFields( vvec0, vvec1, mythid )
+        IF (  first .OR. changed ) THEN
+          CALL exf_SwapFFields( uvec0, uvec1, myThid )
+          CALL exf_SwapFFields( vvec0, vvec1, myThid )
 
-            call exf_GetYearlyFieldName(
+          CALL exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, uvecperiod, year1,
      I         uvecfile,
      O         uvecfile1,
-     I         mycurrenttime, mycurrentiter, mythid )
-            call exf_GetYearlyFieldName(
+     I         myTime, myIter, myThid )
+          CALL exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, vvecperiod, year1,
      I         vvecfile,
      O         vvecfile1,
-     I         mycurrenttime, mycurrentiter, mythid )
+     I         myTime, myIter, myThid )
 
-c     scalar interpolation to (xC,yC) locations
-            interp_method=12
-            call exf_interp( uvecfile1, exf_iprec
-     &          , tmp_u, count1, xC, yC
-     &          , uvec_lon0,uvec_lon_inc
-     &          , uvec_lat0,uvec_lat_inc
-     &          , uvec_nlon,uvec_nlat,interp_method,mythid
-     &          )
-            interp_method=22
-            call exf_interp( vvecfile1, exf_iprec
-     &          , tmp_v, count1, xC, yC
-     &          , vvec_lon0,vvec_lon_inc
-     &          , vvec_lat0,vvec_lat_inc
-     &          , vvec_nlon,vvec_nlat,interp_method,mythid
-     &          )
-c     vector rotation
-            do bj = mybylo(mythid),mybyhi(mythid)
-              do bi = mybxlo(mythid),mybxhi(mythid)
-                do j = 1,sny
-                  do i = 1,snx
+C     scalar interpolation to (xC,yC) locations
+          CALL EXF_INTERP(
+     I             uvecfile1, exf_iprec,
+     O             tmp_u,
+     I             count1, xC, yC,
+     I             uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
+     I             uvec_nlon, uvec_nlat, u_interp_method, myThid )
+          CALL EXF_INTERP(
+     I             vvecfile1, exf_iprec,
+     O             tmp_v,
+     I             count1, xC, yC,
+     I             vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
+     I             vvec_nlon, vvec_nlat, v_interp_method, myThid )
+C     vector rotation
+          DO bj = myByLo(myThid),myByHi(myThid)
+            DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+                DO i = 1,sNx
                     x1=xG(i,j,bi,bj)
                     x2=xG(i+1,j,bi,bj)
                     x3=xG(i,j+1,bi,bj)
                     x4=xG(i+1,j+1,bi,bj)
-                    if ((x2-x1).gt.180) x2=x2-360
-                    if ((x1-x2).gt.180) x2=x2+360
-                    if ((x3-x1).gt.180) x3=x3-360
-                    if ((x1-x3).gt.180) x3=x3+360
-                    if ((x4-x1).gt.180) x4=x4-360
-                    if ((x1-x4).gt.180) x4=x4+360
+                    IF ((x2-x1).GT.180) x2=x2-360
+                    IF ((x1-x2).GT.180) x2=x2+360
+                    IF ((x3-x1).GT.180) x3=x3-360
+                    IF ((x1-x3).GT.180) x3=x3+360
+                    IF ((x4-x1).GT.180) x4=x4-360
+                    IF ((x1-x4).GT.180) x4=x4+360
                     y1=yG(i,j,bi,bj)
                     y2=yG(i+1,j,bi,bj)
                     y3=yG(i,j+1,bi,bj)
@@ -248,7 +239,7 @@ c     vector rotation
                     vvec1(i,j,bi,bj)=
      &                  (tmp_u(i,j,bi,bj)*dx+
      &                  tmp_v(i,j,bi,bj)*dy)/
-     &                  sqrt(dx*dx+dy*dy)
+     &                  SQRT(dx*dx+dy*dy)
                     dx=0.5*(x2+x4-x1-x3)
                     dx=dx*
      &                  cos(deg2rad*yC(i,j,bi,bj))
@@ -256,65 +247,61 @@ c     vector rotation
                     uvec1(i,j,bi,bj)=
      &                  (tmp_u(i,j,bi,bj)*dx+
      &                  tmp_v(i,j,bi,bj)*dy)/
-     &                  sqrt(dx*dx+dy*dy)
-                  enddo
-                enddo
-              enddo
-            enddo
-c     apply mask
-            if (exf_yftype .eq. 'RL') then
-              call exf_filter_rl( uvec1, uvecmask, mythid )
-              call exf_filter_rl( vvec1, vvecmask, mythid )
-            else
-c             call exf_filter_rs( uvec1, uvecmask, mythid )
-c             call exf_filter_rs( vvec1, vvecmask, mythid )
-              STOP 'S/R EXF_SET_UV: invalid exf_yftype'
-            end if
-          endif
+     &                  SQRT(dx*dx+dy*dy)
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+C     apply mask
+          CALL EXF_FILTER_RL( uvec1, uvecmask, myThid )
+          CALL EXF_FILTER_RL( vvec1, vvecmask, myThid )
+        ENDIF
 
-c     Interpolate linearly onto the current time.
-          do bj = mybylo(mythid),mybyhi(mythid)
-            do bi = mybxlo(mythid),mybxhi(mythid)
-              do j = 1,sny
-                do i = 1,snx
-                  uvec(i,j,bi,bj) = exf_inscal_uvec * (
+C     Interpolate linearly onto the current time.
+        DO bj = myByLo(myThid),myByHi(myThid)
+          DO bi = myBxLo(myThid),myBxHi(myThid)
+            DO j = 1,sNy
+              DO i = 1,sNx
+                uvec(i,j,bi,bj) = exf_inscal_uvec * (
      &                fac * uvec0(i,j,bi,bj) +
      &                (exf_one - fac) * uvec1(i,j,bi,bj) )
-                  vvec(i,j,bi,bj) = exf_inscal_vvec * (
+                vvec(i,j,bi,bj) = exf_inscal_vvec * (
      &                fac * vvec0(i,j,bi,bj) +
      &                (exf_one - fac) * vvec1(i,j,bi,bj) )
-                enddo
-              enddo
-            enddo
-          enddo
-
-        endif
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
 
       ELSE
-c     IF ( .NOT. ( usingCurvilinearGrid .OR rotateGrid ) )
+C     case no-interpolation or .NOT.(usingCurvilinearGrid .OR. rotateGrid)
+#else  /* USE_EXF_INTERPOLATION */
+      IF ( .TRUE. ) THEN
+#endif /* USE_EXF_INTERPOLATION */
 
-       interp_method=12
-        call exf_set_gen(
+        CALL EXF_SET_GEN(
      &      uvecfile, uvecstartdate, uvecperiod,
      &      exf_inscal_uvec,
      &      uvec_remove_intercept, uvec_remove_slope,
      &      uvec, uvec0, uvec1, uvecmask,
+#ifdef USE_EXF_INTERPOLATION
      &      uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     &      uvec_nlon, uvec_nlat, xC, yC, interp_method,
-     &      mycurrenttime, mycurrentiter, mythid )
-        interp_method=22
-        call exf_set_gen(
+     &      uvec_nlon, uvec_nlat, xC, yC, u_interp_method,
+#endif /* USE_EXF_INTERPOLATION */
+     &      myTime, myIter, myThid )
+
+        CALL EXF_SET_GEN(
      &      vvecfile, vvecstartdate, vvecperiod,
      &      exf_inscal_vvec,
      &      vvec_remove_intercept, vvec_remove_slope,
      &      vvec, vvec0, vvec1, vvecmask,
+#ifdef USE_EXF_INTERPOLATION
      &      vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     &      vvec_nlon, vvec_nlat, xC, yC, interp_method,
-     &      mycurrenttime, mycurrentiter, mythid )
+     &      vvec_nlon, vvec_nlat, xC, yC, v_interp_method,
+#endif /* USE_EXF_INTERPOLATION */
+     &      myTime, myIter, myThid )
 
       ENDIF
 
-#endif /* USE_EXF_INTERPOLATION */
-
-      return
-      end
+      RETURN
+      END

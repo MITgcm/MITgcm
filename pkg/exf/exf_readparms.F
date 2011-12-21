@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.68 2011/12/12 19:02:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.69 2011/12/21 17:19:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -176,43 +176,52 @@ c     Surface flux data.
 #ifdef USE_EXF_INTERPOLATION
       NAMELIST /EXF_NML_04/
      & ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+     & ustress_nlon, ustress_nlat, ustress_interpMethod,
      & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
-     & ustress_nlon, ustress_nlat, vstress_nlon, vstress_nlat,
+     & vstress_nlon, vstress_nlat, vstress_interpMethod,
      & hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
+     & hflux_nlon, hflux_nlat, hflux_interpMethod,
      & sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
-     & hflux_nlon, hflux_nlat, sflux_nlon, sflux_nlat,
+     & sflux_nlon, sflux_nlat, sflux_interpMethod,
      & swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
+     & swflux_nlon, swflux_nlat, swflux_interpMethod,
      & lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
-     & swflux_nlon, swflux_nlat, lwflux_nlon, lwflux_nlat,
+     & lwflux_nlon, lwflux_nlat, lwflux_interpMethod,
      & atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
-     & atemp_nlon, atemp_nlat,
-     & aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc, aqh_nlon, aqh_nlat,
-     &evap_lon0,evap_lon_inc,evap_lat0,evap_lat_inc,evap_nlon,evap_nlat,
+     & atemp_nlon, atemp_nlat, atemp_interpMethod,
+     & aqh_lon0, aqh_lon_inc, aqh_lat0,aqh_lat_inc,
+     & aqh_nlon, aqh_nlat, aqh_interpMethod,
+     & evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
+     & evap_nlon, evap_nlat, evap_interpMethod,
      & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
+     & precip_nlon, precip_nlat, precip_interpMethod,
      & runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
-     & precip_nlon, precip_nlat, runoff_nlon, runoff_nlat,
-     & snowprecip_lon0, snowprecip_lon_inc, snowprecip_nlon,
-     & snowprecip_lat0, snowprecip_lat_inc, snowprecip_nlat,
+     & runoff_nlon, runoff_nlat, runoff_interpMethod,
+     & snowprecip_lon0, snowprecip_lon_inc,
+     & snowprecip_lat0, snowprecip_lat_inc,
+     & snowprecip_nlon, snowprecip_nlat, snowprecip_interpMethod,
      & uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
+     & uwind_nlon, uwind_nlat, uwind_interpMethod,
      & vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
-     & uwind_nlon, uwind_nlat, vwind_nlon, vwind_nlat,
+     & vwind_nlon, vwind_nlat, vwind_interpMethod,
      & wspeed_lon0, wspeed_lon_inc, wspeed_lat0, wspeed_lat_inc,
-     & wspeed_nlon, wspeed_nlat,
+     & wspeed_nlon, wspeed_nlat, wspeed_interpMethod,
      & swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
+     & swdown_nlon, swdown_nlat, swdown_interpMethod,
      & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
-     & swdown_nlon, swdown_nlat, lwdown_nlon, lwdown_nlat,
-     & apressure_lon0,apressure_lon_inc,apressure_nlon,
-     & apressure_lat0,apressure_lat_inc,apressure_nlat,
-     & areamask_lon0,areamask_lon_inc,areamask_nlon,
-     & areamask_lat0,areamask_lat_inc,areamask_nlat,
-     & climsst_lon0, climsst_lon_inc, climsst_nlon,
-     & climsst_lat0, climsst_lat_inc, climsst_nlat,
-     & climsss_lon0, climsss_lon_inc, climsss_nlon,
-     & climsss_lat0, climsss_lat_inc, climsss_nlat,
-     & climustr_lon0, climustr_lon_inc, climustr_nlon,
-     & climustr_lat0, climustr_lat_inc, climustr_nlat,
-     & climvstr_lon0, climvstr_lon_inc, climvstr_nlon,
-     & climvstr_lat0, climvstr_lat_inc, climvstr_nlat
+     & lwdown_nlon, lwdown_nlat, lwdown_interpMethod,
+     & apressure_lon0,apressure_lon_inc,apressure_lat0,apressure_lat_inc
+     & , apressure_nlon, apressure_nlat, apressure_interpMethod,
+     & areamask_lon0, areamask_lon_inc, areamask_lat0, areamask_lat_inc,
+     & areamask_nlon, areamask_nlat, areamask_interpMethod,
+     & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
+     & climsst_nlon, climsst_nlat, climsst_interpMethod,
+     & climsss_lon0, climsss_lon_inc,climsss_lat0, climsss_lat_inc,
+     & climsss_nlon, climsss_nlat, climsss_interpMethod,
+     & climustr_lon0, climustr_lon_inc, climustr_lat0, climustr_lat_inc,
+     & climustr_nlon, climustr_nlat, climustr_interpMethod,
+     & climvstr_lon0, climvstr_lon_inc, climvstr_lat0, climvstr_lat_inc,
+     & climvstr_nlon, climvstr_nlat, climvstr_interpMethod
 #endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_ICEFRONT
@@ -732,8 +741,8 @@ c     Output scaling factors.
       climustr_nlat   = gridNy
       climvstr_nlon   = gridNx
       climvstr_nlat   = gridNy
-      climustr_lon_inc   = delX(1)
-      climvstr_lon_inc   = delX(1)
+      climustr_lon_inc= delX(1)
+      climvstr_lon_inc= delX(1)
 
       DO i=1,MAX_LAT_INC
          IF (i.LT.gridNy) THEN
@@ -786,6 +795,31 @@ c     Output scaling factors.
             climvstr_lat_inc(i)  = 0.
          ENDIF
       ENDDO
+
+      ustress_interpMethod   = 12
+      vstress_interpMethod   = 22
+      hflux_interpMethod     =  1
+      sflux_interpMethod     =  1
+      swflux_interpMethod    =  1
+      runoff_interpMethod    =  1
+      atemp_interpMethod     =  1
+      aqh_interpMethod       =  1
+      evap_interpMethod      =  1
+      precip_interpMethod    =  1
+      snowprecip_interpMethod=  1
+      uwind_interpMethod     = 12
+      vwind_interpMethod     = 22
+      wspeed_interpMethod    =  1
+      lwflux_interpMethod    =  1
+      swdown_interpMethod    =  1
+      lwdown_interpMethod    =  1
+      apressure_interpMethod =  1
+      areamask_interpMethod  =  1
+      climsst_interpMethod   =  2
+      climsss_interpMethod   =  2
+      climustr_interpMethod  = 12
+      climvstr_interpMethod  = 22
+
 #endif /* USE_EXF_INTERPOLATION */
 
 c     Next, read the forcing data file.
@@ -864,12 +898,15 @@ c     Next, read the forcing data file.
 
 C--   Derive other parameters:
       hq = ht
-#if ( ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) ) \
-     || defined (USE_EXF_INTERPOLATION) )
-      stressIsOnCgrid = .FALSE.
-#else
       stressIsOnCgrid = readStressOnCgrid
+#if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
+      stressIsOnCgrid = .FALSE.
 #endif
+#ifdef USE_EXF_INTERPOLATION
+      IF ( (ustress_interpMethod.GE.1 .AND. ustressfile.NE.' ') .OR.
+     &     (vstress_interpMethod.GE.1 .AND. vstressfile.NE.' ') )
+     &   stressIsOnCgrid = .FALSE.
+#endif /* USE_EXF_INTERPOLATION */
 
       if ( select_ZenAlbedo.GT.0 ) then
            useExfZenAlbedo=.TRUE.
