@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1557 2011/12/21 17:31:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1558 2011/12/21 22:11:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,6 +11,10 @@ o pkg/exf (interpolation):
   - print interpolation parameters to standard output;
   - refine exf_check.F accordingly ; stop if USE_NO_INTERP_RUNOFF is defined
     (to use instead runoff_interpMethod=0 in data.exf).
+  - simplify default setting of interpolation parameters (for all fields,
+    set position to match model grid cell-center position, leading to trivial
+    interpolation in case of regular Lat-Lon grid) and fix for the case of
+    non-uniform delY.
 o pkg/exf/exf_radiation.F: add the factor ocean_emissivity to lwdown, for
    within #ifdef EXF_LWDOWN_WITH_EMISSIVITY/#endif. Unless ocean_emissivity=1.
    this factor is absolutely required, because the lw exitance (= out-going
