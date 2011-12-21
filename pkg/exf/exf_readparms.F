@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.69 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.70 2011/12/21 22:05:11 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -68,7 +68,8 @@ c     == local variables ==
 
 #ifdef USE_EXF_INTERPOLATION
       INTEGER gridNx, gridNy
-      integer i
+      INTEGER j
+      _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat
 #endif /* USE_EXF_INTERPOLATION */
       integer iUnit
 
@@ -628,44 +629,51 @@ c     Output scaling factors.
       exf_outscal_apressure=  1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
-      ustress_lon0   = xgOrigin
-      uwind_lon0     = xgOrigin
-      vstress_lon0   = xgOrigin + delX(1)*exf_half
-      hflux_lon0     = xgOrigin + delX(1)*exf_half
-      sflux_lon0     = xgOrigin + delX(1)*exf_half
-      swflux_lon0    = xgOrigin + delX(1)*exf_half
-      runoff_lon0    = xgOrigin + delX(1)*exf_half
-      atemp_lon0     = xgOrigin + delX(1)*exf_half
-      aqh_lon0       = xgOrigin + delX(1)*exf_half
-      evap_lon0      = xgOrigin + delX(1)*exf_half
-      precip_lon0    = xgOrigin + delX(1)*exf_half
-      snowprecip_lon0= xgOrigin + delX(1)*exf_half
-      vwind_lon0     = xgOrigin + delX(1)*exf_half
-      wspeed_lon0    = xgOrigin + delX(1)*exf_half
-      lwflux_lon0    = xgOrigin + delX(1)*exf_half
-      swdown_lon0    = xgOrigin + delX(1)*exf_half
-      lwdown_lon0    = xgOrigin + delX(1)*exf_half
-      apressure_lon0 = xgOrigin + delX(1)*exf_half
-      areamask_lon0  = xgOrigin + delX(1)*exf_half
-      vstress_lat0   = ygOrigin
-      vwind_lat0     = ygOrigin
-      wspeed_lat0    = ygOrigin
-      ustress_lat0   = ygOrigin + delY(1)*exf_half
-      hflux_lat0     = ygOrigin + delY(1)*exf_half
-      sflux_lat0     = ygOrigin + delY(1)*exf_half
-      runoff_lat0    = ygOrigin + delY(1)*exf_half
-      swflux_lat0    = ygOrigin + delY(1)*exf_half
-      atemp_lat0     = ygOrigin + delY(1)*exf_half
-      aqh_lat0       = ygOrigin + delY(1)*exf_half
-      evap_lat0      = ygOrigin + delY(1)*exf_half
-      precip_lat0    = ygOrigin + delY(1)*exf_half
-      snowprecip_lat0= ygOrigin + delY(1)*exf_half
-      uwind_lat0     = ygOrigin + delY(1)*exf_half
-      lwflux_lat0    = ygOrigin + delY(1)*exf_half
-      swdown_lat0    = ygOrigin + delY(1)*exf_half
-      lwdown_lat0    = ygOrigin + delY(1)*exf_half
-      apressure_lat0 = ygOrigin + delY(1)*exf_half
-      areamask_lat0  = ygOrigin + delY(1)*exf_half
+C--   set default input location to match (in case of simple Lat-Lonp grid)
+C     model grid cell-center position (leading to trivial interpolation)
+      inp_lon0 = xgOrigin + delX(1)*exf_half
+      inp_lat0 = ygOrigin + delY(1)*exf_half
+      inp_dLon = delX(1)
+      inp_dLat = delY(1)
+
+      ustress_lon0   = inp_lon0
+      uwind_lon0     = inp_lon0
+      vstress_lon0   = inp_lon0
+      hflux_lon0     = inp_lon0
+      sflux_lon0     = inp_lon0
+      swflux_lon0    = inp_lon0
+      runoff_lon0    = inp_lon0
+      atemp_lon0     = inp_lon0
+      aqh_lon0       = inp_lon0
+      evap_lon0      = inp_lon0
+      precip_lon0    = inp_lon0
+      snowprecip_lon0= inp_lon0
+      vwind_lon0     = inp_lon0
+      wspeed_lon0    = inp_lon0
+      lwflux_lon0    = inp_lon0
+      swdown_lon0    = inp_lon0
+      lwdown_lon0    = inp_lon0
+      apressure_lon0 = inp_lon0
+      areamask_lon0  = inp_lon0
+      vstress_lat0   = inp_lat0
+      vwind_lat0     = inp_lat0
+      wspeed_lat0    = inp_lat0
+      ustress_lat0   = inp_lat0
+      hflux_lat0     = inp_lat0
+      sflux_lat0     = inp_lat0
+      runoff_lat0    = inp_lat0
+      swflux_lat0    = inp_lat0
+      atemp_lat0     = inp_lat0
+      aqh_lat0       = inp_lat0
+      evap_lat0      = inp_lat0
+      precip_lat0    = inp_lat0
+      snowprecip_lat0= inp_lat0
+      uwind_lat0     = inp_lat0
+      lwflux_lat0    = inp_lat0
+      swdown_lat0    = inp_lat0
+      lwdown_lat0    = inp_lat0
+      apressure_lat0 = inp_lat0
+      areamask_lat0  = inp_lat0
       ustress_nlon   = gridNx
       ustress_nlat   = gridNy
       vstress_nlon   = gridNx
@@ -704,96 +712,76 @@ c     Output scaling factors.
       apressure_nlat = gridNy
       areamask_nlon  = gridNx
       areamask_nlat  = gridNy
-      ustress_lon_inc   = delX(1)
-      vstress_lon_inc   = delX(1)
-      hflux_lon_inc     = delX(1)
-      sflux_lon_inc     = delX(1)
-      swflux_lon_inc    = delX(1)
-      runoff_lon_inc    = delX(1)
-      atemp_lon_inc     = delX(1)
-      aqh_lon_inc       = delX(1)
-      evap_lon_inc      = delX(1)
-      precip_lon_inc    = delX(1)
-      snowprecip_lon_inc= delX(1)
-      uwind_lon_inc     = delX(1)
-      vwind_lon_inc     = delX(1)
-      wspeed_lon_inc    = delX(1)
-      lwflux_lon_inc    = delX(1)
-      swdown_lon_inc    = delX(1)
-      lwdown_lon_inc    = delX(1)
-      apressure_lon_inc = delX(1)
-      areamask_lon_inc  = delX(1)
-      climsst_lon0    = xgOrigin + delX(1)*exf_half
-      climsss_lon0    = xgOrigin + delX(1)*exf_half
-      climsst_lat0    = ygOrigin + delY(1)*exf_half
-      climsss_lat0    = ygOrigin + delY(1)*exf_half
+      ustress_lon_inc   = inp_dLon
+      vstress_lon_inc   = inp_dLon
+      hflux_lon_inc     = inp_dLon
+      sflux_lon_inc     = inp_dLon
+      swflux_lon_inc    = inp_dLon
+      runoff_lon_inc    = inp_dLon
+      atemp_lon_inc     = inp_dLon
+      aqh_lon_inc       = inp_dLon
+      evap_lon_inc      = inp_dLon
+      precip_lon_inc    = inp_dLon
+      snowprecip_lon_inc= inp_dLon
+      uwind_lon_inc     = inp_dLon
+      vwind_lon_inc     = inp_dLon
+      wspeed_lon_inc    = inp_dLon
+      lwflux_lon_inc    = inp_dLon
+      swdown_lon_inc    = inp_dLon
+      lwdown_lon_inc    = inp_dLon
+      apressure_lon_inc = inp_dLon
+      areamask_lon_inc  = inp_dLon
+
+      climsst_lon0    = inp_lon0
+      climsss_lon0    = inp_lon0
+      climustr_lon0   = inp_lon0
+      climvstr_lon0   = inp_lon0
+      climsst_lat0    = inp_lat0
+      climsss_lat0    = inp_lat0
+      climustr_lat0   = inp_lat0
+      climvstr_lat0   = inp_lat0
       climsst_nlon    = gridNx
       climsst_nlat    = gridNy
       climsss_nlon    = gridNx
       climsss_nlat    = gridNy
-      climsst_lon_inc = delX(1)
-      climsss_lon_inc = delX(1)
-      climustr_lon0   = xgOrigin
-      climvstr_lon0   = xgOrigin + delX(1)*exf_half
-      climustr_lat0   = ygOrigin + delY(1)*exf_half
-      climvstr_lat0   = ygOrigin
       climustr_nlon   = gridNx
       climustr_nlat   = gridNy
       climvstr_nlon   = gridNx
       climvstr_nlat   = gridNy
-      climustr_lon_inc= delX(1)
-      climvstr_lon_inc= delX(1)
+      climsst_lon_inc = inp_dLon
+      climsss_lon_inc = inp_dLon
+      climustr_lon_inc= inp_dLon
+      climvstr_lon_inc= inp_dLon
 
-      DO i=1,MAX_LAT_INC
-         IF (i.LT.gridNy) THEN
-            vstress_lat_inc(i)   =  delY(i)
-            vwind_lat_inc(i)     =  delY(i)
-            wspeed_lat_inc(i)    =  delY(i)
-            ustress_lat_inc(i)   = (delY(i) + delY(i))*exf_half
-            hflux_lat_inc(i)     = (delY(i) + delY(i))*exf_half
-            sflux_lat_inc(i)     = (delY(i) + delY(i))*exf_half
-            swflux_lat_inc(i)    = (delY(i) + delY(i))*exf_half
-            runoff_lat_inc(i)    = (delY(i) + delY(i))*exf_half
-            atemp_lat_inc(i)     = (delY(i) + delY(i))*exf_half
-            aqh_lat_inc(i)       = (delY(i) + delY(i))*exf_half
-            evap_lat_inc(i)      = (delY(i) + delY(i))*exf_half
-            precip_lat_inc(i)    = (delY(i) + delY(i))*exf_half
-            snowprecip_lat_inc(i)= (delY(i) + delY(i))*exf_half
-            uwind_lat_inc(i)     = (delY(i) + delY(i))*exf_half
-            lwflux_lat_inc(i)    = (delY(i) + delY(i))*exf_half
-            swdown_lat_inc(i)    = (delY(i) + delY(i))*exf_half
-            lwdown_lat_inc(i)    = (delY(i) + delY(i))*exf_half
-            apressure_lat_inc(i) = (delY(i) + delY(i))*exf_half
-            areamask_lat_inc(i)  = (delY(i) + delY(i))*exf_half
-            climsst_lat_inc(i)   = (delY(i) + delY(i))*exf_half
-            climsss_lat_inc(i)   = (delY(i) + delY(i))*exf_half
-            climustr_lat_inc(i)  = (delY(i) + delY(i))*exf_half
-            climvstr_lat_inc(i)  =  delY(i)
-         ELSE
-            ustress_lat_inc(i)   = 0.
-            vstress_lat_inc(i)   = 0.
-            hflux_lat_inc(i)     = 0.
-            sflux_lat_inc(i)     = 0.
-            swflux_lat_inc(i)    = 0.
-            runoff_lat_inc(i)    = 0.
-            atemp_lat_inc(i)     = 0.
-            aqh_lat_inc(i)       = 0.
-            evap_lat_inc(i)      = 0.
-            precip_lat_inc(i)    = 0.
-            snowprecip_lat_inc(i)= 0.
-            uwind_lat_inc(i)     = 0.
-            vwind_lat_inc(i)     = 0.
-            wspeed_lat_inc(i)    = 0.
-            lwflux_lat_inc(i)    = 0.
-            swdown_lat_inc(i)    = 0.
-            lwdown_lat_inc(i)    = 0.
-            apressure_lat_inc(i) = 0.
-            areamask_lat_inc(i)  = 0.
-            climsst_lat_inc(i)   = 0.
-            climsss_lat_inc(i)   = 0.
-            climustr_lat_inc(i)  = 0.
-            climvstr_lat_inc(i)  = 0.
-         ENDIF
+      DO j=1,MAX_LAT_INC
+        IF (j.LT.gridNy) THEN
+          inp_dLat = (delY(j) + delY(j+1))*exf_half
+        ELSE
+          inp_dLat = 0.
+        ENDIF
+        ustress_lat_inc(j)   = inp_dLat
+        vstress_lat_inc(j)   = inp_dLat
+        hflux_lat_inc(j)     = inp_dLat
+        sflux_lat_inc(j)     = inp_dLat
+        swflux_lat_inc(j)    = inp_dLat
+        runoff_lat_inc(j)    = inp_dLat
+        atemp_lat_inc(j)     = inp_dLat
+        aqh_lat_inc(j)       = inp_dLat
+        evap_lat_inc(j)      = inp_dLat
+        precip_lat_inc(j)    = inp_dLat
+        snowprecip_lat_inc(j)= inp_dLat
+        uwind_lat_inc(j)     = inp_dLat
+        vwind_lat_inc(j)     = inp_dLat
+        wspeed_lat_inc(j)    = inp_dLat
+        lwflux_lat_inc(j)    = inp_dLat
+        swdown_lat_inc(j)    = inp_dLat
+        lwdown_lat_inc(j)    = inp_dLat
+        apressure_lat_inc(j) = inp_dLat
+        areamask_lat_inc(j)  = inp_dLat
+        climsst_lat_inc(j)   = inp_dLat
+        climsss_lat_inc(j)   = inp_dLat
+        climustr_lat_inc(j)  = inp_dLat
+        climvstr_lat_inc(j)  = inp_dLat
       ENDDO
 
       ustress_interpMethod   = 12
