@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.34 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.35 2011/12/21 01:38:00 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -607,7 +607,7 @@ cmm   accumulate averate
 #endif
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-	cph currently all assumed to be surface fields, i.e. 2-d
+cph currently all assumed to be surface fields, i.e. 2-d
       do num_var = 1, NGENCOST
       if ( gencost_barfile(num_var) .ne. ' ' ) then
       call cost_averagesgeneric(
