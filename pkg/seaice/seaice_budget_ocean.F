@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.13 2011/12/19 16:30:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.14 2011/12/21 10:52:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -14,7 +14,7 @@ C     | SUBROUTINE seaice_budget_ocean                                 |
 C     | o Calculate surface heat fluxes over open ocean                |
 C     |   see Hibler, MWR, 108, 1943-1973, 1980                        |
 C     |   If SEAICE_EXTERNAL_FLUXES is defined this routine simply     |
-C     |   simply copies the global fields to the seaice-local fields.  |
+C     |   copies the global fields to the seaice-local fields.         |
 C     |================================================================|
 C     \================================================================/
       IMPLICIT NONE
@@ -23,10 +23,14 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "FFIELDS.h"
-#include "SEAICE_PARAMS.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-# include "EXF_FIELDS.h"
+#ifndef SEAICE_EXTERNAL_FLUXES
+# include "PARAMS.h"
+# include "GRID.h"
+# include "SEAICE_PARAMS.h"
+# ifdef ALLOW_EXF
+#  include "EXF_OPTIONS.h"
+#  include "EXF_FIELDS.h"
+# endif
 #endif
 
 C     === Routine arguments ===
@@ -58,11 +62,6 @@ C     local copies of global variables
       _RL tsurfLoc   (1:sNx,1:sNy)
       _RL atempLoc   (1:sNx,1:sNy)
       _RL lwdownLoc  (1:sNx,1:sNy)
-
-C     local heat fluxes components
-      _RL hsLoc      (1:sNx,1:sNy)
-      _RL hlLoc      (1:sNx,1:sNy)
-      _RL lwNetLoc   (1:sNx,1:sNy)
 
 C     auxiliary variable
       _RL ssq, sstdegC
@@ -108,6 +107,12 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
         netHeatFlux(I,J) = Qnet(I,J,bi,bj)
         SWHeatFlux (I,J) =  Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
+C     This is an example of how one could implement surface fluxes 
+C     over the ocean (if one dislikes the fluxes computed in pkg/exf).
+C     In this example, the exf-fields are re-used so that they no longer
+C     have the same values as at the time when they are saved for 
+C     diagnostics (e.g., hl, hs, lwflux, sflux). To properly 
+C     diagnose them, one has to save them again as different (SI-)fields.
 # ifdef ALLOW_DOWNWARD_RADIATION
 C     net upward short wave heat flux
         SWHeatFlux(I,J) = (SEAICE_waterAlbedo - 1. _d 0)
@@ -115,23 +120,31 @@ C     net upward short wave heat flux
 C     lwup = emissivity*stefanBoltzmann*Tsrf^4 + (1-emissivity)*lwdown
 C     the second terms is the reflected incoming long wave radiation
 C     so that the net upward long wave heat flux is:
-        lwNetLoc(I,J) = - lwdownLoc(I,J)*SEAICE_emissivity
+        lwflux(I,J,bi,bj) = - lwdownLoc(I,J)*SEAICE_emissivity
      &       + D3*tsurfLoc(I,J)**4
         sstdegC = tsurfLoc(I,J) - TMELT
 C     downward sensible heat
-        hsLoc(I,J) = D1*UG(I,J)*(atempLoc(I,J)-tsurfLoc(I,J))
+        hs(I,J,bi,bj) = D1*UG(I,J)*(atempLoc(I,J)-tsurfLoc(I,J))
 C     saturation humidity
         ssq = QS1*6.11 _d +00*EXP(17.2694 _d +00
      &       *sstdegC/(sstdegC+237.3 _d +00))
 C     downward latent heat
-        hlLoc(I,J) = D1W*UG(I,J)*(AQH(I,J,bi,bj)-ssq)
+        hl(I,J,bi,bj) = D1W*UG(I,J)*(AQH(I,J,bi,bj)-ssq)
 C     net heat is positive upward
         netHeatFlux(I,J)=SWHeatFlux(I,J)
-     &       + lwNetLoc(I,J)
-     &       - hsLoc(I,J) - hlLoc(I,J)
+     &       + lwflux(I,J,bi,bj)
+     &       - hs(I,J,bi,bj) - hl(I,J,bi,bj)
 C     compute evaporation here again because latent heat is different 
 C     from its previous value
-        evap(i,j,bi,bj) = -hlloc(I,J)*recip_lhEvap*recip_rhoConstFresh
+        evap(i,j,bi,bj) = -hl(I,J,bi,bj)
+     &       *recip_lhEvap*recip_rhoConstFresh
+C     Salt flux from Precipitation and Evaporation.
+        sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
+#  ifdef ALLOW_RUNOFF
+        sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
+#  endif
+        sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+        empmr(i,j,bi,bj) = sflux(i,j,bi,bj)*rhoConstFresh
 # endif /* ALLOW_DOWNWARD_RADIATION */
 #endif /* SEAICE_EXTERNAL_FLUXES */
        ENDDO
