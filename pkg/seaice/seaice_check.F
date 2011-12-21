@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.51 2011/10/27 21:13:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.52 2011/12/21 12:58:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -351,12 +351,26 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
+#ifdef SEAICE_EXTERNAL_FLUXES
 #if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf '
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
+#else
+         WRITE(msgBuf,'(3A)') 'S/R SEAICE_CHECK: ',
+     &     'SEAICE_EXTERNAL_FLUXES is defined, so we assume you know ',
+     &     'what you are doing.'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
+     &     'Use S/R SEAICE_BUDGET_OCEAN to compute fluxes over ocean.'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
+#endif /* SEAICE_EXTERNAL_FLUXES */
 #if !defined(ALLOW_ATM_WIND) && !defined(SEAICE_CGRID)
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_ATM_WIND'
@@ -468,7 +482,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &       'Open-Boundaries not implemented in B-grid dynamics'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+C      STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* ndef SEAICE_CGRID */
 
