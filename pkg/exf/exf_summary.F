@@ -1,8 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.24 2010/11/23 18:55:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.25 2011/12/21 17:20:29 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
+C--  File exf_summary.F: Routines to print out EXF settings
+C--   Contents
+C--   o EXF_SUMMARY
+C--   o EXF_PRINT_INTERP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXF_SUMMARY( myThid )
 
@@ -67,7 +73,7 @@ C     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// External forcing configuration >>> START <<<'
+     &'// External forcing (EXF) configuration >>> START <<<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -85,8 +91,8 @@ C--   Print general parameters:
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid )
-      CALL WRITE_0D_C( exf_yftype, 0, INDEX_NONE, 'exf_yftype = ',
-     &  ' /* ? */')
+c     CALL WRITE_0D_C( exf_yftype, 0, INDEX_NONE, 'exf_yftype = ',
+c    &  ' /* ? */')
       CALL WRITE_0D_I( exf_iprec, INDEX_NONE, 'exf_iprec =',
      &  ' /* exf file precision */')
       CALL WRITE_0D_L( useExfYearlyFields, INDEX_NONE,
@@ -204,6 +210,18 @@ C--   Print settings of some CPP flags.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid )
 
+#ifdef USE_EXF_INTERPOLATION
+      WRITE(msgBuf,'(A)')
+     &'// USE_EXF_INTERPOLATION:              defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// USE_EXF_INTERPOLATION:          NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
 #ifdef ALLOW_ATM_TEMP
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_TEMP:                     defined'
@@ -281,6 +299,11 @@ C--   Zonal wind stress.
      &'   >>  ',ustressfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'ustress',
+     & ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+     & ustress_nlon, ustress_nlat, ustress_interpMethod, myThid )
+#endif
 
 C--   Meridional wind stress.
       il = ilnblnk(vstressfile)
@@ -305,6 +328,11 @@ C--   Meridional wind stress.
      &'   >>  ',vstressfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'vstress',
+     & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
+     & vstress_nlon, vstress_nlat, vstress_interpMethod, myThid )
+#endif
 #endif
 
 #ifndef ALLOW_ATM_TEMP
@@ -331,6 +359,11 @@ C--   Heat flux.
      &'   >>  ',hfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'hflux',
+     & hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
+     & hflux_nlon, hflux_nlat, hflux_interpMethod, myThid )
+#endif
 
 C--   Salt flux.
       il = ilnblnk(sfluxfile)
@@ -355,6 +388,11 @@ C--   Salt flux.
      &'   >>  ',sfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'sflux',
+     & sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
+     & sflux_nlon, sflux_nlat, sflux_interpMethod, myThid )
+#endif
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
@@ -381,6 +419,11 @@ C--   Net shortwave.
      &'   >>  ',swfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'swflux',
+     & swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
+     & swflux_nlon, swflux_nlat, swflux_interpMethod, myThid )
+#endif
 #endif
 
 #ifdef ALLOW_ATM_WIND
@@ -407,6 +450,11 @@ C--   Zonal wind.
      &'   >>  ',uwindfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'uwind',
+     & uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
+     & uwind_nlon, uwind_nlat, uwind_interpMethod, myThid )
+#endif
 
 C--   Meridional wind.
       il = ilnblnk(vwindfile)
@@ -431,6 +479,11 @@ C--   Meridional wind.
      &'   >>  ',vwindfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'vwind',
+     & vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
+     & vwind_nlon, vwind_nlat, vwind_interpMethod, myThid )
+#endif
 #endif
 
 #ifdef ALLOW_ATM_TEMP
@@ -457,6 +510,11 @@ C--   Atmospheric temperature.
      &'   >>  ',atempfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'atemp',
+     & atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
+     & atemp_nlon, atemp_nlat, atemp_interpMethod, myThid )
+#endif
 
 C--   Atmospheric specific humidity.
       il = ilnblnk(aqhfile)
@@ -481,6 +539,11 @@ C--   Atmospheric specific humidity.
      &'   >>  ',aqhfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'aqh',
+     & aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
+     & aqh_nlon, aqh_nlat, aqh_interpMethod, myThid )
+#endif
 
 C--   Net longwave.
       il = ilnblnk(lwfluxfile)
@@ -505,6 +568,11 @@ C--   Net longwave.
      &'   >>  ',lwfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'lwflux',
+     & lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
+     & lwflux_nlon, lwflux_nlat, lwflux_interpMethod, myThid )
+#endif
 
 C--   Precipitation.
       il = ilnblnk(precipfile)
@@ -529,6 +597,11 @@ C--   Precipitation.
      &'   >>  ',precipfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'precip',
+     & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
+     & precip_nlon, precip_nlat, precip_interpMethod, myThid )
+#endif
 #endif
 
 C--   Evaporation.
@@ -559,6 +632,11 @@ C--   Evaporation.
      &'   >>  ',evapfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'evap',
+     & evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
+     & evap_nlon, evap_nlat, evap_interpMethod, myThid )
+#endif
 #else
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                  NOT defined'
@@ -594,6 +672,11 @@ C--   Runoff.
      &'   >>  ',runofffile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'runoff',
+     & runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
+     & runoff_nlon, runoff_nlat, runoff_interpMethod, myThid )
+#endif
 #else /* ALLOW_RUNOFF */
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                   NOT defined'
@@ -625,6 +708,11 @@ C--   Downward shortwave.
      &'   >>  ',swdownfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'swdown',
+     & swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
+     & swdown_nlon, swdown_nlat, swdown_interpMethod, myThid )
+#endif
 
 C--   Downward longwave.
       il = ilnblnk(lwdownfile)
@@ -649,6 +737,12 @@ C--   Downward longwave.
      &'   >>  ',lwdownfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'lwdown',
+     & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
+     & lwdown_nlon, lwdown_nlat, lwdown_interpMethod, myThid )
+#endif
+
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
@@ -675,6 +769,11 @@ C--   Atmospheric pressure.
      &'   >>  ',apressurefile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'apressure', apressure_lon0,
+     & apressure_lon_inc, apressure_lat0, apressure_lat_inc,
+     & apressure_nlon, apressure_nlat, apressure_interpMethod, myThid )
+#endif
 #endif
 
 #ifdef ALLOW_ICE_AREAMASK
@@ -701,29 +800,16 @@ C--   fractional ice-covered area MASK.
      &'   >>  ',areamaskfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'areamask', areamask_lon0,
+     & areamask_lon_inc, areamask_lat0, areamask_lat_inc,
+     & areamask_nlon, areamask_nlat, areamask_interpMethod, myThid )
 #endif
-
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// External forcing configuration  >>> END <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -731,7 +817,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// External forcing climatology configuration >>> START <<<'
+     &'// External forcing (EXF) climatology configuration :'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -798,6 +884,11 @@ C     Relaxation to SST climatology.
      &'   >>  ',climsstfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'climsst',
+     & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
+     & climsst_nlon, climsst_nlat, climsst_interpMethod, myThid )
+#endif
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
@@ -825,6 +916,11 @@ C     Relaxation to SSS climatology.
      &'   >>  ',climsssfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef USE_EXF_INTERPOLATION
+      CALL EXF_PRINT_INTERP( 'climsss',
+     & climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
+     & climsss_nlon, climsss_nlat, climsss_interpMethod, myThid )
+#endif
 #endif
 
       write(msgbuf,'(a)') ' '
@@ -835,7 +931,7 @@ C     Relaxation to SSS climatology.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// External forcing climatology configuration  >>> END <<<'
+     &'// External forcing (EXF) configuration  >>> END <<<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -850,3 +946,99 @@ C     Relaxation to SSS climatology.
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef USE_EXF_INTERPOLATION
+
+CBOP
+C     !ROUTINE: EXF_PRINT_INTERP
+C     !INTERFACE:
+      SUBROUTINE EXF_PRINT_INTERP( var_name,
+     I               var_lon0, var_lon_inc, var_lat0, var_lat_inc,
+     I               var_nlon, var_nlat, var_interpMethod, myThid )
+
+C     !DESCRIPTION:
+C     Print EXF interpolation parameters for one EXF input field
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+
+C     !INPUT PARAMETERS:
+C     myThid :: My Thread Id number
+      CHARACTER*(*) var_name
+      _RL     var_lon0, var_lon_inc, var_lat0
+      _RL     var_lat_inc(*)
+      INTEGER var_nlon, var_nlat, var_interpMethod
+      INTEGER myThid
+
+C     !FUNCTIONS:
+c     INTEGER  ILNBLNK
+c     EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      INTEGER i
+      _RL var_min, var_max
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+      IF ( var_interpMethod.EQ.0 ) THEN
+        WRITE(msgBuf,'(3X,A,A,A)')
+     &    'assume "',var_name,'" on model-grid (no interpolation)'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+      ELSE
+        WRITE(msgBuf,'(3X,A,A,A,I3,A)')
+     &    'interpolate "',var_name,'" (method=',var_interpMethod,' ):'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+C-      print input-field longitude position:
+        IF ( ABS(var_lon0).LT.1000. .AND. var_lon_inc.GT.-10.
+     &                              .AND. var_lon_inc.LT.100. ) THEN
+          WRITE(msgBuf,'(3X,A,F10.5,A,I6,A,F10.7)')
+     &    'lon0=', var_lon0, ', nlon=', var_nlon,
+     &    ', lon_inc=',var_lon_inc
+        ELSE
+          WRITE(msgBuf,'(3X,A,1PE10.3,A,I6,A,1PE10.3)')
+     &    'lon0=', var_lon0, ', nlon=', var_nlon,
+     &    ', lon_inc=',var_lon_inc
+        ENDIF
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+C-      print input-field latitude position:
+        var_min = var_lat_inc(1)
+        var_max = var_lat_inc(1)
+        DO i=1,var_nlat-1
+          var_min = MIN( var_lat_inc(i), var_min )
+          var_max = MAX( var_lat_inc(i), var_max )
+        ENDDO
+        IF ( ABS(var_lat0).LT.1000. .AND. var_min.GT.-10.
+     &                              .AND. var_max.LT.100. ) THEN
+         IF ( var_min.EQ.var_max ) THEN
+          WRITE(msgBuf,'(3X,A,F10.5,A,I6,A,F10.7)')
+     &    'lat0=', var_lat0, ', nlat=', var_nlat,
+     &    ', lat_inc=', var_min
+         ELSE
+          WRITE(msgBuf,'(3X,A,F10.5,A,I6,A,2F8.5)')
+     &    'lat0=', var_lat0, ', nlat=', var_nlat,
+     &    ', inc(min,max)=', var_min, var_max
+         ENDIF
+        ELSE
+         IF ( var_min.EQ.var_max ) THEN
+          WRITE(msgBuf,'(3X,A,1PE10.3,A,I6,A,1PE10.3)')
+     &    'lat0=', var_lat0, ', nlat=', var_nlat,
+     &    ', lat_inc=', var_min
+         ELSE
+          WRITE(msgBuf,'(3X,A,1PE10.3,A,I6,A,1P2E10.3)')
+     &    'lat0=', var_lat0, ', nlat=', var_nlat,
+     &    ', inc(min,max)=', var_min, var_max
+         ENDIF
+        ENDIF
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+      ENDIF
+
+      RETURN
+      END
+#endif /* USE_EXF_INTERPOLATION */
