@@ -20,6 +20,11 @@
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
+# For backward compatibility only:
+# emissivities should be inherited from exf and setting them here does
+# not set a good example
+ SEAICE_snow_emiss     = 0.97001763668430343479,
+ SEAICE_ice_emiss      = 0.97001763668430343479,
  &
  &SEAICE_PARM02
   mult_ice   = 1.,

@@ -22,6 +22,11 @@
  SEAICE_gamma_t_frz = 10800.,
  SEAICE_clipVelocities= .TRUE.,
  SEAICEwriteState   = .TRUE.,
+# For backward compatibility only:
+# emissivities should be inherited from exf and setting them here does
+# not set a good example
+ SEAICE_snow_emiss     = 0.97001763668430343479,
+ SEAICE_ice_emiss      = 0.97001763668430343479,
  &
 
  &SEAICE_PARM03
