@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.104 2011/12/22 08:40:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.105 2011/12/22 12:31:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -96,7 +96,8 @@ C--   SEAICE parameters
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_salinity,
      & areaMin, areaMax, A22, hiceMin,
-     & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
+     & SEAICE_iceConduct, SEAICE_snowConduct, 
+     & SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
      & SIsalFRAC, SIsal0, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
@@ -258,6 +259,8 @@ C     to be consistent
        SEAICE_lhFusion   = flami
        SEAICE_boltzmann  = stefanBoltzmann
        SEAICE_emissivity = ocean_emissivity
+       SEAICE_ice_emiss  = ice_emissivity
+       SEAICE_snow_emiss = snow_emissivity
       ELSE
 #else
       IF ( .TRUE. ) THEN
@@ -269,6 +272,8 @@ C     to be consistent
        SEAICE_boltzmann  = 5.670  _d -08
 C     old default value of 0.97001763668430343479
        SEAICE_emissivity = 5.5    _d -08/5.670 _d -08
+       SEAICE_ice_emiss  = SEAICE_emissivity
+       SEAICE_snow_emiss = SEAICE_emissivity
       ENDIF
       SEAICE_iceConduct  = 2.1656 _d +00
       SEAICE_snowConduct = 3.1    _d -01
