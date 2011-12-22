@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.17 2011/12/19 16:30:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.18 2011/12/22 12:35:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,7 +120,8 @@ C     This is HICE_ACTUAL.GT.0.
 C     TB :: temperature in boundary layer (=freezing point temperature) (K)
       _RL TB         (1:sNx,1:sNy)
 C
-      _RL D1, D1I, D3
+      _RL D1, D1I
+      _RL D3(1:sNx,1:sNy)
       _RL TMELT, XKI, XKS, HCUT, XIO
       _RL SurfMeltTemp
 C     effective conductivity of combined ice and snow
@@ -186,9 +187,6 @@ C     SENSIBLE HEAT CONSTANT
 C     ICE LATENT HEAT CONSTANT
       lhSublim = SEAICE_lhEvap + SEAICE_lhFusion
       D1I=SEAICE_dalton*lhSublim*SEAICE_rhoAir
-
-C     STEFAN BOLTZMAN CONSTANT TIMES EMISSIVITY
-      D3=SEAICE_emissivity*SEAICE_boltzmann
 
 C     MELTING TEMPERATURE OF ICE
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
@@ -265,6 +263,25 @@ C     Use a constant freezing temperature (SEAICE_VARIABLE_FREEZING_POINT undef)
         TB(I,J) = celsius2K + SEAICE_freeze
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
+        IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
+C     Stefan-Boltzman constant times emissivity
+         D3(I,J)=SEAICE_snow_emiss*SEAICE_boltzmann
+#ifdef EXF_LWDOWN_WITH_EMISSIVITY
+C     This is now [(1-emiss)*lwdown - lwdown]
+         lwdownloc(I,J) = SEAICE_snow_emiss*lwdownloc(I,J)
+#else /* use the old hard wired inconsistent value  */
+         lwdownloc(I,J) = 0.97 _d 0*lwdownloc(I,J)
+#endif /* EXF_LWDOWN_WITH_EMISSIVITY */
+        ELSE
+C     Stefan-Boltzman constant times emissivity
+         D3(I,J)=SEAICE_ice_emiss*SEAICE_boltzmann
+#ifdef EXF_LWDOWN_WITH_EMISSIVITY
+C     This is now [(1-emiss)*lwdown - lwdown]
+         lwdownloc(I,J) = SEAICE_ice_emiss*lwdownloc(I,J)
+#else /* use the old hard wired inconsistent value  */
+         lwdownloc(I,J) = 0.97 _d 0*lwdownloc(I,J)
+#endif /* EXF_LWDOWN_WITH_EMISSIVITY */
+        ENDIF
        ENDDO
       ENDDO
 
@@ -297,7 +314,6 @@ C     If actual snow thickness exceeds the cutoff thickness, use the
 C     snow albedo
          IF (HSNOW_ACTUAL(I,J) .GT. HCUT) THEN
           ALB(I,J) = ALB_SNOW(I,J)
-
 C     otherwise, use some combination of ice and snow albedo
 C     (What is the source of this formulation ?)
          ELSE
@@ -321,13 +337,13 @@ C     NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
          IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
 C     NO SW PENETRATION WITH SNOW
           A1(I,J)=(1.0 _d 0 - ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &         +lwdownLoc(I,J)*0.97 _d 0
+     &         +lwdownLoc(I,J)
      &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
          ELSE
 C        SW PENETRATION UNDER ICE
           A1(I,J)=(1.0 _d 0 - ALB(I,J))*SWDOWN(I,J,bi,bj)
      &         *(1.0 _d 0 - XIO*EXP(-1.5 _d 0*HICE_ACTUAL(I,J)))
-     &         +lwdownLoc(I,J)*0.97 _d 0
+     &         +lwdownLoc(I,J)
      &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
          ENDIF
 #endif /* ALLOW_DOWNWARD_RADIATION */
@@ -335,7 +351,7 @@ C        SW PENETRATION UNDER ICE
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
 
 C     The longwave radiative flux convergence
-         F_lwd(I,J) = - 0.97 _d 0 * lwdownLoc(I,J)
+         F_lwd(I,J) = - lwdownLoc(I,J)
 
 C     Determine the fraction of shortwave radiative flux
 C     remaining after scattering through the snow and ice at
@@ -453,8 +469,8 @@ C     Calculate the flux terms based on the updated tsurfLoc
           F_c(I,J)    = -effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
           F_lh(I,J)   = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
-          A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3*t4
-          A3(I,J) = 4.0 _d 0 * D3 * t3 + effConduct(I,J) + D1*UG(I,J)
+          A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3(I,J)*t4
+          A3(I,J) = 4.0 _d 0*D3(I,J)*t3 + effConduct(I,J)+D1*UG(I,J)
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
 C     A constant for SVP derivative w.r.t TICE
 C         cc3t = TEN **(aa1 / t1)
@@ -475,10 +491,10 @@ c     F_lh_max, cap F_lh and decouple the flux magnitude from TICE
 
 
 c     d(F_ia)/d(TICE)
-          dFiDTs1 = 4.0 _d 0 * D3*t3 + effConduct(I,J) + D1*UG(I,J)
+          dFiDTs1 = 4.0 _d 0*D3(I,J)*t3 + effConduct(I,J) + D1*UG(I,J)
      &         + D1I*UG(I,J)*dqhice_dTice
 
-          F_lwu(I,J)= t4 * D3
+          F_lwu(I,J)= t4 * D3(I,J)
 
           F_sens(I,J)= D1 * UG(I,J) * (t1 - atempLoc(I,J))
 
@@ -600,7 +616,7 @@ C              over ice specific humidity
 #endif
 
          F_c(I,J)  = -effConduct(I,J) * (TB(I,J) - t1)
-         F_lwu(I,J)   = t4 * D3
+         F_lwu(I,J)   = t4 * D3(I,J)
          F_sens(I,J)  = D1 * UG(I,J) * (t1 - atempLoc(I,J))
 
 C              The flux between the ice/snow surface and the atmosphere.
@@ -619,9 +635,9 @@ Cgf no additional dependency through solver, snow, etc.
          t4 = t2*t2
          qhice(I,J)=QS1*(C1*t4+C2*t3 +C3*t2+C4*t1+C5)
 
-         A1(I,J)=0.3 _d 0 *SWDOWN(I,J,bi,bj)+lwdownLoc(I,J)*0.97 _d 0
+         A1(I,J)=0.3 _d 0 *SWDOWN(I,J,bi,bj)+lwdownLoc(I,J)
      &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
-         A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3*t4
+         A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhice(I,J)-D3(I,J)*t4
 
          F_ia(I,J)=-A1(I,J)-A2(I,J)
          IcePenetSWFlux(I,J)= 0. _d 0
