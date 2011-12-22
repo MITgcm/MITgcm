@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.103 2011/12/19 16:30:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.104 2011/12/22 08:40:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -484,7 +484,21 @@ C     Check the consitency of a few parameters
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
-
+      IF ( SEAICE_emissivity .LT. 1. _d -04 ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'SEAICE_emissivity is no longer emissivity*(boltzmann '//
+     &      'constant) but really an emissivity.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A)')
+     &      'Typical values are near 1 '//
+     &      '(default is 5.5/5.67=0.9700176...).'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,E13.6,A)')
+     &      'Please change SEAICE_emissivity in data.seaice to ',
+     &      SEAICE_emissivity, '/5.67e-8.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
 
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
