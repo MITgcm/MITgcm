@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.4 2010/05/14 21:52:34 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.5 2011/12/22 19:05:27 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GCHEM_DIAGNOSTICS_INIT(myThid )
+      SUBROUTINE GCHEM_DIAGNOSTICS_INIT( myThid )
 
 C !DESCRIPTION:
 C define diagnostics for gchem package
@@ -24,11 +24,11 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
 
 C     !LOCAL VARIABLES:
-      INTEGER       diagNum
-      CHARACTER*8   diagName
-      CHARACTER*16  diagCode
-      CHARACTER*16  diagUnits
-      CHARACTER*(80) diagTitle
+c     INTEGER       diagNum
+c     CHARACTER*8   diagName
+c     CHARACTER*16  diagCode
+c     CHARACTER*16  diagUnits
+c     CHARACTER*(80) diagTitle
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Define diagnostics Names :

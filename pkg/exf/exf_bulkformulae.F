@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.24 2010/10/25 16:21:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.25 2011/12/22 19:03:41 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -13,7 +13,7 @@ C     *==========================================================*
 C     | SUBROUTINE EXF_BULKFORMULAE
 C     | o Calculate bulk formula fluxes over open ocean
 C     |   either following
-C     |   Large and Pond, 1981 & 1982 
+C     |   Large and Pond, 1981 & 1982
 C     |   or (if defined ALLOW_BULK_LARGEYEAGER04)
 C     |   Large and Yeager, 2004, NCAR/TN-460+STR.
 C     *==========================================================*
@@ -188,7 +188,9 @@ C     these need to be 2D-arrays for vectorizing code
       _RL delq  (1:sNx,1:sNy)   ! specific humidity difference [kg/kg]
       _RL deltap(1:sNx,1:sNy)
 C
+#ifdef ALLOW_BULK_LARGEYEAGER04
       _RL dzTmp
+#endif
       _RL SSTtmp
       _RL ssq
       _RL re                    ! = Ce / sqrt(Cd)     [-]
@@ -205,7 +207,6 @@ C
       _RL psixh                 ! latent & sensib. stability function
       _RL zwln                  ! = log(zwd/zref)
       _RL ztln                  ! = log(zth/zref)
-      _RL windStress            ! surface wind-stress (@ grid cell center)
       _RL tmpbulk
       _RL recip_rhoConstFresh
       INTEGER ksrf, ksrfp1
@@ -214,12 +215,18 @@ C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculatio
       LOGICAL solve4Stress
 #ifdef ALLOW_ATM_WIND
       PARAMETER ( solve4Stress = .TRUE. )
+#else
+# ifdef ALLOW_ATM_TEMP
+      _RL windStress            ! surface wind-stress (@ grid cell center)
+# endif
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ikey_1
       integer ikey_2
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifndef ALLOW_ATM_WIND
 #ifdef ALLOW_BULK_LARGEYEAGER04
@@ -235,7 +242,7 @@ C-- Set surface parameters :
       czol = hu*karman*gravity_mks
 C--   abbreviation
       recip_rhoConstFresh = 1. _d 0/rhoConstFresh
-      
+
 c     Loop over tiles.
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
@@ -328,7 +335,7 @@ C--  calculate turbulent scales
            qstar(i,j)=ren*delq(i,j)
 
           ELSE
-C     atemp(i,j,bi,bj) .EQ. 0. 
+C     atemp(i,j,bi,bj) .EQ. 0.
            tstar (i,j) = 0. _d 0
            qstar (i,j) = 0. _d 0
            ustar (i,j) = 0. _d 0

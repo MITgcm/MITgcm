@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.8 2011/08/31 21:35:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.9 2011/12/22 19:04:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -59,8 +59,10 @@ C     eastCommMode  ::  a particular tile face uses.
 c     INTEGER biW, bjW, biE, bjE
       INTEGER westCommMode
       INTEGER eastCommMode
-      INTEGER spinCount
       INTEGER ioUnit
+#ifdef EXCH_USE_SPINNING
+      INTEGER spinCount
+#endif
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize
       INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
@@ -273,8 +275,10 @@ C     northCommMode ::  a particular tile face uses.
 c     INTEGER biS, bjS, biN, bjN
       INTEGER southCommMode
       INTEGER northCommMode
-      INTEGER spinCount
       INTEGER ioUnit
+#ifdef EXCH_USE_SPINNING
+      INTEGER spinCount
+#endif
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize
       INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.23 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.24 2011/12/22 19:03:41 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -69,14 +69,17 @@ c     mythid - thread number for this instance of the routine.
 
 c     == local variables ==
 
-      integer bi,bj
-      integer i,j,k
+      INTEGER bi,bj
+      INTEGER i,j,ks
       INTEGER imin, imax
       INTEGER jmin, jmax
       PARAMETER ( imin = 1-OLx , imax = sNx+OLx )
       PARAMETER ( jmin = 1-OLy , jmax = sNy+OLy )
 
 c     == end of interface ==
+
+C--   set surface level index:
+      ks = 1
 
       DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -160,7 +163,7 @@ CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 c     Shift wind stresses calculated at Grid-center to W/S points
               fu(i,j,bi,bj) = exf_outscal_ustress*
      &              (ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))
-     &              *exf_half*maskW(i,j,1,bi,bj)
+     &              *exf_half*maskW(i,j,ks,bi,bj)
             enddo
            enddo
           ENDIF
@@ -198,7 +201,7 @@ CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 c     Shift wind stresses calculated at C-points to W/S points
               fv(i,j,bi,bj) = exf_outscal_vstress*
      &              (vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))
-     &              *exf_half*maskS(i,j,1,bi,bj)
+     &              *exf_half*maskS(i,j,ks,bi,bj)
             enddo
            enddo
           ENDIF

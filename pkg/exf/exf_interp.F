@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.25 2011/06/07 22:17:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.26 2011/12/22 19:03:41 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -95,7 +95,7 @@ C local variables
       _RL      arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       _RL      NorthValue
       _RL      x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
-      integer  i, j, k, l, js, bi, bj, sp, interp_unit
+      integer  i, j, k, l, js, bi, bj, sp
 #ifdef TARGET_NEC_SX
       integer  ic, ii, icnt
       integer  inx(snx*sny,2)

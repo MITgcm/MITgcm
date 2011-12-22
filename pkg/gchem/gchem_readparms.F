@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.18 2010/08/24 14:41:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.19 2011/12/22 19:05:27 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -34,10 +34,8 @@ C  iTracer              :: loop indices
 C  iUnit                :: unit number for I/O
 C  msgBuf               :: message buffer
       INTEGER tIter0
-      INTEGER iTracer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-c     PARAMETER ( UNSET_I      = 123456789  )
 CEOP
 
 C- Sub-package on/off flags: not fully implemented, requires

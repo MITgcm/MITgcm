@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.29 2011/12/13 20:57:45 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.30 2011/12/22 19:05:27 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -13,7 +13,7 @@ C $Name:  $
 CBOP
 C !ROUTINE: GCHEM_FORCING_SEP
 C !INTERFACE: ==========================================================
-      SUBROUTINE GCHEM_FORCING_SEP(myTime,myIter, myThid )
+      SUBROUTINE GCHEM_FORCING_SEP( myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     calls subroutine that will update passive tracers values
@@ -42,20 +42,19 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
-      INTEGER myThid, myIter
       _RL myTime
-
-c!LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
-C  bi,bj                :: tile indices
-C  k                    :: vertical level
-      INTEGER bi,bj,imin,imax,jmin,jmax
-      INTEGER i,j
-      INTEGER niter
+      INTEGER myIter, myThid
 CEOP
 
 #ifdef ALLOW_GCHEM
 #ifdef GCHEM_SEPARATE_FORCING
+
+C!LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+c     INTEGER i,j
 
 ccccccccccccccccccccccccc
 c global calculations   c
@@ -66,31 +65,31 @@ c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
        gsm_alk = 0. _d 0
-       call tracer_meanarea(salt, 1,gsm_s,myThid)
-       call tracer_meanarea(
-     &             ptracer(1-Olx,1-Oly,1,1,1,1), 1, gsm_dic, myThid )
+       CALL TRACER_MEANAREA(salt, 1,gsm_s,myThid)
+       CALL TRACER_MEANAREA(
+     &             pTracer(1-OLx,1-OLy,1,1,1,1), 1, gsm_dic, myThid )
        print*,'mean surface dic', gsm_dic,gsm_s
-       call tracer_meanarea(
-     &             ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk, myThid )
+       CALL TRACER_MEANAREA(
+     &             pTracer(1-OLx,1-OLy,1,1,1,2), 1, gsm_alk, myThid )
 #endif
 #ifdef ALLOW_DARWIN
 c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
        gsm_alk = 0. _d 0
-       call tracer_meanarea(salt, 1,gsm_s,myThid)
-       call tracer_meanarea(
-     &             ptracer(1-Olx,1-Oly,1,1,1,iDIC), 1, gsm_dic, myThid )
+       CALL TRACER_MEANAREA(salt, 1,gsm_s,myThid)
+       CALL TRACER_MEANAREA(
+     &             pTracer(1-OLx,1-OLy,1,1,1,iDIC), 1, gsm_dic, myThid )
        print*,'mean surface dic', gsm_dic,gsm_s
-       call tracer_meanarea(
-     &             ptracer(1-Olx,1-Oly,1,1,1,iALK), 1, gsm_alk, myThid )
+       CALL TRACER_MEANAREA(
+     &             pTracer(1-OLx,1-OLy,1,1,1,iALK), 1, gsm_alk, myThid )
 #endif
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 ccccccccccccccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DARWIN
        IF ( useDARWIN ) THEN
-         CALL DARWIN_cons( myIter, myTime, myThid )
+         CALL DARWIN_CONS( myIter, myTime, myThid )
        ENDIF
 #endif
 
@@ -111,28 +110,28 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DIC
 #ifdef ALLOW_FE
-          call DIC_BIOTIC_Forcing( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,2),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,3),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,4),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,5),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,6),
+          CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,6),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
 #else
 #ifdef ALLOW_O2
-          call DIC_BIOTIC_Forcing( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,2),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,3),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,4),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,5),
+          CALL DIC_BIOTIC_fORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
 #else
-          call DIC_BIOTIC_Forcing( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,2),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,3),
-     &                          Ptracer(1-Olx,1-Oly,1,bi,bj,4),
+          CALL DIC_BIOTIC_Forcing( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
 #endif
@@ -144,23 +143,23 @@ cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
         IF ( useDARWIN ) THEN
 #ifdef NUT_SUPPLY
 c articficial supply of nutrients
-          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,2),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,3),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,3),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,4),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
 #endif
 ccccccccccccccc
 C darwin_forcing operates on bi,bj part only, but needs to get full
 C array because of last (iPtr) index
-          call DARWIN_Forcing(  Ptracer(1-Olx,1-Oly,1,1,1,1),
+          CALL DARWIN_FORCING(  pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
         ENDIF
@@ -171,7 +170,7 @@ C array because of last (iPtr) index
 
 #ifdef ALLOW_DARWIN
        IF ( useDARWIN ) THEN
-         CALL DARWIN_cons( myIter, myTime, myThid )
+         CALL DARWIN_CONS( myIter, myTime, myThid )
 #ifdef ALLOW_CARBON
          CALL DIC_ATMOS( 1, myTime, myIter, myThid )
 #endif

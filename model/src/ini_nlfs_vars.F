@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.6 2011/12/08 22:36:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.7 2011/12/22 19:00:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,14 +29,18 @@ C     == Routine arguments ==
 C     myThid :: my Thread Id. number
       INTEGER myThid
 
-
 C     !LOCAL VARIABLES:
 C     Local variables
 C     i,j,k,bi,bj  :: loop counter
-      INTEGER i,j,bi,bj
+      INTEGER bi,bj
 #ifdef NONLIN_FRSURF
+      INTEGER i, j
       INTEGER k, ks
       _RL hFacInfMOM, Rmin_tmp
+#else /* NONLIN_FRSURF */
+# ifdef EXACT_CONSERV
+      INTEGER i, j
+# endif
 #endif /* NONLIN_FRSURF */
 CEOP
 
@@ -53,8 +57,8 @@ C-    1rst bi,bj loop :
 #ifdef EXACT_CONSERV
 C-- Initialise arrays (defined within ifdef EXACT_CONSERV):
 C   note: should be done elsewhere, outside ifdef NONLIN_FRSURF bloc
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             etaHnm1(i,j,bi,bj) = 0.
             dEtaHdt(i,j,bi,bj) = 0.
             PmEpR  (i,j,bi,bj) = 0.
@@ -64,8 +68,8 @@ C   note: should be done elsewhere, outside ifdef NONLIN_FRSURF bloc
 
 #ifdef NONLIN_FRSURF
 C-- Initialise arrays (NLFS using r-coordinate):
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            hFac_surfC(i,j,bi,bj) = 0.
            hFac_surfW(i,j,bi,bj) = 0.
            hFac_surfS(i,j,bi,bj) = 0.
@@ -77,8 +81,8 @@ C-- Initialise arrays (NLFS using r-coordinate):
          ENDDO
 
 C-- Initialise arrays (NLFS using r* coordinate):
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             rStarFacC(i,j,bi,bj) = 1.
             rStarFacW(i,j,bi,bj) = 1.
             rStarFacS(i,j,bi,bj) = 1.
@@ -95,8 +99,8 @@ C-- Initialise arrays (NLFS using r* coordinate):
          ENDDO
 
 C-- Initialise arrays (NLFS using hybrid sigma-coordinate):
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             etaHw  (i,j,bi,bj) = 0.
             etaHs  (i,j,bi,bj) = 0.
             dEtaWdt(i,j,bi,bj) = 0.
@@ -106,8 +110,8 @@ C-- Initialise arrays (NLFS using hybrid sigma-coordinate):
 
 C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phisurf)
          DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             _hFacC(i,j,k,bi,bj) = h0FacC(i,j,k,bi,bj)
             _hFacW(i,j,k,bi,bj) = h0FacW(i,j,k,bi,bj)
             _hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)

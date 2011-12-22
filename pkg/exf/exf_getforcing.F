@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.39 2011/06/07 22:17:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.40 2011/12/22 19:03:41 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -142,16 +142,15 @@ c     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-      integer mythid
-      integer myiter
       _RL     mytime
+      integer myiter
+      integer mythid
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-      character*(max_len_mbuf) msgbuf
 
 c     == end of interface ==
 CEOP
@@ -287,5 +286,5 @@ c     Map the forcing fields onto the corresponding model fields.
 # endif
 #endif
 
-      end
-
+      RETURN
+      END

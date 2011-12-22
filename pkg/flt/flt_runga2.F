@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.17 2011/08/31 21:32:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.18 2011/12/22 19:04:45 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -50,7 +50,6 @@ C     == Functions ==
 
 C     == local variables ==
       INTEGER bi, bj
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ip
       INTEGER ic, jc, kc, iG, jG
       _RL uu, vv, u1, v1
@@ -200,8 +199,8 @@ C geographical coordinate.
 #endif /* ALLOW_3D_FLT */
 
 C--  new horizontal grid indices
-              ic = MAX( 1-Olx, MIN( NINT(ipart(ip,bi,bj)), sNx+Olx ) )
-              jc = MAX( 1-Oly, MIN( NINT(jpart(ip,bi,bj)), sNy+Oly ) )
+              ic = MAX( 1-OLx, MIN( NINT(ipart(ip,bi,bj)), sNx+OLx ) )
+              jc = MAX( 1-OLy, MIN( NINT(jpart(ip,bi,bj)), sNy+OLy ) )
 
 #ifdef ALLOW_3D_FLT
 C If float is 3D, make sure that it remains in water

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.27 2011/12/08 22:35:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.28 2011/12/22 19:00:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,8 +40,8 @@ C     myThid   :: my Thread Id. number
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-      _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C     !LOCAL VARIABLES:
 C     Local variables in common block
@@ -52,20 +52,24 @@ C     i,j,k    :: Loop counters
 C     uTrans   :: Volume transports ( uVel.xA )
 C     vTrans   :: Volume transports ( vVel.yA )
 C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
-      INTEGER bi,bj
-      INTEGER i,j,k
+      INTEGER k,bi,bj
 #ifdef EXACT_CONSERV
+      INTEGER i, j
       INTEGER ks
-      _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hDivFlow(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL facEmP, facMass
+#else /* EXACT_CONSERV */
+# ifdef ALLOW_OBCS
+      INTEGER i, j
+# endif
 #endif /* EXACT_CONSERV */
 #ifndef ALLOW_ADDFLUID
       _RL addMass(1)
 #endif /* ndef ALLOW_ADDFLUID */
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
-      _RL rStarDhDt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       _RL rStarDhDt(1)
 #endif
@@ -88,8 +92,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Compute the Divergence of The Barotropic Flow :
 
 C-    Initialise
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          hDivFlow(i,j)      = 0. _d 0
          utrans(i,j)        = 0. _d 0
          vtrans(i,j)        = 0. _d 0
@@ -200,8 +204,8 @@ C--   Update etaN at the end of the time step :
 C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
 
        IF (implicDiv2Dflow.EQ. 0. _d 0) THEN
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
          ENDDO
         ENDDO

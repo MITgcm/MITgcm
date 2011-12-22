@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.4 2011/06/08 01:46:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.5 2011/12/22 19:00:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -101,7 +101,7 @@ C     I, J, it2d :: Loop counters ( it2d counts CG iterations )
       _RL    eta_qrNM1
       _RL    cgBeta
       _RL    alpha,  alphaTile(nSx,nSy)
-      _RL    sigma,  sigmaTile(nSx,nSy)
+      _RL    sigma
       _RL    delta,  deltaTile(nSx,nSy)
       _RL    sumRHS, sumRHStile(nSx,nSy)
       _RL    rhsMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.3 2007/11/05 19:05:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.4 2011/12/22 19:05:27 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -33,11 +33,12 @@ C !USES: ===============================================================
 #include "GCHEM_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
 C  myTime               :: current time
-      INTEGER myThid, myIter
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL myTime
+      INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_GCHEM
 # ifndef GCHEM_SEPARATE_FORCING
@@ -47,24 +48,17 @@ C  iTracer              :: ptracer number
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
       INTEGER i,j
-      INTEGER niter
       INTEGER iTracer
-      INTEGER bi,bj,imin,imax,jmin,jmax,k
-#ifdef ALLOW_CFC
-      INTEGER kLoc
-      _RL  PtrLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL gPtrLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-#endif /* ALLOW_CFC */
-CEOP
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
 
 C     gchemTendency is re-initialized here
       DO iTracer = 1, PTRACERS_numInUse
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K = 1, Nr
-          DO J = 1-Oly, sNy+Oly
-           DO I = 1-Olx, sNx+Olx
-            gchemTendency(I,J,K,bi,bj,iTracer) = 0. _d 0
+         DO k = 1, Nr
+          DO j = 1-OLy, sNy+OLy
+           DO i = 1-OLx, sNx+OLx
+            gchemTendency(i,j,k,bi,bj,iTracer) = 0. _d 0
            ENDDO
           ENDDO
          ENDDO
@@ -85,11 +79,11 @@ C     define horizontal loop ranges
         iMax = sNx
         jMin = 1
         jMax = sNy
-C        DO iTracer = 1, PTRACER_NumInUse
-C         DO K = 1, Nr
-C          DO J = 1-Oly, sNy+Oly
-C           DO I = 1-Olx, sNx+Olx
-C            gchemTendency(I,J,K,bi,bj,iTracer) = your specific model
+C        DO iTracer = 1, PTRACER_numInUse
+C         DO k = 1, Nr
+C          DO j = 1-OLy, sNy+OLy
+C           DO i = 1-OLx, sNx+OLx
+C            gchemTendency(i,j,k,bi,bj,iTracer) = your specific model
 C           ENDDO
 C          ENDDO
 C         ENDDO
@@ -101,14 +95,14 @@ c chemical forcing      c
 ccccccccccccccccccccccccc
 ccccccccccccccccccccccccccc CFC cccccccccccccccccccccccccccccccc
 c
-        K = 1
-        CALL CFC11_FORCING( Ptracer     (1-Olx,1-Oly,1,bi,bj,1),
-     &                      gchemTendency(1-Olx,1-Oly,1,bi,bj,1),
-     &                      bi, bj, imin, imax, jmin, jmax,
+        k = 1
+        CALL CFC11_FORCING( pTracer     (1-OLx,1-OLy,1,bi,bj,1),
+     &                      gchemTendency(1-OLx,1-OLy,1,bi,bj,1),
+     &                      bi, bj, iMin, iMax, jMin, jMax,
      &                      myIter, myTime, myThid )
-        CALL CFC12_FORCING( Ptracer     (1-Olx,1-Oly,1,bi,bj,2),
-     &                      gchemTendency(1-Olx,1-Oly,1,bi,bj,2),
-     &                      bi, bj, imin, imax, jmin, jmax,
+        CALL CFC12_FORCING( pTracer     (1-OLx,1-OLy,1,bi,bj,2),
+     &                      gchemTendency(1-OLx,1-OLy,1,bi,bj,2),
+     &                      bi, bj, iMin, iMax, jMin, jMax,
      &                      myIter, myTime, myThid )
 
 cccccccccccccccccccccccccc END CFC cccccccccccccccccccccccccccccccccc
