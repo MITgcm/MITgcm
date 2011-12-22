@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.9 2007/08/10 03:09:07 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.10 2011/12/22 16:05:20 dfer Exp $
 C $Name:  $
 
 C  CPP options file for AIM package 
@@ -28,6 +28,9 @@ C  allow Clear-Sky diagnostic:
 
 C allow 3D cloud fraction for computation of radiation
 #undef ALLOW_CLOUD_3D
+
+C allow CO2 concentration
+#undef ALLOW_AIM_CO2
 
 C   Macro mapping dynamics vertical indexing (KD) to AIM vertical indexing (KA).
 C   ( dynamics puts K=1 at bottom of atmos., AIM puts K=1 at top of atmos. )
