@@ -1,0 +1,26 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+#- old DIFF1 default:
+      SEAICEadvScheme = 33,
+      SEAICE_initialHEFF = 1.0,
+      SEAICE_deltaTtherm = 3600.,
+      SEAICE_deltaTdyn   = 3600.,
+#     LSR_ERROR          = 1.E-12,
+ SEAICEwriteState   = .TRUE.,
+# For backward compatibility only:
+# emissivities should be inherited from exf and setting them here does
+# not set a good example
+ SEAICE_snow_emiss     = 0.97001763668430343479,
+ SEAICE_ice_emiss      = 0.97001763668430343479,
+ &
+
+ &SEAICE_PARM02
+ mult_smrarea = 100.0,
+ smrareadatfile = 'icearea_daily92to03_20x16.labsea1979',
+ wsmrarea0 = 0.5,
+ wmean_smrarea = 0.5,
+ smrarea_errfile = ' ',
+ &
+
+ &SEAICE_PARM03
+ &
