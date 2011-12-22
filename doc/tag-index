@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1558 2011/12/21 22:11:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1559 2011/12/22 12:36:08 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: sort out emissivity and long wave radiation step 2:
+  - add emissivity for snow and ice as new run-time parameters 
+    (unfortunately) that default to the corresponding exf values; this 
+    changes results in most verification experiments so that for backward
+    compatibility these parameter have to be set explicitly to inconsistent
+    values (ugly); 
+  - the exf-flag EXF_LWDOWN_WITH_EMISSIVITY then gets rid off the hard-wired
+    emissivities of 0.97 associated with lwdownloc in S/R seaice_solve4temp
+    until we agree how to handle this bug properly
 o pkg/exf (interpolation):
   - add a set of run-time param ({inputfield}_interpMethod), one for
     each interpolated input field, to select the interpolation method
