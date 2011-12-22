@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.78 2011/12/19 16:30:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.79 2011/12/22 12:30:07 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -197,7 +197,9 @@ C     SEAICE_lhEvap      :: latent heat of evaporation for water (J/kg)
 C     SEAICE_dalton      :: Dalton number (= sensible heat transfer coefficient)
 C     SEAICE_iceConduct  :: sea-ice conductivity
 C     SEAICE_snowConduct :: snow conductivity
-C     SEAICE_emissivity  :: Stefan-Boltzman constant * emissivity
+C     SEAICE_emissivity  :: longwave ocean-surface emissivity (-)
+C     SEAICE_ice_emiss   :: longwave ice-surface emissivity (-)
+C     SEAICE_snow_emiss  :: longwave snow-surface emissivity (-)
 C     SEAICE_boltzmann   :: Stefan-Boltzman constant (not a run time parameter)
 C     SEAICE_snowThick   :: cutoff snow thickness
 C     SEAICE_shortwave   :: penetration shortwave radiation factor
@@ -249,7 +251,8 @@ C
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
       _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
-      _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
+      _RL SEAICE_iceConduct, SEAICE_snowConduct
+      _RL SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss
       _RL SEAICE_boltzmann
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
       _RL SIsalFRAC, SIsal0, SEAICEstressFactor
@@ -279,7 +282,8 @@ C
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
-     &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
+     &    SEAICE_iceConduct, SEAICE_snowConduct,
+     &    SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss,
      &    SEAICE_boltzmann,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SIsalFRAC, SIsal0, SEAICEstressFactor,
