@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.8 2011/10/07 21:36:39 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.9 2011/12/22 16:08:38 dfer Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -13,9 +13,11 @@ C $Name:  $
 #define ALLOW_O2
 #undef READ_PAR
 #undef MINFE
+#undef DIC_NO_NEG
 c these all need to be defined for coupling to
 c atmospheric model
 #undef USE_QSW
+#undef USE_QSW_UNDERICE
 #undef USE_ATMOSCO2
 #undef USE_PLOAD
 
