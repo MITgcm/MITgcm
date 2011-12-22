@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.169 2011/09/30 21:00:02 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.170 2011/12/22 12:55:05 mlosch Exp $
 #  $Name:  $
 #
 
@@ -290,6 +290,14 @@ testoutput_run()
 	 'hSImx') testoutput_var $1 "seaice_heff_max"   "SIce Heff max"	  $2 $3; yy=$? ;;
 	 'hSIav') testoutput_var $1 "seaice_heff_mean"  "SIce Heff mean"  $2 $3; yy=$? ;;
 	 'hSIsd') testoutput_var $1 "seaice_heff_sd"    "SIce Heff StDv"  $2 $3; yy=$? ;;
+	 'uSImn') testoutput_var $1 "seaice_uice_min"   "SIce Uice min"	  $2 $3; yy=$? ;;
+	 'uSImx') testoutput_var $1 "seaice_uice_max"   "SIce Uice max"	  $2 $3; yy=$? ;;
+	 'uSIav') testoutput_var $1 "seaice_uice_mean"  "SIce Uice mean"  $2 $3; yy=$? ;;
+	 'uSIsd') testoutput_var $1 "seaice_uice_sd"    "SIce Uice StDv"  $2 $3; yy=$? ;;
+	 'vSImn') testoutput_var $1 "seaice_vice_min"   "SIce Vice min"	  $2 $3; yy=$? ;;
+	 'vSImx') testoutput_var $1 "seaice_vice_max"   "SIce Vice max"	  $2 $3; yy=$? ;;
+	 'vSIav') testoutput_var $1 "seaice_vice_mean"  "SIce Vice mean"  $2 $3; yy=$? ;;
+	 'vSIsd') testoutput_var $1 "seaice_vice_sd"    "SIce Vice StDv"  $2 $3; yy=$? ;;
 	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $3; yy=$? ;;
 	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $3; yy=$? ;;
 	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $3; yy=$? ;;
