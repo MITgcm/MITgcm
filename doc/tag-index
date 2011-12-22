@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1559 2011/12/22 12:36:08 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1560 2011/12/22 15:38:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add a verification experiment (offline_exf_seaice/input.seaice) that test
+  the B-grid LSOR solver
 o pkg/seaice: sort out emissivity and long wave radiation step 2:
   - add emissivity for snow and ice as new run-time parameters 
     (unfortunately) that default to the corresponding exf values; this 
