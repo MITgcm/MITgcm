@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.10 2011/10/11 23:02:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.11 2011/12/22 19:02:13 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -75,9 +75,6 @@ c     modintsteps     - number of timesteps that are to be performed.
       integer moditerend
       integer modintsteps
 
-      integer errio
-      integer ierr
-      integer il
       integer enddate_1
       integer enddate_2
 
@@ -86,12 +83,6 @@ c     Variables related to the calendar tool.
       integer       iUnit
 
       character*(max_len_mbuf) msgBuf
-      character*(max_len_prec) record
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
