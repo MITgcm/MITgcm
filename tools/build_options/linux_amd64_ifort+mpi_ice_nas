@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.8 2011/06/17 15:56:28 zhc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.9 2011/12/23 14:04:59 dfer Exp $
 # $Name:  $
 
 # tested on pleiades using SLES11 and:
-# module load comp-intel/2011.2 mpi-sgi/mpt.2.04-fsa netcdf/4.0
+# module load comp-intel/2011.2 mpi-sgi/mpt.2.04.10789 netcdf/4.0
 
 FC=ifort
 
@@ -15,10 +15,10 @@ OMPFLAG='-openmp'
 CFLAGS='-fPIC'
 LDADD='-shared-intel'
 
-LIBS='-L/nasa/sgi/mpt/2.04-fsa/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
-INCLUDES='-I/nasa/sgi/mpt/2.04-fsa/include -I/nasa/netcdf/4.0/include'
-INCLUDEDIRS='/nasa/sgi/mpt/2.04-fsa/include'
-MPIINCLUDEDIR='/nasa/sgi/mpt/2.04-fsa/include'
+LIBS='-L/nasa/sgi/mpt/2.04.10789/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
+INCLUDES='-I/nasa/sgi/mpt/2.04.10789/include -I/nasa/netcdf/4.0/include'
+INCLUDEDIRS='/nasa/sgi/mpt/2.04.10789/include'
+MPIINCLUDEDIR='/nasa/sgi/mpt/2.04.10789/include'
 MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
 
