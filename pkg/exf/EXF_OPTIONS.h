@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.19 2011/12/20 10:16:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.20 2011/12/24 01:10:55 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
 #define EXF_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_EXF
-
-#include "CPP_OPTIONS.h"
+C     Package-specific Options & Macros go here
 
 #ifdef ALLOW_AUTODIFF_TAMC
 
@@ -20,7 +20,6 @@ C which is directly included in CPP_OPTIONS.h
 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
 
 c   pkg/exf CPP options:
 c   --------------------
@@ -141,8 +140,7 @@ C   Bulk formulae related flags.
 #define  ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
-#if (defined (ALLOW_ATM_TEMP) || \
-     defined (ALLOW_ATM_WIND))
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # undef ALLOW_BULK_LARGEYEAGER04
 #endif
@@ -165,14 +163,9 @@ C   Relaxation to monthly climatologies.
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
-C   runoff is a special case for which one might want to bypass
-C   interpolation from an input grid
-#ifdef USE_EXF_INTERPOLATION
-# undef USE_NO_INTERP_RUNOFF
-#endif
 
 #define EXF_INTERP_USE_DYNALLOC
-#if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )
+#if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
