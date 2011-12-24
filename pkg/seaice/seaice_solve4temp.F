@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.18 2011/12/22 12:35:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.19 2011/12/24 18:37:18 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SEAICE_SOLVE4TEMP
@@ -40,7 +43,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -79,7 +81,9 @@ c     _RL F_ia_net       (1:sNx,1:sNy)
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
+CEOP
 
+#if defined(ALLOW_ATM_TEMP) && defined(ALLOW_DOWNWARD_RADIATION)
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       _RL F_io_net   (1:sNx,1:sNy)
@@ -148,7 +152,6 @@ C     SEAICE_lhFusion)
 C     powers of temperature
       _RL  t1, t2, t3, t4
       _RL lnTEN
-CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ INIT comlev1_solve4temp = COMMON, sNx*sNy*NMAX_TICE
@@ -333,7 +336,6 @@ C     (What is the source of this formulation ?)
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
 C     NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
 
-#ifdef ALLOW_DOWNWARD_RADIATION
          IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
 C     NO SW PENETRATION WITH SNOW
           A1(I,J)=(1.0 _d 0 - ALB(I,J))*SWDOWN(I,J,bi,bj)
@@ -346,7 +348,6 @@ C        SW PENETRATION UNDER ICE
      &         +lwdownLoc(I,J)
      &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
          ENDIF
-#endif /* ALLOW_DOWNWARD_RADIATION */
 
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
 
@@ -580,11 +581,8 @@ C     NO SW PENETRATION WITH SNOW
           IcePenetSWFlux(I,J)=0.0 _d 0
          ELSE
 C     SW PENETRATION UNDER ICE
-
-#ifdef ALLOW_DOWNWARD_RADIATION
           IcePenetSWFlux(I,J)=-(1.0 _d 0 -ALB(I,J))*SWDOWN(I,J,bi,bj)
      &         *XIO*EXP(-1.5 _d 0*HICE_ACTUAL(I,J))
-#endif /* ALLOW_DOWNWARD_RADIATION */
          ENDIF
 
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
@@ -693,7 +691,7 @@ C     is also positive upward (atmosphere gains freshwater)
              print '(A,4(1x,D24.15))',
      &         'ibi F_lh_max,  F_lh/lhmax) ',
      &         F_lh_max(I,J), F_lh(I,J)/ F_lh_max(I,J)
-         ELSE 
+         ELSE
              print '(A,4(1x,D24.15))',
      &         'ibi F_lh_max = ZERO! '
          ENDIF
@@ -726,5 +724,6 @@ C     is also positive upward (atmosphere gains freshwater)
        ENDDO                    !/* i */
       ENDDO                     !/* j */
 
-      RETURN 
+#endif /* ALLOW_ATM_TEMP && ALLOW_DOWNWARD_RADIATION */
+      RETURN
       END
