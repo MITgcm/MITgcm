@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.19 2011/06/07 22:26:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.20 2011/12/24 19:31:54 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -73,6 +73,7 @@ CEOP
 
 #ifdef ALLOW_EXF
 #ifdef ALLOW_ATM_TEMP
+#ifdef ALLOW_DOWNWARD_RADIATION
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     === Local variables ===
@@ -196,8 +197,8 @@ C     more abbreviations
       qsat_exp = cvapor_exp_ice
 
 C     initialisation of local arrays
-      DO j = 1-Oly,sNy+Oly
-       DO i = 1-Olx,sNx+Olx
+      DO j = 1-OLy,sNy+OLy
+       DO i = 1-OLx,sNx+OLx
         tstar(i,j)  = 0. _d 0
         qstar(i,j)  = 0. _d 0
         ustar(i,j)  = 0. _d 0
@@ -249,14 +250,9 @@ C     for ssq and recomputing Ts2 lateron
          dEvdT(i,j)  = ssq(i,j)*qsat_exp/Ts2
          flwup       = emiss*stefanBoltzmann*Ts2*Ts2
          dflwupdT    = emiss*stefanBoltzmann*Ts2*Tsf * 4. _d 0
-#ifdef ALLOW_DOWNWARD_RADIATION
 c        flwNet_dwn  =       lwdown(i,j,bi,bj) - flwup
 C-    assume long-wave albedo = 1 - emissivity :
          flwNet_dwn  = emiss*lwdown(i,j,bi,bj) - flwup
-#else
-         STOP
-     &     'ABNORMAL END: S/R THSICE_GET_EXF: DOWNWARD_RADIATION undef'
-#endif
 C--   This is not yet the total derivative with respect to surface temperature
          dFlxdT(i,j)   = -dflwupdT
 C--   This is not yet the Net downward radiation excluding shortwave
@@ -469,6 +465,9 @@ C--   in case atemp is zero:
        ENDDO
       ENDDO
 
+#else /* ALLOW_DOWNWARD_RADIATION */
+      STOP 'ABNORMAL END: S/R THSICE_GET_EXF: DOWNWARD_RADIATION undef'
+#endif /* ALLOW_DOWNWARD_RADIATION */
 #else /* ALLOW_ATM_TEMP */
       STOP 'ABNORMAL END: S/R THSICE_GET_EXF: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
