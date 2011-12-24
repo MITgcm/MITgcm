@@ -1,21 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.8 2010/08/29 19:28:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.9 2011/12/24 01:04:46 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 #include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_ECCO
-
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_ECCO
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
+
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
-C
+
 C o include dump of snap shots for checks
 #undef ALLOW_SNAPSHOTS
 
@@ -57,7 +56,7 @@ C o use divided adjoint to split adjoint computations
 C ********************************************************************
 C ***                     Calendar Package                         ***
 C ********************************************************************
-C 
+C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 C
@@ -68,7 +67,7 @@ C o Include the calendar tool.
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C 
+C
 C       >>> Use the EGM-96 geoid error covariance.
 #undef  ALLOW_EGM96_ERROR_COV
 #undef  ALLOW_READ_EGM_DATA
@@ -90,26 +89,26 @@ C       >>> Projection onto Spherical Harmonics
 #undef  ALLOW_SPH_PROJECTION
 
 C       >>> ALLOW_GENCOST_CONTRIBUTION: interactive way to add basic 2D cost function terms.
-C       > In data.ecco, this requires the specification of data file (name, frequency, 
+C       > In data.ecco, this requires the specification of data file (name, frequency,
 C         etc.), bar file name for corresp. model average, standard error file name, etc.
-C       > In addition, adding such cost terms requires editing ecco_cost.h to increase 
+C       > In addition, adding such cost terms requires editing ecco_cost.h to increase
 C         NGENCOST, and editing cost_gencost_customize.F to implement the actual
 C         model average (i.e. the bar file content).
 #undef ALLOW_GENCOST_CONTRIBUTION
 C       >>> free form version of GENCOST: allows one to use otherwise defined elements (e.g.
 C         psbar and and topex data) while taking advantage of the cost function/namelist slots
-C         that can be made available using ALLOW_GENCOST_CONTRIBUTION. To this end 
+C         that can be made available using ALLOW_GENCOST_CONTRIBUTION. To this end
 C         ALLOW_GENCOST_CONTRIBUTION simply switches off tests that check whether all of the
 C         gencost elements (e.g. gencost_barfile and gencost_datafile) are specified in data.ecco.
-C       > While this option increases flexibility within the gencost framework, it implies more room 
+C       > While this option increases flexibility within the gencost framework, it implies more room
 C         for error, so it should be used cautiously, and with good knowledge of the rest of pkg/ecco.
 C       > It requires providing a specific cost function routine, and editing cost_gencost_all.F accordingly.
 #undef ALLOW_GENCOST_FREEFORM
- 
+
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C 
+C
 #undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
 C       >>> Replace hooks for the control variables.
 #ifdef INCLUDE_ECCO_PACKAGE
@@ -154,7 +153,7 @@ C    from Eastward/Northward to model grid directions
 C ********************************************************************
 C ***             External forcing Package                         ***
 C ********************************************************************
-C 
+C
 C o Include/exclude the external forcing package. To use this package,
 C   you have to include the calendar tool as well. KPP can be switched
 C   on or off. The implementation automatically takes care of this.
@@ -177,7 +176,6 @@ C   Relaxation to monthly climatologies.
 C   Relaxation to constant surface fields.
 #undef  ALLOW_CONST_SST_RELAXATION
 #undef  ALLOW_CONST_SSS_RELAXATION
-
 
 #endif /* ALLOW_ECCO */
 #endif /* ECCO_CPPOPTIONS_H */

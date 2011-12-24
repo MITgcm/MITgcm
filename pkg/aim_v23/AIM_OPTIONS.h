@@ -1,14 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.10 2011/12/22 16:05:20 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.11 2011/12/24 01:04:45 jmc Exp $
 C $Name:  $
 
-C  CPP options file for AIM package 
+C  CPP options file for AIM package
 
 #ifndef AIM_OPTIONS_H
 #define AIM_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_AIM
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_AIM
+C     Package-specific Options & Macros go here
 
 C  restore the old AIM interface (ref: coupled run, summer 2000):
 C  - use a simple shift of 1/2 mesh for mapping A.grid <-> C.grid.

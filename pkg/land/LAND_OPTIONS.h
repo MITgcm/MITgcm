@@ -1,14 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_OPTIONS.h,v 1.5 2005/08/24 23:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_OPTIONS.h,v 1.6 2011/12/24 01:04:48 jmc Exp $
 C $Name:  $
 
-C  CPP options file for Land package 
+C  CPP options file for Land package
 
 #ifndef LAND_OPTIONS_H
 #define LAND_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_LAND
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_LAND
+C     Package-specific Options & Macros go here
 
 #ifdef ALLOW_TIMEAVE
 C  allow time average diagnostic:

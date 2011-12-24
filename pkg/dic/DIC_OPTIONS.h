@@ -1,12 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.9 2011/12/22 16:08:38 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.10 2011/12/24 01:04:46 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
 #define DIC_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_DIC
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_DIC
+C     Package-specific Options & Macros go here
 
 #define DIC_BIOTIC
 #undef  ALLOW_FE

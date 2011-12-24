@@ -1,19 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.54 2011/12/19 16:22:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.55 2011/12/24 01:09:40 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
-C     | SEAICE_OPTIONS.h                                         |
-C     | o CPP options file for sea ice package.                  |
+C     | SEAICE_OPTIONS.h
+C     | o CPP options file for sea ice package.
 C     *==========================================================*
-C     | Use this file for selecting options within the sea ice   |
-C     | package.                                                 |
+C     | Use this file for selecting options within the sea ice
+C     | package.
 C     *==========================================================*
 
 #ifndef SEAICE_OPTIONS_H
 #define SEAICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
 #ifdef ALLOW_SEAICE
+C     Package-specific Options & Macros go here
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
@@ -48,7 +50,7 @@ C     otherwise, use the merged version (with some of Ian Fenty s code)
 C--   options only available in the merged version (from Ian Fenty s code)
 #ifndef SEAICE_GROWTH_LEGACY
 C-    to ensure heat conservation in the coupled ocean-seaice system
-#undef SEAICE_HEAT_CONSERV_FIX
+# undef SEAICE_HEAT_CONSERV_FIX
 C-    to switch on/off open-water freezing contribution to thickness tendency:
 # define SEAICE_DO_OPEN_WATER_GROWTH
 C-    ifdef SEAICE_DO_OPEN_WATER_GROWTH then define SEAICE_DO_OPEN_WATER_MELT
@@ -118,7 +120,7 @@ C--   By default for B-grid dynamics solver surface tilt is obtained
 C     indirectly via geostrophic velocities. Define following CPP
 C     in order to use ETAN instead.
 # define EXPLICIT_SSH_SLOPE
-C--   Defining this flag turns on a FV-discretization of the B-grid LSOR 
+C--   Defining this flag turns on a FV-discretization of the B-grid LSOR
 C     solver. It is smoother and includes all metric terms, similar to the
 C     C-grid solver. It is here for completeness, but its usefulness is
 C     unclear.

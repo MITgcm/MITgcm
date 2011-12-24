@@ -1,14 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.8 2011/06/27 22:23:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.9 2011/12/24 01:04:45 jmc Exp $
 C $Name:  $
 
 #ifndef DIAG_OPTIONS_H
 #define DIAG_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_DIAGNOSTICS
-
 #include "CPP_OPTIONS.h"
 
-CEH3 package-specific options go here
+#ifdef ALLOW_DIAGNOSTICS
+C     Package-specific Options & Macros go here
 
 C allow to define specific regions and the corresponding mask ;
 C  used to perform regional statistics over a limited area
@@ -23,7 +22,6 @@ C  cases (e.g., changing data.diagnostics).
 
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIAG_OPTIONS_H */
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

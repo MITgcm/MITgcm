@@ -1,17 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.3 2008/08/11 22:31:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.4 2011/12/24 01:09:39 jmc Exp $
 C $Name:  $
 
 C CPP options file for MYPACKAGE
-C
 C Use this file for selecting options within package "MyPackage"
 
 #ifndef MYPACKAGE_OPTIONS_H
 #define MYPACKAGE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_MYPACKAGE
-
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_MYPACKAGE
 C Place CPP define/undef flag here
 
 C to reduce memory storage, disable unused array with those CPP flags :

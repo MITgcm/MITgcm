@@ -1,17 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML_OPTIONS.h,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML_OPTIONS.h,v 1.2 2011/12/24 01:04:45 jmc Exp $
 C $Name:  $
 
 C Options file for CheapAML package
-C
 C Use this file for selecting options within the CheapAML package
 
 #ifndef CHEAPAML_OPTIONS_H
 #define CHEAPAML_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_CHEAPAML
-
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_CHEAPAML
 C Place CPP define/undef flag here
 
 #endif /* ALLOW_CHEAPAML */

@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_OPTIONS.h,v 1.3 2011/06/29 16:24:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_OPTIONS.h,v 1.4 2011/12/24 01:09:41 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SHELFICE_OPTIONS.h                                       |
-C     | o CPP options file for SHELFICE package.                 |
-C     |==========================================================|
-C     | Use this file for selecting options within the SHELFICE  |
-C     | package.                                                 |
-C     \==========================================================/
+C     *==========================================================*
+C     | SHELFICE_OPTIONS.h
+C     | o CPP options file for SHELFICE package.
+C     *==========================================================*
+C     | Use this file for selecting options within the SHELFICE
+C     | package.
+C     *==========================================================*
 
 #ifndef SHELFICE_OPTIONS_H
 #define SHELFICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_SHELFICE
-
-#include "CPP_OPTIONS.h"
+C     Package-specific Options & Macros go here
 
 C     allow code for simple ISOMIP thermodynamics
 #define ALLOW_ISOMIP_TD
@@ -26,4 +26,3 @@ C     following Holland and Jenkins, JPO, 1999
 
 #endif /* ALLOW_SHELFICE */
 #endif /* SHELFICE_OPTIONS_H */
-

@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.17 2009/09/18 11:40:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.18 2011/12/24 01:04:48 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | KPP_OPTIONS.h                                            |
-C     | o CPP options file for KPP package.                      |
-C     |==========================================================|
-C     | Use this file for selecting options within the KPP       |
-C     | package.  KPP is enabled with ALLOW_KPP in CPP_OPTIONS.h |
-C     \==========================================================/
+C     *==========================================================*
+C     | KPP_OPTIONS.h
+C     | o CPP options file for KPP package.
+C     *==========================================================*
+C     | Use this file for selecting options within the KPP
+C     | package.
+C     *==========================================================*
 
 #ifndef KPP_OPTIONS_H
 #define KPP_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_KPP
-
-#include "CPP_OPTIONS.h"
+C     Package-specific Options & Macros go here
 
 C o When set, smooth shear horizontally with 121 filters
 #define KPP_SMOOTH_SHSQ
@@ -59,7 +59,6 @@ C o Vertically smooth Ri (for interior shear mixing)
 
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

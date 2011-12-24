@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/PP81_OPTIONS.h,v 1.2 2007/10/09 00:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/PP81_OPTIONS.h,v 1.3 2011/12/24 01:09:39 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | PP81_OPTIONS.h                                            |
-C     | o CPP options file for PP81 package.                      |
-C     |==========================================================|
-C     | Use this file for selecting options within the PP81       |
-C     | package.  PP81 is enabled with ALLOW_PP81 in CPP_OPTIONS.h |
-C     \==========================================================/
+C     *==========================================================*
+C     | PP81_OPTIONS.h
+C     | o CPP options file for PP81 package.
+C     *==========================================================*
+C     | Use this file for selecting options within the PP81
+C     | package.
+C     *==========================================================*
 
 #ifndef PP81_OPTIONS_H
 #define PP81_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_PP81
-
-#include "CPP_OPTIONS.h"
+C     Package-specific Options & Macros go here
 
 C o Allow lower bound for viscosity and diffusivity
 #undef ALLOW_PP81_LOWERBOUND
@@ -25,4 +25,3 @@ C o When set, smooth Richardson number
 
 #endif /* ALLOW_PP81 */
 #endif /* PP81_OPTIONS_H */
-

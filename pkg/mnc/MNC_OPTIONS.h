@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.7 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.8 2011/12/24 01:09:39 jmc Exp $
 C $Name:  $
 
 #ifndef MNC_OPTIONS_H
 #define MNC_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_MNC
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_MNC
 
 #include "MNC_ID_HEADER.h"
 
@@ -29,7 +29,6 @@ C     per-file and per-tile file names
 
 #endif /* ALLOW_MNC */
 #endif /* MNC_OPTIONS_H */
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

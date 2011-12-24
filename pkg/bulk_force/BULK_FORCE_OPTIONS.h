@@ -1,14 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULK_FORCE_OPTIONS.h,v 1.5 2006/06/22 14:11:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULK_FORCE_OPTIONS.h,v 1.6 2011/12/24 01:04:45 jmc Exp $
 C $Name:  $
 
 #ifndef BULK_FORCE_OPTIONS_H
 #define BULK_FORCE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_BULK_FORCE
-C CPP Macros go here
+C     Package-specific Options & Macros go here
 
 #undef CONSERV_BULKF
 

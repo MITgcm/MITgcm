@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/embed_files/EMBED_FILES_OPTIONS.h,v 1.1 2006/01/12 03:24:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/embed_files/EMBED_FILES_OPTIONS.h,v 1.2 2011/12/24 01:04:46 jmc Exp $
 C $Name:  $
 
 #ifndef EMBED_FILES_OPTIONS_H
 #define EMBED_FILES_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_EMBED_FILES
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_EMBED_FILES
+C Place CPP define/undef flag here
 
 #endif /* ALLOW_EMBED_FILES */
 #endif /* EMBED_FILES_OPTIONS_H */
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/CAL_OPTIONS.h,v 1.3 2003/11/25 16:07:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/CAL_OPTIONS.h,v 1.4 2011/12/24 01:04:45 jmc Exp $
 C $Name:  $
 
 #ifndef CAL_OPTIONS_H
 #define CAL_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_CAL
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_CAL
 
 CPH >>>>>> ALL CAL OPTIONS ARE CURRENTLY SET IN <<<<<<
 CPH >>>>>> ECCO_CPPOPTIONS.h                    <<<<<<

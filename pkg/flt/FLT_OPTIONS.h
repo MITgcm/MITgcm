@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_OPTIONS.h,v 1.3 2011/02/01 17:08:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_OPTIONS.h,v 1.4 2011/12/24 01:04:47 jmc Exp $
 C $Name:  $
 
 C CPP options file for FLT package
@@ -6,9 +6,10 @@ C CPP options file for FLT package
 #ifndef FLT_OPTIONS_H
 #define FLT_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_FLT
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_FLT
+C     Package-specific Options & Macros go here
 
 C Include/Exclude part that allows 3-dimensional advection of floats
 #define ALLOW_3D_FLT

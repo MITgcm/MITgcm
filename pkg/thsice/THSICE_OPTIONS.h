@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_OPTIONS.h,v 1.4 2007/09/17 21:58:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_OPTIONS.h,v 1.5 2011/12/24 01:09:41 jmc Exp $
 C $Name:  $
 
 #ifndef THSICE_OPTIONS_H
 #define THSICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_THSICE
-
-#include "CPP_OPTIONS.h"
+C     Package-specific Options & Macros go here
 
 C- use continuous power-law function for partition of energy between lateral
 C  melting/freezing and thinning/thickening ; otherwise, use step function.

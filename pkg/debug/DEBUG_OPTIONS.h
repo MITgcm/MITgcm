@@ -1,14 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/DEBUG_OPTIONS.h,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/DEBUG_OPTIONS.h,v 1.3 2011/12/24 01:04:45 jmc Exp $
 C $Name:  $
 
 #ifndef DEBUG_OPTIONS_H
 #define DEBUG_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_DEBUG
-
 #include "CPP_OPTIONS.h"
 
-C CPP Macros go here
+#ifdef ALLOW_DEBUG
+C     Package-specific Options & Macros go here
 
 #endif /* ALLOW_DEBUG */
 #endif /* DEBUG_OPTIONS_H */
