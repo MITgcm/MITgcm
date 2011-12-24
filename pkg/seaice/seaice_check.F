@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.52 2011/12/21 12:58:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.53 2011/12/24 18:47:23 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -342,12 +342,6 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
 #ifndef ALLOW_DOWNWARD_RADIATION
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_DOWNWARD_RADIATION'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
-#ifndef ALLOW_RUNOFF
-         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
-     &        'need to define pkg/exf ALLOW_RUNOFF'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
