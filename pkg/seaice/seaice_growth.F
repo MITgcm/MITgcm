@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.142 2011/12/15 22:30:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.143 2011/12/24 18:38:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SEAICE_GROWTH
@@ -28,9 +31,8 @@ C     === Global variables ===
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-# include "EXF_FIELDS.h"
 # include "EXF_PARAM.h"
+# include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_SALT_PLUME
 # include "SALT_PLUME.h"
@@ -46,6 +48,7 @@ C     myIter :: Simulation timestep number
 C     myThid :: Thread no. that called this routine.
       _RL myTime
       INTEGER myIter, myThid
+CEOP
 
 C     !FUNCTIONS:
 #ifdef ALLOW_DIAGNOSTICS
@@ -84,7 +87,6 @@ C       (e.g. QbyATM or HEFF), and how it is affected (e.g. d_HEFFbyATMonOCN
 C       is the increment of HEFF due to the ATMosphere extracting heat from the
 C       OCeaN surface, or providing heat to the OCeaN surface).
 
-CEOP
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
 C     number of surface interface layer
@@ -739,13 +741,13 @@ C     Compute relative wind speed over sea ice.
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tice(:,:,bi,bj) 
+CADJ STORE tice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnowActual = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heffActual  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
 # ifdef SEAICE_MULTICATEGORY
-CADJ STORE tices(:,:,:,bi,bj) 
+CADJ STORE tices(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 # endif /* SEAICE_MULTICATEGORY */
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -765,8 +767,8 @@ CADJ &                           key = ilockey, byte = isbyte
          DO J=1,sNy
           DO I=1,sNx
            heffActualP(I,J)= heffActual(I,J)*pFac
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET 
-           latentHeatFluxMaxP(I,J) = latentHeatFluxMax(I,J)*pFac 
+#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+           latentHeatFluxMaxP(I,J) = latentHeatFluxMax(I,J)*pFac
 #endif
            TICE(I,J,bi,bj)=TICES(I,J,IT,bi,bj)
           ENDDO
@@ -808,7 +810,7 @@ C--  End loop over multi-categories
 #ifdef ALLOW_DIAGNOSTICS
         DO J=1,sNy
          DO I=1,sNx
-c          The actual latent heat flux realized by SOLVE4TEMP 
+c          The actual latent heat flux realized by SOLVE4TEMP
            DIAGarrayA(I,J) = a_FWbySublim(I,J) * lhSublim
          ENDDO
         ENDDO
@@ -1188,8 +1190,8 @@ CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE recip_heffActual = comlev1_bibj,key=iicekey,byte=isbyte
 cph(
-cphCADJ STORE d_AREAbyATM  = comlev1_bibj,key=iicekey,byte=isbyte   
-cphCADJ STORE d_AREAbyICE  = comlev1_bibj,key=iicekey,byte=isbyte  
+cphCADJ STORE d_AREAbyATM  = comlev1_bibj,key=iicekey,byte=isbyte
+cphCADJ STORE d_AREAbyICE  = comlev1_bibj,key=iicekey,byte=isbyte
 cphCADJ STORE d_AREAbyOCN  = comlev1_bibj,key=iicekey,byte=isbyte
 cph)
 CADJ STORE a_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1245,8 +1247,8 @@ C         that can also act to remove ice cover.
 
 C         Part 2: contraction from ice thinning from above
           d_AREAbyICE(I,J) = 0. _d 0
-          if (d_HEFFbyATMOnOCN_cover(I,J) .LE. ZERO) 
-     &         d_AREAbyICE(I,J) = HALF * d_HEFFbyATMOnOCN_cover(I,J) 
+          if (d_HEFFbyATMOnOCN_cover(I,J) .LE. ZERO)
+     &         d_AREAbyICE(I,J) = HALF * d_HEFFbyATMOnOCN_cover(I,J)
      &         * recip_heffActual(I,J)
 
 C         Part 3: contraction from ice thinning from below
@@ -1585,9 +1587,9 @@ C ======================================================
 
 #ifdef SEAICE_HEAT_CONSERV_FIX
 #ifndef SEAICE_GROWTH_LEGACY
-c Unlike for evap and precip, the temperature of gained/lost 
+c Unlike for evap and precip, the temperature of gained/lost
 c ocean liquid water due to melt/freeze of solid water cannot be chosen
-c to be e.g. the ocean SST. It must be done at 0degC. The fix below anticipates 
+c to be e.g. the ocean SST. It must be done at 0degC. The fix below anticipates
 c on external_forcing_surf.F and applies the correction to QNET.
       IF ((convertFW2Salt.EQ.-1.).OR.(temp_EvPrRn.EQ.UNSET_RL)) THEN
 c I leave alone the exotic case when onvertFW2Salt.NE.-1 and temp_EvPrRn.NE.UNSET_RL and
@@ -1660,7 +1662,9 @@ C     If r_FWbySublim>0, then it is evaporated from ocean.
      &         PRECIP(I,J,bi,bj)
      &         - EVAP(I,J,bi,bj)
      &         *( ONE - AREApreTH(I,J) )
+#ifdef ALLOW_RUNOFF
      &         + RUNOFF(I,J,bi,bj)
+#endif /* ALLOW_RUNOFF */
      &         )*rhoConstFresh
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
      &     - a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
@@ -1747,7 +1751,7 @@ C three that actually need intermediate storage
      &      'SIsnPrcp',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_SCALE_FILL(DIAGarrayB,
      &      tmpscal1,1,'SIdA    ',0,1,3,bi,bj,myThid)
-C
+#ifdef ALLOW_ATM_TEMP
          DO J=1,sNy
           DO I=1,sNx
 CML If I consider the atmosphere above the ice, the surface flux
@@ -1824,7 +1828,10 @@ c compute ice/snow water going to atm, in precip units
 c compute ocean water going to atm, in precip units
            tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
      &       ( ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
-     &         * ( ONE - AREApreTH(I,J) ) - RUNOFF(I,J,bi,bj)
+     &         * ( ONE - AREApreTH(I,J) )
+#ifdef ALLOW_RUNOFF
+     &         - RUNOFF(I,J,bi,bj)
+#endif /* ALLOW_RUNOFF */
      &         + ( d_HFRWbyRAIN(I,J) + r_FWbySublim(I,J) )
      &         *convertHI2PRECIP )
 c factor in the advected specific energy (referenced to 0 for 0deC liquid water)
@@ -1849,7 +1856,8 @@ c add to SIatmQnt, leading to SItflux, which is analogous to TFLUX
          CALL DIAGNOSTICS_FILL(DIAGarrayA,
 c until SItflux is added to diags, output it using SDIAG5
      &      'SDIAG5  ',0,1,3,bi,bj,myThid)
-#endif
+#endif /* SEAICE_HEAT_CONSERV_FIX */
+#endif /* ALLOW_ATM_TEMP */
 
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -1857,6 +1865,6 @@ c until SItflux is added to diags, output it using SDIAG5
 C close bi,bj loops
        ENDDO
       ENDDO
-      
+
       RETURN
       END
