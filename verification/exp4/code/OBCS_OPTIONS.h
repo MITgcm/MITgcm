@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/OBCS_OPTIONS.h,v 1.3 2011/10/25 15:14:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/OBCS_OPTIONS.h,v 1.4 2011/12/24 01:17:51 jmc Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
-C
 C Use this file for selecting options within the OBCS package
-C
-C OBCS is enabled with ALLOW_OBCS in CPP_OPTIONS.h
 
 #ifndef OBCS_OPTIONS_H
 #define OBCS_OPTIONS_H
@@ -13,6 +10,7 @@ C OBCS is enabled with ALLOW_OBCS in CPP_OPTIONS.h
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_OBCS
+C Package-specific Options & Macros go here
 
 C Enable individual open boundaries
 #define ALLOW_OBCS_NORTH
@@ -39,7 +37,7 @@ C balance barotropic velocity
 C Use older implementation of obcs in seaice-dynamics
 C note: most of the "experimental" options listed below have not yet
 C       been implementated in new version.
-#define OBCS_UVICE_OLD
+#undef OBCS_UVICE_OLD
 
 #ifdef OBCS_UVICE_OLD
 C     The following five CPP options are experimental and aim to deal

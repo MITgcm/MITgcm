@@ -1,14 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/SHAP_FILT_OPTIONS.h,v 1.3 2005/02/12 23:11:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/SHAP_FILT_OPTIONS.h,v 1.4 2011/12/24 01:17:51 jmc Exp $
 C $Name:  $
 
-C Header file for package pkg/shap_filt
+C CPP options file for pkg SHAP_FILT
 
 #ifndef SHAP_FILT_OPTIONS_H
 #define SHAP_FILT_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_SHAP_FILT
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_SHAP_FILT
+C     Package-specific Options & Macros go here
 
 C Use [1-d_yy^n)(1-d_xx^n] instead of [1-d_xx^n-d_yy^n]
 C This changes the spectral response function dramatically.

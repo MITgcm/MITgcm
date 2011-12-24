@@ -1,18 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.5 2011/04/28 02:09:00 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.6 2011/12/24 01:17:53 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
-C     | SEAICE_OPTIONS.h                                         |
-C     | o CPP options file for sea ice package.                  |
+C     | SEAICE_OPTIONS.h
+C     | o CPP options file for sea ice package.
 C     *==========================================================*
-C     | Use this file for selecting options within the sea ice   |
-C     | package.                                                 |
+C     | Use this file for selecting options within the sea ice
+C     | package.
 C     *==========================================================*
 
 #ifndef SEAICE_OPTIONS_H
 #define SEAICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_SEAICE
+C     Package-specific Options & Macros go here
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
@@ -47,11 +50,21 @@ C     otherwise, use the merged version (with some of Ian Fenty s code)
 
 C--   options only available in the merged version (from Ian Fenty s code)
 #ifndef SEAICE_GROWTH_LEGACY
+C-    to ensure heat conservation in the coupled ocean-seaice system
+# undef SEAICE_HEAT_CONSERV_FIX
 C-    to switch on/off open-water freezing contribution to thickness tendency:
-#define SEAICE_DO_OPEN_WATER_GROWTH
+# define SEAICE_DO_OPEN_WATER_GROWTH
+C-    ifdef SEAICE_DO_OPEN_WATER_GROWTH then define SEAICE_DO_OPEN_WATER_MELT
+C     to also allow open-water air-sea heat fluxes melt ice
+# undef SEAICE_DO_OPEN_WATER_MELT
 C-    to switch on/off ocean heat contribution to seaice cover reduction:
-#define SEAICE_OCN_MELT_ACT_ON_AREA
+# define SEAICE_OCN_MELT_ACT_ON_AREA
+C-    to preclude infinitesimal ice concentrations:
+# undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #endif
+
+C-    to use the MCPhee formula in computing ocean/ice fluxes
+#undef MCPHEE_OCEAN_ICE_HEAT_FLUX
 
 C--   Use the Old version of seaice_solve4temp (formerly seaice_budget_ice)
 C     otherwise, use Ian Fenty s version
@@ -71,8 +84,12 @@ C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #undef SEAICE_VARIABLE_SALINITY
 
-C--   Track sea ice age.
-#undef SEAICE_AGE
+C--   Tracers of ice and/or ice cover.
+#undef ALLOW_SITRACER
+#ifdef ALLOW_SITRACER
+C--   To try avoid 'spontaneous generation' of tracer maxima by advdiff.
+# define ALLOW_SITRACER_ADVCAP
+#endif
 
 C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
@@ -101,6 +118,11 @@ C--   By default for B-grid dynamics solver surface tilt is obtained
 C     indirectly via geostrophic velocities. Define following CPP
 C     in order to use ETAN instead.
 # undef EXPLICIT_SSH_SLOPE
+C--   Defining this flag turns on a FV-discretization of the B-grid LSOR
+C     solver. It is smoother and includes all metric terms, similar to the
+C     C-grid solver. It is here for completeness, but its usefulness is
+C     unclear.
+# undef SEAICE_LSRBNEW
 #endif /* SEAICE_CGRID */
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
@@ -114,6 +136,7 @@ C--   not recommended
 C     enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
 
+#endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
 
 CEH3 ;;; Local Variables: ***

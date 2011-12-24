@@ -1,18 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.4 2011/06/19 00:06:28 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.5 2011/12/24 01:17:50 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SEAICE_OPTIONS.h                                         |
-C     | o CPP options file for sea ice package.                  |
-C     |==========================================================|
-C     | Use this file for selecting options within the sea ice   |
-C     | package.                                                 |
-C     \==========================================================/
+C     *==========================================================*
+C     | SEAICE_OPTIONS.h
+C     | o CPP options file for sea ice package.
+C     *==========================================================*
+C     | Use this file for selecting options within the sea ice
+C     | package.
+C     *==========================================================*
 
 #ifndef SEAICE_OPTIONS_H
 #define SEAICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_SEAICE
+C     Package-specific Options & Macros go here
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
@@ -40,7 +43,7 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 #undef SEAICE_MODIFY_GROWTH_ADJ
-#undef SEAICE_SIMPLIFY_GROWTH_ADJ 
+#undef SEAICE_SIMPLIFY_GROWTH_ADJ
 
 c     Use the McPhee Ocean-Ice heat flux
 #define MCPHEE_OCEAN_ICE_HEAT_FLUX
@@ -52,8 +55,6 @@ c     Use the McPhee Ocean-Ice heat flux
 #define FENTY_AREA_EXPANSION_CONTRACTION
 
 #undef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
-
-
 
 C--   By default cdm wind stress under sea-ice is set to the
 C     same value as it would be if there was no sea-ice.
@@ -96,6 +97,7 @@ c--   Enable modified sea-ice thermodynamic by Ian Fenty
 c--   Should improve adjoint, but doesnt work so far.
 #undef SEAICE_ALLOW_TD_IF
 
+#endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
 
 CEH3 ;;; Local Variables: ***

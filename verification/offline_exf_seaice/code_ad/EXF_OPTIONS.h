@@ -1,12 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/EXF_OPTIONS.h,v 1.2 2010/03/16 00:27:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/EXF_OPTIONS.h,v 1.3 2011/12/24 01:17:53 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
 #define EXF_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_EXF
-
+#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_EXF
+C     Package-specific Options & Macros go here
 
 #ifdef ALLOW_AUTODIFF_TAMC
 
@@ -18,16 +20,11 @@ C which is directly included in CPP_OPTIONS.h
 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
 
 c   pkg/exf CPP options:
 c   --------------------
 c
-c   >>> INCLUDE_EXTERNAL_FORCING_PACKAGE <<<
-c       Include this package into the setup.
-c
-c   >>> EXF_VERBOSE <<<
-c       Do a bit more printout for the log file than usual.
+c   > ( EXF_VERBOSE ) < replaced with run-time, logical parameter "exf_verbose".
 c
 c   >>> ALLOW_ATM_WIND <<<
 c       If defined, 10-m wind fields can be read-in from files.
@@ -39,6 +36,10 @@ c
 c   >>> ALLOW_DOWNWARD_RADIATION <<<
 c       If defined, downward long-wave and short-wave radiation
 c       can be read-in form files or computed from lwflux and swflux.
+c
+c   >>> ALLOW_ZENITHANGLE <<<
+c       If defined, ocean albedo varies with the zenith angle, and
+c       incoming fluxes at the top of the atmosphere are computed
 c
 c   >>> ALLOW_BULKFORMULAE <<<
 c       Allows the use of bulk formulae in order to estimate
@@ -55,6 +56,9 @@ c   >>> ATMOSPHERIC_LOADING <<<
 c       If defined, atmospheric pressure can be read-in from files.
 c   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
 c            and cannot be changed here (in EXF_OPTIONS)
+c
+c   >>> ICE_AREAMASK <<<
+c       If defined, fractional ice-covered area MASK can be read-in from files.
 c
 c   >>> ALLOW_CLIMSST_RELAXATION <<<
 c       Allow the relaxation to a monthly climatology of sea surface
@@ -131,19 +135,26 @@ c         |     |     |     |     | hflux, swflux, and evap.
 c
 c   ====================================================================
 
-C   Do more printout for the protocol file than usual.
-#define EXF_VERBOSE
-
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
-#if (defined (ALLOW_ATM_TEMP) || \
-     defined (ALLOW_ATM_WIND))
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULK_OFFLINE
 # define ALLOW_BULKFORMULAE
 # undef ALLOW_BULK_LARGEYEAGER04
+#endif
+
+C   Zenith Angle/Albedo related flags.
+#ifdef ALLOW_DOWNWARD_RADIATION
+# undef ALLOW_ZENITHANGLE
+#endif
+
+C   Use ocean_emissivity*lwdwon in lwFlux. This flag should always be define
+C   but is not because of backward compatibility
+#ifdef ALLOW_DOWNWARD_RADIATION
+# undef EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
 C   Relaxation to monthly climatologies.
@@ -155,7 +166,7 @@ C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
 
 #define EXF_INTERP_USE_DYNALLOC
-#if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )
+#if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 

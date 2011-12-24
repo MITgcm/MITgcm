@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/OBCS_OPTIONS.h,v 1.1 2011/04/20 19:17:39 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/OBCS_OPTIONS.h,v 1.2 2011/12/24 01:17:53 jmc Exp $
 C $Name:  $
- 
+
 C CPP options file for OBCS package
-C
 C Use this file for selecting options within the OBCS package
-C
-C OBCS is enabled with ALLOW_OBCS in CPP_OPTIONS.h
 
 #ifndef OBCS_OPTIONS_H
 #define OBCS_OPTIONS_H
@@ -13,6 +10,7 @@ C OBCS is enabled with ALLOW_OBCS in CPP_OPTIONS.h
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_OBCS
+C Package-specific Options & Macros go here
 
 C Enable individual open boundaries
 #define ALLOW_OBCS_NORTH
@@ -23,8 +21,12 @@ C Enable individual open boundaries
 C This include hooks to the Orlanski Open Boundary Radiation code
 #undef ALLOW_ORLANSKI
 
-C Enable OB values to be prescribed via EXF package
+C Enable OB values to be prescribed via external fields that are read
+C from a file
 #define ALLOW_OBCS_PRESCRIBE
+
+C Enable OB conditions following Stevens (1990)
+#undef ALLOW_OBCS_STEVENS
 
 C This includes hooks to sponge layer treatment of uvel, vvel
 #define ALLOW_OBCS_SPONGE
@@ -34,4 +36,3 @@ C balance barotropic velocity
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */
-

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/flt_example/code/FLT_OPTIONS.h,v 1.1 2010/12/22 21:27:35 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/flt_example/code/FLT_OPTIONS.h,v 1.2 2011/12/24 01:17:51 jmc Exp $
 C $Name:  $
 
 C CPP options file for FLT package
@@ -6,27 +6,28 @@ C CPP options file for FLT package
 #ifndef FLT_OPTIONS_H
 #define FLT_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_FLT
-
 #include "CPP_OPTIONS.h"
 
-c Include/Exclude part that allows 3-dimensional advection of floats
-c 
+#ifdef ALLOW_FLT
+C     Package-specific Options & Macros go here
+
+C Include/Exclude part that allows 3-dimensional advection of floats
 #define ALLOW_3D_FLT
 
-c Use the alternative method of adding random noise to float advection
-c 
+C Use the alternative method of adding random noise to float advection
 #define USE_FLT_ALT_NOISE
 
-c Add noise also to the vertical velocity of 3D floats
-c  
+C Add noise also to the vertical velocity of 3D floats
 #ifdef ALLOW_3D_FLT
 #define ALLOW_FLT_3D_NOISE
 #endif
 
-c define this to revert to old second-order Runge-Kutta integration
-c
+C Define this to revert to old second-order Runge-Kutta integration
 #define FLT_SECOND_ORDER_RUNGE_KUTTA
+
+C Prevent floats to re-enter the opposite side of a periodic domain (stop instead)
+#undef FLT_WITHOUT_X_PERIODICITY
+#undef FLT_WITHOUT_Y_PERIODICITY
 
 #endif /* ALLOW_FLT */
 #endif /* FLT_OPTIONS_H */

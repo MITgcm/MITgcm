@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/GAD_OPTIONS.h,v 1.2 2008/05/09 21:46:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/GAD_OPTIONS.h,v 1.3 2011/12/24 01:17:50 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -18,9 +18,10 @@ C Use this file for selecting options within the GAD package
 #ifndef GAD_OPTIONS_H
 #define GAD_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_GENERIC_ADVDIFF
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+C     Package-specific Options & Macros go here
 
 C This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
 C *only for use on a lat-lon grid*
