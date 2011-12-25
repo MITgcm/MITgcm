@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1561 2011/12/24 01:22:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1562 2011/12/25 22:29:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf (vertor interpolation):
+  - rotate vector component toward local grid-axis orientation using grid-angles
+    (stored in GRID.h) instead of locally computed rotation angle; keep old code
+    available with exf option EXF_USE_OLD_VEC_ROTATION (undef by default).
+o pkg/seaice:
+  - allow to compile with exf options ALLOW_ATM_TEMP or ALLOW_DOWNWARD_RADIATION
+    undefined. Fix and remove the stop when ALLOW_RUNOFF is undefined.
 o pkg/PKG_OPTIONS.h files:
   - move #include "CPP_OPTIONS.h" just after #include "PACKAGES_CONFIG.h",
     outside of the #ifdef ALLOW_THISPKG / #endif block.
