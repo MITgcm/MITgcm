@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.22 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.23 2011/12/25 22:26:15 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -92,7 +92,10 @@ C     == local variables ==
       CHARACTER*(128) uvecfile0, uvecfile1
       CHARACTER*(128) vvecfile0, vvecfile1
       LOGICAL first, changed
-      _RL     fac, x1, x2, x3, x4, y1, y2, y3, y4, dx, dy
+      _RL     fac
+#ifdef EXF_USE_OLD_VEC_ROTATION
+      _RL     x1, x2, x3, x4, y1, y2, y3, y4, dx, dy
+#endif
       _RL     tmp_u (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     tmp_v (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER count0, count1
@@ -146,6 +149,7 @@ C     vector rotation
             DO bi = myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
                 DO i = 1,sNx
+#ifdef EXF_USE_OLD_VEC_ROTATION
                     x1=xG(i,j,bi,bj)
                     x2=xG(i+1,j,bi,bj)
                     x3=xG(i,j+1,bi,bj)
@@ -176,6 +180,14 @@ C     vector rotation
      &                  (tmp_u(i,j,bi,bj)*dx+
      &                  tmp_v(i,j,bi,bj)*dy)/
      &                  SQRT(dx*dx+dy*dy)
+#else /* EXF_USE_OLD_VEC_ROTATION */
+                  uvec1(i,j,bi,bj) =
+     &                      angleCosC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
+     &                     +angleSinC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
+                  vvec1(i,j,bi,bj)=
+     &                     -angleSinC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
+     &                     +angleCosC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
+#endif /* EXF_USE_OLD_VEC_ROTATION */
                 ENDDO
               ENDDO
             ENDDO
@@ -218,6 +230,7 @@ C     vector rotation
             DO bi = myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
                 DO i = 1,sNx
+#ifdef EXF_USE_OLD_VEC_ROTATION
                     x1=xG(i,j,bi,bj)
                     x2=xG(i+1,j,bi,bj)
                     x3=xG(i,j+1,bi,bj)
@@ -248,6 +261,14 @@ C     vector rotation
      &                  (tmp_u(i,j,bi,bj)*dx+
      &                  tmp_v(i,j,bi,bj)*dy)/
      &                  SQRT(dx*dx+dy*dy)
+#else /* EXF_USE_OLD_VEC_ROTATION */
+                  uvec1(i,j,bi,bj) =
+     &                      angleCosC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
+     &                     +angleSinC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
+                  vvec1(i,j,bi,bj) =
+     &                     -angleSinC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
+     &                     +angleCosC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
+#endif /* EXF_USE_OLD_VEC_ROTATION */
                 ENDDO
               ENDDO
             ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.20 2011/12/24 01:10:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.21 2011/12/25 22:26:15 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -163,6 +163,9 @@ C   Relaxation to monthly climatologies.
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
+C   for interpolated vector fields, rotate towards model-grid axis
+C   using old rotation formulae (instead of grid-angles)
+#undef EXF_USE_OLD_VEC_ROTATION
 
 #define EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
