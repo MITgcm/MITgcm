@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.50 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.51 2011/12/25 22:24:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,8 +67,8 @@ C--   Set everything to zero everywhere
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           xC(i,j,bi,bj)=0.
           yC(i,j,bi,bj)=0.
           xG(i,j,bi,bj)=0.
@@ -412,8 +412,8 @@ C     a different planet radius (radius_fromHorizGrid <> rSphere)
         tmpFac2 = tmpFac*tmpFac
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             dxC(i,j,bi,bj) = dxC(i,j,bi,bj)*tmpFac
             dyC(i,j,bi,bj) = dyC(i,j,bi,bj)*tmpFac
             dxG(i,j,bi,bj) = dxG(i,j,bi,bj)*tmpFac
@@ -435,7 +435,7 @@ C     a different planet radius (radius_fromHorizGrid <> rSphere)
 C--   Calculate (sines and cosines of) angles of grid north with
 C--   geographical north when they have not been read from a file
       IF ( .NOT.anglesAreSet ) THEN
-       CALL CALC_ANGLES( myThid )
+       CALL CALC_GRID_ANGLES( myThid )
        _BARRIER
        _BEGIN_MASTER(myThid)
        anglesAreSet = .TRUE.

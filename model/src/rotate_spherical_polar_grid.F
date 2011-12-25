@@ -1,12 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.3 2011/02/21 17:57:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.4 2011/12/25 22:24:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-
-C--  File rotate_spherical_polar_grid.F:
-C--   Contents
-C--   o ROTATE_SPHERICAL_POLAR_GRID
-C--   o CALC_ANGLES
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -53,8 +48,8 @@ C     == Routine arguments ==
 C     X, Y   :: on entry: model coordinate location
 C            :: on exit: geographical coordinate location
 C     myThid :: my Thread Id Number
-      _RS X(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RS Y(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS X(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS Y(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 CEOP
 
@@ -143,8 +138,8 @@ C     For each tile ...
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C     loop over grid points
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-Olx,sNx+Olx
+        DO J = 1-OLy,sNy+OLy
+         DO I = 1-OLx,sNx+OLx
 C     transform spherical coordinates with unit radius
 C     to sphere centered cartesian coordinates
           XYZrot(1) =
@@ -178,92 +173,6 @@ C     this can not happen for a sphere with unit radius
           ELSE
            Y(I,J,bi,bj) = ATAN2(XYZgeo(3),hypotxy)/deg2rad
           ENDIF
-         ENDDO
-        ENDDO
-C     bi,bj-loops
-       ENDDO
-      ENDDO
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: CALC_ANGLES
-C     !INTERFACE:
-      SUBROUTINE CALC_ANGLES(
-     I                        myThid )
-
-C     !DESCRIPTION: \bv
-C     *===================================================================*
-C     | SUBROUTINE CALC_ANGLES
-C     | o calculate the angle between geographical north and model grid
-C     |   north, assuming that yG holds the geographical coordinates
-C     *===================================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid  :: my Thread Id Number
-      INTEGER myThid
-CEOP
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     bi,bj  :: Tile indices
-C     i, j   :: Loop counters
-      INTEGER bi, bj
-      INTEGER  i,  j
-C     pseudo velocities
-      _RS uPseudo(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RS vPseudo(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RS uC, vC, uNorm
-CEOP
-
-C     For each tile ...
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-
-C     compute pseudo velocities from stream function psi = -yG*deg2rad,
-C     that is, zonal flow
-        DO j = 1-Oly,sNy+Oly-1
-         DO i = 1-Olx,sNx+Olx
-          IF ( _dyG(i,j,bi,bj).GT.0. ) THEN
-            uPseudo(i,j) =
-     &         - ( yG(i,j,bi,bj) - yG(i,j+1,bi,bj) )*deg2rad
-     &         / _dyG(i,j,bi,bj)
-          ELSE
-            uPseudo(i,j) = 0.
-          ENDIF
-         ENDDO
-        ENDDO
-        DO j = 1-Oly,sNy+Oly
-         DO i = 1-Olx,sNx+Olx-1
-          IF ( _dxG(i,j,bi,bj).GT.0. ) THEN
-            vPseudo(i,j) =
-     &         + ( yG(i,j,bi,bj) - yG(i+1,j,bi,bj) )*deg2rad
-     &         / _dxG(i,j,bi,bj)
-          ELSE
-            vPseudo(i,j) = 0.
-          ENDIF
-         ENDDO
-        ENDDO
-        DO j = 1-Oly,sNy+Oly-1
-         DO i = 1-Olx,sNx+Olx-1
-          uC = 0.5*(uPseudo(i,j) + uPseudo(i+1,j))
-          vC = 0.5*(vPseudo(i,j) + vPseudo(i,j+1))
-          uNorm = SQRT(uC*uC+vC*vC)
-          IF ( uNorm .NE. 0. _d 0 ) uNorm = 1./uNorm
-          angleCosC(i,j,bi,bj) =  uC*uNorm
-          angleSinC(i,j,bi,bj) = -vC*uNorm
          ENDDO
         ENDDO
 C     bi,bj-loops

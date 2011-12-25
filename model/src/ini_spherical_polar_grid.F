@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.29 2011/12/12 19:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.30 2011/12/25 22:24:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -276,7 +276,7 @@ C--   end bi,bj loops
       IF ( rotateGrid ) THEN
        CALL ROTATE_SPHERICAL_POLAR_GRID( xC, yC, myThid )
        CALL ROTATE_SPHERICAL_POLAR_GRID( xG, yG, myThid )
-       CALL CALC_ANGLES( myThid )
+       CALL CALC_GRID_ANGLES( myThid )
       ENDIF
 
       RETURN
