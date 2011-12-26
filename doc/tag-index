@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1562 2011/12/25 22:29:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1563 2011/12/26 22:27:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - update grid-files (in tutorial_held_suarez_cs/input and fizhi-cs-32x32x40/input)
+    with grid-angle generated using "utils/matlab/cs_grid/cubeCalcAngle.m":
+    fix Pb in yG definition @ 2 missing corners (previously yG was averaged);
+  - update output of exp. global_ocean.cs32x15.viscA4 after changing
+    grid-file angles (used here for coriolis-3d);
+  - remove (or gzip) few files not needed to run fizhi-cs experiments.
 o pkg/exf (vertor interpolation):
   - rotate vector component toward local grid-axis orientation using grid-angles
     (stored in GRID.h) instead of locally computed rotation angle; keep old code
