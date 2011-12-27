@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1563 2011/12/26 22:27:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1564 2011/12/27 22:22:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/offline:
+  - new S/R OFFLINE_RESET_PARMS for resetting main-model params (switch off flags);
+  - compute vertical velocity if not read from file (switch on exactConserv
+    & staggerTimeStep);
+  - fix output of ptracer monitor iter & time for default PTRACERS_monitorFreq.
 o verification:
   - update grid-files (in tutorial_held_suarez_cs/input and fizhi-cs-32x32x40/input)
     with grid-angle generated using "utils/matlab/cs_grid/cubeCalcAngle.m":
