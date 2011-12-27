@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.198 2011/12/08 03:36:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.199 2011/12/27 22:20:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -610,8 +610,8 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifndef ALLOW_OFFLINE
 C--   Step forward fields and calculate time tendency terms.
+#ifndef ALLOW_OFFLINE
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
@@ -711,8 +711,6 @@ C      => Filtering of uVel,vVel is necessary
       ENDIF
 #endif
 
-#ifndef ALLOW_OFFLINE
-
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
@@ -731,6 +729,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
       ENDIF
 
 C--   Correct divergence in flow field and cycle time-stepping momentum
+#ifndef ALLOW_OFFLINE
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
@@ -748,7 +747,6 @@ CADJ &     = comlev1, key = ikey_dynamics
 #endif
 #endif /* ndfef ALLOW_OFFLINE */
 
-#ifndef ALLOW_OFFLINE
       IF ( calc_wVelocity ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
@@ -762,7 +760,6 @@ C       (+ update "etaN" & "etaH", exact volume conservation):
         CALL INTEGR_CONTINUITY( uVel, vVel, myTime, myIter, myThid)
         CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
       ENDIF
-#endif /* ndfef ALLOW_OFFLINE */
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
@@ -961,7 +958,7 @@ C--   State-variables time-averaging
 #endif /* ALLOW_NEST_CHILD */
 
 #ifdef ALLOW_MONITOR
-      IF ( .NOT.useOffLine ) THEN
+      IF ( monitorFreq.GT.0. ) THEN
 C--   Check status of solution (statistics, cfl, etc...)
         CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
         CALL MONITOR( myTime, myIter, myThid )
