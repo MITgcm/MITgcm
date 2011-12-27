@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.11 2011/12/07 23:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.12 2011/12/27 22:10:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,19 +35,16 @@ C     !LOCAL VARIABLES:
       _RL tmpVar
 CEOP
 
-      _BEGIN_MASTER(myThid)
-
-      IF ( useOffLine ) THEN
-        WRITE(msgBuf,'(A,A)') 'S/R SET_PARMS: ',
-     &    ' Off-Line => turn off Temp,Salt & Mom_Stepping flags'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , 1)
-        tempStepping = .FALSE.
-        saltStepping = .FALSE.
-        momStepping  = .FALSE.
-      ENDIF
-
 C--   Set (or reset) On/Off flags :
+
+C-    For off-line calculation, switch off Momentum and Active-tracers (=T,S):
+#ifdef ALLOW_OFFLINE
+      IF ( useOffLine ) THEN
+        CALL OFFLINE_RESET_PARMS( myThid )
+      ENDIF
+#endif /* ALLOW_OFFLINE */
+
+      _BEGIN_MASTER(myThid)
 
 C--   On/Off flags for each terms of the momentum equation
       nonHydrostatic   = momStepping .AND. nonHydrostatic
