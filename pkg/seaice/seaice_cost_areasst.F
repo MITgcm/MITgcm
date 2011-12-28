@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.3 2010/08/24 15:07:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.4 2011/12/28 20:54:28 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,7 +21,7 @@ c     SUBROUTINE seaice_cost_areasst
 c     ==================================================================
 c
 c     o Based on cost_generic
-c     o in case where there is observed sea-ice we not only constrain 
+c     o in case where there is observed sea-ice we not only constrain
 c       model(area)=obs(area) but also model(sst)@freezing point
 c
 c     ==================================================================
@@ -61,7 +61,6 @@ c     == routine arguments ==
       integer mythid
       integer localstartdate(4)
 
-      _RL localbarT  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -86,4 +85,5 @@ c     == local variables ==
 #endif /* ifdef ALLOW_COST */
 #endif /* ifdef ALLOW_ECCO */
 
+      return
       end

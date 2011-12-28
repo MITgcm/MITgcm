@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.38 2011/12/19 16:22:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.39 2011/12/28 20:54:28 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,18 +43,18 @@ CEndOfInterface
 
 #ifdef EXPLICIT_SSH_SLOPE
 #include "SURFACE.h"
-      _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, bi, bj, kii
+      INTEGER i, j, bi, bj
       _RL RHOICE, RHOAIR
       _RL COSWIN, COSWAT
       _RS SINWIN, SINWAT
-      _RL ECCEN, ECM2, DELT1, DELT2, PSTAR, AAA
-      _RL TEMPVAR, U1, V1
+      _RL ECCEN, ECM2, PSTAR, AAA
+      _RL U1, V1
 
       _RL COR_ICE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
@@ -158,16 +158,16 @@ C now ice surface stress
 #ifdef EXPLICIT_SSH_SLOPE
 C--   Compute surface pressure at z==0:
 C-    use actual sea surface height for tilt computations
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
           ENDDO
         ENDDO
 #ifdef ATMOSPHERIC_LOADING
 C-    add atmospheric loading and Sea-Ice loading
         IF ( useRealFreshWaterFlux ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + ( pload(i,j,bi,bj)
      &                      +sIceLoad(i,j,bi,bj)*gravity
@@ -175,16 +175,16 @@ C-    add atmospheric loading and Sea-Ice loading
            ENDDO
           ENDDO
         ELSE
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + pload(i,j,bi,bj)*recip_rhoConst
            ENDDO
           ENDDO
         ENDIF
 #endif /* ATMOSPHERIC_LOADING */
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
 C--   NOW ADD IN TILT
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &      -AMASS(I,J,bi,bj)
@@ -202,8 +202,8 @@ C NOW KEEP FORCEX0
          ENDDO
         ENDDO
 #endif /* EXPLICIT_SSH_SLOPE */
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 #ifndef EXPLICIT_SSH_SLOPE
 C--   NOW ADD IN TILT
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)

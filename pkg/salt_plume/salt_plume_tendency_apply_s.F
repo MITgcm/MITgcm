@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.5 2011/05/25 20:39:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.6 2011/12/28 20:50:04 jmc Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -34,7 +34,7 @@ CEOP
 #ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
-      integer i, j, kp1, two2
+      integer i, j, two2
       parameter(two2 = 2)
       _RL plumefrac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL plumekb(two2), SPdepth(two2), minusone

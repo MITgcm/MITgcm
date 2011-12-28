@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.19 2011/12/24 18:37:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.20 2011/12/28 20:54:28 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -93,7 +93,6 @@ C     === Local variables ===
       _RL F_lwd      (1:sNx,1:sNy)
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
-      _RL hice_tmp
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
       _RL F_lh       (1:sNx,1:sNy)
       _RL F_c        (1:sNx,1:sNy)
