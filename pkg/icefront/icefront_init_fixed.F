@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.4 2010/03/24 22:03:35 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.5 2011/12/28 20:45:05 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
+#undef ALLOW_ICEFRONT_DEBUG
 
       SUBROUTINE ICEFRONT_INIT_FIXED( myThid )
 C     *============================================================*
@@ -27,7 +28,9 @@ C     myThid -  Number of this instance of ICEFRONT_INIT_FIXED
 C     === Local variables ===
 C     I,J,K,bi,bj - Loop counters
       INTEGER I, J, K, bi, bj
+#ifdef ALLOW_ICEFRONT_DEBUG
       INTEGER ISinterface
+#endif
 
       IF ( ICEFRONTlengthFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RS( ICEFRONTlengthFile, ' ',
@@ -67,7 +70,6 @@ C     Make sure that R_icefront is positive
        ENDDO
       ENDDO
 
-#undef ALLOW_ICEFRONT_DEBUG
 #ifdef ALLOW_ICEFRONT_DEBUG
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

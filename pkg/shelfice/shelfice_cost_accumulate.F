@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_accumulate.F,v 1.2 2011/05/10 07:49:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_accumulate.F,v 1.3 2011/12/28 20:48:17 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -23,7 +23,6 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
       integer myThid
 
 #ifdef ALLOW_COST
@@ -31,11 +30,12 @@ C     == Local variables
       _RL thetaRef
       _RL drLoc
 
-      integer i, j, k
-      integer ig, jg
+      integer bi, bj
+      integer i, j
+c     integer ig, jg
       integer itlo,ithi
       integer jtlo,jthi
-      integer km1, kp1, klev
+c     integer km1, kp1, klev, k
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -54,12 +54,13 @@ c--
          cMeanSHIforS(i,j,bi,bj) = cMeanSHIforS(i,j,bi,bj)
      &         + shelficeFreshWaterFlux(i,j,bi,bj)*deltaTClock
 c--
-              end do
-            end do
-ccc          end do
-        end do
-      end do
+          enddo
+         enddo
+ccc        enddo
+       enddo
+      enddo
 
 #endif /* ALLOW_COST */
 
+      RETURN
       END

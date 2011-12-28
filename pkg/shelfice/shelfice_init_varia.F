@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.6 2011/06/29 16:24:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.7 2011/12/28 20:48:17 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -6,12 +6,12 @@ C $Name:  $
 
 CBOP
       SUBROUTINE SHELFICE_INIT_VARIA( myThid )
-C     /============================================================\
-C     | SUBROUTINE SHELFICE_INIT_VARIA                             |
-C     | o Routine to initialize SHELFICE variables.                |
-C     |============================================================|
-C     | Initialize SHELFICE parameters and variables.              |
-C     \============================================================/
+C     *============================================================*
+C     | SUBROUTINE SHELFICE_INIT_VARIA
+C     | o Routine to initialize SHELFICE variables.
+C     *============================================================*
+C     | Initialize SHELFICE parameters and variables.
+C     *============================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -31,14 +31,14 @@ CEndOfInterface
 
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
-C     I,J,bi,bj - Loop counters
-      INTEGER I, J, K, bi, bj
+C     i,j,bi,bj - Loop counters
+      INTEGER i, j, bi, bj
 CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
           shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
           shelficeForcingT      (i,j,bi,bj) = 0. _d 0
           shelficeForcingS      (i,j,bi,bj) = 0. _d 0
@@ -54,14 +54,12 @@ CEOP
 #ifdef ALLOW_COST
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-ccc        DO K = 1, Nr
-         DO J = 1-OLy, sNy+OLy
-          DO I = 1-OLx, sNx+OLx
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
            cMeanSHIforT (i,j,bi,bj) = 0. _d 0
            cMeanSHIforS (i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
-ccc        ENDDO
        ENDDO
       ENDDO
 c--
@@ -86,4 +84,3 @@ C-    EXCH call implicitly contains Barrier: no need for an other one.
 
       RETURN
       END
-
