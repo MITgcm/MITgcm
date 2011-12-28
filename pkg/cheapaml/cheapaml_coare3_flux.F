@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.4 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.5 2011/12/28 16:42:03 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -34,9 +34,9 @@ c
       DATA   ssq0,           ssq1,           ssq2
      &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
 
-c      
 c
-c Constants and coefficients (Stull 1988 p640). 
+c
+c Constants and coefficients (Stull 1988 p640).
       xBeta=1.2     !Given as 1.25 in Fairall et al.(1996)
       twopi=2. _d 0*pi
       visa=1.326 _d -5
@@ -50,7 +50,7 @@ c sea surface temperature without skin correction
 
 
 c net upward long wave
-      Rnl= 0.96*(stefan*(tsw+Celsius2K)**4) !Net longwave (up = +). 
+      Rnl= 0.96*(stefan*(tsw+Celsius2K)**4) !Net longwave (up = +).
 c
 c Teten''s returns air svp es in mb
       es = (1.0007+3.46e-6*p0)*6.1121*dexp(17.502*tsw/(240.97+tsw)) !mb
@@ -90,7 +90,7 @@ c Air-sea differences - includes warm layer in Dt and Dq
         u=dsqrt(u)
       Du=(u**2.+Wg**2.)**.5       !include gustiness in wind spd. difference
       Dt=tsw-Tas-gamma_blk*zt         !potential temperature difference.
-      Dq=qs-q                     
+      Dq=qs-q
 c
 c **************** neutral coefficients ******************
 c
@@ -106,13 +106,13 @@ c
 c standard coare3 boundary layer height
       zi=600. _d 0
 
-c      
+c
 c ************* Grachev and Fairall (JAM, 1997) **********
 c
       ta=Tas+Celsius2K
       Ct=xkar/dlog(zt/zot10)         ! Temperature transfer coefficient
       CC=xkar*Ct/Cd                  ! z/L vs Rib linear coefficient
-      Ribcu=-zu/(zi*0.004 _d 0*xBeta**3)  ! Saturation or plateau Rib 
+      Ribcu=-zu/(zi*0.004 _d 0*xBeta**3)  ! Saturation or plateau Rib
       Ribu=-gravity*zu*(Dt+0.61 _d 0*ta*Dq)/(ta*Du**2)
       if (Ribu.lt.0. _d 0) then
           zetu=CC*Ribu/(1. _d 0+Ribu/Ribcu)   ! Unstable G and F
@@ -131,11 +131,11 @@ c
       usr= Du*xkar/(dlog(zu/zo10)-psiu(zu/L10))
       tsr=-(Dt)*xkar/(dlog(zt/zot10)-psit(zt/L10))
       qsr=-(Dq)*xkar/(dlog(zq/zot10)-psit(zq/L10))
-c      
-      charn=0.011 _d 0     !then modify Charnock for high wind speeds Chris' data
+c
+      charn=0.011 _d 0     !then modify Charnock for high wind speeds Chris data
       if(Du.gt.10. _d 0) charn=0.011 _d 0+(0.018-0.011)*(Du-10.)/(18.0-10.0)
       if(Du.gt.18. _d 0) charn=0.018 _d 0
-c      
+c
 c **** Iterate across u*(t*,q*),zo(zot,zoq) and z/L including cool skin ****
 c
       do iter=1,nits
@@ -145,8 +145,8 @@ c
         zo=(50./twopi)*lwave*(usr/cwave)**4.5 _d 0+0.11*visa/usr !Oost et al.
        else if(WAVEMODEL.eq.'TayYel') then
         zo=1200. _d 0*wavesh(i,j,bi,bj)*(wavesh(i,j,bi,bj)/lwave)**4.5
-     & +0.11 _d 0*visa/usr !Taylor and Yelland 
-       endif 
+     & +0.11 _d 0*visa/usr !Taylor and Yelland
+       endif
       rr=zo*usr/visa
 c
 c *** zoq and zot fitted to results from several ETL cruises ************
@@ -170,7 +170,7 @@ c
        endif
          Du=sqrt(u**2.+Wg**2.)        !include gustiness in wind spd.
        enddo
- 
+
 c compute surface fluxes and other parameters
        tau=rhoa*usr*usr*u/Du          !stress N/m2
        hf=-cpair*rhoa*usr*tsr           !sensible W/m2
@@ -182,7 +182,7 @@ c compute surface fluxes and other parameters
        endif
        q100=qs+qsr*(dlog(100. _d 0/zoq)-psit(100. _d 0/L))
 c
-      return 
+      return
       end
 c
 c------------------------------------------------------------------
@@ -210,9 +210,9 @@ c
       endif
       return
       end
-c--------------------------------------------------------------  
+c--------------------------------------------------------------
       function psit(zL)
-      
+
       implicit none
       _RL zL,x,y,psik,psic,f,psit,c
       if(zL.lt.0.0) then
@@ -229,5 +229,5 @@ c--------------------------------------------------------------
       endif
       return
       end
-          
+
 c-------------------------------------------------------------

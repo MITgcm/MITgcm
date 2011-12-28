@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.14 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.15 2011/12/28 16:42:03 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -51,7 +51,7 @@ C     qrair[01]  :: Relaxation specific humidity profile for air
 C     solar[01]  :: short wave flux
 C     uwind[01]  :: zonal wind
 C     vwind[01]  :: meridional wind
-C     CheaptracerR[01] :: Relaxation profile for passive tracer      
+C     CheaptracerR[01] :: Relaxation profile for passive tracer
 C     aWght, bWght :: Interpolation weights
 
       COMMON /BULKFFIELDS/
@@ -65,8 +65,8 @@ C     aWght, bWght :: Interpolation weights
      &         wavesh0,  wavesh1,
      &         wavesp0,  wavesp1,
      &         rair0,    rair1,
-     &         CheaptracerR0, CheaptracerR1 
-      
+     &         CheaptracerR0, CheaptracerR1
+
 
 
       _RL  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -121,8 +121,8 @@ c for the MITGCM.
 C!BD bug a corriger:
       IF ( SolarFile .EQ. ' '  ) THEN
       IF (useStressOption)then
-        write(*,*)' stress option is turned on.  this is not
-     & consistent with the default time dependent forcing option'
+        write(*,*) ' stress option is turned on.  this is not ',
+     & 'consistent with the default time dependent forcing option'
         stop
         ENDIF
          if ( myIter .EQ. nIter0 )then
@@ -178,7 +178,7 @@ c u wind field
            DO j=1,sNy
             DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
-                  local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1))) 
+                  local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
                   uwind(i,j,bi,bj) = local
             ENDDO
            ENDDO
@@ -210,7 +210,7 @@ C Tracer field
           ENDDO
          ENDDO
          ENDIF
-          _EXCH_XY_RL(CheaptracerR, mythid)         
+          _EXCH_XY_RL(CheaptracerR, mythid)
 
       ELSE
 
@@ -250,7 +250,7 @@ C First call requires that we initialize everything to zero for safety
            ENDDO
           ENDDO
          ENDDO
-        ENDDO      
+        ENDDO
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
@@ -360,7 +360,7 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
         CALL READ_REC_XY_RL( TracerRFile,CheaptracerR1,intime1,
      &       myIter,myThid )
-      ENDIF    
+      ENDIF
       ENDIF
        _EXCH_XY_RL(trair0 , myThid )
        _EXCH_XY_RL(qrair0 , myThid )
@@ -395,7 +395,7 @@ C      data for the period ahead and the period behind myTime.
        IF(useCheapTracer) THEN
        _EXCH_XY_RL(CheaptracerR0 , myThid )
        _EXCH_XY_RL(CheaptracerR1, myThid )
-       ENDIF    
+       ENDIF
 C     end of loading new fields block
       ENDIF
 
@@ -431,7 +431,7 @@ C--   Interpolate TR, QR, SOLAR
        IF(useCheapTracer)THEN
            CheaptracerR(i,j,bi,bj) = bWght*CheaptracerR0(i,j,bi,bj)
      &                             +aWght*CheaptracerR1(i,j,bi,bj)
-       ENDIF      
+       ENDIF
         IF(FluxFormula.eq.'COARE3')THEN
         IF(WaveHFile.ne.' ')THEN
           wavesh(i,j,bi,bj)   = bWght*wavesh0(i,j,bi,bj)
@@ -444,7 +444,7 @@ C--   Interpolate TR, QR, SOLAR
         ELSE
           u=uwind(i,j,bi,bj)**2+vwind(i,j,bi,bj)**2
           u=dsqrt(u)
-          wavesp(i,j,bi,bj)=0.729 _d 0 * u  
+          wavesp(i,j,bi,bj)=0.729 _d 0 * u
           wavesh(i,j,bi,bj)=0.018 _d 0 * u*u*(1. _d 0 + .015 _d 0 *u)
           ENDIF
          ENDDO
@@ -452,7 +452,7 @@ C--   Interpolate TR, QR, SOLAR
        ENDDO
       ENDDO
 
-c end if solarFile is empty      
+c end if solarFile is empty
       ENDIF
 
 c end of periodic forcing options, on to steady option
@@ -492,11 +492,11 @@ c end of periodic forcing options, on to steady option
           ENDDO
          ENDDO
         ENDIF
-        
+
         _EXCH_XY_RL(TR, mythid)
 c do specific humidity
         IF ( QrFile .NE. ' ') THEN
-         CALL READ_FLD_XY_RL( QrFile,' ',qr,0,myThid )      
+         CALL READ_FLD_XY_RL( QrFile,' ',qr,0,myThid )
         ELSE
 c default specific humidity profile to 80% relative humidity
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -579,7 +579,7 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
            ENDDO
           ENDIF
           _EXCH_XY_RL(CheaptracerR, mythid)
-        ENDIF     
+        ENDIF
         IF (FluxFormula.eq.'COARE3')THEN
                 IF (WaveHFile.NE.' ')THEN
          CALL READ_FLD_XY_RL( WaveHFile,' ',wavesh,0,myThid )
@@ -593,7 +593,7 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
             DO i=1,sNx
                 u=uwind(i,j,bi,bj)**2+vwind(i,j,bi,bj)**2
                 u=dsqrt(u)
-          wavesp(i,j,bi,bj)=0.729 _d 0 * u  
+          wavesp(i,j,bi,bj)=0.729 _d 0 * u
           wavesh(i,j,bi,bj)=0.018 _d 0 * u*u*(1. _d 0 + .015 _d 0 *u)
             ENDDO
            ENDDO
@@ -602,7 +602,7 @@ c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
        ENDIF
         _EXCH_XY_RL(wavesp, mythid)
         _EXCH_XY_RL(wavesh, mythid)
-      ENDIF 
+      ENDIF
        ENDIF
 
 C     BL height is done in cheapaml_ini_varia
@@ -622,7 +622,7 @@ C     BL height is done in cheapaml_ini_varia
            ENDDO
           ENDIF
           _EXCH_XY_RL(Cheapclouds, mythid)
-        ENDIF     
+        ENDIF
 
 
 C endif for Steady Option
@@ -642,16 +642,16 @@ C fill in outer edges
             uwind(i,j,bi,bj)=uwind(1,j,bi,bj)
             vwind(i,j,bi,bj)=vwind(1,j,bi,bj)
             Solar(i,j,bi,bj)=Solar(1,j,bi,bj)
-            
+
             IF(useStressOption)THEN
               ustress(i,j,bi,bj)=ustress(1,j,bi,bj)
               vstress(i,j,bi,bj)=vstress(1,j,bi,bj)
             ENDIF
-            
+
             IF(useCheapTracer)THEN
               CheaptracerR(i,j,bi,bj)=CheaptracerR(1,j,bi,bj)
-            ENDIF    
-            
+            ENDIF
+
             if(FluxFormula.eq.'COARE3')then
               wavesp(i,j,bi,bj)=wavesp(1,j,bi,bj)
               wavesh(i,j,bi,bj)=wavesh(1,j,bi,bj)
@@ -659,8 +659,8 @@ C fill in outer edges
 
             IF(useclouds)THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(1,j,bi,bj)
-            ENDIF    
-            
+            ENDIF
+
             elseif(iG.gt.Nx)then
             Tr(i,j,bi,bj)=Tr(sNx,j,bi,bj)
             qr(i,j,bi,bj)=qr(sNx,j,bi,bj)
@@ -672,11 +672,11 @@ C fill in outer edges
               ustress(i,j,bi,bj)=ustress(sNx,j,bi,bj)
               vstress(i,j,bi,bj)=vstress(sNx,j,bi,bj)
             endif
-            
+
             IF(useCheapTracer)THEN
               CheaptracerR(i,j,bi,bj)=CheaptracerR(sNx,j,bi,bj)
-            ENDIF                
-            
+            ENDIF
+
             if(FluxFormula.eq.'COARE3')then
               wavesp(i,j,bi,bj)=wavesp(sNx,j,bi,bj)
               wavesh(i,j,bi,bj)=wavesh(sNx,j,bi,bj)
@@ -684,7 +684,7 @@ C fill in outer edges
 
             IF(useclouds)THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(sNx,j,bi,bj)
-            ENDIF                
+            ENDIF
 
             elseif(jG.lt.1)then
             Tr(i,j,bi,bj)=Tr(i,1,bi,bj)
@@ -697,20 +697,20 @@ C fill in outer edges
               ustress(i,j,bi,bj)=ustress(i,1,bi,bj)
               vstress(i,j,bi,bj)=vstress(i,1,bi,bj)
             endif
-            
+
             IF(useCheapTracer)THEN
               CheaptracerR(i,j,bi,bj)=CheaptracerR(i,1,bi,bj)
-            ENDIF                
+            ENDIF
 
             IF(useclouds)THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(i,1,bi,bj)
-            ENDIF                
-            
+            ENDIF
+
             if(FluxFormula.eq.'COARE3')then
               wavesp(i,j,bi,bj)=wavesp(i,1,bi,bj)
               wavesh(i,j,bi,bj)=wavesh(i,1,bi,bj)
             endif
-            
+
             elseif(jG.gt.Ny)then
             Tr(i,j,bi,bj)=Tr(i,sNy,bi,bj)
             qr(i,j,bi,bj)=qr(i,sNy,bi,bj)
@@ -722,10 +722,10 @@ C fill in outer edges
               ustress(i,j,bi,bj)=ustress(i,sNy,bi,bj)
               vstress(i,j,bi,bj)=vstress(i,sNy,bi,bj)
             endif
-            
+
             IF(useCheapTracer)THEN
               CheaptracerR(i,j,bi,bj)=CheaptracerR(i,sNy,bi,bj)
-            ENDIF                
+            ENDIF
 
             if(FluxFormula.eq.'COARE3')then
               wavesp(i,j,bi,bj)=wavesp(i,sNy,bi,bj)
@@ -734,9 +734,9 @@ C fill in outer edges
 
             IF(useclouds)THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(i,sNy,bi,bj)
-            ENDIF                
+            ENDIF
 
-            
+
             endif
             ENDDO
            ENDDO
