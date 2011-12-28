@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.10 2011/12/19 16:25:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.11 2011/12/28 19:18:54 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,7 +20,6 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-CML#include "SEAICE_GRID.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -89,16 +88,16 @@ C--   Initialize grid info
      &         HEFFM(i,j,bi,bj)= 0. _d 0
          ENDDO
         ENDDO
+#ifndef SEAICE_CGRID
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-#ifndef SEAICE_CGRID
           UVM(i,j,bi,bj)=0. _d 0
           mask_uice=HEFFM(i,j,  bi,bj)+HEFFM(i-1,j-1,bi,bj)
      &             +HEFFM(i,j-1,bi,bj)+HEFFM(i-1,j,  bi,bj)
           IF(mask_uice.GT.3.5 _d 0) UVM(i,j,bi,bj)=1. _d 0
-#endif /* SEAICE_CGRID */
          ENDDO
         ENDDO
+#endif /* SEAICE_CGRID */
        ENDDO
       ENDDO
 
