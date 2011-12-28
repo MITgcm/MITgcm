@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.24 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.25 2011/12/28 19:22:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -104,19 +104,15 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, UICE, '_uice',
      &           maskInW, maskInW, rAw, drF, dummyRL, myThid )
 #else
-# ifdef REAL4_IS_SLOW
         CALL MON_WRITESTATS_RL( 1, UICE, '_uice',
      &                   UVM, UVM, rAz, drF, dummyRL, myThid )
-# endif
 #endif
 #ifdef SEAICE_CGRID
         CALL MON_WRITESTATS_RL( 1, VICE, '_vice',
      &           maskInS, maskInS, rAs, drF, dummyRL, myThid )
 #else
-# ifdef REAL4_IS_SLOW
         CALL MON_WRITESTATS_RL( 1, VICE, '_vice',
      &                   UVM, UVM, rAz, drF, dummyRL, myThid )
-# endif
 #endif
         CALL MON_WRITESTATS_RL( 1, AREA, '_area',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
