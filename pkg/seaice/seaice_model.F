@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.93 2011/12/14 23:00:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.94 2011/12/28 20:55:06 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,7 +58,9 @@ CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
+#if defined(SEAICE_GROWTH_LEGACY) || defined(ALLOW_AUTODIFF_TAMC)
       INTEGER i, j, bi, bj
+#endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
 #endif
@@ -95,8 +97,8 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           IF ( (heff(i,j,bi,bj).EQ.0.)
      &     .OR.(area(i,j,bi,bj).EQ.0.)
      &     ) THEN
@@ -119,8 +121,8 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
 c
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           HEFFNM1(i,j,bi,bj) = 0. _d 0
           AREANM1(i,j,bi,bj) = 0. _d 0
           uIceNm1(i,j,bi,bj) = 0. _d 0
@@ -235,12 +237,12 @@ C--   Update overlap regions for a bunch of stuff
 #endif
 #ifdef ALLOW_SITRACER
        DO iTr = 1, SItrMaxNum
-        _EXCH_XY_RL( SItracer(1-Olx,1-Oly,1,1,iTr),myThid )
+        _EXCH_XY_RL( SItracer(1-OLx,1-OLy,1,1,iTr),myThid )
        ENDDO
 #endif
 #ifdef SEAICE_AGE
        DO iTracer = 1, SEAICE_num
-        _EXCH_XY_RL( IceAgeTr(1-Olx,1-Oly,1,1,iTracer),myThid )
+        _EXCH_XY_RL( IceAgeTr(1-OLx,1-OLy,1,1,iTracer),myThid )
        ENDDO
 #endif
        _EXCH_XY_RS(EmPmR, myThid )
@@ -264,14 +266,14 @@ C     no longer needed with the right masking in advection & diffusion S/R.
 c      IF ( useOBCS ) THEN
 c       DO bj=myByLo(myThid),myByHi(myThid)
 c        DO bi=myBxLo(myThid),myBxHi(myThid)
-c          CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( HEFF(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
-c          CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( AREA(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
-c          CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( HSNOW(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
 #ifdef SEAICE_VARIABLE_SALINITY
-c          CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( HSALT(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
 #endif
 c        ENDDO

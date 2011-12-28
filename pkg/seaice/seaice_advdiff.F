@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.54 2011/10/30 22:20:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.55 2011/12/28 20:55:06 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,8 +64,10 @@ C     gFld      :: tendency of seaice field
 C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER i, j, bi, bj
       INTEGER ks
-      INTEGER itmpkey
       LOGICAL SEAICEmultiDimAdvection
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER itmpkey
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_SITRACER
       INTEGER iTr, SEAICEadvSchSItr, SEAICEdiffKhSItr
       _RL SItrExt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -76,7 +78,7 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
       _RL DIAGarray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-#endif
+#endif /* ALLOW_SITRACER */
 #ifdef SEAICE_AGE
       INTEGER iTracer
 #endif
@@ -89,7 +91,7 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
 c     _RL iceFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL gFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL gFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -104,24 +106,24 @@ C--   alternatively interpolate to C-points if necessary
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef SEAICE_CGRID
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           uc(i,j,bi,bj)=UICE(i,j,bi,bj)
           vc(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
 #else /* not SEAICE_CGRID = BGRID */
 C average seaice velocity to C-grid
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           uc(i,j,bi,bj)=.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
           vc(i,j,bi,bj)=.5 _d 0*(VICE(i,j,bi,bj)+VICE(i+1,j,bi,bj))
          ENDDO
         ENDDO
 #endif /* SEAICE_CGRID */
 C-    compute cell areas used by all tracers
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           xA(i,j,bi,bj) = _dyG(i,j,bi,bj)*_maskW(i,j,ks,bi,bj)
           yA(i,j,bi,bj) = _dxG(i,j,bi,bj)*_maskS(i,j,ks,bi,bj)
          ENDDO
@@ -168,8 +170,8 @@ C---   loops on tile indices bi,bj
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     Initialise for TAF
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 c         iceFld(i,j)     = 0. _d 0
           gFld(i,j)       = 0. _d 0
          ENDDO
@@ -186,13 +188,13 @@ C
      &                       + act3*max1*max2
      &                       + act4*max1*max2*max3
 C
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key = itmpkey, kind=isbyte
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key = itmpkey, kind=isbyte
-CADJ STORE heffm(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE heffm(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key = itmpkey, kind=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key = itmpkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -205,8 +207,8 @@ CADJ &     key = itmpkey, kind=isbyte
         ENDDO
 
 C-    Calculate "volume transports" through tracer cell faces.
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           uTrans(i,j) = uc(i,j,bi,bj)*xA(i,j,bi,bj)
           vTrans(i,j) = vc(i,j,bi,bj)*yA(i,j,bi,bj)
          ENDDO
@@ -331,8 +333,8 @@ C--   scale to effective value
          IF (SItrMate(iTr).EQ.'HEFF') THEN
           SEAICEadvSchSItr=SEAICEadvSchHEFF
           SEAICEdiffKhSItr=SEAICEdiffKhHEFF
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
      &          SItracer(i,j,bi,bj,iTr) * HEFFNM1(i,j,bi,bj)
            ENDDO
@@ -341,16 +343,16 @@ c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
          ELSE
           SEAICEadvSchSItr=SEAICEadvSchAREA
           SEAICEdiffKhSItr=SEAICEdiffKhAREA
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
      &          SItracer(i,j,bi,bj,iTr) * AREANM1(i,j,bi,bj)
            ENDDO
           ENDDO
-         ENDIF 
+         ENDIF
 C--   store a couple things
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_SITRACER_ADVCAP
 C--   store previous value for spurious maxima treament
             SItrPrev(i,j,bi,bj)=SItracer(i,j,bi,bj,iTr)
@@ -360,7 +362,7 @@ C--   store previous value for spurious maxima treament
 #endif
            ENDDO
           ENDDO
-C--   compute advective tendency 
+C--   compute advective tendency
           CALL SEAICE_ADVECTION(
      I         GAD_SITR+iTr-1, SEAICEadvSchSItr,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -416,10 +418,10 @@ c           treat case of potential negative value
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
       diagArray(I,J,1+(iTr-1)*5)= - SItrBucket(i,j,bi,bj,iTr)
      &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
-      tmpscal1= ( HEFF(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr) 
+      tmpscal1= ( HEFF(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr)
      &  + SItrBucket(i,j,bi,bj,iTr) )*HEFFM(I,J,bi,bj)
       diagArray(I,J,2+(iTr-1)*5)= tmpscal1-diagArray(I,J,2+(iTr-1)*5)
-      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) * 
+      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) *
      &  SEAICE_deltaTtherm * gFld(i,j)
 #endif
            ENDDO
@@ -448,9 +450,9 @@ c           treat case of potential negative value
             endif
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
       diagArray(I,J,1+(iTr-1)*5)= 0. _d 0
-      diagArray(I,J,2+(iTr-1)*5)= - diagArray(I,J,2+(iTr-1)*5) 
+      diagArray(I,J,2+(iTr-1)*5)= - diagArray(I,J,2+(iTr-1)*5)
      & + AREA(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr)*HEFFM(I,J,bi,bj)
-      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) * 
+      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) *
      &  SEAICE_deltaTtherm * gFld(i,j)
 #endif
            ENDDO
@@ -594,7 +596,7 @@ C-    Add tendency due to diffusion
 #ifdef SEAICE_AGE
        IF ( SEAICEadvAge ) THEN
         DO iTracer = 1, SEAICE_num
-         CALL ADVECT( uc, vc, iceAgeTr(1-Olx,1-Oly,1,1,iTracer),
+         CALL ADVECT( uc, vc, iceAgeTr(1-OLx,1-OLy,1,1,iTracer),
      &                fldNm1, HEFFM, myThid )
          IF ( SEAICEdiffKhAge .GT. 0. _d 0 ) THEN
 C--   Add tendency due to diffusion
@@ -604,7 +606,7 @@ C--   Add tendency due to diffusion
      I           SEAICEdiffKhAge, SEAICE_deltaTtherm,
      I           fldNm1(1-OLx,1-OLy,bi,bj), HEFFM,
      I           xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
-     U           iceAgeTr(1-Olx,1-Oly,bi,bj,iTracer),
+     U           iceAgeTr(1-OLx,1-OLy,bi,bj,iTracer),
      I           bi, bj, myTime, myIter, myThid )
            ENDDO
           ENDDO
@@ -625,8 +627,8 @@ C     in principle we should add a "real" ridging function here (or
 C     somewhere after doing the advection)
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 #ifdef SEAICE_AGE
 C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
            DO iTracer = 1, SEAICE_num

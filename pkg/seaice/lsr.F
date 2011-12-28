@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.30 2011/12/19 16:22:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.31 2011/12/28 20:55:06 jmc Exp $
 C $Name:  $
 
 #ifndef SEAICE_LSRBNEW
@@ -49,8 +49,6 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2
-      LOGICAL doIterate4u, doIterate4v
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL AA3, S1, S2, S1A, S2A
@@ -80,52 +78,54 @@ C     RHS
       _RL rhsU (1:sNx,1:sNy,nSx,nSy)
       _RL rhsV (1:sNx,1:sNy,nSx,nSy)
 #ifdef SEAICE_LSRBNEW
+      LOGICAL doIterate4u, doIterate4v
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     coefficients of ice velocities in coefficient matrix
 C     for both U and V-equation
 C     XX: double derivative in X
 C     YY: double derivative in Y
 C     XM: metric term with derivative in X
 C     YM: metric term with derivative in Y
-      _RL UXX  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL UYY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL UXM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL UYM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL VXX  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL VYY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL VXM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL VYM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL UXX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL UYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL UXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL UYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VXX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     abbreviations
-      _RL etaU (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL zetaU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL etaV (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL zetaV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL etaU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL zetaU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL etaV (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL zetaV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     contribution of sigma on righ hand side
-      _RL sig11(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL sig22(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL sig12(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL sig21(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sig21(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     auxillary fields
-      _RL CUU  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL CVV  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL URT  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL VRT  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL CUU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CVV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL URT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VRT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
-      _RL URT(1-Olx:sNx+Olx), CUU(1-Olx:sNx+Olx)
-      _RL VRT(1-Oly:sNy+Oly), CVV(1-Oly:sNy+Oly)
+      _RL URT(1-OLx:sNx+OLx), CUU(1-OLx:sNx+OLx)
+      _RL VRT(1-OLy:sNy+OLy), CVV(1-OLy:sNy+OLy)
 
-      _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL ETAMEAN  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL ZETAMEAN (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ETAMEAN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ZETAMEAN (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      _RL dVdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dUdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dUdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dVdx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dVdy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dUdx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dUdy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_TEST
-      _RL uz     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vz     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uz     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vz     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
       INTEGER phexit
@@ -137,10 +137,10 @@ C     auxillary fields
       _RL UERR
 
 C     abbreviations
-      _RL ucLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vcLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL uTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL ucLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vcLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C SET SOME VALUES
       WFAU1=0.95 _d 0
@@ -163,18 +163,18 @@ C SET SOME VALUES
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           ucLoc(I,J,bi,bj) = 0.25 _d 0 * (
-     &         +  uIceC(I+1,J,bi,bj) +  uIceC(I+1,J+1,bi,bj) 
+     &         +  uIceC(I+1,J,bi,bj) +  uIceC(I+1,J+1,bi,bj)
      &         +  uIceC(I  ,J,bi,bj) +  uIceC(I,  J+1,bi,bj) )
           vcLoc(I,J,bi,bj) = 0.25 _d 0 * (
-     &         +  vIceC(I+1,J,bi,bj) +  vIceC(I+1,J+1,bi,bj) 
+     &         +  vIceC(I+1,J,bi,bj) +  vIceC(I+1,J+1,bi,bj)
      &         +  vIceC(I  ,J,bi,bj) +  vIceC(I,  J+1,bi,bj) )
          ENDDO
         ENDDO
-        DO J=1-Oly,sNy+Oly-1
-         DO I=1-Oly,sNx+Oly-1
+        DO J=1-OLy,sNy+OLy-1
+         DO I=1-OLy,sNx+OLy-1
           e11loc = 0.5 _d 0 * _recip_dxF(I,J,bi,bj) *
      &                (uIceC(I+1,J+1,bi,bj)+uIceC(I+1,J,bi,bj)
      &                -uIceC(I,  J+1,bi,bj)-uIceC(I,  J,bi,bj))
@@ -183,7 +183,7 @@ C SET SOME VALUES
      &                (vIceC(I+1,J+1,bi,bj)+vIceC(I,J+1,bi,bj)
      &                -vIceC(I+1,J,  bi,bj)-vIceC(I,J,  bi,bj))
      &                + ucLoc(I,J,bi,bj) * k1AtC(I,J,bi,bj)
-          e12loc = 0.5 _d 0*( 
+          e12loc = 0.5 _d 0*(
      &           0.5 _d 0 * _recip_dyF(I,J,bi,bj) *
      &         (uIceC(I+1,J+1,bi,bj)+uIceC(I,J+1,bi,bj)
      &         -uIceC(I+1,J,  bi,bj)-uIceC(I,J,  bi,bj))
@@ -270,16 +270,16 @@ C     is added to the rhs stress tensor terms
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     coefficients for matrices
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           etaU(I,J) = 0.5 _d 0 * (
      &         +  eta(I,J,bi,bj) +  eta(I-1,J,bi,bj) )
           zetaU(I,J)= 0.5 _d 0 *(
      &         + zeta(I,J,bi,bj) + zeta(I-1,J,bi,bj) )
          ENDDO
         ENDDO
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           etaV(I,J) = 0.5 _d 0 * (
      &         +  eta(I,J,bi,bj) +  eta(I,J-1,bi,bj) )
           zetaV(I,J)= 0.5 _d 0 *(
@@ -412,14 +412,14 @@ C     set up right-hand sides
         DO j=1,sNy
          DO i=0,sNx
 C     at V-point
-          sig11(I,J) = 
-     &           (zetaV(I,J)-etaV(I,J)) 
-     &         * (vcLoc(I,J,bi,bj)-vcLoc(I,J-1,bi,bj)) 
+          sig11(I,J) =
+     &           (zetaV(I,J)-etaV(I,J))
+     &         * (vcLoc(I,J,bi,bj)-vcLoc(I,J-1,bi,bj))
      &         * _recip_dyC(I,J,bi,bj)
      &         + (zetaV(I,J)+etaV(I,J))*k2atV(I,J,bi,bj)
      &         * 0.5 _d 0 * (vIceC(I,J,bi,bj)+vIceC(I+1,J,bi,bj))
      &         - 0.5 _d 0 * (PRESS(I,J,bi,bj)+PRESS(I,J-1,bi,bj))
-          sig12(I,J) = etaV(I,J) 
+          sig12(I,J) = etaV(I,J)
      &         * (ucLoc(I,J,bi,bj)-ucLoc(I,J-1,bi,bj))
      &         * _recip_dyC(I,J,bi,bj)
      &         - etaV(I,J) * k2AtV(I,J,bi,bj)
@@ -429,14 +429,14 @@ C     at V-point
         DO j=0,sNy
          DO i=1,sNx
 C     at U-point
-          sig22(I,J) = 
-     &           (zetaU(I,J)-etaU(I,J)) 
-     &         * (ucLoc(I,J,bi,bj)-ucLoc(I-1,J,bi,bj)) 
+          sig22(I,J) =
+     &           (zetaU(I,J)-etaU(I,J))
+     &         * (ucLoc(I,J,bi,bj)-ucLoc(I-1,J,bi,bj))
      &         * _recip_dxC(I,J,bi,bj)
      &         + (zetaU(I,J)+etaU(I,J))*k2atU(I,J,bi,bj)
      &         * 0.5 _d 0 * (uIceC(I,J,bi,bj)+uIceC(I,J+1,bi,bj))
      &         - 0.5 _d 0 * (PRESS(I,J,bi,bj)+PRESS(I-1,J,bi,bj))
-          sig21(I,J) = etaU(I,J) 
+          sig21(I,J) = etaU(I,J)
      &         * (vcLoc(I,J,bi,bj)-vcLoc(I-1,J,bi,bj))
      &         * _recip_dxC(I,J,bi,bj)
      &         - etaU(I,J) * k1AtU(I,J,bi,bj)
@@ -454,9 +454,9 @@ C     at U-point
      &         * recip_rAz(I,J,bi,bj) * UVM(I,J,bi,bj)
           rhsV(I,J,bi,bj) = - DRAGA(I,J,bi,bj)*uIceC(I,J,bi,bj)
      &         +FORCEY(I,J,bi,bj)
-     &         + ( _dyC(I,  J,  bi,bj) * sig12(I,  J  ) 
-     &           - _dyC(I-1,J,  bi,bj) * sig12(I-1,J  ) 
-     &           + _dxC(I,  J,  bi,bj) * sig22(I,  J  ) 
+     &         + ( _dyC(I,  J,  bi,bj) * sig12(I,  J  )
+     &           - _dyC(I-1,J,  bi,bj) * sig12(I-1,J  )
+     &           + _dxC(I,  J,  bi,bj) * sig22(I,  J  )
      &           - _dxC(I,  J-1,bi,bj) * sig22(I,  J-1) )
      &         * recip_rAz(I,J,bi,bj) * UVM(I,J,bi,bj)
          ENDDO
@@ -693,14 +693,14 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           etaPlusZeta(I,J,bi,bj) = ETA(I,J,bi,bj)+ZETA(I,J,bi,bj)
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA(I,J,bi,bj)
          ENDDO
         ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           ETAMEAN(I,J,bi,bj) =QUART*(
      &          ETA(I,J-1,bi,bj) + ETA(I-1,J-1,bi,bj)
      &         +ETA(I,J  ,bi,bj) + ETA(I-1,J  ,bi,bj))
@@ -748,8 +748,8 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
         END DO
 
 C     now set up right-hand side
-        DO J=1-Oly,sNy+Oly-1
-         DO I=1-Olx,sNx+Olx-1
+        DO J=1-OLy,sNy+OLy-1
+         DO I=1-OLx,sNx+OLx-1
           dVdy(I,J) = 0.5 _d 0 * (
      &         ( VICEC(I+1,J+1,bi,bj) - VICEC(I+1,J  ,bi,bj) )
      &         * _recip_dyG(I+1,J,bi,bj)
@@ -763,8 +763,8 @@ C     now set up right-hand side
          ENDDO
         ENDDO
 #ifdef SEAICE_TEST
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           vz(i,j) = quart * (
      &         vicec(i,j,bi,bj) + vicec(i+1,j,bi,bj) )
           vz(i,j)= vz(i,j) + quart * (
@@ -991,8 +991,8 @@ C NOW FOR VICE
         END DO
 
 C     now set up right-hand-side
-        DO J=1-Oly,sNy+Oly-1
-         DO I=1-Olx,sNx+Olx-1
+        DO J=1-OLy,sNy+OLy-1
+         DO I=1-OLx,sNx+OLx-1
           dUdx(I,J) = 0.5 _d 0 * (
      &         ( UICEC(I+1,J+1,bi,bj) - UICEC(I ,J+1,bi,bj) )
      &         * _recip_dxG(I,J+1,bi,bj)
@@ -1006,8 +1006,8 @@ C     now set up right-hand-side
          ENDDO
         ENDDO
 #ifdef SEAICE_TEST
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           uz(i,j) = quart * (
      &         uicec(i,j,bi,bj) + uicec(i+1,j,bi,bj) )
           uz(i,j)= uz(i,j) + quart * (
@@ -1193,8 +1193,8 @@ C NOW END
 C NOW MAKE COROLIS TERM IMPLICIT
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           UICE(I,J,bi,bj)=UICE(I,J,bi,bj)*UVM(I,J,bi,bj)
           VICE(I,J,bi,bj)=VICE(I,J,bi,bj)*UVM(I,J,bi,bj)
          END DO
