@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.5 2011/12/28 16:41:19 jmc Exp $
+C $Name:  $
+
 #include "CHEAPAML_OPTIONS.h"
 CBOP
 C     !ROUTINE: CHEAPAML_DIAGNOSTICS_INIT
@@ -85,7 +88,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'cheapAML Zonal Wind      '
       diagUnits = 'm/s           '
       diagCode  = 'UU      L1      '
-      diagmate  = diagNum + 2 
+      diagmate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagmate, myThid )
 
