@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/timestep_2d_tracer.F,v 1.3 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/timestep_2d_tracer.F,v 1.4 2011/12/28 16:50:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,14 +7,14 @@ CBOP
 C     !ROUTINE: TIMESTEP_2d_TRACER
 C     !INTERFACE:
       SUBROUTINE TIMESTEP_2d_TRACER(
-     I                     bi, bj, iMin, iMax, jMin, jMax, 
+     I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     deltaTTracer,
      I                     tracer, gTracer,
      I                     myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R TIMESTEP_2d_TRACER                                       
-C     | o Step model tracer field forward in time                 
+C     | S/R TIMESTEP_2d_TRACER
+C     | o Step model tracer field forward in time
 C     *==========================================================*
 C     \ev
 
@@ -28,7 +28,6 @@ C     == Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER advection_scheme
       _RL  tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  deltaTTracer
@@ -48,7 +47,7 @@ C     -    Extrapolate tendancies to mid-time level (n+1/2)
      $       +deltaTtracer*gTracer(i,j,bi,bj)
         ENDDO
       ENDDO
-      
+
       RETURN
       END
-      
+
