@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.66 2011/11/17 13:17:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.67 2011/12/28 19:15:53 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -215,7 +215,7 @@ C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
 #ifdef SEAICE_CGRID
         IF (useOBCS) THEN
 C--   If OBCS is turned on, close southern and western boundaries
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
 C Southern boundary
           J_obc = OB_Js(i,bi,bj)
           IF (J_obc.NE.0) THEN
@@ -223,7 +223,7 @@ C Southern boundary
            seaiceMaskV(i,J_obc,bi,bj)=   0.0 _d 0
           ENDIF
          ENDDO
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
 C Western boundary
           I_obc=OB_Iw(j,bi,bj)
           IF (I_obc.NE.0) THEN
@@ -260,7 +260,7 @@ C--   Update overlap regions
 #ifdef SEAICE_CGRID
       CALL EXCH_UV_XY_RL(seaiceMaskU,seaiceMaskV,.FALSE.,myThid)
 #else
-      _EXCH_XY_RL(UVM, myThid)
+      _EXCH_XY_RS(UVM, myThid)
 #endif
 
 C--   Now lets look at all these beasts
@@ -273,7 +273,7 @@ C--   Now lets look at all these beasts
          CALL PLOT_FIELD_XYRL( seaiceMaskV, 'Current seaiceMaskV',
      &        nIter0, myThid )
 #else
-         CALL PLOT_FIELD_XYRL( UVM     , 'Current UVM     ' ,
+         CALL PLOT_FIELD_XYRS( UVM     , 'Current UVM     ' ,
      &        nIter0, myThid )
 #endif
       ENDIF
@@ -414,8 +414,8 @@ C--   Read initial sea ice age from file if available.
        DO iTracer = 1, SEAICE_num
         IF ( IceAgeTrFile(iTracer) .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( IceAgeTrFile(iTracer), ' ',
-     &   IceAgeTr(1-Olx,1-Oly,1,1,iTracer), 0, myThid )
-        _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTracer),myThid)
+     &   IceAgeTr(1-OLx,1-OLy,1,1,iTracer), 0, myThid )
+        _EXCH_XY_RL(IceAgeTr(1-OLx,1-OLy,1,1,iTracer),myThid)
         ENDIF
        ENDDO
 #endif /* SEAICE_AGE */
@@ -428,14 +428,14 @@ C     no longer needed with the right masking in advection & diffusion S/R.
 c     IF ( useOBCS ) THEN
 c       DO bj=myByLo(myThid),myByHi(myThid)
 c        DO bi=myBxLo(myThid),myBxHi(myThid)
-c          CALL OBCS_COPY_TRACER( HEFF(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( HEFF(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
-c          CALL OBCS_COPY_TRACER( AREA(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( AREA(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
-c          CALL OBCS_COPY_TRACER( HSNOW(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( HSNOW(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
 #ifdef SEAICE_VARIABLE_SALINITY
-c          CALL OBCS_COPY_TRACER( HSALT(1-Olx,1-Oly,bi,bj),
+c          CALL OBCS_COPY_TRACER( HSALT(1-OLx,1-OLy,bi,bj),
 c    I                            1, bi, bj, myThid )
 #endif
 c        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.58 2011/12/19 16:22:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.59 2011/12/28 19:15:53 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -53,17 +53,17 @@ C     k1/2AtC    for metric terms in U/V ice equations.
       _RS k2AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       COMMON/ARRAYB/ UVM
-      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     k1/2AtC/U/V :: coefficients at C, U, and V points
 C                    for metric terms in U/V ice equations.
-      COMMON/ARRAYBMETRIC/  
+      COMMON/ARRAYBMETRIC/
      &     k1AtC, k1AtU, k1AtV, k2AtC, k2AtU, k2AtV
       _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k1AtU      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RS k1AtV      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS k1AtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k1AtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k2AtU      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RS k2AtV      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS k2AtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k2AtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_CGRID */
 
 C--   Dynamical variables
@@ -81,7 +81,7 @@ C--   Dynamical variables
       _RL VICENM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON/SEAICE_DYNVARS_3/
-     &     ETA,ZETA,PRESS, e11, e22, e12, 
+     &     ETA,ZETA,PRESS, e11, e22, e12,
      &     DRAGS,DRAGA,FORCEX,FORCEY,UICEC,VICEC
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
