@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.16 2011/05/20 22:23:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.17 2011/12/28 16:30:56 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -403,7 +403,7 @@ c interpolation information consistent (self and with grid)
 
       ProfNo(num_file,bi,bj)=length_for_tile
 
-      write(msgbuf,'(a,i3,i3,i3,i5)')
+      write(msgbuf,'(a,i10,i3,i3,i5)')
      &   'fid dimid ProfNo',fid, dimid,
      & num_file, ProfNo(num_file,bi,bj)
       call print_message(
