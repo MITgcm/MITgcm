@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1566 2011/12/30 22:27:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1567 2012/01/01 01:25:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exf (interpolation):
+  - assume periodicity in X only if input field cover full longitude range.
+  - improve search for lat. index (supposed to be faster, in ~log2(ny) steps,
+    and should vectorise).
+  - fix input lat of the 2 added row (in case we provide N.pole data).
 
 checkpoint63h (2011/12/30)
 o pkg/seaice:
@@ -20,7 +26,7 @@ o verification:
   - update output of exp. global_ocean.cs32x15.viscA4 after changing
     grid-file angles (used here for coriolis-3d);
   - remove (or gzip) few files not needed to run fizhi-cs experiments.
-o pkg/exf (vertor interpolation):
+o pkg/exf (vector interpolation):
   - rotate vector component toward local grid-axis orientation using grid-angles
     (stored in GRID.h) instead of locally computed rotation angle; keep old code
     available with exf option EXF_USE_OLD_VEC_ROTATION (undef by default).
