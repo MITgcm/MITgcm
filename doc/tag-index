@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1568 2012/01/03 11:07:12 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1569 2012/01/03 18:11:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - change masking flags definition (no longer "parameter"), put them in
+    common block and set them in S/R EXF_INIT_FIXED.
+  - change recognized masking flag from s,u,v to c,w,s since the mask
+    to use (maskC,W,S) depends on position on model grid and has little to
+    do with scalar/vector difference; fix masking if using P-coordinates.
+  - fix masking of wind-stress (was wrong if interpolated or read on A-grid)
+    and update results of exp. global_with_exf (x2).
+  - fix setting of zenith-angle table when SHORTWAVE_HEATING is undef.
 o pkg/obcs
   - S/R obcs_calc_stevens: fix a small bug (gammat -> gammas where appropriate)
 o pkg/exf (interpolation):
