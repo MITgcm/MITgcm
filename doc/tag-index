@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1567 2012/01/01 01:25:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1568 2012/01/03 11:07:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs
+  - S/R obcs_calc_stevens: fix a small bug (gammat -> gammas where appropriate)
 o pkg/exf (interpolation):
   - assume periodicity in X only if input field cover full longitude range.
   - improve search for lat. index (supposed to be faster, in ~log2(ny) steps,
