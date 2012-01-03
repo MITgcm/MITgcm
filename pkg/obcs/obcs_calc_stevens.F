@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.11 2011/12/13 15:15:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.12 2012/01/03 11:06:58 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -557,7 +557,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
      &        *(salt(I,J,K,bi,bj)-salt(I,J-1,K,bi,bj))
      &        * _recip_dyC(I,J,bi,bj)
-     &        - gFacZ(I,K) * gammat 
+     &        - gFacZ(I,K) * gammas 
      &           * (salt(I,J,K,bi,bj)-OBNs(I,K,bi,bj)) )
            ENDIF
           ENDDO
@@ -695,7 +695,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
      &        *(salt(I,J+1,K,bi,bj)-salt(I,J,K,bi,bj))
      &        * _recip_dyC(I,J+1,bi,bj)
-     &        - gFacZ(I,K) * gammat 
+     &        - gFacZ(I,K) * gammas
      &           * (salt(I,J,K,bi,bj)-OBSs(I,K,bi,bj)) )
            ENDIF
           ENDDO
