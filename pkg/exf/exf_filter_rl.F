@@ -1,113 +1,92 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_filter_rl.F,v 1.9 2007/04/17 23:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_filter_rl.F,v 1.10 2012/01/03 17:49:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_filter_rl(
-     I                          arr,
-     I                          ckind,
-     I                          mythid
-     &                        )
+      SUBROUTINE EXF_FILTER_RL(
+     U                          arr,
+     I                          ckind, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_filter_rl
-c     ==================================================================
-c
-c     o Read a flux record for external forcing.
-c
-c     started: Ralf.Giering@FastOpt.de 24-Mai-2000
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c     ==================================================================
-c     SUBROUTINE exf_filter_rl
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE EXF_FILTER_RL
+C     ==================================================================
+C
+C     o apply mask to input field
+C
+C     ==================================================================
+C     SUBROUTINE EXF_FILTER_RL
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "PARAMS.h"
-#include "EXF_CONSTANTS.h"
-#include "EXF_PARAM.h"
+#include "GRID.h"
+c#include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
-
+C     == routine arguments ==
       _RL arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      character*1 ckind
-      integer mythid
+      CHARACTER*1 ckind
+      INTEGER myThid
 
-c     == local variables ==
+C     == local variables ==
+      INTEGER bi,bj
+      INTEGER i,j, ks
 
-      integer bi,bj
-      integer i,j
-      integer itlo,ithi
-      integer jtlo,jthi
+C     == end of interface ==
 
-c     == end of interface ==
+C     filter forcing field array
+      IF ( ckind.NE.' ' ) THEN
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+        ks = 1
+        IF ( usingPCoords ) ks = Nr
 
-c     Do not filter with pkg/seaice because of B/C-grid interpolation
-      IF ( .NOT. useSEAICE ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
 
-c     filter forcing field array
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-
-c         Set undefined values to zero.
-crg not necessary and
-crg would require additional intermediate results in adjoint
-crg          do j = 1,sny
-crg            do i = 1,snx
-crg              if (arr(i,j,bi,bj) .le. exf_undef) then
+C         Set undefined values to zero.
+Crg not necessary and
+Crg would require additional intermediate results in adjoint
+crg          DO j = 1,sNy
+crg            DO i = 1,sNx
+crg              IF (arr(i,j,bi,bj) .LE. exf_undef) THEN
 crg                arr(i,j,bi,bj) = 0. _d 0
-crg              endif
-crg            enddo
-crg          enddo
+crg              ENDIF
+crg            ENDDO
+crg          ENDDO
 
-c         Set land points to zero
-          if      (ckind .eq. 's') then
+C         Set land points to zero
+          IF     ( ckind .EQ. 'c' ) THEN
+            DO j = 1,sNy
+             DO i = 1,sNx
+               IF ( maskC(i,j,ks,bi,bj) .EQ. 0. ) THEN
+                 arr(i,j,bi,bj) = 0. _d 0
+               ENDIF
+             ENDDO
+            ENDDO
+          ELSEIF ( ckind .EQ. 'w' ) THEN
+            DO j = 1,sNy
+             DO i = 1,sNx
+               IF ( maskW(i,j,ks,bi,bj) .EQ. 0. ) THEN
+                 arr(i,j,bi,bj) = 0. _d 0
+               ENDIF
+             ENDDO
+            ENDDO
+          ELSEIF ( ckind .EQ. 's' ) THEN
+            DO j = 1,sNy
+             DO i = 1,sNx
+               IF ( maskS(i,j,ks,bi,bj) .EQ. 0. ) THEN
+                 arr(i,j,bi,bj) = 0. _d 0
+               ENDIF
+             ENDDO
+            ENDDO
+          ENDIF
 
-            do j = 1,sny
-              do i = 1,snx
-                if ( maskC(i,j,1,bi,bj) .eq. 0. ) then
-                  arr(i,j,bi,bj) = 0. _d 0
-                endif
-              enddo
-            enddo
-
-          else if (ckind .eq. 'u') then
-
-            do j = 1,sny
-              do i = 1,snx
-                if ( maskW(i,j,1,bi,bj) .eq. 0. ) then
-                  arr(i,j,bi,bj) = 0. _d 0
-                endif
-              enddo
-            enddo
-
-          else if (ckind .eq. 'v') then
-
-            do j = 1,sny
-              do i = 1,snx
-                if ( maskS(i,j,1,bi,bj) .eq. 0. ) then
-                  arr(i,j,bi,bj) = 0. _d 0
-                endif
-              enddo
-            enddo
-
-          end if
-
-        enddo
-      enddo
-
+         ENDDO
+        ENDDO
       ENDIF
-c     END IF ( .NOT. useSEAICE )
 
-      end
+      RETURN
+      END
