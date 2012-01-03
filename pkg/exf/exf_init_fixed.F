@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.18 2011/10/12 02:53:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.19 2012/01/03 17:48:45 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_ICEFRONT
+# include "ICEFRONT_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: EXF_INIT_FIXED
@@ -26,7 +29,6 @@ C     === Global variables ===
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 #ifdef ALLOW_ICEFRONT
-# include "ICEFRONT_OPTIONS.h"
 # include "ICEFRONT.h"
 #endif
 
@@ -39,19 +41,82 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER date_array(4), difftime(4), yearStartDate(4)
+#ifdef USE_EXF_INTERPOLATION
+      INTEGER j
+#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('EXF_INIT_FIXED',myThid)
 #endif
 
-C     Complete the start date specifications for the forcing
+      _BEGIN_MASTER( myThid )
+
+C--   Set mask for each input field
+C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
+      hfluxmask    = 'c'
+      sfluxmask    = 'c'
+      atempmask    = 'c'
+      aqhmask      = 'c'
+      evapmask     = 'c'
+      precipmask   = 'c'
+      snowprecipmask='c'
+      runoffmask   = 'c'
+      IF ( stressIsOnCgrid ) THEN
+       ustressmask = 'w'
+       vstressmask = 's'
+      ELSE
+       ustressmask = 'c'
+       vstressmask = 'c'
+      ENDIF
+      uwindmask    = 'c'
+      vwindmask    = 'c'
+      wspeedmask   = 'c'
+      swfluxmask   = 'c'
+      lwfluxmask   = 'c'
+      swdownmask   = 'c'
+      lwdownmask   = 'c'
+      apressuremask= 'c'
+      areamaskmask = 'c'
+      climsstmask  = 'c'
+      climsssmask  = 'c'
+      climustrmask = 'w'
+      climvstrmask = 's'
+      sgrunoffmask = 'c'
+
+      IF ( useSEAICE ) THEN
+C     Do not filter with pkg/seaice because of B/C-grid interpolation
+       hfluxmask    = ' '
+       sfluxmask    = ' '
+       atempmask    = ' '
+       aqhmask      = ' '
+       evapmask     = ' '
+       precipmask   = ' '
+       snowprecipmask=' '
+       runoffmask   = ' '
+       ustressmask  = ' '
+       vstressmask  = ' '
+       uwindmask    = ' '
+       vwindmask    = ' '
+       wspeedmask   = ' '
+       swfluxmask   = ' '
+       lwfluxmask   = ' '
+       swdownmask   = ' '
+       lwdownmask   = ' '
+       apressuremask= ' '
+       areamaskmask = ' '
+       climsstmask  = ' '
+       climsssmask  = ' '
+       climustrmask = ' '
+       climvstrmask = ' '
+       sgrunoffmask = ' '
+      ENDIF
+
+C--   Complete the start date specifications for the forcing
 C     fields to get a complete calendar date array.
 C     FLDstartdate, for FLD = { uwind, vwind, wspeed, etc. },
 C     returns time in seconds of first FLD record from the
 C     beginning of the model integration or, if useYearlyFields,
 C     from the beginning of the year.
-
-      _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_ATM_WIND
       IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
@@ -704,17 +769,75 @@ C     from the beginning of the year.
       ENDIF
 #endif /* ALLOW_CLIMSTRESS_RELAXATION */
 
+#ifdef USE_EXF_INTERPOLATION
+C--   For vector fields, set flag to interpolate the 2 components together
+C-    wind-stress:
+      uvInterp_stress = ustressfile.NE.' ' .AND. vstressfile.NE.' '
+     &  .AND. ustress_interpMethod.GE.1 .AND. vstress_interpMethod.GE.1
+      uvInterp_stress = uvInterp_stress
+     &  .AND. ustressstartdate .EQ. vstressstartdate
+     &  .AND. ustressperiod    .EQ. vstressperiod
+      uvInterp_stress = uvInterp_stress
+     &  .AND. ustress_nlon .EQ. vstress_nlon
+     &  .AND. ustress_nlat .EQ. vstress_nlat
+     &  .AND. ustress_lon0 .EQ. vstress_lon0
+     &  .AND. ustress_lat0 .EQ. vstress_lat0
+     &  .AND. ustress_lon_inc .EQ. vstress_lon_inc
+      IF ( uvInterp_stress ) THEN
+        DO j=1,MIN(ustress_nlat-1,MAX_LAT_INC)
+          uvInterp_stress = uvInterp_stress
+     &     .AND. ustress_lat_inc(j) .EQ. vstress_lat_inc(j)
+        ENDDO
+      ENDIF
+C-    wind:
+      uvInterp_wind = uwindfile.NE.' ' .AND. vwindfile.NE.' '
+     &  .AND. uwind_interpMethod.GE.1 .AND. vwind_interpMethod.GE.1
+      uvInterp_wind = uvInterp_wind
+     &  .AND. uwindstartdate .EQ. vwindstartdate
+     &  .AND. uwindperiod    .EQ. vwindperiod
+      uvInterp_wind = uvInterp_wind
+     &  .AND. uwind_nlon .EQ. vwind_nlon
+     &  .AND. uwind_nlat .EQ. vwind_nlat
+     &  .AND. uwind_lon0 .EQ. vwind_lon0
+     &  .AND. uwind_lat0 .EQ. vwind_lat0
+     &  .AND. uwind_lon_inc .EQ. vwind_lon_inc
+      IF ( uvInterp_wind ) THEN
+        DO j=1,MIN(uwind_nlat-1,MAX_LAT_INC)
+          uvInterp_wind = uvInterp_wind
+     &     .AND. uwind_lat_inc(j) .EQ. vwind_lat_inc(j)
+        ENDDO
+      ENDIF
+C-    clim wind-stress:
+      uvInterp_climstr = climustrfile.NE.' ' .AND. climvstrfile.NE.' '
+     &  .AND.climustr_interpMethod.GE.1 .AND.climvstr_interpMethod.GE.1
+      uvInterp_climstr = uvInterp_climstr
+     &  .AND. climustrstartdate .EQ. climvstrstartdate
+     &  .AND. climustrperiod    .EQ. climvstrperiod
+      uvInterp_climstr = uvInterp_climstr
+     &  .AND. climustr_nlon .EQ. climvstr_nlon
+     &  .AND. climustr_nlat .EQ. climvstr_nlat
+     &  .AND. climustr_lon0 .EQ. climvstr_lon0
+     &  .AND. climustr_lat0 .EQ. climvstr_lat0
+     &  .AND. climustr_lon_inc .EQ. climvstr_lon_inc
+      IF ( uvInterp_climstr ) THEN
+        DO j=1,MIN(climustr_nlat-1,MAX_LAT_INC)
+          uvInterp_climstr = uvInterp_climstr
+     &     .AND. climustr_lat_inc(j) .EQ. climvstr_lat_inc(j)
+        ENDDO
+      ENDIF
+#endif  /* USE_EXF_INTERPOLATION */
+
       _END_MASTER( myThid )
       _BARRIER
 
-#if defined(ALLOW_ZENITHANGLE) && defined(SHORTWAVE_HEATING)
+#ifdef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('EXF_ZENITHANGLE_TABLE',myThid)
 # endif
        CALL EXF_ZENITHANGLE_TABLE(myThid)
       ENDIF
-#endif
+#endif /* ALLOW_ZENITHANGLE */
 
 C--   Summarize the External forcing setup.
 # ifdef ALLOW_DEBUG
