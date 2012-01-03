@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.24 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.25 2012/01/03 17:47:48 jmc Exp $
 C $Name:  $
 c
 c
 c     ==================================================================
-c     HEADER exf_param
+c     HEADER EXF_PARAM.h
 c     ==================================================================
 c
 c     o Header file for the surface flux data. Used by the external
@@ -28,7 +28,7 @@ c
 c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
-c     HEADER exf_param
+c     HEADER EXF_PARAM.h
 c     ==================================================================
 
 c     Year in seconds
@@ -63,7 +63,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     hflux_exfremo_intercept
       _RL     hflux_exfremo_slope
       character*1 hfluxmask
-      parameter(  hfluxmask = 's' )
 
       integer atempstartdate1
       integer atempstartdate2
@@ -73,7 +72,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     atemp_exfremo_intercept
       _RL     atemp_exfremo_slope
       character*1 atempmask
-      parameter(  atempmask = 's' )
 
       integer aqhstartdate1
       integer aqhstartdate2
@@ -83,7 +81,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     aqh_exfremo_intercept
       _RL     aqh_exfremo_slope
       character*1 aqhmask
-      parameter(  aqhmask = 's' )
 
       integer sfluxstartdate1
       integer sfluxstartdate2
@@ -93,7 +90,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     sflux_exfremo_intercept
       _RL     sflux_exfremo_slope
       character*1 sfluxmask
-      parameter(  sfluxmask = 's' )
 
       integer evapstartdate1
       integer evapstartdate2
@@ -103,7 +99,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     evap_exfremo_intercept
       _RL     evap_exfremo_slope
       character*1 evapmask
-      parameter(  evapmask = 's' )
 
       integer precipstartdate1
       integer precipstartdate2
@@ -113,7 +108,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     precip_exfremo_intercept
       _RL     precip_exfremo_slope
       character*1 precipmask
-      parameter(  precipmask = 's' )
 
       integer snowprecipstartdate1
       integer snowprecipstartdate2
@@ -123,7 +117,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     snowprecip_exfremo_intercept
       _RL     snowprecip_exfremo_slope
       character*1 snowprecipmask
-      parameter(  snowprecipmask = 's' )
 
       integer runoffstartdate1
       integer runoffstartdate2
@@ -133,7 +126,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     runoff_exfremo_intercept
       _RL     runoff_exfremo_slope
       character*1 runoffmask
-      parameter(  runoffmask = 's' )
 
       integer ustressstartdate1
       integer ustressstartdate2
@@ -143,7 +135,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     ustress_exfremo_intercept
       _RL     ustress_exfremo_slope
       character*1 ustressmask
-      parameter(  ustressmask = 'u' )
 
       integer vstressstartdate1
       integer vstressstartdate2
@@ -153,7 +144,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     vstress_exfremo_intercept
       _RL     vstress_exfremo_slope
       character*1 vstressmask
-      parameter(  vstressmask = 'v' )
 
       integer uwindstartdate1
       integer uwindstartdate2
@@ -163,7 +153,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     uwind_exfremo_intercept
       _RL     uwind_exfremo_slope
       character*1 uwindmask
-      parameter(  uwindmask = 's' )
 
       integer vwindstartdate1
       integer vwindstartdate2
@@ -173,7 +162,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     vwind_exfremo_intercept
       _RL     vwind_exfremo_slope
       character*1 vwindmask
-      parameter(  vwindmask = 's' )
 
       integer wspeedstartdate1
       integer wspeedstartdate2
@@ -183,7 +171,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     wspeed_exfremo_intercept
       _RL     wspeed_exfremo_slope
       character*1 wspeedmask
-      parameter(  wspeedmask = 's' )
 
       integer swfluxstartdate1
       integer swfluxstartdate2
@@ -193,7 +180,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     swflux_exfremo_intercept
       _RL     swflux_exfremo_slope
       character*1 swfluxmask
-      parameter(  swfluxmask = 's' )
 
       integer lwfluxstartdate1
       integer lwfluxstartdate2
@@ -203,7 +189,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     lwflux_exfremo_intercept
       _RL     lwflux_exfremo_slope
       character*1 lwfluxmask
-      parameter(  lwfluxmask = 's' )
 
       integer swdownstartdate1
       integer swdownstartdate2
@@ -213,7 +198,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     swdown_exfremo_intercept
       _RL     swdown_exfremo_slope
       character*1 swdownmask
-      parameter(  swdownmask = 's' )
 
       integer lwdownstartdate1
       integer lwdownstartdate2
@@ -223,7 +207,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     lwdown_exfremo_intercept
       _RL     lwdown_exfremo_slope
       character*1 lwdownmask
-      parameter(  lwdownmask = 's' )
 
       integer apressurestartdate1
       integer apressurestartdate2
@@ -233,7 +216,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     apressure_exfremo_intercept
       _RL     apressure_exfremo_slope
       character*1 apressuremask
-      parameter(  apressuremask = 's' )
 
       integer areamaskstartdate1
       integer areamaskstartdate2
@@ -244,7 +226,6 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     areamask_exfremo_intercept
       _RL     areamask_exfremo_slope
       character*1 areamaskmask
-      parameter(  areamaskmask = 's' )
 
 c     Calendar data.
       integer climsststartdate1
@@ -256,7 +237,6 @@ c     Calendar data.
       _RL     climsst_exfremo_intercept
       _RL     climsst_exfremo_slope
       character*1 climsstmask
-      parameter(  climsstmask = 's' )
 
       integer climsssstartdate1
       integer climsssstartdate2
@@ -267,7 +247,6 @@ c     Calendar data.
       _RL     climsss_exfremo_intercept
       _RL     climsss_exfremo_slope
       character*1 climsssmask
-      parameter(  climsssmask = 's' )
 
       integer climustrstartdate1
       integer climustrstartdate2
@@ -278,7 +257,6 @@ c     Calendar data.
       _RL     climustr_exfremo_intercept
       _RL     climustr_exfremo_slope
       character*1 climustrmask
-      parameter(  climustrmask = 'u' )
 
       integer climvstrstartdate1
       integer climvstrstartdate2
@@ -289,7 +267,6 @@ c     Calendar data.
       _RL     climvstr_exfremo_intercept
       _RL     climvstr_exfremo_slope
       character*1 climvstrmask
-      parameter(  climvstrmask = 'v' )
 
 c     freezing temperature is the minimum temperature allowed, used
 c     to reset climatological temperatures fields where they have
@@ -307,7 +284,6 @@ c     with pkg/icefront to specify sub-glacial runoff
       _RL     sgrunoff_exfremo_slope
       _RL     exf_inscal_sgrunoff
       character*1 sgrunoffmask
-      parameter(  sgrunoffmask = 's' )
 
 c     the following variables are used in conjunction with pkg/obcs
 c     to describe S/T/U/V open boundary condition files
@@ -414,7 +390,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
       integer select_ZenAlbedo
       logical useExfZenIncoming
 
-      common /exf_param_l/
+      COMMON /EXF_PARAM_L/
      &       exf_verbose, useExfCheckRange,
      &       useExfYearlyFields, twoDigitYear,
      &       useOBCSYearlyFields,
@@ -422,7 +398,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       readStressOnAgrid, readStressOnCgrid,
      &       stressIsOnCgrid, useStabilityFct_overIce,
      &       useRelativeWind, noNegativeEvap
-      common /exf_param_i/
+      COMMON /EXF_PARAM_I/
      &       select_ZenAlbedo,
      &       hfluxstartdate1,   hfluxstartdate2,
      &       atempstartdate1,   atempstartdate2,
@@ -453,7 +429,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       apressurestartdate1,apressurestartdate2,
      &       areamaskstartdate1,areamaskstartdate2
 
-      common /exf_param_r/
+      COMMON /EXF_PARAM_R/
      &       year2sec,          windstressmax,
      &       repeatPeriod,      exf_monFreq,
      &       exf_scal_BulkCdn,
@@ -507,7 +483,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       areamaskTauRelax,
      &       areamaskconst
 
-      common /exf_param_trend_removal/
+      COMMON /EXF_PARAM_TREND_REMOVAL/
      &       hflux_exfremo_intercept,
      &       atemp_exfremo_intercept,
      &       aqh_exfremo_intercept,
@@ -549,40 +525,41 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       apressure_exfremo_slope,
      &       areamask_exfremo_slope
 
-      common /exf_param_c/
-     &       hfluxfile,
-     &       atempfile,
-     &       aqhfile,
-     &       sfluxfile,
-     &       evapfile,
-     &       precipfile,
-     &       snowprecipfile,
-     &       runofffile,
-     &       ustressfile,
-     &       vstressfile,
-     &       uwindfile,
-     &       vwindfile,
-     &       wspeedfile,
-     &       swfluxfile,
-     &       lwfluxfile,
-     &       swdownfile,
-     &       lwdownfile,
-     &       apressurefile,
-     &       areamaskfile
+      COMMON /EXF_PARAM_C/
+     &       hfluxfile,     hfluxmask,
+     &       atempfile,     atempmask,
+     &       aqhfile,       aqhmask,
+     &       sfluxfile,     sfluxmask,
+     &       evapfile,      evapmask,
+     &       precipfile,    precipmask,
+     &       snowprecipfile,snowprecipmask,
+     &       runofffile,    runoffmask,
+     &       ustressfile,   ustressmask,
+     &       vstressfile,   vstressmask,
+     &       uwindfile,     uwindmask,
+     &       vwindfile,     vwindmask,
+     &       wspeedfile,    wspeedmask,
+     &       swfluxfile,    swfluxmask,
+     &       lwfluxfile,    lwfluxmask,
+     &       swdownfile,    swdownmask,
+     &       lwdownfile,    lwdownmask,
+     &       apressurefile, apressuremask,
+     &       areamaskfile,  areamaskmask,
+     &                      sgrunoffmask
 
-      common /exf_clim_i/
+      COMMON /EXF_CLIM_I/
      &       climsststartdate1,  climsststartdate2,
      &       climsssstartdate1,  climsssstartdate2,
      &       climustrstartdate1,  climustrstartdate2,
      &       climvstrstartdate1,  climvstrstartdate2
 
-      common /exf_clim_c/
-     &       climsstfile,
-     &       climsssfile,
-     &       climustrfile,
-     &       climvstrfile
+      COMMON /EXF_CLIM_C/
+     &       climsstfile,  climsstmask,
+     &       climsssfile,  climsssmask,
+     &       climustrfile, climustrmask,
+     &       climvstrfile, climvstrmask
 
-      common /exf_clim_r/
+      COMMON /EXF_CLIM_R/
      &       climtempfreeze,
      &       climsstperiod,      climsststartdate,
      &       climsssperiod,      climsssstartdate,
@@ -601,7 +578,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
 
 c     file precision and field type
 
-      common /exf_param_type/
+      COMMON /EXF_PARAM_TYPE/
      &       exf_iprec,
      &       exf_iprec_obcs,
      &       exf_yftype
@@ -650,7 +627,7 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_outscal_sss
       _RL     exf_outscal_apressure
 
-      common /exf_param_scal/
+      COMMON /EXF_PARAM_SCAL/
      &                      exf_inscal_hflux
      &                    , exf_inscal_sflux
      &                    , exf_inscal_ustress
@@ -708,6 +685,10 @@ C  {inputField}_nlat    :: input filed 2nd  dim, latitudinal  direction
 C  {inputField}_interpMethod :: interpolation method: =0 : no interpolation ;
 C                            :: =1,11,21 : bilinear ; =2,12,22 : bicubic ;
 C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
+C-  For 2 components vector field:
+C    uvInterp_stress    :: interpolate wind-stress u & v components together
+C    uvInterp_wind      :: interpolate wind        u & v components together
+C    uvInterp_climstr   :: interpolate clim stress u & v components together
       _RL ustress_lon0, ustress_lon_inc
       _RL ustress_lat0, ustress_lat_inc(MAX_LAT_INC)
       INTEGER ustress_nlon, ustress_nlat, ustress_interpMethod
@@ -766,7 +747,13 @@ C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
       _RL areamask_lat0,areamask_lat_inc(MAX_LAT_INC)
       INTEGER areamask_nlon,areamask_nlat,areamask_interpMethod
 
-      common /exf_interpolation_rl/
+      LOGICAL uvInterp_stress
+      LOGICAL uvInterp_wind
+      LOGICAL uvInterp_climstr
+      COMMON /EXF_INTERPOLATION_L/
+     & uvInterp_stress, uvInterp_wind, uvInterp_climstr
+
+      COMMON /EXF_INTERPOLATION_RL/
      & ustress_lon0, ustress_lon_inc,
      & ustress_lat0, ustress_lat_inc,
      & vstress_lon0, vstress_lon_inc,
@@ -806,7 +793,7 @@ C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
      & areamask_lon0,areamask_lon_inc,
      & areamask_lat0,areamask_lat_inc
 
-      common /exf_interpolation_i/
+      COMMON /EXF_INTERPOLATION_I/
      & ustress_nlon, ustress_nlat, ustress_interpMethod,
      & vstress_nlon, vstress_nlat, vstress_interpMethod,
      & hflux_nlon, hflux_nlat, hflux_interpMethod,
@@ -840,7 +827,7 @@ C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
       _RL climvstr_lat0, climvstr_lat_inc(MAX_LAT_INC)
       INTEGER climvstr_nlon, climvstr_nlat, climvstr_interpMethod
 
-      common /exf_clim_interpolation/
+      COMMON /EXF_CLIM_INTERPOLATION/
      & climsst_lon0, climsst_lon_inc,
      & climsst_lat0, climsst_lat_inc,
      & climsss_lon0, climsss_lon_inc,
