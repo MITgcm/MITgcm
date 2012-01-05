@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.29 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.30 2012/01/05 20:24:58 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -48,7 +48,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
 
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
@@ -139,12 +138,12 @@ c     get record numbers and interpolation factor for gen
 
 #ifdef USE_EXF_INTERPOLATION
             IF ( interp_method.GE.1 ) THEN
-              call exf_interp(
+              CALL EXF_INTERP(
      I             genfile0, exf_iprec,
      O             gen1,
      I             count0, gen_xout, gen_yout,
      I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     I             gen_nlon, gen_nlat, interp_method, mythid )
+     I             gen_nlon, gen_nlat, interp_method, myIter, myThid )
             ELSE
 #endif /* USE_EXF_INTERPOLATION */
               CALL READ_REC_3D_RL( genfile0, exf_iprec, 1,
@@ -167,12 +166,12 @@ c     get record numbers and interpolation factor for gen
 
 #ifdef USE_EXF_INTERPOLATION
             IF ( interp_method.GE.1 ) THEN
-              call exf_interp(
+              CALL EXF_INTERP(
      I             genfile1, exf_iprec,
      O             gen1,
      I             count1, gen_xout, gen_yout,
      I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     I             gen_nlon, gen_nlat, interp_method, mythid )
+     I             gen_nlon, gen_nlat, interp_method, myIter, myThid )
             ELSE
 #endif /* USE_EXF_INTERPOLATION */
               CALL READ_REC_3D_RL( genfile1, exf_iprec, 1,
@@ -291,12 +290,12 @@ c     == end of interface ==
 
 #ifdef USE_EXF_INTERPOLATION
          IF ( interp_method.GE.1 ) THEN
-              call exf_interp(
+              CALL EXF_INTERP(
      I             genfile, exf_iprec,
      O             genfld,
      I             count, gen_xout, gen_yout,
      I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     I             gen_nlon, gen_nlat, interp_method, mythid )
+     I             gen_nlon, gen_nlat, interp_method, 0, myThid )
          ELSE
 #endif /* USE_EXF_INTERPOLATION */
             CALL READ_REC_3D_RL( genfile, exf_iprec, 1,
