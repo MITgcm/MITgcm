@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.26 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.27 2012/01/05 20:33:41 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -288,12 +288,6 @@ C--   Initialise to zero intermediate fields (in common block)
 #endif /* ALLOW_ICE_AREAMASK */
 
 #ifdef ALLOW_RUNOFF
-#ifdef USE_NO_INTERP_RUNOFF
-      call exf_init_runoff (
-     &     runofffile, runoffperiod, exf_inscal_runoff, runoffmask,
-     &     runoffconst, runoff, runoff0, runoff1,
-     &     mythid )
-#else /* ndef USE_NO_INTERP_RUNOFF */
       call exf_init_gen (
      &     runofffile, runoffperiod, exf_inscal_runoff, runoffmask,
      &     runoffconst, runoff, runoff0, runoff1,
@@ -303,7 +297,6 @@ C--   Initialise to zero intermediate fields (in common block)
      &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
 #endif
      &     mythid )
-#endif /* def USE_NO_INTERP_RUNOFF */
 #endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_CLIMSST_RELAXATION
