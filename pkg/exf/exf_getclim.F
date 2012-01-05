@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.19 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.20 2012/01/05 20:32:59 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -135,6 +135,7 @@ c     Get values of climatological ustr fields.
      I     climvstr_lon0, climvstr_lon_inc,
      I     climvstr_lat0, climvstr_lat_inc,
      I     climvstr_nlon, climvstr_nlat, climvstr_interpMethod,
+     I     uvInterp_climstr,
 #endif
      I     mytime, myiter, mythid )
 
