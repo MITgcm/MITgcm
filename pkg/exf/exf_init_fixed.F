@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.19 2012/01/03 17:48:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.20 2012/01/05 20:39:53 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -825,6 +825,11 @@ C-    clim wind-stress:
      &     .AND. climustr_lat_inc(j) .EQ. climvstr_lat_inc(j)
         ENDDO
       ENDIF
+# ifdef EXF_USE_OLD_INTERP_POLE
+      uvInterp_stress = .FALSE.
+      uvInterp_wind   = .FALSE.
+      uvInterp_climstr= .FALSE.
+# endif
 #endif  /* USE_EXF_INTERPOLATION */
 
       _END_MASTER( myThid )
