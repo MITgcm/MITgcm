@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.83 2011/08/26 19:26:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.84 2012/01/05 10:19:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -289,7 +289,11 @@ cph# endif
 #endif /* ALLOW_SMOOTH */
 
 #ifdef ALLOW_AUTODIFF
-CADJ STORE theta = tapelev_init, key = 1
+CADJ STORE theta  = tapelev_init, key = 1
+CADJ STORE salt   = tapelev_init, key = 1
+# ifdef ALLOW_DIFFKR_CONTROL
+CADJ STORE diffkr = tapelev_init, key = 1
+# endif
 c--   Initialise auxiliary xx_ fields
       IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
       CALL CTRL_INIT_VARIABLES ( myThid )
