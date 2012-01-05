@@ -18,6 +18,7 @@ obcs_exf_load.f
 obcs_fields_load.f
 obcs_init_variables.f
 obcs_prescribe_read.f
+obcs_read_pickup.f
 obcs_sponge.f	
 obcs_balance_flow.f
 orlanski_east.f
