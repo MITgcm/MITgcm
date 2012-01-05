@@ -1,51 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.28 2012/01/01 15:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.29 2012/01/05 20:24:02 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
-#undef OLD_EXF_INTERP_LAT_INDEX
-
-C==========================================*
-C Flux Coupler using                       |
-C Bilinear interpolation of forcing fields |
-C                                          |
-C B. Cheng (12/2002)                       |
-C                                          |
-C added Bicubic (bnc 1/2003)               |
-C                                          |
-C==========================================*
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-       _RL FUNCTION LAGRAN(i,x,a,sp)
-
-       IMPLICIT NONE
-
-        INTEGER i
-        _RS x
-        _RL a(4)
-        INTEGER sp
-
-C-      local variables:
-        INTEGER k
-        _RL numer,denom
-
-        numer = 1. _d 0
-        denom = 1. _d 0
-
-#ifdef TARGET_NEC_SX
-!CDIR UNROLL=8
-#endif /* TARGET_NEC_SX */
-        DO k=1,sp
-         IF ( k .NE. i) THEN
-          denom = denom*(a(i) - a(k))
-          numer = numer*(x    - a(k))
-         ENDIF
-        ENDDO
-
-        LAGRAN = numer/denom
-
-       RETURN
-       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -53,13 +9,11 @@ CBOP
 C     !ROUTINE: EXF_INTERP
 C     !INTERFACE:
        SUBROUTINE EXF_INTERP(
-     I                inFile,
-     I                filePrec,
+     I                inFile, filePrec,
      O                arrayout,
      I                irecord, xG_in, yG,
-     I                lon_0, lon_inc,
-     I                lat_0, lat_inc,
-     I                nxIn, nyIn, method, myThid )
+     I                lon_0, lon_inc, lat_0, lat_inc,
+     I                nxIn, nyIn, method, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C  *==========================================================*
@@ -76,7 +30,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-
 C !INPUT/OUTPUT PARAMETERS:
 C  inFile      (string)  :: name of the binary input file (direct access)
 C  filePrec    (integer) :: number of bits per word in file (32 or 64)
@@ -89,9 +42,10 @@ C     lat_inc            :: vector y-grid increments
 C  nxIn,nyIn   (integer) :: size in x & y direction of input file to read
 C     method             :: 1,11,21 for bilinear; 2,12,22 for bicubic
 C                        :: 1,2 for tracer; 11,12 for U; 21,22 for V
+C  myIter      (integer) :: current iteration number
 C  myThid      (integer) :: My Thread Id number
 
-      CHARACTER*(*) infile
+      CHARACTER*(*) inFile
       INTEGER       filePrec, irecord, nxIn, nyIn
       _RL           arrayout(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS           xG_in   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -99,43 +53,232 @@ C  myThid      (integer) :: My Thread Id number
       _RL           lon_0, lon_inc
 c     _RL           lat_0, lat_inc(nyIn-1)
       _RL           lat_0, lat_inc(*)
-      INTEGER       method, myThid
+      INTEGER       method, myIter, myThid
 
 C !FUNCTIONS:
-      EXTERNAL LAGRAN
-      _RL      LAGRAN
+#ifdef ALLOW_DEBUG
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+#endif
 
 C !LOCAL VARIABLES:
-C     msgBuf      :: Informational/error message buffer
+C     arrayin     :: input field array (loaded from file)
+C     x_in        :: longitude vector defining input field grid
+C     y_in        :: latitude  vector defining input field grid
+C     w_ind       :: input field longitudinal index, on western side of model grid pt
+C     s_ind       :: input field latitudinal index, on southern side of model grid pt
 C     bi, bj      :: tile indices
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER  bi, bj
-      INTEGER  w_ind(sNx,sNy), s_ind(sNx,sNy)
-      _RL      px_ind(4), py_ind(4), ew_val(4)
+C     i, j, k, l  :: loop indices
+C     msgBuf      :: Informational/error message buffer
       _RL      arrayin( -1:nxIn+2, -1:nyIn+2 )
       _RL      x_in(-1:nxIn+2), y_in(-1:nyIn+2)
-      _RL      NorthValue
-      INTEGER  i, j, k, l, sp
-#ifdef OLD_EXF_INTERP_LAT_INDEX
-      INTEGER  js
-#else
+      INTEGER  w_ind(sNx,sNy), s_ind(sNx,sNy)
+      INTEGER  bi, bj
+      INTEGER  i, j, k, l
       INTEGER  nLoop
       _RL      tmpVar
-#endif
-#ifdef TARGET_NEC_SX
-      INTEGER  ic, ii, icnt
-      INTEGER  inx(sNx*sNy,2)
-      _RL      ew_val1, ew_val2, ew_val3, ew_val4
-#endif
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL      ninety
-      PARAMETER ( ninety = 90. )
       _RS      threeSixtyRS
+      _RL      yPole, symSign, poleValue
       PARAMETER ( threeSixtyRS = 360. )
-      LOGICAL  xIsPeriodic
+      PARAMETER ( yPole = 90. )
+      INTEGER  nxd2
+      LOGICAL  xIsPeriodic, poleSymmetry
+#ifdef ALLOW_DEBUG
+      LOGICAL  debugFlag
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RS      prtPole(-1:4)
+#endif
 CEOP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---  Load inut field
+
+      CALL EXF_INTERP_READ(
+     I         inFile, filePrec,
+     O         arrayin,
+     I         irecord, nxIn, nyIn, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---  Prepare input grid and input field
+
+C--   setup input longitude grid
+      DO i=-1,nxIn+2
+       x_in(i) = lon_0 + (i-1)*lon_inc
+      ENDDO
+      xIsPeriodic = nxIn.EQ.NINT( threeSixtyRS / lon_inc )
+      nxd2 = NINT( nxIn*0.5 )
+      poleSymmetry = xIsPeriodic .AND. ( nxIn.EQ.2*nxd2 )
+#ifdef EXF_USE_OLD_INTERP_POLE
+      poleSymmetry = .FALSE.
+#endif
+
+C--   setup input latitude grid
+      y_in(1) = lat_0
+      DO j=1,nyIn+1
+       i = MIN(j,nyIn-1)
+       y_in(j+1) = y_in(j) + lat_inc(i)
+      ENDDO
+      y_in(0) = y_in(1) - lat_inc(1)
+      y_in(-1)= y_in(0) - lat_inc(1)
+#ifdef ALLOW_DEBUG
+      DO l=-1,4
+        prtPole(l) = 0.
+      ENDDO
+#endif
+C--   For tracer (method=1,2) add 1 row @ the pole (if last row is not)
+C     and will fill it with the polarmost-row zonally averaged value.
+C     For vector component, cannot do much without the other component;
+C     averaging properly done if uvInterp=T in S/R EXF_INTERP_UV
+#ifdef EXF_USE_OLD_INTERP_POLE
+      IF ( .TRUE. ) THEN
+#else
+      IF ( method.LT.10 ) THEN
+C-    Add 2 row @ southern end; if one is beyond S.pole, put one @ S.pole
+       j = 0
+       IF ( ABS(y_in(j+1)).LT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
+         y_in(j) = -yPole
+         y_in(j-1) = -2.*yPole - y_in(1)
+#ifdef ALLOW_DEBUG
+         prtPole(j)   = 1.
+         prtPole(j-1) = 2.
+#endif
+       ENDIF
+       j = -1
+       IF ( ABS(y_in(j+1)).GT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
+         y_in(j) = -yPole
+#ifdef ALLOW_DEBUG
+         prtPole(j)   = 1.
+#endif
+       ENDIF
+#endif /* EXF_USE_OLD_INTERP_POLE */
+C-    Add 2 row @ northern end; if one is beyond N.pole, put one @ N.pole
+       j = nyIn+1
+       IF ( ABS(y_in(j-1)).LT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
+         y_in(j) = yPole
+         y_in(j+1) = 2.*yPole - y_in(j-1)
+#ifdef ALLOW_DEBUG
+         prtPole(3)   = 1.
+         prtPole(3+1) = 2.
+#endif
+       ENDIF
+       j = nyIn+2
+       IF ( ABS(y_in(j-1)).LT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
+         y_in(j) = yPole
+#ifdef ALLOW_DEBUG
+         prtPole(4)   = 1.
+#endif
+       ENDIF
+      ENDIF
+
+C--   Enlarge boundary
+      IF ( xIsPeriodic ) THEN
+C-    fill-in added column assuming periodicity
+        DO j=1,nyIn
+         arrayin( 0,j)     = arrayin(nxIn  ,j)
+         arrayin(-1,j)     = arrayin(nxIn-1,j)
+         arrayin(nxIn+1,j) = arrayin(1,j)
+         arrayin(nxIn+2,j) = arrayin(2,j)
+        ENDDO
+      ELSE
+C-    fill-in added column from nearest column
+        DO j=1,nyIn
+         arrayin( 0,j)     = arrayin(1,j)
+         arrayin(-1,j)     = arrayin(1,j)
+         arrayin(nxIn+1,j) = arrayin(nxIn,j)
+         arrayin(nxIn+2,j) = arrayin(nxIn,j)
+        ENDDO
+      ENDIF
+      symSign = 1. _d 0
+      IF ( method.GE.10 ) symSign = -1. _d 0
+      DO l=-1,2
+       j = l
+       IF ( l.GE.1 ) j = nyIn+l
+       k = MAX(1,MIN(j,nyIn))
+       IF ( poleSymmetry .AND. ABS(y_in(j)).GT.yPole ) THEN
+C-    fill-in added row assuming pole-symmetry
+        DO i=-1,nxd2
+         arrayin(i,j) = symSign*arrayin(i+nxd2,k)
+        ENDDO
+        DO i=1,nxd2+2
+         arrayin(i+nxd2,j) = symSign*arrayin(i,k)
+        ENDDO
+#ifdef ALLOW_DEBUG
+        i = l + 2*( (l+1)/2 )
+        prtPole(i) = prtPole(i) + 0.2
+#endif
+       ELSE
+C-    fill-in added row from nearest column values
+        DO i=-1,nxIn+2
+         arrayin(i,j) = arrayin(i,k)
+        ENDDO
+       ENDIF
+      ENDDO
+
+C--   For tracer (method=1,2) set to northernmost zonal-mean value
+C     at 90N to avoid sharp zonal gradients near the Pole.
+C     For vector component, cannot do much without the other component;
+C     averaging properly done if uvInterp=T in S/R EXF_INTERP_UV
+#ifdef EXF_USE_OLD_INTERP_POLE
+      IF ( .TRUE. ) THEN
+       DO l= 3,4
+#else
+      IF ( method.LT.10 ) THEN
+       DO l=-1,4
+#endif
+        j = l
+        IF ( l.GE.2 ) j = nyIn+l-2
+        IF ( ABS(y_in(j)).EQ.yPole ) THEN
+         IF (method.EQ.1 .OR. method.EQ.2) THEN
+          poleValue = 0.
+          DO i=1,nxIn
+           poleValue = poleValue + arrayin(i,j)
+          ENDDO
+          poleValue = poleValue / nxIn
+          DO i=-1,nxIn+2
+           arrayin(i,j) = poleValue
+          ENDDO
+#ifdef ALLOW_DEBUG
+          prtPole(l) = prtPole(l) + 0.1
+#endif
+#ifdef EXF_USE_OLD_INTERP_POLE
+         ELSEIF (method.EQ.11 .OR. method.EQ.12) THEN
+          DO i=-1,nxIn+2
+           arrayin(i,j) = 0.
+          ENDDO
+#ifdef ALLOW_DEBUG
+          prtPole(l) = prtPole(l) + 0.9
+#endif
+#endif /* EXF_USE_OLD_INTERP_POLE */
+         ENDIF
+        ENDIF
+       ENDDO
+      ENDIF
+
+#ifdef ALLOW_DEBUG
+      debugFlag = ( debugLevel.GE.debLevC )
+     &       .OR. ( debugLevel.GE.debLevB .AND. myIter.LE.nIter0 )
+C     prtPole(l)=0 : extended, =1 : changed to pole, =2 : changed to symetric
+      IF ( debugFlag ) THEN
+        l = ILNBLNK(inFile)
+        WRITE(msgBuf,'(3A,I6,A,2L5)')
+     &   'EXF_INTERP: file="',inFile(1:l),'", rec=', irecord,
+     &   ' , x-Per,P.Sym=', xIsPeriodic, poleSymmetry
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A,3F4.1,A,3F12.6)') 'S.edge (j=-1,0,1) :',
+     &   ' proc=', (prtPole(j),j=-1,1), ', yIn=', (y_in(j),j=-1,1)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A,3F4.1,A,3F12.6)') 'N.edge (j=+0,+1,+2)',
+     &   ' proc=', (prtPole(j),j=2,4), ', yIn=',(y_in(j),j=nyIn,nyIn+2)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif /* ALLOW_DEBUG */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---  Prepare output grid and interpolate for each tile
 
 C--   put xG in interval [ lon_0 , lon_0+360 [
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -147,102 +290,9 @@ C--   put xG in interval [ lon_0 , lon_0+360 [
           xG(i,j,bi,bj) = lon_0+MOD(xG(i,j,bi,bj),threeSixtyRS)
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-
-C--   Load inut field
-      CALL EXF_INTERP_READ(
-     I         inFile, filePrec,
-     O         arrayin,
-     I         irecord, nxIn, nyIn, myThid )
-
-C--   setup input longitude grid
-      DO i=-1,nxIn+2
-       x_in(i) = lon_0 + (i-1)*lon_inc
-      ENDDO
-      xIsPeriodic = nxIn.EQ.NINT( threeSixtyRS / lon_inc )
-
-C--   setup input latitude grid
-      y_in(1) = lat_0
-      DO j=1,nyIn+1
-       i = MIN(j,nyIn-1)
-       y_in(j+1) = y_in(j) + lat_inc(i)
-      ENDDO
-C-    Add 2 row @ southern end; if one is beyond S.pole, put one @ S.pole
-      y_in(0) = y_in(1) - lat_inc(1)
-      y_in(-1)= y_in(0) - lat_inc(1)
-c     IF ( y_in(1).GT.-ninety .AND. y_in(0).LT.-ninety ) THEN
-c       y_in(0) = -ninety
-c       y_in(-1) = -2.*ninety - y_in(1)
-c     ENDIF
-c     IF ( y_in(0).GT.-ninety .AND. y_in(-1).LT.-ninety ) THEN
-c       y_in(-1) = -ninety
-c     ENDIF
-C-    Add 2 row @ northern end; if one is beyond N.pole, put one @ N.pole
-      j = nyIn+1
-      IF ( y_in(j-1).LT.ninety .AND. y_in(j).GT.ninety ) THEN
-        y_in(j) = ninety
-        y_in(j+1) = 2.*ninety - y_in(j-1)
-      ENDIF
-      j = nyIn+2
-      IF ( y_in(j-1).LT.ninety .AND. y_in(j).GT.ninety ) THEN
-        y_in(j) = ninety
-      ENDIF
-
-C--   enlarge boundary
-      IF ( xIsPeriodic ) THEN
-        DO j=1,nyIn
-         arrayin( 0,j)     = arrayin(nxIn  ,j)
-         arrayin(-1,j)     = arrayin(nxIn-1,j)
-         arrayin(nxIn+1,j) = arrayin(1,j)
-         arrayin(nxIn+2,j) = arrayin(2,j)
-        ENDDO
-      ELSE
-        DO j=1,nyIn
-         arrayin( 0,j)     = arrayin(1,j)
-         arrayin(-1,j)     = arrayin(1,j)
-         arrayin(nxIn+1,j) = arrayin(nxIn,j)
-         arrayin(nxIn+2,j) = arrayin(nxIn,j)
-        ENDDO
-      ENDIF
-      DO i=-1,nxIn+2
-         arrayin(i, 0)     = arrayin(i,1)
-         arrayin(i,-1)     = arrayin(i,1)
-         arrayin(i,nyIn+1) = arrayin(i,nyIn)
-         arrayin(i,nyIn+2) = arrayin(i,nyIn)
-      ENDDO
-
-C-    For tracer (method=1,2) set to northernmost zonal-mean value
-C     at 90N to avoid sharp zonal gradients near the Pole.
-C     For U (method=11,12) set to zero at 90N to minimize velocity
-C     gradient at North Pole
-C     For V (method=11,12) set to northernmost zonal value at 90N,
-C     as is already done above in order to allow cross-PoleArctic flow
-      DO j=nyIn,nyIn+2
-       IF (y_in(j).EQ.ninety) THEN
-        IF (method.EQ.1 .OR. method.EQ.2) THEN
-         NorthValue = 0.
-         DO i=1,nxIn
-          NorthValue = NorthValue + arrayin(i,j)
-         ENDDO
-         NorthValue = NorthValue / nxIn
-         DO i=-1,nxIn+2
-          arrayin(i,j) = NorthValue
-         ENDDO
-        ELSEIF (method.EQ.11 .OR. method.EQ.12) THEN
-         DO i=-1,nxIn+2
-          arrayin(i,j) = 0.
-         ENDDO
-        ENDIF
-       ENDIF
-      ENDDO
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-
-C--   Check validity of input/output coordinates
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel.GE.debLevC ) THEN
+C--   Check validity of input/output coordinates
+        IF ( debugFlag ) THEN
          DO j=1,sNy
           DO i=1,sNx
            IF ( xG(i,j,bi,bj) .LT. x_in(0)        .OR.
@@ -271,86 +321,13 @@ C--   Check validity of input/output coordinates
          ENDDO
         ENDIF
 #endif /* ALLOW_DEBUG */
+       ENDDO
+      ENDDO
 
-C--   Compute interpolation indices
-#ifdef OLD_EXF_INTERP_LAT_INDEX
-        DO j=1,sNy
-         DO i=1,sNx
-          IF (xG(i,j,bi,bj)-x_in(1) .GE. 0.) THEN
-           w_ind(i,j) = INT((xG(i,j,bi,bj)-x_in(1))/lon_inc) + 1
-          ELSE
-           w_ind(i,j) = INT((xG(i,j,bi,bj)-x_in(1))/lon_inc)
-          ENDIF
-         ENDDO
-        ENDDO
-#ifndef TARGET_NEC_SX
-C-    use the original and more readable variant of the algorithm that
-C     has unvectorizable while-loops for each (i,j)
-        DO j=1,sNy
-         DO i=1,sNx
-          js = nyIn*.5
-          DO WHILE (yG(i,j,bi,bj) .LT. y_in(js))
-           js = (js - 1)*.5
-          ENDDO
-          DO WHILE (yG(i,j,bi,bj) .GE. y_in(js+1))
-           js = js + 1
-          ENDDO
-          s_ind(i,j) = js
-         ENDDO
-        ENDDO
-#else /* TARGET_NEC_SX defined */
-C-    this variant vectorizes more efficiently than the original one because
-C     it moves the while loops out of the i,j loops (loop pushing) but
-C     it is ugly and incomprehensible
-        icnt = 0
-        DO j=1,sNy
-         DO i=1,sNx
-          s_ind(i,j) = nyIn*.5
-          icnt = icnt+1
-          inx(icnt,1) = i
-          inx(icnt,2) = j
-         ENDDO
-        ENDDO
-        DO WHILE (icnt .GT. 0)
-         ii = 0
-!CDIR NODEP
-         DO ic=1,icnt
-          i = inx(ic,1)
-          j = inx(ic,2)
-          IF (yG(i,j,bi,bj) .LT. y_in(s_ind(i,j))) THEN
-           s_ind(i,j) = (s_ind(i,j) - 1)*.5
-           ii = ii+1
-           inx(ii,1) = i
-           inx(ii,2) = j
-          ENDIF
-         ENDDO
-         icnt = ii
-        ENDDO
-        icnt = 0
-        DO j=1,sNy
-         DO i=1,sNx
-          icnt = icnt+1
-          inx(icnt,1) = i
-          inx(icnt,2) = j
-         ENDDO
-        ENDDO
-        DO WHILE (icnt .GT. 0)
-         ii = 0
-!CDIR NODEP
-         DO ic=1,icnt
-          i = inx(ic,1)
-          j = inx(ic,2)
-          IF (yG(i,j,bi,bj) .GE. y_in(s_ind(i,j)+1)) THEN
-           s_ind(i,j) = s_ind(i,j) + 1
-           ii = ii+1
-           inx(ii,1) = i
-           inx(ii,2) = j
-          ENDIF
-         ENDDO
-         icnt = ii
-        ENDDO
-#endif /* TARGET_NEC_SX defined */
-#else /* OLD_EXF_INTERP_LAT_INDEX */
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C--   Compute interpolation lon & lat index mapping
 C--     latitude index
         DO j=1,sNy
          DO i=1,sNx
@@ -377,7 +354,7 @@ C       1 + truncated log2(# interval -1); add epsil=1.e-3 for safey
          ENDDO
         ENDDO
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel.GE.debLevC ) THEN
+        IF ( debugFlag ) THEN
 C-      Check that we found the right lat. index
          DO j=1,sNy
           DO i=1,sNx
@@ -411,118 +388,17 @@ C--     longitude index
            w_ind(i,j) = INT((xG(i,j,bi,bj)-x_in(-1))/lon_inc) - 1
          ENDDO
         ENDDO
-#endif /* ndef OLD_EXF_INTERP_LAT_INDEX */
 
-        IF (method.EQ.1 .OR. method.EQ.11 .OR. method.EQ.21) THEN
+C--   Do interpolation using lon & lat index mapping
+        CALL EXF_INTERPOLATE(
+     I                inFile, irecord, method,
+     I                nxIn, nyIn, x_in, y_in,
+     O                arrayin,
+     O                arrayout,
+     I                xG, yG,
+     I                w_ind, s_ind,
+     I                bi, bj, myThid )
 
-C--   Bilinear interpolation
-         sp = 2
-         DO j=1,sNy
-          DO i=1,sNx
-           arrayout(i,j,bi,bj) = 0.
-           DO l=0,1
-            px_ind(l+1) = x_in(w_ind(i,j)+l)
-            py_ind(l+1) = y_in(s_ind(i,j)+l)
-           ENDDO
-#ifndef TARGET_NEC_SX
-           DO k=1,2
-            ew_val(k) = arrayin(w_ind(i,j)  ,s_ind(i,j)+k-1)
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &                + arrayin(w_ind(i,j)+1,s_ind(i,j)+k-1)
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-            arrayout(i,j,bi,bj) = arrayout(i,j,bi,bj)
-     &         + ew_val(k)*LAGRAN(k,yG(i,j,bi,bj),py_ind,sp)
-           ENDDO
-#else
-           ew_val1 = arrayin(w_ind(i,j)  ,s_ind(i,j)  )
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+1,s_ind(i,j)  )
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-           ew_val2 = arrayin(w_ind(i,j)  ,s_ind(i,j)+1)
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+1,s_ind(i,j)+1)
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-           arrayout(i,j,bi,bj)=
-     &            +ew_val1*LAGRAN(1,yG(i,j,bi,bj),py_ind,sp)
-     &            +ew_val2*LAGRAN(2,yG(i,j,bi,bj),py_ind,sp)
-#endif /* TARGET_NEC_SX defined */
-          ENDDO
-         ENDDO
-        ELSEIF (method .EQ. 2 .OR. method.EQ.12 .OR. method.EQ.22) THEN
-
-C--   Bicubic interpolation
-         sp = 4
-         DO j=1,sNy
-          DO i=1,sNx
-           arrayout(i,j,bi,bj) = 0.
-           DO l=-1,2
-            px_ind(l+2) = x_in(w_ind(i,j)+l)
-            py_ind(l+2) = y_in(s_ind(i,j)+l)
-           ENDDO
-#ifndef TARGET_NEC_SX
-           DO k=1,4
-            ew_val(k) = arrayin(w_ind(i,j)-1,s_ind(i,j)+k-2)
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &                + arrayin(w_ind(i,j)  ,s_ind(i,j)+k-2)
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-     &                + arrayin(w_ind(i,j)+1,s_ind(i,j)+k-2)
-     &                    *LAGRAN(3,xG(i,j,bi,bj),px_ind,sp)
-     &                + arrayin(w_ind(i,j)+2,s_ind(i,j)+k-2)
-     &                    *LAGRAN(4,xG(i,j,bi,bj),px_ind,sp)
-            arrayout(i,j,bi,bj) = arrayout(i,j,bi,bj)
-     &         + ew_val(k)*LAGRAN(k,yG(i,j,bi,bj),py_ind,sp)
-           ENDDO
-#else
-           ew_val1 = arrayin(w_ind(i,j)-1,s_ind(i,j)-1)
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)  ,s_ind(i,j)-1)
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+1,s_ind(i,j)-1)
-     &                    *LAGRAN(3,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+2,s_ind(i,j)-1)
-     &                    *LAGRAN(4,xG(i,j,bi,bj),px_ind,sp)
-           ew_val2 = arrayin(w_ind(i,j)-1,s_ind(i,j)  )
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)  ,s_ind(i,j)  )
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+1,s_ind(i,j)  )
-     &                    *LAGRAN(3,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+2,s_ind(i,j)  )
-     &                    *LAGRAN(4,xG(i,j,bi,bj),px_ind,sp)
-           ew_val3 = arrayin(w_ind(i,j)-1,s_ind(i,j)+1)
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)  ,s_ind(i,j)+1)
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+1,s_ind(i,j)+1)
-     &                    *LAGRAN(3,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+2,s_ind(i,j)+1)
-     &                    *LAGRAN(4,xG(i,j,bi,bj),px_ind,sp)
-           ew_val4 = arrayin(w_ind(i,j)-1,s_ind(i,j)+2)
-     &                    *LAGRAN(1,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)  ,s_ind(i,j)+2)
-     &                    *LAGRAN(2,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+1,s_ind(i,j)+2)
-     &                    *LAGRAN(3,xG(i,j,bi,bj),px_ind,sp)
-     &             + arrayin(w_ind(i,j)+2,s_ind(i,j)+2)
-     &                    *LAGRAN(4,xG(i,j,bi,bj),px_ind,sp)
-           arrayout(i,j,bi,bj) =
-     &             ew_val1*LAGRAN(1,yG(i,j,bi,bj),py_ind,sp)
-     &            +ew_val2*LAGRAN(2,yG(i,j,bi,bj),py_ind,sp)
-     &            +ew_val3*LAGRAN(3,yG(i,j,bi,bj),py_ind,sp)
-     &            +ew_val4*LAGRAN(4,yG(i,j,bi,bj),py_ind,sp)
-#endif /* TARGET_NEC_SX defined */
-          ENDDO
-         ENDDO
-        ELSE
-         l = ILNBLNK(inFile)
-         WRITE(msgBuf,'(3A,I6)')
-     &        'EXF_INTERP: file="', inFile(1:l), '", rec=', irecord
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A,I8,A)')
-     &        'EXF_INTERP: method=', method,' not supported'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R EXF_INTERP: invalid method'
-        ENDIF
        ENDDO
       ENDDO
 
