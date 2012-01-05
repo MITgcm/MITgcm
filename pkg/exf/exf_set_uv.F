@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.23 2011/12/25 22:26:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.24 2012/01/05 20:28:28 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -14,7 +14,7 @@ C $Name:  $
      I     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
      I     uvec_nlon, uvec_nlat, u_interp_method,
      I     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     I     vvec_nlon, vvec_nlat, v_interp_method,
+     I     vvec_nlon, vvec_nlat, v_interp_method, uvInterp,
 #endif /* USE_EXF_INTERPOLATION */
      I     myTime, myIter, myThid )
 
@@ -81,6 +81,7 @@ C     *vec_lat_inc         :: vector y-grid increments for *vec
       _RL vvec_lon0, vvec_lon_inc
       _RL vvec_lat0, vvec_lat_inc(MAX_LAT_INC)
       INTEGER vvec_nlon, vvec_nlat, v_interp_method
+      LOGICAL uvInterp
 #endif /* USE_EXF_INTERPOLATION */
       _RL     myTime
       INTEGER myIter
@@ -106,11 +107,11 @@ C     == local variables ==
 C     == end of interface ==
 
 #ifdef USE_EXF_INTERPOLATION
-      IF ( u_interp_method.GE.1 .AND. v_interp_method.GE.1
-     &   .AND.  uvecfile.NE.' ' .AND. vvecfile.NE.' '
-     &   .AND. ( usingCurvilinearGrid .OR. rotateGrid ) ) THEN
+      IF ( u_interp_method.GE.1 .AND. v_interp_method.GE.1 .AND.
+     &     uvecfile.NE.' ' .AND. vvecfile.NE.' ' .AND.
+     &     (usingCurvilinearGrid .OR. rotateGrid .OR. uvInterp) ) THEN
 
-C     get record numbers and interpolation factor
+C-    get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
      I           uvecstartdate, uvecperiod,
      I           useExfYearlyFields,
@@ -119,6 +120,7 @@ C     get record numbers and interpolation factor
      I           myTime, myIter, myThid )
 
         IF ( first ) THEN
+C--   Load and interpolate a new reccord (= 1rst one of this run)
 
           CALL exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, uvecperiod, year0,
@@ -131,24 +133,39 @@ C     get record numbers and interpolation factor
      O         vvecfile0,
      I         myTime, myIter, myThid )
 
-C     scalar interpolation to (xC,yC) locations
-          CALL EXF_INTERP(
+          IF ( uvInterp ) THEN
+C-    vector interpolation to (xC,yC) locations
+           CALL EXF_INTERP_UV(
+     I             uvecfile0, vvecfile0, exf_iprec, count0,
+     I             uvec_nlon, uvec_nlat,
+     I             uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
+     O             tmp_u, tmp_v,
+     I             xC, yC,
+     I             u_interp_method, v_interp_method, myIter, myThid )
+          ELSE
+C-    scalar interpolation to (xC,yC) locations
+           CALL EXF_INTERP(
      I             uvecfile0, exf_iprec,
      O             tmp_u,
      I             count0, xC, yC,
      I             uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     I             uvec_nlon, uvec_nlat, u_interp_method, myThid )
-          CALL EXF_INTERP(
+     I             uvec_nlon, uvec_nlat, u_interp_method,
+     I             myIter, myThid )
+           CALL EXF_INTERP(
      I             vvecfile0, exf_iprec,
      O             tmp_v,
      I             count0, xC, yC,
      I             vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     I             vvec_nlon, vvec_nlat, v_interp_method, myThid )
-C     vector rotation
-          DO bj = myByLo(myThid),myByHi(myThid)
-            DO bi = myBxLo(myThid),myBxHi(myThid)
+     I             vvec_nlon, vvec_nlat, v_interp_method,
+     I             myIter, myThid )
+          ENDIF
+
+C-    vector rotation
+          IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+            DO bj = myByLo(myThid),myByHi(myThid)
+             DO bi = myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
-                DO i = 1,sNx
+               DO i = 1,sNx
 #ifdef EXF_USE_OLD_VEC_ROTATION
                     x1=xG(i,j,bi,bj)
                     x2=xG(i+1,j,bi,bj)
@@ -181,23 +198,37 @@ C     vector rotation
      &                  tmp_v(i,j,bi,bj)*dy)/
      &                  SQRT(dx*dx+dy*dy)
 #else /* EXF_USE_OLD_VEC_ROTATION */
-                  uvec1(i,j,bi,bj) =
+                 uvec1(i,j,bi,bj) =
      &                      angleCosC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
      &                     +angleSinC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
-                  vvec1(i,j,bi,bj)=
+                 vvec1(i,j,bi,bj) =
      &                     -angleSinC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
      &                     +angleCosC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
 #endif /* EXF_USE_OLD_VEC_ROTATION */
-                ENDDO
+               ENDDO
               ENDDO
+             ENDDO
             ENDDO
-          ENDDO
-C     apply mask
+          ELSE
+            DO bj = myByLo(myThid),myByHi(myThid)
+             DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+               DO i = 1,sNx
+                 uvec1(i,j,bi,bj) = tmp_u(i,j,bi,bj)
+                 vvec1(i,j,bi,bj) = tmp_v(i,j,bi,bj)
+               ENDDO
+              ENDDO
+             ENDDO
+            ENDDO
+          ENDIF
+C-    apply mask
           CALL EXF_FILTER_RL( uvec1, uvecmask, myThid )
           CALL EXF_FILTER_RL( vvec1, vvecmask, myThid )
         ENDIF
 
         IF (  first .OR. changed ) THEN
+C--   Load and interpolate a new reccord
+
           CALL exf_SwapFFields( uvec0, uvec1, myThid )
           CALL exf_SwapFFields( vvec0, vvec1, myThid )
 
@@ -212,24 +243,39 @@ C     apply mask
      O         vvecfile1,
      I         myTime, myIter, myThid )
 
-C     scalar interpolation to (xC,yC) locations
+          IF ( uvInterp ) THEN
+C-    vector interpolation to (xC,yC) locations
+           CALL EXF_INTERP_UV(
+     I             uvecfile1, vvecfile1, exf_iprec, count1,
+     I             uvec_nlon, uvec_nlat,
+     I             uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
+     O             tmp_u, tmp_v,
+     I             xC, yC,
+     I             u_interp_method, v_interp_method, myIter, myThid )
+          ELSE
+C-    scalar interpolation to (xC,yC) locations
           CALL EXF_INTERP(
      I             uvecfile1, exf_iprec,
      O             tmp_u,
      I             count1, xC, yC,
      I             uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     I             uvec_nlon, uvec_nlat, u_interp_method, myThid )
+     I             uvec_nlon, uvec_nlat, u_interp_method,
+     I             myIter, myThid )
           CALL EXF_INTERP(
      I             vvecfile1, exf_iprec,
      O             tmp_v,
      I             count1, xC, yC,
      I             vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     I             vvec_nlon, vvec_nlat, v_interp_method, myThid )
-C     vector rotation
-          DO bj = myByLo(myThid),myByHi(myThid)
-            DO bi = myBxLo(myThid),myBxHi(myThid)
+     I             vvec_nlon, vvec_nlat, v_interp_method,
+     I             myIter, myThid )
+          ENDIF
+
+C-    vector rotation
+          IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+            DO bj = myByLo(myThid),myByHi(myThid)
+             DO bi = myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
-                DO i = 1,sNx
+               DO i = 1,sNx
 #ifdef EXF_USE_OLD_VEC_ROTATION
                     x1=xG(i,j,bi,bj)
                     x2=xG(i+1,j,bi,bj)
@@ -262,23 +308,35 @@ C     vector rotation
      &                  tmp_v(i,j,bi,bj)*dy)/
      &                  SQRT(dx*dx+dy*dy)
 #else /* EXF_USE_OLD_VEC_ROTATION */
-                  uvec1(i,j,bi,bj) =
+                 uvec1(i,j,bi,bj) =
      &                      angleCosC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
      &                     +angleSinC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
-                  vvec1(i,j,bi,bj) =
+                 vvec1(i,j,bi,bj) =
      &                     -angleSinC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
      &                     +angleCosC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
 #endif /* EXF_USE_OLD_VEC_ROTATION */
-                ENDDO
+               ENDDO
               ENDDO
+             ENDDO
             ENDDO
-          ENDDO
-C     apply mask
+          ELSE
+            DO bj = myByLo(myThid),myByHi(myThid)
+             DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+               DO i = 1,sNx
+                 uvec1(i,j,bi,bj) = tmp_u(i,j,bi,bj)
+                 vvec1(i,j,bi,bj) = tmp_v(i,j,bi,bj)
+               ENDDO
+              ENDDO
+             ENDDO
+            ENDDO
+          ENDIF
+C-    apply mask
           CALL EXF_FILTER_RL( uvec1, uvecmask, myThid )
           CALL EXF_FILTER_RL( vvec1, vvecmask, myThid )
         ENDIF
 
-C     Interpolate linearly onto the current time.
+C--   Interpolate linearly onto the current time.
         DO bj = myByLo(myThid),myByHi(myThid)
           DO bi = myBxLo(myThid),myBxHi(myThid)
             DO j = 1,sNy
@@ -295,7 +353,8 @@ C     Interpolate linearly onto the current time.
         ENDDO
 
       ELSE
-C     case no-interpolation or .NOT.(usingCurvilinearGrid .OR. rotateGrid)
+C     case no-interpolation
+C     or ( .NOT.usingCurvilinearGrid & .NOT.rotateGrid & .NOT.uvInterp )
 #else  /* USE_EXF_INTERPOLATION */
       IF ( .TRUE. ) THEN
 #endif /* USE_EXF_INTERPOLATION */
