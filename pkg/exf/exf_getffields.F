@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.44 2011/12/21 17:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.45 2012/01/05 20:33:19 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -73,6 +73,7 @@ c     Zonal and meridional wind stress.
      I     ustress_nlon, ustress_nlat, ustress_interpMethod,
      I     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      I     vstress_nlon, vstress_nlat, vstress_interpMethod,
+     I     uvInterp_stress,
 #endif /* USE_EXF_INTERPOLATION */
      I     mytime, myiter, mythid )
 
@@ -93,21 +94,21 @@ c--   wind speed
 
 c     Zonal and meridional wind.
       call exf_set_uv(
-     &     uwindfile, uwindstartdate, uwindperiod,
-     &     exf_inscal_uwind,
-     &     uwind_exfremo_intercept, uwind_exfremo_slope,
+     I     uwindfile, uwindstartdate, uwindperiod,
+     I     exf_inscal_uwind,
+     I     uwind_exfremo_intercept, uwind_exfremo_slope,
      U     uwind, uwind0, uwind1, uwindmask,
-     &     vwindfile, vwindstartdate, vwindperiod,
-     &     exf_inscal_vwind,
-     &     vwind_exfremo_intercept, vwind_exfremo_slope,
+     I     vwindfile, vwindstartdate, vwindperiod,
+     I     exf_inscal_vwind,
+     I     vwind_exfremo_intercept, vwind_exfremo_slope,
      U     vwind, vwind0, vwind1, vwindmask,
 #ifdef USE_EXF_INTERPOLATION
-     &     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
-     &     uwind_nlon, uwind_nlat, uwind_interpMethod,
-     &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
-     &     vwind_nlon, vwind_nlat, vwind_interpMethod,
+     I     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
+     I     uwind_nlon, uwind_nlat, uwind_interpMethod,
+     I     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
+     I     vwind_nlon, vwind_nlat, vwind_interpMethod, uvInterp_wind,
 #endif /* USE_EXF_INTERPOLATION */
-     &     mytime, myiter, mythid )
+     I     mytime, myiter, mythid )
 
       if (useRelativeWind) then
 C     Subtract UVEL and VVEL from UWIND and VWIND.
@@ -314,14 +315,6 @@ c     fractional ice-covered area MASK
 
 #ifdef ALLOW_RUNOFF
 c     Runoff
-#ifdef USE_NO_INTERP_RUNOFF
-      call exf_set_runoff  (
-     &     runofffile, runoffstartdate, runoffperiod,
-     &     exf_inscal_runoff,
-     &     runoff_exfremo_intercept, runoff_exfremo_slope,
-     &     runoff, runoff0, runoff1, runoffmask,
-     &     mytime, myiter, mythid )
-#else /* ndef USE_NO_INTERP_RUNOFF */
       call exf_set_gen  (
      &     runofffile, runoffstartdate, runoffperiod,
      &     exf_inscal_runoff,
@@ -332,7 +325,6 @@ c     Runoff
      &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
 #endif
      &     mytime, myiter, mythid )
-#endif /* def USE_NO_INTERP_RUNOFF */
 #endif /* ALLOW_RUNOFF */
 
 c-- Control variables for atmos. state
