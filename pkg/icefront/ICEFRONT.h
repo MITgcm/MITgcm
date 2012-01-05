@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.11 2011/05/16 22:41:03 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.12 2012/01/05 22:01:00 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -7,11 +7,11 @@ CBOP
 C !ROUTINE: ICEFRONT.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | ICEFRONT.h                                               |
 C     | o Basic header thermodnynamic shelf ice package.         |
 C     |   Contains all ICEFRONT field declarations.              |
-C     \==========================================================/
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
 C
@@ -33,7 +33,7 @@ C                                interior temperture of the ice changes linearly
 C                                from ICEFRONTthetaSurface at surface to 0 oC at
 C                                the bottom
 C     ICEFRONTlatentHeat       - latent heat of fusion (J/kg)
-C     applyIcefrontTendT/S     -  
+C     applyIcefrontTendT/S     -
 C
 C     K_icefront             - # of icefront model levels at every horizontal location (2D)
 C     R_icefront             - icefront depth [m] (2D)
@@ -54,7 +54,7 @@ CEOP
       COMMON /ICEFRONT_PARMS_I/  K_icefront
       INTEGER K_icefront (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON /ICEFRONT_PARMS_R/ 
+      COMMON /ICEFRONT_PARMS_R/
      &     rhoIcefront, ICEFRONTkappa,
      &     ICEFRONTlatentHeat, recip_ICEFRONTlatentHeat,
      &     ICEFRONTheatCapacity_Cp,
@@ -66,18 +66,18 @@ CEOP
       _RL recip_ICEFRONTlatentHeat
       _RL ICEFRONTthetaSurface
 
-      COMMON /ICEFRONT_FIELDS_RL/ 
+      COMMON /ICEFRONT_FIELDS_RL/
      &     icefront_TendT,
      &     icefront_TendS
       _RL icefront_TendT (1:sNx,1:sNy,Nr,nSx,nSy)
       _RL icefront_TendS (1:sNx,1:sNy,Nr,nSx,nSy)
 
-      COMMON /ICEFRONT_FIELDS_RS/ 
+      COMMON /ICEFRONT_FIELDS_RS/
      &     R_icefront,
      &     icefrontlength
       _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      
+
       LOGICAL ICEFRONTisOn
       LOGICAL applyIcefrontTendT
       LOGICAL applyIcefrontTendS
@@ -88,17 +88,17 @@ CEOP
 
       CHARACTER*(MAX_LEN_FNAM) ICEFRONTlengthFile
       CHARACTER*(MAX_LEN_FNAM) ICEFRONTdepthFile
-      COMMON /ICEFRONT_PARM_C/ 
-     &     ICEFRONTlengthFile, 
-     &     ICEFRONTdepthFile
+      CHARACTER*(MAX_LEN_FNAM) SGrunoffFile
+      COMMON /ICEFRONT_PARM_C/
+     &     ICEFRONTlengthFile,
+     &     ICEFRONTdepthFile,
+     &     SGrunoffFile
 
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
-      CHARACTER*(MAX_LEN_FNAM) SGrunoffFile
       _RL SGrunoff (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SGrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SGrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /SUBGLACIAL_RUNOFF/
-     &     SGrunoffFile,
      &     SGrunoff, SGrunoff0,SGrunoff1
 #endif /* ALLOW_SUBGLACIAL_RUNOFF */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.9 2011/05/16 22:41:03 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.10 2012/01/05 22:01:00 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -80,9 +80,7 @@ C Default values when SHELFICE is not used
       ICEFRONTdepthFile        = ' '
       applyIcefrontTendS       = .TRUE.
       applyIcefrontTendT       = .TRUE.
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
       SGrunoffFile             = ' '
-#endif
 
 C Open and read the data.icefront file
       WRITE(msgBuf,'(A)') ' ICEFRONT_READPARMS: opening data.icefront'
