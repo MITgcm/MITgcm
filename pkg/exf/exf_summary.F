@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.25 2011/12/21 17:20:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.26 2012/01/05 20:40:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -91,8 +91,6 @@ C--   Print general parameters:
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid )
-c     CALL WRITE_0D_C( exf_yftype, 0, INDEX_NONE, 'exf_yftype = ',
-c    &  ' /* ? */')
       CALL WRITE_0D_I( exf_iprec, INDEX_NONE, 'exf_iprec =',
      &  ' /* exf file precision */')
       CALL WRITE_0D_L( useExfYearlyFields, INDEX_NONE,
@@ -332,8 +330,12 @@ C--   Meridional wind stress.
       CALL EXF_PRINT_INTERP( 'vstress',
      & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      & vstress_nlon, vstress_nlat, vstress_interpMethod, myThid )
+      WRITE(msgBuf,'(2A,L5)') '    Interp. U & V comp. together:',
+     &                  ' uvInterp_stress =', uvInterp_stress
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
-#endif
+#endif /* ndef ALLOW_ATM_WIND */
 
 #ifndef ALLOW_ATM_TEMP
 C--   Heat flux.
@@ -393,7 +395,7 @@ C--   Salt flux.
      & sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
      & sflux_nlon, sflux_nlat, sflux_interpMethod, myThid )
 #endif
-#endif
+#endif /* ndef ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 C--   Net shortwave.
@@ -424,7 +426,7 @@ C--   Net shortwave.
      & swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
      & swflux_nlon, swflux_nlat, swflux_interpMethod, myThid )
 #endif
-#endif
+#endif /* ALLOW_ATM_TEMP or SHORTWAVE_HEATING */
 
 #ifdef ALLOW_ATM_WIND
 C--   Zonal wind.
@@ -483,8 +485,12 @@ C--   Meridional wind.
       CALL EXF_PRINT_INTERP( 'vwind',
      & vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
      & vwind_nlon, vwind_nlat, vwind_interpMethod, myThid )
+      WRITE(msgBuf,'(2A,L5)') '    Interp. U & V comp. together:',
+     &                     ' uvInterp_wind =', uvInterp_wind
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
-#endif
+#endif /* ALLOW_ATM_WIND */
 
 #ifdef ALLOW_ATM_TEMP
 C--   Atmospheric temperature.
@@ -602,7 +608,7 @@ C--   Precipitation.
      & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
      & precip_nlon, precip_nlat, precip_interpMethod, myThid )
 #endif
-#endif
+#endif /* ALLOW_ATM_TEMP */
 
 C--   Evaporation.
       write(msgbuf,'(a)') ' '
@@ -637,12 +643,12 @@ C--   Evaporation.
      & evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
      & evap_nlon, evap_nlat, evap_interpMethod, myThid )
 #endif
-#else
+#else /* EXF_READ_EVAP */
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                  NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif
+#endif /* EXF_READ_EVAP */
 
 C--   Runoff.
       write(msgbuf,'(a)') ' '
@@ -742,8 +748,7 @@ C--   Downward longwave.
      & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
      & lwdown_nlon, lwdown_nlat, lwdown_interpMethod, myThid )
 #endif
-
-#endif
+#endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
 C--   Atmospheric pressure.
@@ -774,7 +779,7 @@ C--   Atmospheric pressure.
      & apressure_lon_inc, apressure_lat0, apressure_lat_inc,
      & apressure_nlon, apressure_nlat, apressure_interpMethod, myThid )
 #endif
-#endif
+#endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_ICE_AREAMASK
 C--   fractional ice-covered area MASK.
@@ -805,7 +810,7 @@ C--   fractional ice-covered area MASK.
      & areamask_lon_inc, areamask_lat0, areamask_lat_inc,
      & areamask_nlon, areamask_nlat, areamask_interpMethod, myThid )
 #endif
-#endif
+#endif /* ALLOW_ICE_AREAMASK */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -889,7 +894,7 @@ C     Relaxation to SST climatology.
      & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
      & climsst_nlon, climsst_nlat, climsst_interpMethod, myThid )
 #endif
-#endif
+#endif /* ALLOW_CLIMSST_RELAXATION */
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
 C     Relaxation to SSS climatology.
@@ -921,7 +926,7 @@ C     Relaxation to SSS climatology.
      & climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
      & climsss_nlon, climsss_nlat, climsss_interpMethod, myThid )
 #endif
-#endif
+#endif /* ALLOW_CLIMSSS_RELAXATION */
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
