@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1569 2012/01/03 18:11:55 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1570 2012/01/05 21:26:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf (interpolation):
+  - extended input field (2 rows) near the N & S poles:
+    * fill in with the symetric value (when even Nb of data in longitude)
+    * add average value at the poles only for scalar quantities ; for vector
+      component interpolation, skip the averaging and keep duplicated values,
+      unless the 2 components have same location (uvInterp=T) in which case
+      interpolate the 2 components together using S/R EXF_INTERP_UV.
+  - new S/R EXF_INTERP_UV to interpolate the 2 components of a vector field
+    together: this allows to account properly for local orientation when
+    averaging at N & S pole.
+  - add CPP option EXF_USE_OLD_INTERP_POLE to recover old results regarding
+    exf-interpolation near N & S poles. Undef by default.
+  - add debug check/print on 1rst iter if debugLevel >=2.
 o pkg/exf:
   - change masking flags definition (no longer "parameter"), put them in
     common block and set them in S/R EXF_INIT_FIXED.
