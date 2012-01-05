@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.70 2011/12/21 22:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.71 2012/01/05 23:41:51 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -62,7 +62,7 @@ c#include "cal.h"
 
 c     == routine arguments ==
 
-      integer myThid
+      INTEGER myThid
 
 c     == local variables ==
 
@@ -71,9 +71,9 @@ c     == local variables ==
       INTEGER j
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat
 #endif /* USE_EXF_INTERPOLATION */
-      integer iUnit
-
-      character*(max_len_mbuf) msgBuf
+      INTEGER iUnit
+      CHARACTER*(2) exf_yftype
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 
@@ -884,6 +884,11 @@ c     Next, read the forcing data file.
 
       CLOSE( iUnit )
 
+C--   Retired parameters
+      IF ( exf_yftype.NE.'RL' ) THEN
+       STOP 'S/R EXF_READPARAMS: value of exf_yftype not allowed'
+      ENDIF
+
 C--   Derive other parameters:
       hq = ht
       stressIsOnCgrid = readStressOnCgrid
@@ -896,9 +901,9 @@ C--   Derive other parameters:
      &   stressIsOnCgrid = .FALSE.
 #endif /* USE_EXF_INTERPOLATION */
 
-      if ( select_ZenAlbedo.GT.0 ) then
+      IF ( select_ZenAlbedo.GT.0 ) THEN
            useExfZenAlbedo=.TRUE.
-      endif
+      ENDIf
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 cgf warning before we overwrite tauThetaClimRelax/thetaClimFile:
@@ -916,8 +921,8 @@ cgf overwrite tauThetaClimRelax/thetaClimFile:
       tauThetaClimRelax=climsstTauRelax
       thetaClimFile=' '
 cgf overwrite doThetaClimRelax based on data.exf:
-      if ( climsstTauRelax.NE.0.) then
-        if (climsstfile.EQ.' ') then
+      IF ( climsstTauRelax.NE.0.) THEN
+        IF (climsstfile.EQ.' ') THEN
            WRITE(msgBuf,'(A)')
      &     'S/R EXF_READPARMS: climsstTauRelax > 0 but'
            CALL PRINT_ERROR( msgBuf, myThid )
@@ -925,12 +930,12 @@ cgf overwrite doThetaClimRelax based on data.exf:
      &     'S/R EXF_READPARMS: climsstfile is undefined'
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R EXF_READPARMS'
-        else
+        ELSE
            doThetaClimRelax=.TRUE.
-        endif
-      else
+        ENDIF
+      ELSE
            doThetaClimRelax=.FALSE.
-      endif
+      ENDIf
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
@@ -949,8 +954,8 @@ cgf overwrite tauSaltClimRelax/saltClimFile:
       tauSaltClimRelax=climsssTauRelax
       saltClimFile=' '
 cgf overwrite doSaltClimRelax based on data.exf:
-      if ( climsssTauRelax.NE.0.) then
-        if (climsssfile.EQ.' ') then
+      IF ( climsssTauRelax.NE.0.) THEN
+        IF (climsssfile.EQ.' ') THEN
            WRITE(msgBuf,'(A)')
      &     'S/R EXF_READPARMS: climsssTauRelax > 0 but'
            CALL PRINT_ERROR( msgBuf, myThid )
@@ -958,12 +963,12 @@ cgf overwrite doSaltClimRelax based on data.exf:
      &     'S/R EXF_READPARMS: climsssfile is undefined'
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R EXF_READPARMS'
-        else
+        ELSE
            doSaltClimRelax=.TRUE.
-        endif
-      else
+        ENDIF
+      ELSE
            doSaltClimRelax=.FALSE.
-      endif
+      ENDIF
 #endif
 
 c     Complete the start date specifications for the forcing

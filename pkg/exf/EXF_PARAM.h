@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.25 2012/01/03 17:47:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.26 2012/01/05 23:41:51 jmc Exp $
 C $Name:  $
 c
 c
@@ -19,7 +19,7 @@ c              Christian Eckert eckert@mit.edu  12-Feb-2000
 c              - Changed some variables names (package prefix: exf_)
 c
 c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c              - included exf_iprec, exf_yftype to enable easy
+c              - included exf_iprec to enable easy
 c                switch between 32bit/64 bit data format
 c
 c              Patrick Heimbach, heimbach@mit.edu  01-May-2001
@@ -580,12 +580,10 @@ c     file precision and field type
 
       COMMON /EXF_PARAM_TYPE/
      &       exf_iprec,
-     &       exf_iprec_obcs,
-     &       exf_yftype
+     &       exf_iprec_obcs
 
       integer exf_iprec
       integer exf_iprec_obcs
-      character*(2) exf_yftype
 
 c     exf_inscal_*      input scaling factors
 c     exf_offset_atemp  input air temperature offset
