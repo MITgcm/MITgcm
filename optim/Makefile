@@ -72,9 +72,11 @@ OBJECTS     = $(SRC:.F=.o)
 
 .SUFFIXES: .o .f .F
 
-all: $(EXECUTABLE)
+all: small_f $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	$(FC) -o $@ $(FFLAGS) $(OBJECTS) $(LIBDIRS) $(LIBS)
+
+small_f: $(SMALLF)
 
 depend:
 	makedepend -o .f $(INCLUDEDIRS) $(SRC)
