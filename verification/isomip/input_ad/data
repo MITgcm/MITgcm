@@ -1,0 +1,79 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ Tref = 30*-1.9,
+ Sref = 30*34.4,
+ viscAz=1.E-3,
+ viscAh=600.0,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=100.0,
+ diffKzT=5.E-5,
+ diffKhS=100.0,
+ diffKzS=5.E-5,
+ bottomDragQuadratic=2.5E-3,
+ eosType='JMD95Z', 
+ HeatCapacity_cp = 3974.0,
+ rhoConst=1030.,
+ rhoNil=1030.,
+ gravity=9.81,
+ convertFW2Salt = 33.4,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ hFacMin=0.05,
+ nonHydrostatic=.FALSE.,
+ readBinaryPrec=64,
+ useCDScheme = .TRUE.,
+#ph(
+ implicitDiffusion=.TRUE.,
+# ivdc_kappa = 7200.,
+ staggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ nonlinFreeSurf=2,
+# hFacInf=0.2,
+# hFacSup=2.0,
+#ph) 
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+#ph cg3dMaxIters=400,
+#ph cg3dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=8640,
+ nTimeSteps=10,
+ deltaT=1800.0,
+ abEps=0.1,
+ cAdjFreq = 1.,
+ tauCD = 400000.,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=0.0,
+ taveFreq=0.0,
+ monitorFreq=1.,
+### monitorSelect=2,
+ adjMonitorFreq=1800.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ ygOrigin = -80.0,
+ delX=50*0.3,
+ delY=100*0.1,
+ delZ=30*30.0,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathy.box',
+ &
