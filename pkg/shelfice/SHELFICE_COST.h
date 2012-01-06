@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_COST.h,v 1.2 2011/05/10 07:49:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_COST.h,v 1.3 2012/01/06 09:33:59 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -9,18 +9,9 @@ C !ROUTINE: SHELFICE_COST.h
 C !DESCRIPTION: \bv
 C     /==========================================================\
 C     | SHELFICE_COST.h                                          |
-C     | o Basic header thermodnynamic shelf ice package.         |
-C     |   Contains all SHELFICE field declarations.              |
+C     | o shelfice cost terms                                    |
 C     \==========================================================/
 
-C-----------------------------------------------------------------------
-C
-C--   Fields
-C     shelficeForcingT       - analogue of surfaceForcingT
-C                              units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
-C     shelficeForcingS       - analogue of surfaceForcingS
-C                              units are  r_unit.psu/s (=psu.m/s if r=z)
-C-----------------------------------------------------------------------
 C \ev
 CEOP
 
