@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1570 2012/01/05 21:26:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1571 2012/01/06 09:40:35 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o optim: make Makefile more robust (?)
+o pkg/shelfice: add missing initialisation of num_shifwflx
 o pkg/exf (interpolation):
   - extended input field (2 rows) near the N & S poles:
     * fill in with the symetric value (when even Nb of data in longitude)
