@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.200 2012/01/06 10:58:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.201 2012/01/06 16:58:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -958,7 +958,7 @@ C--   State-variables time-averaging
 #endif /* ALLOW_NEST_CHILD */
 
 #ifdef ALLOW_MONITOR
-      IF ( monitorFreq.GT.0. .OR. inAdmode .EQV. inAdTrue ) THEN
+      IF ( monitorFreq.GT.0. .OR. adjMonitorFreq.GT.0. ) THEN
 C--   Check status of solution (statistics, cfl, etc...)
         CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
         CALL MONITOR( myTime, myIter, myThid )
