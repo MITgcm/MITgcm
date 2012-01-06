@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.4 2011/12/24 01:17:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.5 2012/01/06 15:01:04 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -136,10 +136,10 @@ c
 c   ====================================================================
 
 C   Bulk formulae related flags.
-#undef   ALLOW_ATM_TEMP
-#undef   ALLOW_ATM_WIND
-#define  ALLOW_DOWNWARD_RADIATION
-#define  ALLOW_RUNOFF
+#undef  ALLOW_ATM_TEMP
+#undef  ALLOW_ATM_WIND
+#undef  ALLOW_DOWNWARD_RADIATION
+#undef  ALLOW_RUNOFF
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # define ALLOW_BULK_LARGEYEAGER04
@@ -164,7 +164,7 @@ C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #define USE_EXF_INTERPOLATION
 
-#define EXF_INTERP_USE_DYNALLOC
+#undef EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
