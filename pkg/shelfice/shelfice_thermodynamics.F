@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.23 2011/06/29 16:24:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.24 2012/01/06 13:45:59 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -93,8 +93,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef SHI_ALLOW_GAMMAFRICT
       shiKarman= 0.4 _d 0
       shiLo = 0. _d 0
-      shiPr = (viscArNr(1)/diffKrNrT(1))**(2/3)
-      shiSc = (viscArNr(1)/diffKrNrS(1))**(2/3)
+      shiPr = shiPrandtl**(2/3)
+      shiSc = shiSchmidt**(2/3)
+cph      shiPr = (viscArNr(1)/diffKrNrT(1))**(2/3)
+cph      shiSc = (viscArNr(1)/diffKrNrS(1))**(2/3)
       gammaTmoleT = 12.5 _d 0 * shiPr - 6. _d 0
       gammaTmoleS = 12.5 _d 0 * shiSc - 6. _d 0
 #endif
@@ -261,22 +263,22 @@ C     Implement friction velocity-dependent transfer coefficient
 C     of Holland and Jenkins, JPO, 1999
             IF ( SHELFICEuseGammaFrict ) THEN
              ustarSq = shiCdrag * MAX( 1D-06,
-     &            (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-     &           *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-     &           +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
-     &           *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
+     &          (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+     &         *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+     &         +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
+     &         *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
              ustar     = SQRT(ustarSq)
 C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
              etastar   = 1. _d 0
              gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
-     &           / ABS( fCori(I,J,bi,bj) * 0.5 _d 0 * viscArNr(k) ) )
-     &           / shiKarman 
-     &           + 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
-     &           - 1. _d 0 / shiKarman
+     &         / ABS(fCori(I,J,bi,bj) * 5.0 _d 0 * shiKinVisc))
+     &         / shiKarman 
+     &         + 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
+     &         - 1. _d 0 / shiKarman
              shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
-     &           ustar/(gammaTurb + gammaTmoleT) )
+     &         ustar/(gammaTurb + gammaTmoleT) )
              shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
-     &           ustar/(gammaTurb + gammaTmoleS) )             
+     &         ustar/(gammaTurb + gammaTmoleS) )             
             ENDIF
 #endif
 C     a few abbreviations
