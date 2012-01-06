@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/SIZE.h_mpi,v 1.1 2012/01/06 13:01:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/SIZE.h_mpi,v 1.2 2012/01/06 22:07:29 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -56,3 +56,5 @@ C                routine buufers.
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
 
+      INTEGER nobcs
+      PARAMETER ( nobcs = 4 )
