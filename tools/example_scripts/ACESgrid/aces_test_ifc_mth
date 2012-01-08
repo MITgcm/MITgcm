@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_mth.stderr
 #PBS -o /home/jmc/test_aces/output/tst_mth.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.19 2011/11/07 15:27:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.20 2012/01/08 18:29:54 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -53,7 +53,7 @@ fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
     /bin/rm -rf $gcmDIR/verification/tr_${dNam}-${sfx}_????????_?
-#   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+    ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
     RETVAL=$?
@@ -88,4 +88,8 @@ fi
 
 echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
 ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
+
+echo ''
+echo ../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
+../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
 
