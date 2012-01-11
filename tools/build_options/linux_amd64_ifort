@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort,v 1.8 2011/09/12 16:58:50 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort,v 1.9 2012/01/11 20:18:01 jmc Exp $
 #  $Name:  $
 #
 # Composed and tested by ce107 on ross/weddell (Opteron system)
@@ -56,7 +56,7 @@ OMPFLAG='-openmp'
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
-FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC"
+FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
 FFLAGS="$FFLAGS -fPIC"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
