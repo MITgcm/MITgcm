@@ -1,44 +1,49 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.5 2010/03/21 18:01:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.6 2012/01/11 17:34:00 mlosch Exp $
 # $Name:  $
 
-# Tested on columbia (SGI Altix cluster)
-# a) Processor specific flags:
-#    1) for more speed on Core2 processors replace -xW with -xT
-#    2) for more speed on Pentium4 based EM64T processors replaces -xW with -xP
-# b) For more speed, provided your data size doesn't exceed 2GB you can
+# Tested on uv100.awi.de (SGI UV 100, details:
+#                         http://www.sgi.com/products/servers/uv/specs.html)
+# a) For more speed, provided your data size does not exceed 2GB you can
 #    remove -fPIC which carries a performance penalty of 2-6%.
-# c) Provided that the libraries you link to are compiled with -fPIC this
-#    optfile should work.
-# d) You can replace -fPIC with -mcmodel=medium which may perform faster
-#   than -fPIC and still support data sizes over 2GB per process but all
-#   the libraries you link to must be compiled with -fPIC or -mcmodel=medium
-# e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed
-#   impact appears to be minimal.
+# b) You can replace -fPIC with '-mcmodel=medium -shared-intel' which may 
+#    perform faster than -fPIC and still support data sizes over 2GB per
+#    process but all the libraries you link to must be compiled with 
+#    -fPIC or -mcmodel=medium
+# c) flags adjusted for ifort 12.1.0
 
 FC=ifort
 F90C=ifort
 CC=icc
-LINK='ifort -static'
+# requires that all static libraries are available:
+#LINK='ifort -static'
+LINK='ifort'
+# for adjoint runs the default makedepend often cannot handle enough files
+#MAKEDEPEND=tools_xmakedepend
 
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp  -traditional -P'
+CPP='cpp -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf' 
 EXTENDED_SRC_FLAG='-132'
 #OMPFLAG='-openmp'
-
-NOOPTFLAGS='-O0 -g -m64 -fPIC'
-NOOPTFILES=''
 
 INCLUDEDIRS=''
 INCLUDES=''
 LIBS=''
 
+MCMODEL='-fPIC'
+# for large memory requirements uncomment this line
+#MCMODEL='-mcmodel=medium -shared-intel'
+FFLAGS="-W0 -WB -convert big_endian -assume byterecl $MCMODEL"
+
+NOOPTFLAGS="-O0 -g -m64"
+NOOPTFILES=''
+
 if test "x$DEVEL" != x ; then
-    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fpstkchk -check all -fpe0 -traceback -ftrapuv -fpmodel except -warn all"
+    FFLAGS="$FFLAGS -O0 -g -noalign -check all -fpe0 -traceback -ftrapuv -fp-model precise -fp-model except -warn all"
 else
-    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC"
+    FFLAGS="$FFLAGS"
 fi
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
@@ -47,14 +52,19 @@ fi
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-O2 -align'
+    FOPTIM='-O3 -align'
+# does not work when -static does not work
+#    FOPTIM='-fast -align'
+# instead you can use
+#    FOPTIM='-O3 -ipo -align'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-O0 -noalign -mp'
+    FOPTIM='-O0 -noalign -fp-model precise' 
+# -fltconsistency'
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O2 -ip -fPIC'
+CFLAGS="-O0 -ip $MCMODEL"
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIRS="${NETCDF_ROOT}/include"
@@ -89,5 +99,14 @@ elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDEDIRS='/usr/local/include'
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    LIBS="$LIBS -lmpi"
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    MPI_HEADER_FILES='mpif.h mpiof.h'
+    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
 fi
 
