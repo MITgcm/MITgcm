@@ -1,15 +1,15 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.6 2012/01/11 17:34:00 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.7 2012/01/11 20:37:01 jmc Exp $
 # $Name:  $
 
 # Tested on uv100.awi.de (SGI UV 100, details:
 #                         http://www.sgi.com/products/servers/uv/specs.html)
 # a) For more speed, provided your data size does not exceed 2GB you can
 #    remove -fPIC which carries a performance penalty of 2-6%.
-# b) You can replace -fPIC with '-mcmodel=medium -shared-intel' which may 
+# b) You can replace -fPIC with '-mcmodel=medium -shared-intel' which may
 #    perform faster than -fPIC and still support data sizes over 2GB per
-#    process but all the libraries you link to must be compiled with 
+#    process but all the libraries you link to must be compiled with
 #    -fPIC or -mcmodel=medium
 # c) flags adjusted for ifort 12.1.0
 
@@ -24,47 +24,44 @@ LINK='ifort'
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-F90FIXEDFORMAT='-fixed -Tf' 
+F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 #OMPFLAG='-openmp'
-
-INCLUDEDIRS=''
-INCLUDES=''
-LIBS=''
-
-MCMODEL='-fPIC'
-# for large memory requirements uncomment this line
-#MCMODEL='-mcmodel=medium -shared-intel'
-FFLAGS="-W0 -WB -convert big_endian -assume byterecl $MCMODEL"
 
 NOOPTFLAGS="-O0 -g -m64"
 NOOPTFILES=''
 
-if test "x$DEVEL" != x ; then
-    FFLAGS="$FFLAGS -O0 -g -noalign -check all -fpe0 -traceback -ftrapuv -fp-model precise -fp-model except -warn all"
-else
-    FFLAGS="$FFLAGS"
-fi
+MCMODEL='-fPIC'
+# for large memory requirements uncomment this line
+#MCMODEL='-mcmodel=medium -shared-intel'
+
+FFLAGS="$FFLAGS -W0 -WB -convert big_endian -assume byterecl $MCMODEL"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
-#  Note that the -mp switch is for ieee "maintain precision" and is
-#  roughly equivalent to -ieee
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
+if test "x$IEEE" = x ; then     #- with optimisation:
     FOPTIM='-O3 -align'
 # does not work when -static does not work
 #    FOPTIM='-fast -align'
 # instead you can use
 #    FOPTIM='-O3 -ipo -align'
 else
-    #  Try to follow IEEE-754
-    FOPTIM='-O0 -noalign -fp-model precise' 
-# -fltconsistency'
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -noalign -fp-model precise'
+   # -fltconsistency
+  else                          #- development/check options:
+    FOPTIM='-O0 -noalign -fp-model precise'
+    FOPTIM="$FOPTIM -g -check all -fpe0 -traceback -ftrapuv -fp-model except -warn all"
+  fi
 fi
+
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS="-O0 -ip $MCMODEL"
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIRS="${NETCDF_ROOT}/include"
