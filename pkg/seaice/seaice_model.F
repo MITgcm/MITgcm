@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.94 2011/12/28 20:55:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.95 2012/01/13 21:08:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -123,8 +123,10 @@ c
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFNM1(i,j,bi,bj) = 0. _d 0
-          AREANM1(i,j,bi,bj) = 0. _d 0
+#ifdef SEAICE_GROWTH_LEGACY
+          areaNm1(i,j,bi,bj) = 0. _d 0
+          hEffNm1(i,j,bi,bj) = 0. _d 0
+#endif
           uIceNm1(i,j,bi,bj) = 0. _d 0
           vIceNm1(i,j,bi,bj) = 0. _d 0
          ENDDO

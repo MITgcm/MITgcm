@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.67 2011/12/28 19:15:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.68 2012/01/13 21:08:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,8 +80,10 @@ C--   Initialise all variables in common blocks:
 C
           uIceNm1(i,j,bi,bj)=0. _d 0
           vIceNm1(i,j,bi,bj)=0. _d 0
+#ifdef SEAICE_GROWTH_LEGACY
           areaNm1(i,j,bi,bj)=0. _d 0
           hEffNm1(i,j,bi,bj)=0. _d 0
+#endif
          ENDDO
         ENDDO
 #ifdef SEAICE_MULTICATEGORY
@@ -101,8 +103,8 @@ C
           DRAGA(i,j,bi,bj)  = 0. _d 0
           FORCEX(i,j,bi,bj) = 0. _d 0
           FORCEY(i,j,bi,bj) = 0. _d 0
-          UICEC(i,j,bi,bj)  = 0. _d 0
-          VICEC(i,j,bi,bj)  = 0. _d 0
+          uIceC(i,j,bi,bj)  = 0. _d 0
+          vIceC(i,j,bi,bj)  = 0. _d 0
 #ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
@@ -151,9 +153,6 @@ c "ice concentration" tracer that should remain .EQ.1.
            IceAgeTr(i,j,bi,bj,iTracer) = 0. _d 0
           ENDDO
 #endif
-          YNEG (i,j,bi,bj)  = 0. _d 0
-          RIVER(i,j,bi,bj)  = 0. _d 0
-          TMIX(i,j,bi,bj)   = 0. _d 0
           TICE(i,j,bi,bj)   = 0. _d 0
           TAUX(i,j,bi,bj)   = 0. _d 0
           TAUY(i,j,bi,bj)   = 0. _d 0
@@ -290,7 +289,6 @@ C--   Set model variables to initial/restart conditions
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           TMIX(i,j,bi,bj)=TICE(i,j,bi,bj)
            HEFF(i,j,bi,bj)=SEAICE_initialHEFF*HEFFM(i,j,bi,bj)
            UICE(i,j,bi,bj)=ZERO
            VICE(i,j,bi,bj)=ZERO
