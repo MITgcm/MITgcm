@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.14 2011/12/21 10:52:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.15 2012/01/13 21:09:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -6,17 +6,16 @@ C $Name:  $
 CStartOfInterface
       SUBROUTINE SEAICE_BUDGET_OCEAN(
      I     UG,
-     U     TSURF,
+     I     TSURF,
      O     netHeatFlux, SWHeatFlux,
      I     bi, bj, myTime, myIter, myThid )
-C     /================================================================\
-C     | SUBROUTINE seaice_budget_ocean                                 |
-C     | o Calculate surface heat fluxes over open ocean                |
-C     |   see Hibler, MWR, 108, 1943-1973, 1980                        |
-C     |   If SEAICE_EXTERNAL_FLUXES is defined this routine simply     |
-C     |   copies the global fields to the seaice-local fields.         |
-C     |================================================================|
-C     \================================================================/
+C     *================================================================*
+C     | SUBROUTINE seaice_budget_ocean
+C     | o Calculate surface heat fluxes over open ocean
+C     |   see Hibler, MWR, 108, 1943-1973, 1980
+C     |   If SEAICE_EXTERNAL_FLUXES is defined this routine simply
+C     |   copies the global fields to the seaice-local fields.
+C     *================================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -36,7 +35,7 @@ C     === Global variables ===
 C     === Routine arguments ===
 C     INPUT:
 C     UG      :: thermal wind of atmosphere
-C     TSURF   :: surface temperature of ocean in Kelvin
+C     TSURF   :: ocean surface temperature in Kelvin
 C     bi,bj   :: loop indices
 C     myTime  :: Simulation time
 C     myIter  :: Simulation timestep number
@@ -45,7 +44,7 @@ C     OUTPUT:
 C     netHeatFlux :: net surface heat flux over open water or under ice
 C     SWHeatFlux  :: short wave heat flux over open water or under ice
       _RL UG         (1:sNx,1:sNy)
-      _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TSURF      (1:sNx,1:sNy)
       _RL netHeatFlux(1:sNx,1:sNy)
       _RL SWHeatFlux (1:sNx,1:sNy)
       _RL myTime
@@ -69,7 +68,7 @@ C     auxiliary variable
 
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
-      QS1=0.622 _d +00/1013.0 _d +00
+      QS1=0.622 _d 0/1013.0 _d 0
 C SENSIBLE HEAT CONSTANT
       D1=SEAICE_dalton*SEAICE_cpAir*SEAICE_rhoAir
 C WATER LATENT HEAT CONSTANT
@@ -77,8 +76,8 @@ C WATER LATENT HEAT CONSTANT
 C STEFAN BOLTZMAN CONSTANT TIMES EMISSIVITY
       D3=SEAICE_emissivity*SEAICE_boltzmann
 C MELTING TEMPERATURE OF ICE
-      TMELT=273.16 _d +00
-C     
+      TMELT=273.16 _d 0
+C
       recip_lhEvap = 1./SEAICE_lhEvap
       recip_rhoConstFresh = 1./rhoConstFresh
 
@@ -86,7 +85,7 @@ C
        DO I=1,sNx
         netHeatFlux(I,J) = 0. _d 0
         SWHeatFlux (I,J) = 0. _d 0
-C     
+C
         tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
 # ifdef ALLOW_ATM_TEMP
 C     Is this necessary?
@@ -107,11 +106,11 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
         netHeatFlux(I,J) = Qnet(I,J,bi,bj)
         SWHeatFlux (I,J) =  Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
-C     This is an example of how one could implement surface fluxes 
+C     This is an example of how one could implement surface fluxes
 C     over the ocean (if one dislikes the fluxes computed in pkg/exf).
 C     In this example, the exf-fields are re-used so that they no longer
-C     have the same values as at the time when they are saved for 
-C     diagnostics (e.g., hl, hs, lwflux, sflux). To properly 
+C     have the same values as at the time when they are saved for
+C     diagnostics (e.g., hl, hs, lwflux, sflux). To properly
 C     diagnose them, one has to save them again as different (SI-)fields.
 # ifdef ALLOW_DOWNWARD_RADIATION
 C     net upward short wave heat flux
@@ -126,15 +125,15 @@ C     so that the net upward long wave heat flux is:
 C     downward sensible heat
         hs(I,J,bi,bj) = D1*UG(I,J)*(atempLoc(I,J)-tsurfLoc(I,J))
 C     saturation humidity
-        ssq = QS1*6.11 _d +00*EXP(17.2694 _d +00
-     &       *sstdegC/(sstdegC+237.3 _d +00))
+        ssq = QS1*6.11 _d 0 *EXP( 17.2694 _d 0
+     &                           *sstdegC/(sstdegC+237.3 _d 0) )
 C     downward latent heat
         hl(I,J,bi,bj) = D1W*UG(I,J)*(AQH(I,J,bi,bj)-ssq)
 C     net heat is positive upward
         netHeatFlux(I,J)=SWHeatFlux(I,J)
      &       + lwflux(I,J,bi,bj)
      &       - hs(I,J,bi,bj) - hl(I,J,bi,bj)
-C     compute evaporation here again because latent heat is different 
+C     compute evaporation here again because latent heat is different
 C     from its previous value
         evap(i,j,bi,bj) = -hl(I,J,bi,bj)
      &       *recip_lhEvap*recip_rhoConstFresh
