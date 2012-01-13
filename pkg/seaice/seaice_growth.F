@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.144 2012/01/13 14:19:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.145 2012/01/13 21:09:35 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,6 +94,9 @@ C     number of surface interface layer
 C     constants
       _RL TBC, ICE2SNOW
       _RL QI, QS
+
+C--   TmixLoc        :: ocean surface/mixed-layer temperature (in K)
+      _RL TmixLoc       (1:sNx,1:sNy)
 
 C     a_QbyATM_cover :: available heat (in W/m^2) due to the interaction of
 C             the atmosphere and the ocean surface - for ice covered water
@@ -687,9 +690,9 @@ C determine available heat due to the atmosphere -- for open water
 C ================================================================
 
 C ocean surface/mixed layer temperature
-        DO J=1,sNy
-         DO I=1,sNx
-          TMIX(I,J,bi,bj)=theta(I,J,kSurface,bi,bj)+celsius2K
+        DO j=1,sNy
+         DO i=1,sNx
+          TmixLoc(i,j) = theta(i,j,kSurface,bi,bj)+celsius2K
          ENDDO
         ENDDO
 
@@ -704,12 +707,12 @@ C wind speed from exf
 CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 CADJ STORE qsw(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 cCADJ STORE UG = comlev1_bibj, key = iicekey,byte=isbyte
-cCADJ STORE TMIX(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+cCADJ STORE TmixLoc = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         CALL SEAICE_BUDGET_OCEAN(
      I       UG,
-     U       TMIX,
+     I       TmixLoc,
      O       a_QbyATM_open, a_QSWbyATM_open,
      I       bi, bj, myTime, myIter, myThid )
 
@@ -1128,7 +1131,7 @@ c           heat flux overcoming potential melt by ocean
      &            (1.0 _d 0 - AREApreTH(i,J))
 c           Penetrative shortwave flux beyond first layer
 c           that is therefore not available to ice growth/melt
-            tmpscal2=SWFRACB * a_QSWbyATM_open(I,J)
+            tmpscal2=SWFracB * a_QSWbyATM_open(I,J)
 #ifdef SEAICE_DO_OPEN_WATER_MELT
 C           allow not only growth but also melt by open ocean heat flux
             tmpscal3=MAX(tmpscal1-tmpscal2, -HEFF(I,J,bi,bj))
