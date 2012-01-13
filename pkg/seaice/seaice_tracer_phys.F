@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.3 2011/06/13 23:21:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.4 2012/01/13 14:19:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,7 +57,7 @@ cgf eventually I will need to handle them as function params
       DO bi=myBxLo(myThid),myBxHi(myThid)
       DO iTr=1,SItrMaxNum
 
-c 0) set ice-ocean and ice-snow exchange values       
+c 0) set ice-ocean and ice-snow exchange values
 c =============================================
       DO J=1,sNy
        DO I=1,sNx
@@ -69,12 +69,12 @@ c =============================================
       if (SItrName(iTr).EQ.'age') then
 c age tracer: no age in ocean, or effect from ice cover changes
       elseif (SItrName(iTr).EQ.'salinity') then
-c salinity tracer: 
+c salinity tracer:
        DO J=1,sNy
         DO I=1,sNx
          SItrFromOcean(i,j)=SIsal0
 #ifdef SEAICE_VARIABLE_SALINITY
-         if (SIsalFRAC.GT.0.) 
+         if (SIsalFRAC.GT.0.)
      &   SItrFromOcean(i,j)=SIsalFRAC*salt(I,j,ks,bi,bj)
 #endif
 c as of now, flooding implies no salt extraction from ocean
@@ -96,7 +96,7 @@ c ==================================
        DO I=1,sNx
         HEFFprev=SItrHEFF(i,j,bi,bj,1)
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-        DIAGarray(I,J,5+(iTr-1)*5) = 
+        DIAGarray(I,J,5+(iTr-1)*5) =
      &    HEFFprev*SItracer(i,j,bi,bj,iTr) + SItrBucket(i,j,bi,bj,iTr)
 #endif
 c apply the sequence of thermodynamics increments to actual traceur
@@ -133,7 +133,7 @@ c as we dont have snow tracers, so it goes through SItrBucket.
           SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
      &             -HEFFpost*SItrFromFlood(i,j)*(1. _d 0 - growFact)
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-        DIAGarray(I,J,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr) 
+        DIAGarray(I,J,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr)
      &  +SItrBucket(i,j,bi,bj,iTr)-DIAGarray(I,J,5+(iTr-1)*5)
 #endif
        ENDDO
@@ -142,10 +142,10 @@ c TAF?      if (SItrMate(iTr).EQ.'AREA') then
       else
 c 1) or seaice cover expansion
 c ============================
-c this is much simpler than for ice volume/mass tracers, because 
-c properties of the ice surface are not be conserved across the 
+c this is much simpler than for ice volume/mass tracers, because
+c properties of the ice surface are not be conserved across the
 c ocean-ice system, the contraction/expansion terms are all
-c simultaneous (which is sane), and the only generic effect 
+c simultaneous (which is sane), and the only generic effect
 c is due to expansion (new cover).
       DO J=1,sNy
        DO I=1,sNx
@@ -272,7 +272,7 @@ c DIAGarray(:,:,3) is the term of comparison for DIAGarray(:,:,2)
 #endif
       ENDDO
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-      CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG1  ',0,Nr,3,bi,bj,myThid)
+c     CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG1  ',0,Nr,3,bi,bj,myThid)
 #endif
       ENDDO
       ENDDO

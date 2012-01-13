@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.55 2011/12/28 20:55:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.56 2012/01/13 14:19:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -462,7 +462,7 @@ C--
          ENDIF
         ENDDO
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-      CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG2  ',0,Nr,2,bi,bj,myThid)
+c     CALL DIAGNOSTICS_FILL(DIAGarray,'UDIAG2  ',0,Nr,2,bi,bj,myThid)
 #endif
 #endif /* ALLOW_SITRACER */
 

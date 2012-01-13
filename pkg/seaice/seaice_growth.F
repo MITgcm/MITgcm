@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.143 2011/12/24 18:38:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.144 2012/01/13 14:19:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1618,9 +1618,9 @@ c melt/freez water is in effect consistently gained/lost at 0degC
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-c temporary (?) output of unaltered QNET using SDIAG6
-         CALL DIAGNOSTICS_FILL(DIAGarrayA,
-     &      'SDIAG6  ',0,1,3,bi,bj,myThid)
+C temporary (?) output of unaltered QNET using SDIAG6
+c        CALL DIAGNOSTICS_FILL(DIAGarrayA,
+c    &      'SDIAG6  ',0,1,3,bi,bj,myThid)
 #endif
       ENDIF
 #endif
@@ -1853,9 +1853,9 @@ c add to SIatmQnt, leading to SItflux, which is analogous to TFLUX
      &            -tmpscal1-tmpscal2
           ENDDO
          ENDDO
-         CALL DIAGNOSTICS_FILL(DIAGarrayA,
-c until SItflux is added to diags, output it using SDIAG5
-     &      'SDIAG5  ',0,1,3,bi,bj,myThid)
+c        CALL DIAGNOSTICS_FILL(DIAGarrayA,
+C until SItflux is added to diags, output it using SDIAG5
+c    &      'SDIAG5  ',0,1,3,bi,bj,myThid)
 #endif /* SEAICE_HEAT_CONSERV_FIX */
 #endif /* ALLOW_ATM_TEMP */
 
