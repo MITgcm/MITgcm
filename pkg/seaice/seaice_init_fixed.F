@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.11 2011/12/28 19:18:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.12 2012/01/13 21:11:30 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -34,15 +34,13 @@ C     i,j,k,bi,bj - Loop counters
 #ifndef SEAICE_CGRID
       _RS  mask_uice
 #endif
-cif(
+#ifdef SHORTWAVE_HEATING
 cif   Helper variable for determining the fraction of sw radiation
 cif   penetrating the model shallowest layer
-      INTEGER dummyIter
       _RL dummyTime
       _RL swfracba(2)
-      _RL FACTORM
-      INTEGER IMAX
-cif)
+      _RL tmpFac
+#endif /* SHORTWAVE_HEATING */
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
@@ -57,21 +55,21 @@ C     Initialize MNC variable information for SEAICE
         CALL SEAICE_MNC_INIT( myThid )
       ENDIF
 
-cif(
+      _BEGIN_MASTER(myThid)
 #ifdef SHORTWAVE_HEATING
-      IMAX      = 2
-      FACTORM   = -1.0
-      dummyTime = 1.0
-      dummyIter = 0
-      swfracba(1) = abs(rF(1))
-      swfracba(2) = abs(rF(2))
-      CALL SWFRAC(
-     I       IMAX,FACTORM,
+       tmpFac    = -1.0
+       dummyTime = 1.0
+       swfracba(1) = ABS(rF(1))
+       swfracba(2) = ABS(rF(2))
+       CALL SWFRAC(
+     I       2, tmpFac,
      U       swfracba,
-     I       dummyTime,dummyIter,myThid)
-      SWFRACB = swfracba(2)
-#endif
-cif)
+     I       dummyTime, 0, myThid )
+       SWFracB = swfracba(2)
+#else /* SHORTWAVE_HEATING */
+       SWFracB = 0. _d 0
+#endif /* SHORTWAVE_HEATING */
+      _END_MASTER(myThid)
 
 C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)
