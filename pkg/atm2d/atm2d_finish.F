@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_finish.F,v 1.4 2007/11/06 20:28:40 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_finish.F,v 1.5 2012/01/13 15:53:33 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -26,8 +26,15 @@ C     myThid - thread number for this instance of the routine.
       INTEGER myThid
 
 C     === Local variables ===
+
 #ifdef OCEAN_3D
       INTEGER rc
+#endif
+
+#ifdef CLM35
+C     next line is hack to call atmos one more time step
+C     as CLM35 writes end-of-year file at start of next year
+      CALL atmosphere(1,1)
 #endif
 
 #ifdef ATM2D_MPI_ON
