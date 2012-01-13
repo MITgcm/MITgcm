@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.56 2012/01/13 14:19:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.57 2012/01/13 21:11:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,7 +57,6 @@ C     ks        :: surface level index
 C     uc/vc     :: current ice velocity on C-grid
 C     uTrans    :: volume transport, x direction
 C     vTrans    :: volume transport, y direction
-C     iceFld    :: copy of seaice field
 C     afx       :: horizontal advective flux, x direction
 C     afy       :: horizontal advective flux, y direction
 C     gFld      :: tendency of seaice field
@@ -69,15 +68,19 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_SITRACER
+# ifndef SEAICE_GROWTH_LEGACY
+      _RL hEffNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL areaNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif /* ndef SEAICE_GROWTH_LEGACY */
       INTEGER iTr, SEAICEadvSchSItr, SEAICEdiffKhSItr
       _RL SItrExt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpscal1, tmpscal2
-#ifdef ALLOW_SITRACER_ADVCAP
+# ifdef ALLOW_SITRACER_ADVCAP
       _RL SItrPrev  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-#ifdef ALLOW_SITRACER_DEBUG_DIAG
+# endif
+# ifdef ALLOW_SITRACER_DEBUG_DIAG
       _RL DIAGarray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif
+# endif
 #endif /* ALLOW_SITRACER */
 #ifdef SEAICE_AGE
       INTEGER iTracer
@@ -88,7 +91,6 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       _RL fldNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL iceFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -136,6 +138,11 @@ C     Do we need this? I am afraid so.
       CALL EXCH_UV_XY_RL(uc,vc,.TRUE.,myThid)
 #endif /* not SEAICE_CGRID */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       SEAICEmultidimadvection = .TRUE.
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.SEAICEadvScheme.EQ.ENUM_UPWIND_3RD
@@ -143,26 +150,10 @@ C     Do we need this? I am afraid so.
        SEAICEmultiDimAdvection = .FALSE.
       ENDIF
 
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEmultiDimAdvection ) THEN
-C     This has to be done to comply with the time stepping in advect.F:
-C     Making sure that the following routines see the different
-C     time levels correctly
-C     At the end of the routine ADVECT,
-C     timelevel 1 is updated with advection contribution
-C                 and diffusion contribution
-C                 (which was computed in DIFFUS on timelevel 3)
-C     timelevel 2 is the previous timelevel 1
-C     timelevel 3 is the total diffusion tendency * deltaT
-C                 (empty if no diffusion)
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uc     = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE vc     = comlev1, key = ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -172,7 +163,6 @@ C---   loops on tile indices bi,bj
 C     Initialise for TAF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-c         iceFld(i,j)     = 0. _d 0
           gFld(i,j)       = 0. _d 0
          ENDDO
         ENDDO
@@ -200,8 +190,10 @@ CADJ &     key = itmpkey, kind=isbyte
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFNM1(i,j,bi,bj) = HEFF(i,j,bi,bj)
-          AREANM1(i,j,bi,bj) = AREA(i,j,bi,bj)
+#if ( defined (SEAICE_GROWTH_LEGACY) || defined (ALLOW_SITRACER) )
+          hEffNm1(i,j,bi,bj) = HEFF(i,j,bi,bj)
+          areaNm1(i,j,bi,bj) = AREA(i,j,bi,bj)
+#endif
           recip_heff(i,j)    = 1. _d 0
          ENDDO
         ENDDO
@@ -336,7 +328,7 @@ C--   scale to effective value
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
-     &          SItracer(i,j,bi,bj,iTr) * HEFFNM1(i,j,bi,bj)
+     &          SItracer(i,j,bi,bj,iTr) * hEffNm1(i,j,bi,bj)
            ENDDO
           ENDDO
 c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
@@ -346,7 +338,7 @@ c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             SItrExt(i,j,bi,bj) = HEFFM(i,j,bi,bj) *
-     &          SItracer(i,j,bi,bj,iTr) * AREANM1(i,j,bi,bj)
+     &          SItracer(i,j,bi,bj,iTr) * areaNm1(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDIF
@@ -398,8 +390,8 @@ C--   scale back to actual value, or move effective value to ocean bucket
             SItrBucket(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)
             endif
 #ifdef ALLOW_SITRACER_ADVCAP
-c hack to try avoid 'spontaneous generation' of maxima, which supposedly would
-c occur less frequently if we advected SItr with uXheff instead SItrXheff with u
+C hack to try avoid 'spontaneous generation' of maxima, which supposedly would
+C occur less frequently if we advected SItr with uXheff instead SItrXheff with u
              tmpscal1=max(SItrPrev(i,j,bi,bj),
      &       SItrPrev(i+1,j,bi,bj),SItrPrev(i-1,j,bi,bj),
      &       SItrPrev(i,j+1,bi,bj),SItrPrev(i,j-1,bi,bj))
@@ -408,7 +400,7 @@ c occur less frequently if we advected SItr with uXheff instead SItrXheff with u
              SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
      &           +tmpscal2*HEFF(I,J,bi,bj)
 #endif
-c           treat case of potential negative value
+C           treat case of potential negative value
             if (HEFF(I,J,bi,bj).GE.siEps) then
               tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
               SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
@@ -443,7 +435,7 @@ c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
              tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
              SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
 #endif
-c           treat case of potential negative value
+C           treat case of potential negative value
             if (AREA(I,J,bi,bj).GE.SEAICE_area_floor) then
               tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
               SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
@@ -508,23 +500,43 @@ C---   end bi,bj loops
       ELSE
 C--   if not multiDimAdvection
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+Cold     This has to be done to comply with the time stepping in advect.F:
+Cold     Making sure that the following routines see the different
+Cold     time levels correctly
+Cold     At the end of the routine ADVECT,
+Cold     timelevel 1 is updated with advection contribution
+Cold                 and diffusion contribution
+Cold                 (which was computed in DIFFUS on timelevel 3)
+Cold     timelevel 2 is the previous timelevel 1
+Cold     timelevel 3 is the total diffusion tendency * deltaT
+Cold                 (empty if no diffusion)
+C--   This is what remains from old 3-level storage of AREA & HEFF: still
+C     needed for SEAICE_GROWTH, Legacy branch. Left old comments here above.
+#ifdef SEAICE_GROWTH_LEGACY
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           hEffNm1(i,j,bi,bj) = HEFF(i,j,bi,bj)
+           areaNm1(i,j,bi,bj) = AREA(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif
 
        IF ( SEAICEadvHEff ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
-        CALL ADVECT( uc, vc, hEff, hEffNm1, HEFFM, myThid )
+        CALL ADVECT( uc, vc, hEff, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
             CALL SEAICE_DIFFUSION(
      I           GAD_HEFF, SEAICEdiffKhHeff, SEAICE_deltaTtherm,
-     I           hEffNm1(1-OLx,1-OLy,bi,bj), HEFFM,
+     I           fldNm1(1-OLx,1-OLy,bi,bj), HEFFM,
      I           xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
      U           HEFF(1-OLx,1-OLy,bi,bj),
      I           bi, bj, myTime, myIter, myThid )
@@ -536,14 +548,14 @@ C-    Add tendency due to diffusion
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
-        CALL ADVECT( uc, vc, area, areaNm1, HEFFM, myThid )
+        CALL ADVECT( uc, vc, area, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
             CALL SEAICE_DIFFUSION(
      I           GAD_AREA, SEAICEdiffKhArea, SEAICE_deltaTtherm,
-     I           AreaNm1(1-OLx,1-OLy,bi,bj), HEFFM,
+     I           fldNm1(1-OLx,1-OLy,bi,bj), HEFFM,
      I           xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
      U           Area(1-OLx,1-OLy,bi,bj),
      I           bi, bj, myTime, myIter, myThid )
