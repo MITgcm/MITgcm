@@ -1,17 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1572 2012/01/06 14:06:18 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1573 2012/01/14 16:41:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - remove array YNEG, RIVER, TMIX (replaced by local var) from common block;
+    remove also areaNm1 & hEffNm1 when SEAICE_GROWTH_LEGACY is undef.
+  - fix bug: areaNm1 & hEffNm1 are needed in seaice_growth (SEAICE_GROWTH_LEGACY)
+    but were not filled when resp. SEAICEadvArea=F & SEAICEadvHeff=F and
+    not multi-dim advection;
+  - fix seaice_growth.F to compile with both SEAICE_GROWTH_LEGACY and
+    SHORTWAVE_HEATING #undef.
 o optim: make Makefile more robust (?)
 o pkg/obcs:
   * fix treatment of obcs_read_pickup for TAF
-o pkg/shelfice: 
+o pkg/shelfice:
   * add missing initialisation of num_shifwflx
   * new adjoint verification exp. for isomip
   * change Prandtl and Schmidt numbers from generic formulations
-    (in terms of model diffus. and visc.) to separate runtime 
+    (in terms of model diffus. and visc.) to separate runtime
     parameters, with Holland and Jenkins (1999) default values.
 o pkg/exf (interpolation):
   - extended input field (2 rows) near the N & S poles:
