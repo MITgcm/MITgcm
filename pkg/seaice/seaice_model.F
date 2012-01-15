@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.95 2012/01/13 21:08:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.96 2012/01/15 02:12:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -118,7 +118,6 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -133,7 +132,6 @@ c
         ENDDO
        ENDDO
       ENDDO
-c
 CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
@@ -202,6 +200,19 @@ C NOW DO ADVECTION and DIFFUSION
        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
        CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
+#ifdef SEAICE_GROWTH_LEGACY
+      ELSE
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           areaNm1(i,j,bi,bj) = AREA(i,j,bi,bj)
+           hEffNm1(i,j,bi,bj) = HEFF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif /* SEAICE_GROWTH_LEGACY */
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
