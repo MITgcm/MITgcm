@@ -1,22 +1,16 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#- old DIFF1 default:
-      DIFF1 = 4.E-3,
-      SEAICE_initialHEFF = 1.0,
-      SEAICE_deltaTtherm = 3600.,
-      SEAICE_deltaTdyn   = 3600.,
-      SEAICEuseDYNAMICS  =.FALSE.,
-      LSR_ERROR          = 1.E-12,
-# does not have an effect here
-# for backward compatibility turn off advection of snow
+ SEAICE_initialHEFF = 1.0,
+ SEAICE_deltaTtherm = 3600.,
+ SEAICE_deltaTdyn   = 3600.,
+ SEAICEuseDYNAMICS  =.FALSE.,
+#LSR_ERROR          = 1.E-12,
+# turn-off Advection flags (get identical results, but faster)
+ SEAICEadvArea = .FALSE.,
+ SEAICEadvHeff = .FALSE.,
  SEAICEadvSnow = .FALSE.,
  SEAICEuseFlooding = .FALSE.,
  SEAICEwriteState   = .TRUE.,
-# For backward compatibility only:
-# emissivities should be inherited from exf and setting them here does
-# not set a good example
- SEAICE_snow_emiss     = 0.97001763668430343479,
- SEAICE_ice_emiss      = 0.97001763668430343479,
  &
 
  &SEAICE_PARM02
