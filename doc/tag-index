@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1573 2012/01/14 16:41:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1574 2012/01/16 23:53:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf and seaice exp:
+  - change offline_exf_seaice.seaicetd test exp. to use default DIFF1 value (=0)
+    so that switching off area & heff advection flags does not affect results.
+  - change default EXF_LWDOWN_WITH_EMISSIVITY to #define in EXF_OPTIONS.h
+  - keep seaice_obcs unchanged (using #undef EXF_LWDOWN_WITH_EMISSIVITY)
+    and, using pkg/exf default emissivities, update results of fwd verification
+    experiments: 1D_ocean_ice_column, global_ocean.cs32x15.seaice, lab_sea (x4)
+    and offline_exf_seaice (x3).
 o pkg/seaice:
   - remove array YNEG, RIVER, TMIX (replaced by local var) from common block;
     remove also areaNm1 & hEffNm1 when SEAICE_GROWTH_LEGACY is undef.
