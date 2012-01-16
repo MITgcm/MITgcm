@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.37 2011/12/19 16:30:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.38 2012/01/16 18:17:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -177,6 +177,12 @@ c    & 'LAD               =', ' /* time stepping scheme */')
      & 'SEAICE_gamma_t    =', ' /* melting timescale due to warm ML*/')
       CALL WRITE_0D_RL( OCEAN_drag        ,INDEX_NONE,
      & 'OCEAN_drag        =', ' /* air-ocean drag coefficient */')
+#ifndef SEAICE_EXTERNAL_FLUXES
+      CALL WRITE_0D_RL( SEAICE_waterAlbedo,INDEX_NONE,
+     & 'SEAICE_waterAlbedo=', ' /* water albedo */')
+      CALL WRITE_0D_RL( SEAICE_emissivity, INDEX_NONE,
+     & 'SEAICE_emissivity =', ' /* ocean-surface emissivity */')
+#endif /* SEAICE_EXTERNAL_FLUXES */
 
       CALL WRITE_0D_RL( SEAICE_drag       ,INDEX_NONE,
      & 'SEAICE_drag       =', ' /* air-ice drag coefficient */')
@@ -206,8 +212,10 @@ c    & 'LAD               =', ' /* time stepping scheme */')
      & 'SEAICE_wetSnowAlb_south=', ' /* Southern Ocean wetSnowAlb */')
       CALL WRITE_0D_RL( HO_south          ,INDEX_NONE,
      & 'HO_south               =', ' /* Southern Ocean HO */')
-      CALL WRITE_0D_RL( SEAICE_waterAlbedo,INDEX_NONE,
-     & 'SEAICE_waterAlbedo=', ' /* water albedo */')
+      CALL WRITE_0D_RL( SEAICE_snow_emiss ,INDEX_NONE,
+     & 'SEAICE_snow_emiss =', ' /* snow emissivity */')
+      CALL WRITE_0D_RL( SEAICE_ice_emiss ,INDEX_NONE,
+     & 'SEAICE_ice_emiss =', ' /* seaice emissivity */')
       CALL WRITE_0D_RL( SEAICE_cpAir      ,INDEX_NONE,
      & 'SEAICE_cpAir      =', ' /* heat capacity of air */')
       CALL WRITE_0D_RL( SEAICE_dalton     ,INDEX_NONE,
@@ -220,16 +228,22 @@ c    & 'LAD               =', ' /* time stepping scheme */')
      & 'SEAICE_iceConduct =', ' /* sea-ice conductivity */')
       CALL WRITE_0D_RL( SEAICE_snowConduct,INDEX_NONE,
      & 'SEAICE_snowConduct=', ' /* snow conductivity */')
-      CALL WRITE_0D_RL( SEAICE_emissivity ,INDEX_NONE,
-     & 'SEAICE_emissivity =', ' /* emissivity */')
       CALL WRITE_0D_RL( SEAICE_snowThick  ,INDEX_NONE,
      & 'SEAICE_snowThick  =', ' /* cutoff snow thickness */')
       CALL WRITE_0D_RL( SEAICE_shortwave  ,INDEX_NONE,
      & 'SEAICE_shortwave  =', ' /* penetration shortwave radiation */')
+#ifdef SEAICE_VARIABLE_FREEZING_POINT
+c     WRITE(msgBuf,'(A,A)') 'Sea-water freezing temp. ',
+c    &     'is linear function of water Salinity'
+      WRITE(msgBuf,'(A,A)') 'ignores SEAICE_freeze ',
+     &     '(#define SEAICE_VARIABLE_FREEZING_POINT)'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+#endif
       CALL WRITE_0D_RL( SEAICE_freeze     ,INDEX_NONE,
      & 'SEAICE_freeze     =', ' /* freezing temp. of sea water */')
-      CALL WRITE_0D_RL( DIFF1             ,INDEX_NONE,
-     & 'DIFF1             =', ' /* parameter used in advect.F */')
+      CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
+     &                  ' /* parameter used in advect.F [m/s] */')
 #ifndef SEAICE_CAP_HEFF
       WRITE(msgBuf,'(A,A)')
      &     'MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined'
