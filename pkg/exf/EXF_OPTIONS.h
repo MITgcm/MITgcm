@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.22 2012/01/05 20:39:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.23 2012/01/16 22:58:33 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -150,10 +150,10 @@ C   Zenith Angle/Albedo related flags.
 # undef ALLOW_ZENITHANGLE
 #endif
 
-C   Use ocean_emissivity*lwdwon in lwFlux. This flag should always be define
-C   but is not because of backward compatibility
+C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   unless to reproduce old results (obtained with inconsistent old code)
 #ifdef ALLOW_DOWNWARD_RADIATION
-# undef EXF_LWDOWN_WITH_EMISSIVITY
+# define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
 C   Relaxation to monthly climatologies.
