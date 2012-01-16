@@ -48,11 +48,9 @@
  diffKhS=0.0,
  diffKzS=1.46e-7,
 # beta=1.E-11,
-# 1-D setups work best with an f-plane due to unequal Coriolis force on north 
-# and south faces 
- selectCoriMap=0
- tAlpha=2.E-4,
- sBeta =7.4E-4,
+# 1-D setups work best with an f-plane due to unequal Coriolis force on north
+# and south faces
+ selectCoriMap=0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='JMD95Z',
@@ -69,7 +67,7 @@
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0
  gravity         = 9.8156,
- rhoNil          = 1027.D0
+ rhoConst        = 1027.D0
  rhoConstFresh   = 999.8,
  useCDscheme=.FALSE.,
  inAdExact=.TRUE.,
@@ -146,7 +144,7 @@
  usingCartesianGrid=.TRUE.,
  dXspacing=5000.,
  dYspacing=5000.,
- 
+
 # usingSphericalPolarGrid=.TRUE.,
 # delX=1*2.E0,
 # delY=1*2.E0,
