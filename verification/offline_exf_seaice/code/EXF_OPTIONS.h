@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/EXF_OPTIONS.h,v 1.4 2011/12/24 01:17:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/EXF_OPTIONS.h,v 1.5 2012/01/16 23:07:24 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -151,10 +151,10 @@ C   Zenith Angle/Albedo related flags.
 # undef ALLOW_ZENITHANGLE
 #endif
 
-C   Use ocean_emissivity*lwdwon in lwFlux. This flag should always be define
-C   but is not because of backward compatibility
+C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   unless to reproduce old results (obtained with inconsistent old code)
 #ifdef ALLOW_DOWNWARD_RADIATION
-# undef EXF_LWDOWN_WITH_EMISSIVITY
+# define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
 C   Relaxation to monthly climatologies.
@@ -164,6 +164,12 @@ C   Relaxation to monthly climatologies.
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
+C   for interpolated vector fields, rotate towards model-grid axis
+C   using old rotation formulae (instead of grid-angles)
+#undef EXF_USE_OLD_VEC_ROTATION
+C   for interpolation around N & S pole, use the old formulation
+C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole)
+#undef EXF_USE_OLD_INTERP_POLE
 
 #define EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
