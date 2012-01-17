@@ -6,7 +6,7 @@
   useSEAICE = .TRUE.,
   useDOWN_SLOPE=.TRUE.,
   useDiagnostics = .FALSE.,
-  useMNC    = .TRUE.,
+# useMNC    = .TRUE.,
   useECCO   = .TRUE.,
   useGrdchk = .TRUE.,
  &
