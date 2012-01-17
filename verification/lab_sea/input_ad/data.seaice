@@ -1,8 +1,5 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#- old default for useFluxForm and DIFF1:
-      SEAICEuseFluxForm  = .FALSE.,
-      DIFF1 = 4.E-3,
       SEAICE_initialHEFF = 1.0,
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
@@ -19,15 +16,11 @@
       SEAICE_availHeatFrac = 0.8,
       SEAICEadvSnow      = .TRUE.,
       SEAICEuseFlooding  = .TRUE.,
+      SEAICEdiffKhArea   = 200.,
       SEAICEwriteState   = .TRUE.,
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
-# For backward compatibility only:
-# emissivities should be inherited from exf and setting them here does
-# not set a good example
- SEAICE_snow_emiss     = 0.97001763668430343479,
- SEAICE_ice_emiss      = 0.97001763668430343479,
  &
 
  &SEAICE_PARM02
