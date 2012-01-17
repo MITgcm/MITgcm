@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.6 2011/01/23 04:14:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.7 2012/01/17 15:18:55 jmc Exp $
 C $Name:  $
 
 C
@@ -77,9 +77,6 @@ C ********************************************************************
 C ***             External forcing Package                         ***
 C ********************************************************************
 
-C   Do more printout for the protocol file than usual.
-#define EXF_VERBOSE
-
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
 #undef   ALLOW_ATM_WIND
@@ -89,6 +86,12 @@ C   Bulk formulae related flags.
      defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # undef  ALLOW_BULK_LARGEYEAGER04
+#endif
+
+C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   unless to reproduce old results (obtained with inconsistent old code)
+#ifdef ALLOW_DOWNWARD_RADIATION
+# define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
 C   Relaxation to monthly climatologies.
@@ -103,8 +106,6 @@ C   forcing files from input grid to model grid.
 #if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
-
-
 
 
 C >>> No Open boundaries
