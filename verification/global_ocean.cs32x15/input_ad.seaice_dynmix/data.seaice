@@ -6,12 +6,6 @@
  SEAICEuseFREEDRIFT = .FALSE.,
 # for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
-# ocean_emissivity=1. in data.exf, so that this value is inconsistent
- SEAICE_emissivity     = 0.97001763668430343479,
-# emissivities should be inherited from exf and setting them here does
-# not set a good example
- SEAICE_snow_emiss     = 0.97001763668430343479,
- SEAICE_ice_emiss      = 0.97001763668430343479,
 #
  SIsal0                = 4.,
  SEAICEadvHeff         = .TRUE.,
@@ -21,7 +15,7 @@
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
  &
-#
+
  &SEAICE_PARM02
  mult_ice   = 1.,
 # choose which seaice cost term you want
