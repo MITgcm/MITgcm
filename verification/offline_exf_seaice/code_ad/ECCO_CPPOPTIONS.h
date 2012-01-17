@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.1 2007/06/25 20:15:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2012/01/17 15:28:50 jmc Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -11,11 +11,11 @@ C
 #undef  ALLOW_ECCO_FORWARD_RUN
 #undef  ALLOW_ECCO_DIAGNOSTICS_RUN
 #define  ALLOW_ECCO_OPTIMIZATION
- 
+
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
 C ********************************************************************
-                                                                                                                        
+
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
@@ -81,21 +81,22 @@ cph-test #define  ALLOW_SST_CONTROL
 C ********************************************************************
 C ***             External forcing Package                         ***
 C ********************************************************************
-C 
-
-C   Do more printout for the protocol file than usual.
-#undef EXF_VERBOSE
 
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
-#if (defined (ALLOW_ATM_TEMP) || \
-     defined (ALLOW_ATM_WIND))
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULK_OFFLINE
 # define ALLOW_BULKFORMULAE
 # undef ALLOW_BULK_LARGEYEAGER04
+#endif
+
+C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   unless to reproduce old results (obtained with inconsistent old code)
+#ifdef ALLOW_DOWNWARD_RADIATION
+# define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
 C   Relaxation to monthly climatologies.
@@ -107,6 +108,6 @@ C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
 
 #define EXF_INTERP_USE_DYNALLOC
-#if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )
+#if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
