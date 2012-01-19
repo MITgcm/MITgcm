@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.14 2011/08/01 20:36:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.15 2012/01/19 04:44:33 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -149,7 +149,7 @@ C--   Fill in the overlap:
       _EXCH_XY_RS( OBCS_insideMask, myThid )
 
 C==   Set interior mask at U & V location (grid-cell Wester & Southern edges)
-C     leave OB edges inside (maskIn=1) (e.g., maskInW(OB_Ie)=1 )
+C     leave OB edges inside (maskIn=1) (e.g., Eastern OB: maskInW(OB_Ie)=1 )
 C     so that velocity normal-component at OB is still in Interior region.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -191,9 +191,8 @@ C-    Eastern boundary
            DO i=iB+1,iB+OB_ApplX-1
              maskInW(i,j,bi,bj) = 0.
            ENDDO
-           IF (OB_Ie(jm,bi,bj).NE.0 ) iB = MAX( iB, OB_Ie(jm,bi,bj) )
-         ELSE
-           iB = OB_Ie(jm,bi,bj)
+           iB = MAX( iB, OB_Ie(jm,bi,bj) )
+           IF (OB_Ie(jm,bi,bj).EQ.0 ) iB = 0
          ENDIF
          IF ( iB.NE.0 ) THEN
            DO i=iB,iB+OB_ApplX-1
@@ -212,9 +211,7 @@ C-    Western boundary
            DO i=2-OB_ApplX+iB,iB
              maskInW(i,j,bi,bj) = 0.
            ENDDO
-           IF (OB_Iw(jm,bi,bj).NE.0 ) iB = MIN( iB, OB_Iw(jm,bi,bj) )
-         ELSE
-           iB = OB_Iw(jm,bi,bj)
+           iB = MIN( iB, OB_Iw(jm,bi,bj) )
          ENDIF
          IF ( iB.NE.0 ) THEN
            DO i=1-OB_ApplX+iB,iB
@@ -233,9 +230,8 @@ C-    Northern boundary
            DO j=jB+1,jB+OB_ApplY-1
              maskInS(i,j,bi,bj) = 0.
            ENDDO
-           IF (OB_Jn(im,bi,bj).NE.0 ) jB = MAX( jB, OB_Jn(im,bi,bj) )
-         ELSE
-           jB = OB_Jn(im,bi,bj)
+           jB = MAX( jB, OB_Jn(im,bi,bj) )
+           IF (OB_Jn(im,bi,bj).EQ.0 ) jB = 0
          ENDIF
          IF ( jB.NE.0 ) THEN
            DO j=jB,jB+OB_ApplY-1
@@ -254,9 +250,7 @@ C-    Southern boundary
            DO j=2-OB_ApplY+jB,jB
              maskInS(i,j,bi,bj) = 0.
            ENDDO
-           IF (OB_Js(im,bi,bj).NE.0 ) jB = MIN( jB, OB_Js(im,bi,bj) )
-         ELSE
-           jB = OB_Js(im,bi,bj)
+           jB = MIN( jB, OB_Js(im,bi,bj) )
          ENDIF
          IF ( jB.NE.0 ) THEN
            DO j=1-OB_ApplY+jB,jB
