@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.15 2012/01/19 04:44:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.16 2012/01/20 01:26:15 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -34,10 +34,12 @@ CEOP
 
 #ifdef ALLOW_OBCS
 C     !LOCAL VARIABLES:
+C     msgBuf   :: Informational/error message buffer
 C     OB_ApplX :: number of grid points (in X dir) overwritten by obcs_apply
 C     OB_ApplY :: number of grid points (in Y dir) overwritten by obcs_apply
 C     bi,bj    :: tile indices
 C     i, j     :: Loop counters
+      CHARACTER*(MAX_LEN_MBUF) msgBuf, errMsg
       INTEGER OB_ApplX
       INTEGER OB_ApplY
       INTEGER bi, bj
@@ -45,26 +47,14 @@ C     i, j     :: Loop counters
       INTEGER im, jm
       INTEGER iB, jB
       LOGICAL flag
+      INTEGER ioUnit
 
-C--   Set OB active tiles:
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         tileHasOBN(bi,bj) = .FALSE.
-         tileHasOBS(bi,bj) = .FALSE.
-         tileHasOBE(bi,bj) = .FALSE.
-         tileHasOBW(bi,bj) = .FALSE.
-         DO j=1-OLy,sNy+OLy
-          IF ( OB_Ie(j,bi,bj).NE.0 ) tileHasOBE(bi,bj) = .TRUE.
-          IF ( OB_Iw(j,bi,bj).NE.0 ) tileHasOBW(bi,bj) = .TRUE.
-         ENDDO
-         DO i=1-OLx,sNx+OLx
-          IF ( OB_Jn(i,bi,bj).NE.0 ) tileHasOBN(bi,bj) = .TRUE.
-          IF ( OB_Js(i,bi,bj).NE.0 ) tileHasOBS(bi,bj) = .TRUE.
-         ENDDO
-       ENDDO
-      ENDDO
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('OBCS_INIT_FIXED',myThid)
+#endif
 
 C==   Set Interior mask at Cell Center:
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -153,8 +143,8 @@ C     leave OB edges inside (maskIn=1) (e.g., Eastern OB: maskInW(OB_Ie)=1 )
 C     so that velocity normal-component at OB is still in Interior region.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=2-Oly,sNy+Oly
-          DO i=2-Olx,sNx+Olx
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
             maskInW(i,j,bi,bj) = maskInW(i,j,bi,bj)
      &                     *MAX( OBCS_insideMask(i-1,j,bi,bj),
      &                           OBCS_insideMask(i,j,bi,bj) )
@@ -168,10 +158,131 @@ C     so that velocity normal-component at OB is still in Interior region.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C--   After exchange, set tiled index arrays OB_Jn/Js/Ie/Iw in overlap region
+C     issue a warning if not consistent (similar to OBCS_CHECK but for overlap)
+
+c     IF ( OBCS_indexStatus .LT. 2 ) THEN
+      IF ( .TRUE. ) THEN
+       ioUnit = standardMessageUnit
+       WRITE(msgBuf,'(2A)')
+     &      'OBCS_INIT_FIXED: Setting OB indices in Overlap'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(errMsg,'(2A)') 'S/R OBCS_INIT_FIXED: ',
+     &              'Inside Mask and OB locations disagree :'
+       flag = .TRUE.
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C-    Eastern boundary
+         DO j=1-OLy,sNy+OLy
+          DO i=1,sNx+1
+           IF ( OBCS_insideMask(i,j,bi,bj).LT.
+     &          OBCS_insideMask(i-1,j,bi,bj)
+     &          .AND. ( j.LT.1 .OR. j.GT.sNy )
+     &          .AND. ksurfW(i,j,bi,bj).LE.Nr ) THEN
+            IF ( OB_Ie(j,bi,bj).EQ.0 ) THEN
+              OB_Ie(j,bi,bj) = i
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' Sets OBE(j,bi,bj=',j,',',bi,',',bj,')=', OB_Ie(j,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+            ELSEIF ( OB_Ie(j,bi,bj).NE.i ) THEN
+              IF ( flag ) CALL PRINT_ERROR( errMsg, myThid )
+              flag = .FALSE.
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' OBE(j,bi,bj=',j,',',bi,',',bj,')=', OB_Ie(j,bi,bj),
+     &        ' but from insideMask expects I=', i
+              CALL PRINT_ERROR( msgBuf, myThid )
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+C-    Western boundary
+         DO j=1-OLy,sNy+OLy
+c         DO i=0,sNx
+C- note: loop should start at 0, but OBCS index convention excludes OB_I=0
+          DO i=1,sNx
+           IF ( OBCS_insideMask(i,j,bi,bj).LT.
+     &          OBCS_insideMask(i+1,j,bi,bj)
+     &          .AND. ( j.LT.1 .OR. j.GT.sNy )
+     &          .AND. ksurfW(i+1,j,bi,bj).LE.Nr ) THEN
+            IF ( OB_Iw(j,bi,bj).EQ.0 ) THEN
+              OB_Iw(j,bi,bj) = i
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' Sets OBW(j,bi,bj=',j,',',bi,',',bj,')=', OB_Iw(j,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+            ELSEIF ( OB_Iw(j,bi,bj).NE.i ) THEN
+              IF ( flag ) CALL PRINT_ERROR( errMsg, myThid )
+              flag = .FALSE.
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' OBW(j,bi,bj=',j,',',bi,',',bj,')=', OB_Iw(j,bi,bj),
+     &        ' but from insideMask expects I=', i
+              CALL PRINT_ERROR( msgBuf, myThid )
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+C-    Northern boundary
+         DO j=1,sNy+1
+          DO i=1-OLx,sNx+OLx
+           IF ( OBCS_insideMask(i,j,bi,bj).LT.
+     &          OBCS_insideMask(i,j-1,bi,bj)
+     &          .AND. ( i.LT.1 .OR. i.GT.sNx )
+     &          .AND. ksurfS(i,j,bi,bj).LE.Nr ) THEN
+            IF ( OB_Jn(i,bi,bj).EQ.0 ) THEN
+              OB_Jn(i,bi,bj) = j
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' Sets OBN(i,bi,bj=',i,',',bi,',',bj,')=', OB_Jn(i,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+            ELSEIF ( OB_Jn(i,bi,bj).NE.j ) THEN
+              IF ( flag ) CALL PRINT_ERROR( errMsg, myThid )
+              flag = .FALSE.
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' OBN(i,bi,bj=',i,',',bi,',',bj,')=', OB_Jn(i,bi,bj),
+     &        ' but from insideMask expects J=', j
+              CALL PRINT_ERROR( msgBuf, myThid )
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+C-    Southern boundary
+c        DO j=0,sNy
+C- note: loop should start at 0, but OBCS index convention excludes OB_I=0
+         DO j=1,sNy
+          DO i=1-OLx,sNx+OLx
+           IF ( OBCS_insideMask(i,j,bi,bj).LT.
+     &          OBCS_insideMask(i,j+1,bi,bj)
+     &          .AND. ( i.LT.1 .OR. i.GT.sNx )
+     &          .AND. ksurfS(i,j+1,bi,bj).LE.Nr ) THEN
+            IF ( OB_Js(i,bi,bj).EQ.0 ) THEN
+              OB_Js(i,bi,bj) = j
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' Sets OBS(i,bi,bj=',i,',',bi,',',bj,')=', OB_Js(i,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+            ELSEIF ( OB_Js(i,bi,bj).NE.j ) THEN
+              IF ( flag ) CALL PRINT_ERROR( errMsg, myThid )
+              flag = .FALSE.
+              WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
+     &        ' OBS(i,bi,bj=',i,',',bi,',',bj,')=', OB_Js(i,bi,bj),
+     &        ' but from insideMask expects J=', j
+              CALL PRINT_ERROR( msgBuf, myThid )
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+
+        ENDDO
+       ENDDO
+       WRITE(msgBuf,'(2A)')
+     &      'OBCS_INIT_FIXED: Setting OB indices in Overlap <= done'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C==   After EXCH: reset Interior mask to zero beyond OB: this is necessary
 C     when EXCH are not disabled (e.g. with EXCH1) between tile Edges
 C     that are closed by OB.
-C     Do it over Olx,Oly grid points beyond OB, in agreement with OBCS code
+C     Do it over OLx,OLy grid points beyond OB, in agreement with OBCS code
 C     (apply_tracer) which overwrites tracer over the same width.
       OB_ApplX = OLx
       OB_ApplY = OLy
@@ -182,7 +293,7 @@ C     (apply_tracer) which overwrites tracer over the same width.
 C--   Set Interior mask to zero beyond OB
 C-    Eastern boundary
         DO j=1-OLy,sNy+OLy
-         jm = MAX( j-1, 1-Oly )
+         jm = MAX( j-1, 1-OLy )
          iB = OB_Ie(j,bi,bj)
          IF ( iB.NE.0 ) THEN
            DO i=iB,iB+OB_ApplX-1
@@ -202,7 +313,7 @@ C-    Eastern boundary
         ENDDO
 C-    Western boundary
         DO j=1-OLy,sNy+OLy
-         jm = MAX( j-1, 1-Oly )
+         jm = MAX( j-1, 1-OLy )
          iB = OB_Iw(j,bi,bj)
          IF ( iB.NE.0 ) THEN
            DO i=1-OB_ApplX+iB,iB
@@ -221,7 +332,7 @@ C-    Western boundary
         ENDDO
 C-    Northern boundary
         DO i=1-OLx,sNx+OLx
-         im = MAX( i-1, 1-Olx )
+         im = MAX( i-1, 1-OLx )
          jB = OB_Jn(i,bi,bj)
          IF ( jB.NE.0 ) THEN
            DO j=jB,jB+OB_ApplY-1
@@ -241,7 +352,7 @@ C-    Northern boundary
         ENDDO
 C-    Southern boundary
         DO i=1-OLx,sNx+OLx
-         im = MAX( i-1, 1-Olx )
+         im = MAX( i-1, 1-OLx )
          jB = OB_Js(i,bi,bj)
          IF ( jB.NE.0 ) THEN
            DO j=1-OB_ApplY+jB,jB
@@ -260,8 +371,8 @@ C-    Southern boundary
         ENDDO
 
 C--   Apply mask to maskInC :
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             maskInC(i,j,bi,bj) = maskInC(i,j,bi,bj)
      &                          *OBCS_insideMask(i,j,bi,bj)
           ENDDO
@@ -270,6 +381,30 @@ C--   Apply mask to maskInC :
 C--   end bi,bj loops
        ENDDO
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Set OB active tiles:
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         tileHasOBN(bi,bj) = .FALSE.
+         tileHasOBS(bi,bj) = .FALSE.
+         tileHasOBE(bi,bj) = .FALSE.
+         tileHasOBW(bi,bj) = .FALSE.
+         DO j=1-OLy,sNy+OLy
+          IF ( OB_Ie(j,bi,bj).NE.0 ) tileHasOBE(bi,bj) = .TRUE.
+          IF ( OB_Iw(j,bi,bj).NE.0 ) tileHasOBW(bi,bj) = .TRUE.
+         ENDDO
+         DO i=1-OLx,sNx+OLx
+          IF ( OB_Jn(i,bi,bj).NE.0 ) tileHasOBN(bi,bj) = .TRUE.
+          IF ( OB_Js(i,bi,bj).NE.0 ) tileHasOBS(bi,bj) = .TRUE.
+         ENDDO
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('OBCS_INIT_FIXED',myThid)
+#endif
 
 #endif /* ALLOW_OBCS */
       RETURN

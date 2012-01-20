@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.36 2011/06/07 22:23:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.37 2012/01/20 01:26:15 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -49,7 +49,7 @@ C     msgBuf      :: Informational/error message buffer
 C     iUnit       :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER I, J
+      INTEGER i, j
       INTEGER bi, bj, iG, jG, iGm, jGm
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
@@ -113,11 +113,6 @@ C     OBEW_Ny :: height of global domain for OB_Ieast, OB_Iwest
 
       INTEGER OBNS_Nx, OBNS_Ny
       INTEGER OBEW_Nx, OBEW_Ny
-
-#ifdef ALLOW_EXCH2
-C     buf :: used to exchange OB_Jnorth, ...
-      _RS buf(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-#endif
 CEOP
 
 C     retired parameters
@@ -184,14 +179,15 @@ C     retired parameters
 
 C--   Default flags and values for OBCS
       insideOBmaskFile = ' '
-      DO I=1,OBNS_Nx
-       OB_Jnorth(I)=0
-       OB_Jsouth(I)=0
+      DO i=1,OBNS_Nx
+       OB_Jnorth(i)=0
+       OB_Jsouth(i)=0
       ENDDO
-      DO J=1,OBEW_Ny
-       OB_Ieast(J)=0
-       OB_Iwest(J)=0
+      DO j=1,OBEW_Ny
+       OB_Ieast(j)=0
+       OB_Iwest(j)=0
       ENDDO
+      OBCS_indexStatus = 0
       useOrlanskiNorth   =.FALSE.
       useOrlanskiSouth   =.FALSE.
       useOrlanskiEast    =.FALSE.
@@ -357,11 +353,11 @@ C-    retired parameter
       ENDIF
 
 C-    Account for periodicity if negative indices were supplied
-      DO J=1,OBEW_Ny
-       IF (OB_Ieast(J).LT.0) OB_Ieast(J)=OB_Ieast(J)+OBEW_Nx+1
+      DO j=1,OBEW_Ny
+       IF (OB_Ieast(j) .LT.0) OB_Ieast(j) = OB_Ieast(j)+OBEW_Nx+1
       ENDDO
-      DO I=1,OBNS_Nx
-       IF (OB_Jnorth(I).LT.0) OB_Jnorth(I)=OB_Jnorth(I)+OBNS_Ny+1
+      DO i=1,OBNS_Nx
+       IF (OB_Jnorth(i).LT.0) OB_Jnorth(i)=OB_Jnorth(i)+OBNS_Ny+1
       ENDDO
       IF ( debugLevel.GE.debLevA ) THEN
 c       write(*,*) 'OB Jn =',OB_Jnorth
@@ -401,17 +397,18 @@ C--   Calculate the tiled index arrays OB_Jn/Js/Ie/Iw here from the
 C     global arrays OB_Jnorth/Jsouth/Ieast/Iwest.
 C     Note: This part of the code has been moved from obcs_init_fixed to
 C     routine routine because the OB_Jn/Js/Ie/Iw index arrays are
-C     required by ini_depth which is called before obcs_init_fixed
+C     required by INI_DEPTH (calling OBCS_CHECK_DEPTHS, but only needs
+C     valid interior indices) which is called before OBCS_INIT_FIXED.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-        DO I=1-Olx,sNx+Olx
-         OB_Jn(I,bi,bj)=0
-         OB_Js(I,bi,bj)=0
+        DO i=1-OLx,sNx+OLx
+         OB_Jn(i,bi,bj)=0
+         OB_Js(i,bi,bj)=0
         ENDDO
 
-        DO J=1-Oly,sNy+Oly
-         OB_Ie(J,bi,bj)=0
+        DO j=1-OLy,sNy+OLy
+         OB_Ie(j,bi,bj)=0
          OB_Iw(J,bi,bj)=0
         ENDDO
 
@@ -419,103 +416,75 @@ C     required by ini_depth which is called before obcs_init_fixed
 C       We apply OBCS only inside tile and exchange overlaps later
         tN = W2_myTileList(bi,bj)
 C 1. N/S boundaries
-        DO J=1,sNy
+        DO j=1,sNy
 C   convert from local y index J to global y index jG
 c   for N/S boundaries, we use faces stacked in x direction
-         jG = exch2_tyXStackLo(tN)+J-1
+         jG = exch2_tyXStackLo(tN)+j-1
 C   loop over local x index I
-         DO I=1,sNx
-          iG = exch2_txXStackLo(tN)+I-1
-          IF (jG.EQ.OB_Jnorth(iG)) OB_Jn(I,bi,bj)=J
-          IF (jG.EQ.OB_Jsouth(iG)) OB_Js(I,bi,bj)=J
+         DO i=1,sNx
+          iG = exch2_txXStackLo(tN)+i-1
+          IF (jG.EQ.OB_Jnorth(iG)) OB_Jn(i,bi,bj)=j
+          IF (jG.EQ.OB_Jsouth(iG)) OB_Js(i,bi,bj)=j
          ENDDO
         ENDDO
 C 2. E/W boundaries
-        DO J=1,sNy
+        DO j=1,sNy
 C   convert from local y index J to global y index jG
 c   for E/W boundaries, we use faces stacked in y direction
-         jG = exch2_tyYStackLo(tN)+J-1
+         jG = exch2_tyYStackLo(tN)+j-1
 C   loop over local x index I
-         DO I=1,sNx
-          iG = exch2_txYStackLo(tN)+I-1
-          IF (iG.EQ.OB_Ieast(jG))  OB_Ie(J,bi,bj)=I
-          IF (iG.EQ.OB_Iwest(jG))  OB_Iw(J,bi,bj)=I
+         DO i=1,sNx
+          iG = exch2_txYStackLo(tN)+i-1
+          IF (iG.EQ.OB_Ieast(jG))  OB_Ie(j,bi,bj)=i
+          IF (iG.EQ.OB_Iwest(jG))  OB_Iw(j,bi,bj)=i
          ENDDO
         ENDDO
+        _BEGIN_MASTER(myThid)
+C-    OB-index tiled-arrays are set for tile-interior region
+         OBCS_indexStatus = 1
+        _END_MASTER(myThid)
 
 #else /* ALLOW_EXCH2 */
 
-        DO J=1-Oly,sNy+Oly
+        DO j=1-OLy,sNy+OLy
 C convert from local y index J to global y index jG
-         jG = myYGlobalLo-1+(bj-1)*sNy+J
+         jG = myYGlobalLo+(bj-1)*sNy+j-1
 C use periodicity to deal with out of range points caused by the overlaps.
 C they will be excluded by the mask in any case, but this saves array
 C out-of-bounds errors here.
          jGm = 1+mod( jG-1+Ny , Ny )
 C loop over local x index I
-         DO I=1,sNx
-          iG = myXGlobalLo-1+(bi-1)*sNx+I
+         DO i=1,sNx
+          iG = myXGlobalLo+(bi-1)*sNx+i-1
           iGm = 1+mod( iG-1+Nx , Nx )
 C OB_Ieast(jGm) allows for the eastern boundary to be at variable x locations
-          IF (iG.EQ.OB_Ieast(jGm))  OB_Ie(J,bi,bj)=I
-          IF (iG.EQ.OB_Iwest(jGm))  OB_Iw(J,bi,bj)=I
+          IF (iG.EQ.OB_Ieast(jGm))  OB_Ie(j,bi,bj)=i
+          IF (iG.EQ.OB_Iwest(jGm))  OB_Iw(j,bi,bj)=i
          ENDDO
         ENDDO
-        DO J=1,sNy
-         jG = myYGlobalLo-1+(bj-1)*sNy+J
+        DO j=1,sNy
+         jG = myYGlobalLo+(bj-1)*sNy+j-1
          jGm = 1+mod( jG-1+Ny , Ny )
-         DO I=1-Olx,sNx+Olx
-          iG = myXGlobalLo-1+(bi-1)*sNx+I
+         DO i=1-OLx,sNx+OLx
+          iG = myXGlobalLo+(bi-1)*sNx+i-1
           iGm = 1+mod( iG-1+Nx , Nx )
 C OB_Jnorth(iGm) allows for the northern boundary to be at variable y locations
-          IF (jG.EQ.OB_Jnorth(iGm)) OB_Jn(I,bi,bj)=J
-          IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(I,bi,bj)=J
+          IF (jG.EQ.OB_Jnorth(iGm)) OB_Jn(i,bi,bj)=j
+          IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(i,bi,bj)=j
          ENDDO
         ENDDO
+        _BEGIN_MASTER(myThid)
+C-    OB-index tiled-arrays are set for interior and overlap regions
+        OBCS_indexStatus = 2
+        _END_MASTER(myThid)
 #endif /* ALLOW_EXCH2 */
 
 C     bi,bj-loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_EXCH2
-C     exchange with neighbors
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1,sNy
-         buf(sNx,J,bi,bj) = OB_Ie(J,bi,bj)
-         buf(  1,J,bi,bj) = OB_Iw(J,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
-      CALL EXCH_3D_RS( buf, 1, myThid )
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         OB_Ie(J,bi,bj) = buf(sNx,J,bi,bj)
-         OB_Iw(J,bi,bj) = buf(  1,J,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO I=1,sNx
-         buf(I,sNy,bi,bj) = OB_Jn(I,bi,bj)
-         buf(I,  1,bi,bj) = OB_Js(I,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
-      CALL EXCH_3D_RS( buf, 1, myThid )
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO I=1-Olx,sNx+Olx
-         OB_Jn(I,bi,bj) = buf(I,sNy,bi,bj)
-         OB_Js(I,bi,bj) = buf(I,  1,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_EXCH2 */
+C--   Everyone else must wait for OBCS_indexStatus to be set
+      _BARRIER
 
 #endif /* ALLOW_OBCS */
       RETURN
