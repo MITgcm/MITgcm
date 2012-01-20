@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.39 2011/10/21 17:32:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.40 2012/01/20 15:16:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -380,6 +380,17 @@ C     sigma1 and sigma2 are computed on C points
      &           * seaice_tension(I,J)
      &           ) * denom2
      &         *hEffM(I,J,bi,bj)
+#ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
+C     Code to avoid very small numbers that can degrade performance.
+C     Many compilers can handle this more efficiently with the help of 
+C     a flag (copied from CICE after correspondence with Elizabeth Hunke)
+            seaice_sigma1(I,J,bi,bj) = SIGN(MAX(
+     &           ABS( seaice_sigma1(I,J,bi,bj) ), SEAICE_EPS ), 
+     &           seaice_sigma1(I,J,bi,bj) )
+            seaice_sigma2(I,J,bi,bj) = SIGN(MAX(
+     &           ABS( seaice_sigma2(I,J,bi,bj) ), SEAICE_EPS ), 
+     &           seaice_sigma2(I,J,bi,bj) )
+#endif /* SEAICE_EVP_ELIMINATE_UNDERFLOWS */
 C     recover sigma11 and sigma22
             sig11(I,J) = 0.5 _d 0 *
      &           ( seaice_sigma1(I,J,bi,bj)+seaice_sigma2(I,J,bi,bj) )
@@ -395,6 +406,11 @@ C     sigma12 is computed on Z points
      &           + SEAICE_deltaTevp * 0.25 _d 0 * recip_evp_tau *
      &           seaice_shear(I,J)
      &           ) * denom2
+#ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
+            seaice_sigma12(I,J,bi,bj) = SIGN(MAX(
+     &           ABS( seaice_sigma12(I,J,bi,bj) ), SEAICE_EPS ), 
+     &           seaice_sigma12(I,J,bi,bj) )
+#endif /* SEAICE_EVP_ELIMINATE_UNDERFLOWS */
            ENDDO
           ENDDO
 C
