@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.18 2011/07/19 12:53:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.19 2012/01/20 15:26:33 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -137,6 +137,10 @@ C     abbreviations
                t2 = t1*t1
                t3 = t2*t1
 
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+               s3o2 = 0. _d 0
+#endif
                s1  = salt(i,j,k,bi,bj)
               IF ( s1 .GT. 0. _d 0 ) THEN
                s3o2 = SQRT(s1*s1*s1)
@@ -238,6 +242,10 @@ C     of sea water at p
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+               sp5 = 0. _d 0
+#endif
               IF ( s1 .GT. 0. _d 0 ) THEN
                sp5 = SQRT(s1)
               ELSE
@@ -285,6 +293,10 @@ C     of sea water at p
         DO i=iMin,iMax
          ct      = theta(i,j,k,bi,bj)
          sa      = salt(i,j,k,bi,bj)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+         sqrtsa  = 0. _d 0
+#endif
          IF ( sa .GT. 0. _d 0 ) THEN
           sqrtsa = SQRT(sa)
          ELSE
@@ -448,6 +460,10 @@ C     abbreviations
                t3 = t2*t1
 
                s1  = salt(i,j,k,bi,bj)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+               s3o2 = 0. _d 0
+#endif
               IF ( s1 .GT. 0. _d 0 ) THEN
                s3o2 = 1.5*SQRT(s1)
               ELSE
@@ -534,6 +550,10 @@ C     of sea water at p
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+               sp5 = 0. _d 0
+#endif
               IF ( s1 .GT. 0. _d 0 ) THEN
                sp5 = SQRT(s1)
               ELSE
@@ -574,6 +594,10 @@ C     of sea water at p
         DO i=iMin,iMax
          ct      = theta(i,j,k,bi,bj)
          sa      = salt(i,j,k,bi,bj)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+         sqrtsa  = 0. _d 0
+#endif
          IF ( sa .GT. 0. _d 0 ) THEN
           sqrtsa = SQRT(sa)
          ELSE

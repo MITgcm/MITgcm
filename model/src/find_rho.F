@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.38 2011/07/19 12:53:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.39 2012/01/20 15:26:33 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -290,6 +290,10 @@ C     abbreviations
             t3 = t2*t
             t4 = t3*t
 
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+            s3o2 = 0. _d 0
+#endif
             s  = sFld(i,j)
            IF ( s .GT. 0. _d 0 ) THEN
             s3o2 = s*SQRT(s)
@@ -381,6 +385,10 @@ C     abbreviations
             t3 = t2*t
             t4 = t3*t
 
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+            s3o2 = 0. _d 0
+#endif
             s  = sFld(i,j)
           IF ( s .GT. 0. _d 0 ) THEN
             s3o2 = s*SQRT(s)
@@ -554,6 +562,10 @@ C     abbreviations
             t1  = tFld(i,j)
             t2 = t1*t1
             s1  = sFld(i,j)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+            sp5 = 0. _d 0
+#endif
            IF ( s1 .GT. 0. _d 0 ) THEN
             sp5 = SQRT(s1)
            ELSE
@@ -633,6 +645,10 @@ CEOP
 C     abbreviations
         ct      = tFld(i,j)
         sa      = sFld(i,j)
+#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+C     this line makes TAF create vectorizable code
+        sqrtsa = 0. _d 0
+#endif
         IF ( sa .GT. 0. _d 0 ) THEN
          sqrtsa = SQRT(sa)
         ELSE
