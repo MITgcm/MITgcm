@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_calc.F,v 1.4 2011/12/12 15:28:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_calc.F,v 1.5 2012/01/20 14:24:08 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -467,7 +467,7 @@ C     to clean this fields first by copying the defined range to tmpFld
       tmpFld = 0. _d 0
       DO j = 1,jRun
        DO i = 1,iRun
-        tmpFld(i,j) = inpArr(i,j)
+        tmpFld(i,j) = inpArr(i,j)*tmpFac
        ENDDO
       ENDDO
       IF ( power.EQ.2) THEN
@@ -478,12 +478,12 @@ C     sum up the volume
       statArr(0)  = SUM(tmpVol)*arrDr
 C     compute and sum up volume*field
       tmpVol = tmpVol*tmpFld
-      statArr(1)  = SUM(tmpVol)*tmpFac*arrDr
+      statArr(1)  = SUM(tmpVol)*arrDr
 C     compute and sum up volume*field**2
       tmpVol = tmpVol*tmpFld
-      statArr(2)  = SUM(tmpVol)*tmpFac*tmpFac*arrDr
-      statArr(im) = MINVAL(tmpFld, MASK = arrMaskL>0.)*tmpFac
-      statArr(ix) = MAXVAL(tmpFld, MASK = arrMaskL>0.)*tmpFac
+      statArr(2)  = SUM(tmpVol)*arrDr
+      statArr(im) = MINVAL(tmpFld, MASK = arrMaskL>0.)
+      statArr(ix) = MAXVAL(tmpFld, MASK = arrMaskL>0.)
 
 #endif /* TARGET_NEC_SX */
 
