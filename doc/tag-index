@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1575 2012/01/17 17:14:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1576 2012/01/20 01:30:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs (with exch2):
+  - derive OB indices in overlap region from OB-InsideMask (in obcs_init_fixed.F)
+    and remove code (in obcs_readparms.F) which was based on EXCH of indices
+    (through buffer) and did not account for exch2 (e.g., CS-grid) topology.
 o pkg/exf and seaice exp:
   - change offline_exf_seaice.seaicetd test exp. to use default DIFF1 value (=0)
     so that switching off area & heff advection flags does not affect results.
