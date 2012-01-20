@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/relax_add.F,v 1.4 2010/06/16 21:04:22 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/relax_add.F,v 1.5 2012/01/20 20:32:57 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -123,8 +123,10 @@ C         ONLY if seaice is present
               nearIce=(sstRelax(i,j)+1.0)/3.0
           endif
 
-          qrelflux= lambdaTheta*(sstFromOcn(i,j)-sstRelax(i,j))/
-     &              (recip_Cp*recip_rhoNil*recip_drF(1))*nearIce
+          qrelflux= lambdaTheta*(sstFromOcn(i,j)-sstRelax(i,j))
+     &            * (HeatCapacity_Cp*rhoNil*drF(1))*nearIce
+C-    should use rhoConst instead of rhoNil:
+c    &            * (HeatCapacity_Cp*rhoConst*drF(1))*nearIce
 
 C         no longer restore on top of ice, but effectively full gridpoint UNDER ice
 C         (unless gridpoint is fully ice covered)
