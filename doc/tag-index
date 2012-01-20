@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1577 2012/01/20 14:35:03 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1578 2012/01/20 15:49:11 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: add a little initialisation trick to find_rho.F and find_alpha.F
+  to make TAF generate vectorizable code
+o pkg/seaice/seaice_evp.F: add code (copied from CICE) that avoids underflows.
+   Turn on by defining SEAICE_EVP_ELIMINATE_UNDERFLOWS. Most compilers
+   have flags that do this more efficiently.
 o pkg/diagnostics/diagstats_calc.F
   - for TARGET_NEC_SX fix the treatment of the scaling factor tmpFac=scaleFact
 o pkg/obcs (with exch2):
