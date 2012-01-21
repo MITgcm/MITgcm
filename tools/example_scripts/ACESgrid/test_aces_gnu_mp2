@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.7 2011/11/03 17:37:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.8 2012/01/21 15:09:04 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -25,6 +25,7 @@ export LC_ALL="en_US.UTF-8"
 
 HERE=$TST_DIR/output
 sfx='mp2'
+ module add torque
  module add gcc
  module add mvapich2
  OPTFILE="../tools/build_options/linux_amd64_gfortran"
