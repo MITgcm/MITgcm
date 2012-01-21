@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.157 2011/12/12 18:59:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.158 2012/01/21 18:45:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -238,7 +238,7 @@ C--   Set (free)surface-related parameters
       balancePrintMean    = .FALSE.
 
 C--   Atmospheric physical parameters (e.g.: EOS)
-      celsius2K = 273.16 _d 0
+      celsius2K = 273.15 _d 0
       atm_Po =  1. _d 5
       atm_Cp = 1004. _d 0
       atm_Rd = UNSET_RL
