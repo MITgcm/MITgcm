@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.256 2011/12/12 18:58:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.257 2012/01/21 18:46:27 jmc Exp $
 C $Name:  $
 C
 
@@ -528,7 +528,7 @@ C     gravity   :: Accel. due to gravity ( m/s^2 )
 C     recip_gravity and its inverse
 C     gBaro     :: Accel. due to gravity used in barotropic equation ( m/s^2 )
 C     rhoNil    :: Reference density for the linear equation of state
-C     rhoConst  :: Vertically constant reference density
+C     rhoConst  :: Vertically constant reference density (Boussinesq)
 C     rhoFacC   :: normalized (by rhoConst) reference density at cell-Center
 C     rhoFacF   :: normalized (by rhoConst) reference density at cell-interFace
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
@@ -743,7 +743,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & freeSurfFac, implicSurfPress, implicDiv2Dflow, implicitNHPress,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_gravity, gBaro,
-     & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
+     & rhoNil, rhoConst, recip_rhoConst,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
      & rhoConstFresh, rho1Ref, tRef, sRef, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
@@ -836,7 +836,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL gravity
       _RL recip_gravity
       _RL gBaro
-      _RL rhonil,        recip_rhonil
+      _RL rhoNil
       _RL rhoConst,      recip_rhoConst
       _RL rhoFacC(Nr),   recip_rhoFacC(Nr)
       _RL rhoFacF(Nr+1), recip_rhoFacF(Nr+1)
