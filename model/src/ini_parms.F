@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.244 2011/12/14 15:41:28 utke Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.245 2012/01/21 18:43:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -180,7 +180,7 @@ C--   Continuous equation parameters
      & diffKhT, diffK4T, diffKhS, diffK4S,
      & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, integr_GeoPot, selectFindRoSurf,
-     & atm_Cp, atm_Rd, atm_Rq, atm_Po,
+     & celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor,
      & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
@@ -600,13 +600,11 @@ C--   for backward compatibility :
       ELSE
        recip_rhoConst = 1. _d 0 / rhoConst
       ENDIF
-      IF ( rhoNil .LE. 0. ) THEN
+      IF ( eosType.EQ.'LINEAR' .AND. rhoNil.LE.0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: rhoNil must be greater than 0.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
-      ELSE
-       recip_rhoNil = 1. _d 0 / rhoNil
       ENDIF
       IF ( HeatCapacity_Cp .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
