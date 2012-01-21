@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1578 2012/01/20 15:49:11 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1579 2012/01/21 19:41:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - add celsius2K to namelist PARM01; remove unused recip_rhoNil from PARAMS.h;
+  - change default celsius2K from 273.16 to 273.15
+  - to keep results unchanged, add back old value of celsius2K in verification
+    exp. input*/data : aim.5l_cs, 1D_ocean_ice_column, lab_sea (fwd) &
+     global_ocean.cs32x15(seaice).
 o model/src: add a little initialisation trick to find_rho.F and find_alpha.F
   to make TAF generate vectorizable code
 o pkg/seaice/seaice_evp.F: add code (copied from CICE) that avoids underflows.
