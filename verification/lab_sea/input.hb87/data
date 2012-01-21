@@ -47,6 +47,8 @@
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
  allowFreezing=.FALSE.,
+#- set wrong celsius2K to reproduce old results:
+ celsius2K=273.16,
  HeatCapacity_Cp = 3986.D0,
  gravity         = 9.8156,
  rhoConst        = 1027.D0,
