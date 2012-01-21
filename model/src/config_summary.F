@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.133 2011/12/12 18:59:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.134 2012/01/21 18:45:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -201,10 +201,14 @@ C     i, k   :: Loop counters.
      & '  /* Smoothing parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
-      CALL WRITE_0D_RL( tAlpha,  INDEX_NONE,'tAlpha =',
-     &'   /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
-      CALL WRITE_0D_RL( sBeta,   INDEX_NONE,'sBeta =',
-     &'   /* Linear EOS haline contraction coefficient ( 1/psu ) */')
+      IF ( eosType .EQ. 'LINEAR' ) THEN
+        CALL WRITE_0D_RL( tAlpha,  INDEX_NONE,'tAlpha =',
+     &  ' /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
+        CALL WRITE_0D_RL( sBeta,   INDEX_NONE,'sBeta  =',
+     &  ' /* Linear EOS haline contraction coefficient ( 1/psu ) */')
+        CALL WRITE_0D_RL( rhoNil,  INDEX_NONE, 'rhoNil    =',
+     &  ' /* Reference density for Linear EOS ( kg/m^3 ) */')
+      ENDIF
       IF ( eosType .EQ. 'POLY3' ) THEN
         WRITE(msgBuf,'(A)')
      &   '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
@@ -214,6 +218,8 @@ C     i, k   :: Loop counters.
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDDO
       ENDIF
+      CALL WRITE_0D_RL( celsius2K, INDEX_NONE, 'celsius2K =',
+     &  ' /* 0 degree Celsius converted to Kelvin ( K ) */')
       IF ( fluidIsAir ) THEN
        CALL WRITE_0D_RL( atm_Rd, INDEX_NONE, 'atm_Rd =',
      & '  /* gas constant for dry air ( J/kg/K ) */')
@@ -231,16 +237,14 @@ C     i, k   :: Loop counters.
      & 'selectFindRoSurf=',
      & '  /* select how Surf.Ref. pressure is defined */')
       ENDIF
-      CALL WRITE_0D_RL( rhonil,  INDEX_NONE,'rhonil =',
-     &'   /* Reference density ( kg/m^3 ) */')
-      CALL WRITE_0D_RL( rhoConst, INDEX_NONE,'rhoConst =',
-     &'   /* Reference density ( kg/m^3 ) */')
+      CALL WRITE_0D_RL( rhoConst, INDEX_NONE,'rhoConst  =',
+     &  ' /* Reference density (Boussinesq)  ( kg/m^3 ) */')
       CALL WRITE_1D_RL( rhoFacC, Nr,   INDEX_K, 'rhoFacC = ',
      &  ' /* normalized Reference density @ cell-Center (-) */')
       CALL WRITE_1D_RL( rhoFacF, Nr+1, INDEX_K, 'rhoFacF = ',
      &  ' /* normalized Reference density @ W-Interface (-) */')
       CALL WRITE_0D_RL( rhoConstFresh, INDEX_NONE,'rhoConstFresh =',
-     &'   /* Reference density ( kg/m^3 ) */')
+     &  ' /* Fresh-water reference density ( kg/m^3 ) */')
       CALL WRITE_0D_RL( gravity, INDEX_NONE,'gravity =',
      &'   /* Gravitational acceleration ( m/s^2 ) */')
       CALL WRITE_0D_RL( gBaro,   INDEX_NONE,'gBaro =',
