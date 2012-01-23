@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1579 2012/01/21 19:41:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1580 2012/01/23 14:16:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o model/src:
+  - add factorized versions of some EOS code to find_rho.F, 
+    define USE_FACTORIZED_EOS to turn it on (default for TARGET_NEC_SX)
   - add celsius2K to namelist PARM01; remove unused recip_rhoNil from PARAMS.h;
   - change default celsius2K from 273.16 to 273.15
   - to keep results unchanged, add back old value of celsius2K in verification
