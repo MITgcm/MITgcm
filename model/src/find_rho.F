@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.39 2012/01/20 15:26:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.40 2012/01/23 14:16:36 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef TARGET_NEC_SX
+C     make sure that the factorized EOS is used on NEC vector computers
+# define USE_FACTORIZED_EOS
+#endif
+C     this was the default, so we keep it that way
 #define USE_FACTORIZED_POLY
 
 C--  File find_rho.F: Routines to compute density
@@ -280,8 +285,30 @@ C     == Local variables ==
       INTEGER i,j
       _RL rfresh, rsalt
       _RL t, t2, t3, t4, s, s3o2
+#ifdef USE_FACTORIZED_EOS
+      _RL eosF1, eosF2, eosF3, eosF4, eosF5, eosF6
+      _RL eosS1, eosS2, eosS3, eosS4, eosS5, eosS6
+      _RL eosS7, eosS8, eosS9
+#endif /* USE_FACTORIZED_EOS */
 CEOP
-
+#ifdef USE_FACTORIZED_EOS
+      eosF1 = eosJMDCFw(1) 
+      eosF2 = eosJMDCFw(2)
+      eosF3 = eosJMDCFw(3)
+      eosF4 = eosJMDCFw(4)
+      eosF5 = eosJMDCFw(5)
+      eosF6 = eosJMDCFw(6)
+      eosS1 = eosJMDCSw(1)
+      eosS2 = eosJMDCSw(2)
+      eosS3 = eosJMDCSw(3)
+      eosS4 = eosJMDCSw(4)
+      eosS5 = eosJMDCSw(5)
+      eosS6 = eosJMDCSw(6)
+      eosS7 = eosJMDCSw(7)
+      eosS8 = eosJMDCSw(8)
+      eosS9 = eosJMDCSw(9)
+#endif /* USE_FACTORIZED_EOS */
+      
       DO j=jMin,jMax
          DO i=iMin,iMax
 C     abbreviations
@@ -303,14 +330,35 @@ C     this line makes TAF create vectorizable code
            ENDIF
 
 C     density of freshwater at the surface
-            rfresh =
+#ifdef USE_FACTORIZED_EOS
+            rfresh =      
+     &                    eosF1 +
+     &               t* ( eosF2 +
+     &               t* ( eosF3 +
+     &               t* ( eosF4 +
+     &               t* ( eosF5 +
+     &               t*   eosF6  ))))
+#else
+            rfresh =      
      &             eosJMDCFw(1)
      &           + eosJMDCFw(2)*t
      &           + eosJMDCFw(3)*t2
      &           + eosJMDCFw(4)*t3
      &           + eosJMDCFw(5)*t4
      &           + eosJMDCFw(6)*t4*t
+#endif /* USE_FACTORIZED_EOS */
 C     density of sea water at the surface
+#ifdef USE_FACTORIZED_EOS
+            rsalt =  s * ( eosS1 +
+     &               t * ( eosS2 +
+     &               t * ( eosS3 +
+     &               t * ( eosS4 +
+     &               t *   eosS5  ))))
+     &          + s3o2 * ( eosS6 +
+     &               t * ( eosS7 + 
+     &               t *   eosS8  ))
+     &          + s*s  *   eosS9
+#else
             rsalt =
      &         s*(
      &             eosJMDCSw(1)
@@ -325,6 +373,7 @@ C     density of sea water at the surface
      &           + eosJMDCSw(8)*t2
      &           )
      &           + eosJMDCSw(9)*s*s
+#endif /* USE_FACTORIZED_EOS */
 
             rhoP0(i,j) = rfresh + rsalt
 
@@ -375,7 +424,43 @@ C     == Local variables ==
       INTEGER i,j
       _RL bMfresh, bMsalt, bMpres
       _RL t, t2, t3, t4, s, s3o2, p, p2
+#ifdef USE_FACTORIZED_EOS
+      _RL eosF1, eosF2, eosF3, eosF4, eosF5
+      _RL eosS1, eosS2, eosS3, eosS4, eosS5, eosS6, eosS7
+      _RL eosP1, eosP2, eosP3, eosP4, eosP5, eosP6, eosP7
+      _RL eosP8, eosP9, eosP10, eosP11, eosP12, eosP13, eosP14
+#endif /* USE_FACTORIZED_EOS */
 CEOP
+#ifdef USE_FACTORIZED_EOS
+      eosF1 = eosJMDCKFw(1)
+      eosF2 = eosJMDCKFw(2)
+      eosF3 = eosJMDCKFw(3)
+      eosF4 = eosJMDCKFw(4)
+      eosF5 = eosJMDCKFw(5)
+
+      eosS1 = eosJMDCKSw(1)
+      eosS2 = eosJMDCKSw(2)
+      eosS3 = eosJMDCKSw(3)
+      eosS4 = eosJMDCKSw(4)
+      eosS5 = eosJMDCKSw(5)
+      eosS6 = eosJMDCKSw(6)
+      eosS7 = eosJMDCKSw(7)
+
+      eosP1  =eosJMDCKP(1)
+      eosP2  =eosJMDCKP(2)
+      eosP3  =eosJMDCKP(3)
+      eosP4  =eosJMDCKP(4)
+      eosP5  =eosJMDCKP(5)
+      eosP6  =eosJMDCKP(6)
+      eosP7  =eosJMDCKP(7)
+      eosP8  =eosJMDCKP(8)
+      eosP9  =eosJMDCKP(9)
+      eosP10 =eosJMDCKP(10)
+      eosP11 =eosJMDCKP(11)
+      eosP12 =eosJMDCKP(12)
+      eosP13 =eosJMDCKP(13)
+      eosP14 =eosJMDCKP(14)
+#endif /* USE_FACTORIZED_EOS */
 
       DO j=jMin,jMax
          DO i=iMin,iMax
@@ -400,12 +485,45 @@ C
             p = locPres(i,j)*SItoBar
             p2 = p*p
 C     secant bulk modulus of fresh water at the surface
+#ifdef USE_FACTORIZED_EOS
+            bMfresh =       eosF1 +
+     &                t * ( eosF2 +
+     &                t * ( eosF3 +
+     &                t * ( eosF4 +
+     &                t *   eosF5  )))
+#else
             bMfresh =
      &             eosJMDCKFw(1)
      &           + eosJMDCKFw(2)*t
      &           + eosJMDCKFw(3)*t2
      &           + eosJMDCKFw(4)*t3
      &           + eosJMDCKFw(5)*t4
+#endif /* USE_FACTORIZED_EOS */
+C     secant bulk modulus of sea water at the surface
+#ifdef USE_FACTORIZED_EOS
+            bMsalt =  s * ( eosS1 +
+     &                t * ( eosS2 +
+     &                t * ( eosS3 +
+     &                t *   eosS4  )))
+     &            + s3o2* ( eosS5 +
+     &                t * ( eosS6 +
+     &                t *   eosS7  ))
+C     secant bulk modulus of sea water at pressure p
+            bMpres =  p * ( eosP1 +
+     &                t * ( eosP2 +
+     &                t * ( eosP3 +
+     &                t *   eosP4  )))
+     &             + p*s* ( eosP5 +
+     &                t * ( eosP6 +
+     &                t *   eosP7  ))
+     &             + p*s3o2*eosP8
+     &             + p2 * ( eosP9 +
+     &                t * ( eosP10 +
+     &                t *   eosP11  ))
+     &            + p2*s* ( eosP12 +
+     &                t * ( eosP13 +
+     &                t *   eosP14 ))
+#else
 C     secant bulk modulus of sea water at the surface
             bMsalt =
      &         s*( eosJMDCKSw(1)
@@ -437,6 +555,7 @@ C     secant bulk modulus of sea water at pressure p
      &           + eosJMDCKP(13)*t
      &           + eosJMDCKP(14)*t2
      &           )
+#endif /* USE_FACTORIZED_EOS */
 
             bulkMod(i,j) = bMfresh + bMsalt + bMpres
 
@@ -607,7 +726,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE FIND_RHONUMTEOS
+C     | o SUBROUTINE FIND_RHOTEOS
 C     |   Calculates numerator and inverse of denominator of the 
 C     |   TEOS-10 (McDougall et al. 2011) equation of state
 C     |   - the code is more or less a copy the teos-10 toolbox
@@ -725,7 +844,46 @@ C     == Local variables ==
       _RL rhoNum, rhoDen, den, epsln
       PARAMETER ( epsln = 0. _d 0 )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef USE_FACTORIZED_EOS
+      _RL eosF1, eosF2, eosF3, eosF4, eosF5, eosF6
+      _RL eosS1, eosS2, eosS3, eosS4, eosS5, eosS6
+      _RL eosS7, eosS8, eosS9
+      _RL eosP1, eosP2, eosP3, eosP4, eosP5, eosP6, eosP7
+      _RL eosP8, eosP9, eosP10, eosP11, eosP12, eosP13, eosP14
+#endif /* USE_FACTORIZED_EOS */
 CEOP
+#ifdef USE_FACTORIZED_EOS
+      eosF1 = eosJMDCFw(1) 
+      eosF2 = eosJMDCFw(2)
+      eosF3 = eosJMDCFw(3)
+      eosF4 = eosJMDCFw(4)
+      eosF5 = eosJMDCFw(5)
+      eosF6 = eosJMDCFw(6)
+      eosS1 = eosJMDCSw(1)
+      eosS2 = eosJMDCSw(2)
+      eosS3 = eosJMDCSw(3)
+      eosS4 = eosJMDCSw(4)
+      eosS5 = eosJMDCSw(5)
+      eosS6 = eosJMDCSw(6)
+      eosS7 = eosJMDCSw(7)
+      eosS8 = eosJMDCSw(8)
+      eosS9 = eosJMDCSw(9)
+
+      eosP1  =eosJMDCKP(1)
+      eosP2  =eosJMDCKP(2)
+      eosP3  =eosJMDCKP(3)
+      eosP4  =eosJMDCKP(4)
+      eosP5  =eosJMDCKP(5)
+      eosP6  =eosJMDCKP(6)
+      eosP7  =eosJMDCKP(7)
+      eosP8  =eosJMDCKP(8)
+      eosP9  =eosJMDCKP(9)
+      eosP10 =eosJMDCKP(10)
+      eosP11 =eosJMDCKP(11)
+      eosP12 =eosJMDCKP(12)
+      eosP13 =eosJMDCKP(13)
+      eosP14 =eosJMDCKP(14)
+#endif /* USE_FACTORIZED_EOS */
 
       rhoLoc  = 0. _d 0
       rhoP0   = 0. _d 0
@@ -786,6 +944,15 @@ C     nonlinear equation of state in pressure coordinates
          p2 = p1*p1
 
 C     density of freshwater at the surface
+#ifdef USE_FACTORIZED_EOS
+         rfresh =      
+     &              eosF1 +
+     &        t1* ( eosF2 +
+     &        t1* ( eosF3 +
+     &        t1* ( eosF4 +
+     &        t1* ( eosF5 +
+     &        t1*   eosF6  ))))
+#else
          rfresh =
      &          eosJMDCFw(1)
      &        + eosJMDCFw(2)*t1
@@ -793,7 +960,19 @@ C     density of freshwater at the surface
      &        + eosJMDCFw(4)*t3
      &        + eosJMDCFw(5)*t4
      &        + eosJMDCFw(6)*t4*t1
+#endif /* USE_FACTORIZED_EOS */
 C     density of sea water at the surface
+#ifdef USE_FACTORIZED_EOS
+         rsalt =   s1 * ( eosS1 +
+     &             t1 * ( eosS2 +
+     &             t1 * ( eosS3 +
+     &             t1 * ( eosS4 +
+     &             t1 *   eosS5  ))))
+     &         + s3o2 * ( eosS6 +
+     &             t1 * ( eosS7 + 
+     &             t1 *   eosS8  ))
+     &         + s1*s1*   eosS9
+#else
          rsalt =
      &        s1*(
      &             eosJMDCSw(1)
@@ -808,16 +987,50 @@ C     density of sea water at the surface
      &           + eosJMDCSw(8)*t2
      &           )
      &           + eosJMDCSw(9)*s1*s1
+#endif /* USE_FACTORIZED_EOS */
 
          rhoP0 = rfresh + rsalt
 
 C     secant bulk modulus of fresh water at the surface
+#ifdef USE_FACTORIZED_EOS
+         bMfresh =   eosF1 +
+     &        t1 * ( eosF2 +
+     &        t1 * ( eosF3 +
+     &        t1 * ( eosF4 +
+     &        t1 *   eosF5  )))
+#else 
          bMfresh =
      &             eosJMDCKFw(1)
      &           + eosJMDCKFw(2)*t1
      &           + eosJMDCKFw(3)*t2
      &           + eosJMDCKFw(4)*t3
      &           + eosJMDCKFw(5)*t4
+#endif /* USE_FACTORIZED_EOS */
+C     secant bulk modulus of sea water at the surface
+#ifdef USE_FACTORIZED_EOS
+         bMsalt = s1 * ( eosS1 +
+     &            t1 * ( eosS2 +
+     &            t1 * ( eosS3 +
+     &            t1 *   eosS4  )))
+     &        + s3o2 * ( eosS5 +
+     &            t1 * ( eosS6 +
+     &            t1 *   eosS7  ))
+C     secant bulk modulus of sea water at pressure p
+         bMpres =  p1 * ( eosP1 +
+     &             t1 * ( eosP2 +
+     &             t1 * ( eosP3 +
+     &             t1 *   eosP4  )))
+     &          + p1*s1*( eosP5 +
+     &             t1 * ( eosP6 +
+     &             t1 *   eosP7  ))
+     &          + p1*s3o2*eosP8
+     &          + p2  * ( eosP9 +
+     &             t1 * ( eosP10 +
+     &             t1 *   eosP11  ))
+     &         + p2*s1* ( eosP12 +
+     &             t1 * ( eosP13 +
+     &             t1 *   eosP14 ))
+#else
 C     secant bulk modulus of sea water at the surface
          bMsalt =
      &        s1*( eosJMDCKSw(1)
@@ -849,6 +1062,7 @@ C     secant bulk modulus of sea water at pressure p
      &           + eosJMDCKP(13)*t1
      &           + eosJMDCKP(14)*t2
      &           )
+#endif /* USE_FACTORIZED_EOS */
 
          bulkMod = bMfresh + bMsalt + bMpres
 
@@ -857,35 +1071,35 @@ C     density of sea water at pressure p
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         sp5 = SQRT(s1)
+       sp5 = SQRT(s1)
 
-         p1   = pLoc*SItodBar
-         p1t1 = p1*t1
+       p1   = pLoc*SItodBar
+       p1t1 = p1*t1
 
-         rhoNum = eosMDJWFnum(0)
-     &        + t1*(eosMDJWFnum(1)
-     &        +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )
-     &        + s1*(eosMDJWFnum(4)
-     &        +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)
-     &        + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2
-     &        +     eosMDJWFnum(9)*s1
-     &        +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
+       rhoNum = eosMDJWFnum(0)
+     &      + t1*(eosMDJWFnum(1)
+     &      +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )
+     &      + s1*(eosMDJWFnum(4)
+     &      +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)
+     &      + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2
+     &      +     eosMDJWFnum(9)*s1
+     &      +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
 
 
-         den = eosMDJWFden(0)
-     &        + t1*(eosMDJWFden(1)
-     &        +     t1*(eosMDJWFden(2)
-     &        +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
-     &        + s1*(eosMDJWFden(5)
-     &        +     t1*(eosMDJWFden(6)
-     &        +         eosMDJWFden(7)*t2)
-     &        +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) )
-     &        + p1*(eosMDJWFden(10)
-     &        +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
+       den = eosMDJWFden(0)
+     &      + t1*(eosMDJWFden(1)
+     &      +     t1*(eosMDJWFden(2)
+     &      +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
+     &      + s1*(eosMDJWFden(5)
+     &      +     t1*(eosMDJWFden(6)
+     &      +         eosMDJWFden(7)*t2)
+     &      +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) )
+     &      + p1*(eosMDJWFden(10)
+     &      +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
 
-         rhoDen = 1.0/(epsln+den)
-
-         rhoLoc = rhoNum*rhoDen
+       rhoDen = 1.0/(epsln+den)
+       
+       rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'TEOS10' ) THEN
 
