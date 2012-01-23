@@ -11,6 +11,8 @@
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
  atm_Rq=0.6078E-3,
+#- set wrong celsius2K to reproduce old results:
+ celsius2K=273.16,
  Integr_GeoPot=2,
  selectFindRoSurf=1,
  gravity=9.81,
