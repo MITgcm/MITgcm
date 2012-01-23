@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.4 2011/08/19 22:54:42 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.5 2012/01/23 20:54:07 jmc Exp $
 #  $Name:  $
 #
 # Build options for PGI compiler on Linux AMD64 platform
@@ -28,13 +28,19 @@
 if test "x$MPI" = xtrue ; then
   CC=mpicc
   FC=mpif77
-  LINK=mpif77
+  F90C=mpif90
 else
   CC=pgcc
   FC=pgf77
+  F90C=pgf90
 fi
 
-DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+DEFINES="-DWORDLENGTH=4"
+if test "x$ALWAYS_USE_F90" = x1 ; then
+    FC=$F90C
+else
+    DEFINES="$DEFINES -DNML_EXTENDED_F77"
+fi
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
 GET_FC_VERSION="-V"
