@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.16 2012/01/20 01:26:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.17 2012/01/23 21:57:16 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -161,8 +161,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   After exchange, set tiled index arrays OB_Jn/Js/Ie/Iw in overlap region
 C     issue a warning if not consistent (similar to OBCS_CHECK but for overlap)
 
-c     IF ( OBCS_indexStatus .LT. 2 ) THEN
-      IF ( .TRUE. ) THEN
+c     IF ( .TRUE. ) THEN
+      IF ( OBCS_indexStatus .LT. 2 ) THEN
        ioUnit = standardMessageUnit
        WRITE(msgBuf,'(2A)')
      &      'OBCS_INIT_FIXED: Setting OB indices in Overlap'
