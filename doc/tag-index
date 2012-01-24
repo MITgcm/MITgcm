@@ -1,17 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1580 2012/01/23 14:16:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1581 2012/01/24 14:41:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63i (2012/01/24)
 o model/src:
-  - add factorized versions of some EOS code to find_rho.F, 
+  - add factorized versions of some EOS code to find_rho.F,
     define USE_FACTORIZED_EOS to turn it on (default for TARGET_NEC_SX)
+o model/src:
   - add celsius2K to namelist PARM01; remove unused recip_rhoNil from PARAMS.h;
   - change default celsius2K from 273.16 to 273.15
   - to keep results unchanged, add back old value of celsius2K in verification
-    exp. input*/data : aim.5l_cs, 1D_ocean_ice_column, lab_sea (fwd) &
-     global_ocean.cs32x15(seaice).
+    exp. input*/data : aim.5l_cs, 1D_ocean_ice_column, lab_sea (fwd),
+     global_ocean.cs32x15(seaice) & cpl_aim+ocn(input_atm).
 o model/src: add a little initialisation trick to find_rho.F and find_alpha.F
   to make TAF generate vectorizable code
 o pkg/seaice/seaice_evp.F: add code (copied from CICE) that avoids underflows.
