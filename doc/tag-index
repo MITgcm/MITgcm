@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1581 2012/01/24 14:41:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1582 2012/01/24 15:09:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o tools (genmake2):
+  - fix makefile NAME specification (option: -makefile NAME) by adding
+    "-f $MAKEFILE" in few places where it was missing including makedepend
+    command (contribution from Paul).
 
 checkpoint63i (2012/01/24)
 o model/src:
