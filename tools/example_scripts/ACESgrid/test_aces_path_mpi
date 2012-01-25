@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_path.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_path.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mpi,v 1.5 2011/11/03 17:37:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mpi,v 1.6 2012/01/25 17:28:21 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -25,8 +25,12 @@ export LC_ALL="en_US.UTF-8"
 
 HERE=$TST_DIR/output
 sfx='path'
+#module add ekopath
+#module add openmpi
+#- with mpich2, needs module torque to run
+ module add torque
  module add ekopath
- module add openmpi
+ module add mvapich2
  OPTFILE="../tools/build_options/linux_amd64_pathf90"
 #options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
 #EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
