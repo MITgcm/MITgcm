@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.16 2012/01/16 16:57:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.17 2012/01/29 21:25:34 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,7 +76,7 @@ C WATER LATENT HEAT CONSTANT
 C STEFAN BOLTZMAN CONSTANT TIMES EMISSIVITY
       D3=SEAICE_emissivity*SEAICE_boltzmann
 C MELTING TEMPERATURE OF ICE
-      TMELT=273.16 _d 0
+      TMELT = celsius2K
 C
       recip_lhEvap = 1./SEAICE_lhEvap
       recip_rhoConstFresh = 1./rhoConstFresh
@@ -86,10 +86,10 @@ C
         netHeatFlux(I,J) = 0. _d 0
         SWHeatFlux (I,J) = 0. _d 0
 C
-        tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J))
+        tsurfLoc (I,J) = MIN(celsius2K+MAX_TICE,TSURF(I,J))
 # ifdef ALLOW_ATM_TEMP
 C     Is this necessary?
-        atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
+        atempLoc (I,J) = MAX(celsius2K+MIN_ATEMP,ATEMP(I,J,bi,bj))
 # endif
 # ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
