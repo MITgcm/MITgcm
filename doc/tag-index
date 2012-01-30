@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1583 2012/01/30 11:19:33 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1584 2012/01/30 15:30:50 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F: add mask to avoid non-zero ice thickness
+  over land (non-legacy code)
 o vectorize salt_plume package: 
   - add extra code to salt_plume_frac and salt_plume_tendency_apply_s
   - this code computes plumebk everywhere (also over land), thus requires
