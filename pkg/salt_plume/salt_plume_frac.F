@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.5 2012/01/30 11:18:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.6 2012/01/30 14:45:46 mlosch Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -66,6 +66,9 @@ C     !LOCAL VARIABLES:
 #endif
       _RL     one, two, three, tempN, tempN20
       parameter( one = 1. _d 0, two = 2. _d 0, three = 3. _d 0 )
+C     This is an abbreviation of 1./(exp(1.)-1.)
+      _RL     recip_expOneM1
+      parameter( recip_expOneM1 = 0.581976706869326343 )
 
       DO i = 1,imax
        facz = abs(fact*plumek(i))
@@ -76,7 +79,9 @@ C     Default: uniform distribution, PlumeMethod=1, Npower=0
          dd20 = (abs(SPDepth(i)))
 #ifdef TARGET_NEC_SX
          IF ( dd20 .GT. 0. _d 0 ) THEN
-          tempN   = (facz/dd20)**(Npower+1)
+          tempN   = (facz/dd20)
+C     crazy attempt to make the code faster and raise tempN to (Npower+1)
+          IF (Npower .GT. 0) tempN = tempN*tempN**Npower          
          ELSE
           tempN = 0. _d 0
          ENDIF
@@ -93,8 +98,9 @@ C     Default: uniform distribution, PlumeMethod=1, Npower=0
 
         ELSEIF (PlumeMethod .EQ. 2) THEN !exponential distribution
          dd = abs(SPDepth(i))
-         plumek(i) = one - (exp(facz/dd)-one)/
-     &                     (exp(one    )-one)
+CML         plumek(i) = one - (exp(facz/dd)-one)/
+CML     &                     (exp(one    )-one)
+         plumek(i) = one - (exp(facz/dd)-one)*recip_expOneM1
 
 C     PlumeMethod = 3, distribute salt LINEARLY between SPDepth and 
 C     SPDepth/SPovershoot
@@ -114,7 +120,8 @@ C     PlumeMethod = 5, dumping all salt at the top layer
          dd   = 0.
          dd20 = one
          IF( (facz.GE.dd).AND.(facz.LT.dd20) ) THEN
-          plumek(i) = one - min(one,(facz-dd)/(dd20-dd))
+CML          plumek(i) = one - min(one,(facz-dd)/(dd20-dd))
+          plumek(i) = one - min(one,facz)
          ELSE
           plumek(i) = 0.
          ENDIF
@@ -123,7 +130,9 @@ C     PLumeMethod = 6, currently only works for Npower = 1 and 2.
          dd20 = (abs(SPDepth(i)))
 #ifdef TARGET_NEC_SX
          IF ( dd20 .GT. 0. _d 0 ) THEN
-          tempN   = (facz/dd20)**(Npower+1)
+          tempN   = (facz/dd20)
+C     crazy attempt to make the code faster and raise tempN to (Npower+1)
+          IF (Npower .GT. 0) tempN = tempN*tempN**Npower          
           tempN20 = 1. _d 0/dd20
          ELSE
           tempN   = 0. _d 0
