@@ -1,12 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1584 2012/01/30 15:30:50 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1585 2012/01/30 18:42:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - mask (in exf_init_fixed.F) atemp,aqh,evap,precip,runoff,lwflx,areamask
+    and climsst/sss even when using seaice (to prevent calculation that might
+    use SST on land); does not affect any verification exp.
+  - apply mask to taux,tauy (in seaice_get_dynforcing.F); update output
+    of lab_sea.fd & lab_sea.hb87 and global_ocean.cs32x15.seaice_dynmix.
 o pkg/seaice/seaice_growth.F: add mask to avoid non-zero ice thickness
   over land (non-legacy code)
-o vectorize salt_plume package: 
+o vectorize salt_plume package:
   - add extra code to salt_plume_frac and salt_plume_tendency_apply_s
   - this code computes plumebk everywhere (also over land), thus requires
     code to avoid divisions by zero and catch the case of kLev=Nr.
