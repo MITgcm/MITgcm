@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1582 2012/01/24 15:09:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1583 2012/01/30 11:19:33 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o vectorize salt_plume package: 
+  - add extra code to salt_plume_frac and salt_plume_tendency_apply_s
+  - this code computes plumebk everywhere (also over land), thus requires
+    code to avoid divisions by zero and catch the case of kLev=Nr.
+  - efficiency of salt_plume_frac is still sub-optimal
 o tools (genmake2):
   - fix makefile NAME specification (option: -makefile NAME) by adding
     "-f $MAKEFILE" in few places where it was missing including makedepend
