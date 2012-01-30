@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.6 2011/12/28 20:50:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.7 2012/01/30 11:19:02 mlosch Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -34,41 +34,89 @@ CEOP
 #ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
-      integer i, j, two2
-      parameter(two2 = 2)
-      _RL plumefrac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL plumekb(two2), SPdepth(two2), minusone
+      integer i, j
+      _RL minusone
       parameter(minusone = -1.)
+      _RL plumefrac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef TARGET_NEC_SX
+      integer imt
+      parameter( imt=(sNx+2*OLx)*(sNy+2*OLy) )
+      _RL plumekb2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#else
+      integer two2
+      parameter(two2 = 2)
+      _RL plumekb(two2), SPdepth(two2)
+#endif
 
-      do j=jMin,jMax
-       do i=iMin,iMax
+#ifdef TARGET_NEC_SX
+C     The vector version computes plumekb2D at each grid point, but this
+C     is still faster than non-vector code.
+      IF ( kLev .LT. Nr ) THEN
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         plumekb2D(i,j)=abs(rF(kLev))
+        ENDDO
+       ENDDO
+       CALL SALT_PLUME_FRAC(
+     I      imt,minusone,SaltPlumeDepth(1-Olx,1-Oly,bi,bj),
+     U      plumekb2D,
+     I      myTime, 1, myThid )
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         plumefrac(I,J) = plumekb2D(i,j)*maskC(i,j,klev,bi,bj)
+         plumekb2D(i,j) = abs(rF(kLev+1))
+        ENDDO
+       ENDDO
+       CALL SALT_PLUME_FRAC(
+     I      imt,minusone,SaltPlumeDepth(1-Olx,1-Oly,bi,bj),
+     U      plumekb2D,
+     I      myTime, 1, myThid )
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+C     Penetrating saltplume fraction:
+         IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
+          plumefrac(i,j)     = plumefrac(i,j)
+     &         -plumekb2D(i,j)*maskC(i,j,klev,bi,bj)
+          gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
+     &         +saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)*mass2rUnit
+     &         *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+         ELSE
+          plumefrac(i,j)=0. _d 0         
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+#else
+      DO j=jMin,jMax
+       DO i=iMin,iMax
 C Penetrating saltplume fraction:
-          plumefrac(I,J) = 0. _d 0
-          plumekb(1)=abs(rF(klev))
-          plumekb(2)=abs(rF(klev+1))
-          SPdepth(1)=SaltPlumeDepth(i,j,bi,bj)
-          SPdepth(2)=SaltPlumeDepth(i,j,bi,bj)
-          CALL SALT_PLUME_FRAC(
+        IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
+         plumefrac(I,J) = 0. _d 0
+         plumekb(1)=abs(rF(klev))
+         plumekb(2)=abs(rF(klev+1))
+         SPdepth(1)=SaltPlumeDepth(i,j,bi,bj)
+         SPdepth(2)=SaltPlumeDepth(i,j,bi,bj)
+         CALL SALT_PLUME_FRAC(
      I                   two2,minusone,SPdepth,
      U                   plumekb,
      I                   myTime, 1, myThid )
-          IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
-           plumefrac(I,J)=(plumekb(1)-plumekb(2))*maskC(i,j,klev,bi,bj)
-           gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &            +saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)*mass2rUnit
-     &            *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-          ENDIF
-        ENDDO
+         plumefrac(I,J)=(plumekb(1)-plumekb(2))*maskC(i,j,klev,bi,bj)
+         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &        +saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)*mass2rUnit
+     &        *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+        ENDIF
        ENDDO
+      ENDDO
+#endif /* TARGET_NEC_SX */
 
 #ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL (
-     &         plumefrac,'PLUMEKB ',kLev,1,2,bi,bj,myThid )
-       ENDIF
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL (
+     &      plumefrac,'PLUMEKB ',kLev,1,2,bi,bj,myThid )
+      ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
+      
 #endif /* ALLOW_SALT_PLUME */
-
-      return
-      end
+      
+      RETURN
+      END
