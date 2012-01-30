@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.21 2012/01/30 03:38:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.22 2012/01/30 20:51:43 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,16 +113,18 @@ C     specific humidity at ice surface variables
       _RL mm_pi,mm_log10pi
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
-C     F_c      :: conductive heat flux through seaice+snow (+=downward)
+C     F_c      :: conductive heat flux through seaice+snow (+=upward)
 C     F_lh     :: latent heat flux (sublimation) (+=upward)
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
 C     A1 :: part of atmos surface flux (+=downward) independent of tsurf
 C     A2 :: part of atmos surface flux (+=upward) which depends on tsurf
-C     A3 :: derivative of (A2+F_c) versus tsurf
+C     A3 :: derivative of (A2-F_c) versus tsurf
       _RL A2         (1:sNx,1:sNy)
       _RL A3         (1:sNx,1:sNy)
       _RL A1         (1:sNx,1:sNy)
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
+C     F_lwu    :: upward long-wave surface heat flux (+=upward)
+C     F_sens   :: sensible surface heat flux         (+=upward)
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
@@ -422,7 +424,7 @@ C     d(qh)/d(TICE)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 C     Calculate the flux terms based on the updated tsurfLoc
-          F_c(I,J)    = -effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
+          F_c(I,J)    = effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
           F_lh(I,J)   = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
           A2(I,J) = D1*UG(I,J)*t1+D1I*UG(I,J)*qhice(I,J)+D3(I,J)*t4
@@ -445,7 +447,7 @@ C     d(F_ia)/d(TICE)
           F_lwu(I,J) = t4 * D3(I,J)
           F_sens(I,J)= D1 * UG(I,J) * (t1 - atempLoc(I,J))
           F_ia(I,J) = -lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J)
-     &              +  F_c(I,J) + F_sens(I,J) + F_lh(I,J)
+     &                -F_c(I,J) + F_sens(I,J) + F_lh(I,J)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
@@ -455,7 +457,7 @@ C     d(F_ia)/d(TICE)
      &          'ice-iter qhICE,       ', ITER,qhIce(I,J)
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
            print '(A,i6,4(1x,D24.15))',
-     &          'ice-iter A1 A2 B      ',ITER,A1(I,J),A2(I,J),-F_c(I,J)
+     &          'ice-iter A1 A2 B      ',ITER,A1(I,J),A2(I,J),F_c(I,J)
            print '(A,i6,4(1x,D24.15))',
      &          'ice-iter A3 (-A1+A2)  ',ITER,A3(I,J),-A1(I,J)+A2(I,J)
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
@@ -467,9 +469,9 @@ C     d(F_ia)/d(TICE)
 
 C     Update tsurfLoc
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
-C     update tsurf as solution of : A1 - A2 = Fc + A3 *delta.tsurf
+C     update tsurf as solution of : Fc = A2 - A1 + A3 *delta.tsurf
           tsurfLoc(I,J)=tsurfLoc(I,J)
-     &         +(A1(I,J)-A2(I,J)-F_c(I,J))/A3(I,J)
+     &         +(A1(I,J)-A2(I,J)+F_c(I,J))/A3(I,J)
           tsurfLoc(I,J) = MAX( 273.16 _d 0+MIN_TICE, tsurfLoc(I,J) )
 
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
@@ -531,7 +533,7 @@ C     over ice specific humidity
          ENDIF
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
 
-         F_c(I,J)  = -effConduct(I,J) * (TB(I,J) - t1)
+         F_c(I,J)  = effConduct(I,J) * (TB(I,J) - t1)
          F_lwu(I,J)   = t4 * D3(I,J)
          F_sens(I,J)  = D1 * UG(I,J) * (t1 - atempLoc(I,J))
 
@@ -567,8 +569,8 @@ C     is also positive upward (atmosphere gains freshwater)
 
 #ifdef SEAICE_DEBUG
 C     Caclulate the net ice-ocean and ice-atmosphere fluxes
-         IF (F_c(I,J) .LT. 0.0 _d 0) THEN
-          F_io_net(I,J) = -F_c(I,J)
+         IF (F_c(I,J) .GT. 0.0 _d 0) THEN
+          F_io_net(I,J) = F_c(I,J)
           F_ia_net(I,J) = 0.0 _d 0
          ELSE
           F_io_net(I,J) = 0.0 _d 0
@@ -615,7 +617,7 @@ C     Caclulate the net ice-ocean and ice-atmosphere fluxes
           print '(A,4(1x,D24.15))',
      &         'ibi F_ia, F_ia_net, F_c    ',
 #ifdef SEAICE_SOLVE4TEMP_LEGACY
-     &         -A1(I,J)+A2(I,J), -A1(I,J)+A2(I,J)+F_c(I,J), F_c(I,J)
+     &         -A1(I,J)+A2(I,J), -A1(I,J)+A2(I,J)-F_c(I,J), F_c(I,J)
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
      &         F_ia(I,J), F_ia_net(I,J), F_c(I,J)
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
