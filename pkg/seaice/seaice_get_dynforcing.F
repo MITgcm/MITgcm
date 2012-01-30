@@ -1,21 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.11 2011/10/11 14:07:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.12 2012/01/30 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_SOLVE4TEMP
+C     !INTERFACE:
       SUBROUTINE SEAICE_GET_DYNFORCING(
      I     uIce, vIce,
      O     taux, tauy,
      I     myTime, myIter, myThid )
-C     *================================================================*
+C     !DESCRIPTION: \bv
+C     *==========================================================*
 C     | SUBROUTINE SEAICE_GET_DYNFORCING
 C     |   compute surface stress from atmopheric forcing fields
-C     *================================================================*
+C     *==========================================================*
 C     | started by Martin Losch, April 2007
-C     *================================================================*
-      IMPLICIT NONE
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -30,15 +35,14 @@ C     === Global variables ===
 # include "EXF_PARAM.h"
 #endif
 
-C     === Routine arguments ===
-C     INPUT:
-C     uIce   - zonal      ice velocity (currently not used)
-C     vIce   - meridional ice velocity (currently not used)
-C     taux   - zonal      wind stress over ice at U point
-C     tauy   - meridional wind stress over ice at V point
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-C     myThid - Thread no. that called this routine.
+C     !INPUT/OUTPUT PARAMETERS:
+C   uIce   (inp) :: zonal      ice velocity (input)
+C   vIce   (inp) :: meridional ice velocity (input)
+C   taux   (out) :: zonal      wind stress over ice at U point
+C   tauy   (out) :: meridional wind stress over ice at V point
+C   myTime (inp) :: current time in simulation
+C   myIter (inp) :: iteration number in simulation
+C   myThid (inp) :: my Thread Id. number
       _RL uIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL taux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -46,14 +50,14 @@ C     myThid - Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef SEAICE_CGRID
-C     === Local variables ===
-C     i,j - Loop counters
-C     k   - vertical index of surface layer
+C     !LOCAL VARIABLES:
+C     i,j,bi,bj :: Loop counters
+C     ks        :: vertical index of surface layer
       INTEGER bi, bj, i, j
-      INTEGER k
+      INTEGER ks
       _RL  COSWIN
       _RS  SINWIN
 #if !defined(SEAICE_EXTERNAL_FLUXES) || defined(ALLOW_ATM_WIND)
@@ -68,8 +72,8 @@ C     oceTauY :: wind-stress over open-ocean (on Arakawa A-grid), Y direction
       _RL oceTauY (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
-C--   surrface level
-      k = 1
+C--   surface level
+      ks = 1
 C--   introduce turning angle (default is zero)
       SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
       COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
@@ -108,7 +112,9 @@ C     from A-grid to U and V points of C-grid
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           fu(i,j,bi,bj) = 0.5 _d 0*( oceTauX(i,j) + oceTauX(i-1,j) )
+     &                            *_maskW(i,j,ks,bi,bj)
           fv(i,j,bi,bj) = 0.5 _d 0*( oceTauY(i,j) + oceTauY(i,j-1) )
+     &                            *_maskS(i,j,ks,bi,bj)
          ENDDO
         ENDDO
 #endif /* ndef SEAICE_EXTERNAL_FLUXES */
@@ -118,10 +124,10 @@ C--   Now compute ice surface stress
          DO j=1-Oly,sNy+Oly-1
           DO i=1-Olx,sNx+Olx-1
            U1=UWIND(i,j,bi,bj)
-     &          + 0.5 _d 0 * (uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
+     &          + 0.5 _d 0 * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
      &          - 0.5 _d 0 * (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj))
            V1=VWIND(i,j,bi,bj)
-     &          + 0.5 _d 0 * (vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
+     &          + 0.5 _d 0 * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
      &          - 0.5 _d 0 * (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj))
            AAA=U1**2+V1**2
            IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
@@ -160,40 +166,42 @@ C--   Now compute ice surface stress
           DO i=1-Olx+1,sNx+Olx-1
 C     interpolate to U points
            taux(i,j,bi,bj)= 0.5 _d 0 *
-     &          (CDAIR(i,j)*(COSWIN*
+     &         ( CDAIR(i,j)*(COSWIN*
      &          (uWind(i,j,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
+     &          +0.5 _d 0*(uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
      &          -0.5 _d 0*(uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)))
      &          -SIGN(SINWIN, _fCori(i,j,bi,bj))*
      &          (vWind(i,j,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
+     &          +0.5 _d 0*(vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
      &          -0.5 _d 0*(vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj))))
      &          +CDAIR(i-1,j)*(COSWIN*
      &          (uWind(i-1,j,bi,bj)
-     &          +0.5 _d 0*(uVel(i-1,j,k,bi,bj)+uVel(i,j,k,bi,bj))
+     &          +0.5 _d 0*(uVel(i-1,j,ks,bi,bj)+uVel(i,j,ks,bi,bj))
      &          -0.5 _d 0*(uIce(i-1,j,bi,bj)+uIce(i,j,bi,bj)))
      &          -SIGN(SINWIN, _fCori(i-1,j,bi,bj))*
      &          (vWind(i-1,j,bi,bj)
-     &          +0.5 _d 0*(vVel(i-1,j,k,bi,bj)+vVel(i-1,j+1,k,bi,bj))
-     &          -0.5 _d 0*(vIce(i-1,j,bi,bj)+vIce(i-1,j+1,bi,bj)))))
+     &          +0.5 _d 0*(vVel(i-1,j,ks,bi,bj)+vVel(i-1,j+1,ks,bi,bj))
+     &          -0.5 _d 0*(vIce(i-1,j,bi,bj)+vIce(i-1,j+1,bi,bj))))
+     &         )*_maskW(i,j,ks,bi,bj)
 C     interpolate to V points
            tauy(i,j,bi,bj)= 0.5 _d 0 *
-     &          (CDAIR(i,j)*(SIGN(SINWIN, _fCori(i,j,bi,bj))*
+     &         ( CDAIR(i,j)*(SIGN(SINWIN, _fCori(i,j,bi,bj))*
      &          (uWind(i,j,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
+     &          +0.5 _d 0*(uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
      &          -0.5 _d 0*(uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)))
      &          +COSWIN*
      &          (vWind(i,j,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
+     &          +0.5 _d 0*(vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
      &          -0.5 _d 0*(vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj))))
      &          +CDAIR(i,j-1)*(SIGN(SINWIN, _fCori(i,j-1,bi,bj))*
      &          (uWind(i,j-1,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j-1,k,bi,bj)+uVel(i+1,j-1,k,bi,bj))
+     &          +0.5 _d 0*(uVel(i,j-1,ks,bi,bj)+uVel(i+1,j-1,ks,bi,bj))
      &          -0.5 _d 0*(uIce(i,j-1,bi,bj)+uIce(i+1,j-1,bi,bj)))
      &          +COSWIN*
      &          (vWind(i,j-1,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j-1,k,bi,bj)+vVel(i,j,k,bi,bj))
-     &          -0.5 _d 0*(vIce(i,j-1,bi,bj)+vIce(i,j,bi,bj)))))
+     &          +0.5 _d 0*(vVel(i,j-1,ks,bi,bj)+vVel(i,j,ks,bi,bj))
+     &          -0.5 _d 0*(vIce(i,j-1,bi,bj)+vIce(i,j,bi,bj))))
+     &         )*_maskS(i,j,ks,bi,bj)
           ENDDO
          ENDDO
         ELSE
@@ -201,22 +209,22 @@ C     interpolate to V points
           DO i=1-Olx+1,sNx+Olx
 C     interpolate to U points
            taux(i,j,bi,bj)=0.5 _d 0 *
-     &          ( CDAIR(i  ,j)*(
+     &         (  CDAIR(i  ,j)*(
      &          COSWIN                            *uWind(i  ,j,bi,bj)
      &          -SIGN(SINWIN, _fCori(i  ,j,bi,bj))*vWind(i  ,j,bi,bj) )
      &          + CDAIR(i-1,j)*(
      &          COSWIN                            *uWind(i-1,j,bi,bj)
      &          -SIGN(SINWIN, _fCori(i-1,j,bi,bj))*vWind(i-1,j,bi,bj) )
-     &          )
+     &         )*_maskW(i,j,ks,bi,bj)
 C     interpolate to V points
            tauy(i,j,bi,bj)=0.5 _d 0 *
-     &          ( CDAIR(i,j  )*(
+     &         (  CDAIR(i,j  )*(
      &          SIGN(SINWIN, _fCori(i,j  ,bi,bj))*uWind(i,j  ,bi,bj)
      &          +COSWIN*vWind(i,j  ,bi,bj) )
      &          + CDAIR(i,j-1)*(
      &          SIGN(SINWIN, _fCori(i,j-1,bi,bj))*uWind(i,j-1,bi,bj)
      &          +COSWIN*vWind(i,j-1,bi,bj) )
-     &          )
+     &         )*_maskS(i,j,ks,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -235,8 +243,10 @@ C now ice surface stress
           ELSE
            CDAIR(i,j) = SEAICE_drag      /OCEAN_drag
           ENDIF
-          taux (i,j,bi,bj) = CDAIR(i,j)*fu(i,j,bi,bj)
-          tauy (i,j,bi,bj) = CDAIR(i,j)*fv(i,j,bi,bj)
+          taux(i,j,bi,bj) = CDAIR(i,j)*fu(i,j,bi,bj)
+     &                    *_maskW(i,j,ks,bi,bj)
+          tauy(i,j,bi,bj) = CDAIR(i,j)*fv(i,j,bi,bj)
+     &                    *_maskS(i,j,ks,bi,bj)
          ENDDO
         ENDDO
        ENDDO
