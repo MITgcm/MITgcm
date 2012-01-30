@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.145 2012/01/13 21:09:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.146 2012/01/30 15:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1138,6 +1138,7 @@ C           allow not only growth but also melt by open ocean heat flux
 #else
             tmpscal3=MAX(tmpscal1-tmpscal2, 0. _d 0)
 #endif /* SEAICE_DO_OPEN_WATER_MELT */
+     &           *HEFFM(I,J,bi,bj)
           d_HEFFbyATMonOCN_open(I,J)=tmpscal3
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal3
           r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal3
