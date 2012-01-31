@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1585 2012/01/30 18:42:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1586 2012/01/31 17:12:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - lots of editing/cleaning in seaice_solve4temp.F + better documentation
+    of arrays, sign/direction of fluxes; no effect on results.
+  - replace hard coded 273.16 (=previous value of celsius2K) by celsius2K
+    in seaice_budget_ocean.F & seaice_solve4temp.F (SOLVE4TEMP_LEGACY part);
+    note: this should have been done before changing celsius2K default.
+  - to keep results unchanged, add back old value of celsius2K in verification
+    exp. input*/data : lab_sea (AD), offline_exf_seaice (fwd+AD) & seaice_obcs
+  - replace hard coded seawater freezing temp in seaice_solve4temp.F (part
+    SOLVE4TEMP_LEGACY) of 271.20 (=previous value of celsius2K + default
+    value of SEAICE_freeze) by celsius2K+SEAICE_freeze so that seawater
+    freezing temp is consistent with value in seaice_growth.F ; this causes
+    differences at machine truncation level: update lab_sea AD output (3/4).
 o pkg/seaice:
   - mask (in exf_init_fixed.F) atemp,aqh,evap,precip,runoff,lwflx,areamask
     and climsst/sss even when using seaice (to prevent calculation that might
