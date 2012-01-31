@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.6 2012/01/30 14:45:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.7 2012/01/31 17:33:31 mlosch Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -169,7 +169,7 @@ C     crazy attempt to make the code faster and raise tempN to (Npower+1)
 #endif /* not TARGET_NEC_SX */
         ENDIF
        ELSE
-        plumek(i) = 0._d 0
+        plumek(i) = 0. _d 0
        ENDIF
       ENDDO
       
