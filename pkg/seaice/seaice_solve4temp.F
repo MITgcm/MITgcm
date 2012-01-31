@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.22 2012/01/30 20:51:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.23 2012/01/31 15:57:17 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -191,12 +191,13 @@ C     ICE LATENT HEAT CONSTANT
       D1I=SEAICE_dalton*lhSublim*SEAICE_rhoAir
 
 C     MELTING TEMPERATURE OF ICE
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-      TMELT        = 273.16  _d +00
-      SurfMeltTemp = 273.159 _d +00
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
       TMELT        = celsius2K
       SurfMeltTemp = TMELT
+#ifdef SEAICE_SOLVE4TEMP_LEGACY
+C     old SOLVE4TEMP_LEGACY setting, consistent with former celsius2K value:
+c     TMELT        = 273.16  _d +00
+c     SurfMeltTemp = 273.159 _d +00
+      SurfMeltTemp = TMELT - 1. _d -3
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 C     ICE CONDUCTIVITY
@@ -237,8 +238,8 @@ C     Reset the snow/ice surface to TMELT and bound the atmospheric temperature
         A1(I,J) = 0.0 _d 0
         A2(I,J) = 0.0 _d 0
         A3(I,J) = 0.0 _d 0
-        tsurfLoc (I,J) = MIN(273.16 _d 0 + MAX_TICE, TSURF(I,J,bi,bj))
-        atempLoc (I,J) = MAX(273.16 _d 0 + MIN_ATEMP,ATEMP(I,J,bi,bj))
+        tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURF(I,J,bi,bj) )
+        atempLoc (I,J) = MAX( celsius2K+MIN_ATEMP, ATEMP(I,J,bi,bj) )
         lwdownLoc(I,J) = MAX( MIN_LWDOWN, LWDOWN(I,J,bi,bj) )
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
         F_lwu    (I,J) = 0. _d 0
@@ -255,11 +256,9 @@ C     Use a variable seawater freezing point
      &       + celsius2K
 #else
 C     Use a constant freezing temperature (SEAICE_VARIABLE_FREEZING_POINT undef)
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-        TB(I,J) = 271.2 _d 0
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
+C     old SOLVE4TEMP_LEGACY setting (not consistent with seaice_growth value)
+c       TB(I,J) = 271.2 _d 0
         TB(I,J) = celsius2K + SEAICE_freeze
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
         IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
 C     Stefan-Boltzmann constant times emissivity
@@ -472,7 +471,7 @@ C     Update tsurfLoc
 C     update tsurf as solution of : Fc = A2 - A1 + A3 *delta.tsurf
           tsurfLoc(I,J)=tsurfLoc(I,J)
      &         +(A1(I,J)-A2(I,J)+F_c(I,J))/A3(I,J)
-          tsurfLoc(I,J) = MAX( 273.16 _d 0+MIN_TICE, tsurfLoc(I,J) )
+          tsurfLoc(I,J) = MAX( celsius2K+MIN_TICE, tsurfLoc(I,J) )
 
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
           tsurfLoc(I,J) = tsurfLoc(I,J) - F_ia(I,J) / dFiDTs1
