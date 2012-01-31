@@ -56,9 +56,11 @@
  saltAdvScheme =7,
  convertFW2Salt=-1,
  allowFreezing=.FALSE.,
- HeatCapacity_Cp = 3986.D0,
+#- set wrong celsius2K to reproduce old results:
+ celsius2K=273.16,
+ HeatCapacity_Cp = 3986.0,
  gravity         = 9.8156,
- rhoNil          = 1027.D0,
+ rhoConst        = 1027.0,
  rhoConstFresh   = 999.8,
  readBinaryPrec=32,
  writeBinaryPrec=32,
@@ -121,7 +123,7 @@
        500., 500., 500., 500., 500., 500., 500.,
  ygOrigin=46.,
  xgOrigin=280.,
- rSphere         = 6371.D3,
+ rSphere = 6371.D3,
  &
 
 # Input datasets

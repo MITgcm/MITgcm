@@ -35,6 +35,8 @@
  tempStepping=.FALSE.,
  momStepping=.FALSE.
  allowFreezing=.FALSE.,
+#- set wrong celsius2K to reproduce old results:
+ celsius2K=273.16,
  HeatCapacity_Cp = 3986.0,
  gravity         = 9.8156,
  rhoConst        = 1027.0,
@@ -102,7 +104,7 @@
  delZ= 10.,10.,10.,
  ygOrigin=46.,
  xgOrigin=280.,
- rSphere         = 6371.D3,
+ rSphere = 6371.D3,
  &
 
 # Input datasets
