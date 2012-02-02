@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1586 2012/01/31 17:12:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1587 2012/02/02 02:06:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_solve4temp.F (SOLVE4TEMP_LEGACY undef):
+  - remove from F_ia (and from it's derivative dFiDTs1) the contribution of
+    conductive heat flux F_c , and add it explicitly when updating tsurf as
+    solution of: Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
+    so that now F_ia has a consistent meaning through the entire routine.
+    This causes differences at truncation level: update output of fwd exp.
+    global_ocean.cs32x15.seaice.
 o pkg/seaice:
   - lots of editing/cleaning in seaice_solve4temp.F + better documentation
     of arrays, sign/direction of fluxes; no effect on results.
