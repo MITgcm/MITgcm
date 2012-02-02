@@ -111,8 +111,8 @@
  &PARM03
 
  startTime=0.0,
-# nTimeSteps= 10,
- nTimeSteps= 11000,
+ nTimeSteps= 10,
+# nTimeSteps= 11000,
 
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
@@ -127,7 +127,7 @@
  adjDumpFreq=1.,
  adjMonitorFreq = 1.,
 
-# monitorFreq=86400.,
+ monitorFreq=1.,
 # adjDumpFreq=86400.,
 # adjMonitorFreq = 86400.,
  tracForcingOutAB=1,

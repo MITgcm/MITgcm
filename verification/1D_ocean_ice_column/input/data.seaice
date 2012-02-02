@@ -1,7 +1,8 @@
 # SEAICE parameters
  &SEAICE_PARM01
       SEAICEwriteState   = .TRUE.,
-      SEAICE_initialHEFF = 0.5,
+#      SEAICE_initialHEFF = 0.5,
+      SEAICE_initialHEFF = 0.0,
       HsnowFile          = 'snow_0m_1x1',
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
