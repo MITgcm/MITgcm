@@ -25,9 +25,9 @@
 #  fields(1,3) = 'EXFqnet ','EXFswnet','EXFlwnet',
 #  filename(3) = 'EXF_net_avg_daily',
 
-#  frequency(2)  = 86400,
-#  fields(1:3,2)   = 'SIarea  ','SIheff  ','SIhsnow ',
-#  filename(2)   = 'ICE_avg_daily',
+  frequency(2)  = 86400,
+  fields(1:3,2)   = 'SIarea  ','SIheff  ','SIhsnow ',
+  filename(2)   = 'ICE_avg_daily',
 
   frequency(4)  = 86400,
   fields(1:3,4)   = 'SIdHbATO','SIdHbATC','SIdHbOCN',
@@ -37,6 +37,13 @@
   fields(1:4,5) = 'SIdAbATO','SIdAbATC','SIdAbOCN','SIdA     ',
   filename(5)   = 'ICE_avg_daily_3',
 
+  frequency(6) = 86400,
+  fields(1:5,6) = 'SIaQbATC','SIaQbATO','SIaQbOCN','SIqneto ','SIqneti ',
+  filename(6) = 'ICE_avg_daily_4',
+
+  frequency(7) = 86400,
+  fields(1:5,7) = 'SIaQbSWC','SIaQbSWO','SIaQbSWX',
+  filename(7) = 'ICE_avg_daily_5',
 
 #  frequency(8)   = 86400,
 #  fields(1,8)    = 'KPPdiffS','KPPviscA',,'KPPdiffT',
