@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.3 2010/11/09 00:36:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.4 2012/02/02 15:06:51 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CBOP
       SUBROUTINE SEAICE_FREEDRIFT( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE  SEAICE_FREEDRIFT                             |
-C     | o Solve ice approximate momentum equation analytically   |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE  SEAICE_FREEDRIFT
+C     | o Solve ice approximate momentum equation analytically
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -44,14 +44,14 @@ C     === Local variables ===
       _RL taux_onIce_cntr, tauy_onIce_cntr, uvel_cntr, vvel_cntr
       _RL mIceCor, rhs_x, rhs_y, rhs_n, rhs_a, sol_n, sol_a
 
-      _RL uice_cntr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vice_cntr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 
        kSrf=1
 
-c initialize fields:
-c ==================
+C initialize fields:
+C ==================
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -74,78 +74,78 @@ c ==================
          DO j=1,sNy
           DO i=1,sNx
 
-c preliminary computations:
-c =========================
-c factor to convert air-sea stress to air-ice stresss
+C preliminary computations:
+C =========================
+C factor to convert air-sea stress to air-ice stresss
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
             tmpscal1 = SEAICE_drag_south/OCEAN_drag
            ELSE
             tmpscal1 = SEAICE_drag      /OCEAN_drag
            ENDIF
-c air-ice stress at cell center
+C air-ice stress at cell center
            taux_onIce_cntr=
      &       tmpscal1*HALF*(TAUX(i,j,bi,bj)+TAUX(i+1,j,bi,bj))
            tauy_onIce_cntr=
      &       tmpscal1*HALF*(TAUY(i,j,bi,bj)+TAUY(i,j+1,bi,bj))
-c mass of ice per unit area (kg/m2) times coriolis f
+C mass of ice per unit area (kg/m2) times coriolis f
            mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(I,J,bi,bj)
-c ocean velocity at cell center
+C ocean velocity at cell center
            uvel_cntr=HALF*(uvel(i,j,kSrf,bi,bj)+uvel(i+1,j,kSrf,bi,bj))
            vvel_cntr=HALF*(vvel(i,j,kSrf,bi,bj)+vvel(i,j+1,kSrf,bi,bj))
-c right hand side of free drift equation:
+C right hand side of free drift equation:
            rhs_x= -taux_onIce_cntr -mIceCor*vvel_cntr
            rhs_y= -tauy_onIce_cntr +mIceCor*uvel_cntr
 
-c norm of angle of rhs
+C norm of angle of rhs
            tmpscal1=rhs_x*rhs_x + rhs_y*rhs_y
-           if (tmpscal1.GT.0.) then
-             rhs_n=sqrt( rhs_x*rhs_x + rhs_y*rhs_y )
-             rhs_a=atan2(rhs_y,rhs_x)
-           else
+           IF ( tmpscal1.GT.ZERO ) THEN
+             rhs_n=SQRT( rhs_x*rhs_x + rhs_y*rhs_y )
+             rhs_a=ATAN2(rhs_y,rhs_x)
+           ELSE
              rhs_n=0. _d 0
              rhs_a=0. _d 0
-           endif
+           ENDIF
 
-c solve for norm:
-c ===============
+C solve for norm:
+C ===============
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
             tmpscal1 = 1. _d 0 /SEAICE_waterDrag_south
            ELSE
             tmpscal1 = 1. _d 0 /SEAICE_waterDrag
            ENDIF
-c polynomial coefficients
-           tmpscal2= +tmpscal1*tmpscal1*mIceCor*mIceCor
-           tmpscal3= -tmpscal1*tmpscal1*rhs_n*rhs_n
-c discriminant
-           tmpscal4=tmpscal2*tmpscal2-4*tmpscal3
-           if (tmpscal4.GT.0) then
-             sol_n=sqrt(HALF*(sqrt(tmpscal4)-tmpscal2))
-           else
+C polynomial coefficients
+           tmpscal2= tmpscal1*tmpscal1*mIceCor*mIceCor
+           tmpscal3= tmpscal1*tmpscal1*rhs_n*rhs_n
+C discriminant
+           tmpscal4=tmpscal2*tmpscal2+4. _d 0*tmpscal3
+           IF ( tmpscal3.GT.ZERO ) THEN
+             sol_n=SQRT(HALF*(SQRT(tmpscal4)-tmpscal2))
+           ELSE
              sol_n=0. _d 0
-           endif
+           ENDIF
 
-c solve for angle:
-c ================
+C solve for angle:
+C ================
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
             tmpscal1 = SEAICE_waterDrag_south
            ELSE
             tmpscal1 = SEAICE_waterDrag
            ENDIF
-c
+
            tmpscal2= tmpscal1*sol_n*sol_n
            tmpscal3= mIceCor*sol_n
-c
-           tmpscal4=tmpscal2*tmpscal2 + tmpscal3*tmpscal3
-           if (tmpscal4.GT.0) then
-             sol_a=rhs_a-atan2(tmpscal3,tmpscal2)
-           else
-             sol_a=0. _d 0
-           endif
 
-c compute uice, vice at cell center:
-c ==================================
-           uice_cntr(i,j,bi,bj)=uvel_cntr-sol_n*cos(sol_a)
-           vice_cntr(i,j,bi,bj)=vvel_cntr-sol_n*sin(sol_a)
+           tmpscal4=tmpscal2*tmpscal2 + tmpscal3*tmpscal3
+           IF ( tmpscal4.GT.ZERO ) THEN
+             sol_a=rhs_a-ATAN2(tmpscal3,tmpscal2)
+           ELSE
+             sol_a=0. _d 0
+           ENDIF
+
+C compute uice, vice at cell center:
+C ==================================
+           uice_cntr(i,j,bi,bj)=uvel_cntr-sol_n*COS(sol_a)
+           vice_cntr(i,j,bi,bj)=vvel_cntr-sol_n*SIN(sol_a)
 
           ENDDO
          ENDDO
@@ -153,8 +153,8 @@ c ==================================
        ENDDO
 
 
-c interpolated to velocity points:
-c ================================
+C interpolated to velocity points:
+C ================================
 
        CALL EXCH_UV_AGRID_3D_RL(uice_cntr,vice_cntr,.TRUE.,1,myThid)
 
@@ -176,8 +176,8 @@ c ================================
 C     Apply masks (same/similar to seaice_evp.F/seaice_lsr.F)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           uIce_fd(i,j,bi,bj)=uIce_fd(i,j,bi,bj)* _maskW(i,j,kSrf,bi,bj)
           vIce_fd(i,j,bi,bj)=vIce_fd(i,j,bi,bj)* _maskS(i,j,kSrf,bi,bj)
          ENDDO
