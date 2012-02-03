@@ -12,5 +12,9 @@
  &
 
  &SEAICE_PARM03
+ siTrName(1)           = 'age',
+ siTrMate(1)           = 'AREA',
+ siTrUnit(1)           = 's',
+ siTrName(2)           = 'one',
  &
 

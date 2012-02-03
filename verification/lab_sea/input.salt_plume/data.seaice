@@ -30,4 +30,8 @@
  &
 
  &SEAICE_PARM03
+ siTrName(1)           = 'ridge',
+ siTrMate(1)           = 'AREA',
+ siTrName(2)           = 'one',
+ siTrMate(2)           = 'AREA',
  &

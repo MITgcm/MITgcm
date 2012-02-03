@@ -7,7 +7,6 @@
 #-- According to Martin, SEAICE_clipVelocities is not recommended
 #     SEAICE_clipVelocities=.TRUE.,
       SEAICEadvSalt      =.FALSE.,
-      SEAICEadvAge       =.FALSE.,
 #-- above: to reproduce old results
       LSR_ERROR          = 1.E-6,
 ###      SEAICE_deltaTevp   = 60,
