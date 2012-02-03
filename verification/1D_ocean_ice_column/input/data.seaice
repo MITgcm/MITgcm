@@ -8,7 +8,6 @@
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  = .FALSE.,
       SEAICEadvSalt      = .FALSE.,
-      SEAICEadvAge       = .FALSE.,
 # turn-off Advection flags (get identical results, but faster)
       SEAICEadvArea      = .FALSE.,
       SEAICEadvHeff      = .FALSE.,
