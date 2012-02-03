@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1588 2012/02/02 19:22:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1589 2012/02/03 15:21:38 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - retire old way of SEAICE_AGE. Now replaced with ALLOW_SITRACER.
 o pkg/seaice:
   - seaice_solve4temp.F (keeping results unchanged):
     * add 2 future run-time params to select which saturation vapor pressure
