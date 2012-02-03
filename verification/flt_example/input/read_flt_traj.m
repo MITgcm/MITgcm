@@ -1,19 +1,27 @@
-function [flt,data,header] = read_flt_traj(fName)
+function [flt,data,header] = read_flt_traj(varargin)
 % Reads the float_trajectories files.
 %
+% flts=read_flt_traj(File_Names,[Worldlength]);
+% input Worldlength (= 4 or 8) is optional
 % returns a structured array with fields 'time','x','y','k','u','v','t','s','p'
 %
 % eg.
-% >> flts=read_flt_traj('float_trajectories');
+% >> flts=read_flt_traj('float_trajectories',4);
 % >> plot( flts(3).time, flts(3).x/1e3 )
 % >> for k=1:126;plot(flts(k).x/1e3,flts(k).y/1e3);hold on;end;hold off
 
-% $Header: /u/gcmpack/MITgcm/verification/flt_example/input/read_flt_traj.m,v 1.5 2009/02/25 01:41:00 dfer Exp $
+% $Header: /u/gcmpack/MITgcm/verification/flt_example/input/read_flt_traj.m,v 1.6 2012/02/03 04:08:12 dfer Exp $
 % $Name:  $
 
+fName = varargin{1};
 imax=13;                  % record size
 ieee='b';                 % IEEE big-endian format
-bytesPerRec=imax*8;       % 8 bytes per real*8
+WORDLENGTH = 8;           % 8 bytes per real*8
+if length(varargin)==2
+   WORDLENGTH = varargin{2};
+end
+bytesPerRec=imax*WORDLENGTH;
+rtype =['real*',num2str(WORDLENGTH)];
 
 [I]=strfind(fName,'/');
 if length(I) == 0,
@@ -35,10 +43,11 @@ for k=1:size(fls,1)
  fid=fopen([bDr,fls(k).name],'r',ieee);
 %fprintf('fid= %i\n',fid);
  nrecs=fls(k).bytes/bytesPerRec;
- ldata=fread(fid,[imax nrecs],'real*8');
+ ldata=fread(fid,[imax nrecs],rtype);
  fclose(fid);
  header=[header ldata(:,1)];
  data=[data ldata(:,2:end)];
+ clear ldata;
 end
 
 flt=struct('numsteps',[],'time',[],'x',[],'y',[],'z',[]);
@@ -60,3 +69,5 @@ for k=1:max(max(data(1,:)));
  flt(k).t=data(12,j);
  flt(k).s=data(13,j);
 end
+
+return
