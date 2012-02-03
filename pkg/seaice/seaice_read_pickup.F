@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.12 2011/09/27 00:08:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.13 2012/02/03 13:34:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,7 +54,7 @@ C     bi,bj       :: tile indices
       CHARACTER*(8) missFldList(missFldDim)
       INTEGER nj, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
+#ifdef ALLOW_SITRACER
       CHARACTER*(8) fldName
       INTEGER iTrac, kerr
 #endif
@@ -127,19 +127,6 @@ C-      Old meta-file without List of Fields
         ENDIF
        ENDIF
 
-#ifdef SEAICE_AGE
-       IF ( nbFields.GT.0 ) THEN
-C--    ice age field has been re-named:
-         CALL READ_MFLDS_RENAME( 'siAGE   ', 'siAGEt01', kerr, myThid )
-         IF ( kerr.GE.2 ) THEN
-          WRITE(msgBuf,'(2A,I4)') 'SEAICE_READ_PICKUP: ',
-     &      'renaming siAGE -> siAGEt01 return error:', kerr
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SEAICE_READ_PICKUP'
-         ENDIF
-       ENDIF
-#endif
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---   Old way to read seaice fields:
@@ -180,11 +167,6 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         CALL READ_REC_3D_RL( fn, fp, 1, HSALT    , nj, nIter0, myThid )
         nj = nj + 1
 #endif
-#ifdef SEAICE_AGE
-        CALL READ_REC_3D_RL( fn, fp, 1,
-     &    IceAgeTr(1-Olx,1-Oly,1,1,1),
-     &    nj, nIter0, myThid )
-#endif
 
        ELSE
 C---   New way to read model fields:
@@ -218,15 +200,6 @@ C--    continue with 2-D fields:
          CALL READ_MFLDS_3D_RL( 'siHSALT ', HSALT,
      &                                      nj, fp, 1, nIter0, myThid )
 #endif
-#ifdef SEAICE_AGE
-         DO iTrac = 1, SEAICE_num
-          WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTrac
-          CALL READ_MFLDS_3D_RL( fldName,
-     &         IceAgeTr(1-Olx,1-Oly,1,1,iTrac),
-     &         nj, fp, 1, nIter0, myThid )
-          _EXCH_XY_RL(IceAgeTr(1-Olx,1-Oly,1,1,iTrac),myThid)
-         ENDDO
-#endif /* SEAICE_AGE */
 #ifdef ALLOW_SITRACER
          DO iTrac = 1, SItrMaxNum
           WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac

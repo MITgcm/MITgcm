@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.30 2011/06/29 21:39:06 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.31 2012/02/03 13:34:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,9 +58,6 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       iTr, ilnb, numMateTr, numMateTrPreTh
       CHARACTER*8   locUnitTr
       CHARACTER*30  locNameTr
-#endif
-#ifdef SEAICE_AGE
-      INTEGER       iTracer
 #endif
       INTEGER       numArea,numAreaPreTh,numHeff,numHeffPreTh
       CHARACTER*9   flxUnits
@@ -185,17 +182,6 @@ C-     use name & units from data.seaice :
        CALL DIAGNOSTICS_ADDTOLIST( diagNum, diagName,
      I      diagCode, diagUnits, diagTitle, numMateTrPreTh, myThid )
 
-      ENDDO
-#endif
-
-#ifdef SEAICE_AGE
-      DO iTracer = 1, SEAICE_num
-       WRITE(diagName,'(A5,I2.2,A1)') 'SIage',iTracer,' '
-       WRITE(diagTitle,'(A,I2.2)') 'SEAICE age of tracer no. ', iTracer
-       diagUnits = 's               '
-       diagCode  = 'SM      M1      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
 #endif
 

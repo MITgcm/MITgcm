@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.5 2011/10/04 13:53:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.6 2012/02/03 13:34:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,14 +59,14 @@ C     bi,bj       :: tile indices
 c     LOGICAL oldIceAge
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(8) fldName
-#if (defined SEAICE_MULTICATEGORY) || (defined SEAICE_AGE )
+#if (defined SEAICE_MULTICATEGORY) 
       INTEGER i,j,bi,bj
 #endif
 #ifdef SEAICE_MULTICATEGORY
       INTEGER k
 #endif
-#ifdef SEAICE_AGE
-      INTEGER siTrac
+#ifdef ALLOW_SITRACER
+      INTEGER iTracer
       CHARACTER*(2) fldNum
 #endif
 CEOP
@@ -136,42 +136,21 @@ C        if SEAICEuseEVPpickup then stop / else warning / endif
            WRITE(msgBuf,'(4A)') 'SEAICE_CHECK_PICKUP: ',
      &       'cannot restart without field "',fldName,'"'
            CALL PRINT_ERROR( msgBuf, myThid )
-#ifdef SEAICE_AGE
-         ELSEIF ( fldName.EQ.'siAGEt01' ) THEN
-          IF ( .NOT.pickupStrictlyMatch ) THEN
-           WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
-     &                  ' restart without "',fldName,'" (set to zero)'
-           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          ENDIF
-         ELSEIF ( fldName(1:6).EQ.'siAGEt' ) THEN
-           siTrac = 0
-           DO i = 1, SEAICE_num
-             WRITE(fldNum,'(I2.2)') i
-             IF ( fldName(7:8).EQ.fldNum ) siTrac = i
+#ifdef ALLOW_SITRACER
+         ELSEIF ( fldName(1:6).EQ.'siTrac' ) THEN
+           DO iTracer = 1, SItrMaxNum
+            WRITE(fldNum,'(I2.2)') iTracer
+            IF ( fldName(7:8).EQ.fldNum ) THEN
+             IF ( .NOT.pickupStrictlyMatch ) THEN
+              WRITE(msgBuf,'(4A)') 
+     &         '** WARNINGS ** SEAICE_CHECK_PICKUP: ',
+     &         'restart without "',fldName,'" (set to zero)'
+              CALL PRINT_MESSAGE( 
+     &         msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+             ENDIF
+            ENDIF
            ENDDO
-           IF ( siTrac.EQ.0 ) THEN
-             stopFlag = .TRUE.
-             WRITE(msgBuf,'(4A)') 'SEAICE_CHECK_PICKUP: ',
-     &        'missing field "',fldName,'" not recognized'
-             CALL PRINT_ERROR( msgBuf, myThid )
-           ELSEIF ( .NOT.pickupStrictlyMatch ) THEN
-             WRITE(msgBuf,'(2A,I3,A)')
-     &        '** WARNING ** SEAICE_CHECK_PICKUP:',
-     &        ' restart siTr=', siTrac,
-     &        ' from IceAge (siTr=1 copied to IceAgeTr)'
-             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-C      copy IceAgeTr(...,1) -> IceAgeTr(...,siTrac)
-             DO bj=myByLo(myThid),myByHi(myThid)
-              DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-OLy,sNy+OLy
-                DO i=1-OLx,sNx+OLx
-                 IceAgeTr(i,j,bi,bj,siTrac) = IceAgeTr(i,j,bi,bj,1)
-                ENDDO
-               ENDDO
-              ENDDO
-             ENDDO
-           ENDIF
-#endif /* SEAICE_AGE */
+#endif /* ALLOW_SITRACER */
          ELSE
 C-    not recognized fields:
            stopFlag = .TRUE.

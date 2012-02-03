@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.9 2011/04/28 02:06:31 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.10 2012/02/03 13:34:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,7 +51,7 @@ C     == Local variables in common block :
 
 C     == Local variables ==
       CHARACTER*(10) suff
-#ifdef SEAICE_AGE
+#ifdef ALLOW_SITRACER
       CHARACTER*(13) pref
       INTEGER iTracer
 #endif
@@ -126,12 +126,12 @@ CEOP
 #ifdef SEAICE_VARIABLE_SALINITY
             CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
 #endif
-#ifdef SEAICE_AGE
-            DO iTracer = 1, SEAICE_num
-             WRITE(pref,'(A8,I2.2,A1)') 'ICEAGETR', iTracer, '.'
+#ifdef ALLOW_SITRACER
+            DO iTracer = 1, SItrMaxNum
+             WRITE(pref,'(A8,I2.2,A1)') 'SITRACER', iTracer, '.'
              CALL WRITE_FLD_XY_RL(
      &            pref,suff,
-     &            IceAgeTr(1-OLx,1-OLy,1,1,iTracer),
+     &            SItracer(1-OLx,1-OLy,1,1,iTracer),
      &            myIter,myThid)
             ENDDO
 #endif

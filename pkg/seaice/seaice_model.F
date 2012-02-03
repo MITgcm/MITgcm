@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.96 2012/01/15 02:12:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.97 2012/02/03 13:34:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -63,9 +63,6 @@ C     i,j,bi,bj :: Loop counters
 #endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
-#endif
-#ifdef SEAICE_AGE
-      INTEGER iTracer
 #endif
 CEOP
 
@@ -195,7 +192,7 @@ C--   (called from DO_OCEANIC_PHYSICS) take care of this
 
 C NOW DO ADVECTION and DIFFUSION
       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
-     &        .OR. SEAICEadvSalt .OR. SEAICEadvAge ) THEN
+     &        .OR. SEAICEadvSalt ) THEN
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
@@ -251,11 +248,6 @@ C--   Update overlap regions for a bunch of stuff
 #ifdef ALLOW_SITRACER
        DO iTr = 1, SItrMaxNum
         _EXCH_XY_RL( SItracer(1-OLx,1-OLy,1,1,iTr),myThid )
-       ENDDO
-#endif
-#ifdef SEAICE_AGE
-       DO iTracer = 1, SEAICE_num
-        _EXCH_XY_RL( IceAgeTr(1-OLx,1-OLy,1,1,iTracer),myThid )
        ENDDO
 #endif
        _EXCH_XY_RS(EmPmR, myThid )

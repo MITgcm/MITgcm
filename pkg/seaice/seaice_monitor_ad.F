@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor_ad.F,v 1.3 2011/12/28 19:22:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor_ad.F,v 1.4 2012/02/03 13:34:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,7 +51,7 @@ C     === Functions ====
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef SEAICE_AGE
+#ifdef ALLOW_SITRACER
       INTEGER iTracer
       CHARACTER*(MAX_LEN_MBUF) suff
 #endif

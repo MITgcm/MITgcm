@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.79 2011/12/22 12:30:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.80 2012/02/03 13:34:31 gforget Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -33,8 +33,6 @@ C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
 C     SEAICEadvSalt     :: turn on advection of salt (does not work with
 C                          non-default Leap-frog scheme for advection)
-C     SEAICEadvAge      :: turn on advection of ice age (does not work with
-C                          non-default Leap-frog scheme for advection)
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
@@ -57,7 +55,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
+     &     SEAICEadvSnow, SEAICEadvSalt, 
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
@@ -69,7 +67,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
+     &     SEAICEadvSnow, SEAICEadvSalt, 
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
@@ -92,7 +90,6 @@ C                         (=volume), snow thickness, and salt if available
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
 C     SEAICEadvSchSalt  :: sets the advection scheme for sea ice salinity
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
-C     SEAICEadvSchAge   :: sets the advection scheme for sea ice age
 C     SEAICEareaFormula :: sets the formula used to increment area as
 C                          a function of heff increment
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
@@ -107,7 +104,6 @@ C
       INTEGER SEAICEadvSchHeff
       INTEGER SEAICEadvSchSnow
       INTEGER SEAICEadvSchSalt
-      INTEGER SEAICEadvSchAge
       INTEGER SEAICEadjMODE
       INTEGER SEAICEareaFormula
       INTEGER SEAICE_debugPointI
@@ -122,7 +118,6 @@ C
      &     SEAICEadvSchHeff,
      &     SEAICEadvSchSnow,
      &     SEAICEadvSchSalt,
-     &     SEAICEadvSchAge,
      &     SEAICEadjMODE,
      &     SEAICEareaFormula,
      &     SEAICE_debugPointI,
@@ -234,7 +229,6 @@ C     SEAICEdiffKhArea   :: sets the diffusivity for area (m^2/s)
 C     SEAICEdiffKhHeff   :: sets the diffusivity for effective thickness (m^2/s)
 C     SEAICEdiffKhSnow   :: sets the diffusivity for snow on sea-ice (m^2/s)
 C     SEAICEdiffKhSalt   :: sets the diffusivity for sea ice salinity (m^2/s)
-C     SEAICEdiffKhAge    :: sets the diffusivity for sea ice age (m^2/s)
 C     SEAICE_airTurnAngle   :: turning angles of air-ice interfacial stress
 C     SEAICE_waterTurnAngle :: and ice-water interfacial stress (in degrees)
 C
@@ -265,7 +259,7 @@ C
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
-      _RL SEAICEdiffKhSalt, SEAICEdiffKhAge
+      _RL SEAICEdiffKhSalt
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -293,7 +287,7 @@ C
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
-     &    SEAICEdiffKhSalt, SEAICEdiffKhAge,
+     &    SEAICEdiffKhSalt, 
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.11 2011/09/27 00:08:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.12 2012/02/03 13:34:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,7 +61,7 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) wrFldList(listDim)
       INTEGER j, nj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#if (defined (SEAICE_AGE) || defined (ALLOW_SITRACER))
+#ifdef ALLOW_SITRACER
       CHARACTER*(8) fldName
       INTEGER iTrac
 #endif
@@ -113,17 +113,6 @@ C---  continue to write 2-D fields:
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp,  1, HSALT , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siHSALT '
-#endif
-#ifdef SEAICE_AGE
-         DO iTrac = 1, SEAICE_num
-          WRITE(fldName,'(A6,I2.2)') 'siAGEt', iTrac
-          j = j + 1
-          nj = nj-1
-          CALL WRITE_REC_3D_RL( fn, fp,  1,
-     &         IceAgeTr(1-Olx,1-Oly,1,1,iTrac),
-     &         nj, myIter, myThid )
-          IF (j.LE.listDim) wrFldList(j) = fldName
-         ENDDO
 #endif
 #ifdef ALLOW_SITRACER
          DO iTrac = 1, SItrMaxNum

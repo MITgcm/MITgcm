@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.53 2011/12/24 18:47:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.54 2012/02/03 13:34:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,7 +43,7 @@ C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
-      LOGICAL checkAdvSchSalt, checkAdvSchAge
+      LOGICAL checkAdvSchSalt
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -103,19 +103,10 @@ C--   Check advection schemes
      &     SEAICEadvSchSalt.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchSalt.NE.ENUM_DST3_FLUX_LIMIT .AND.
      &     SEAICEadvSchSalt.NE.ENUM_OS7MP )
-      checkAdvSchAge  = SEAICEadvAge  .AND. (
-     &     SEAICEadvSchAge .NE.ENUM_UPWIND_1RST .AND.
-     &     SEAICEadvSchAge .NE.ENUM_CENTERED_2ND .AND.
-     &     SEAICEadvSchAge .NE.ENUM_DST2 .AND.
-     &     SEAICEadvSchAge .NE.ENUM_FLUX_LIMIT .AND.
-     &     SEAICEadvSchAge .NE.ENUM_DST3 .AND.
-     &     SEAICEadvSchAge .NE.ENUM_DST3_FLUX_LIMIT .AND.
-     &     SEAICEadvSchAge .NE.ENUM_OS7MP )
       IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR.
-     &     checkAdvSchSnow .OR. checkAdvSchSalt .OR.
-     &     checkAdvSchAge ) THEN
+     &     checkAdvSchSnow .OR. checkAdvSchSalt ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: allowed advection schemes',
-     &          ' for heff, area, snow, salt, and ice-age are: '
+     &          ' for heff, area, snow, and salt are: '
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,7I3)') 'SEAICE_CHECK:',
      &      ENUM_UPWIND_1RST, ENUM_CENTERED_2ND, ENUM_DST2,
@@ -145,11 +136,6 @@ C--   Check advection schemes
      &       ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
         CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
-       IF ( checkAdvSchAge  ) THEN
-        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &       ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
-        CALL PRINT_ERROR( msgBuf, myThid )
-       ENDIF
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND ) THEN
@@ -164,11 +150,8 @@ C    for an other ice-field. In this case, stop here.
      &     SEAICEadvSchSnow.NE.ENUM_CENTERED_2ND
         checkAdvSchSalt = SEAICEadvSalt .AND.
      &     SEAICEadvSchSalt.NE.ENUM_CENTERED_2ND
-        checkAdvSchAge  = SEAICEadvAge  .AND.
-     &     SEAICEadvSchAge .NE.ENUM_CENTERED_2ND
        IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR.
-     &      checkAdvSchSnow .OR. checkAdvSchSalt .OR.
-     &      checkAdvSchAge ) THEN
+     &      checkAdvSchSnow .OR. checkAdvSchSalt ) THEN
         WRITE(msgBuf,'(A,I3,A)') 'SEAICE_CHECK: SEAICEadvScheme=',
      &   SEAICEadvScheme, ' not compatible with those Adv.Scheme:'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -192,11 +175,6 @@ C    for an other ice-field. In this case, stop here.
      &        ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
-        IF ( checkAdvSchAge  ) THEN
-         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
-     &        ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
-         CALL PRINT_ERROR( msgBuf, myThid )
-        ENDIF
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
       ELSEIF ( DIFF1 .NE. 0. _d 0 ) THEN
@@ -216,8 +194,7 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
      &     ( SEAICEdiffKhHeff .NE. 0. _d 0 ) .OR.
      &     ( SEAICEdiffKhArea .NE. 0. _d 0 ) .OR.
      &     ( SEAICEdiffKhSnow .NE. 0. _d 0 ) .OR.
-     &     ( SEAICEdiffKhSalt .NE. 0. _d 0 ) .OR.
-     &     ( SEAICEdiffKhAge  .NE. 0. _d 0 )
+     &     ( SEAICEdiffKhSalt .NE. 0. _d 0 )
      &                              ) ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' DIFF1 > 0 and one of the SEAICEdiffKh[] > 0'
@@ -507,18 +484,6 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
-
-#ifndef SEAICE_AGE
-      IF ( SEAICEadvAge ) THEN
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEadvAge = .TRUE. but cpp-flag'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
-     &       'SEAICE_AGE is undef in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-#endif /* SEAICE_AGE */
 
 #if defined(FENTY_AREA_EXPANSION_CONTRACTION) && !defined(SEAICE_DO_OPEN_WATER_GROWTH)
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.146 2012/01/30 15:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.147 2012/02/03 13:34:31 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -439,9 +439,6 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
             TICE(I,J,bi,bj)=celsius2K
-#ifdef SEAICE_AGE
-            IceAgeTr(i,j,bi,bj,2)=0. _d 0
-#endif /* SEAICE_AGE */
           endif
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+tmpscal2
           d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
@@ -472,13 +469,6 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
         DO J=1,sNy
          DO I=1,sNx
           IF ((HEFF(i,j,bi,bj).GT.0).OR.(HSNOW(i,j,bi,bj).GT.0)) THEN
-#ifdef SEAICE_AGE
-           IF (AREA(I,J,bi,bj).LT.SEAICE_area_floor) THEN
-            IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
-     &       + IceAgeTr(i,j,bi,bj,1)
-     &       *(SEAICE_area_floor-AREA(I,J,bi,bj)) / SEAICE_area_floor
-           ENDIF
-#endif /* SEAICE_AGE */
            AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),SEAICE_area_floor)
           ENDIF
          ENDDO
@@ -498,13 +488,6 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #ifdef ALLOW_SITRACER
           SItrAREA(I,J,bi,bj,1)=AREA(I,J,bi,bj)
 #endif
-#ifdef SEAICE_AGE
-          IF (AREA(I,J,bi,bj).GT.SEAICE_area_max) THEN
-           IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
-     &      - IceAgeTr(i,j,bi,bj,1)
-     &      *(AREA(I,J,bi,bj)-SEAICE_area_max) / SEAICE_area_max
-          ENDIF
-#endif /* SEAICE_AGE */
           AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),SEAICE_area_max)
          ENDDO
         ENDDO
@@ -548,31 +531,6 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
          ENDDO
         ENDDO
 #endif /* SEAICE_VARIABLE_SALINITY */
-
-C 5) treat sea ice age pathological cases
-C ...
-
-#ifdef SEAICE_AGE
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE IceAgeTr(:,:,bi,bj,1)  = comlev1_bibj,
-CADJ &     key = iicekey,byte=isbyte
-CADJ STORE IceAgeTr(:,:,bi,bj,2)  = comlev1_bibj,
-CADJ &     key = iicekey,byte=isbyte
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key = iicekey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-        DO J=1,sNy
-         DO I=1,sNx
-          IF (HEFF(i,j,bi,bj).EQ.0.) THEN
-            IceAgeTr(i,j,bi,bj,1)=0. _d 0
-            IceAgeTr(i,j,bi,bj,2)=0. _d 0
-          ENDIF
-          IF (IceAgeTr(i,j,bi,bj,1).LT.0.) IceAgeTr(i,j,bi,bj,1)=0. _d 0
-          IF (IceAgeTr(i,j,bi,bj,2).LT.0.) IceAgeTr(i,j,bi,bj,2)=0. _d 0
-         ENDDO
-        ENDDO
-#endif /* SEAICE_AGE */
 
 #endif /* SEAICE_GROWTH_LEGACY */
 
@@ -1437,7 +1395,7 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
 
 
 C =======================================================================
-C =====LEGACY PART 5.5: treat pathological cases, then do flooding ======
+C ==LEGACY PART 6 (LEGACY) treat pathological cases, then do flooding ===
 C =======================================================================
 
 #ifdef SEAICE_GROWTH_LEGACY
@@ -1524,35 +1482,6 @@ c needs to be here to allow use also with LEGACY branch
          ENDDO
         ENDDO
 #endif
-
-C ===================================================================
-C ===============PART 6: determine ice age increments================
-C ===================================================================
-
-#ifdef SEAICE_AGE
-C     Sources and sinks for sea ice age:
-C     assume that a) freezing: new ice fraction forms with zero age
-C                 b) melting: ice fraction vanishes with current age
-        DO J=1,sNy
-         DO I=1,sNx
-C--   increase age as time passes
-                IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
-     &            +SEAICE_deltaTtherm*AREApreTH(i,j)
-                IceAgeTr(i,j,bi,bj,2)=IceAgeTr(i,j,bi,bj,2)
-     &            +SEAICE_deltaTtherm*HEFFpreTH(i,j)
-C--   account for ice melt
-               IF (AREApreTH(i,j).GT.AREA(i,j,bi,bj)) THEN
-                    IceAgeTr(i,j,bi,bj,1)=IceAgeTr(i,j,bi,bj,1)
-     &              *AREA(i,j,bi,bj)/AREApreTH(i,j)
-               ENDIF
-               IF (HEFFpreTH(i,j).GT.HEFF(i,j,bi,bj)) THEN
-                    IceAgeTr(i,j,bi,bj,2)=IceAgeTr(i,j,bi,bj,2)
-     &              *HEFF(i,j,bi,bj)/HEFFpreTH(i,j)
-               ENDIF
-         ENDDO
-        ENDDO
-#endif /* SEAICE_AGE */
-
 
 C ===================================================================
 C ==============PART 7: determine ocean model forcing================

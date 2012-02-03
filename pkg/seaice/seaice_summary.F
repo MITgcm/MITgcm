@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.38 2012/01/16 18:17:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.39 2012/02/03 13:34:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,8 +132,6 @@ C--  Thermodynamics parameters
      & 'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
       CALL WRITE_0D_L ( SEAICEadvSalt, INDEX_NONE,
      & 'SEAICEadvSalt =', ' /* advect salinity together with ice */')
-      CALL WRITE_0D_L ( SEAICEadvAge, INDEX_NONE,
-     & 'SEAICEadvAge =', ' /* advect age together with ice */')
       CALL WRITE_0D_L ( SEAICEuseFlooding, INDEX_NONE,
      & 'SEAICEuseFlooding =', ' /* turn submerged snow into ice */')
 C     retired param:
@@ -158,9 +156,6 @@ c    & 'LAD               =', ' /* time stepping scheme */')
       IF ( SEAICEadvSalt )
      &CALL WRITE_0D_I ( SEAICEadvSchSalt,   INDEX_NONE,
      & 'SEAICEadvSchSalt   =', ' /* advection scheme for salt */')
-      IF ( SEAICEadvAge )
-     &CALL WRITE_0D_I ( SEAICEadvSchAge,   INDEX_NONE,
-     & 'SEAICEadvSchAge   =', ' /* advection scheme for age */')
       CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
      & 'SEAICEdiffKhArea   =', ' /* diffusivity (m^2/s) for area */')
       CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
@@ -169,8 +164,6 @@ c    & 'LAD               =', ' /* time stepping scheme */')
      & 'SEAICEdiffKhSnow   =', ' /* diffusivity (m^2/s) for snow */')
       CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
      & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
-      CALL WRITE_0D_RL( SEAICEdiffKhAge,   INDEX_NONE,
-     & 'SEAICEdiffKhAge   =', ' /* diffusivity (m^2/s) for age */')
       CALL WRITE_0D_RL( SEAICE_availHeatFrac, INDEX_NONE,
      & 'SEAICE_availHeatFrac =', ' /* fraction used from melting */')
       CALL WRITE_0D_RL( SEAICE_gamma_t, INDEX_NONE,

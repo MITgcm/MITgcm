@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.105 2011/12/22 12:31:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.106 2012/02/03 13:34:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -52,7 +52,7 @@ C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL chkFlag
       INTEGER iUnit
-#if (defined SEAICE_AGE)||(defined ALLOW_SITRACER)
+#ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
 
@@ -62,7 +62,10 @@ C     retired parameters
       _RL SEAICE_salinity
       _RL SEAICE_lhSublim
       _RL areaMin, areaMax, A22, hiceMin
-      CHARACTER*(MAX_LEN_MBUF) IceAgeFile
+      LOGICAL SEAICEadvAge
+      INTEGER SEAICEadvSchAge
+      _RL SEAICEdiffKhAge
+      CHARACTER*(MAX_LEN_MBUF) IceAgeFile, IceAgeTrFile(4)
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -127,9 +130,10 @@ C--   SEAICE parameters
      &          smrareastartdate1, smrareastartdate2, smrareaperiod
 #endif
 
-#if (defined SEAICE_AGE)||(defined ALLOW_SITRACER)
+#ifdef ALLOW_SITRACER
       NAMELIST /SEAICE_PARM03/
-     &  IceAgeTrFile, SItrName, SItrNameLong, SItrUnit, SItrMate
+     &  SItrFile, SItrName, SItrNameLong, SItrUnit, SItrMate,
+     &  IceAgeTrFile
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -175,11 +179,6 @@ c     SEAICEuseFluxForm  = .FALSE.
 #else
       SEAICEadvSalt      = .FALSE.
 #endif
-#ifdef SEAICE_AGE
-      SEAICEadvAge       = .TRUE.
-#else
-      SEAICEadvAge       = .FALSE.
-#endif
 #ifdef ALLOW_SEAICE_FLOODING
       SEAICEuseFlooding  = .TRUE.
 #else
@@ -193,12 +192,10 @@ c     SEAICEuseFluxForm  = .FALSE.
       SEAICEadvSchHeff   = UNSET_I
       SEAICEadvSchSnow   = UNSET_I
       SEAICEadvSchSalt   = UNSET_I
-      SEAICEadvSchAge    = UNSET_I
       SEAICEdiffKhArea   = UNSET_RL
       SEAICEdiffKhHeff   = UNSET_RL
       SEAICEdiffKhSnow   = UNSET_RL
       SEAICEdiffKhSalt   = UNSET_RL
-      SEAICEdiffKhAge    = UNSET_RL
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
@@ -346,6 +343,13 @@ C     SEAICE_latentIce   = 6.4474 _d +03
       A22                = UNSET_RL
       areaMax            = UNSET_RL
       SEAICE_lhSublim    = UNSET_RL
+      SEAICEadvAge       = .TRUE.
+      SEAICEadvSchAge    = UNSET_I
+      SEAICEdiffKhAge    = UNSET_RL
+      IceAgeTrFile(1)    = ' '
+      IceAgeTrFile(2)    = ' '
+      IceAgeTrFile(3)    = ' '
+      IceAgeTrFile(4)    = ' '
 C     end retired parameters
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
@@ -384,11 +388,9 @@ C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM02)
 #endif
 
-#if (defined SEAICE_AGE)||(defined ALLOW_SITRACER)
-      DO iTracer = 1, SEAICE_num
-       IceAgeTrFile(iTracer) = ' '
-      ENDDO
+#ifdef ALLOW_SITRACER
       DO iTracer = 1, SItrMaxNum
+       SItrFile(iTracer) = ' '
        SItrName(iTracer) = ' '
        SItrNameLong(iTracer) = ' '
        SItrUnit(iTracer) = ' '
@@ -533,7 +535,6 @@ C     so we reset them here
        SEAICEadvArea         = .FALSE.
        SEAICEadvSnow         = .FALSE.
        SEAICEadvSalt         = .FALSE.
-       SEAICEadvAge          = .FALSE.
       ENDIF
 C     Set advection schemes to some sensible values if not done
 C     in data.seaice
@@ -549,8 +550,6 @@ C     in data.seaice
      &     SEAICEadvSchSnow = SEAICEadvSchHeff
       IF ( SEAICEadvSchSalt .EQ. UNSET_I )
      &     SEAICEadvSchSalt = SEAICEadvSchHeff
-      IF ( SEAICEadvSchAge  .EQ. UNSET_I )
-     &     SEAICEadvSchAge  = SEAICEadvSchHeff
 C     Set diffusivity to some sensible values if not done in data.seaice
       IF ( SEAICEdiffKhArea .EQ. UNSET_RL )
      &     SEAICEdiffKhArea = SEAICEdiffKhHeff
@@ -562,8 +561,6 @@ C     Set diffusivity to some sensible values if not done in data.seaice
      &     SEAICEdiffKhSnow = SEAICEdiffKhHeff
       IF ( SEAICEdiffKhSalt .EQ. UNSET_RL )
      &     SEAICEdiffKhSalt = SEAICEdiffKhHeff
-      IF ( SEAICEdiffKhAge  .EQ. UNSET_RL )
-     &     SEAICEdiffKhAge  = SEAICEdiffKhHeff
 
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
@@ -680,6 +677,53 @@ C     retired parameter
      &  '"SEAICE_hice_reg" for regularization'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
+      IF ( .NOT. SEAICEadvAge ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICEadvAge" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: since ALLOW_SITRACER ',
+     &  'replaced and extended SEAICE_AGE'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICEadvSchAge .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICEadvSchAge" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: since ALLOW_SITRACER ',
+     &  'replaced and extended SEAICE_AGE'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICEdiffKhAge .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICEdiffKhAge" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: since ALLOW_SITRACER ',
+     &  'replaced and extended SEAICE_AGE'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( ( IceAgeTrFile(1) .NE. ' ' ).OR.
+     &     ( IceAgeTrFile(2) .NE. ' ' ).OR.
+     &     ( IceAgeTrFile(3) .NE. ' ' ).OR.
+     &     ( IceAgeTrFile(4) .NE. ' ' ) ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "IceAgeTrFile" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: since ALLOW_SITRACER ',
+     &  'replaced and extended SEAICE_AGE'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
 
 C-    Set Output type flags :
       SEAICE_tave_mdsio = .TRUE.
@@ -736,13 +780,6 @@ C     in case using centered avection scheme without any diffusion:
          IF ( SEAICEadvSalt .AND. SEAICEdiffKhSalt .EQ. 0. _d 0 ) THEN
           WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
      &    'will use AdvScheme = 2 for HSALT without any diffusion'
-          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-          chkFlag = .TRUE.
-         ENDIF
-         IF ( SEAICEadvAge  .AND. SEAICEdiffKhAge  .EQ. 0. _d 0 ) THEN
-          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
-     &    'will use AdvScheme = 2 for IceAgeTr without any diffusion'
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
           chkFlag = .TRUE.
