@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.257 2012/01/21 18:46:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.258 2012/02/04 00:56:23 heimbach Exp $
 C $Name:  $
 C
 
@@ -949,6 +949,7 @@ C Logical flags for selecting packages
       LOGICAL useSEAICE
       LOGICAL useSALT_PLUME
       LOGICAL useShelfIce
+      LOGICAL useStreamIce
       LOGICAL useICEFRONT
       LOGICAL useThSIce
       LOGICAL useATM2d
@@ -970,7 +971,7 @@ C Logical flags for selecting packages
      &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
      &        useGrdchk, useSMOOTH, useECCO, useSBO, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
-     &        useSEAICE, useSALT_PLUME, useShelfIce,
+     &        useSEAICE, useSALT_PLUME, useShelfIce, useStreamIce,
      &        useICEFRONT, useThSIce,
      &        useATM2D, useAIM, useLand, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
