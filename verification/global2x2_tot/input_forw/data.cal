@@ -1,9 +1,0 @@
-#
-# *******************
-# Calendar Parameters
-# *******************
- &CAL_NML
- TheCalendar='gregorian',
- startDate_1=19920101,
- startDate_2=60000,
- &
