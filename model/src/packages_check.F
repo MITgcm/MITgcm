@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.55 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.56 2012/02/04 01:43:40 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -113,7 +113,7 @@ C     If taveFreq is finite, make sure the pkg/timeave is being compiled
 #endif
 
 #ifndef ALLOW_CD_CODE
-      IF (useCDscheme) CALL PACKAGES_ERROR_MSG(
+       IF (useCDscheme) CALL PACKAGES_ERROR_MSG(
      &                  'CD_CODE', 'useCDscheme=.T.', myThid )
 #endif
 
@@ -281,6 +281,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useShelfIce) CALL SHELFICE_CHECK( myThid )
 #else
       IF (useShelfIce) CALL PACKAGES_ERROR_MSG('ShelfIce',' ',myThid)
+#endif
+
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) CALL STREAMICE_CHECK( myThid )
+#else
+      IF (useStreamIce) CALL PACKAGES_ERROR_MSG('StreamIce',' ',myThid)
 #endif
 
 #ifdef ALLOW_ICEFRONT

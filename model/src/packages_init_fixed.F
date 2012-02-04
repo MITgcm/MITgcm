@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.76 2011/10/26 09:30:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.77 2012/02/04 01:43:40 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -481,6 +481,15 @@ C--   Initialise fixed array for Float pkg
         CALL ICEFRONT_INIT_FIXED( myThid )
       ENDIF
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_FIXED',myThid)
+# endif
+       CALL STREAMICE_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_STREAMICE */
 
 #ifdef ALLOW_EMBED_FILES
       IF ( useEMBED_FILES ) THEN

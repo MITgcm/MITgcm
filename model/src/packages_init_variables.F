@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.84 2012/01/05 10:19:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.85 2012/02/04 01:43:40 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -235,6 +235,15 @@ cph# endif
        CALL ICEFRONT_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
+# endif
+       CALL STREAMICE_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_STREAMICE */
 
 #ifdef ALLOW_PTRACERS
 # ifndef ALLOW_AUTODIFF_TAMC

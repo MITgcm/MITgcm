@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.68 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.69 2012/02/04 01:43:40 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -206,6 +206,11 @@ C--   Initialize SEAICE parameters
 #ifdef ALLOW_SHELFICE
 C--   Initialize SHELFICE parameters
       IF (useShelfIce) CALL SHELFICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_STREAMICE
+C--   Initialize STREAMICE parameters
+      IF (useStreamIce) CALL STREAMICE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ICEFRONT
