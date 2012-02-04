@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.111 2011/12/19 11:47:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.112 2012/02/04 14:52:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -327,6 +327,12 @@ C     ice-front ocean interface
      &      myThid)
       ENDIF
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_SALT_PLUME
+      IF ( useSALT_PLUME ) THEN
+          CALL SALT_PLUME_DO_EXCH( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_SALT_PLUME */
 
 C--   Freeze water in the ocean interior and let it rise to the surface
 C     temporarily exclude from adjoint computations until
