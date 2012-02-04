@@ -1,9 +1,0 @@
-#
-#
-# ******************
-# cost function
-# ******************
- &COST_NML
-#revert to default 1 month
-# lastinterval=7776000.,
- &
