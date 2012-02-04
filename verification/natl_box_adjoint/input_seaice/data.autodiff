@@ -1,8 +1,0 @@
-
-#
-# *************************
-# Automatic differentiation
-# *************************
- &AUTODIFF
-  using_autodiff = .true.,
- &
