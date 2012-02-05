@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.25 2012/02/02 19:18:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.26 2012/02/05 21:06:54 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,13 +94,15 @@ C     kSrf  :: vertical index of surface layer
       INTEGER kSrf
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
       INTEGER ITER
-C  useMaykutPolySatVap :: use Maykut Polymomia for saturation vapor pressure
+C  useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law.
 C  postSolvTempIter :: select post solver-iteration flux calculation:
 C                      0 = none, i.e., from last iter ; 2 = full non-lin form
-C                      1 = use linearized approx (consitent with tsurf finding)
+C                      1 = use linearized approx (consistent with tsurf finding)
+C  SEAICE_wetAlbTemp :: Temp (deg.C) above which wet-albedo values are used
       LOGICAL useMaykutSatVapPoly
       INTEGER postSolvTempIter
+      _RL SEAICE_wetAlbTemp
 C     TB :: ocean temperature in contact with ice (=seawater freezing point) (K)
       _RL TB         (1:sNx,1:sNy)
       _RL D1, D1I
@@ -115,7 +117,7 @@ C     t1,t2,t3,t4 :: powers of temperature
       _RL  t1, t2, t3, t4
 
 C-    Constants to calculate Saturation Vapor Pressure
-C     Maykut Polynomia Coeff. for Sat. Vapor Press
+C     Maykut Polynomial Coeff. for Sat. Vapor Press
       _RL C1, C2, C3, C4, C5, QS1
 C     Extended temp-range expon. relation Coeff. for Sat. Vapor Press
       _RL lnTEN
@@ -124,28 +126,19 @@ C     specific humidity at ice surface variables
       _RL mm_pi,mm_log10pi
 
 C     F_c      :: conductive heat flux through seaice+snow (+=upward)
+C     F_lwu    :: upward long-wave surface heat flux (+=upward)
+C     F_sens   :: sensible surface heat flux         (+=upward)
 C     F_lh     :: latent heat flux (sublimation) (+=upward)
 C     qhice    :: saturation vapor pressure of snow/ice surface
 C     dqh_dTs  :: derivative of qhice w.r.t snow/ice surf. temp
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-C     A1 :: part of atmos surface flux (+=downward) independent of tsurf
-C     A2 :: part of atmos surface flux (+=upward) which depends on tsurf
-C     A3 :: derivative of (A2-F_c) w.r.t tsurf
-      _RL A2         (1:sNx,1:sNy)
-      _RL A3         (1:sNx,1:sNy)
-      _RL A1         (1:sNx,1:sNy)
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
-C     F_lwu    :: upward long-wave surface heat flux (+=upward)
-C     F_sens   :: sensible surface heat flux         (+=upward)
 C     dFia_dTs :: derivative of surf heat flux (F_ia) w.r.t surf. temp
+      _RL F_c        (1:sNx,1:sNy)
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
-      _RL dFia_dTs   (1:sNx,1:sNy)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
       _RL F_lh       (1:sNx,1:sNy)
-      _RL F_c        (1:sNx,1:sNy)
       _RL qhice      (1:sNx,1:sNy)
       _RL dqh_dTs    (1:sNx,1:sNy)
+      _RL dFia_dTs   (1:sNx,1:sNy)
       _RL absorbedSW (1:sNx,1:sNy)
       _RL penetSWFrac
       _RL delTsurf
@@ -206,7 +199,6 @@ C     ICE LATENT HEAT CONSTANT
 
 C     MELTING TEMPERATURE OF ICE
       TMELT        = celsius2K
-      SurfMeltTemp = TMELT
 
 C     ICE CONDUCTIVITY
       XKI=SEAICE_iceConduct
@@ -219,6 +211,9 @@ C     Snow-Thickness above HCUT: SW optically thick snow (=> snow-albedo).
 C     Snow-Thickness below HCUT: linear transition to ice-albedo
       HCUT = SEAICE_snowThick
 
+C     Wet/dry albebo temperature threshold
+      SEAICE_wetAlbTemp = - 1. _d -3
+
 C     PENETRATION SHORTWAVE RADIATION FACTOR
       XIO=SEAICE_shortwave
 
@@ -227,14 +222,15 @@ C--   until these become run-time params, set according to CPP OPTION:
 C     old SOLVE4TEMP_LEGACY setting, consistent with former celsius2K value:
 c     TMELT        = 273.16  _d +00
 c     SurfMeltTemp = 273.159 _d +00
-      SurfMeltTemp = TMELT - 1. _d -3
       useMaykutSatVapPoly = .TRUE.
       postSolvTempIter = 0
 #else /* SEAICE_SOLVE4TEMP_LEGACY */
+      SEAICE_wetAlbTemp =  0. _d 0
       HCUT = 0. _d 0
       useMaykutSatVapPoly = .FALSE.
       postSolvTempIter = 2
 #endif /* SEAICE_SOLVE4TEMP_LEGACY */
+      SurfMeltTemp = TMELT + SEAICE_wetAlbTemp
 
 C     Initialize variables
       DO J=1,sNy
@@ -249,20 +245,12 @@ C     here in a separate array
         dqh_dTs  (I,J) = 0. _d 0
         F_ia     (I,J) = 0. _d 0
         F_lh     (I,J) = 0. _d 0
-
-C     Reset the snow/ice surface to TMELT and bound the atmospheric temperature
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-        A1(I,J) = 0.0 _d 0
-        A2(I,J) = 0.0 _d 0
-        A3(I,J) = 0.0 _d 0
-        tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURF(I,J,bi,bj) )
-        lwdownLoc(I,J) = MAX( MIN_LWDOWN, LWDOWN(I,J,bi,bj) )
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
         F_lwu    (I,J) = 0. _d 0
         F_sens   (I,J) = 0. _d 0
+C     Make a local copy of LW, surface & atmospheric temperatures
         tsurfLoc (I,J) = TSURF(I,J,bi,bj)
-        lwdownLoc(I,J) = LWDOWN(I,J,bi,bj)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
+c       tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURF(I,J,bi,bj) )
+        lwdownLoc(I,J) = MAX( MIN_LWDOWN, LWDOWN(I,J,bi,bj) )
         atempLoc (I,J) = MAX( celsius2K+MIN_ATEMP, ATEMP(I,J,bi,bj) )
 
 C     FREEZING TEMPERATURE OF SEAWATER
@@ -276,23 +264,26 @@ C     old SOLVE4TEMP_LEGACY setting (not consistent with seaice_growth value)
 c       TB(I,J) = 271.2 _d 0
         TB(I,J) = celsius2K + SEAICE_freeze
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
+
+C     Now determine fixed (relative to tsurf) forcing term in heat budget
+
         IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
 C     Stefan-Boltzmann constant times emissivity
          D3(I,J)=SEAICE_snow_emiss*SEAICE_boltzmann
 #ifdef EXF_LWDOWN_WITH_EMISSIVITY
 C     This is now [(1-emiss)*lwdown - lwdown]
-         lwdownloc(I,J) = SEAICE_snow_emiss*lwdownloc(I,J)
+         lwdownLoc(I,J) = SEAICE_snow_emiss*lwdownLoc(I,J)
 #else /* use the old hard wired inconsistent value  */
-         lwdownloc(I,J) = 0.97 _d 0*lwdownloc(I,J)
+         lwdownLoc(I,J) = 0.97 _d 0*lwdownLoc(I,J)
 #endif /* EXF_LWDOWN_WITH_EMISSIVITY */
         ELSE
 C     Stefan-Boltzmann constant times emissivity
          D3(I,J)=SEAICE_ice_emiss*SEAICE_boltzmann
 #ifdef EXF_LWDOWN_WITH_EMISSIVITY
 C     This is now [(1-emiss)*lwdown - lwdown]
-         lwdownloc(I,J) = SEAICE_ice_emiss*lwdownloc(I,J)
+         lwdownLoc(I,J) = SEAICE_ice_emiss*lwdownLoc(I,J)
 #else /* use the old hard wired inconsistent value  */
-         lwdownloc(I,J) = 0.97 _d 0*lwdownloc(I,J)
+         lwdownLoc(I,J) = 0.97 _d 0*lwdownLoc(I,J)
 #endif /* EXF_LWDOWN_WITH_EMISSIVITY */
         ENDIF
        ENDDO
@@ -349,25 +340,13 @@ C     The shortwave radiative flux convergence in the seaice.
          absorbedSW(I,J) =  (1.0 _d 0 - ALB(I,J))
      &        *(1.0 _d 0 - penetSWFrac)* SWDOWN(I,J,bi,bj)
 
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-C     Now determine fixed (relative to tsurf) forcing term in heat budget
-         A1(I,J) = absorbedSW(I,J) + lwdownLoc(I,J)
-     &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
-
 C     The effective conductivity of the two-layer snow/ice system.
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-         effConduct(I,J)=
-     &        XKS/(HSNOW_ACTUAL(I,J)/HICE_ACTUAL(I,J) +
-     &        XKS/XKI)/HICE_ACTUAL(I,J)
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
-C     Set a mininum sea ice thickness of 5 cm to bound
+C     Set a minimum sea ice thickness of 5 cm to bound
 C     the magnitude of conductive heat fluxes.
 Cif   * now taken care of by SEAICE_hice_reg in seaice_growth
 c        hice_tmp = max(HICE_ACTUAL(I,J),5. _d -2)
          effConduct(I,J) = XKI * XKS /
      &        (XKS * HICE_ACTUAL(I,J) + XKI * HSNOW_ACTUAL(I,J))
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef SEAICE_DEBUG
          IF ( (I .EQ. SEAICE_debugPointI) .AND.
@@ -400,7 +379,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO I=1,sNx
 #ifdef ALLOW_AUTODIFF_TAMC
          iicekey = I + sNx*(J-1) + (ITER-1)*sNx*sNy
-CADJ STORE tsurfloc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 
@@ -439,11 +418,6 @@ C     d(qh)/d(TICE)
 C     Calculate the flux terms based on the updated tsurfLoc
           F_c(I,J)    = effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
           F_lh(I,J)   = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-          A2(I,J) = D1*UG(I,J)*t1+D1I*UG(I,J)*qhice(I,J)+D3(I,J)*t4
-          A3(I,J) = 4.0 _d 0*D3(I,J)*t3 + effConduct(I,J)+D1*UG(I,J)
-     &         + D1I*UG(I,J)*dqh_dTs(I,J)
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
 C     if the latent heat flux implied by tsurfLoc exceeds
 C     F_lh_max, cap F_lh and decouple the flux magnitude from TICE
@@ -453,53 +427,38 @@ C     F_lh_max, cap F_lh and decouple the flux magnitude from TICE
           ENDIF
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
 
-C     d(F_ia)/d(Tsurf)
-          dFia_dTs(I,J) = 4.0 _d 0*D3(I,J)*t3 + D1*UG(I,J)
-     &                  + D1I*UG(I,J)*dqh_dTs(I,J)
-
           F_lwu(I,J) = t4 * D3(I,J)
           F_sens(I,J)= D1 * UG(I,J) * (t1 - atempLoc(I,J))
           F_ia(I,J) = -lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J)
      &              +  F_sens(I,J) + F_lh(I,J)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
+C     d(F_ia)/d(Tsurf)
+          dFia_dTs(I,J) = 4.0 _d 0*D3(I,J)*t3 + D1*UG(I,J)
+     &                  + D1I*UG(I,J)*dqh_dTs(I,J)
 
 #ifdef SEAICE_DEBUG
           IF ( (I .EQ. SEAICE_debugPointI) .AND.
      &         (J .EQ. SEAICE_debugPointJ) ) THEN
            print '(A,i6,4(1x,D24.15))',
      &          'ice-iter qhICE,       ', ITER,qhIce(I,J)
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-           print '(A,i6,4(1x,D24.15))',
-     &          'ice-iter A1 A2 B      ',ITER,A1(I,J),A2(I,J),F_c(I,J)
-           print '(A,i6,4(1x,D24.15))',
-     &          'ice-iter A3 (-A1+A2)  ',ITER,A3(I,J),-A1(I,J)+A2(I,J)
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
            print '(A,i6,4(1x,D24.15))',
      &          'ice-iter dFiDTs1 F_ia ', ITER,
      &          dFia_dTs(I,J)+effConduct(I,J), F_ia(I,J)-F_c(I,J)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
           ENDIF
 #endif /* SEAICE_DEBUG */
 
-C     Update tsurfLoc
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-C     update tsurf as solution of : Fc = A2 - A1 + A3 *delta.tsurf
-          tsurfLoc(I,J)=tsurfLoc(I,J)
-     &         +(A1(I,J)-A2(I,J)+F_c(I,J))/A3(I,J)
-          tsurfLoc(I,J) = MAX( celsius2K+MIN_TICE, tsurfLoc(I,J) )
-
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
-C     update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
+C-    Update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
           tsurfLoc(I,J) = tsurfLoc(I,J)
      &    + ( F_c(I,J)-F_ia(I,J) ) / ( effConduct(I,J)+dFia_dTs(I,J) )
 
+          IF ( useMaykutSatVapPoly ) THEN
+            tsurfLoc(I,J) = MAX( celsius2K+MIN_TICE, tsurfLoc(I,J) )
+          ENDIF
 C     If the search leads to tsurfLoc < 50 Kelvin, restart the search
 C     at tsurfLoc = TMELT.  Note that one solution to the energy balance problem
 C     is an extremely low temperature - a temperature far below realistic values.
-          IF (tsurfLoc(I,J) .LT. 50.0 _d 0 ) THEN
-           tsurfLoc(I,J) = TMELT
-          ENDIF
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
+c         IF (tsurfLoc(I,J) .LT. 50.0 _d 0 ) tsurfLoc(I,J) = TMELT
+C   Comments & code above not relevant anymore (from older version, when
+C   trying Maykut-Polynomial & dqh_dTs > 0 ?): commented out
           tsurfLoc(I,J) = MIN( tsurfLoc(I,J), TMELT )
 
 #ifdef SEAICE_DEBUG
@@ -529,25 +488,17 @@ C     Save updated tsurf and finalize the flux terms
 Cgf no additional dependency through solver, snow, etc.
          IF ( SEAICEadjMODE.GE.2 ) THEN
           CALL ZERO_ADJ_1D( 1, TSURF(I,J,bi,bj), myThid)
-          t1 = TSURF(I,J,bi,bj)
-          t2 = t1*t1
-          t3 = t2*t1
-          t4 = t2*t2
-          qhice(I,J)=QS1*(C1*t4+C2*t3 +C3*t2+C4*t1+C5)
-
-          A1(I,J)=0.3 _d 0 *SWDOWN(I,J,bi,bj)+lwdownLoc(I,J)
-     &         +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
-          A2(I,J)= D1*UG(I,J)*t1+D1I*UG(I,J)*qhice(I,J)+D3(I,J)*t4
-
-          F_ia(I,J)=-A1(I,J)+A2(I,J)
+          absorbedSW(I,J) = 0.3 _d 0 *SWDOWN(I,J,bi,bj)
           IcePenetSW(I,J)= 0. _d 0
-         ELSEIF ( postSolvTempIter.EQ.2 ) THEN
+         ENDIF
+         IF ( postSolvTempIter.EQ.2 .OR. SEAICEadjMODE.GE.2 ) THEN
+          t1 = TSURF(I,J,bi,bj)
 #else /* SEAICE_MODIFY_GROWTH_ADJ */
 
          IF ( postSolvTempIter.EQ.2 ) THEN
-#endif /* SEAICE_MODIFY_GROWTH_ADJ */
 C     Recalculate the fluxes based on the (possibly) adjusted TSURF
           t1 = tsurfLoc(I,J)
+#endif /* SEAICE_MODIFY_GROWTH_ADJ */
           t2 = t1*t1
           t3 = t2*t1
           t4 = t2*t2
@@ -564,44 +515,32 @@ C     The following form does the same, but is faster
 C     over ice specific humidity
            qhice(I,J) = bb1*mm_pi/( Ppascals -(1.0 _d 0 - bb1)*mm_pi )
           ENDIF
+          F_c(I,J)  = effConduct(I,J) * (TB(I,J) - t1)
           F_lh(I,J) = D1I * UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
 #ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
           IF (F_lh(I,J) .GT. F_lh_max(I,J)) THEN
              F_lh(I,J)  = F_lh_max(I,J)
           ENDIF
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
-
-          F_c(I,J)  = effConduct(I,J) * (TB(I,J) - t1)
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-          A2(I,J)   = D1*UG(I,J)*t1+D1I*UG(I,J)*qhice(I,J)+D3(I,J)*t4
-          F_ia(I,J) = -A1(I,J)+A2(I,J)
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
           F_lwu(I,J)  = t4 * D3(I,J)
           F_sens(I,J) = D1 * UG(I,J) * (t1 - atempLoc(I,J))
 C     The flux between the ice/snow surface and the atmosphere.
           F_ia(I,J) = -lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J)
      &              +  F_sens(I,J) + F_lh(I,J)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
          ELSEIF ( postSolvTempIter.EQ.1 ) THEN
 C     Update fluxes (consistent with the linearized formulation)
           delTsurf  = tsurfLoc(I,J)-tsurfPrev(I,J)
           F_c(I,J)  = effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-          F_ia(I,J) = -A1(I,J)+A2(I,J)
-     &              + ( A3(I,J)-effConduct(I,J) )*delTsurf
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
           F_ia(I,J) = F_ia(I,J) + dFia_dTs(I,J)*delTsurf
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
           F_lh(I,J) = F_lh(I,J)
      &              + D1I*UG(I,J)*dqh_dTs(I,J)*delTsurf
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-         ELSEIF ( postSolvTempIter.EQ.0 ) THEN
+
+c        ELSEIF ( postSolvTempIter.EQ.0 ) THEN
 C     Take fluxes from last iteration
-          F_ia(I,J) = -A1(I,J)+A2(I,J)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
+
          ELSEIF ( postSolvTempIter.NE.0 ) THEN
-           STOP 'SEAICE_SOLVE4TEMP: unvalid postSolvTempIter'
+           STOP 'SEAICE_SOLVE4TEMP: invalid postSolvTempIter'
          ENDIF
 
 C     Fresh water flux (kg/m^2/s) from latent heat of sublimation.
@@ -610,7 +549,7 @@ C     is also positive upward (atmosphere gains freshwater)
          FWsublim(I,J) = F_lh(I,J)/lhSublim
 
 #ifdef SEAICE_DEBUG
-C     Caclulate the net ice-ocean and ice-atmosphere fluxes
+C     Calculate the net ice-ocean and ice-atmosphere fluxes
          IF (F_c(I,J) .GT. 0.0 _d 0) THEN
           F_io_net = F_c(I,J)
           F_ia_net = 0.0 _d 0
@@ -634,7 +573,6 @@ C     Caclulate the net ice-ocean and ice-atmosphere fluxes
           print '(A,4(1x,D24.15))',
      &         'ibi qh(ATM ICE)            ',
      &         AQH(I,J,bi,bj),qhice(I,J)
-#ifndef SEAICE_SOLVE4TEMP_LEGACY
          print '(A,4(1x,D24.15))',
      &         'ibi F(lwd,swi,lwu)         ',
      &         -lwdownLoc(I,J), -absorbedSW(I,J), F_lwu(I,J)
@@ -655,14 +593,9 @@ C     Caclulate the net ice-ocean and ice-atmosphere fluxes
      &          FWsublim(I,J),
      &          FWsublim(I,J)*SEAICE_deltaTtherm/SEAICE_rhoICE
 #endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
           print '(A,4(1x,D24.15))',
      &         'ibi F_ia, F_ia_net, F_c    ',
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-     &         -A1(I,J)+A2(I,J), -A1(I,J)+A2(I,J)-F_c(I,J), F_c(I,J)
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
      &         F_ia(I,J), F_ia_net, F_c(I,J)
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
           print '(A)','----------------------------------------'
          ENDIF
 #endif /* SEAICE_DEBUG */
