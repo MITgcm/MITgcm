@@ -9,6 +9,7 @@
  jGloPos          = 1,
  kGloPos          = 1,
  nstep            = 1,
- nend             = 6,
+#nend             = 6,
+ nend             = 3,
  grdchkvarindex   = 1,
  &
