@@ -1,15 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1590 2012/02/04 17:25:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1591 2012/02/05 22:40:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_solve4temp.F (SOLVE4TEMP_LEGACY):
+  - remove LEGACY code for solving for tsurf (A1,A2,A3) but maintain the same
+    algorithm (same choice: useMaykutPolySatVap=T, postSolvTempIter=0);
+    difference in results only due to machine truncation.
+  - remove MAX_TICE (tsurf is always =< TMELT anyway); keep MIN_TICE if using
+    MaykutPolySatVap; keep MIN_LWDOWN.
+  - adapt SEAICE_MODIFY_GROWTH_ADJ code (untested) to non-legacy formulation.
+  - update output of verification exp. lab_sea (4 fwd: 11 cg2d digits except hb87,
+    + 3 AD: 6 digits except evp) and offline_exf_seaice.seaice (12 digits).
 o pkg/salt_plume:
-   - isolate saltPlumeFlux array exch into a specific S/R called from
-     do_oceanic_phys.F
-   - add interface to pkg/salt_plume (filling of saltPlumeFlux) in pkg/thsice.
+  - isolate saltPlumeFlux array exch into a specific S/R called from
+    do_oceanic_phys.F
+  - add interface to pkg/salt_plume (filling of saltPlumeFlux) in pkg/thsice.
 o verification:
-   - move untested set-up to MITgcm_contrib/verification_other.
+  - move untested set-up to MITgcm_contrib/verification_other.
 o pkg/seaice:
   - retire old way of SEAICE_AGE. Now replaced with ALLOW_SITRACER.
 o pkg/seaice:
