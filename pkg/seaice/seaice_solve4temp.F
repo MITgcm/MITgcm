@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.26 2012/02/05 21:06:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.27 2012/02/06 19:19:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,20 +94,12 @@ C     kSrf  :: vertical index of surface layer
       INTEGER kSrf
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
       INTEGER ITER
-C  useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
-C                         instead of extended temp-range exponential law.
-C  postSolvTempIter :: select post solver-iteration flux calculation:
-C                      0 = none, i.e., from last iter ; 2 = full non-lin form
-C                      1 = use linearized approx (consistent with tsurf finding)
-C  SEAICE_wetAlbTemp :: Temp (deg.C) above which wet-albedo values are used
-      LOGICAL useMaykutSatVapPoly
-      INTEGER postSolvTempIter
-      _RL SEAICE_wetAlbTemp
 C     TB :: ocean temperature in contact with ice (=seawater freezing point) (K)
       _RL TB         (1:sNx,1:sNy)
       _RL D1, D1I
       _RL D3(1:sNx,1:sNy)
       _RL TMELT, XKI, XKS, HCUT, XIO
+C     SurfMeltTemp :: Temp (K) above which wet-albedo values are used
       _RL SurfMeltTemp
 C     effConduct :: effective conductivity of combined ice and snow
       _RL effConduct(1:sNx,1:sNy)
@@ -217,20 +209,11 @@ C     Wet/dry albebo temperature threshold
 C     PENETRATION SHORTWAVE RADIATION FACTOR
       XIO=SEAICE_shortwave
 
-C--   until these become run-time params, set according to CPP OPTION:
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
+C     Temperature Threshold for wet-albedo:
+      SurfMeltTemp = TMELT + SEAICE_wetAlbTemp
 C     old SOLVE4TEMP_LEGACY setting, consistent with former celsius2K value:
 c     TMELT        = 273.16  _d +00
 c     SurfMeltTemp = 273.159 _d +00
-      useMaykutSatVapPoly = .TRUE.
-      postSolvTempIter = 0
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
-      SEAICE_wetAlbTemp =  0. _d 0
-      HCUT = 0. _d 0
-      useMaykutSatVapPoly = .FALSE.
-      postSolvTempIter = 2
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
-      SurfMeltTemp = TMELT + SEAICE_wetAlbTemp
 
 C     Initialize variables
       DO J=1,sNy

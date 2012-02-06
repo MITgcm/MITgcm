@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.39 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.40 2012/02/06 19:19:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,6 +120,9 @@ C--  Time-stepping related param.
 C--  Thermodynamics parameters
       CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
      & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
+      CALL WRITE_0D_L ( useMaykutSatVapPoly, INDEX_NONE,
+     & 'useMaykutSatVapPoly =',
+     & ' /* use Maykut Polynomial for Sat.Vap.Pr */')
       CALL WRITE_0D_I ( SEAICEareaFormula,   INDEX_NONE,
      & 'SEAICEareaFormula =', ' /* ice cover formula */')
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
@@ -134,11 +137,11 @@ C--  Thermodynamics parameters
      & 'SEAICEadvSalt =', ' /* advect salinity together with ice */')
       CALL WRITE_0D_L ( SEAICEuseFlooding, INDEX_NONE,
      & 'SEAICEuseFlooding =', ' /* turn submerged snow into ice */')
-C     retired param:
-c     CALL WRITE_0D_I ( LAD,               INDEX_NONE,
-c    & 'LAD               =', ' /* time stepping scheme */')
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
-     & 'IMAX_TICE         =', ' /* iterations for ice heat budget */')
+     & 'IMAX_TICE         =', ' /* iterations for ice surface temp */')
+      CALL WRITE_0D_I ( postSolvTempIter,  INDEX_NONE,
+     & 'postSolvTempIter=',
+     & ' /* flux calculation after surf. temp iter */')
       CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
      & 'SEAICEadvScheme   =', ' /* advection scheme for ice */')
       IF ( SEAICEadvScheme .EQ. 2 )
@@ -205,6 +208,9 @@ c    & 'LAD               =', ' /* time stepping scheme */')
      & 'SEAICE_wetSnowAlb_south=', ' /* Southern Ocean wetSnowAlb */')
       CALL WRITE_0D_RL( HO_south          ,INDEX_NONE,
      & 'HO_south               =', ' /* Southern Ocean HO */')
+      CALL WRITE_0D_RL( SEAICE_wetAlbTemp ,INDEX_NONE,
+     & 'SEAICE_wetAlbTemp=',
+     & ' /* Temp (o.C) threshold for wet-albedo */')
       CALL WRITE_0D_RL( SEAICE_snow_emiss ,INDEX_NONE,
      & 'SEAICE_snow_emiss =', ' /* snow emissivity */')
       CALL WRITE_0D_RL( SEAICE_ice_emiss ,INDEX_NONE,
@@ -222,12 +228,11 @@ c    & 'LAD               =', ' /* time stepping scheme */')
       CALL WRITE_0D_RL( SEAICE_snowConduct,INDEX_NONE,
      & 'SEAICE_snowConduct=', ' /* snow conductivity */')
       CALL WRITE_0D_RL( SEAICE_snowThick  ,INDEX_NONE,
-     & 'SEAICE_snowThick  =', ' /* cutoff snow thickness */')
+     & 'SEAICE_snowThick  =',
+     & ' /* cutoff snow thickness (for albedo) */')
       CALL WRITE_0D_RL( SEAICE_shortwave  ,INDEX_NONE,
      & 'SEAICE_shortwave  =', ' /* penetration shortwave radiation */')
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
-c     WRITE(msgBuf,'(A,A)') 'Sea-water freezing temp. ',
-c    &     'is linear function of water Salinity'
       WRITE(msgBuf,'(A,A)') 'ignores SEAICE_freeze ',
      &     '(#define SEAICE_VARIABLE_FREEZING_POINT)'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -249,8 +254,6 @@ c    &     'is linear function of water Salinity'
      & 'MIN_ATEMP         =', ' /* minimum air temperature */')
       CALL WRITE_0D_RL( MIN_LWDOWN        ,INDEX_NONE,
      & 'MIN_LWDOWN        =', ' /* minimum downward longwave */')
-      CALL WRITE_0D_RL( MAX_TICE          ,INDEX_NONE,
-     & 'MAX_TICE          =', ' /* maximum ice temperature */')
       CALL WRITE_0D_RL( MIN_TICE          ,INDEX_NONE,
      & 'MIN_TICE          =', ' /* minimum ice temperature */')
       CALL WRITE_0D_RL( SEAICE_EPS        ,INDEX_NONE,

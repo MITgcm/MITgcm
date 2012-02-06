@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.54 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.55 2012/02/06 19:19:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -233,17 +233,6 @@ C--
       ENDIF
 #endif
 
-C--   LAD has been retired
-      IF ( LAD .EQ. 1 ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     & ' 2nd order advection with Leap frog (LAD==1) has been retired'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     & ' please use the defauld modified Euler step (LAD==2)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-
 C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
 #ifndef SEAICE_ALLOW_DYNAMICS
       IF (SEAICEuseDYNAMICS) THEN
@@ -350,10 +339,10 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
 #endif
 #endif /* ALLOW_EXF */
 
-      IF ( Olx.LT.3 .OR. Oly.LT.3 ) THEN
+      IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'SEAICE_CHECK: cannot use EVP nor LSR solver with',
-     &  ' overlap (Olx,Oly) smaller than 3'
+     &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

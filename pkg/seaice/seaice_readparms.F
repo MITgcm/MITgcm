@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.106 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.107 2012/02/06 19:19:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,14 +56,17 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER iTracer
 #endif
 
-C     retired parameters
+C     Retired parameters
+C     MAX_TICE          :: maximum ice temperature   (deg C)
+C     LAD               :: time stepping used for sea-ice advection:
+C                          1 = LEAPFROG,  2 = BACKWARD EULER.
       INTEGER nRetired
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_salinity
       _RL SEAICE_lhSublim
-      _RL areaMin, areaMax, A22, hiceMin
+      _RL areaMin, areaMax, A22, hiceMin, MAX_TICE
       LOGICAL SEAICEadvAge
-      INTEGER SEAICEadvSchAge
+      INTEGER SEAICEadvSchAge, LAD
       _RL SEAICEdiffKhAge
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile, IceAgeTrFile(4)
 
@@ -72,12 +75,14 @@ C--   SEAICE parameters
      & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseTEM,
      & SEAICEuseEVPpickup, SEAICEuseFluxForm,
      & SEAICEuseMetricTerms,
-     & useHB87stressCoupling, SEAICEuseFlooding, usePW79thermodynamics,
+     & useHB87stressCoupling, SEAICEuseFlooding,
+     & usePW79thermodynamics, useMaykutSatVapPoly,
      & SEAICErestoreUnderIce,
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
      & SEAICEadvSalt, SEAICEadvAge,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
-     & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea,
+     & LAD, IMAX_TICE, postSolvTempIter,
+     & SEAICEadvScheme, SEAICEadvSchArea,
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICEadvSchSalt, SEAICEadvSchAge,
      & SEAICEdiffKhHeff, SEAICEdiffKhSnow, SEAICEdiffKhArea,
@@ -94,12 +99,13 @@ C--   SEAICE parameters
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
-     & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
+     & SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
+     & SEAICE_strength, SEAICE_eccen,
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_salinity,
      & areaMin, areaMax, A22, hiceMin,
-     & SEAICE_iceConduct, SEAICE_snowConduct, 
+     & SEAICE_iceConduct, SEAICE_snowConduct,
      & SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
      & SIsalFRAC, SIsal0, SEAICEstressFactor,
@@ -171,6 +177,7 @@ c     SEAICEuseFluxForm  = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
+      useMaykutSatVapPoly = .FALSE.
       SEAICEadvHeff      = .TRUE.
       SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .TRUE.
@@ -241,6 +248,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_drySnowAlb_south = UNSET_RL
       SEAICE_wetSnowAlb_south = UNSET_RL
       HO_south                = UNSET_RL
+      SEAICE_wetAlbTemp  = -1. _d -3
       SEAICE_waterAlbedo = 0.1    _d +00
       SEAICE_strength    = 2.75   _d +04
       SEAICE_eccen       = 2.     _d 0
@@ -290,8 +298,8 @@ C     old default value of 0.97001763668430343479
       HeffFile   = ' '
       uIceFile   = ' '
       vIceFile   = ' '
-      LAD        = 2
       IMAX_TICE  = 10
+      postSolvTempIter = 2
       SOLV_MAX_ITERS = 1500
       SOLV_NCHECK= 2
 C     two pseudo time steps correspond to the original modified
@@ -322,22 +330,25 @@ c     DIFF1      = .004 _d 0
       MAX_HEFF          = 10.     _d 0
       MIN_ATEMP         = -50.    _d 0
       MIN_LWDOWN        = 60.     _d 0
-      MAX_TICE          = 30.     _d 0
       MIN_TICE          = -50.    _d 0
       SEAICE_EPS        = 1.      _d -10
       SEAICE_EPS_SQ     = -99999.
-C     retired parameters
-C     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
-C     SEAICE_sensHeat    = 2.284  _d +00
+C-    Retired parameters:
+c     LAD        = 2
+      LAD        = UNSET_I
+c     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
+c     SEAICE_sensHeat    = 2.284  _d +00
       SEAICE_sensHeat    = UNSET_RL
-C     SEAICE_latentWater = 1.75 _d -03 * 2.500 _d 06 * 1.3
-C     SEAICE_latentWater = 5.6875 _d +03
+c     SEAICE_latentWater = 1.75 _d -03 * 2.500 _d 06 * 1.3
+c     SEAICE_latentWater = 5.6875 _d +03
       SEAICE_latentWater = UNSET_RL
-C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
-C     SEAICE_latentIce   = 6.4474 _d +03
+c     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
+c     SEAICE_latentIce   = 6.4474 _d +03
       SEAICE_latentIce   = UNSET_RL
       SEAICE_salinity    = UNSET_RL
       IceAgeFile         = ' '
+c     MAX_TICE           = 30.     _d 0
+      MAX_TICE           = UNSET_RL
       areaMin            = UNSET_RL
       hiceMin            = UNSET_RL
       A22                = UNSET_RL
@@ -350,9 +361,19 @@ C     SEAICE_latentIce   = 6.4474 _d +03
       IceAgeTrFile(2)    = ' '
       IceAgeTrFile(3)    = ' '
       IceAgeTrFile(4)    = ' '
-C     end retired parameters
+C-    end retired parameters
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
+
+#ifdef SEAICE_SOLVE4TEMP_LEGACY
+C-    old SOLVE4TEMP_LEGACY setting:
+      useMaykutSatVapPoly = .TRUE.
+      postSolvTempIter  =  0
+#else /* SEAICE_SOLVE4TEMP_LEGACY */
+C-    old non-SOLVE4TEMP_LEGACY setting:
+      SEAICE_wetAlbTemp =  0. _d 0
+      SEAICE_snowThick  =  0. _d 0
+#endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef ALLOW_COST
       mult_ice_export   =  0. _d 0
@@ -565,7 +586,7 @@ C     Set diffusivity to some sensible values if not done in data.seaice
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
-C     retired parameter
+C-    Retired parameters
       nRetired = 0
       IF ( SEAICE_sensHeat    .NE. UNSET_RL ) THEN
        nRetired = nRetired + 1
@@ -664,6 +685,22 @@ C     retired parameter
        WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: replaced by ',
      &  '"SEAICE_area_reg" for regularization'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( LAD .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'S/R SEAICE_READPARMS: "LAD" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'always use modified Euler step ',
+     &  '(LAD==2) since Leap frog code (LAD==1) is gone.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( MAX_TICE .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "MAX_TICE" ',
+     &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( hiceMin .NE. UNSET_RL ) THEN

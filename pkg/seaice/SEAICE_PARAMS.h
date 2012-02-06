@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.80 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.81 2012/02/06 19:19:58 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SEAICE_PARAMS.h                                          |
-C     | o Basic parameter header for sea ice model.              |
-C     \==========================================================/
+C     *==========================================================*
+C     | SEAICE_PARAMS.h
+C     | o Basic parameter header for sea ice model.
+C     *==========================================================*
 
 C--   COMMON /SEAICE_PARM_L/ Logical parameters of sea ice model.
 C
@@ -38,6 +38,8 @@ C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
 C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
+C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
+C                         instead of extended temp-range exponential law; def=F.
 C     SEAICErestoreUnderIce :: restore surface T/S also underneath ice
 C                          ( default is false )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
@@ -55,9 +57,10 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt, 
+     &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
-     &     usePW79thermodynamics, SEAICErestoreUnderIce,
+     &     usePW79thermodynamics, useMaykutSatVapPoly,
+     &     SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
@@ -67,18 +70,20 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt, 
+     &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
-     &     usePW79thermodynamics, SEAICErestoreUnderIce,
+     &     usePW79thermodynamics, useMaykutSatVapPoly,
+     &     SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
-C     LAD               :: time stepping used for sea-ice advection:
-C                          1 = LEAPFROG,  2 = BACKWARD EULER.
-C     IMAX_TICE         :: number of iterations for ice heat budget   10
-C     SOLV_MAX_ITERS    :: maximum number of allowed solver iterations
+C     IMAX_TICE         :: number of iterations for ice surface temp (default=10)
+C     postSolvTempIter :: select flux calculation after surf. temp solver iteration
+C                         0 = none, i.e., from last iter ; 2 = full non-lin form
+C                         1 = use linearized approx (consistent with tsurf finding)
+C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
 C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial guess
@@ -95,7 +100,7 @@ C                          a function of heff increment
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
-      INTEGER LAD, IMAX_TICE
+      INTEGER IMAX_TICE, postSolvTempIter
       INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
       INTEGER NPSEUDOTIMESTEPS
       INTEGER LSR_mixIniGuess
@@ -109,7 +114,7 @@ C
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
       COMMON /SEAICE_PARM_I/
-     &     LAD, IMAX_TICE,
+     &     IMAX_TICE, postSolvTempIter,
      &     SOLV_MAX_ITERS, SOLV_NCHECK,
      &     NPSEUDOTIMESTEPS,
      &     LSR_mixIniGuess,
@@ -184,6 +189,7 @@ C     SEAICE_drySnowAlb_south :: Southern Ocean SEAICE_drySnowAlb
 C     SEAICE_wetSnowAlb_south :: Southern Ocean SEAICE_wetSnowAlb
 C     HO_south                :: Southern Ocean HO
 C
+C     SEAICE_wetAlbTemp  :: Temp (deg.C) above which wet-albedo values are used
 C     SEAICE_waterAlbedo :: water albedo
 C     SEAICE_strength    :: sea-ice strength Pstar
 C     SEAICE_eccen       :: sea-ice eccentricity of the elliptical yield curve
@@ -196,12 +202,11 @@ C     SEAICE_emissivity  :: longwave ocean-surface emissivity (-)
 C     SEAICE_ice_emiss   :: longwave ice-surface emissivity (-)
 C     SEAICE_snow_emiss  :: longwave snow-surface emissivity (-)
 C     SEAICE_boltzmann   :: Stefan-Boltzman constant (not a run time parameter)
-C     SEAICE_snowThick   :: cutoff snow thickness
-C     SEAICE_shortwave   :: penetration shortwave radiation factor
+C     SEAICE_snowThick   :: cutoff snow thickness (for snow-albedo)
+C     SEAICE_shortwave   :: ice penetration shortwave radiation factor
 C     SEAICE_freeze      :: FREEZING TEMP. OF SEA WATER
-C     SIsalFRAC          :: salinity of newly formed sea ice defined as a
-C                           fraction of the model surface level salinity
-C                           at the time of freezing
+C     SIsalFRAC          :: salinity of newly formed sea ice defined as a fraction
+C                           of the ocean surface salinity at the time of freezing
 C     SIsal0             :: prescribed salinity of seaice (in g/kg).
 C     SEAICE_gamma_t     :: timescale for melting ice from a warm mixed layer (s),
 C                           3d = 259200s is a reasonable value, default=unset
@@ -242,7 +247,8 @@ C
       _RL SEAICE_drag_south, SEAICE_waterDrag_south
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
-      _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
+      _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
+      _RL SEAICE_strength, SEAICE_eccen
       _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct
@@ -273,7 +279,8 @@ C
      &    SEAICE_drag_south, SEAICE_waterDrag_south,
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
-     &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
+     &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
+     &    SEAICE_strength, SEAICE_eccen,
      &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct,
@@ -287,22 +294,21 @@ C
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
-     &    SEAICEdiffKhSalt, 
+     &    SEAICEdiffKhSalt,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MAX_HEFF          :: maximum ice thickness     (m)
 C     MIN_ATEMP         :: minimum air temperature   (deg C)
 C     MIN_LWDOWN        :: minimum downward longwave (W/m^2)
-C     MAX_TICE          :: maximum ice temperature   (deg C)
 C     MIN_TICE          :: minimum ice temperature   (deg C)
 C     SEAICE_EPS        :: small number used to reduce derivative singularities
 C     SEAICE_EPS_SQ     :: small number square
 C
-      _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
+      _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MIN_TICE
       _RL SEAICE_EPS, SEAICE_EPS_SQ
       COMMON /SEAICE_BOUND_RL/
-     &     MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
+     &     MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MIN_TICE,
      &     SEAICE_EPS, SEAICE_EPS_SQ
 
 C--   Constants used by sea-ice model
