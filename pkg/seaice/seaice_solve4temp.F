@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.27 2012/02/06 19:19:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.28 2012/02/06 23:36:40 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,9 +202,6 @@ C     CUTOFF SNOW THICKNESS
 C     Snow-Thickness above HCUT: SW optically thick snow (=> snow-albedo).
 C     Snow-Thickness below HCUT: linear transition to ice-albedo
       HCUT = SEAICE_snowThick
-
-C     Wet/dry albebo temperature threshold
-      SEAICE_wetAlbTemp = - 1. _d -3
 
 C     PENETRATION SHORTWAVE RADIATION FACTOR
       XIO=SEAICE_shortwave
