@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.147 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.148 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -225,21 +225,9 @@ C temporary variables available for the various computations
       PARAMETER ( nDim = 1 )
 #endif /* SEAICE_MULTICATEGORY */
 
-#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
 C     Factor by which we increase the upper ocean friction velocity (u*) when
 C     ice is absent in a grid cell  (dimensionless)
       _RL MixedLayerTurbulenceFactor
-
-c     The Stanton number for the McPhee
-c     ocean-ice heat flux parameterization (dimensionless)
-      _RL STANTON_NUMBER
-
-c     A typical friction velocity beneath sea ice for the
-c     McPhee heat flux parameterization (m/s)
-      _RL USTAR_BASE
-
-      _RL surf_theta
-#endif
 
 #ifdef ALLOW_SITRACER
       INTEGER iTr
@@ -252,6 +240,7 @@ c     Helper variables for diagnostics
       _RL DIAGarrayC    (1:sNx,1:sNy)
       _RL DIAGarrayD    (1:sNx,1:sNy)
 #endif
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -286,11 +275,6 @@ C     ICE LATENT HEAT CONSTANT
 C     regularization constants
       area_reg_sq = SEAICE_area_reg * SEAICE_area_reg
       hice_reg_sq = SEAICE_hice_reg * SEAICE_hice_reg
-
-#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
-      STANTON_NUMBER = 0.0056 _d 0
-      USTAR_BASE = 0.0125 _d 0
-#endif
 
 C conversion factors to go from Q (W/m2) to HEFF (ice meters)
       convertQ2HI=SEAICE_deltaTtherm/QI
@@ -832,55 +816,34 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
            TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
-
-#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
-
-c     Bound the ocean temperature to be at or above the freezing point.
-           surf_theta = max(theta(I,J,kSurface,bi,bj), TBC)
-#ifdef GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR
-           MixedLayerTurbulenceFactor = 12.5 _d 0 -
-     &            11.5 _d 0 *AREApreTH(I,J)
-#else
-c     If ice is present, MixedLayerTurbulenceFactor = 1.0, else 12.50
-           IF (AREApreTH(I,J) .GT. 0. _d 0) THEN
-               MixedLayerTurbulenceFactor = ONE
-            ELSE
-               MixedLayerTurbulenceFactor = 12.5 _d 0
-           ENDIF
-#endif /* GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR */
-
-c          The turbulent ocean-ice heat flux
-           a_QbyOCN(I,J) = -STANTON_NUMBER * USTAR_BASE * rhoConst *
-     &       HeatCapacity_Cp  *(surf_theta - TBC)*
-     &       MixedLayerTurbulenceFactor*maskC(i,j,kSurface,bi,bj)
-
-c          The turbulent ocean-ice heat flux converted to meters
-c          of potential ice melt
-           a_QbyOCN(I,J) = a_QbyOCN(I,J) * convertQ2HI
-
-c          by design a_QbyOCN .LE. 0. so that initial ice growth cannot
-c          be triggered by this term, which Ian says is better for adjoint
-#else
-
+c efficiency of turbulent fluxes : dependency to sign of THETA-TBC
            IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
-             tmpscal1 = SEAICE_availHeatFrac
+               tmpscal1 = SEAICE_availHeatFrac
            ELSE
-             tmpscal1 = SEAICE_availHeatFracFrz
+               tmpscal1 = SEAICE_availHeatFracFrz
            ENDIF
-           tmpscal1 = tmpscal1
+c efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
+           if ( (SEAICEturbFluxFormula.EQ.3).AND.
+     &        (AREApreTH(I,J) .GE. 0. _d 0) ) then
+              MixedLayerTurbulenceFactor = ONE - AREApreTH(I,J) *
+     &        (MCPHEE_TAPER_FAC-1) / MCPHEE_TAPER_FAC
+           elseif ( (SEAICEturbFluxFormula.EQ.4).AND.
+     &        (AREApreTH(I,J) .LE. 0. _d 0) ) then
+              MixedLayerTurbulenceFactor = MCPHEE_TAPER_FAC
+           else
+              MixedLayerTurbulenceFactor = ONE
+           endif
+c maximum turbulent flux, in ice meters
+           tmpscal2= - (HeatCapacity_Cp*rhoConst/QI)
+     &              * (theta(I,J,kSurface,bi,bj)-TBC)
      &              * dRf(kSurface) * maskC(i,j,kSurface,bi,bj)
-
-           a_QbyOCN(i,j) = -tmpscal1 * (HeatCapacity_Cp*rhoConst/QI)
-     &                   * (theta(I,J,kSurface,bi,bj)-TBC)
-
-#endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */
-
-          r_QbyOCN(i,j) = a_QbyOCN(i,j)
-
+c available turbulent flux
+           a_QbyOCN(i,j) =
+     &      tmpscal1 * tmpscal2 * MixedLayerTurbulenceFactor
+           r_QbyOCN(i,j) = a_QbyOCN(i,j)
          ENDDO
         ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.40 2012/02/06 19:19:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.41 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,6 +18,11 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SEAICE_PARAMS.h"
+#ifdef ALLOW_SITRACER
+# include "SIZE.h"
+# include "SEAICE_SIZE.h"
+# include "SEAICE_TRACER.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     == routine arguments ==
@@ -29,6 +34,9 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_SITRACER
+      INTEGER iTracer
+#endif
 
 C     == end of interface ==
 
@@ -123,6 +131,41 @@ C--  Thermodynamics parameters
       CALL WRITE_0D_L ( useMaykutSatVapPoly, INDEX_NONE,
      & 'useMaykutSatVapPoly =',
      & ' /* use Maykut Polynomial for Sat.Vap.Pr */')
+      CALL WRITE_0D_I ( SEAICEturbFluxFormula,   INDEX_NONE,
+     & 'SEAICEturbFluxFormula =', ' /* turbulent flux formula */')
+      WRITE(msgBuf,'(A,A)') ' (SEAICEturbFluxFormula = 3 or 4 adds',
+     &                      ' a dependency  of turb. flux to area)'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      CALL WRITE_0D_RL ( SEAICE_availHeatFrac,   INDEX_NONE,
+     & 'SEAICE_availHeatFrac =',
+     & ' /* melting efficiency due turbulent flux (0< <1)*/')
+      CALL WRITE_0D_RL ( SEAICE_availHeatFracFrz,   INDEX_NONE,
+     & 'SEAICE_availHeatFracFrz =',
+     & ' /* freezing efficiency due turbulent flux (0< <1)*/')
+#ifdef ALLOW_SITRACER
+      DO iTracer = 1, SItrMaxNum
+       if (SItrName(iTracer).NE.' ') then
+      WRITE(msgBuf,'(A,I3,A)') '== SItracer no. ',iTracer,
+     &' is in use and defined as'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       CALL WRITE_0D_C ( SItrMate(iTracer), -1, INDEX_NONE,
+     & '  -- SItrMate =',' /* tracer of HEFF or AREA */')
+       CALL WRITE_0D_C ( SItrName(iTracer), -1, INDEX_NONE,
+     & '  -- SItrName =',' /* tracer name*/')
+       CALL WRITE_0D_C ( SItrNameLong(iTracer), -1, INDEX_NONE,
+     & '  -- SItrNameLong =',' /* tracer long name*/')
+       CALL WRITE_0D_C ( SItrFile(iTracer), -1, INDEX_NONE,
+     & '  -- SItrFile =',' /* tracer initial condition file */')
+       CALL WRITE_0D_C ( SItrUnit(iTracer), -1, INDEX_NONE,
+     & '  -- SItrUnit =',' /* tracer unit */')
+       endif
+      ENDDO
+#endif
       CALL WRITE_0D_I ( SEAICEareaFormula,   INDEX_NONE,
      & 'SEAICEareaFormula =', ' /* ice cover formula */')
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
@@ -167,10 +210,6 @@ C--  Thermodynamics parameters
      & 'SEAICEdiffKhSnow   =', ' /* diffusivity (m^2/s) for snow */')
       CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
      & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
-      CALL WRITE_0D_RL( SEAICE_availHeatFrac, INDEX_NONE,
-     & 'SEAICE_availHeatFrac =', ' /* fraction used from melting */')
-      CALL WRITE_0D_RL( SEAICE_gamma_t, INDEX_NONE,
-     & 'SEAICE_gamma_t    =', ' /* melting timescale due to warm ML*/')
       CALL WRITE_0D_RL( OCEAN_drag        ,INDEX_NONE,
      & 'OCEAN_drag        =', ' /* air-ocean drag coefficient */')
 #ifndef SEAICE_EXTERNAL_FLUXES

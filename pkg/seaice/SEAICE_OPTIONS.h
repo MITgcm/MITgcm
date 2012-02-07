@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.57 2012/02/07 02:19:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.58 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -61,9 +61,6 @@ C-    to switch on/off ocean heat contribution to seaice cover reduction:
 C-    to preclude infinitesimal ice concentrations:
 # undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #endif
-
-C-    to use the MCPhee formula in computing ocean/ice fluxes
-#undef MCPHEE_OCEAN_ICE_HEAT_FLUX
 
 C--   By default the freezing point of water is set to the value of
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a

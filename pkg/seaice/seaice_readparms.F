@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.108 2012/02/07 02:04:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.109 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -91,7 +91,7 @@ C--   SEAICE parameters
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
-     & SEAICE_initialHEFF, SEAICEareaFormula,
+     & SEAICE_initialHEFF, SEAICEareaFormula, SEAICEturbFluxFormula,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_cpAir,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -287,6 +287,7 @@ C     old default value of 0.97001763668430343479
       SEAICE_freeze      = -1.96  _d 0
       SIsalFRAC          = 0.0    _d 0
       SIsal0             = 0.0    _d 0
+      SEAICEturbFluxFormula = 1
       SEAICE_gamma_t     = UNSET_RL
       SEAICE_gamma_t_frz = UNSET_RL
       SEAICE_availHeatFrac = UNSET_RL
@@ -486,19 +487,21 @@ C
 #endif /* SEAICE_ALLOW_FREEDRIFT */
 
 C     Check the consitency of a few parameters
-      IF ( SEAICE_availHeatFrac .NE. UNSET_RL .AND.
-     &     SEAICE_gamma_t       .NE. UNSET_RL ) THEN
+      IF ( ( SEAICE_availHeatFrac  .NE. UNSET_RL .OR.
+     &       SEAICE_availHeatFracFrz .NE. UNSET_RL ) .AND.
+     &     ( SEAICEturbFluxFormula   .NE. 1 ) ) THEN
          WRITE(msgBuf,'(A)')
-     &        'SEAICE_availHeatFrac and SEAICE_gamma_t '//
-     &        'must not be set at the same time.'
+     &      'SEAICE_availHeatFrac and SEAICE_availHeatFracFrz '//
+     &      'cannot be set unless SEAICEturbFluxFormula is set to 1'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
-      IF ( SEAICE_availHeatFracFrz .NE. UNSET_RL .AND.
-     &     SEAICE_gamma_t_frz      .NE. UNSET_RL ) THEN
+      IF ( ( SEAICE_gamma_t     .NE. UNSET_RL .OR.
+     &       SEAICE_gamma_t_frz .NE. UNSET_RL ) .AND.
+     &     ( SEAICEturbFluxFormula .NE. 2 ) ) THEN
          WRITE(msgBuf,'(A)')
-     &        'SEAICE_availHeatFracFrz and SEAICE_gamma_t_frz '//
-     &        'must not be set at the same time.'
+     &      'SEAICE_gamma_t and SEAICE_gamma_t_frz '//
+     &      'cannot be set unless SEAICEturbFluxFormula is set to 2'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
@@ -521,22 +524,6 @@ C     Check the consitency of a few parameters
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
 C     Set default values
-      IF ( SEAICE_availHeatFrac .EQ. UNSET_RL ) THEN
-         SEAICE_availHeatFrac = 1. _d 0
-      ENDIF
-      IF ( SEAICE_gamma_t .NE. UNSET_RL .AND.
-     &     SEAICE_gamma_t .NE. 0. _d 0 ) THEN
-         SEAICE_availHeatFrac = SEAICE_deltaTtherm/SEAICE_gamma_t
-      ENDIF
-      IF ( SEAICE_availHeatFracFrz .EQ. UNSET_RL ) THEN
-         SEAICE_availHeatFracFrz = SEAICE_availHeatFrac
-      ENDIF
-      IF ( SEAICE_gamma_t_frz .EQ. 0. _d 0 ) THEN
-         SEAICE_availHeatFracFrz = 1. _d 0
-      ELSEIF ( SEAICE_gamma_t_frz .NE. UNSET_RL ) THEN
-         SEAICE_availHeatFracFrz = SEAICE_deltaTtherm/SEAICE_gamma_t_frz
-      ENDIF
-
       IF ( useThSice ) THEN
 C     If the thsice package with the Winton thermodynamics is used
 C     is does not make sense to have the following parameters defined,
@@ -824,9 +811,6 @@ C     in case using centered avection scheme without any diffusion:
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-C--   Summarise pkg/seaice configuration
-      CALL SEAICE_SUMMARY( myThid )
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.81 2012/02/06 19:19:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.82 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -97,6 +97,11 @@ C     SEAICEadvSchSalt  :: sets the advection scheme for sea ice salinity
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
 C     SEAICEareaFormula :: sets the formula used to increment area as
 C                          a function of heff increment
+C     SEAICEturbFluxFormula :: selects formula for ocean-ice turbulent flux
+C                        :: 1=direct spec. of SEAICE_availHeatFrac/Frz
+C                        :: 2=spec. via SEAICE_gamma_t/_frz
+C                        :: 3=McPhee with linear tapering
+C                        :: 4=McPhee with step function
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
@@ -111,6 +116,7 @@ C
       INTEGER SEAICEadvSchSalt
       INTEGER SEAICEadjMODE
       INTEGER SEAICEareaFormula
+      INTEGER SEAICEturbFluxFormula
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
       COMMON /SEAICE_PARM_I/
@@ -125,6 +131,7 @@ C
      &     SEAICEadvSchSalt,
      &     SEAICEadjMODE,
      &     SEAICEareaFormula,
+     &     SEAICEturbFluxFormula,
      &     SEAICE_debugPointI,
      &     SEAICE_debugPointJ
 
@@ -320,6 +327,13 @@ C--   Constants used by sea-ice model
       PARAMETER ( siEps = 1. _d -5 )
       INTEGER MPSEUDOTIMESTEPS
       PARAMETER (MPSEUDOTIMESTEPS=2)
+
+C--   Constants needed by McPhee formulas for turbulent ocean fluxes :
+C        Stanton number (dimensionless), typical friction velocity 
+C        beneath sea ice (m/s), and tapering factor (dimensionless)
+      _RL STANTON_NUMBER, USTAR_BASE, MCPHEE_TAPER_FAC
+      PARAMETER ( MCPHEE_TAPER_FAC = 12.5 _d 0 , STANTON_NUMBER = 
+     &            0.0056 _d 0, USTAR_BASE = 0.0125 _d 0 )
 
 C--   identifiers for advected properties
       INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW

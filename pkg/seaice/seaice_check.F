@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.56 2012/02/07 14:00:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.57 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -269,7 +269,46 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
      &     'the seaice*_IF codes are now merged into the main branch.'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif /* SEAICE_SALINITY */
+#endif /* SEAICE_ALLOW_TD_IF */
+
+C--   MCPHEE_OCEAN_ICE_HEAT_FLUX is obsolete: issue warning and stop.
+#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
+         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &     'MCPHEE_OCEAN_ICE_HEAT_FLUX option is obsolete'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A)') 'it is now done by setting ',
+     &     ' SEAICEturbFluxFormula to 3 '
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A)') '(for retired',
+     &     ' GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR) or 4'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */
+
+C     check concistency of turbulent flux term specification
+      IF ( ( SEAICE_availHeatFrac .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_availHeatFrac .GT. 1. _d 0 ) .OR.
+     &     ( SEAICE_availHeatFracFrz .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_availHeatFracFrz .GT. 1. _d 0 ) ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' SEAICE_availHeatFrac or SEAICE_availHeatFracFrz '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' out of bounds; they must lie within 0. and 1. '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--   SEAICE_AGE is obsolete: issue warning and stop.
+#ifdef SEAICE_AGE
+         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &     'SEAICE_AGE option is obsolete: '
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A)') 'it now is done',
+     &     ' with SEAICE_SITRACER and siTrName=age'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_AGE */
 
 C--   SEAICE_SALINITY is obsolete: issue warning and stop.
 #ifdef SEAICE_SALINITY

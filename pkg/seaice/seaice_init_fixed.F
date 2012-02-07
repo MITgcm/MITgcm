@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.12 2012/01/13 21:11:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.13 2012/02/07 18:41:09 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,6 +70,39 @@ C     Initialize MNC variable information for SEAICE
        SWFracB = 0. _d 0
 #endif /* SHORTWAVE_HEATING */
       _END_MASTER(myThid)
+      
+
+C--   efficiency of ocean-ice turbulent flux ...
+      if (SEAICEturbFluxFormula.EQ.1) then
+c     ... can be specified as fractions between 0 and 1
+        IF ( SEAICE_availHeatFrac .EQ. UNSET_RL )
+     &    SEAICE_availHeatFrac = ONE
+        IF ( SEAICE_availHeatFracFrz .EQ. UNSET_RL )
+     &    SEAICE_availHeatFracFrz = SEAICE_availHeatFrac
+      elseif (SEAICEturbFluxFormula.EQ.2) then
+c     ... can be specified as time scales (>SEAICE_deltaTtherm)
+        IF ( SEAICE_gamma_t .EQ. UNSET_RL )
+     &    SEAICE_gamma_t=SEAICE_deltaTtherm   
+        IF ( SEAICE_gamma_t_frz .EQ. UNSET_RL )
+     &    SEAICE_gamma_t_frz=SEAICE_gamma_t     
+        IF ( SEAICE_gamma_t .LE. SEAICE_deltaTtherm ) THEN
+            SEAICE_availHeatFracFrz = 1. _d 0
+        ELSE
+            SEAICE_availHeatFrac = SEAICE_deltaTtherm/SEAICE_gamma_t
+        ENDIF
+        IF ( SEAICE_gamma_t_frz .LE. SEAICE_deltaTtherm ) THEN
+            SEAICE_availHeatFracFrz = 1. _d 0
+        ELSE
+            SEAICE_availHeatFracFrz = 
+     &        SEAICE_deltaTtherm/SEAICE_gamma_t_frz
+        ENDIF
+      elseif ( (SEAICEturbFluxFormula.EQ.3).OR.
+     &         (SEAICEturbFluxFormula.EQ.4) ) then
+c     ... is hard-coded (after McPhee)
+        SEAICE_availHeatFrac= MCPHEE_TAPER_FAC * STANTON_NUMBER * 
+     &    USTAR_BASE / dRf(kSurface) * SEAICE_deltaTtherm
+        SEAICE_availHeatFracFrz=ZERO
+      endif
 
 C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -263,5 +296,8 @@ C--   Choose a proxy level for geostrophic velocity,
       ENDIF
 #endif
 
+C--   Summarise pkg/seaice configuration
+      CALL SEAICE_SUMMARY( myThid )
+      
       RETURN
       END
