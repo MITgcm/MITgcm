@@ -5,6 +5,9 @@
  SEAICE_deltaTtherm = 3600.,
  SEAICE_deltaTdyn   = 3600.,
 #LSR_ERROR          = 1.E-12,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
  SEAICEwriteState   = .TRUE.,
  &
 

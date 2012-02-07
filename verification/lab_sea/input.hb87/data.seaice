@@ -8,6 +8,9 @@
  useHB87stressCoupling = .TRUE.,
  SEAICE_no_slip     = .TRUE.,
  SEAICEdiffKhArea   = 200.,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
  AreaFile           = 'AREA.0000008760',
  HsnowFile          = 'HSNOW.0000008760',
  HsaltFile          = 'HSALT.0000008760',

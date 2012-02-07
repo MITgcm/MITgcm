@@ -11,6 +11,9 @@
 ###      LSR_ERROR          = 1.E-6,
       SEAICE_deltaTevp   = 60,
       SEAICE_EPS         = 1.E-8,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
       SIsalFRAC          = 0.3,
       SEAICE_availHeatFrac = 0.8,
       SEAICEadvSnow      = .TRUE.,

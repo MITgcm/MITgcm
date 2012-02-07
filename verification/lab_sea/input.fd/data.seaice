@@ -9,6 +9,9 @@
  SEAICEadvSchHeff = 33,
 #- add small diffKh to test diffusion with multi-dim advect.
  SEAICEdiffKhHeff = 20.,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
  SEAICEwriteState   = .TRUE.,
  &
 

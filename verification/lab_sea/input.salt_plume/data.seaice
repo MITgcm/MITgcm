@@ -9,6 +9,9 @@
  LSR_mixIniGuess    = 1,
  LSR_ERROR          = 1.E-12,
 #SEAICE_deltaTevp   = 30.,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
  SEAICE_dryIceAlb   = 0.8756,
  SEAICE_wetIceAlb   = 0.7856,
  SEAICE_drySnowAlb  = 0.9656,

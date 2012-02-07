@@ -2,6 +2,9 @@
  &SEAICE_PARM01
 #- old DIFF1 default:
  DIFF1 = 4.E-3,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
  SEAICE_dryIceAlb   = 0.8756,
  SEAICE_wetIceAlb   = 0.7856,
  SEAICE_drySnowAlb  = 0.9656,

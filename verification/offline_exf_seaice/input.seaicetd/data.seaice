@@ -5,6 +5,9 @@
  SEAICE_deltaTdyn   = 3600.,
  SEAICEuseDYNAMICS  =.FALSE.,
 #LSR_ERROR          = 1.E-12,
+#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+  useMaykutSatVapPoly = .TRUE.,
+  postSolvTempIter  =  0,
 # turn-off Advection flags (get identical results, but faster)
  SEAICEadvArea = .FALSE.,
  SEAICEadvHeff = .FALSE.,
