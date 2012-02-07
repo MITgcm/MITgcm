@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.7 2012/01/17 14:26:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.8 2012/02/07 18:53:14 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -61,9 +61,6 @@ C-    to switch on/off ocean heat contribution to seaice cover reduction:
 C-    to preclude infinitesimal ice concentrations:
 # undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #endif
-
-C-    to use the MCPhee formula in computing ocean/ice fluxes
-#undef MCPHEE_OCEAN_ICE_HEAT_FLUX
 
 C--   Use the Old version of seaice_solve4temp (formerly seaice_budget_ice)
 C     otherwise, use Ian Fenty s version
