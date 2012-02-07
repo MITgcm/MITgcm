@@ -20,6 +20,7 @@
  SEAICEuseFlooding  = .TRUE.,
  SEAICE_no_Slip     = .FALSE.,
  SIsalFRAC          = 0.3,
+ SEAICEturbFluxFormula = 2,
  SEAICE_gamma_t     = 259200.,
  SEAICE_gamma_t_frz = 10800.,
  AreaFile           = 'AREA.seaice_obcs',
