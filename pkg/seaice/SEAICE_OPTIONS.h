@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.56 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.57 2012/02/07 02:19:14 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -64,10 +64,6 @@ C-    to preclude infinitesimal ice concentrations:
 
 C-    to use the MCPhee formula in computing ocean/ice fluxes
 #undef MCPHEE_OCEAN_ICE_HEAT_FLUX
-
-C--   Use the Old version of seaice_solve4temp (formerly seaice_budget_ice)
-C     otherwise, use Ian Fenty s version
-#define SEAICE_SOLVE4TEMP_LEGACY
 
 C--   By default the freezing point of water is set to the value of
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
