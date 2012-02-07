@@ -19,6 +19,9 @@
 #      SEAICE_debugPointI = 3,
 #      SEAICE_debugPointJ = 3,
       IMAX_TICE = 6,
+#- to reproduce old results with former #undef SEAICE_SOLVE4TEMP_LEGACY code
+  SEAICE_wetAlbTemp = 0.,
+  SEAICE_snowThick  = 0.,
       SEAICE_mon_mnc = .TRUE.
 # For backward compatibility only:
 # emissivities should be inherited from exf and setting them here does

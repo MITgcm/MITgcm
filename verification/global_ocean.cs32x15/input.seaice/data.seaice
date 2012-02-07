@@ -5,6 +5,9 @@
 #SEAICEuseDynamics = .FALSE.,
 # for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
+#- to reproduce old results with former #undef SEAICE_SOLVE4TEMP_LEGACY code
+  SEAICE_wetAlbTemp = 0.,
+  SEAICE_snowThick  = 0.,
 #
  SIsal0                = 4.,
  SEAICEadvHeff         = .TRUE.,
