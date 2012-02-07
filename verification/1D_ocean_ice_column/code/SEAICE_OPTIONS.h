@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.7 2012/02/06 23:01:23 ifenty Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.8 2012/02/07 04:57:19 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -91,7 +91,7 @@ C--   Seaice flooding
 #define ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
-#undef SEAICE_VARIABLE_SALINITY
+#define SEAICE_VARIABLE_SALINITY
 
 
 #endif /* ALLOW_SEAICE */
