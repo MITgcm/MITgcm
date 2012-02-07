@@ -11,6 +11,7 @@
       LSR_ERROR          = 1.E-6,
       SEAICE_EPS         = 1.E-8,
       SEAICEadvSnow      = .TRUE.,
+      SEAICEturbFluxFormula = 3,
       SIsalFRAC          = 0.30,
       SEAICEuseFlooding  = .TRUE.,
       SEAICE_area_reg    = 0.15,
