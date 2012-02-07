@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.28 2012/02/06 23:36:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.29 2012/02/07 14:01:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -519,8 +519,6 @@ C     Update fluxes (consistent with the linearized formulation)
 c        ELSEIF ( postSolvTempIter.EQ.0 ) THEN
 C     Take fluxes from last iteration
 
-         ELSEIF ( postSolvTempIter.NE.0 ) THEN
-           STOP 'SEAICE_SOLVE4TEMP: invalid postSolvTempIter'
          ENDIF
 
 C     Fresh water flux (kg/m^2/s) from latent heat of sublimation.
