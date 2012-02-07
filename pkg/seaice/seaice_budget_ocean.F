@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.17 2012/01/29 21:25:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.18 2012/02/07 13:58:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -86,7 +86,9 @@ C
         netHeatFlux(I,J) = 0. _d 0
         SWHeatFlux (I,J) = 0. _d 0
 C
-        tsurfLoc (I,J) = MIN(celsius2K+MAX_TICE,TSURF(I,J))
+C     MAX_TICE does not exist anly longer, lets see if it works without
+C       tsurfLoc (I,J) = MIN(celsius2K+MAX_TICE,TSURF(I,J))
+        tsurfLoc (I,J) = TSURF(I,J)
 # ifdef ALLOW_ATM_TEMP
 C     Is this necessary?
         atempLoc (I,J) = MAX(celsius2K+MIN_ATEMP,ATEMP(I,J,bi,bj))
