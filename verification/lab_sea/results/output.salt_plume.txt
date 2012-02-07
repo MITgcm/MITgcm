@@ -6,9 +6,9 @@
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint63i
-(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // Build user:        gforget
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Sun Feb  5 16:15:50 EST 2012
+(PID.TID 0000.0001) // Build date:        Tue Feb  7 12:48:07 EST 2012
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -501,6 +501,9 @@
 (PID.TID 0000.0001) > LSR_mixIniGuess    = 1,
 (PID.TID 0000.0001) > LSR_ERROR          = 1.E-12,
 (PID.TID 0000.0001) >#SEAICE_deltaTevp   = 30.,
+(PID.TID 0000.0001) >#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
+(PID.TID 0000.0001) >  useMaykutSatVapPoly = .TRUE.,
+(PID.TID 0000.0001) >  postSolvTempIter  =  0,
 (PID.TID 0000.0001) > SEAICE_dryIceAlb   = 0.8756,
 (PID.TID 0000.0001) > SEAICE_wetIceAlb   = 0.7856,
 (PID.TID 0000.0001) > SEAICE_drySnowAlb  = 0.9656,
@@ -510,6 +513,7 @@
 (PID.TID 0000.0001) > OCEAN_drag         = 8.1541e-04,
 (PID.TID 0000.0001) > SEAICE_waterDrag   = 5.3508,
 (PID.TID 0000.0001) > SIsalFRAC          = 0.3,
+(PID.TID 0000.0001) > SEAICEturbFluxFormula = 2,
 (PID.TID 0000.0001) > SEAICE_gamma_t     = 259200.,
 (PID.TID 0000.0001) > SEAICE_gamma_t_frz = 10800.,
 (PID.TID 0000.0001) > SEAICE_clipVelocities= .TRUE.,
@@ -529,292 +533,6 @@
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  SEAICE_READPARMS: finished reading data.seaice
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Seaice configuration (SEAICE_PARM01) >>> START <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) model grid type   = /* type of sea ice model grid */
-(PID.TID 0000.0001)               'C-GRID'
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseDYNAMICS = /* use dynamics */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseFREEDRIFT = /* use free drift solution */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseTEM      = /* use truncated ellipse rheology */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_strength   = /* sea-ice strength Pstar */
-(PID.TID 0000.0001)                 2.678000000000000E+04
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_zetaMin    = /* lower bound for viscosity */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseMetricTerms = /* use metric terms */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_no_slip    = /* no slip boundary conditions */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_clipVeloctities = /* impose max. vels. */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useHB87stressCoupling  = /* altern. ice-ocean stress */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseEVP      = /* use EVP solver */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_elasticParm= /* EVP elastic parameter */
-(PID.TID 0000.0001)                 3.333333333333333E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_evpTauRelax= /* EVP relaxation timescale */
-(PID.TID 0000.0001)                -1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_evpDampC   = /* EVP damping parameter */
-(PID.TID 0000.0001)                -1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_maskRHS    = /* mask RHS of solver */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) LSR_mixIniGuess = /* mix free-drift sol. into LSR initial Guess */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SOLV_MAX_ITERS    = /* max. number of LSR solver steps */
-(PID.TID 0000.0001)                    1500
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) LSR_ERROR         = /* sets accuracy of LSR solver */
-(PID.TID 0000.0001)                 1.000000000000000E-12
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SOLV_NCHECK       = /* test interval for LSR solver */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) NPSEUDOTIMESTEPS  = /* num. of extra pseudo time steps */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_deltaTdyn  = /* dynamic timestep */
-(PID.TID 0000.0001)                 3.600000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_deltaTevp  = /* EVP timestep */
-(PID.TID 0000.0001)                 1.234567000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_deltaTtherm= /* thermodynamic timestep */
-(PID.TID 0000.0001)                 3.600000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) usePW79thermodynamics  = /* default 0-layer TD */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEareaFormula = /* ice cover formula */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICErestoreUnderIce  = /* restore T and S under ice */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvHeff = /* advect effective ice thickness */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvArea = /* advect fractional ice area */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvSnow = /* advect snow layer together with ice */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvSalt = /* advect salinity together with ice */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseFlooding = /* turn submerged snow into ice */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) IMAX_TICE         = /* iterations for ice heat budget */
-(PID.TID 0000.0001)                      10
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvScheme   = /* advection scheme for ice */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseFluxForm = /* advection in FV flux form */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvSchArea   = /* advection scheme for area */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvSchHeff   = /* advection scheme for thickness */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvSchSnow   = /* advection scheme for snow */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEadvSchSalt   = /* advection scheme for salt */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEdiffKhArea   = /* diffusivity (m^2/s) for area */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEdiffKhHeff   = /* diffusivity (m^2/s) for heff */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEdiffKhSnow   = /* diffusivity (m^2/s) for snow */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEdiffKhSalt   = /* diffusivity (m^2/s) for salt */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_availHeatFrac = /* fraction used from melting */
-(PID.TID 0000.0001)                 1.388888888888889E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_gamma_t    = /* melting timescale due to warm ML*/
-(PID.TID 0000.0001)                 2.592000000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) OCEAN_drag        = /* air-ocean drag coefficient */
-(PID.TID 0000.0001)                 8.154100000000000E-04
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_drag       = /* air-ice drag coefficient */
-(PID.TID 0000.0001)                 2.000000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_waterDrag  = /* water-ice drag * density */
-(PID.TID 0000.0001)                 5.350800000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dryIceAlb  = /* winter albedo */
-(PID.TID 0000.0001)                 8.756000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetIceAlb  = /* summer albedo */
-(PID.TID 0000.0001)                 7.856000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_drySnowAlb = /* dry snow albedo */
-(PID.TID 0000.0001)                 9.656000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetSnowAlb = /* wet snow albedo */
-(PID.TID 0000.0001)                 8.256000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) HO                = /* demarcation ice thickness */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_drag_south      = /* Southern Ocean SEAICE_drag */
-(PID.TID 0000.0001)                 2.000000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_waterDrag_south = /* Southern Ocean waterDrag */
-(PID.TID 0000.0001)                 5.350800000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dryIceAlb_south = /* Southern Ocean dryIceAlb */
-(PID.TID 0000.0001)                 8.756000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetIceAlb_south = /* Southern Ocean wetIceAlb */
-(PID.TID 0000.0001)                 7.856000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_drySnowAlb_south= /* Southern Ocean drySnowAlb */
-(PID.TID 0000.0001)                 9.656000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetSnowAlb_south= /* Southern Ocean wetSnowAlb */
-(PID.TID 0000.0001)                 8.256000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) HO_south               = /* Southern Ocean HO */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_snow_emiss = /* snow emissivity */
-(PID.TID 0000.0001)                 9.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_ice_emiss = /* seaice emissivity */
-(PID.TID 0000.0001)                 9.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_cpAir      = /* heat capacity of air */
-(PID.TID 0000.0001)                 1.005000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dalton     = /* constant dalton number */
-(PID.TID 0000.0001)                 1.750000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_lhEvap     = /* latent heat of evaporation */
-(PID.TID 0000.0001)                 2.500000000000000E+06
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_lhFusion   = /* latent heat of fusion */
-(PID.TID 0000.0001)                 3.340000000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_iceConduct = /* sea-ice conductivity */
-(PID.TID 0000.0001)                 2.165600000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_snowConduct= /* snow conductivity */
-(PID.TID 0000.0001)                 3.100000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_snowThick  = /* cutoff snow thickness */
-(PID.TID 0000.0001)                 1.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_shortwave  = /* penetration shortwave radiation */
-(PID.TID 0000.0001)                 3.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) ignores SEAICE_freeze (#define SEAICE_VARIABLE_FREEZING_POINT)
-(PID.TID 0000.0001) SEAICE_freeze     = /* freezing temp. of sea water */
-(PID.TID 0000.0001)                -1.960000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) DIFF1             = /* parameter used in advect.F [m/s] */
-(PID.TID 0000.0001)                 4.000000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined
-(PID.TID 0000.0001) MAX_HEFF          = /* maximum ice thickness */
-(PID.TID 0000.0001)                 1.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MIN_ATEMP         = /* minimum air temperature */
-(PID.TID 0000.0001)                -5.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MIN_LWDOWN        = /* minimum downward longwave */
-(PID.TID 0000.0001)                 6.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MAX_TICE          = /* maximum ice temperature */
-(PID.TID 0000.0001)                 3.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MIN_TICE          = /* minimum ice temperature */
-(PID.TID 0000.0001)                -5.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_EPS        = /* reduce derivative singularities */
-(PID.TID 0000.0001)                 1.000000000000000E-10
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_initialHEFF= /* initial sea-ice thickness */
-(PID.TID 0000.0001)                 1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) AreaFile = /* Initial ice concentration File */
-(PID.TID 0000.0001)               ''
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) HeffFile = /* Initial effective ice thickness File */
-(PID.TID 0000.0001)               ''
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) uIceFile = /* Initial U-ice velocity File */
-(PID.TID 0000.0001)               ''
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) vIceFile = /* Initial V-ice velocity File */
-(PID.TID 0000.0001)               ''
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEwriteState  = /* write sea ice state to file */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_monFreq  = /* monitor frequency */
-(PID.TID 0000.0001)                 1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dumpFreq   = /* dump frequency */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_taveFreq   = /* time-averaging frequency */
-(PID.TID 0000.0001)                 3.600000000000000E+04
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_mon_stdio  = /* write monitor to std-outp */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dump_mdsio = /* write snap-shot   using MDSIO */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_tave_mdsio = /* write TimeAverage using MDSIO */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_mon_mnc    = /* write monitor to netcdf file */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dump_mnc   = /* write snap-shot   using MNC */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_tave_mnc   = /* write TimeAverage using MNC */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Seaice configuration (SEAICE_PARM01) >>> END <<<
-(PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) SALT_PLUME_READPARMS: opening data.salt_plume
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.salt_plume
 (PID.TID 0000.0001) // =======================================================
@@ -1297,6 +1015,335 @@
 (PID.TID 0000.0001) // External forcing (EXF) configuration  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Seaice configuration (SEAICE_PARM01) >>> START <<<
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) model grid type   = /* type of sea ice model grid */
+(PID.TID 0000.0001)               'C-GRID'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseDYNAMICS = /* use dynamics */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseFREEDRIFT = /* use free drift solution */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseTEM      = /* use truncated ellipse rheology */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_strength   = /* sea-ice strength Pstar */
+(PID.TID 0000.0001)                 2.678000000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_zetaMin    = /* lower bound for viscosity */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseMetricTerms = /* use metric terms */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_no_slip    = /* no slip boundary conditions */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_clipVeloctities = /* impose max. vels. */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useHB87stressCoupling  = /* altern. ice-ocean stress */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseEVP      = /* use EVP solver */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_elasticParm= /* EVP elastic parameter */
+(PID.TID 0000.0001)                 3.333333333333333E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_evpTauRelax= /* EVP relaxation timescale */
+(PID.TID 0000.0001)                -1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_evpDampC   = /* EVP damping parameter */
+(PID.TID 0000.0001)                -1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_maskRHS    = /* mask RHS of solver */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) LSR_mixIniGuess = /* mix free-drift sol. into LSR initial Guess */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SOLV_MAX_ITERS    = /* max. number of LSR solver steps */
+(PID.TID 0000.0001)                    1500
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) LSR_ERROR         = /* sets accuracy of LSR solver */
+(PID.TID 0000.0001)                 1.000000000000000E-12
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SOLV_NCHECK       = /* test interval for LSR solver */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) NPSEUDOTIMESTEPS  = /* num. of extra pseudo time steps */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_deltaTdyn  = /* dynamic timestep */
+(PID.TID 0000.0001)                 3.600000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_deltaTevp  = /* EVP timestep */
+(PID.TID 0000.0001)                 1.234567000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_deltaTtherm= /* thermodynamic timestep */
+(PID.TID 0000.0001)                 3.600000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usePW79thermodynamics  = /* default 0-layer TD */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useMaykutSatVapPoly = /* use Maykut Polynomial for Sat.Vap.Pr */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEturbFluxFormula = /* turbulent flux formula */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  (SEAICEturbFluxFormula = 3 or 4 adds a dependency  of turb. flux to area)
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) SEAICE_availHeatFrac = /* melting efficiency due turbulent flux (0< <1)*/
+(PID.TID 0000.0001)                 1.388888888888889E-02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_availHeatFracFrz = /* freezing efficiency due turbulent flux (0< <1)*/
+(PID.TID 0000.0001)                 3.333333333333333E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) == SItracer no.   1 is in use and defined as
+(PID.TID 0000.0001)   -- SItrMate = /* tracer of HEFF or AREA */
+(PID.TID 0000.0001)               'AREA'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrName = /* tracer name*/
+(PID.TID 0000.0001)               'ridge'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrNameLong = /* tracer long name*/
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrFile = /* tracer initial condition file */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrUnit = /* tracer unit */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) == SItracer no.   2 is in use and defined as
+(PID.TID 0000.0001)   -- SItrMate = /* tracer of HEFF or AREA */
+(PID.TID 0000.0001)               'AREA'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrName = /* tracer name*/
+(PID.TID 0000.0001)               'one'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrNameLong = /* tracer long name*/
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrFile = /* tracer initial condition file */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)   -- SItrUnit = /* tracer unit */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEareaFormula = /* ice cover formula */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICErestoreUnderIce  = /* restore T and S under ice */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvHeff = /* advect effective ice thickness */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvArea = /* advect fractional ice area */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvSnow = /* advect snow layer together with ice */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvSalt = /* advect salinity together with ice */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseFlooding = /* turn submerged snow into ice */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) IMAX_TICE         = /* iterations for ice surface temp */
+(PID.TID 0000.0001)                      10
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) postSolvTempIter= /* flux calculation after surf. temp iter */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvScheme   = /* advection scheme for ice */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseFluxForm = /* advection in FV flux form */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvSchArea   = /* advection scheme for area */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvSchHeff   = /* advection scheme for thickness */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvSchSnow   = /* advection scheme for snow */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEadvSchSalt   = /* advection scheme for salt */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEdiffKhArea   = /* diffusivity (m^2/s) for area */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEdiffKhHeff   = /* diffusivity (m^2/s) for heff */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEdiffKhSnow   = /* diffusivity (m^2/s) for snow */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEdiffKhSalt   = /* diffusivity (m^2/s) for salt */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) OCEAN_drag        = /* air-ocean drag coefficient */
+(PID.TID 0000.0001)                 8.154100000000000E-04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_drag       = /* air-ice drag coefficient */
+(PID.TID 0000.0001)                 2.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_waterDrag  = /* water-ice drag * density */
+(PID.TID 0000.0001)                 5.350800000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_dryIceAlb  = /* winter albedo */
+(PID.TID 0000.0001)                 8.756000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_wetIceAlb  = /* summer albedo */
+(PID.TID 0000.0001)                 7.856000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_drySnowAlb = /* dry snow albedo */
+(PID.TID 0000.0001)                 9.656000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_wetSnowAlb = /* wet snow albedo */
+(PID.TID 0000.0001)                 8.256000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) HO                = /* demarcation ice thickness */
+(PID.TID 0000.0001)                 5.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_drag_south      = /* Southern Ocean SEAICE_drag */
+(PID.TID 0000.0001)                 2.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_waterDrag_south = /* Southern Ocean waterDrag */
+(PID.TID 0000.0001)                 5.350800000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_dryIceAlb_south = /* Southern Ocean dryIceAlb */
+(PID.TID 0000.0001)                 8.756000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_wetIceAlb_south = /* Southern Ocean wetIceAlb */
+(PID.TID 0000.0001)                 7.856000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_drySnowAlb_south= /* Southern Ocean drySnowAlb */
+(PID.TID 0000.0001)                 9.656000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_wetSnowAlb_south= /* Southern Ocean wetSnowAlb */
+(PID.TID 0000.0001)                 8.256000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) HO_south               = /* Southern Ocean HO */
+(PID.TID 0000.0001)                 5.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_wetAlbTemp= /* Temp (o.C) threshold for wet-albedo */
+(PID.TID 0000.0001)                -1.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_snow_emiss = /* snow emissivity */
+(PID.TID 0000.0001)                 9.500000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_ice_emiss = /* seaice emissivity */
+(PID.TID 0000.0001)                 9.500000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_cpAir      = /* heat capacity of air */
+(PID.TID 0000.0001)                 1.005000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_dalton     = /* constant dalton number */
+(PID.TID 0000.0001)                 1.750000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_lhEvap     = /* latent heat of evaporation */
+(PID.TID 0000.0001)                 2.500000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_lhFusion   = /* latent heat of fusion */
+(PID.TID 0000.0001)                 3.340000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_iceConduct = /* sea-ice conductivity */
+(PID.TID 0000.0001)                 2.165600000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_snowConduct= /* snow conductivity */
+(PID.TID 0000.0001)                 3.100000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_snowThick  = /* cutoff snow thickness (for albedo) */
+(PID.TID 0000.0001)                 1.500000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_shortwave  = /* penetration shortwave radiation */
+(PID.TID 0000.0001)                 3.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) ignores SEAICE_freeze (#define SEAICE_VARIABLE_FREEZING_POINT)
+(PID.TID 0000.0001) SEAICE_freeze     = /* freezing temp. of sea water */
+(PID.TID 0000.0001)                -1.960000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) DIFF1             = /* parameter used in advect.F [m/s] */
+(PID.TID 0000.0001)                 4.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined
+(PID.TID 0000.0001) MAX_HEFF          = /* maximum ice thickness */
+(PID.TID 0000.0001)                 1.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) MIN_ATEMP         = /* minimum air temperature */
+(PID.TID 0000.0001)                -5.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) MIN_LWDOWN        = /* minimum downward longwave */
+(PID.TID 0000.0001)                 6.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) MIN_TICE          = /* minimum ice temperature */
+(PID.TID 0000.0001)                -5.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_EPS        = /* reduce derivative singularities */
+(PID.TID 0000.0001)                 1.000000000000000E-10
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_initialHEFF= /* initial sea-ice thickness */
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) AreaFile = /* Initial ice concentration File */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) HeffFile = /* Initial effective ice thickness File */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) uIceFile = /* Initial U-ice velocity File */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) vIceFile = /* Initial V-ice velocity File */
+(PID.TID 0000.0001)               ''
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEwriteState  = /* write sea ice state to file */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_monFreq  = /* monitor frequency */
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_dumpFreq   = /* dump frequency */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_taveFreq   = /* time-averaging frequency */
+(PID.TID 0000.0001)                 3.600000000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_mon_stdio  = /* write monitor to std-outp */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_dump_mdsio = /* write snap-shot   using MDSIO */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_tave_mdsio = /* write TimeAverage using MDSIO */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_mon_mnc    = /* write monitor to netcdf file */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_dump_mnc   = /* write snap-shot   using MNC */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_tave_mnc   = /* write TimeAverage using MNC */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Seaice configuration (SEAICE_PARM01) >>> END <<<
+(PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON fCori_max                    =   1.4210453727344E-04
 (PID.TID 0000.0001) %MON fCori_min                    =   1.0666243053630E-04
 (PID.TID 0000.0001) %MON fCori_mean                   =   1.2711058365303E-04
@@ -4218,7 +4265,7 @@
  cg2d: Sum(rhs),rhsMax =  -7.64754426452185E-10  3.71071236192042E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    4.68722345860344E-02
 (PID.TID 0000.0001)                       cg2d_iters =    41
-(PID.TID 0000.0001)                         cg2d_res =    7.06836177248839E-13
+(PID.TID 0000.0001)                         cg2d_res =    7.06836177248108E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4226,7 +4273,7 @@
 (PID.TID 0000.0001) %MON time_secondsf                =   2.8800000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   9.4814956123239E-02
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.1944804204757E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4140555865012E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4140538732472E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.3781192961950E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   1.8055598314849E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   4.5850576081938E-02
@@ -4241,7 +4288,7 @@
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.9205233603924E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.2164790549615E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.0016328360423E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.9772004828091E-22
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.9658007242136E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.4531086943673E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.5198986890286E-07
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2476480184852E+01
@@ -4294,7 +4341,7 @@
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843862411E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688588497874E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.3605230870457E-07
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.9189651107936E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.9189651107941E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4461,16 +4508,16 @@
 (PID.TID 0000.0001) // =======================================================
  SEAICE_LSR: Residual Initial Uice,Vice=  1.45914657E-03  1.29337426E-03
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.69914661E+01  5.72942557E+00
- SEAICE_LSR (ipass=   1) iters,dU,Resid=   148  8.30370495E-13  1.31490604E-12
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=   148  8.30370495E-13  1.31490649E-12
  SEAICE_LSR (ipass=   1) iters,dV,Resid=    94  9.63683994E-13  6.38733323E-11
  SEAICE_LSR: Residual Initial Uice,Vice=  1.37573845E-03  8.80589554E-04
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.69873025E+01  5.72908020E+00
- SEAICE_LSR (ipass=   2) iters,dU,Resid=   148  7.84025622E-13  1.22380555E-12
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=   148  7.84025622E-13  1.22380696E-12
  SEAICE_LSR (ipass=   2) iters,dV,Resid=    88  7.68132086E-13  5.08812787E-11
- cg2d: Sum(rhs),rhsMax =  -7.65301877425628E-10  3.70802998457226E-01
-(PID.TID 0000.0001)                    cg2d_init_res =    4.25352243122579E-02
+ cg2d: Sum(rhs),rhsMax =  -7.65301932936779E-10  3.70802998457226E-01
+(PID.TID 0000.0001)                    cg2d_init_res =    4.25352243122577E-02
 (PID.TID 0000.0001)                       cg2d_iters =    41
-(PID.TID 0000.0001)                         cg2d_res =    4.85518903082866E-13
+(PID.TID 0000.0001)                         cg2d_res =    4.85518903083567E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4478,7 +4525,7 @@
 (PID.TID 0000.0001) %MON time_secondsf                =   3.2400000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.0188294451161E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.1982539190754E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4140962762844E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4140624395174E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.3883834837973E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   1.7951790772419E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   4.8585724466149E-02
@@ -4488,12 +4535,12 @@
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   3.9319899318369E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.1055796313091E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -8.7909727502059E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   6.8396193102600E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   6.8396193102601E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   6.4332014477779E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   4.3657086408087E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.2831462143191E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.1211562293065E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -9.8860024140455E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -7.9088019312364E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.6422592956859E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.0371852928757E-06
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2476118738473E+01
@@ -4518,7 +4565,7 @@
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   3.7187690686234E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   3.9791816545822E-04
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -8.3179625315246E-05
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.2763277047350E-05
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.2763277047351E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   9.8796905987849E-05
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   6.4519494236007E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.3478106590114E-02
@@ -4545,8 +4592,8 @@
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8117812235818E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843937467E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688588125731E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.9357506921551E-07
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.1968619831595E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.9357506921552E-07
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.1968619831607E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4713,16 +4760,16 @@
 (PID.TID 0000.0001) // =======================================================
  SEAICE_LSR: Residual Initial Uice,Vice=  1.23557840E-03  9.83577873E-04
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.68202515E+01  5.72578976E+00
- SEAICE_LSR (ipass=   1) iters,dU,Resid=   154  9.71056568E-13  1.52104843E-12
- SEAICE_LSR (ipass=   1) iters,dV,Resid=    92  9.19215658E-13  6.09279278E-11
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=   154  9.71049630E-13  1.52104841E-12
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=    92  9.19216092E-13  6.09279281E-11
  SEAICE_LSR: Residual Initial Uice,Vice=  1.12400483E-03  8.24200333E-04
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.68100721E+01  5.72510278E+00
- SEAICE_LSR (ipass=   2) iters,dU,Resid=   150  8.37857561E-13  1.30427670E-12
- SEAICE_LSR (ipass=   2) iters,dV,Resid=    88  9.03333398E-13  5.98580579E-11
- cg2d: Sum(rhs),rhsMax =  -7.65587038209503E-10  3.70666785439474E-01
-(PID.TID 0000.0001)                    cg2d_init_res =    3.96643992340229E-02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=   150  8.37843683E-13  1.30428478E-12
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=    88  9.03333398E-13  5.98580607E-11
+ cg2d: Sum(rhs),rhsMax =  -7.65585372874966E-10  3.70666785439474E-01
+(PID.TID 0000.0001)                    cg2d_init_res =    3.96643992340220E-02
 (PID.TID 0000.0001)                       cg2d_iters =    41
-(PID.TID 0000.0001)                         cg2d_res =    6.34271674431721E-13
+(PID.TID 0000.0001)                         cg2d_res =    6.34271674432044E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4730,22 +4777,22 @@
 (PID.TID 0000.0001) %MON time_secondsf                =   3.6000000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.0644920288533E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2033411073773E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4141519570403E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4141416775161E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.3949985804525E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   1.7940160677716E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   5.0808061469345E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -5.2136492033743E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.7136578146845E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.7136578146844E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   6.1864549280503E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   4.1841623197993E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.6068607773807E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -8.9418635664522E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   8.0996607622754E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   8.0996607622756E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   7.0759012090275E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   4.8114617417255E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.3170201851656E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2282248178816E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.9772004828091E-22
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.9202016898318E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.7844897554889E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.1097662430578E-06
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2475753319545E+01
@@ -4785,8 +4832,8 @@
 (PID.TID 0000.0001) %MON forcing_fv_del2              =   6.9340461708858E-04
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.6386643405286E-03
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.4474899984478E-03
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   4.5957294485522E-03
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   5.2629584315288E-03
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   4.5957294485523E-03
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   5.2629584315289E-03
 (PID.TID 0000.0001) %MON pe_b_mean                    =   9.5952326867777E-06
 (PID.TID 0000.0001) %MON ke_max                       =   3.3976456914915E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.4608613430104E-05
@@ -4797,8 +4844,8 @@
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8118122958153E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734844024357E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688582066018E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.1883631024401E-07
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.6400044212349E-08
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.1883631024403E-07
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.6400044212336E-08
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4837,7 +4884,7 @@
 (PID.TID 0000.0001) %MON seaice_hsalt_max             =   1.0877302417904E+02
 (PID.TID 0000.0001) %MON seaice_hsalt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsalt_mean            =   1.6464973728329E+01
-(PID.TID 0000.0001) %MON seaice_hsalt_sd              =   2.5636310241846E+01
+(PID.TID 0000.0001) %MON seaice_hsalt_sd              =   2.5636310241847E+01
 (PID.TID 0000.0001) %MON seaice_hsalt_del2            =   1.4191801514937E+00
 (PID.TID 0000.0001) %MON seaice_sitracer01_max        =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_sitracer01_min        =   0.0000000000000E+00
@@ -4859,147 +4906,147 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 0000000010
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   1.8100000000000001
-(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:   1.8643689155578613
+(PID.TID 0000.0001)           User time:   1.8000000000000000
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:   1.8230991363525391
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  8.99999999999999967E-002
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  0.13552904129028320
+(PID.TID 0000.0001)           User time:  0.10000000000000001
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.10513687133789063
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   1.7200000000000000
+(PID.TID 0000.0001)           User time:   1.7000000000000000
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:   1.7288029193878174
+(PID.TID 0000.0001)     Wall clock time:   1.7179260253906250
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  2.99999999999999989E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.37858200073242188E-002
+(PID.TID 0000.0001)     Wall clock time:  3.21819782257080078E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.6899999999999999
+(PID.TID 0000.0001)           User time:   1.6699999999999999
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:   1.6949911117553711
+(PID.TID 0000.0001)     Wall clock time:   1.6857171058654785
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.6899999999999999
+(PID.TID 0000.0001)           User time:   1.6700000000000002
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:   1.6949052810668945
+(PID.TID 0000.0001)     Wall clock time:   1.6856338977813721
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.11300849914550781E-002
+(PID.TID 0000.0001)     Wall clock time:  2.07481384277343750E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.09746360778808594E-002
+(PID.TID 0000.0001)     Wall clock time:  2.05910205841064453E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.86781311035156250E-005
+(PID.TID 0000.0001)     Wall clock time:  7.98702239990234375E-005
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.82000000000000028
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.82467651367187500
+(PID.TID 0000.0001)           User time:  0.81000000000000005
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  0.82240724563598633
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.32000000000000006
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.32026791572570801
+(PID.TID 0000.0001)           User time:  0.34000000000000030
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  0.32050490379333496
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
 (PID.TID 0000.0001)           User time:  0.30000000000000004
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.30278921127319336
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  0.30320906639099121
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.35999999999999965
+(PID.TID 0000.0001)           User time:  0.35999999999999943
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.36332654953002930
+(PID.TID 0000.0001)     Wall clock time:  0.36149120330810547
 (PID.TID 0000.0001)          No. starts:          36
 (PID.TID 0000.0001)           No. stops:          36
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.26999999999999980
+(PID.TID 0000.0001)           User time:  0.27999999999999980
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.27705788612365723
+(PID.TID 0000.0001)     Wall clock time:  0.27660989761352539
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
+(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.94466018676757813E-002
+(PID.TID 0000.0001)     Wall clock time:  2.92460918426513672E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.14414024353027344E-003
+(PID.TID 0000.0001)     Wall clock time:  8.15820693969726563E-003
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.77402114868164063E-003
+(PID.TID 0000.0001)     Wall clock time:  5.76877593994140625E-003
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.99999999999998135E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.24182605743408203E-002
+(PID.TID 0000.0001)     Wall clock time:  2.21979618072509766E-002
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.39000000000000012
+(PID.TID 0000.0001)           User time:  0.36999999999999988
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.38804721832275391
+(PID.TID 0000.0001)     Wall clock time:  0.38725781440734863
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.56309318542480469E-003
+(PID.TID 0000.0001)     Wall clock time:  4.48369979858398438E-003
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
+(PID.TID 0000.0001)           User time:  3.99999999999998135E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.46527194976806641E-002
+(PID.TID 0000.0001)     Wall clock time:  2.35729217529296875E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  4.00000000000000355E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.14702892303466797E-002
+(PID.TID 0000.0001)     Wall clock time:  4.10230159759521484E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  3.00000000000000266E-002
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  4.20491695404052734E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  3.91201972961425781E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.10413742065429688E-003
+(PID.TID 0000.0001)     Wall clock time:  3.68618965148925781E-003
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001) // ======================================================
