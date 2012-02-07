@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.8 2012/02/07 04:57:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.9 2012/02/07 18:48:23 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -44,10 +44,6 @@ C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 #undef SEAICE_MODIFY_GROWTH_ADJ
 #undef SEAICE_SIMPLIFY_GROWTH_ADJ
-
-c     Use the McPhee Ocean-Ice heat flux
-#define MCPHEE_OCEAN_ICE_HEAT_FLUX
-#define GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR
 
 #define SEAICE_DO_OPEN_WATER_GROWTH
 #define SEAICE_DO_OPEN_WATER_MELT
