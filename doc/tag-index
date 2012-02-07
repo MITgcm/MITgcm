@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1591 2012/02/05 22:40:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1592 2012/02/07 02:20:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - remove un-used parameters LAD & MAX_TICE ; add new run-time parameters:
+    useMaykutSatVapPoly (default=F), postSolvTempIter (default=2) and
+    SEAICE_wetAlbTemp (default=-1e-3). Remove option SEAICE_SOLVE4TEMP_LEGACY.
+  - update verification/*/input*/data.seaice:
+    to reproduce previous results with former #defined SEAICE_SOLVE4TEMP_LEGACY
+    code, set useMaykutSatVapPoly=T & postSolvTempIter=0 ;
+    and to reproduce previous results with former non-SOLVE4TEMP_LEGACY code,
+    set SEAICE_wetAlbTemp=0 & SEAICE_snowThick=0.
 o pkg/seaice/seaice_solve4temp.F (SOLVE4TEMP_LEGACY):
   - remove LEGACY code for solving for tsurf (A1,A2,A3) but maintain the same
     algorithm (same choice: useMaykutPolySatVap=T, postSolvTempIter=0);
