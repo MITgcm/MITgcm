@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.107 2012/02/06 19:19:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.108 2012/02/07 02:04:54 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -364,16 +364,6 @@ c     MAX_TICE           = 30.     _d 0
 C-    end retired parameters
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
-
-#ifdef SEAICE_SOLVE4TEMP_LEGACY
-C-    old SOLVE4TEMP_LEGACY setting:
-      useMaykutSatVapPoly = .TRUE.
-      postSolvTempIter  =  0
-#else /* SEAICE_SOLVE4TEMP_LEGACY */
-C-    old non-SOLVE4TEMP_LEGACY setting:
-      SEAICE_wetAlbTemp =  0. _d 0
-      SEAICE_snowThick  =  0. _d 0
-#endif /* SEAICE_SOLVE4TEMP_LEGACY */
 
 #ifdef ALLOW_COST
       mult_ice_export   =  0. _d 0
