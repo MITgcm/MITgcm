@@ -1,22 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1593 2012/02/07 19:12:06 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1594 2012/02/08 22:34:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - fix and simplify interface to salt_plume pkg ; diagnose directly amount of
+    seawater freezing in thsice_calc_thickn (not used).
 o pkg/seaice: turbulent flux term specification via run time params.
   - replace CPP switches with run time switches to facilitate testing
   - retired CPPs : MCPHEE_OCEAN_ICE_HEAT_FLUX, GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR
   - added runtime parameter : SEAICEturbFluxFormula
   - move Mcphee constants to SEAICE_PARAMS.h
   - seaice_readparms.F : read turbulent flux term params (SEAICEturbFluxFormula;
-   SEAICE_availHeatFrac/Frz, or SEAICE_gamma_t/_frz if apply); remove
-   seaice_summary call (moved to seaice_init_fixed)
-  - seaice_init_fixed.F : set SEAICE_availHeatFrac/Frz depending on 
-   SEAICEturbFluxFormula, and seaice_summary call (moved from seaice_readparms)
+    SEAICE_availHeatFrac/Frz, or SEAICE_gamma_t/_frz if apply); remove
+    seaice_summary call (moved to seaice_init_fixed)
+  - seaice_init_fixed.F : set SEAICE_availHeatFrac/Frz depending on
+    SEAICEturbFluxFormula, and seaice_summary call (moved from seaice_readparms)
   - seaice_summary.F : add missing report of read turbulent flux term set up (and SITRACER).
   - seaice_check.F : check range; inform and stop if retired CPPs are used (incl. SEAICE_AGE).
-  - seaice_growth.F : unified use of SEAICE_availHeatFrac/Frz, without 
+  - seaice_growth.F : unified use of SEAICE_availHeatFrac/Frz, without
 	CPP switch, same computation as before for the different options.
   - change results at the truncation level.
 o pkg/seaice:
