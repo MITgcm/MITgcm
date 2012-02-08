@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.14 2012/02/08 03:14:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.15 2012/02/08 04:04:20 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -161,7 +161,7 @@ c--   Individual checks.
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT, mythid )
 #ifdef ALLOW_TANGENTLINEAR_RUN
-          ratio_RMS  = ratio_RMS + ratio_flt*ratio_flt
+          ratio_RMS  = ratio_RMS + ratio_ftl*ratio_ftl
           write(msgbuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &         i, gfd, ftlxxmemo, ratio_ftl
