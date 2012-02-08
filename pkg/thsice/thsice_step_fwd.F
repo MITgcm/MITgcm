@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.34 2012/02/08 14:48:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.35 2012/02/08 22:32:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -60,10 +60,10 @@ C-- Use fluxes hold in commom blocks
 C- input:
 C     icFlxSW :: net short-wave heat flux (+=down) below sea-ice, into ocean
 C     icFlxAtm  :: net Atmospheric surf. heat flux over sea-ice [W/m2], (+=down)
-C     icFrwAtm  :: evaporation over sea-ice to the atmosphere [kg/m2/s] (+=up)
+C     icFrwAtm  :: evaporation over sea-ice to the atmosphere   [kg/m2/s] (+=up)
 C- output
 C     icFlxAtm  :: net Atmospheric surf. heat flux over ice+ocean [W/m2], (+=down)
-C     icFrwAtm  :: net fresh-water flux (E-P) from the atmosphere [m/s] (+=up)
+C     icFrwAtm  :: net fresh-water flux (E-P) from the atmosphere [kg/m2/s] (+=up)
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -78,8 +78,9 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     iceFrac   :: fraction of grid area covered in ice
 C     flx2oc    :: net heat flux from the ice to the ocean (+=down) [W/m2]
-C     frw2oc    :: fresh-water flux from the ice to the ocean
-C     fsalt     :: mass salt flux to the ocean
+C     frw2oc    :: fresh-water flux from the ice to the ocean (+=down)
+C     fsalt     :: mass salt flux to the ocean                (+=down)
+C     frzSeaWat :: seawater freezing rate (expressed as mass flux) [kg/m^2/s]
 C     frzmltMxL :: ocean mixed-layer freezing/melting potential [W/m2]
 C     tFrzOce   :: sea-water freezing temperature [oC] (function of S)
 C     isIceFree :: true for ice-free grid-cell that remains ice-free
@@ -90,6 +91,7 @@ C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
       _RL     flx2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     frw2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     fsalt    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     frzSeaWat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tFrzOce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     frzmltMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ageFac
@@ -132,6 +134,7 @@ C-    Initialise
 #else
           saltFlux(i,j,bi,bj) = 0. _d 0
 #endif
+          frzSeaWat(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
           iceFrac(i,j) = 0.
           flx2oc(i,j) = 0. _d 0
@@ -239,7 +242,7 @@ CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
      U          snowHeight(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),
      U          Qice1(siLo,sjLo,bi,bj), Qice2(siLo,sjLo,bi,bj),
      U          icFrwAtm(siLo,sjLo,bi,bj), frzmltMxL, flx2oc,
-     O          frw2oc, fsalt,
+     O          frw2oc, fsalt, frzSeaWat,
      I          myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -286,6 +289,10 @@ c#endif
      &                    +  opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj) = -icFrac*fsalt(i,j)
 #endif
+C-    All seawater freezing (no reduction by surf. melting) from CALC_THICKN
+c         frzSeaWat(i,j) = icFrac*frzSeaWat(i,j)
+C-    Net seawater freezing (underestimated if there is surf. melting or rain)
+          frzSeaWat(i,j) = MAX( -icFrac*frw2oc(i,j), 0. _d 0 )
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -303,17 +310,6 @@ c#endif
         ENDIF
        ENDDO
       ENDDO
-
-#ifdef ALLOW_SALT_PLUME
-      IF ( useSALT_PLUME ) THEN
-        CALL THSICE_SALT_PLUME(
-     I          iceMask(1-OLx,1-OLy,bi,bj),
-     I          sOceMxL(1-OLx,1-OLy,bi,bj),
-     I          frw2oc,
-     I          iMin,iMax, jMin,jMax, bi, bj,
-     I          0, myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_SALT_PLUME */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.3 : freezing of sea-water
@@ -357,6 +353,7 @@ C--    Net fluxes :
           EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt(i,j)
 #endif
+          frzSeaWat(i,j) = frzSeaWat(i,j) + MAX(-frw2oc(i,j), 0. _d 0 )
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -392,11 +389,10 @@ C--    Net fluxes :
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
         CALL THSICE_SALT_PLUME(
-     I          frzmltMxL,
      I          sOceMxL(1-OLx,1-OLy,bi,bj),
-     I          frw2oc,
+     I          frzSeaWat,
      I          iMin,iMax, jMin,jMax, bi, bj,
-     I          1, myTime, myIter, myThid )
+     I          myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 

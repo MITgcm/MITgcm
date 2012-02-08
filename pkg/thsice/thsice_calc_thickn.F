@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.25 2011/06/02 17:36:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.26 2012/02/08 22:32:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
      I                  snowP, prcAtm, sHeat, flxCnB,
      U                  icFrac, hIce, hSnow, tSrf, qIc1, qIc2,
      U                  frwAtm, fzMlOc, flx2oc,
-     O                  frw2oc, fsalt,
+     O                  frw2oc, fsalt, frzSeaWat,
      I                  myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -100,6 +100,7 @@ C  flx2oc         :: net heat flux to ocean    [W/m2]          (> 0 downward)
 C---  Output
 C  frw2oc         :: Total fresh water flux to ocean [kg/m2/s] (> 0 downward)
 C  fsalt          :: salt flux to ocean        [g/m2/s]        (> 0 downward)
+C  frzSeaWat      :: seawater freezing rate (expressed as mass flux) [kg/m^2/s]
 C---  Input:
 C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
@@ -127,6 +128,7 @@ C     myThid      :: my Thread Id number
       _RL flx2oc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL frw2oc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fsalt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL frzSeaWat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
@@ -136,7 +138,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C---  local copy of input/output argument list variables (see description above)
-      _RL qicen(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nlyr)
+      _RL qicen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nlyr)
 
 C     == Local Variables ==
 C     i,j,k      :: loop indices
@@ -170,15 +172,15 @@ C     qhtot      :: qh1 + qh2
 C     q2tmp      :: Temporary value of qice for layer 2
       INTEGER  i,j,k
       _RL rec_nlyr
-      _RL evapLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Fbot   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL etop   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ebot   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL etope  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ebote  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL esurp  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL evapLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Fbot   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL etop   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ebot   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL etope  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ebote  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL esurp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL extend
-      _RL hnew   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nlyr)
+      _RL hnew   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nlyr)
       _RL hlyr
       _RL dhi
       _RL dhs
@@ -186,8 +188,8 @@ C     q2tmp      :: Temporary value of qice for layer 2
       _RL rqh
       _RL qbot
       _RL dt
-      _RL mwater0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL msalt0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL mwater0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL msalt0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL freshe
       _RL salte
       _RL lowIcFrac1, lowIcFrac2
@@ -207,9 +209,9 @@ C     q2tmp      :: Temporary value of qice for layer 2
       _RL rec_pLaw
       _RL c1Mlt, c2Mlt, aMlt, hMlt
       _RL c1Frz, c2Frz, aFrz, hFrz
-      _RL enFrcMlt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL enFrcMlt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL xxMlt, tmpMlt
-      _RL enFrcFrz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL enFrcFrz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL xxFrz, tmpFrz
 #endif
 
@@ -270,8 +272,8 @@ C-    Linear relation
 
 
 C     initialise local arrays
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         evapLoc(i,j) = 0. _d 0
         Fbot   (i,j) = 0. _d 0
         etop   (i,j) = 0. _d 0
@@ -288,8 +290,8 @@ C     initialise local arrays
        ENDDO
       ENDDO
       DO k = 1,nlyr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          hnew(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
@@ -560,10 +562,10 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 
+C Bottom growth:
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0 .AND. ebot(i,j) .LT. 0. _d 0) THEN
-C Bottom melt/growth.
 C Compute enthalpy of new ice growing at bottom surface.
          qbot =  -cpIce *tFrz(i,j) + Lfresh
          dhi = -ebot(i,j) / (qbot * rhoi)
@@ -577,6 +579,7 @@ CML#endif
      &        (hnew(i,j,nlyr)*qicen(i,j,nlyr)+dhi*qbot) /
      &        (hnew(i,j,nlyr)+dhi)
          hnew(i,j,nlyr) = hnew(i,j,nlyr) + dhi
+         frzSeaWat(i,j) = rhoi*dhi/dt
 
 C     endif iceMask > 0 and ebot < 0
         ENDIF
@@ -591,6 +594,7 @@ CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
+C Bottom melt:
       DO k = nlyr, 1, -1
 CML#ifdef ALLOW_AUTODIFF_TAMC
 CML           ikey_2 = (nlyr-k+1)
