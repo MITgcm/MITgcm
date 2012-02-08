@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.33 2012/02/04 17:21:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.34 2012/02/08 14:48:03 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_ATM2D
 # include "ctrparam.h"
 #endif
+#define THSICE_OLD_STEP_FWD
 
 CBOP
 C     !ROUTINE: THSICE_STEP_FWD
@@ -124,7 +125,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Initialise
       dBugFlag = debugLevel.GE.debLevC
       DO j = 1-OLy, sNy+OLy
-        DO i = 1-OLx, sNx+OLx
+       DO i = 1-OLx, sNx+OLx
           isIceFree(i,j) = .FALSE.
 #ifdef ALLOW_ATM2D
           sFluxFromIce(i,j) = 0. _d 0
@@ -133,8 +134,11 @@ C-    Initialise
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
           iceFrac(i,j) = 0.
+          flx2oc(i,j) = 0. _d 0
+          frw2oc(i,j) = 0. _d 0
+          fsalt (i,j) = 0. _d 0
 #endif
-        ENDDO
+       ENDDO
       ENDDO
 
       ageFac = 1. _d 0 - thSIce_deltaT/snowAgTime
@@ -157,8 +161,6 @@ C--  Snow aging :
           IF ( snowPrc(i,j,bi,bj).GT.0. _d 0 )
      &      snowAge(i,j,bi,bj) = snowAge(i,j,bi,bj)
      &          * EXP( - snowFac*snowPrc(i,j,bi,bj) )
-c    &          * EXP( -(thSIce_deltaT*snowPrc(i,j,bi,bj)/rhos)
-c    &                  /hNewSnowAge )
 C-------
 C note: Any flux of mass (here fresh water) that enter or leave the system
 C       with a non zero energy HAS TO be counted: add snow precip.
@@ -305,10 +307,10 @@ c#endif
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
         CALL THSICE_SALT_PLUME(
-     I          iceMask(1-Olx,1-Oly,bi,bj),
-     I          sOceMxL(1-Olx,1-Oly,bi,bj),
+     I          iceMask(1-OLx,1-OLy,bi,bj),
+     I          sOceMxL(1-OLx,1-OLy,bi,bj),
      I          frw2oc,
-     I          iMin,iMax, jMin,jMax, bi, bj, 
+     I          iMin,iMax, jMin,jMax, bi, bj,
      I          0, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
@@ -317,6 +319,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.3 : freezing of sea-water
 C     over ice-free fraction and what is left from ice-covered fraction
 C-------
+      DO j = 1-OLy, sNy+OLy
+       DO i = 1-OLx, sNx+OLx
+         flx2oc(i,j) = 0. _d 0
+         frw2oc(i,j) = 0. _d 0
+         fsalt (i,j) = 0. _d 0
+       ENDDO
+      ENDDO
       CALL THSICE_EXTEND(
      I          bi, bj,
      I          iMin,iMax, jMin,jMax, dBugFlag,
@@ -335,7 +344,9 @@ CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
+#ifdef THSICE_OLD_STEP_FWD
         IF (frzmltMxL(i,j).GT.0. _d 0) THEN
+#endif
 C--    Net fluxes :
 #ifdef ALLOW_ATM2D
           pass_qnet(i,j) = pass_qnet(i,j) - flx2oc(i,j)
@@ -353,7 +364,9 @@ C--    Net fluxes :
      &           iceFrac(i,j), iceHeight(i,j,bi,bj),
      &           snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
 #endif
+#ifdef THSICE_OLD_STEP_FWD
         ENDIF
+#endif
 
         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
      &    isIceFree(i,j) = iceMask(i,j,bi,bj).LE.0. _d 0
@@ -379,10 +392,10 @@ C--    Net fluxes :
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
         CALL THSICE_SALT_PLUME(
-     I          frzmltMxL,      
-     I          sOceMxL(1-Olx,1-Oly,bi,bj),
+     I          frzmltMxL,
+     I          sOceMxL(1-OLx,1-OLy,bi,bj),
      I          frw2oc,
-     I          iMin,iMax, jMin,jMax, bi, bj, 
+     I          iMin,iMax, jMin,jMax, bi, bj,
      I          1, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
