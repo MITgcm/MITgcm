@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.33 2011/09/26 12:56:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.34 2012/02/08 03:14:13 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -229,6 +229,12 @@ cph(
 cph-print               print *, 'ph-grd ----- back from loc -----',
 cph-print     &             icvrec, itilepos, jtilepos, layer, obcspos
 cph)
+            else
+              itile    = 0
+              jtile    = 0
+              layer    = 0
+              itilepos = 0
+              jtilepos = 0
             endif
             _BARRIER
 
@@ -263,6 +269,9 @@ c--   1. perturb control vector component: xx(i)=1.
      &              itilepos, jtilepos,
      &              xxmemo_ref, xxmemo_pert, localEps,
      &              mythid )
+            else
+              xxmemo_ref  = 0.
+              xxmemo_pert = 0.
             endif
             _BARRIER
 
@@ -319,6 +328,9 @@ c--   positive perturbation
      &              itilepos, jtilepos,
      &              xxmemo_ref, xxmemo_pert, localEps,
      &              mythid )
+            else
+              xxmemo_ref  = 0.
+              xxmemo_pert = 0.
             endif
             _BARRIER
 
@@ -360,6 +372,9 @@ c--   repeat the proceedure for a negative perturbation
      &                 itilepos, jtilepos,
      &                 xxmemo_ref, xxmemo_pert, localEps,
      &                 mythid )
+               else
+                 xxmemo_ref  = 0.
+                 xxmemo_pert = 0.
                endif
                _BARRIER
 
@@ -412,14 +427,15 @@ c******************************************************
 
             if ( myProcId .EQ. grdchkwhichproc .AND.
      &           ierr .EQ. 0 ) then
-
                tmpplot1(itilepos,jtilepos,layer,itile,jtile)
      &              = gfd
                tmpplot2(itilepos,jtilepos,layer,itile,jtile)
      &              = ratio_ad
                tmpplot3(itilepos,jtilepos,layer,itile,jtile)
      &              = ratio_ftl
+            endif
 
+            if ( ierr .EQ. 0 ) then
                fcrmem      ( ichknum ) = fcref
                fcppmem     ( ichknum ) = fcpertplus
                fcpmmem     ( ichknum ) = fcpertminus
@@ -443,6 +459,10 @@ c******************************************************
                itestmem  ( ichknum ) = itest
                ierrmem   ( ichknum ) = ierr
                icglomem  ( ichknum ) = icglo
+            endif
+
+            if ( myProcId .EQ. grdchkwhichproc .AND.
+     &           ierr .EQ. 0 ) then
 
                WRITE(standardmessageunit,'(A)')
      &             'grad-res -------------------------------'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.13 2011/08/05 17:56:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.14 2012/02/08 03:14:13 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -48,6 +48,7 @@ c     == local variables ==
       _RL ftlxxmemo
       _RL ratio_ad
       _RL ratio_ftl
+      _RL ratio_RMS
 
       integer i
       integer itile
@@ -123,6 +124,7 @@ c--   Individual checks.
          numchecks = maxgrdchecks
       endif
 
+      ratio_RMS = 0.
       do i = 1, numchecks
         xxmemo_ref   = xxmemref  (i)
         xxmemo_pert  = xxmempert (i)
@@ -159,10 +161,12 @@ c--   Individual checks.
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT, mythid )
 #ifdef ALLOW_TANGENTLINEAR_RUN
+          ratio_RMS  = ratio_RMS + ratio_flt*ratio_flt
           write(msgbuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &         i, gfd, ftlxxmemo, ratio_ftl
 #else
+          ratio_RMS  = ratio_RMS + ratio_ad*ratio_ad
           write(msgbuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &          i, gfd, adxxmemo, ratio_ad
@@ -189,8 +193,16 @@ c--   Individual checks.
       enddo
 
 c--   Print final lines.
-      write(msgbuf,'(a)')
-     &' '
+      IF ( ichknum.GT.1 ) ratio_RMS = ratio_RMS / ichknum
+      IF ( ratio_RMS.GT.0. ) ratio_RMS = SQRT( ratio_RMS )
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT, mythid )
+      write(msgbuf,'(A,I4,A,1P1E21.13)')
+     &  'grdchk  summary  :  RMS of ',ichknum,' ratios =',ratio_RMS
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT, mythid )
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT, mythid )
       write(msgbuf,'(a)')
