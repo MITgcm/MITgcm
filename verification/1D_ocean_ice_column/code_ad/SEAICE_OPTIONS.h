@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.7 2012/02/07 18:48:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.8 2012/02/09 03:46:49 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -44,11 +44,6 @@ C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 #undef SEAICE_MODIFY_GROWTH_ADJ
 #undef SEAICE_SIMPLIFY_GROWTH_ADJ
-
-#define SEAICE_DO_OPEN_WATER_GROWTH
-#define SEAICE_DO_OPEN_WATER_MELT
-
-#define FENTY_AREA_EXPANSION_CONTRACTION
 
 #undef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
 

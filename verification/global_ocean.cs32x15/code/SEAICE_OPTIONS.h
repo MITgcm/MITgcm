@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.11 2012/02/07 18:44:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.12 2012/02/09 03:44:04 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -47,24 +47,13 @@ C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
 #undef SEAICE_GROWTH_LEGACY
 
-C--   options only available in the merged version (from Ian Fenty s code)
+C--   options only available in the merged version
 #ifndef SEAICE_GROWTH_LEGACY
 C-    to ensure heat conservation in the coupled ocean-seaice system
 # undef SEAICE_HEAT_CONSERV_FIX
-C-    to switch on/off open-water freezing contribution to thickness tendency:
-# define SEAICE_DO_OPEN_WATER_GROWTH
-C-    ifdef SEAICE_DO_OPEN_WATER_GROWTH then define SEAICE_DO_OPEN_WATER_MELT
-C     to also allow open-water air-sea heat fluxes melt ice
-# undef SEAICE_DO_OPEN_WATER_MELT
-C-    to switch on/off ocean heat contribution to seaice cover reduction:
-# define SEAICE_OCN_MELT_ACT_ON_AREA
 C-    to preclude infinitesimal ice concentrations:
 # undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #endif
-
-C--   Use the Old version of seaice_solve4temp (formerly seaice_budget_ice)
-C     otherwise, use Ian Fenty s version
-#undef SEAICE_SOLVE4TEMP_LEGACY
 
 C--   By default the freezing point of water is set to the value of
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
