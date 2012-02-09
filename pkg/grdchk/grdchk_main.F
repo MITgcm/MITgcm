@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.34 2012/02/08 03:14:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.35 2012/02/09 17:55:54 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -230,11 +230,15 @@ cph-print               print *, 'ph-grd ----- back from loc -----',
 cph-print     &             icvrec, itilepos, jtilepos, layer, obcspos
 cph)
             else
+              icvrec   = 0
               itile    = 0
               jtile    = 0
               layer    = 0
+              obcspos  = 0
               itilepos = 0
               jtilepos = 0
+              icglo    = 0
+              itest    = 0
             endif
             _BARRIER
 
