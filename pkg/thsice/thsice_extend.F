@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.12 2010/12/17 04:00:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.13 2012/02/09 02:20:00 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -120,6 +120,18 @@ C-    define grid-point location where to print debugging values
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      deltaTice = thSIce_deltaT
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO j = 1-OLy, sNy+OLy
+       DO i = 1-OLx, sNx+OLx
+         flx2oc(i,j) = 0. _d 0
+         frw2oc(i,j) = 0. _d 0
+         fsalt (i,j) = 0. _d 0
+       ENDDO
+      ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
       max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -132,8 +144,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      deltaTice = thSIce_deltaT
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hIce(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
