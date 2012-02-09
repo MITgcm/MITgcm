@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.36 2012/02/09 02:20:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.37 2012/02/09 21:47:58 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_ATM2D
 # include "ctrparam.h"
 #endif
-#undef THSICE_OLD_STEP_FWD
 
 CBOP
 C     !ROUTINE: THSICE_STEP_FWD
@@ -137,9 +136,9 @@ C-    Initialise
           frzSeaWat(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
           iceFrac(i,j) = 0.
-          flx2oc(i,j) = 0. _d 0
-          frw2oc(i,j) = 0. _d 0
-          fsalt (i,j) = 0. _d 0
+c         flx2oc(i,j) = 0. _d 0
+c         frw2oc(i,j) = 0. _d 0
+c         fsalt (i,j) = 0. _d 0
 #endif
        ENDDO
       ENDDO
@@ -340,10 +339,7 @@ CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
-#ifdef THSICE_OLD_STEP_FWD
-        IF (frzmltMxL(i,j).GT.0. _d 0) THEN
-#endif
-C--    Net fluxes :
+C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
 #ifdef ALLOW_ATM2D
           pass_qnet(i,j) = pass_qnet(i,j) - flx2oc(i,j)
           pass_evap(i,j) = pass_evap(i,j) - frw2oc(i,j)/rhofw
@@ -356,13 +352,10 @@ C--    Net fluxes :
           frzSeaWat(i,j) = frzSeaWat(i,j) + MAX(-frw2oc(i,j), 0. _d 0 )
 
 #ifdef ALLOW_DBUG_THSICE
-          IF (dBug(i,j,bi,bj)) WRITE(6,1010)
+        IF (dBug(i,j,bi,bj)) WRITE(6,1010)
      &         'ThSI_FWD:-4- iceFrac, hIc, hSn, Qnet =',
      &           iceFrac(i,j), iceHeight(i,j,bi,bj),
      &           snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
-#endif
-#ifdef THSICE_OLD_STEP_FWD
-        ENDIF
 #endif
 
         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
