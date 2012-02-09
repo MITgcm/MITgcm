@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.148 2012/02/07 18:41:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.149 2012/02/09 03:42:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -173,8 +173,10 @@ C     actual snow thickness
       _RL hsnowActual         (1:sNx,1:sNy)
 C     actual ice thickness (with lower limit only) Reciprocal
       _RL recip_heffActual    (1:sNx,1:sNy)
-C     local value (=HO or HO_south)
-      _RL HO_loc
+C     local value (=1/HO or 1/HO_south)
+      _RL recip_HO
+C     local value (=1/ice thickness)
+      _RL recip_HH
 
 C     AREA_PRE :: hold sea-ice fraction field before any seaice-thermo update
       _RL AREApreTH           (1:sNx,1:sNy)
@@ -196,10 +198,7 @@ C     pathological cases thresholds
       _RL lhSublim
 
 C temporary variables available for the various computations
-#ifdef SEAICE_GROWTH_LEGACY
-      _RL tmpscal0
-#endif
-      _RL tmpscal1, tmpscal2, tmpscal3, tmpscal4
+      _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
       _RL tmparr1             (1:sNx,1:sNy)
 
 #ifdef ALLOW_SEAICE_FLOODING
@@ -1035,7 +1034,6 @@ Cph)
 
 C gain of new ice over open water
 C ===============================
-#ifndef SEAICE_GROWTH_LEGACY
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_QbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1043,9 +1041,9 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE a_QSWbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
         DO J=1,sNy
          DO I=1,sNx
-#ifdef SEAICE_DO_OPEN_WATER_GROWTH
 c           Initial ice growth is triggered by open water
 c           heat flux overcoming potential melt by ocean
             tmpscal1=r_QbyATM_open(I,J)+r_QbyOCN(i,j) *
@@ -1053,21 +1051,16 @@ c           heat flux overcoming potential melt by ocean
 c           Penetrative shortwave flux beyond first layer
 c           that is therefore not available to ice growth/melt
             tmpscal2=SWFracB * a_QSWbyATM_open(I,J)
-#ifdef SEAICE_DO_OPEN_WATER_MELT
-C           allow not only growth but also melt by open ocean heat flux
-            tmpscal3=MAX(tmpscal1-tmpscal2, -HEFF(I,J,bi,bj))
-#else
-            tmpscal3=MAX(tmpscal1-tmpscal2, 0. _d 0)
-#endif /* SEAICE_DO_OPEN_WATER_MELT */
-     &           *HEFFM(I,J,bi,bj)
+C           impose -HEFF as the maxmum melting if SEAICE_doOpenWaterMelt
+C           or 0. otherwise (no melting if not SEAICE_doOpenWaterMelt)
+            tmpscal3=facOpenGrow*MAX(tmpscal1-tmpscal2,
+     &           -HEFF(I,J,bi,bj)*facOpenMelt)*HEFFM(I,J,bi,bj)
           d_HEFFbyATMonOCN_open(I,J)=tmpscal3
           d_HEFFbyATMonOCN(I,J)=d_HEFFbyATMonOCN(I,J)+tmpscal3
           r_QbyATM_open(I,J)=r_QbyATM_open(I,J)-tmpscal3
           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) + tmpscal3
-#endif /* SEAICE_DO_OPEN_WATER_GROWTH */
          ENDDO
         ENDDO
-#endif /* SEAICE_GROWTH_LEGACY */
 
 #ifdef ALLOW_SITRACER
         DO J=1,sNy
@@ -1131,96 +1124,65 @@ CADJ STORE AREA(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
          DO I=1,sNx
 
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           HO_loc=HO_south
+           recip_HO=1. _d 0 / HO_south
           ELSE
-           HO_loc=HO
+           recip_HO=1. _d 0 / HO
           ENDIF
-
-C         compute contraction/expansion from melt/growth
 #ifdef SEAICE_GROWTH_LEGACY
+           recip_HH = AREApreTH(I,J) /(tmpscal1+.00001 _d 0)
+#else
+           recip_HH = recip_heffActual(I,J)
+#endif
 
-C compute heff after ice melt by ocn:
-          tmpscal0=HEFF(I,J,bi,bj) - d_HEFFbyATMonOCN(I,J)
-C compute available heat left after snow melt by atm:
-          tmpscal1= a_QbyATM_open(I,J)+a_QbyATM_cover(I,J)
+C gain of ice over open water : computed from 
+C   (SEAICE_areaGainFormula.EQ.1) from growth by ATM
+C   (SEAICE_areaGainFormula.EQ.2) from predicted growth by ATM
+          if (SEAICE_areaGainFormula.EQ.1) then
+            tmpscal4 = MAX(ZERO,d_HEFFbyATMonOCN_open(I,J))
+          else
+            tmpscal4=MAX(ZERO,a_QbyATM_open(I,J))
+          endif
+
+C loss of ice cover by melting : computed from 
+C   (SEAICE_areaLossFormula.EQ.1) from all but only melt conributions by ATM and OCN
+C   (SEAICE_areaLossFormula.EQ.2) from net melt-growth>0 by ATM and OCN
+C   (SEAICE_areaLossFormula.EQ.3) from predicted melt by ATM
+          if (SEAICE_areaLossFormula.EQ.1) then
+            tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN_cover(I,J) ) 
+     &        + MIN( 0. _d 0 , d_HEFFbyATMonOCN_open(I,J) )
+     &        + MIN( 0. _d 0 , d_HEFFbyOCNonICE(I,J) )
+          elseif (SEAICE_areaLossFormula.EQ.2) then
+            tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN_cover(I,J)
+     &        + d_HEFFbyATMonOCN_open(I,J) + d_HEFFbyOCNonICE(I,J) )
+          else
+C           compute heff after ice melt by ocn:
+            tmpscal0=HEFF(I,J,bi,bj) - d_HEFFbyATMonOCN(I,J)
+C           compute available heat left after snow melt by atm:
+            tmpscal1= a_QbyATM_open(I,J)+a_QbyATM_cover(I,J)
      &            - d_HSNWbyATMonSNW(I,J)/ICE2SNOW
-C (cannot melt more than all the ice)
-          tmpscal2 = MAX(-tmpscal0,tmpscal1)
-          tmpscal3 = MIN(ZERO,tmpscal2)
-C gain of new ice over open water
-          tmpscal4=MAX(ZERO,a_QbyATM_open(I,J))
-C compute cover fraction tendency
-          d_AREAbyATM(I,J)=tmpscal4/HO_loc+HALF*tmpscal3
-     &         *AREApreTH(I,J) /(tmpscal0+.00001 _d 0)
-
-#else /* SEAICE_GROWTH_LEGACY */
-
-#  ifdef FENTY_AREA_EXPANSION_CONTRACTION
-
-C         the various volume tendency terms
-
-C         Part 1: expansion/contraction of ice cover in open-water areas.
-          d_AREAbyATM(I,J) = 0. _d 0
-          IF (d_HEFFbyATMOnOCN_open(I,J) .GT. ZERO) then
-C         Ice cover is all created from open ocean-water air-sea heat fluxes
-             d_AREAbyATM(I,J)=d_HEFFbyATMOnOCN_open(I,J)/HO_loc
-          ELSEIF (AREApreTH(I,J) .GT. ZERO) THEN
-C         that can also act to remove ice cover.
-             d_AREAbyATM(i,J) = HALF*d_HEFFbyATMOnOCN_open(I,J)
-     &          *recip_heffActual(I,J)
-          ENDIF
-
-C         Part 2: contraction from ice thinning from above
-          d_AREAbyICE(I,J) = 0. _d 0
-          if (d_HEFFbyATMOnOCN_cover(I,J) .LE. ZERO)
-     &         d_AREAbyICE(I,J) = HALF * d_HEFFbyATMOnOCN_cover(I,J)
-     &         * recip_heffActual(I,J)
-
-C         Part 3: contraction from ice thinning from below
-          d_AREAbyOCN(I,J) = 0. _d 0
-          if (d_HEFFbyOCNonICE(I,J) .LE.ZERO) d_AREAbyOCN(I,J) =
-     &         HALF * d_HEFFbyOCNonICE(I,J)* recip_heffActual(I,J)
-
-# else /* FENTY_AREA_EXPANSION_CONTRACTION */
-
-#   ifdef SEAICE_OCN_MELT_ACT_ON_AREA
-C ice cover reduction by joint OCN+ATM melt
-          tmpscal3 = MIN( 0. _d 0 ,
-     &              d_HEFFbyATMonOCN(I,J)+d_HEFFbyOCNonICE(I,J) )
-#   else
-C ice cover reduction by ATM melt only -- as in legacy code
-          tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN(I,J) )
-#   endif
-C gain of new ice over open water
-
-#   ifdef SEAICE_DO_OPEN_WATER_GROWTH
-C the one effectively used to increment HEFF
-          tmpscal4 = MAX(ZERO,d_HEFFbyATMonOCN_open(I,J))
-#   else
-C the virtual one -- as in legcy code
-          tmpscal4 = MAX(ZERO,a_QbyATM_open(I,J))
-#   endif
-
-C compute cover fraction tendency
-          d_AREAbyATM(I,J)=tmpscal4/HO_loc+
-     &                     HALF*tmpscal3*recip_heffActual(I,J)
-
-#   endif /* FENTY_AREA_EXPANSION_CONTRACTION */
-
-#endif /* SEAICE_GROWTH_LEGACY */
+C           could not melt more than all the ice
+            tmpscal2 = MAX(-tmpscal0,tmpscal1)
+            tmpscal3 = MIN(ZERO,tmpscal2)
+          endif
+          
+C to be fixed soon : proper fill of d_AREAbyATM, d_AREAbyICE, d_AREAbyOCN
+          d_AREAbyATM(I,J)=recip_HO*tmpscal4+HALF*recip_HH*tmpscal3
+          d_AREAbyOCN(I,J)=ZERO
+          d_AREAbyICE(I,J)=ZERO
 
 C apply tendency
           IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
            AREA(I,J,bi,bj)=max(0. _d 0,
      &      min( SEAICE_area_max, AREA(I,J,bi,bj)
-     &       +d_AREAbyATM(I,J) + d_AREAbyOCN(I,J) + d_AREAbyICE(I,J) ))
+     &       + recip_HO*tmpscal4+HALF*recip_HH*tmpscal3 ))
           ELSE
            AREA(I,J,bi,bj)=0. _d 0
           ENDIF
 #ifdef ALLOW_SITRACER
           SItrAREA(I,J,bi,bj,3)=AREA(I,J,bi,bj)
 #endif
+
          ENDDO
         ENDDO
 

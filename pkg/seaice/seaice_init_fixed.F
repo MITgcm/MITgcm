@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.13 2012/02/07 18:41:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.14 2012/02/09 03:42:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,6 +103,12 @@ c     ... is hard-coded (after McPhee)
      &    USTAR_BASE / dRf(kSurface) * SEAICE_deltaTtherm
         SEAICE_availHeatFracFrz=ZERO
       endif
+
+C--   convert SEAICE_doOpenWaterGrowth/Melt logical switch to numerical facOpenGrow/Melt
+        facOpenGrow=0. _d 0
+        facOpenMelt=0. _d 0
+        if (SEAICE_doOpenWaterGrowth) facOpenGrow=1. _d 0
+        if (SEAICE_doOpenWaterMelt)   facOpenMelt=1. _d 0
 
 C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)

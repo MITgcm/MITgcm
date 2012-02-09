@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.41 2012/02/07 18:41:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.42 2012/02/09 03:42:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -166,8 +166,10 @@ C--  Thermodynamics parameters
        endif
       ENDDO
 #endif
-      CALL WRITE_0D_I ( SEAICEareaFormula,   INDEX_NONE,
-     & 'SEAICEareaFormula =', ' /* ice cover formula */')
+      CALL WRITE_0D_I ( SEAICE_areaGainFormula,   INDEX_NONE,
+     & 'SEAICE_areaGainFormula =', ' /* ice cover gain formula */')
+      CALL WRITE_0D_I ( SEAICE_areaLossFormula,   INDEX_NONE,
+     & 'SEAICE_areaLossFormula =', ' /* ice cover loss formula */')
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
      & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
       CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,

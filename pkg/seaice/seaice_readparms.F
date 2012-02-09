@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.109 2012/02/07 18:41:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.110 2012/02/09 03:42:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -91,7 +91,9 @@ C--   SEAICE parameters
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
-     & SEAICE_initialHEFF, SEAICEareaFormula, SEAICEturbFluxFormula,
+     & SEAICE_initialHEFF, SEAICEturbFluxFormula,
+     & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
+     & SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_cpAir,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -225,11 +227,6 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_mon_mnc  = .FALSE.
 #endif
       SEAICE_initialHEFF = ZERO
-#ifdef SEAICE_GROWTH_LEGACY
-      SEAICEareaFormula = 1
-#else
-      SEAICEareaFormula = 2
-#endif
       SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_rhoSnow     = 330.   _d 0
       ICE2WATR           = UNSET_RL
@@ -292,6 +289,17 @@ C     old default value of 0.97001763668430343479
       SEAICE_gamma_t_frz = UNSET_RL
       SEAICE_availHeatFrac = UNSET_RL
       SEAICE_availHeatFracFrz = UNSET_RL
+#ifndef SEAICE_GROWTH_LEGACY
+      SEAICE_doOpenWaterGrowth=.TRUE.
+      SEAICE_doOpenWaterMelt=.FALSE.
+      SEAICE_areaLossFormula=1
+      SEAICE_areaGainFormula=1
+#else
+      SEAICE_doOpenWaterGrowth=.FALSE.
+      SEAICE_doOpenWaterMelt=.FALSE.
+      SEAICE_areaGainFormula=2
+      SEAICE_areaLossFormula=3
+#endif
       SEAICEstressFactor = 1.     _d 0
       AreaFile   = ' '
       HsnowFile  = ' '

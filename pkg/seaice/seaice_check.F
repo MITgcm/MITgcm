@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.57 2012/02/07 18:41:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.58 2012/02/09 03:42:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -63,13 +63,61 @@ C--   SEAICE needs forcing_In_AB FALSE
       ENDIF
 
 C--   check ice cover fraction formula
-      IF ((SEAICEareaFormula.LT.1).OR.(SEAICEareaFormula.GT.3)) THEN
+      IF ((SEAICE_areaGainFormula.LT.1).OR.
+     &    (SEAICE_areaGainFormula.GT.2)) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &         ' SEAICEareaFormula must be between 1 and 3'
+     &         ' SEAICE_areaGainFormula must be between 1 and 2'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ((SEAICE_areaLossFormula.LT.1).OR.
+     &    (SEAICE_areaLossFormula.GT.3)) THEN
+         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &         ' SEAICE_areaLossFormula must be between 1 and 2'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
+#ifdef SEAICE_GROWTH_LEGACY
+      IF ( (.NOT.useThSIce).AND.( (SEAICE_areaGainFormula.NE.2).OR.
+     &     (SEAICE_areaLossFormula.NE.3).OR.SEAICE_doOpenWaterGrowth
+     &     .OR.SEAICE_doOpenWaterMelt ) ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'to use SEAICE_GROWTH_LEGACY, you need to set' 
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'SEAICE_areaGainFormula.EQ.2, SEAICE_areaLossFormula.EQ.3, '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'unset SEAICE_doOpenWaterGrowth F, SEAICE_areaLossFormula F'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_GROWTH_LEGACY */
+
+      IF ( (.NOT.useThSIce).AND.(.NOT.SEAICE_doOpenWaterGrowth)
+     &   .AND.( (SEAICE_areaGainFormula.NE.2).OR.
+     &          (SEAICE_areaLossFormula.NE.3) ) ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'when SEAICE_doOpenWaterGrowth is false, you need to set'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'SEAICE_areaGainFormula.EQ.2 and SEAICE_areaLossFormula.EQ.3'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+      IF ( (.NOT.useThSIce).AND.SEAICE_doOpenWaterMelt
+     &     .AND.(.NOT.SEAICE_doOpenWaterGrowth) ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'to use SEAICE_doOpenWaterMelt, you need to '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'also set SEAICE_doOpenWaterGrowth to .TRUE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      
 C--   Check advection schemes
       checkAdvSchArea = SEAICEadvArea .AND. (
      &     SEAICEadvSchArea.NE.ENUM_UPWIND_1RST .AND.
@@ -284,6 +332,40 @@ C--   MCPHEE_OCEAN_ICE_HEAT_FLUX is obsolete: issue warning and stop.
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */
+
+C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
+#if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \
+    defined(SEAICE_DO_OPEN_WATER_MELT)
+         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &     'SEAICE_DO_OPEN_WATER_GROWTH / MELT options are obsolete'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A)') 'they are replaced with run time',
+     &     ' parameter SEAICE_doOpenWaterGrowth / Melt'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_DO_OPEN_WATER_GROWTH */
+
+C--   SEAICE_OCN_MELT_ACT_ON_AREA is obsolete: issue warning and stop.
+#ifdef SEAICE_OCN_MELT_ACT_ON_AREA
+         WRITE(msgBuf,'(A)')
+     &     'SEAICE_OCN_MELT_ACT_ON_AREA option is obsolete:'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &     'it is now done with SEAICE_areaLossFormula.EQ.1 and 2'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_OCN_MELT_ACT_ON_AREA */
+
+C--   FENTY_AREA_EXPANSION_CONTRACTION is obsolete: issue warning and stop.
+#ifdef FENTY_AREA_EXPANSION_CONTRACTION
+         WRITE(msgBuf,'(A)')
+     &     'FENTY_AREA_EXPANSION_CONTRACTION option is obsolete:'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &     'it is now done with SEAICE_areaLoss(Melt)Formula.EQ.1'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif /* SEAICE_DO_OPEN_WATER_MELT */
 
 C     check concistency of turbulent flux term specification
       IF ( ( SEAICE_availHeatFrac .LT. 0. _d 0 ) .OR.
@@ -519,16 +601,6 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
-
-#if defined(FENTY_AREA_EXPANSION_CONTRACTION) && !defined(SEAICE_DO_OPEN_WATER_GROWTH)
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
-     &      'FENTY_AREA_EXPANSION_CONTRACTION requires that'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'SEAICE_CHECK: SEAICE_DO_OPEN_WATER_GROWTH is defined'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
 
       _END_MASTER(myThid)
 

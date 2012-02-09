@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.82 2012/02/07 18:41:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.83 2012/02/09 03:42:32 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -40,6 +40,10 @@ C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law; def=F.
+C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
+C                                 (when false cool ocean, and grow later if needed)
+C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
+C                                 (when false warm ocean, and melt later if needed)
 C     SEAICErestoreUnderIce :: restore surface T/S also underneath ice
 C                          ( default is false )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
@@ -60,6 +64,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, useMaykutSatVapPoly,
+     &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
@@ -73,6 +78,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, useMaykutSatVapPoly,
+     &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
@@ -95,13 +101,18 @@ C                         (=volume), snow thickness, and salt if available
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
 C     SEAICEadvSchSalt  :: sets the advection scheme for sea ice salinity
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
-C     SEAICEareaFormula :: sets the formula used to increment area as
-C                          a function of heff increment
 C     SEAICEturbFluxFormula :: selects formula for ocean-ice turbulent flux
 C                        :: 1=direct spec. of SEAICE_availHeatFrac/Frz
 C                        :: 2=spec. via SEAICE_gamma_t/_frz
 C                        :: 3=McPhee with linear tapering
 C                        :: 4=McPhee with step function
+C     SEAICE_areaLossFormula :: selects formula for ice cover loss from melt
+C                        :: 1=from all but only melt conributions by ATM and OCN
+C                        :: 2=from net melt-growth>0 by ATM and OCN
+C                        :: 3=from predicted melt by ATM
+C     SEAICE_areaGainFormula :: selects formula for ice cover gain from open water growth
+C                        :: 1=from growth by ATM
+C                        :: 2=from predicted growth by ATM
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
@@ -115,8 +126,9 @@ C
       INTEGER SEAICEadvSchSnow
       INTEGER SEAICEadvSchSalt
       INTEGER SEAICEadjMODE
-      INTEGER SEAICEareaFormula
       INTEGER SEAICEturbFluxFormula
+      INTEGER SEAICE_areaLossFormula
+      INTEGER SEAICE_areaGainFormula      
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
       COMMON /SEAICE_PARM_I/
@@ -130,8 +142,9 @@ C
      &     SEAICEadvSchSnow,
      &     SEAICEadvSchSalt,
      &     SEAICEadjMODE,
-     &     SEAICEareaFormula,
      &     SEAICEturbFluxFormula,
+     &     SEAICE_areaLossFormula,
+     &     SEAICE_areaGainFormula,
      &     SEAICE_debugPointI,
      &     SEAICE_debugPointJ
 
@@ -226,6 +239,8 @@ C     SEAICE_availHeatFracFrz :: Fraction of surface level heat content used to
 C                          freeze ice; default=SEAICE_availHeatFrac
 C                          if SEAICE_gamma_t_frz is unset, otherwise
 C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t_frz
+C     facOpenGrow        :: 0./1. version of logical switch SEAICE_doOpenWaterGrowth
+C     facOpenMelt        :: 0./1. version of logical switch SEAICE_doOpenWaterMelt
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
@@ -265,6 +280,7 @@ C
       _RL SIsalFRAC, SIsal0, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
+      _RL facOpenGrow, facOpenMelt      
       _RL OCEAN_drag, LSR_ERROR, DIFF1
       _RL SEAICE_area_reg, SEAICE_hice_reg
       _RL SEAICE_area_floor, SEAICE_area_max
@@ -297,6 +313,7 @@ C
      &    SIsalFRAC, SIsal0, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
+     &    facOpenGrow, facOpenMelt,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
