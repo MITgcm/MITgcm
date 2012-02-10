@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.58 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.59 2012/02/10 01:31:03 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,7 +72,8 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       _RL hEffNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areaNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif /* ndef SEAICE_GROWTH_LEGACY */
-      INTEGER iTr, SEAICEadvSchSItr, SEAICEdiffKhSItr
+      INTEGER iTr, SEAICEadvSchSItr
+      _RL SEAICEdiffKhSItr
       _RL SItrExt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpscal1, tmpscal2
 # ifdef ALLOW_SITRACER_ADVCAP
