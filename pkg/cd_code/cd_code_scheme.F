@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.4 2009/11/19 22:29:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.5 2012/02/10 00:27:39 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -39,12 +39,12 @@ C  myIter               :: current time-step number
 C  myThid               :: thread number
 
       INTEGER bi,bj,k
-      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL    guFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL    gvFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL    guCor(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL    gvCor(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    guFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    gvFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    guCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    gvCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -64,8 +64,8 @@ C  aF                   :: work space
       _RL phxFac, phyFac
 C     Define ranges
       INTEGER iMin,iMax, jMin,jMax
-      PARAMETER( iMin = 1-Olx+1 , iMax = sNx+Olx-1 )
-      PARAMETER( jMin = 1-Oly+1 , jMax = sNy+Oly-1 )
+      PARAMETER( iMin = 1-OLx+1 , iMax = sNx+OLx-1 )
+      PARAMETER( jMin = 1-OLy+1 , jMax = sNy+OLy-1 )
 CEOP
 
 C     Adams-Bashforth weighting factors
@@ -82,16 +82,16 @@ C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
       ENDIF
 
 C-    Initialize output (dummy) arrays:
-c     DO j=1-Oly,sNy+Oly
-c      DO i=1-Olx,sNx+Olx
+c     DO j=1-OLy,sNy+OLy
+c      DO i=1-OLx,sNx+OLx
 c       guCor(i,j) = 0. _d 0
 c       gvCor(i,j) = 0. _d 0
 c      ENDDO
 c     ENDDO
 
 C     Pressure extrapolated forward in time
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 #ifdef CD_CODE_NO_AB_CORIOLIS
 C     Keep this just to reproduce old results (to get same truncation)
         pf(i,j) =
@@ -108,13 +108,16 @@ C--   Zonal velocity coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
 C--   Coriolis with CD scheme allowed
 C     grady(p) + gV
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         af(i,j) =
      &        (  gvFld(i,j)
      &          -( _recip_dyC(i,j,bi,bj)*(pf(i,j)-pf(i,j-1))
      &            +phyFac*dPhiHydY(i,j) )
      &        )*_maskS(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &         *maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 C     Average to Vd point and add coriolis
@@ -167,13 +170,16 @@ C     Calculate coriolis force on U
 
 C--   Meridional velocity coriolis term
 C     gradx(p)+gU
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx
         af(i,j) =
      &        (  guFld(i,j)
      &          -( _recip_dxC(i,j,bi,bj)*(pf(i,j)-pf(i-1,j))
      &            +phxFac*dPhiHydX(i,j) )
      &        )*_maskW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &         *maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
+#endif
        ENDDO
       ENDDO
 C     Average to Ud point and add coriolis
