@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.42 2012/02/09 03:42:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.43 2012/02/11 03:35:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -273,14 +273,12 @@ C--  Thermodynamics parameters
      & ' /* cutoff snow thickness (for albedo) */')
       CALL WRITE_0D_RL( SEAICE_shortwave  ,INDEX_NONE,
      & 'SEAICE_shortwave  =', ' /* penetration shortwave radiation */')
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
-      WRITE(msgBuf,'(A,A)') 'ignores SEAICE_freeze ',
-     &     '(#define SEAICE_VARIABLE_FREEZING_POINT)'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-#endif
-      CALL WRITE_0D_RL( SEAICE_freeze     ,INDEX_NONE,
-     & 'SEAICE_freeze     =', ' /* freezing temp. of sea water */')
+      CALL WRITE_0D_RL( SEAICE_dTempFrz_dS,INDEX_NONE,
+     & 'SEAICE_dTempFrz_dS=',
+     & ' /* freezing temp. of sea water (slope) */')
+      CALL WRITE_0D_RL( SEAICE_tempFrz0   ,INDEX_NONE,
+     & 'SEAICE_tempFrz0   =', 
+     & ' /* freezing temp. of sea water (intercept) */')
       CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
      &                  ' /* parameter used in advect.F [m/s] */')
 #ifndef SEAICE_CAP_HEFF

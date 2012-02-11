@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.29 2012/02/07 14:01:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.30 2012/02/11 03:35:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !ROUTINE: SEAICE_SOLVE4TEMP
 C     !INTERFACE:
       SUBROUTINE SEAICE_SOLVE4TEMP(
      I   UG, HICE_ACTUAL, HSNOW_ACTUAL,
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+#ifdef SEAICE_CAP_SUBLIM
      I   F_lh_max,
 #endif
      U   TSURF,
@@ -39,9 +39,7 @@ C     === Global variables ===
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
 #include "DYNVARS.h"
-#endif /* SEAICE_VARIABLE_FREEZING_POINT */
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
 #endif
@@ -72,7 +70,7 @@ C----------
       _RL UG          (1:sNx,1:sNy)
       _RL HICE_ACTUAL (1:sNx,1:sNy)
       _RL HSNOW_ACTUAL(1:sNx,1:sNy)
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+#ifdef SEAICE_CAP_SUBLIM
       _RL F_lh_max    (1:sNx,1:sNy)
 #endif
       _RL TSURF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -88,14 +86,12 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i, j  :: Loop counters
-C     kSrf  :: vertical index of surface layer
+C     kSurface  :: vertical index of surface layer
       INTEGER i, j
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
-      INTEGER kSrf
-#endif /* SEAICE_VARIABLE_FREEZING_POINT */
+      INTEGER kSurface
       INTEGER ITER
-C     TB :: ocean temperature in contact with ice (=seawater freezing point) (K)
-      _RL TB         (1:sNx,1:sNy)
+C     tempFrz :: ocean temperature in contact with ice (=seawater freezing point) (K)
+      _RL tempFrz         (1:sNx,1:sNy)
       _RL D1, D1I
       _RL D3(1:sNx,1:sNy)
       _RL TMELT, XKI, XKS, HCUT, XIO
@@ -178,9 +174,11 @@ C     cc0 = TEN ** aa2
       cc1 = cc0*aa1*bb1*Ppascals*lnTEN
       cc2 = cc0*bb2
 
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
-      kSrf = 1
-#endif /* SEAICE_VARIABLE_FREEZING_POINT */
+      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       kSurface        = Nr
+      ELSE
+       kSurface        = 1
+      ENDIF
 
 C     SENSIBLE HEAT CONSTANT
       D1=SEAICE_dalton*SEAICE_cpAir*SEAICE_rhoAir
@@ -233,18 +231,10 @@ c       tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURF(I,J,bi,bj) )
         lwdownLoc(I,J) = MAX( MIN_LWDOWN, LWDOWN(I,J,bi,bj) )
         atempLoc (I,J) = MAX( celsius2K+MIN_ATEMP, ATEMP(I,J,bi,bj) )
 
-C     FREEZING TEMPERATURE OF SEAWATER
-#ifdef SEAICE_VARIABLE_FREEZING_POINT
-C     Use a variable seawater freezing point
-        TB(I,J) = -0.0575 _d 0*salt(I,J,kSrf,bi,bj) + 0.0901 _d 0
-     &       + celsius2K
-#else
-C     Use a constant freezing temperature (SEAICE_VARIABLE_FREEZING_POINT undef)
-C     old SOLVE4TEMP_LEGACY setting (not consistent with seaice_growth value)
-c       TB(I,J) = 271.2 _d 0
-        TB(I,J) = celsius2K + SEAICE_freeze
-#endif /* SEAICE_VARIABLE_FREEZING_POINT */
-
+c     FREEZING TEMP. OF SEA WATER (K)
+        tempFrz(I,J) = SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
+     &     + SEAICE_tempFrz0 + celsius2K
+     
 C     Now determine fixed (relative to tsurf) forcing term in heat budget
 
         IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
@@ -396,16 +386,16 @@ C     d(qh)/d(TICE)
           ENDIF
 
 C     Calculate the flux terms based on the updated tsurfLoc
-          F_c(I,J)    = effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
+          F_c(I,J)    = effConduct(I,J)*(tempFrz(I,J)-tsurfLoc(I,J))
           F_lh(I,J)   = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+#ifdef SEAICE_CAP_SUBLIM
 C     if the latent heat flux implied by tsurfLoc exceeds
 C     F_lh_max, cap F_lh and decouple the flux magnitude from TICE
           IF (F_lh(I,J) .GT. F_lh_max(I,J)) THEN
              F_lh(I,J)  = F_lh_max(I,J)
              dqh_dTs(I,J) = ZERO
           ENDIF
-#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+#endif /* SEAICE_CAP_SUBLIM */
 
           F_lwu(I,J) = t4 * D3(I,J)
           F_sens(I,J)= D1 * UG(I,J) * (t1 - atempLoc(I,J))
@@ -495,13 +485,13 @@ C     The following form does the same, but is faster
 C     over ice specific humidity
            qhice(I,J) = bb1*mm_pi/( Ppascals -(1.0 _d 0 - bb1)*mm_pi )
           ENDIF
-          F_c(I,J)  = effConduct(I,J) * (TB(I,J) - t1)
+          F_c(I,J)  = effConduct(I,J) * (tempFrz(I,J) - t1)
           F_lh(I,J) = D1I * UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+#ifdef SEAICE_CAP_SUBLIM
           IF (F_lh(I,J) .GT. F_lh_max(I,J)) THEN
              F_lh(I,J)  = F_lh_max(I,J)
           ENDIF
-#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+#endif /* SEAICE_CAP_SUBLIM */
           F_lwu(I,J)  = t4 * D3(I,J)
           F_sens(I,J) = D1 * UG(I,J) * (t1 - atempLoc(I,J))
 C     The flux between the ice/snow surface and the atmosphere.
@@ -511,7 +501,7 @@ C     The flux between the ice/snow surface and the atmosphere.
          ELSEIF ( postSolvTempIter.EQ.1 ) THEN
 C     Update fluxes (consistent with the linearized formulation)
           delTsurf  = tsurfLoc(I,J)-tsurfPrev(I,J)
-          F_c(I,J)  = effConduct(I,J)*(TB(I,J)-tsurfLoc(I,J))
+          F_c(I,J)  = effConduct(I,J)*(tempFrz(I,J)-tsurfLoc(I,J))
           F_ia(I,J) = F_ia(I,J) + dFia_dTs(I,J)*delTsurf
           F_lh(I,J) = F_lh(I,J)
      &              + D1I*UG(I,J)*dqh_dTs(I,J)*delTsurf
@@ -557,7 +547,7 @@ C     Calculate the net ice-ocean and ice-atmosphere fluxes
          print '(A,4(1x,D24.15))',
      &         'ibi F(c,lh,sens)           ',
      &         F_c(I,J), F_lh(I,J), F_sens(I,J)
-#ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+#ifdef SEAICE_CAP_SUBLIM
          IF (F_lh_max(I,J) .GT. ZERO) THEN
              print '(A,4(1x,D24.15))',
      &         'ibi F_lh_max,  F_lh/lhmax) ',
@@ -570,7 +560,7 @@ C     Calculate the net ice-ocean and ice-atmosphere fluxes
      &         'ibi FWsub, FWsubm*dT/rhoI  ',
      &          FWsublim(I,J),
      &          FWsublim(I,J)*SEAICE_deltaTtherm/SEAICE_rhoICE
-#endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+#endif /* SEAICE_CAP_SUBLIM */
           print '(A,4(1x,D24.15))',
      &         'ibi F_ia, F_ia_net, F_c    ',
      &         F_ia(I,J), F_ia_net, F_c(I,J)

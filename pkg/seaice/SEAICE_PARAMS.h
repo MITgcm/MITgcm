@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.83 2012/02/09 03:42:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.84 2012/02/11 03:35:01 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -241,6 +241,8 @@ C                          if SEAICE_gamma_t_frz is unset, otherwise
 C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t_frz
 C     facOpenGrow        :: 0./1. version of logical switch SEAICE_doOpenWaterGrowth
 C     facOpenMelt        :: 0./1. version of logical switch SEAICE_doOpenWaterMelt
+C     SEAICE_tempFrz0    :: sea water freezing point is
+C     SEAICE_dTempFrz_dS ::     tempFrz = SEAICE_tempFrz0 + salt * SEAICE_dTempFrz_dS
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
@@ -280,7 +282,8 @@ C
       _RL SIsalFRAC, SIsal0, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
-      _RL facOpenGrow, facOpenMelt      
+      _RL facOpenGrow, facOpenMelt
+      _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
       _RL OCEAN_drag, LSR_ERROR, DIFF1
       _RL SEAICE_area_reg, SEAICE_hice_reg
       _RL SEAICE_area_floor, SEAICE_area_max
@@ -314,6 +317,7 @@ C
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      &    facOpenGrow, facOpenMelt,
+     &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,

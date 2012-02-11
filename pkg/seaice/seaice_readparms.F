@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.110 2012/02/09 03:42:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.111 2012/02/11 03:35:01 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -110,6 +110,7 @@ C--   SEAICE parameters
      & SEAICE_iceConduct, SEAICE_snowConduct,
      & SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
+     & SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
      & SIsalFRAC, SIsal0, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
@@ -188,11 +189,7 @@ c     SEAICEuseFluxForm  = .FALSE.
 #else
       SEAICEadvSalt      = .FALSE.
 #endif
-#ifdef ALLOW_SEAICE_FLOODING
       SEAICEuseFlooding  = .TRUE.
-#else
-      SEAICEuseFlooding  = .FALSE.
-#endif /* ALLOW_SEAICE_FLOODING */
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .FALSE.
       SEAICE_maskRHS     = .FALSE.
@@ -281,7 +278,7 @@ C     old default value of 0.97001763668430343479
       SEAICE_snowConduct = 3.1    _d -01
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
-      SEAICE_freeze      = -1.96  _d 0
+      SEAICE_freeze      = UNSET_RL
       SIsalFRAC          = 0.0    _d 0
       SIsal0             = 0.0    _d 0
       SEAICEturbFluxFormula = 1
@@ -300,6 +297,11 @@ C     old default value of 0.97001763668430343479
       SEAICE_areaGainFormula=2
       SEAICE_areaLossFormula=3
 #endif
+      SEAICE_tempFrz0    = 0.0901 _d 0
+      SEAICE_dTempFrz_dS = -0.0575 _d 0
+c old default for constant freezing point
+c      SEAICE_tempFrz0    = -1.96 _d 0
+c      SEAICE_dTempFrz_dS = 0. _d 0
       SEAICEstressFactor = 1.     _d 0
       AreaFile   = ' '
       HsnowFile  = ' '
@@ -567,7 +569,6 @@ C     Set diffusivity to some sensible values if not done in data.seaice
      &     SEAICEdiffKhSnow = SEAICEdiffKhHeff
       IF ( SEAICEdiffKhSalt .EQ. UNSET_RL )
      &     SEAICEdiffKhSalt = SEAICEdiffKhHeff
-
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
