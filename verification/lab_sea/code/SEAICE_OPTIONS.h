@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.23 2012/02/09 03:47:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.24 2012/02/11 03:49:21 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -47,6 +47,10 @@ C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
 #define SEAICE_GROWTH_LEGACY
 
+C--   Since the missing sublimation term is now included
+C     this flag is needed for backward compatibility
+#define SEAICE_DISABLE_SUBLIM
+
 C--   options only available in the merged version
 #ifndef SEAICE_GROWTH_LEGACY
 C-    to ensure heat conservation in the coupled ocean-seaice system
@@ -55,16 +59,10 @@ C-    to preclude infinitesimal ice concentrations:
 # undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #endif
 
-C--   By default the freezing point of water is set to the value of
-C     the parameter SEAICE_freeze (=-1.96 by default). To use a
-C     simple linear dependence of the freezing point on salinity,
-C     set the following flag (pressure is assumed to have no effect,
-C     which is a good assumption for the top 20 meters). With this
-C     option defined the parameter SEAICE_freeze has no effect.
+C--   The freezing point of water is a simple linear dependence to salinity.
+C     The flag below is now obsolete, but kept to ease the transition
+C     from the old constant freezing point default (see seaice_check.F).
 #define SEAICE_VARIABLE_FREEZING_POINT
-
-C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
-#define ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #define SEAICE_VARIABLE_SALINITY

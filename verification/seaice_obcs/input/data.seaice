@@ -20,6 +20,8 @@
  SEAICEuseFlooding  = .TRUE.,
  SEAICE_no_Slip     = .FALSE.,
  SIsalFRAC          = 0.3,
+ SEAICE_tempFrz0    = -1.96,
+ SEAICE_dTempFrz_dS = 0.,
  SEAICEturbFluxFormula = 2,
  SEAICE_gamma_t     = 259200.,
  SEAICE_gamma_t_frz = 10800.,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.10 2012/02/09 03:46:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.11 2012/02/11 03:48:49 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -45,7 +45,14 @@ C     in the middle of an integration.
 #undef SEAICE_MODIFY_GROWTH_ADJ
 #undef SEAICE_SIMPLIFY_GROWTH_ADJ
 
-#undef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+C--   Since the missing sublimation term is now included
+C     this flag is needed for backward compatibility
+#define SEAICE_DISABLE_SUBLIM
+
+C--   The freezing point of water is a simple linear dependence to salinity.
+C     The flag below is now obsolete, but kept to ease the transition
+C     from the old constant freezing point default (see seaice_check.F).
+#define SEAICE_VARIABLE_FREEZING_POINT
 
 C--   By default cdm wind stress under sea-ice is set to the
 C     same value as it would be if there was no sea-ice.
@@ -59,14 +66,6 @@ C     following options are available.
 #undef SEAICE_ORIGINAL_BAD_ICE_STRESS
 #undef SEAICE_TEST_ICE_STRESS_1
 
-C--   By default the freezing point of water is set to the value of
-C     the parameter SEAICE_freeze (=-1.96 by default). To use a
-C     simple linear dependence of the freezing point on salinity,
-C     set the following flag (pressure is assumed to have no effect,
-C     which is a good assumption for the top 20 meters). With this
-C     option defined the parameter SEAICE_freeze has no effect.
-#undef SEAICE_VARIABLE_FREEZING_POINT
-
 C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
 C     (not thoroughly) test version on a C-grid
@@ -77,9 +76,6 @@ C     defining the following flag
 #ifdef SEAICE_CGRID
 #define SEAICE_ALLOW_EVP
 #endif /* SEAICE_CGRID */
-
-C--   Seaice flooding
-#define ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #define SEAICE_VARIABLE_SALINITY

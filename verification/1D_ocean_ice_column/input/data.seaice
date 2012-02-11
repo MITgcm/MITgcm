@@ -16,6 +16,8 @@
       SEAICE_EPS         = 1.E-8,
       SEAICEturbFluxFormula = 3,
       SIsalFRAC          = 0.30,
+      SEAICE_tempFrz0    = -1.96,
+      SEAICE_dTempFrz_dS = 0.,
       SEAICEuseFlooding  = .TRUE.,
       SEAICE_area_reg    = 0.15,
       SEAICE_area_floor  = 1.E-5,
