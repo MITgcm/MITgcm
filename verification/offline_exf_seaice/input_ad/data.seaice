@@ -12,8 +12,11 @@
 #-- above: to reproduce old results
       LSR_ERROR          = 1.E-12,
 #- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
-  useMaykutSatVapPoly = .TRUE.,
-  postSolvTempIter  =  0,
+      useMaykutSatVapPoly = .TRUE.,
+      postSolvTempIter  =  0,
+      SEAICE_tempFrz0    = -1.96,
+      SEAICE_dTempFrz_dS = 0.,
+      SEAICEuseFlooding  = .FALSE.,
       SEAICEwriteState   = .TRUE.,
  &
 
