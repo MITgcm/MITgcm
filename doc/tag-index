@@ -1,9 +1,32 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1594 2012/02/08 22:34:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1595 2012/02/13 16:38:08 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o global_ocean.cs32x15/results: three changes following from the pkg/seaice commit below.
+  - switch to variable freezing point. 
+       Results change : cg2d -> 1 digits; ad -> 3-6-6 digits.
+  - bug fix : the sublimation term that was missing is now activated.
+       Results change : cg2d -> 2 digits; ad -> 8-6-6 digits.
+  - bug fix : flooding sign term for SIsal0.NE.0. 
+       Result change : cg2d -> 8 digits; ad -> 11-12-9 digits.
+o pkg/seaice:
+  - unified freezing point treatment : the old SEAICE_VARIABLE_FREEZING_POINT
+ is now the default, and the old default constant freezing point is recovered with 
+ SEAICE_tempFrz0    = -1.96,
+ SEAICE_dTempFrz_dS = 0.,
+  - retire SEAICE_freeze that was the old way of specifycing the constant freezing point.
+  - remove ALLOW_SEAICE_FLOODING brackets; run time switch is already there.
+  - bug fix (thanks to M. Losch) : the sublimation term that was missing is now 
+ activated. To reproduce old results that had this bug define SEAICE_DISABLE_SUBLIM.
+  - bug fix (silly me) : flooding sign term (seaice_growth.F r 1.149line 1211) 
+ was wrong for SIsal0.NE.0. Changes cs32x15 results (see above item for detail).
+  - bug fix (thanks to O. Jahn) : area loss for melting  got messed up in 
+ seaice_growth r149 for legacy branch (no results change).
+  - introduce SEAICE_CAP_SUBLIM : caps sublimation heat flux in solve4temp (code from I. Fenty).
+  - results did not change except for global_ocean.cs32x15, mostly due to the switch 
+  to variable freezing point (see above item for detail).
 o pkg/thsice:
   - fix and simplify interface to salt_plume pkg ; diagnose directly amount of
     seawater freezing in thsice_calc_thickn (not used).
