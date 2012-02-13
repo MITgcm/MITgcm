@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.150 2012/02/11 03:35:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.151 2012/02/13 19:03:50 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -822,7 +822,7 @@ c efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
      &        (MCPHEE_TAPER_FAC-1) / MCPHEE_TAPER_FAC
            elseif ( (SEAICEturbFluxFormula.EQ.4).AND.
      &        (AREApreTH(I,J) .LE. 0. _d 0) ) then
-              MixedLayerTurbulenceFactor = MCPHEE_TAPER_FAC
+              MixedLayerTurbulenceFactor = ONE/MCPHEE_TAPER_FAC
            else
               MixedLayerTurbulenceFactor = ONE
            endif
