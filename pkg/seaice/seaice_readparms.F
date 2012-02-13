@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.111 2012/02/11 03:35:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.112 2012/02/13 23:20:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,9 +114,13 @@ C--   SEAICE parameters
      & SIsalFRAC, SIsal0, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
+     & SEAICE_availHeatTaper,
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS, LSR_mixIniGuess,
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
+#ifndef SEAICE_DISABLE_HEATCONSFIX
+     & SEAICEheatConsFix,
+#endif
      & SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
@@ -171,6 +175,9 @@ C--   set default sea ice parameters
 #endif
       SEAICEadjMODE      = 0
       SEAICEuseFREEDRIFT = .FALSE.
+#ifndef SEAICE_DISABLE_HEATCONSFIX
+      SEAICEheatConsFix  = .FALSE.
+#endif
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
@@ -286,6 +293,7 @@ C     old default value of 0.97001763668430343479
       SEAICE_gamma_t_frz = UNSET_RL
       SEAICE_availHeatFrac = UNSET_RL
       SEAICE_availHeatFracFrz = UNSET_RL
+      SEAICE_availHeatTaper = 0.0 _d 0
 #ifndef SEAICE_GROWTH_LEGACY
       SEAICE_doOpenWaterGrowth=.TRUE.
       SEAICE_doOpenWaterMelt=.FALSE.

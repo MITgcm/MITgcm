@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.151 2012/02/13 19:03:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.152 2012/02/13 23:20:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -123,10 +123,12 @@ C conversion factors to go from Q (W/m2) to HEFF (ice meters)
 C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
       _RL convertPRECIP2HI, convertHI2PRECIP
 
+#ifdef ALLOW_DIAGNOSTICS
 C ICE/SNOW stocks tendencies associated with the various melt/freeze processes
       _RL d_AREAbyATM         (1:sNx,1:sNy)
       _RL d_AREAbyOCN         (1:sNx,1:sNy)
       _RL d_AREAbyICE         (1:sNx,1:sNy)
+#endif
 
 c     The change of mean ice thickness due to out-of-bounds values following
 c     sea ice dyhnamics
@@ -310,9 +312,11 @@ C =====================
           a_QbyOCN (I,J)             = 0.0 _d 0
           r_QbyOCN (I,J)             = 0.0 _d 0
 
+#ifdef ALLOW_DIAGNOSTICS
           d_AREAbyATM(I,J)           = 0.0 _d 0
           d_AREAbyICE(I,J)           = 0.0 _d 0
           d_AREAbyOCN(I,J)           = 0.0 _d 0
+#endif
 
           d_HEFFbyNEG(I,J)           = 0.0 _d 0
           d_HEFFbyOCNonICE(I,J)      = 0.0 _d 0
@@ -816,13 +820,13 @@ c efficiency of turbulent fluxes : dependency to sign of THETA-TBC
                tmpscal1 = SEAICE_availHeatFracFrz
            ENDIF
 c efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
-           if ( (SEAICEturbFluxFormula.EQ.3).AND.
-     &        (AREApreTH(I,J) .GE. 0. _d 0) ) then
-              MixedLayerTurbulenceFactor = ONE - AREApreTH(I,J) *
-     &        (MCPHEE_TAPER_FAC-1) / MCPHEE_TAPER_FAC
+           if ( (SEAICEturbFluxFormula.NE.4).AND.
+     &        (AREApreTH(I,J) .GT. 0. _d 0) ) then
+              MixedLayerTurbulenceFactor = ONE - 
+     &         SEAICE_availHeatTaper * AREApreTH(I,J)
            elseif ( (SEAICEturbFluxFormula.EQ.4).AND.
-     &        (AREApreTH(I,J) .LE. 0. _d 0) ) then
-              MixedLayerTurbulenceFactor = ONE/MCPHEE_TAPER_FAC
+     &        (AREApreTH(I,J) .GT. 0. _d 0) ) then
+              MixedLayerTurbulenceFactor = ONE- SEAICE_availHeatTaper
            else
               MixedLayerTurbulenceFactor = ONE
            endif
@@ -1155,11 +1159,6 @@ C           could not melt more than all the ice
             tmpscal3 = MIN(ZERO,tmpscal2)
           endif
           
-C to be fixed soon : proper fill of d_AREAbyATM, d_AREAbyICE, d_AREAbyOCN
-          d_AREAbyATM(I,J)=recip_HO*tmpscal4+HALF*recip_HH*tmpscal3
-          d_AREAbyOCN(I,J)=ZERO
-          d_AREAbyICE(I,J)=ZERO
-
 C apply tendency
           IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
@@ -1172,7 +1171,15 @@ C apply tendency
 #ifdef ALLOW_SITRACER
           SItrAREA(I,J,bi,bj,3)=AREA(I,J,bi,bj)
 #endif
-
+#ifdef ALLOW_DIAGNOSTICS
+          d_AREAbyATM(I,J)=
+     &       recip_HO*MAX(ZERO,d_HEFFbyATMonOCN_open(I,J))
+     &       +HALF*recip_HH*MIN(0. _d 0,d_HEFFbyATMonOCN_open(I,J))
+          d_AREAbyICE(I,J)=
+     &        HALF*recip_HH*MIN(0. _d 0,d_HEFFbyATMonOCN_cover(I,J))
+          d_AREAbyOCN(I,J)=
+     &        HALF*recip_HH*MIN( 0. _d 0,d_HEFFbyOCNonICE(I,J) )
+#endif
          ENDDO
         ENDDO
 
@@ -1426,8 +1433,10 @@ C ======================================================
          ENDDO
         ENDDO
 
-#ifdef SEAICE_HEAT_CONSERV_FIX
-#ifndef SEAICE_GROWTH_LEGACY
+#ifndef SEAICE_DISABLE_HEATCONSFIX
+C treat advective heat flux by ocean to ice water exchange (at 0decC)
+C ===================================================================
+      IF ( SEAICEheatConsFix ) THEN 
 c Unlike for evap and precip, the temperature of gained/lost
 c ocean liquid water due to melt/freeze of solid water cannot be chosen
 c to be e.g. the ocean SST. It must be done at 0degC. The fix below anticipates
@@ -1437,8 +1446,10 @@ c I leave alone the exotic case when onvertFW2Salt.NE.-1 and temp_EvPrRn.NE.UNSE
 c the small error of the synchronous time stepping case (see external_forcing_surf.F).
         DO J=1,sNy
          DO I=1,sNx
+#ifdef ALLOW_DIAGNOSTICS
 c store unaltered QNET for diagnostic purposes
-           DIAGarrayA(I,J)=-QNET(I,J,bi,bj)
+           DIAGarrayA(I,J)=QNET(I,J,bi,bj)
+#endif
 c compute the ocean water going to ice/snow, in precip units
            tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
      &       ( d_HSNWbyATMonSNW(I,J)/ICE2SNOW
@@ -1456,15 +1467,18 @@ c melt/freez water is in effect consistently gained/lost at 0degC
              QNET(I,J,bi,bj)=QNET(I,J,bi,bj) - tmpscal3*
      &         HeatCapacity_Cp * theta(I,J,kSurface,bi,bj)
            ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+c back out the eventual TFLUX adjustement and fill diag
+           DIAGarrayA(I,J)=QNET(I,J,bi,bj)-DIAGarrayA(I,J)
+#endif
          ENDDO
         ENDDO
+      ENDIF
 #ifdef ALLOW_DIAGNOSTICS
-C temporary (?) output of unaltered QNET using SDIAG6
-c        CALL DIAGNOSTICS_FILL(DIAGarrayA,
-c    &      'SDIAG6  ',0,1,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &      'SIaaflux',0,1,3,bi,bj,myThid)
 #endif
       ENDIF
-#endif
 #endif
 
 C compute net fresh water flux leaving/entering
@@ -1648,7 +1662,6 @@ C the latent heat flux
          CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIrsSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIhl    ',0,1,3,bi,bj,myThid)
 
-#ifdef SEAICE_HEAT_CONSERV_FIX
          DO J=1,sNy
           DO I=1,sNx
 c compute ice/snow water going to atm, in precip units
@@ -1683,10 +1696,8 @@ c add to SIatmQnt, leading to SItflux, which is analogous to TFLUX
      &            -tmpscal1-tmpscal2
           ENDDO
          ENDDO
-c        CALL DIAGNOSTICS_FILL(DIAGarrayA,
-C until SItflux is added to diags, output it using SDIAG5
-c    &      'SDIAG5  ',0,1,3,bi,bj,myThid)
-#endif /* SEAICE_HEAT_CONSERV_FIX */
+         CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &      'SItflux ',0,1,3,bi,bj,myThid)
 #endif /* ALLOW_ATM_TEMP */
 
         ENDIF

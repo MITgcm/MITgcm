@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.84 2012/02/11 03:35:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.85 2012/02/13 23:20:36 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -17,6 +17,7 @@ C                          1998) set this parameter to true, default is false
 C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
 C                          if true use elastic viscous plastic solver
 C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP or LSR
+C     SEAICEheatConsFix ::  If true then fix ocn<->seaice advective heat flux.
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
@@ -58,6 +59,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
+#ifndef SEAICE_DISABLE_HEATCONSFIX
+     &     SEAICEheatConsFix,
+#endif
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
@@ -72,6 +76,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
+#ifndef SEAICE_DISABLE_HEATCONSFIX
+     &     SEAICEheatConsFix,
+#endif
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
@@ -241,6 +248,8 @@ C                          if SEAICE_gamma_t_frz is unset, otherwise
 C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t_frz
 C     facOpenGrow        :: 0./1. version of logical switch SEAICE_doOpenWaterGrowth
 C     facOpenMelt        :: 0./1. version of logical switch SEAICE_doOpenWaterMelt
+C     SEAICE_availHeatTaper :: tapering down of turbulent flux term with ice concentration
+C                           The 100% cover turb. flux is multiplied by 1.-SEAICE_availHeatTaper
 C     SEAICE_tempFrz0    :: sea water freezing point is
 C     SEAICE_dTempFrz_dS ::     tempFrz = SEAICE_tempFrz0 + salt * SEAICE_dTempFrz_dS
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
@@ -292,6 +301,7 @@ C
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
+      _RL SEAICE_availHeatTaper
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -323,6 +333,7 @@ C
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt,
+     &    SEAICE_availHeatTaper,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values

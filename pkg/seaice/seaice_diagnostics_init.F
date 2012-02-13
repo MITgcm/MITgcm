@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.31 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.32 2012/02/13 23:20:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -285,6 +285,22 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SItflux '
+      diagTitle = 'Same as TFLUX but incl seaice (>0 incr T decr H)'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifndef SEAICE_DISABLE_HEATCONSFIX
+      diagName  = 'SIaaflux'
+      diagTitle = 'conservative ocn<->seaice adv. heat flux adjust.'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
       diagName  = 'SIhl    '
       diagTitle = 'Latent heat flux into ocean, >0 increases theta'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.14 2012/02/09 03:42:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.15 2012/02/13 23:20:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,6 +102,15 @@ c     ... is hard-coded (after McPhee)
         SEAICE_availHeatFrac= MCPHEE_TAPER_FAC * STANTON_NUMBER * 
      &    USTAR_BASE / dRf(kSurface) * SEAICE_deltaTtherm
         SEAICE_availHeatFracFrz=ZERO
+      endif
+C--   tapering of ocean-ice turbulent flux as AREA increases
+      if ( (SEAICEturbFluxFormula.EQ.3).OR.
+     &       (SEAICEturbFluxFormula.EQ.4) ) then
+c          hard-coded (after McPhee)
+           SEAICE_availHeatTaper = 
+     &       (MCPHEE_TAPER_FAC-ONE)/MCPHEE_TAPER_FAC
+      elseif (SEAICE_availHeatTaper.EQ.UNSET_RL) then
+           SEAICE_availHeatTaper = ZERO
       endif
 
 C--   convert SEAICE_doOpenWaterGrowth/Melt logical switch to numerical facOpenGrow/Melt

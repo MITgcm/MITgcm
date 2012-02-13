@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.43 2012/02/11 03:35:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.44 2012/02/13 23:20:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -133,19 +133,15 @@ C--  Thermodynamics parameters
      & ' /* use Maykut Polynomial for Sat.Vap.Pr */')
       CALL WRITE_0D_I ( SEAICEturbFluxFormula,   INDEX_NONE,
      & 'SEAICEturbFluxFormula =', ' /* turbulent flux formula */')
-      WRITE(msgBuf,'(A,A)') ' (SEAICEturbFluxFormula = 3 or 4 adds',
-     &                      ' a dependency  of turb. flux to area)'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
       CALL WRITE_0D_RL ( SEAICE_availHeatFrac,   INDEX_NONE,
      & 'SEAICE_availHeatFrac =',
      & ' /* melting efficiency due turbulent flux (0< <1)*/')
       CALL WRITE_0D_RL ( SEAICE_availHeatFracFrz,   INDEX_NONE,
      & 'SEAICE_availHeatFracFrz =',
      & ' /* freezing efficiency due turbulent flux (0< <1)*/')
+      CALL WRITE_0D_RL ( SEAICE_availHeatTaper,     INDEX_NONE,
+     & 'SEAICE_availHeatTaper =',
+     & ' /* tapering of turbulent flux (0< <1) for AREA=1. */')
 #ifdef ALLOW_SITRACER
       DO iTracer = 1, SItrMaxNum
        if (SItrName(iTracer).NE.' ') then

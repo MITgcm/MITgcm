@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.59 2012/02/11 03:35:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.60 2012/02/13 23:20:36 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -379,6 +379,14 @@ C     check concistency of turbulent flux term specification
      &  ' out of bounds; they must lie within 0. and 1. '
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ( ( SEAICE_availHeatTaper .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_availHeatTaper .GT. 1. _d 0 ) ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'SEAICE_availHeatTaper cannot be specified  '//
+     &      'outside of the [0. 1.] range'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
 C--   SEAICE_AGE is obsolete: issue warning and stop.
