@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1595 2012/02/13 16:38:08 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1596 2012/02/13 23:45:41 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice : 
+  - simplify McPhee tapering, and allow to use it with SEAICEturbFluxFormula.EQ.
+  1 or 2, using newly added run time parameter SEAICE_availHeatTaper.
+  - fix d_AREAbyATM, d_AREAbyOCN, d_AREAbyICE diags I broke in r1.148.
+  - add permanent SItflux diag that corresponds to TFLUX but includes 
+  ice+snow. Hence SItflux-TFLUX should match the ice+snow heat budget.
+  - allow activation/testing of a fix for suspected missing term in 
+  ocn-ice heat budget (to be confirmed). To test this, you want to 
+  undef SEAICE_DISABLE_HEATCONSFIX, and then set the run time param
+  SEAICEheatConsFix to .TRUE. that also allows the 'SIaaflux' diagnostic.
+  - no change in results, fwd or ad.
 o global_ocean.cs32x15/results: three changes following from the pkg/seaice commit below.
   - switch to variable freezing point. 
        Results change : cg2d -> 1 digits; ad -> 3-6-6 digits.
