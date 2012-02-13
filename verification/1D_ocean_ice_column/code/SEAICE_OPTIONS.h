@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.11 2012/02/11 03:48:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.12 2012/02/13 23:26:58 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -48,6 +48,9 @@ C     in the middle of an integration.
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
 #define SEAICE_DISABLE_SUBLIM
+
+C--   Suspected missing term in coupled ocn-ice heat budget (to be further tested)
+#define SEAICE_DISABLE_HEATCONSFIX
 
 C--   The freezing point of water is a simple linear dependence to salinity.
 C     The flag below is now obsolete, but kept to ease the transition

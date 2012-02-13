@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.9 2012/02/11 03:48:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SEAICE_OPTIONS.h,v 1.10 2012/02/13 23:26:59 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -48,6 +48,9 @@ C     in the middle of an integration.
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
 #define SEAICE_DISABLE_SUBLIM
+
+C--   Suspected missing term in coupled ocn-ice heat budget (to be further tested)
+#define SEAICE_DISABLE_HEATCONSFIX
 
 C--   By default cdm wind stress under sea-ice is set to the
 C     same value as it would be if there was no sea-ice.
