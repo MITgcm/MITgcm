@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SEAICE_OPTIONS.h,v 1.11 2012/02/11 03:36:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SEAICE_OPTIONS.h,v 1.12 2012/02/13 23:44:52 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -50,6 +50,9 @@ C     otherwise, use the merged version (with some of Ian Fenty s code)
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
 #undef SEAICE_DISABLE_SUBLIM
+
+C--   Suspected missing term in coupled ocn-ice heat budget (to be further tested)
+#undef SEAICE_DISABLE_HEATCONSFIX
 
 C--   options only available in the merged version
 #ifndef SEAICE_GROWTH_LEGACY
