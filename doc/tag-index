@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1596 2012/02/13 23:45:41 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1597 2012/02/14 14:53:17 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: remove (almost) all divisions by constants within loops 
+  in seaice_growth.F and seaice_solve4temp.F
 o pkg/seaice : 
   - simplify McPhee tapering, and allow to use it with SEAICEturbFluxFormula.EQ.
   1 or 2, using newly added run time parameter SEAICE_availHeatTaper.
