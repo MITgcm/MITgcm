@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.85 2012/02/13 23:20:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.86 2012/02/14 02:09:27 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -59,9 +59,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
-#ifndef SEAICE_DISABLE_HEATCONSFIX
      &     SEAICEheatConsFix,
-#endif
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,
@@ -76,9 +74,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
-#ifndef SEAICE_DISABLE_HEATCONSFIX
      &     SEAICEheatConsFix,
-#endif
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
      &     SEAICEadvHeff, SEAICEadvArea,

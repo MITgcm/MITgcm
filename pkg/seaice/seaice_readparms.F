@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.112 2012/02/13 23:20:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.113 2012/02/14 02:09:27 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -118,9 +118,7 @@ C--   SEAICE parameters
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS, LSR_mixIniGuess,
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
-#ifndef SEAICE_DISABLE_HEATCONSFIX
      & SEAICEheatConsFix,
-#endif
      & SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
@@ -175,9 +173,7 @@ C--   set default sea ice parameters
 #endif
       SEAICEadjMODE      = 0
       SEAICEuseFREEDRIFT = .FALSE.
-#ifndef SEAICE_DISABLE_HEATCONSFIX
       SEAICEheatConsFix  = .FALSE.
-#endif
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
