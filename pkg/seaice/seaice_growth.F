@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.152 2012/02/13 23:20:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.153 2012/02/14 14:47:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -92,8 +92,8 @@ C     i,j,bi,bj :: Loop counters
 C     number of surface interface layer
       INTEGER kSurface
 C     constants
-      _RL tempFrz, ICE2SNOW
-      _RL QI, QS
+      _RL tempFrz, ICE2SNOW, SNOW2ICE
+      _RL QI, QS, recip_QI
 
 C--   TmixLoc        :: ocean surface/mixed-layer temperature (in K)
       _RL TmixLoc       (1:sNx,1:sNy)
@@ -223,6 +223,10 @@ C temporary variables available for the various computations
 #else
       PARAMETER ( nDim = 1 )
 #endif /* SEAICE_MULTICATEGORY */
+C     Helper variables: reciprocal of some constants
+      _RL recip_nDim
+      _RL recip_deltaTtherm
+      _RL recip_rhoIce
 
 C     Factor by which we increase the upper ocean friction velocity (u*) when
 C     ice is absent in a grid cell  (dimensionless)
@@ -253,15 +257,21 @@ C ===================================================================
        kSurface        = 1
       ENDIF
 
+C     avoid unnecessary divisions in loops
+      recip_nDim        = 1./float(nDim)
+      recip_deltaTtherm = 1./SEAICE_deltaTtherm
+      recip_rhoIce      = 1./SEAICE_rhoIce
 
 C     Cutoff for iceload
       heffTooHeavy=dRf(kSurface) / 5. _d 0
 
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
+      SNOW2ICE     = 1./ICE2SNOW
 
 C     HEAT OF FUSION OF ICE (J/m^3)
       QI           = SEAICE_rhoIce*SEAICE_lhFusion
+      recip_QI     = 1. _d 0 / QI
 C     HEAT OF FUSION OF SNOW (J/m^3)
       QS           = SEAICE_rhoSnow*SEAICE_lhFusion
 
@@ -509,7 +519,7 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
           IF ( (HSALT(I,J,bi,bj) .LT. 0.0).OR.
      &         (HEFF(I,J,bi,bj) .EQ. 0.0)  ) THEN
              saltFluxAdjust(I,J) = - HEFFM(I,J,bi,bj) *
-     &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
+     &            HSALT(I,J,bi,bj) * recip_deltaTtherm
              HSALT(I,J,bi,bj) = 0.0 _d 0
           ENDIF
          ENDDO
@@ -609,7 +619,7 @@ c        The latent heat flux over the sea ice which
 c        will sublimate all of the snow and ice over one time
 c        step (W/m^2)
           IF (HEFFpreTH(I,J) .GT. ZERO) THEN
-            latentHeatFluxMax(I,J) = lhSublim / SEAICE_deltaTtherm *
+            latentHeatFluxMax(I,J) = lhSublim * recip_deltaTtherm *
      &         (HEFFpreTH(I,J) * SEAICE_rhoIce +
      &          HSNWpreTH(I,J) * SEAICE_rhoSnow)/AREApreTH(I,J)
           ELSE
@@ -698,7 +708,7 @@ C     TICES before the loop?
 CADJ STORE tices(:,:,it,bi,bj) = comlev1_multdim,
 CADJ &                           key = ilockey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-         pFac = (2.0 _d 0*real(IT)-1.0 _d 0)/nDim
+         pFac = (2.0 _d 0*real(IT)-1.0 _d 0)*recip_nDim
          DO J=1,sNy
           DO I=1,sNx
            heffActualP(I,J)= heffActual(I,J)*pFac
@@ -721,11 +731,11 @@ CADJ &                           key = ilockey, byte = isbyte
           DO I=1,sNx
 C     average over categories
            a_QbyATM_cover   (I,J) = a_QbyATM_cover(I,J)
-     &          + a_QbyATMmult_cover(I,J)/nDim
+     &          + a_QbyATMmult_cover(I,J)*recip_nDim
            a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J)
-     &          + a_QSWbyATMmult_cover(I,J)/nDim
+     &          + a_QSWbyATMmult_cover(I,J)*recip_nDim
            a_FWbySublim     (I,J) = a_FWbySublim(I,J)
-     &          + a_FWbySublimMult(I,J)/nDim
+     &          + a_FWbySublimMult(I,J)*recip_nDim
            TICES(I,J,IT,bi,bj) = TICE(I,J,bi,bj)
           ENDDO
          ENDDO
@@ -780,7 +790,7 @@ C     Negative sublimation is resublimation and will be added as snow.
 cgf just for those who may need to omit this term to reproduce old results
           a_FWbySublim(I,J) = ZERO
 #endif /* SEAICE_CAP_SUBLIM */
-          a_FWbySublim(I,J) = SEAICE_deltaTtherm/SEAICE_rhoIce
+          a_FWbySublim(I,J) = SEAICE_deltaTtherm*recip_rhoIce
      &           * a_FWbySublim(I,J)*AREApreTH(I,J)
           r_FWbySublim(I,J)=a_FWbySublim(I,J)
          ENDDO
@@ -810,34 +820,34 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-c          FREEZING TEMP. OF SEA WATER (deg C)
-           tempFrz = SEAICE_tempFrz0 + 
-     &               SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
+c         FREEZING TEMP. OF SEA WATER (deg C)
+          tempFrz = SEAICE_tempFrz0 + 
+     &              SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
 c efficiency of turbulent fluxes : dependency to sign of THETA-TBC
-           IF ( theta(I,J,kSurface,bi,bj) .GE. tempFrz ) THEN
-               tmpscal1 = SEAICE_availHeatFrac
-           ELSE
-               tmpscal1 = SEAICE_availHeatFracFrz
-           ENDIF
+          IF ( theta(I,J,kSurface,bi,bj) .GE. tempFrz ) THEN
+           tmpscal1 = SEAICE_availHeatFrac
+          ELSE
+           tmpscal1 = SEAICE_availHeatFracFrz
+          ENDIF
 c efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
-           if ( (SEAICEturbFluxFormula.NE.4).AND.
-     &        (AREApreTH(I,J) .GT. 0. _d 0) ) then
-              MixedLayerTurbulenceFactor = ONE - 
-     &         SEAICE_availHeatTaper * AREApreTH(I,J)
-           elseif ( (SEAICEturbFluxFormula.EQ.4).AND.
-     &        (AREApreTH(I,J) .GT. 0. _d 0) ) then
-              MixedLayerTurbulenceFactor = ONE- SEAICE_availHeatTaper
-           else
-              MixedLayerTurbulenceFactor = ONE
-           endif
+          IF ( (SEAICEturbFluxFormula.NE.4).AND.
+     &         (AREApreTH(I,J) .GT. 0. _d 0) ) THEN
+           MixedLayerTurbulenceFactor = ONE - 
+     &          SEAICE_availHeatTaper * AREApreTH(I,J)
+          ELSEIF ( (SEAICEturbFluxFormula.EQ.4).AND.
+     &        (AREApreTH(I,J) .GT. 0. _d 0) ) THEN
+           MixedLayerTurbulenceFactor = ONE - SEAICE_availHeatTaper
+          ELSE
+           MixedLayerTurbulenceFactor = ONE
+          ENDIF
 c maximum turbulent flux, in ice meters
-           tmpscal2= - (HeatCapacity_Cp*rhoConst/QI)
-     &              * (theta(I,J,kSurface,bi,bj)-tempFrz)
-     &              * dRf(kSurface) * maskC(i,j,kSurface,bi,bj)
+          tmpscal2= - (HeatCapacity_Cp*rhoConst * recip_QI)
+     &         * (theta(I,J,kSurface,bi,bj)-tempFrz)
+     &         * dRf(kSurface) * maskC(i,j,kSurface,bi,bj)
 c available turbulent flux
-           a_QbyOCN(i,j) =
-     &      tmpscal1 * tmpscal2 * MixedLayerTurbulenceFactor
-           r_QbyOCN(i,j) = a_QbyOCN(i,j)
+          a_QbyOCN(i,j) =
+     &         tmpscal1 * tmpscal2 * MixedLayerTurbulenceFactor
+          r_QbyOCN(i,j) = a_QbyOCN(i,j)
          ENDDO
         ENDDO
 
@@ -861,7 +871,7 @@ CADJ STORE r_FWbySublim     = comlev1_bibj,key=iicekey,byte=isbyte
          DO I=1,sNx
 C     First sublimate/deposite snow
           tmpscal2 = 
-     &     MAX(MIN(r_FWbySublim(I,J),HSNOW(I,J,bi,bj)/ICE2SNOW),ZERO)
+     &     MAX(MIN(r_FWbySublim(I,J),HSNOW(I,J,bi,bj)*SNOW2ICE),ZERO)
           d_HSNWbySublim(I,J) = - tmpscal2 * ICE2SNOW
           HSNOW(I,J,bi,bj)    = HSNOW(I,J,bi,bj)  - tmpscal2*ICE2SNOW
           r_FWbySublim(I,J)   = r_FWbySublim(I,J) - tmpscal2
@@ -920,15 +930,17 @@ CADJ STORE r_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1=MAX(r_QbyATM_cover(I,J)*ICE2SNOW,-HSNOW(I,J,bi,bj))
+C     Convert to standard units (meters of ice) rather than to meters
+C     of snow. This appears to be more robust.
+          tmpscal1=MAX(r_QbyATM_cover(I,J),-HSNOW(I,J,bi,bj)*SNOW2ICE)
           tmpscal2=MIN(tmpscal1,0. _d 0)
 #ifdef SEAICE_MODIFY_GROWTH_ADJ
 Cgf no additional dependency through snow
           IF ( SEAICEadjMODE.GE.2 ) tmpscal2 = 0. _d 0
 #endif
-          d_HSNWbyATMonSNW(I,J)= tmpscal2
-          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + tmpscal2
-          r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J) - tmpscal2/ICE2SNOW
+          d_HSNWbyATMonSNW(I,J)= tmpscal2*ICE2SNOW
+          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + tmpscal2*ICE2SNOW
+          r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J) - tmpscal2
          ENDDO
         ENDDO
 
@@ -1020,7 +1032,7 @@ Cgf no additional dependency through snow
 #endif
           d_HSNWbyOCNonSNW(I,J) = tmpscal2
           r_QbyOCN(I,J)=r_QbyOCN(I,J)
-     &                               -d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
+     &                               -d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+d_HSNWbyOCNonSNW(I,J)
          ENDDO
         ENDDO
@@ -1079,7 +1091,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
          DO J=1,sNy
           DO I=1,sNx
            tmpscal0 = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/rhoConst
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)*recip_rhoConst
            tmpscal1 = MAX( 0. _d 0, tmpscal0 - HEFF(I,J,bi,bj))
            d_HEFFbyFLOODING(I,J)=tmpscal1
            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)+d_HEFFbyFLOODING(I,J)
@@ -1153,7 +1165,7 @@ C           compute heff after ice melt by ocn:
             tmpscal0=HEFF(I,J,bi,bj) - d_HEFFbyATMonOCN(I,J)
 C           compute available heat left after snow melt by atm:
             tmpscal1= a_QbyATM_open(I,J)+a_QbyATM_cover(I,J)
-     &            - d_HSNWbyATMonSNW(I,J)/ICE2SNOW
+     &            - d_HSNWbyATMonSNW(I,J)*SNOW2ICE
 C           could not melt more than all the ice
             tmpscal2 = MAX(-tmpscal0,tmpscal1)
             tmpscal3 = MIN(ZERO,tmpscal2)
@@ -1218,11 +1230,11 @@ CADJ &                       key = iicekey, byte = isbyte
      &               d_HEFFbyATMonOCN(I,J) + d_HEFFbyFLOODING(I,J)
      &             + d_HEFFbySublim(I,J)
           tmpscal2 = tmpscal1 * SIsal0 * HEFFM(I,J,bi,bj)
-     &            /SEAICE_deltaTtherm * SEAICE_rhoIce
+     &            * recip_deltaTtherm * SEAICE_rhoIce
           saltFlux(I,J,bi,bj) = tmpscal2
 #ifdef ALLOW_SALT_PLUME
           tmpscal3 = tmpscal1*salt(I,j,kSurface,bi,bj)*HEFFM(I,J,bi,bj)
-     &            /SEAICE_deltaTtherm * SEAICE_rhoIce
+     &            * recip_deltaTtherm * SEAICE_rhoIce
           saltPlumeFlux(I,J,bi,bj) = MAX( tmpscal3-tmpscal2 , 0. _d 0)
      &            *SPsalFRAC
 #endif /* ALLOW_SALT_PLUME */
@@ -1241,7 +1253,7 @@ CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
           IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
              saltFluxAdjust(I,J) = - HEFFM(I,J,bi,bj) *
-     &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
+     &            HSALT(I,J,bi,bj) * recip_deltaTtherm
              HSALT(I,J,bi,bj) = 0.0 _d 0
           ENDIF
          ENDDO
@@ -1262,13 +1274,13 @@ C recompute HEFF before thermodyncamic updates (which is not AREApreTH in legacy
 C tmpscal1 > 0 : m of sea ice that is created
           IF ( tmpscal1 .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) =
-     &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
+     &            HEFFM(I,J,bi,bj)*recip_deltaTtherm
      &            *SIsalFRAC*salt(I,j,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
 #ifdef ALLOW_SALT_PLUME
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
-     &            HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
+     &            HEFFM(I,J,bi,bj)*recip_deltaTtherm
      &            *(1-SIsalFRAC)*salt(I,j,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
      &            *SPsalFRAC
@@ -1282,7 +1294,7 @@ C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
 C tmpscal1 < 0 : m of sea ice that is melted
           ELSE
              saltFlux(I,J,bi,bj) =
-     &         HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm
+     &         HEFFM(I,J,bi,bj)*recip_deltaTtherm
      &         *HSALT(I,J,bi,bj)
      &         *tmpscal1/tmpscal2
 #ifdef ALLOW_SALT_PLUME
@@ -1297,12 +1309,11 @@ C update HSALT based on surface saltFlux
 #ifdef SEAICE_GROWTH_LEGACY
 C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
           IF ( HEFF(I,J,bi,bj) .EQ. 0.0 ) THEN
-             saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
-     &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
-     &            SEAICE_deltaTtherm
-             HSALT(I,J,bi,bj) = 0.0 _d 0
+           saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
+     &          HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) * recip_deltaTtherm
+           HSALT(I,J,bi,bj) = 0.0 _d 0
 #ifdef ALLOW_SALT_PLUME
-             saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+           saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
 #endif /* ALLOW_SALT_PLUME */
           ENDIF
 #endif /* SEAICE_GROWTH_LEGACY */
@@ -1331,9 +1342,10 @@ CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-C NOW SET AREA(I,J,bi,bj)=0 WHERE NO ICE IS
-          AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj)
-     &                         ,HEFF(I,J,bi,bj)/.0001 _d 0)
+C     NOW SET AREA(I,J,bi,bj)=0 WHERE THERE IS NO ICE
+CML   replaced "/.0001 _d 0" by "*1. _d 4", 1e-4 is probably
+CML   meant to be something like a minimum thickness
+          AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),HEFF(I,J,bi,bj)*1. _d 4)
          ENDDO
         ENDDO
 
@@ -1377,7 +1389,7 @@ C =================================
          DO J=1,sNy
           DO I=1,sNx
            tmpscal0     = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)/rhoConst
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)*recip_rhoConst
            tmpscal1 = MAX( 0. _d 0, tmpscal0 - HEFF(I,J,bi,bj))
            d_HEFFbyFLOODING(I,J)=tmpscal1
            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)+d_HEFFbyFLOODING(I,J)
@@ -1415,9 +1427,9 @@ C for backward compatibility it is left out of the LEGACY branch
      &         +   a_QSWbyATM_cover(I,J)
 #endif /* SEAICE_GROWTH_LEGACY */
      &         - ( d_HEFFbyOCNonICE(I,J) +
-     &             d_HSNWbyOCNonSNW(I,J)/ICE2SNOW +
+     &             d_HSNWbyOCNonSNW(I,J)*SNOW2ICE +
      &             d_HEFFbyNEG(I,J) +
-     &             d_HSNWbyNEG(I,J)/ICE2SNOW )
+     &             d_HSNWbyNEG(I,J)*SNOW2ICE )
      &         * maskC(I,J,kSurface,bi,bj)
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) + a_QSWbyATM_open(I,J)
          ENDDO
@@ -1452,10 +1464,10 @@ c store unaltered QNET for diagnostic purposes
 #endif
 c compute the ocean water going to ice/snow, in precip units
            tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
-     &       ( d_HSNWbyATMonSNW(I,J)/ICE2SNOW
-     &       + d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
+     &       ( d_HSNWbyATMonSNW(I,J)*SNOW2ICE
+     &       + d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
      &       + d_HEFFbyOCNonICE(I,J) + d_HEFFbyATMonOCN(I,J)
-     &       + d_HEFFbyNEG(I,J) + d_HSNWbyNEG(I,J)/ICE2SNOW )
+     &       + d_HEFFbyNEG(I,J) + d_HSNWbyNEG(I,J)*SNOW2ICE )
      &       * convertHI2PRECIP
 c factor in the heat content that external_forcing_surf.F
 c will associate with EMPMR, and remove it from QNET, so that
@@ -1488,13 +1500,13 @@ C ==================================================
 #ifdef ALLOW_ATM_TEMP
         DO J=1,sNy
          DO I=1,sNx
-          tmpscal1= d_HSNWbyATMonSNW(I,J)/ICE2SNOW
+          tmpscal1= d_HSNWbyATMonSNW(I,J)*SNOW2ICE
      &             +d_HFRWbyRAIN(I,J)
-     &             +d_HSNWbyOCNonSNW(I,J)/ICE2SNOW
+     &             +d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
      &             +d_HEFFbyOCNonICE(I,J)
      &             +d_HEFFbyATMonOCN(I,J)
      &             +d_HEFFbyNEG(I,J)
-     &             +d_HSNWbyNEG(I,J)/ICE2SNOW
+     &             +d_HSNWbyNEG(I,J)*SNOW2ICE
 C     If r_FWbySublim>0, then it is evaporated from ocean.
      &             +r_FWbySublim(I,J)
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
@@ -1519,7 +1531,7 @@ C     If r_FWbySublim>0, then it is evaporated from ocean.
      &         + RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
      &         )*rhoConstFresh
-     &     - a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
+     &     - a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
          ENDDO
         ENDDO
 #endif
@@ -1561,7 +1573,7 @@ C ===================================================================
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-         tmpscal1=1. _d 0 / SEAICE_deltaTtherm
+         tmpscal1=1. _d 0 * recip_deltaTtherm
          CALL DIAGNOSTICS_SCALE_FILL(a_QbyATM_cover,
      &      tmpscal1,1,'SIaQbATC',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_SCALE_FILL(a_QbyATM_open,
@@ -1594,7 +1606,7 @@ C three that actually need intermediate storage
          DO J=1,sNy
           DO I=1,sNx
             DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
-     &        * d_HSNWbyRAIN(I,J)*SEAICE_rhoSnow/SEAICE_deltaTtherm
+     &        * d_HSNWbyRAIN(I,J)*SEAICE_rhoSnow*recip_deltaTtherm
             DIAGarrayB(I,J) =  AREA(I,J,bi,bj)-AREApreTH(I,J)
           ENDDO
          ENDDO
@@ -1619,7 +1631,7 @@ CML the ice-ocean system.
      &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
 C
            DIAGarrayB(I,J) = maskC(I,J,kSurface,bi,bj) *
-     &       a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
+     &       a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
 C
            DIAGarrayC(I,J) = maskC(I,J,kSurface,bi,bj)*(
      &          PRECIP(I,J,bi,bj)
@@ -1628,7 +1640,7 @@ C
      &          + RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
      &           )*rhoConstFresh
-     &     - a_FWbySublim(I,J) * SEAICE_rhoIce / SEAICE_deltaTtherm
+     &     - a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(DIAGarrayA,
@@ -1643,11 +1655,11 @@ C
 C the actual Freshwater flux of sublimated ice, >0 decreases ice
            DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
      &       * (a_FWbySublim(I,J)-r_FWbySublim(I,J))
-     &       * SEAICE_rhoIce / SEAICE_deltaTtherm
+     &       * SEAICE_rhoIce * recip_deltaTtherm
 c the residual Freshwater flux of sublimated ice
            DIAGarrayC(I,J) = maskC(I,J,kSurface,bi,bj)
      &       * r_FWbySublim(I,J)
-     &       * SEAICE_rhoIce / SEAICE_deltaTtherm
+     &       * SEAICE_rhoIce * recip_deltaTtherm
 C the latent heat flux
            tmpscal1= EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
      &             + r_FWbySublim(I,J)*convertHI2PRECIP
@@ -1666,7 +1678,7 @@ C the latent heat flux
           DO I=1,sNx
 c compute ice/snow water going to atm, in precip units
            tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
-     &       * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)/ICE2SNOW
+     &       * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)*SNOW2ICE
      &       + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
 c compute ocean water going to atm, in precip units
            tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
