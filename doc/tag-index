@@ -1,11 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1597 2012/02/14 14:53:17 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1598 2012/02/14 16:42:44 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice: remove (almost) all divisions by constants within loops 
-  in seaice_growth.F and seaice_solve4temp.F
+  in seaice_growth.F and seaice_solve4temp.F, this changes (only) the cg2d 
+  results of global_ocean.cs32x15.seaice from 16 to 11 digits (but only
+  those, caused by 1/QI -> recip_QI) -> update output.seaice.txt
 o pkg/seaice : 
   - simplify McPhee tapering, and allow to use it with SEAICEturbFluxFormula.EQ.
   1 or 2, using newly added run time parameter SEAICE_availHeatTaper.
