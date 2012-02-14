@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.30 2012/02/11 03:35:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.31 2012/02/14 14:52:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,7 +94,7 @@ C     tempFrz :: ocean temperature in contact with ice (=seawater freezing point
       _RL tempFrz         (1:sNx,1:sNy)
       _RL D1, D1I
       _RL D3(1:sNx,1:sNy)
-      _RL TMELT, XKI, XKS, HCUT, XIO
+      _RL TMELT, XKI, XKS, HCUT, recip_HCUT, XIO
 C     SurfMeltTemp :: Temp (K) above which wet-albedo values are used
       _RL SurfMeltTemp
 C     effConduct :: effective conductivity of combined ice and snow
@@ -200,6 +200,7 @@ C     CUTOFF SNOW THICKNESS
 C     Snow-Thickness above HCUT: SW optically thick snow (=> snow-albedo).
 C     Snow-Thickness below HCUT: linear transition to ice-albedo
       HCUT = SEAICE_snowThick
+      recip_HCUT = 1./HCUT
 
 C     PENETRATION SHORTWAVE RADIATION FACTOR
       XIO=SEAICE_shortwave
@@ -290,7 +291,7 @@ C     If actual snow thickness exceeds the cutoff thickness, use snow albedo
           ALB(I,J) = ALB_ICE(I,J)
          ELSE
 C     otherwise, use linear transition between ice and snow albedo
-          ALB(I,J) = MIN( ALB_ICE(I,J) + HSNOW_ACTUAL(I,J)/HCUT
+          ALB(I,J) = MIN( ALB_ICE(I,J) + HSNOW_ACTUAL(I,J)*recip_HCUT
      &                                 *(ALB_SNOW(I,J) -ALB_ICE(I,J))
      &                  , ALB_SNOW(I,J) )
          ENDIF
