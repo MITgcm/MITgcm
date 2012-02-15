@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.25 2011/11/03 17:36:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.26 2012/02/15 15:07:23 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -286,11 +286,13 @@ fi
 
 if test $action = 4 -a "x$REJECTED" != x ; then
 
+  echo "" >> $LOG_FIL
   echo "Try 2nd round for fast-failed jobs: '$REJECTED'" | tee -a $LOG_FIL
   JOB_LIST=$REJECTED
   sub_list_jobs
  #echo " info-main:     NB_SUB_JOBS='$NB_SUB_JOBS'" >> $LOG_FIL
 
+  echo "" >> $LOG_FIL
   get_outp_back $NB_SUB_JOBS
  #echo " info-main:     REJECTED='$REJECTED'" >> $LOG_FIL
 
