@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.31 2012/02/14 14:52:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.32 2012/02/15 00:47:33 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -200,7 +200,8 @@ C     CUTOFF SNOW THICKNESS
 C     Snow-Thickness above HCUT: SW optically thick snow (=> snow-albedo).
 C     Snow-Thickness below HCUT: linear transition to ice-albedo
       HCUT = SEAICE_snowThick
-      recip_HCUT = 1./HCUT
+      recip_HCUT = 0. _d 0
+      IF ( HCUT.GT.0. _d 0 ) recip_HCUT = 1. _d 0 / HCUT
 
 C     PENETRATION SHORTWAVE RADIATION FACTOR
       XIO=SEAICE_shortwave
@@ -235,7 +236,7 @@ c       tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURF(I,J,bi,bj) )
 c     FREEZING TEMP. OF SEA WATER (K)
         tempFrz(I,J) = SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
      &     + SEAICE_tempFrz0 + celsius2K
-     
+
 C     Now determine fixed (relative to tsurf) forcing term in heat budget
 
         IF(HSNOW_ACTUAL(I,J).GT.0.0) THEN
