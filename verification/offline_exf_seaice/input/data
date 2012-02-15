@@ -33,7 +33,7 @@
  eosType='JMD95Z',
  saltStepping=.FALSE.,
  tempStepping=.FALSE.,
- momStepping=.FALSE.
+ momStepping=.FALSE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.0,
  gravity         = 9.8156,

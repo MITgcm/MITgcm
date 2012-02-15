@@ -1,5 +1,27 @@
 Seaice-only estimation in the Labrador Sea
 ------------------------------------------
+
+Notes:
+
+- The offline code is enabled during compilation with:
+  ALLOW_BULK_OFFLINE in EXF_OPTIONS.h
+
+- At runtime turn off time-stepping in data PARM01 using:
+  saltStepping = .FALSE.,
+  tempStepping = .FALSE.,
+  momStepping  = .FALSE.,
+
+- specify SST in data.exf using:
+  climsstfile
+  climsststartdate1
+  climsststartdate2
+  climsstperiod
+
+- and turn off surface relaxation to avoid biasing output diagnostics:
+  climsstTauRelax = 0.0, 
+
+==============
+
 09-Sep-2005
 heimbach@mit.edu, ifenty@mit.edu, menemenlis@jpl.nasa.gov
 
