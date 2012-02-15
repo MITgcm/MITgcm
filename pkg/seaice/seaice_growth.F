@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.153 2012/02/14 14:47:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.154 2012/02/15 22:00:23 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -258,20 +258,23 @@ C ===================================================================
       ENDIF
 
 C     avoid unnecessary divisions in loops
-      recip_nDim        = 1./float(nDim)
-      recip_deltaTtherm = 1./SEAICE_deltaTtherm
-      recip_rhoIce      = 1./SEAICE_rhoIce
+      recip_nDim        = nDim
+      recip_nDim        = ONE / recip_nDim
+C     above/below: double/single precision calculation of recip_nDim
+c     recip_nDim        = 1./float(nDim)
+      recip_deltaTtherm = ONE / SEAICE_deltaTtherm
+      recip_rhoIce      = ONE / SEAICE_rhoIce
 
 C     Cutoff for iceload
       heffTooHeavy=dRf(kSurface) / 5. _d 0
 
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
-      SNOW2ICE     = 1./ICE2SNOW
+      SNOW2ICE     = ONE / ICE2SNOW
 
 C     HEAT OF FUSION OF ICE (J/m^3)
       QI           = SEAICE_rhoIce*SEAICE_lhFusion
-      recip_QI     = 1. _d 0 / QI
+      recip_QI     = ONE / QI
 C     HEAT OF FUSION OF SNOW (J/m^3)
       QS           = SEAICE_rhoSnow*SEAICE_lhFusion
 
@@ -821,7 +824,7 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
         DO J=1,sNy
          DO I=1,sNx
 c         FREEZING TEMP. OF SEA WATER (deg C)
-          tempFrz = SEAICE_tempFrz0 + 
+          tempFrz = SEAICE_tempFrz0 +
      &              SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
 c efficiency of turbulent fluxes : dependency to sign of THETA-TBC
           IF ( theta(I,J,kSurface,bi,bj) .GE. tempFrz ) THEN
@@ -832,7 +835,7 @@ c efficiency of turbulent fluxes : dependency to sign of THETA-TBC
 c efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
           IF ( (SEAICEturbFluxFormula.NE.4).AND.
      &         (AREApreTH(I,J) .GT. 0. _d 0) ) THEN
-           MixedLayerTurbulenceFactor = ONE - 
+           MixedLayerTurbulenceFactor = ONE -
      &          SEAICE_availHeatTaper * AREApreTH(I,J)
           ELSEIF ( (SEAICEturbFluxFormula.EQ.4).AND.
      &        (AREApreTH(I,J) .GT. 0. _d 0) ) THEN
@@ -870,7 +873,7 @@ CADJ STORE r_FWbySublim     = comlev1_bibj,key=iicekey,byte=isbyte
         DO J=1,sNy
          DO I=1,sNx
 C     First sublimate/deposite snow
-          tmpscal2 = 
+          tmpscal2 =
      &     MAX(MIN(r_FWbySublim(I,J),HSNOW(I,J,bi,bj)*SNOW2ICE),ZERO)
           d_HSNWbySublim(I,J) = - tmpscal2 * ICE2SNOW
           HSNOW(I,J,bi,bj)    = HSNOW(I,J,bi,bj)  - tmpscal2*ICE2SNOW
@@ -884,7 +887,7 @@ CADJ STORE r_FWbySublim    = comlev1_bibj,key=iicekey,byte=isbyte
         DO J=1,sNy
          DO I=1,sNx
 C     If anything is left, sublimate ice
-          tmpscal2 = 
+          tmpscal2 =
      &     MAX(MIN(r_FWbySublim(I,J),HEFF(I,J,bi,bj)),ZERO)
           d_HEFFbySublim(I,J) = - tmpscal2
           HEFF(I,J,bi,bj)     = HEFF(I,J,bi,bj)   - tmpscal2
@@ -1140,7 +1143,7 @@ CADJ STORE AREA(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
            recip_HH = recip_heffActual(I,J)
 #endif
 
-C gain of ice over open water : computed from 
+C gain of ice over open water : computed from
 C   (SEAICE_areaGainFormula.EQ.1) from growth by ATM
 C   (SEAICE_areaGainFormula.EQ.2) from predicted growth by ATM
           if (SEAICE_areaGainFormula.EQ.1) then
@@ -1149,12 +1152,12 @@ C   (SEAICE_areaGainFormula.EQ.2) from predicted growth by ATM
             tmpscal4=MAX(ZERO,a_QbyATM_open(I,J))
           endif
 
-C loss of ice cover by melting : computed from 
+C loss of ice cover by melting : computed from
 C   (SEAICE_areaLossFormula.EQ.1) from all but only melt conributions by ATM and OCN
 C   (SEAICE_areaLossFormula.EQ.2) from net melt-growth>0 by ATM and OCN
 C   (SEAICE_areaLossFormula.EQ.3) from predicted melt by ATM
           if (SEAICE_areaLossFormula.EQ.1) then
-            tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN_cover(I,J) ) 
+            tmpscal3 = MIN( 0. _d 0 , d_HEFFbyATMonOCN_cover(I,J) )
      &        + MIN( 0. _d 0 , d_HEFFbyATMonOCN_open(I,J) )
      &        + MIN( 0. _d 0 , d_HEFFbyOCNonICE(I,J) )
           elseif (SEAICE_areaLossFormula.EQ.2) then
@@ -1170,7 +1173,7 @@ C           could not melt more than all the ice
             tmpscal2 = MAX(-tmpscal0,tmpscal1)
             tmpscal3 = MIN(ZERO,tmpscal2)
           endif
-          
+
 C apply tendency
           IF ( (HEFF(i,j,bi,bj).GT.0. _d 0).OR.
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
@@ -1448,7 +1451,7 @@ C ======================================================
 #ifndef SEAICE_DISABLE_HEATCONSFIX
 C treat advective heat flux by ocean to ice water exchange (at 0decC)
 C ===================================================================
-      IF ( SEAICEheatConsFix ) THEN 
+      IF ( SEAICEheatConsFix ) THEN
 c Unlike for evap and precip, the temperature of gained/lost
 c ocean liquid water due to melt/freeze of solid water cannot be chosen
 c to be e.g. the ocean SST. It must be done at 0degC. The fix below anticipates
