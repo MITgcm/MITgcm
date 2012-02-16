@@ -16,6 +16,7 @@
  &
 
  &SEAICE_PARM03
+ SItrNumInUse          = 2,
  siTrName(1)           = 'age',
  siTrUnit(1)           = 's',
  siTrName(2)           = 'salinity',

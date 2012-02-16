@@ -15,6 +15,7 @@
  &
 
  &SEAICE_PARM03
+ SItrNumInUse          = 2,
  siTrName(1)           = 'age',
  siTrMate(1)           = 'AREA',
  siTrUnit(1)           = 's',
