@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.154 2012/02/15 22:00:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.155 2012/02/16 01:23:27 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -538,7 +538,7 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
          CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIheffPT',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayD,'SIhsnoPT',0,1,3,bi,bj,myThid)
 #ifdef ALLOW_SITRACER
-         DO iTr = 1, SItrMaxNum
+         DO iTr = 1, SItrNumInUse
           WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'PT'
           if (SItrMate(iTr).EQ.'HEFF') then
            CALL DIAGNOSTICS_FRACT_FILL(

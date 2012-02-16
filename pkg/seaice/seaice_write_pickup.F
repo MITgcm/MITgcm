@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.12 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.13 2012/02/16 01:23:27 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -115,7 +115,7 @@ C---  continue to write 2-D fields:
         IF (j.LE.listDim) wrFldList(j) = 'siHSALT '
 #endif
 #ifdef ALLOW_SITRACER
-         DO iTrac = 1, SItrMaxNum
+         DO iTrac = 1, SItrNumInUse
           WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
           j = j + 1
           nj = nj-1
