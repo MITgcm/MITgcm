@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.6 2012/02/16 01:28:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.7 2012/02/16 03:32:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE SEAICE_TRACER_PHYS( myTime, myIter, myThid )
-C     /=======================================================\
-C     | SUBROUTINE seaice_tracer_phys                         |
-C     | o Time step SItr/SItrEFF as a result of               |
-C     |   seaice thermodynamics and specific tracer physics   |
-C     \=======================================================/
+C     *=======================================================*
+C     | SUBROUTINE seaice_tracer_phys
+C     | o Time step SItr/SItrEFF as a result of
+C     |   seaice thermodynamics and specific tracer physics
+C     *=======================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -70,7 +70,7 @@ c =============================================
        ENDDO
       ENDDO
 c salinity tracer:
-      if ( (SItrName(iTr).EQ.'salinity').AND. 
+      if ( (SItrName(iTr).EQ.'salinity').AND.
      &      (SItrFromOceanFrac(iTr).GT.ZERO) ) then
        DO J=1,sNy
         DO I=1,sNx
@@ -195,7 +195,7 @@ c ==========================================================
       if (SItrMate(iTr).EQ.'HEFF') then
         WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'FX'
         tmpscal1=-ONE/SEAICE_deltaTtherm*SEAICE_rhoIce
-        CALL DIAGNOSTICS_SCALE_FILL(SItrBucket(1-oLx,1-oLy,bi,bj,iTr),
+        CALL DIAGNOSTICS_SCALE_FILL(SItrBucket(1-OLx,1-OLy,bi,bj,iTr),
      &   tmpscal1, 1, diagName,0,1,2,bi,bj,myThid)
       endif
 #endif
@@ -210,13 +210,13 @@ c salinity tracer: salt flux
 c note: at this point of the time step, that is the correct sign
 #ifdef ALLOW_SALT_PLUME
 c should work for both constant and variable ice salinity -- to be tested
-          saltPlumeFlux(I,J,bi,bj) = MAX(ZERO,saltFlux(I,J,bi,bj))            						
+          saltPlumeFlux(I,J,bi,bj) = MAX(ZERO,saltFlux(I,J,bi,bj))
      &      *SPsalFRAC*(salt(I,j,ks,bi,bj)-SItrFromOcean(i,j))
 #endif
          ENDDO
         ENDDO
       endif
-      
+
       DO J=1,sNy
        DO I=1,sNx
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
@@ -227,7 +227,7 @@ c empty bucket
         SItrBucket(i,j,bi,bj,iTr)=0. _d 0
        ENDDO
       ENDDO
-      
+
 c TAF? elseif (SItrMate(iTr).EQ.'AREA') then
 
 c 4) diagnostics
