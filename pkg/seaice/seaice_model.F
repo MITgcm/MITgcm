@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.98 2012/02/04 14:51:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.99 2012/02/16 01:22:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -243,7 +243,7 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_RL( HSALT, myThid )
 #endif
 #ifdef ALLOW_SITRACER
-       DO iTr = 1, SItrMaxNum
+       DO iTr = 1, SItrNumInUse
         _EXCH_XY_RL( SItracer(1-OLx,1-OLy,1,1,iTr),myThid )
        ENDDO
 #endif

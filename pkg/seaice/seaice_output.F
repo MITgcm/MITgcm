@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.10 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.11 2012/02/16 01:22:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -127,7 +127,7 @@ CEOP
             CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
 #endif
 #ifdef ALLOW_SITRACER
-            DO iTracer = 1, SItrMaxNum
+            DO iTracer = 1, SItrNumInUse
              WRITE(pref,'(A8,I2.2,A1)') 'SITRACER', iTracer, '.'
              CALL WRITE_FLD_XY_RL(
      &            pref,suff,

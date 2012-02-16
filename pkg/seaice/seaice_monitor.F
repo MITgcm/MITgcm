@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.26 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.27 2012/02/16 01:22:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -125,7 +125,7 @@ C       Print some statistics about input forcing fields
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* SEAICE_VARIABLE_SALINITY */
 #ifdef ALLOW_SITRACER
-        DO iTracer = 1, SItrMaxNum
+        DO iTracer = 1, SItrNumInUse
          WRITE(suff,'(A9,I2.2)') '_sitracer', iTracer
          CALL MON_WRITESTATS_RL(
      &          1,SItracer(1-OLx,1-OLy,1,1,iTracer),suff,

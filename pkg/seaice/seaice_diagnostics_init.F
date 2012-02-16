@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.32 2012/02/13 23:20:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.33 2012/02/16 01:22:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,7 +134,7 @@ C=============== state variables ============
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef ALLOW_SITRACER
-      DO iTr = 1, SItrMaxNum
+      DO iTr = 1, SItrNumInUse
 
 C--    Set default name & tracer Units:
        WRITE(locNameTr,'(A,I4.4,A)') 'sea ice tracer no. ',iTr
@@ -383,7 +383,7 @@ C     is EmPmR before impact of ice.
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef ALLOW_SITRACER
-      DO iTr = 1, SItrMaxNum
+      DO iTr = 1, SItrNumInUse
        IF (SItrMate(iTr).EQ.'HEFF') then
 C--    Set default name & tracer Units:
        WRITE(diagUnits,'(A)') 'kg/m^2/s'

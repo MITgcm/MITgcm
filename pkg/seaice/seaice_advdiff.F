@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.59 2012/02/10 01:31:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.60 2012/02/16 01:22:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -316,7 +316,7 @@ C     now do the "explicit" time step
 
 #ifdef ALLOW_SITRACER
 C--   Sea Ice Tracers
-        DO iTr = 1, SItrMaxNum
+        DO iTr = 1, SItrNumInUse
         IF ( (SEAICEadvHEFF.AND.(SItrMate(iTr).EQ.'HEFF')).OR.
      &       (SEAICEadvAREA.AND.(SItrMate(iTr).EQ.'AREA')) ) THEN
 C--   scale to effective value
