@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.14 2012/02/16 01:23:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.15 2012/02/16 03:32:59 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,7 +56,7 @@ C     bi,bj       :: tile indices
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_SITRACER
       CHARACTER*(8) fldName
-      INTEGER iTrac, kerr
+      INTEGER iTrac
 #endif
 CEOP
 
@@ -204,9 +204,9 @@ C--    continue with 2-D fields:
          DO iTrac = 1, SItrNumInUse
           WRITE(fldName,'(A6,I2.2)') 'siTrac', iTrac
           CALL READ_MFLDS_3D_RL( fldName,
-     &         SItracer(1-Olx,1-Oly,1,1,iTrac),
+     &         SItracer(1-OLx,1-OLy,1,1,iTrac),
      &         nj, fp, 1, nIter0, myThid )
-          _EXCH_XY_RL(SItracer(1-Olx,1-Oly,1,1,iTrac),myThid)
+          _EXCH_XY_RL(SItracer(1-OLx,1-OLy,1,1,iTrac),myThid)
          ENDDO
 #endif /* ALLOW_SITRACER */
 
