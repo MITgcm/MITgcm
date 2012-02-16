@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.15 2012/02/13 23:20:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.16 2012/02/16 01:28:58 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,6 +20,10 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#ifdef ALLOW_SITRACER
+# include "SEAICE_SIZE.h"
+#endif
+#include "SEAICE_TRACER.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -31,6 +35,9 @@ C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       INTEGER kSurface
+#ifdef ALLOW_SITRACER
+      INTEGER iTracer
+#endif
 #ifndef SEAICE_CGRID
       _RS  mask_uice
 #endif
@@ -112,6 +119,48 @@ c          hard-coded (after McPhee)
       elseif (SEAICE_availHeatTaper.EQ.UNSET_RL) then
            SEAICE_availHeatTaper = ZERO
       endif
+
+
+C--   SItracer specifications for basic tracers
+#ifdef ALLOW_SITRACER
+      DO iTracer = 1, SItrNumInUse
+C "ice concentration" tracer that should remain .EQ.1.
+      if (SItrName(iTracer).EQ.'one') then
+         SItrFromOcean0(iTracer)    =ONE
+         SItrFromFlood0(iTracer)    =ONE
+         SItrExpand0(iTracer)       =ONE
+         SItrFromOceanFrac(iTracer) =ZERO
+         SItrFromFloodFrac(iTracer) =ZERO
+      endif
+C age tracer: no age in ocean, or effect from ice cover changes
+      if (SItrName(iTracer).EQ.'age') then
+         SItrFromOcean0(iTracer)    =ZERO
+         SItrFromFlood0(iTracer)    =ZERO
+         SItrExpand0(iTracer)       =ZERO
+         SItrFromOceanFrac(iTracer) =ZERO
+         SItrFromFloodFrac(iTracer) =ZERO
+      endif 
+C salinity tracer:
+      if (SItrName(iTracer).EQ.'salinity') then
+         SItrMate(iTracer)          ='HEFF'
+         SItrExpand0(iTracer)       =ZERO
+         if ( SEAICE_salinityTracer ) then
+           SIsal0=ZERO
+           SIsalFrac=ZERO
+         endif
+      endif 
+c simple, made up, ice surface roughness index prototype
+      if (SItrName(iTracer).EQ.'ridge') then
+         SItrMate(iTracer)          ='AREA'
+         SItrFromOcean0(iTracer)    =ZERO
+         SItrFromFlood0(iTracer)    =ZERO
+         SItrExpand0(iTracer)       =ZERO
+         SItrFromOceanFrac(iTracer) =ZERO
+         SItrFromFloodFrac(iTracer) =ZERO
+      endif 
+C
+      ENDDO
+#endif
 
 C--   convert SEAICE_doOpenWaterGrowth/Melt logical switch to numerical facOpenGrow/Melt
         facOpenGrow=0. _d 0

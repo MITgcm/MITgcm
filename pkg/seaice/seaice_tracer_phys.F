@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.5 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.6 2012/02/16 01:28:58 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,6 +21,9 @@ C     === Global variables ===
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_TRACER.h"
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME.h"
+#endif
 
 C     === Routine arguments ===
 C     INPUT:
@@ -55,37 +58,24 @@ cgf eventually I will need to handle them as function params
 
       DO bj=myByLo(myThid),myByHi(myThid)
       DO bi=myBxLo(myThid),myBxHi(myThid)
-      DO iTr=1,SItrMaxNum
+      DO iTr=1,SItrNumInUse
 
 c 0) set ice-ocean and ice-snow exchange values
 c =============================================
       DO J=1,sNy
        DO I=1,sNx
-        SItrFromOcean(i,j)=0. _d 0
-        SItrFromFlood(i,j)=0. _d 0
-        SItrExpand(i,j)=0. _d 0
+        SItrFromOcean(i,j)=SItrFromOcean0(iTr)
+        SItrFromFlood(i,j)=SItrFromFlood0(iTr)
+        SItrExpand(i,j)=SItrExpand0(iTr)
        ENDDO
       ENDDO
-      if (SItrName(iTr).EQ.'age') then
-c age tracer: no age in ocean, or effect from ice cover changes
-      elseif (SItrName(iTr).EQ.'salinity') then
 c salinity tracer:
+      if ( (SItrName(iTr).EQ.'salinity').AND. 
+     &      (SItrFromOceanFrac(iTr).GT.ZERO) ) then
        DO J=1,sNy
         DO I=1,sNx
-         SItrFromOcean(i,j)=SIsal0
-#ifdef SEAICE_VARIABLE_SALINITY
-         if (SIsalFRAC.GT.0.)
-     &   SItrFromOcean(i,j)=SIsalFRAC*salt(I,j,ks,bi,bj)
-#endif
-c as of now, flooding implies no salt extraction from ocean
-        ENDDO
-       ENDDO
-      elseif (SItrName(iTr).EQ.'one') then
-c "ice concentration" tracer that should remain .EQ.1.
-       DO J=1,sNy
-        DO I=1,sNx
-         SItrFromOcean(i,j)=1. _d 0
-         SItrFromFlood(i,j)=1. _d 0
+         SItrFromOcean(i,j)=SItrFromOceanFrac(iTr)*salt(I,j,ks,bi,bj)
+         SItrFromFlood(i,j)=SItrFromFloodFrac(iTr)*salt(I,j,ks,bi,bj)
         ENDDO
        ENDDO
       endif
@@ -209,21 +199,24 @@ c ==========================================================
      &   tmpscal1, 1, diagName,0,1,2,bi,bj,myThid)
       endif
 #endif
-      if (SItrName(iTr).EQ.'age') then
-c age tracer: not passed to ocean
-      elseif (SItrName(iTr).EQ.'salinity') then
+
+      if ( (SItrName(iTr).EQ.'salinity').AND.
+     &     (SEAICE_salinityTracer) ) then
 c salinity tracer: salt flux
-c      DO J=1,sNy
-c       DO I=1,sNx
-c        saltFlux(I,J,bi,bj) = - SItrBucket(i,j,bi,bj,iTr)
-c    &     *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
+        DO J=1,sNy
+         DO I=1,sNx
+          saltFlux(I,J,bi,bj) = - SItrBucket(i,j,bi,bj,iTr)
+     &      *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
 c note: at this point of the time step, that is the correct sign
-c        saltPlumeFlux(I,J,bi,bj) = ...
-c       ENDDO
-c      ENDDO
-      elseif (SItrName(iTr).EQ.'one') then
-c "ice concentration" tracer: not passed to ocean
+#ifdef ALLOW_SALT_PLUME
+c should work for both constant and variable ice salinity -- to be tested
+          saltPlumeFlux(I,J,bi,bj) = MAX(ZERO,saltFlux(I,J,bi,bj))            						
+     &      *SPsalFRAC*(salt(I,j,ks,bi,bj)-SItrFromOcean(i,j))
+#endif
+         ENDDO
+        ENDDO
       endif
+      
       DO J=1,sNy
        DO I=1,sNx
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
@@ -234,7 +227,9 @@ c empty bucket
         SItrBucket(i,j,bi,bj,iTr)=0. _d 0
        ENDDO
       ENDDO
+      
 c TAF? elseif (SItrMate(iTr).EQ.'AREA') then
+
 c 4) diagnostics
 c ==============
 #ifdef ALLOW_SITRACER_DEBUG_DIAG

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.113 2012/02/14 02:09:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.114 2012/02/16 01:28:58 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,6 +78,7 @@ C--   SEAICE parameters
      & useHB87stressCoupling, SEAICEuseFlooding,
      & usePW79thermodynamics, useMaykutSatVapPoly,
      & SEAICErestoreUnderIce,
+     & SEAICE_salinityTracer, SEAICE_ageTracer,
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
      & SEAICEadvSalt, SEAICEadvAge,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
@@ -144,7 +145,9 @@ C--   SEAICE parameters
 #ifdef ALLOW_SITRACER
       NAMELIST /SEAICE_PARM03/
      &  SItrFile, SItrName, SItrNameLong, SItrUnit, SItrMate,
-     &  IceAgeTrFile
+     &  SItrFromOcean0, SItrFromOceanFrac, SItrFromFlood0, 
+     &  SItrFromFloodFrac, SItrExpand0,
+     &  IceAgeTrFile, SItrNumInUse
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -181,6 +184,8 @@ C--   set default sea ice parameters
 C--   old default:
 c     SEAICEuseFluxForm  = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
+      SEAICE_salinityTracer = .FALSE.
+      SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
       useMaykutSatVapPoly = .FALSE.
@@ -415,12 +420,18 @@ C--   Read settings from model parameter file "data.seaice".
 #endif
 
 #ifdef ALLOW_SITRACER
+      SItrNumInUse=SItrMaxNum
       DO iTracer = 1, SItrMaxNum
        SItrFile(iTracer) = ' '
        SItrName(iTracer) = ' '
        SItrNameLong(iTracer) = ' '
        SItrUnit(iTracer) = ' '
        SItrMate(iTracer) = 'HEFF'
+       SItrFromOcean0(iTracer)    = ZERO
+       SItrFromOceanFrac(iTracer) = ZERO
+       SItrFromFlood0(iTracer)    = ZERO
+       SItrFromFloodFrac(iTracer) = ZERO
+       SItrExpand0(iTracer)       = ZERO
       ENDDO
 C--
       READ(UNIT=iUnit,NML=SEAICE_PARM03)

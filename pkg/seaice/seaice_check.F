@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.61 2012/02/14 02:09:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.62 2012/02/16 01:28:58 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,6 +44,9 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
       LOGICAL checkAdvSchSalt
+#ifdef ALLOW_SITRACER
+      INTEGER iTracer
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -107,6 +110,30 @@ C--   check ice cover fraction formula
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
+C--   check concistency of turbulent flux term specification
+
+      IF ( ( SEAICE_availHeatFrac .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_availHeatFrac .GT. 1. _d 0 ) .OR.
+     &     ( SEAICE_availHeatFracFrz .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_availHeatFracFrz .GT. 1. _d 0 ) ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' SEAICE_availHeatFrac or SEAICE_availHeatFracFrz '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' out of bounds; they must lie within 0. and 1. '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+      IF ( ( SEAICE_availHeatTaper .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_availHeatTaper .GT. 1. _d 0 ) ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'SEAICE_availHeatTaper cannot be specified  '//
+     &      'outside of the [0. 1.] range'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
       IF ( (.NOT.useThSIce).AND.SEAICE_doOpenWaterMelt
      &     .AND.(.NOT.SEAICE_doOpenWaterGrowth) ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
@@ -117,6 +144,8 @@ C--   check ice cover fraction formula
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+
+C--   check specifications of new features for testing
 
 #ifdef SEAICE_DISABLE_HEATCONSFIX
       IF ( SEAICEheatConsFix ) THEN
@@ -130,6 +159,75 @@ C--   check ice cover fraction formula
       ENDIF
 #endif
 
+#ifndef ALLOW_SITRACER
+      IF ( SEAICE_salinityTracer ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'to use SEAICE_salinityTracer, you need to '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'define ALLOW_SITRACER and recompile'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+      IF ( SEAICE_ageTracer ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'to use SEAICE_ageTracer, you need to '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'define ALLOW_SITRACER and recompile'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
+
+C--   check SItracer specifications
+#ifdef ALLOW_SITRACER
+
+c to be added : if SEAICE_salinityTracer we need one tracer doing that
+c to be added : if SEAICE_ageTracer we suggest that one tracer does that
+
+      DO iTracer = 1, SItrNumInUse
+
+      IF ( ( SItrFromOceanFrac(iTracer) .LT. 0. _d 0 ) .OR.
+     &     ( SItrFromOceanFrac(iTracer) .GT. 1. _d 0 ) ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'SItrFromOceanFrac cannot be specified  '//
+     &      'outside of the [0. 1.] range'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+      IF ( ( SItrFromFloodFrac(iTracer) .LT. 0. _d 0 ) .OR.
+     &     ( SItrFromFloodFrac(iTracer) .GT. 1. _d 0 ) ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'SItrFromFloodFrac cannot be specified  '//
+     &      'outside of the [0. 1.] range'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+c      IF ( (SItrName(iTracer).EQ.'salinity') .AND.
+c     &     (SItrMate(iTracer).NE.'HEFF') ) THEN
+c         WRITE(msgBuf,'(A)')
+c     &      'SItrName = "salinity" requires  '//
+c     &      'SItrMate = "HEFF" '
+c         CALL PRINT_ERROR( msgBuf , myThid)
+c         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+c      ENDIF
+
+      IF ( (SItrName(iTracer).NE.'salinity').AND.
+     &     ( (SItrFromOceanFrac(iTracer).NE.ZERO).OR.
+     &       (SItrFromFloodFrac(iTracer).NE.ZERO) ) ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'SItrFromOceanFrac / SItrFromFloodFrac is only  '//
+     &      'available for SItrName = "salinity" (for now)'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+      ENDDO
+#endif      
       
 C--   Check advection schemes
       checkAdvSchArea = SEAICEadvArea .AND. (
@@ -379,28 +477,6 @@ C--   FENTY_AREA_EXPANSION_CONTRACTION is obsolete: issue warning and stop.
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_DO_OPEN_WATER_MELT */
-
-C     check concistency of turbulent flux term specification
-      IF ( ( SEAICE_availHeatFrac .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_availHeatFrac .GT. 1. _d 0 ) .OR.
-     &     ( SEAICE_availHeatFracFrz .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_availHeatFracFrz .GT. 1. _d 0 ) ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' SEAICE_availHeatFrac or SEAICE_availHeatFracFrz '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' out of bounds; they must lie within 0. and 1. '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-      IF ( ( SEAICE_availHeatTaper .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_availHeatTaper .GT. 1. _d 0 ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SEAICE_availHeatTaper cannot be specified  '//
-     &      'outside of the [0. 1.] range'
-         CALL PRINT_ERROR( msgBuf , myThid)
-         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
 
 C--   SEAICE_AGE is obsolete: issue warning and stop.
 #ifdef SEAICE_AGE
