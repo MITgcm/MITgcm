@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1599 2012/02/15 22:13:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1600 2012/02/16 01:40:04 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o pkg/seaice: overhaul of seaice_summary.F after jan 2012 clean-up of seaice_growth.F etc. 
+o pkg/seaice SItracer :  added run time params, and allow coupling to ocn salinity.
 o pkg/seaice: remove (almost) all divisions by constants within loops
   in seaice_growth.F and seaice_solve4temp.F, this changes (only) the cg2d
   results of global_ocean.cs32x15.seaice from 16 to 11 digits (but only
