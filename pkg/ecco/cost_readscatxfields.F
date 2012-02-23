@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.6 2011/07/28 18:43:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.7 2012/02/23 23:31:48 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -129,7 +129,7 @@ c-- assume daily fields
            call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
            ymod = scatxstartdate(1)/10000
            if ( ymod .EQ. yday ) then
-              middate(1) = modelstartdate(1)
+              middate(1) = scatxstartdate(1)
            else
               middate(1) = yday*10000+100+1
            endif

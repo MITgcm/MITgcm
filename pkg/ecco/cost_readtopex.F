@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.9 2010/03/24 01:34:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.10 2012/02/23 23:31:48 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -95,7 +95,7 @@ cnew(
       ymod = topexstartdate(1)/10000
 
       if ( ymod .EQ. yday ) then
-         middate(1) = modelstartdate(1)
+         middate(1) = topexstartdate(1)
       else
          middate(1) = yday*10000+100+1
       endif

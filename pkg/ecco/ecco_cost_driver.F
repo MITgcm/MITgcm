@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.3 2010/11/22 23:48:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.4 2012/02/23 23:31:48 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -90,7 +90,7 @@ c--   Compute cost function contribution of SSH.
       call timer_start('cost_ssh_new       [ECCO SPIN-DOWN]', mythid)
       call cost_ssh_new( myiter, mytime, mythid )
       call timer_stop ('cost_ssh_new       [ECCO SPIN-DOWN]', mythid)
-# else
+# elif (!defined (ALLOW_GENCOST_SSHV4))
       call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
       call cost_ssh( myiter, mytime, mythid )
       call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)

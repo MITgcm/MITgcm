@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.1 2009/11/03 03:32:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.2 2012/02/23 23:31:48 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -100,7 +100,7 @@ cnew(
       ymod = sla_startdate(1)/10000
 
       if ( ymod .EQ. yday ) then
-         middate(1) = modelstartdate(1)
+         middate(1) = sla_startdate(1)
       else
          middate(1) = yday*10000+100+1
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.3 2011/05/18 03:15:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.4 2012/02/23 23:31:48 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -51,6 +51,7 @@ c     == global variables ==
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
 #endif
+#include "cal.h"
 
 c     == routine arguments ==
 
@@ -137,6 +138,8 @@ c for PART 4/5: compute smooth/raw anomalies
       character*(80) fname4test
       character*(MAX_LEN_MBUF) msgbuf
 
+      LOGICAL doReference
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -202,6 +205,15 @@ c      tpmean_y1=2002
 c rio
 c      tpmean_y0=1993
 c      tpmean_y1=1999
+
+      doReference=.FALSE.
+      if ((modelstartdate(1).GT.1992*100).AND.
+     &    (modelstartdate(1).LT.2011*100).AND.
+     &    (ndaysrec.GE.365))  doReference=.TRUE.
+
+        write(msgbuf,'(a,l)') ' sshv4:re-reference MDT=',doReference
+        call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -305,7 +317,8 @@ c--   re-reference tpmean:
           do j = jmin,jmax
             do i = imin,imax
                if ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ) then
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
+     &              ( doReference ) ) then
                   tpmean(i,j,bi,bj) = tpmean(i,j,bi,bj)
      &                 -mean_slaobs(i,j,bi,bj)
                endif
@@ -485,7 +498,8 @@ c--   END loop over records for the first time.
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
-     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) ) then
+     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( doReference ) ) then
                   mean_slaobs2(i,j,bi,bj) =
      &                 mean_slaobs2(i,j,bi,bj) /
      &                 mean_psMssh_all_NUM(i,j,bi,bj)
@@ -496,6 +510,15 @@ c--   END loop over records for the first time.
                   offset=offset+mean_psMssh_all(i,j,bi,bj)*
      &                 mean_psMssh_all_NUM(i,j,bi,bj)
                   offset_sum=offset_sum+mean_psMssh_all_NUM(i,j,bi,bj)
+               elseif ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
+     &              ( .NOT.doReference ) ) then
+                  mean_slaobs2(i,j,bi,bj) = 0.d0
+                  mean_psMssh_all(i,j,bi,bj) = 0. _d 0
+                  mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
+                  offset=offset+RA(i,j,bi,bj)
+     &                  *( psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) )
+                  offset_sum=offset_sum+RA(i,j,bi,bj)
                else
                   mean_slaobs2(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
@@ -509,6 +532,10 @@ c--   END loop over records for the first time.
 c--   Do a global summation.
       _GLOBAL_SUM_RL( offset     , mythid )
       _GLOBAL_SUM_RL( offset_sum , mythid )
+
+       write(msgbuf,'(a,2d22.15)') ' sshv4:offset=',offset,offset_sum
+       call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
 
       if (offset_sum .eq. 0.0) then
         _BEGIN_MASTER( mythid )
@@ -549,6 +576,16 @@ c use the simpler approach
      &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
                else
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
+               endif
+
+c use the simpler approach
+               if ( ( .NOT.doReference ).AND.
+     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ) then
+                   mean_psMssh_all(i,j,bi,bj) =
+     &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
+               else
+                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
                endif
 
                if ( maskc(i,j,1,bi,bj) .NE. 0. )

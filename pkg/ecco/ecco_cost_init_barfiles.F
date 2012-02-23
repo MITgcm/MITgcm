@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.22 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.23 2012/02/23 23:31:48 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,7 +139,7 @@ c--   Save psbar on file.
      &     yadprefix, psbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, ndaysrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnamepsbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_psbar_mean_dummy )
 #endif
@@ -155,7 +155,7 @@ c--   Save bpbar on file.
      &     yadprefix, bpbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnamebpbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_bpbar_mean_dummy )
 #endif
@@ -176,7 +176,7 @@ c--   Save tbar on file.
      &     yadprefix, tbarfile(1:ilt), '.', optimcycle
 
       do irec = 1,nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xyz( adfnametbar, tmpfld3d, irec,
      &                         optimcycle, mythid, xx_tbar_mean_dummy )
 #endif
@@ -190,7 +190,7 @@ c--   Save tbar on file.
       write(adfnametbar,'(3a,i10.10)')
      &     yadprefix, tbarfile(1:ilt), '.', optimcycle
       do irec = 1,nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnametbar, tmpfld2d, irec,
      &                        optimcycle, mythid, xx_tbar_mean_dummy )
 #endif
@@ -207,7 +207,7 @@ c--   Save tbar on file.
       write(adfnamesstbar,'(3a,i10.10)')
      &     yadprefix, sstbarfile(1:ilt), '.', optimcycle
       do irec = 1,ndaysrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
          call active_write_xy( adfnamesstbar, tmpfld2d, irec,
      &                        optimcycle, mythid, xx_sstbar_mean_dummy )
 #endif
@@ -227,7 +227,7 @@ c--   Save sbar.
      &     yadprefix, sbarfile(1:ils), '.', optimcycle
 
       do irec = 1,nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xyz( adfnamesbar, tmpfld3d, irec,
      &                         optimcycle, mythid, xx_sbar_mean_dummy)
 #endif
@@ -242,7 +242,7 @@ c--   Save sbar.
      &     yadprefix, sbarfile(1:ils), '.', optimcycle
 
       do irec = 1,nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnamesbar, tmpfld2d, irec,
      &                        optimcycle, mythid, xx_sbar_mean_dummy)
 #endif
@@ -269,7 +269,7 @@ c--   Save ubar and vbar.
      &     yadprefix, vbarfile(1:ils), '.', optimcycle
 
       do irec = 1,nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xyz( adfnameubar, tmpfld3d, irec,
      &                         optimcycle, mythid, xx_ubar_mean_dummy)
         call active_write_xyz( adfnamevbar, tmpfld3d, irec,
@@ -287,7 +287,7 @@ c--   Save wbar
      &     yadprefix, wbarfile(1:ils), '.', optimcycle
 
       do irec = 1,nmonsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xyz( adfnamewbar, tmpfld3d, irec,
      &                         optimcycle, mythid, xx_wbar_mean_dummy)
 #endif
@@ -313,7 +313,7 @@ c--   Save tauxbar, tauybar on file.
 #else
       do irec = 1, ndaysrec
 #endif
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnametauxbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_taux_mean_dummy )
         call active_write_xy( adfnametauybar, tmpfld2d, irec,
@@ -331,7 +331,7 @@ c--   Save hfluxmeanbar on file.
      &     yadprefix, hfluxmeanbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, nyearsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnamehfluxmeanbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_hflux_mean_dummy )
 #endif
@@ -347,7 +347,7 @@ c--   Save sfluxmeanbar on file.
      &     yadprefix, sfluxmeanbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, nyearsrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnamesfluxmeanbar, tmpfld2d, irec,
      &                         optimcycle,mythid, xx_sflux_mean_dummy )
 #endif
@@ -378,7 +378,7 @@ c initialize smr sss bar
      &     yadprefix, smrsssbarfile(1:ilps), '.', optimcycle
 
       do irec = 1, ndaysrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnamesmrareabar, tmpfld2d, irec,
      &        optimcycle,mythid, xx_smrareabar_mean_dummy )
         call active_write_xy( adfnamesmrsstbar, tmpfld3d, irec,
@@ -403,7 +403,7 @@ c--   Save gencost_barfile on file.
       write(adfname_gencostbar,'(3a,i10.10)')
      &     yadprefix, gencost_barfile(k)(1:ilt), '.', optimcycle
       do irec = 1,gencost_nrec(k)
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
      &       optimcycle, mythid, xx_genbar_dummy(k) )
 #endif
@@ -419,7 +419,7 @@ c--   Save gencost_barfile on file.
       write(adfnameiestaubar,'(3a,i10.10)')
      &     yadprefix, iestaubarfile(1:ilps), '.', optimcycle
       do irec = 1, ndaysrec
-#ifndef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfnameiestaubar, tmpfld2d, irec,
      &        optimcycle,mythid, xx_iestaubar_mean_dummy )
 #endif
