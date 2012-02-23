@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.17 2011/12/28 16:30:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.18 2012/02/23 23:29:52 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -528,18 +528,22 @@ C===========================================================
      & fnameequinc,fidforward(num_file,bi,bj),
      & ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      & bi,bj,myThid)
+#ifdef ALLOW_ADJOINT_RUN
       call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      & adfnameequinc, fidadjoint(num_file,bi,bj),ProfNo(num_file,bi,bj),
      & ProfDepthNo(num_file,bi,bj),bi,bj, myThid)
+#endif
       else
        call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
        open( fidforward(num_file,bi,bj),file=fnameequinc,
      & form ='unformatted',status='unknown', access='direct',
      & recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
+#ifdef ALLOW_ADJOINT_RUN
        call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
        open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
      & form ='unformatted',status='unknown', access='direct',
      & recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
+#endif
       endif
 
       endif

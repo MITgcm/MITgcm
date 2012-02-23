@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.9 2011/12/02 18:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.10 2012/02/23 23:29:49 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -80,23 +80,31 @@ c     _END_MASTER( mythid )
       IF ( .NOT. exst) THEN
 
          if ( whichxyz .EQ. '3d') then
+#ifdef ALLOW_ADJOINT_RUN
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
+#endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
+#ifdef ALLOW_ADJOINT_RUN     
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
+#endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
+#ifdef ALLOW_ADJOINT_RUN     
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
+#endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
+#ifdef ALLOW_ADJOINT_RUN     
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
+#endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_yz( fname(1), ivarindex, mythid )
          else
