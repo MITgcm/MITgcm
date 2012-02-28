@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.33 2011/03/29 02:25:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.34 2012/02/28 00:35:24 gforget Exp $
 C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
