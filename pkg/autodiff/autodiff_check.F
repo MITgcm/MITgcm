@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.12 2011/11/05 15:49:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.13 2012/02/28 00:33:50 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -29,7 +29,8 @@ C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if (defined ALLOW_AUTODIFF_TAMC && \
+    (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) )
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 # if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
