@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read_yd.F,v 1.1 2009/11/03 03:32:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read_yd.F,v 1.2 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_sla_read_yd( sla_file, 
+      subroutine cost_sla_read_yd( sla_file, sla_startdate,
 c     I                sla_startdate, sla_period,
 c     I                sla_intercept, sla_slope,
      O                sla_obs, sla_mask,
@@ -39,6 +39,14 @@ c     == routine arguments ==
       integer year,day
       integer mythid
 
+      integer sla_startdate(4)
+      _RL sla_period
+      _RL sla_intercept
+      _RL sla_slope
+      _RL sla_obs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL sla_mask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      character*(MAX_LEN_FNAM) sla_file
+
 c     == local variables ==
 
       integer bi,bj
@@ -54,14 +62,6 @@ c     == local variables ==
       _RL diffsecs
       _RL spval
       _RL factor
-
-      integer sla_startdate(4)
-      _RL sla_period
-      _RL sla_intercept
-      _RL sla_slope
-      _RL sla_obs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL sla_mask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      character*(MAX_LEN_FNAM) sla_file
 
 cnew(
       integer  il

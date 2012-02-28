@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatyfields.F,v 1.7 2012/02/23 23:31:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatyfields.F,v 1.8 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -76,6 +76,11 @@ cnew(
       logical exst
 cnew)
 
+#ifdef ALLOW_ECCO_DEBUG
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER ioUnit
+#endif
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -95,16 +100,9 @@ ce    --> there is certainly a better place for this.
       imin = 1
       imax = snx
 
-c      beginscaty = scatystartdate(1)/10000
-c      beginrun = modelstartdate(1)/10000
-c      if ( beginscaty .eq. beginrun ) then
-c        scatyrec = mod(modelstartdate(1)/100,100) -
-c     &           mod(scatystartdate(1)/100,100) + irec
-c      else
-c        scatyrec = ( beginrun - beginscaty - 1)*nmonthyear +
-c     &           (nmonthyear - mod(scatystartdate(1)/100,100) +
-c     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
-c      endif
+#ifdef ALLOW_ECCO_DEBUG
+      ioUnit=standardMessageUnit
+#endif
 
 #ifdef ALLOW_SCAT_COST_CONTRIBUTION
 c-- assume monthly fields
@@ -127,16 +125,15 @@ c-- assume daily fields
            call cal_getdate( dayiter, daytime, daydate, mythid )
            call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
            ymod = scatystartdate(1)/10000
-           if ( ymod .EQ. yday ) then
-              middate(1) = scatystartdate(1)
+           if ( ymod .GE. yday ) then
+              call cal_FullDate( scatystartdate(1), 0, middate, mythid)
            else
               middate(1) = yday*10000+100+1
+              call cal_FullDate( middate(1), 0, middate, mythid)
            endif
-           middate(2) = 0
-           middate(3) = modelstartdate(3)
-           middate(4) = modelstartdate(4)
            call cal_TimePassed( middate, daydate, difftime, mythid )
            call cal_ToSeconds( difftime, diffsecs, mythid )
+c           localrec = floor(diffsecs/86400. _d 0) + 1
            localrec = int(diffsecs/86400. _d 0) + 1
 #endif  
         il=ilnblnk(scatydatfile)
@@ -144,12 +141,39 @@ c-- assume daily fields
      &       scatydatfile(1:il), '_', yday
         inquire( file=fnametmp, exist=exst )
         if (.NOT. exst) then
+#ifdef ALLOW_ECCO_DEBUG
+           WRITE(msgBuf,'(2A)') 'cost_readscatyfields : did not find',
+     &                           fnametmp(1:128)
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+#endif
+c          now assume one big file
            write(fnametmp(1:128),'(a)') scatydatfile(1:il)
+#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+c-- assume monthly fields
            localrec = obsrec
+#else
+c-- assume daily fields
+           call cal_TimePassed(scatystartdate,daydate,difftime,mythid)
+           call cal_ToSeconds( difftime, diffsecs, mythid )
+c           localrec = floor(diffsecs/86400. _d 0) + 1
+           localrec = int(diffsecs/86400. _d 0) + 1
+#endif  
         endif
 
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0) ) then
+             call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
      &                   scatydat, localrec, mythid )
+        else
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
+              do j = jmin,jmax
+                do i = imin,imax
+                   scatydat(i,j,bi,bj) = spval
+                enddo
+              enddo
+            enddo
+          enddo
+        endif
 cnew)
 
       nobs = 0
@@ -163,7 +187,7 @@ cnew)
               else
                 scatymask(i,j,bi,bj) = 1. _d 0
               endif
-              if (scatydat(i,j,bi,bj) .lt. spval) then
+              if (scatydat(i,j,bi,bj) .le. spval) then
                 scatymask(i,j,bi,bj) = 0. _d 0
               endif
               if (scatydat(i,j,bi,bj) .eq. 0. _d 0 ) then

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.8 2011/07/28 18:43:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.9 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 

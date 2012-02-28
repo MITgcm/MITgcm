@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.6 2010/10/25 20:42:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.7 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -197,17 +197,17 @@ c      tpmean_y1=1999
       do year=tpmean_y0,tpmean_y1
        do day=1,366
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      call cost_sla_read_yd( topexfile,
+      call cost_sla_read_yd( topexfile, topexstartdate,
      &                tpobs, tpmask,
      &                year, day, mythid )
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      call cost_sla_read_yd( ersfile,
+      call cost_sla_read_yd( ersfile, ersstartdate,
      &                ersobs, ersmask,
      &                year, day, mythid )
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      call cost_sla_read_yd( gfofile,
+      call cost_sla_read_yd( gfofile, gfostartdate,
      &                gfoobs, gfomask,
      &                year, day, mythid )
 #endif
@@ -484,7 +484,7 @@ c--   Do a global summation.
 
       if (offset_sum .eq. 0.0) then
         _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' cost_ssh: offset_sum = zero!'
+        write(msgbuf,'(a)') ' sshv4: offset_sum = zero!'
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
@@ -492,7 +492,7 @@ c        stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a,d22.15)')
-     &          ' cost_ssh: offset_sum = ',offset_sum
+     &          ' sshv4: offset_sum = ',offset_sum
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )

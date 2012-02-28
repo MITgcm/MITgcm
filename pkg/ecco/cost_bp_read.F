@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.2 2010/02/15 23:10:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.3 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -53,6 +53,8 @@ c     == local variables ==
       integer beginbp
       integer beginrun
 
+      INTEGER beginlocal, beginmodel, obsrec
+
       _RL spval
       _RL vartile
 
@@ -83,6 +85,14 @@ ce    --> there is certainly a better place for this.
       imin = 1
       imax = snx
 
+
+       beginlocal = bpstartdate(1)/10000
+       beginmodel = modelstartdate(1)/10000
+       obsrec =  ( beginmodel - beginlocal )*nmonthyear
+     &         + ( mod(modelstartdate(1)/100,100)
+     &            -mod(bpstartdate(1)/100,100) )
+     &         + irec
+
       mody = modelstartdate(1)/10000
       modm = modelstartdate(1)/100 - mody*100
       iyear = mody + INT((modm-1+irec-1)/12)
@@ -94,11 +104,23 @@ ce    --> there is certainly a better place for this.
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
          write(fnametmp(1:80),'(a)') bpdatfile(1:il)
-         imonth = irec
+         imonth = obsrec
       endif
 
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
+      if ( (obsrec.GT.0).AND.(imonth.GT.0) ) then
+        call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
      &                   bpdat, imonth, mythid )
+      else
+        do bj = jtlo,jthi
+         do bi = itlo,ithi
+          do j = jmin,jmax
+           do i = imin,imax
+            bpdat(i,j,bi,bj) = spval
+           enddo
+          enddo
+         enddo
+        enddo
+      endif
 
       nobs = 0
 
@@ -112,7 +134,7 @@ c                bpmask(i,j,bi,bj) = 0. _d 0
 c              else
 c                bpmask(i,j,bi,bj) = 1. _d 0
 c              endif
-              if (bpdat(i,j,bi,bj) .lt. spval) then
+              if (bpdat(i,j,bi,bj) .le. spval) then
                 bpmask(i,j,bi,bj) = 0. _d 0
               else
                 bpmask(i,j,bi,bj) = 1. _d 0

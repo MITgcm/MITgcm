@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.2 2012/02/23 23:31:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.3 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -92,42 +92,47 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
-cnew(
+c select data record to read
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
       dayiter = hoursperday*(irec-1)+modeliter0
       call cal_getdate( dayiter, daytime, daydate, mythid )
       call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
       ymod = sla_startdate(1)/10000
 
-      if ( ymod .EQ. yday ) then
-         middate(1) = sla_startdate(1)
+      if ( ymod .GE. yday ) then
+         call cal_FullDate( sla_startdate(1), 0, middate, mythid)
       else
          middate(1) = yday*10000+100+1
+         call cal_FullDate( middate(1), 0, middate, mythid)
       endif
-      middate(2) = 0
-      middate(3) = modelstartdate(3)
-      middate(4) = modelstartdate(4)
 
       call cal_TimePassed( middate, daydate, difftime, mythid )
       call cal_ToSeconds( difftime, diffsecs, mythid )
+c      sshrec = floor(diffsecs/sla_period) + 1
       sshrec = int(diffsecs/sla_period) + 1
 
       il=ilnblnk(sla_file)
       write(fnametmp(1:80),'(2a,i4)')
      &     sla_file(1:il), '_', yday
       inquire( file=fnametmp, exist=exst )
-      if (.NOT. exst) then
-         write(fnametmp(1:80),'(a)') sla_file(1:il)
-         sshrec = irec
+
+c read data:
+      if ( (sshrec .GT. 0).AND.(exst) ) then
+       call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 
+     &                          1, sla_obs, sshrec, mythid )
+      else
+       do bj = jtlo,jthi
+        do bi = itlo,ithi
+         do j = jmin,jmax
+          do i = imin,imax
+            sla_obs(i,j,bi,bj) = spval
+          enddo
+         enddo
+        enddo
+       enddo
       endif
 
-cnew)
-
-
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, sla_obs,
-     &                   sshrec, mythid )
-
-
+c mask data:
       do bj = jtlo,jthi
         do bi = itlo,ithi
           k = 1

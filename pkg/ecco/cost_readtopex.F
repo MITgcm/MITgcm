@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.10 2012/02/23 23:31:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.11 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -68,6 +68,11 @@ cnew(
       logical exst
 cnew)
 
+#ifdef ALLOW_ECCO_DEBUG
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER ioUnit
+#endif
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -84,6 +89,10 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
+#ifdef ALLOW_ECCO_DEBUG
+      ioUnit=standardMessageUnit
+#endif
+
       factor = 0.01 _d 0
       spval = -9990. _d 0
 
@@ -94,32 +103,66 @@ cnew(
       call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
       ymod = topexstartdate(1)/10000
 
-      if ( ymod .EQ. yday ) then
-         middate(1) = topexstartdate(1)
+      if ( ymod .GE. yday ) then
+         call cal_FullDate( topexstartdate(1), 0, middate, mythid)
       else
          middate(1) = yday*10000+100+1
+         call cal_FullDate( middate(1), 0, middate, mythid)
       endif
-      middate(2) = 0
-      middate(3) = modelstartdate(3)
-      middate(4) = modelstartdate(4)
 
       call cal_TimePassed( middate, daydate, difftime, mythid )
       call cal_ToSeconds( difftime, diffsecs, mythid )
+c      sshrec = floor(diffsecs/topexperiod) + 1
       sshrec = int(diffsecs/topexperiod) + 1
 
       il=ilnblnk(topexfile)
       write(fnametmp(1:80),'(2a,i4)')
      &     topexfile(1:il), '_', yday
+#ifdef ALLOW_ECCO_DEBUG
+        WRITE(msgBuf,'(A,I4,A,I4,A,I10,A,1PE15.2)') 'tpx reading ',
+     &      yday,' ',ymod,' ',sshrec,' ',diffsecs
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c
+        CALL CAL_PRINTDATE(middate,mythid)
+        CALL CAL_PRINTDATE(daydate,mythid)
+        CALL CAL_PRINTDATE(difftime,mythid)
+#endif  
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
          write(fnametmp(1:80),'(a)') topexfile(1:il)
-         sshrec = irec
+         call cal_TimePassed(topexstartdate,daydate,difftime,mythid)
+         call cal_ToSeconds( difftime, diffsecs, mythid )
+c         sshrec = floor(diffsecs/topexperiod) + 1
+         sshrec = int(diffsecs/topexperiod) + 1
+         inquire( file=fnametmp, exist=exst )
+#ifdef ALLOW_ECCO_DEBUG
+        WRITE(msgBuf,'(A,I4,A,I4,A,I10,A,1PE15.2)') 'tpx now reading ',
+     &      yday,' ',ymod,' ',sshrec,' ',diffsecs
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c
+        CALL CAL_PRINTDATE(middate,mythid)
+        CALL CAL_PRINTDATE(daydate,mythid)
+        CALL CAL_PRINTDATE(difftime,mythid)
+#endif
       endif
 
 cnew)
 
+c read data:
+      if ( (sshrec .GT. 0).AND.(exst) ) then
       call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, tpobs,
      &                   sshrec, mythid )
+      else
+       do bj = jtlo,jthi
+        do bi = itlo,ithi
+         do j = jmin,jmax
+          do i = imin,imax
+            tpobs(i,j,bi,bj) = spval
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.13 2011/07/28 18:43:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.14 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -201,16 +201,15 @@ c-- assume daily fields
            call cal_getdate( dayiter, daytime, daydate, mythid )
            call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
            ymod = localstartdate(1)/10000
-           if ( ymod .EQ. yday ) then
-              middate(1) = modelstartdate(1)
+           if ( ymod .GE. yday ) then
+              call cal_FullDate( localstartdate(1), 0, middate, mythid)
            else
               middate(1) = yday*10000+100+1
+              call cal_FullDate( middate(1), 0, middate, mythid)
            endif
-           middate(2) = 0
-           middate(3) = modelstartdate(3)
-           middate(4) = modelstartdate(4)
            call cal_TimePassed( middate, daydate, difftime, mythid )
            call cal_ToSeconds( difftime, diffsecs, mythid )
+c           localrec = floor(diffsecs/localperiod) + 1
            localrec = int(diffsecs/localperiod) + 1
         else
 c-- assume monthly fields
@@ -231,8 +230,9 @@ c-- assume monthly fields
         write(fname2(1:128),'(2a,i4)')
      &       localobsfile(1:il), '_', yday
         inquire( file=fname2, exist=exst )
-        if (.NOT. exst) then
+        if ( (.NOT. exst).AND.( localperiod .NE. 86400. ) ) then
            write(fname2(1:128),'(a)') localobsfile(1:il)
+           inquire( file=fname2, exist=exst )
 #ifndef COST_GENERIC_ASSUME_CYCLIC 
 c assume we have one big file, one year after the other
            localrec = obsrec
@@ -240,7 +240,7 @@ c otherwise assume climatology, used for each year
 #endif
         endif
 
-        if ( localrec .GT. 0 ) then
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
           call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
         else

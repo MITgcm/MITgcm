@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.10 2012/02/23 23:31:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.11 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -94,17 +94,16 @@ cnew(
       call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
       ymod = ersstartdate(1)/10000
 
-      if ( ymod .EQ. yday ) then
-         middate(1) = ersstartdate(1)
+      if ( ymod .GE. yday ) then
+         call cal_FullDate( ersstartdate(1), 0, middate, mythid)
       else
          middate(1) = yday*10000+100+1
+         call cal_FullDate( middate(1), 0, middate, mythid)
       endif
-      middate(2) = 0
-      middate(3) = modelstartdate(3)
-      middate(4) = modelstartdate(4)
 
       call cal_TimePassed( middate, daydate, difftime, mythid )
       call cal_ToSeconds( difftime, diffsecs, mythid )
+c      sshrec = floor(diffsecs/ersperiod) + 1
       sshrec = int(diffsecs/ersperiod) + 1
 
       il=ilnblnk(ersfile)
@@ -113,15 +112,30 @@ cnew(
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
          write(fnametmp(1:80),'(a)') ersfile(1:il)
-         sshrec = irec
+         call cal_TimePassed(ersstartdate,daydate,difftime,mythid)
+         call cal_ToSeconds( difftime, diffsecs, mythid )
+c         sshrec = floor(diffsecs/ersperiod) + 1
+         sshrec = int(diffsecs/ersperiod) + 1
+         inquire( file=fnametmp, exist=exst )
       endif
 
 cnew)
 
-
+c read data:
+      if ( (sshrec .GT. 0).AND.(exst) ) then
       call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, ersobs,
      &                   sshrec, mythid )
-
+      else
+       do bj = jtlo,jthi
+        do bi = itlo,ithi
+         do j = jmin,jmax
+          do i = imin,imax
+            ersobs(i,j,bi,bj) = spval
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

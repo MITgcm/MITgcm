@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.2 2010/10/28 18:20:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.3 2012/02/28 00:51:07 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -80,7 +80,12 @@ c     == local variables ==
 
       character*(80) fname
       character*(80) fname2
-      character*(MAX_LEN_MBUF) msgbuf
+
+#ifdef ALLOW_ECCO_DEBUG
+      character*(MAX_LEN_MBUF) msgBuf
+      INTEGER ioUnit
+#endif
+      logical exst
 
       _RL daytime
       _RL diffsecs
@@ -89,6 +94,7 @@ c     == local variables ==
       integer daydate(4)
       integer difftime(4)
       integer middate(4)
+      integer locstartdate(4)
       integer yday, ymod
       integer md, dd, sd, ld, wd
       integer mody, modm
@@ -110,6 +116,12 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
+
+#ifdef ALLOW_ECCO_DEBUG
+      ioUnit=standardMessageUnit
+#endif
+
+      call cal_FullDate(19920101,0,locstartdate,mythid)
 
 c-- detect the relevant gencost indices
       igen_amsre=0
@@ -166,26 +178,36 @@ c get modeled sst:
      &                       xx_sstbar_mean_dummy )
 
 c get observed sst:
-             daytime = FLOAT(secondsperday*(krec-1))
-             dayiter = hoursperday*(krec-1)
+             daytime = FLOAT(secondsperday*(krec-1)) + modelstart
+             dayiter = hoursperday*(krec-1)+modeliter0
              call cal_getdate( dayiter, daytime, daydate, mythid )
              call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
-             ymod = modelstartdate(1)/10000
-             if ( ymod .EQ. yday ) then
-                middate(1) = modelstartdate(1)
+             ymod = locstartdate(1)/10000
+             if ( ymod .GE. yday ) then
+                call cal_FullDate(locstartdate(1),0,middate,mythid)
              else
-                middate(1) = yday*10000+100+1
+               middate(1) = yday*10000+100+1
+               call cal_FullDate( middate(1), 0, middate, mythid)
              endif
-             middate(2) = 0
-             middate(3) = modelstartdate(3)
-             middate(4) = modelstartdate(4)
              call cal_TimePassed( middate, daydate, difftime, mythid )
              call cal_ToSeconds( difftime, diffsecs, mythid )
+c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
              il=ilnblnk(gencost_datafile(igen_amsre))
              write(fname2(1:80),'(2a,i4)')
      &         gencost_datafile(igen_amsre)(1:il), '_', yday
+             inquire( file=fname2, exist=exst )
+
+#ifdef ALLOW_ECCO_DEBUG
+        WRITE(msgBuf,'(A,I4,A,I4,A,I10,A,1PE15.2)') 'sstv4 reading ',
+     &      yday,' ',ymod,' ',localrec,' ',diffsecs
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c
+        CALL CAL_PRINTDATE(middate,mythid)
+        CALL CAL_PRINTDATE(daydate,mythid)
+        CALL CAL_PRINTDATE(difftime,mythid)
+#endif  
 
              if ( localrec .GT. 0 ) then
                call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
@@ -304,26 +326,36 @@ c get modeled sst:
      &                       xx_sstbar_mean_dummy )
 
 c get observed sst:
-             daytime = FLOAT(secondsperday*(irec-1))
-             dayiter = hoursperday*(irec-1)
+             daytime = FLOAT(secondsperday*(irec-1)) + modelstart
+             dayiter = hoursperday*(irec-1)+modeliter0
              call cal_getdate( dayiter, daytime, daydate, mythid )
              call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
-             ymod = modelstartdate(1)/10000
-             if ( ymod .EQ. yday ) then
-                middate(1) = modelstartdate(1)
+             ymod = locstartdate(1)/10000
+             if ( ymod .GE. yday ) then
+                call cal_FullDate(locstartdate(1),0,middate,mythid)
              else
-                middate(1) = yday*10000+100+1
+               middate(1) = yday*10000+100+1
+               call cal_FullDate( middate(1), 0, middate, mythid)
              endif
-             middate(2) = 0
-             middate(3) = modelstartdate(3)
-             middate(4) = modelstartdate(4)
              call cal_TimePassed( middate, daydate, difftime, mythid )
              call cal_ToSeconds( difftime, diffsecs, mythid ) 
+c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
              il=ilnblnk(gencost_datafile(igen_amsre))
              write(fname2(1:80),'(2a,i4)')
      &         gencost_datafile(igen_amsre)(1:il), '_', yday
+             inquire( file=fname2, exist=exst )
+
+#ifdef ALLOW_ECCO_DEBUG
+        WRITE(msgBuf,'(A,I4,A,I4,A,I10,A,1PE15.2)') 'sstv4 reading ',
+     &      yday,' ',ymod,' ',localrec,' ',diffsecs
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c
+        CALL CAL_PRINTDATE(middate,mythid)
+        CALL CAL_PRINTDATE(daydate,mythid)
+        CALL CAL_PRINTDATE(difftime,mythid)
+#endif
 
              if ( localrec .GT. 0 ) then
                call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
