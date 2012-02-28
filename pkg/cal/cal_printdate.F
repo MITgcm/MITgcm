@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printdate.F,v 1.3 2004/03/04 19:34:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printdate.F,v 1.4 2012/02/28 00:36:36 gforget Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -48,22 +48,24 @@ c     mythid  - thread number for this instance of the routine.
 
 c     == local variables ==
 
-      integer ierr
-ce    character*(max_len_mbuf) msgbuf
+      integer ierr, ioUnit
+      character*(max_len_mbuf) msgbuf
 
 c     == end of interface ==
 
+      ioUnit=standardMessageUnit
+
       if ( caldate(4) .gt. 0 ) then
 c       Print the calendar date.
-        print*,caldate
-ce      write(*,'(i10,i8,i3,i4)') caldate(1), caldate(2),
-ce   &                            caldate(3), caldate(4)
+        write(msgBuf,'(i10,i8,i3,i4)') caldate(1), caldate(2),
+     &                                 caldate(3), caldate(4)
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       else if ( caldate(4) .eq. -1 ) then
 c       Print the time interval.
-        print*,caldate
-ce      write(*,'(i10,i8,i3,i4)') caldate(1), caldate(2),
-ce   &                            caldate(3), caldate(4)
+        write(msgBuf,'(i10,i8,i3,i4)') caldate(1), caldate(2),
+     &                                 caldate(3), caldate(4)
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       else
 
