@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.39 2011/05/24 22:02:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.40 2012/02/28 00:26:11 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -58,6 +58,7 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
+#if (defined (ALLOW_ADJOINT_RUN)||defined (ALLOW_TANGENTLINEAR_RUN))
 c     == local variables ==
 
       _RL    fcloc
@@ -653,6 +654,7 @@ c          write(cunit) nWetiGlobal(1)
        ENDIF !IF ( myProcId .eq. 0 )
        _END_MASTER( mythid )
       _BARRIER
+#endif /* (defined (ALLOW_ADJOINT_RUN)||defined (ALLOW_TANGENTLINEAR_RUN)) */
 #endif /* EXCLUDE_CTRL_PACK */
 
       return
