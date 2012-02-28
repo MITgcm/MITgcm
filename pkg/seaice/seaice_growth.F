@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.155 2012/02/16 01:23:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.156 2012/02/28 18:05:40 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -698,6 +698,8 @@ CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE tices(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 # endif /* SEAICE_MULTICATEGORY */
+CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Start loop over multi-categories, if SEAICE_MULTICATEGORY is undefined
@@ -773,6 +775,15 @@ cif     The actual vs. maximum latent heat flux
 # endif
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE AREApreTH       = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QbyATM_cover  = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QSWbyATM_cover= comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QbyATM_open   = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QSWbyATM_open = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C switch heat fluxes from W/m2 to 'effective' ice meters
         DO J=1,sNy
          DO I=1,sNx
@@ -799,6 +810,17 @@ cgf just for those who may need to omit this term to reproduce old results
          ENDDO
         ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE AREApreTH       = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QbyATM_cover  = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QSWbyATM_cover= comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QbyATM_open   = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QSWbyATM_open = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE r_QbyATM_cover  = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE r_QbyATM_open   = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE r_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf no additional dependency through ice cover
@@ -818,7 +840,10 @@ C underlying surface water temperature to freezing point
 C ======================================================
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE theta(:,:,kSurface,bi,bj) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
+CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
 #endif
 
         DO J=1,sNy
@@ -1115,6 +1140,7 @@ CADJ STORE d_HEFFbyATMonOCN_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE recip_heffActual = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_hsnwbyatmonsnw = comlev1_bibj,key=iicekey,byte=isbyte
 cph(
 cphCADJ STORE d_AREAbyATM  = comlev1_bibj,key=iicekey,byte=isbyte
 cphCADJ STORE d_AREAbyICE  = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1421,6 +1447,11 @@ C compute net heat flux leaving/entering the ocean,
 C accounting for the part used in melt/freeze processes
 C =====================================================
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE d_hsnwbyneg = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_hsnwbyocnonsnw = comlev1_bibj,key=iicekey,byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
         DO J=1,sNy
          DO I=1,sNx
           QNET(I,J,bi,bj) = r_QbyATM_cover(I,J) + r_QbyATM_open(I,J)
@@ -1451,6 +1482,16 @@ C ======================================================
 #ifndef SEAICE_DISABLE_HEATCONSFIX
 C treat advective heat flux by ocean to ice water exchange (at 0decC)
 C ===================================================================
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE d_HEFFbyNEG = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HSNWbyNEG = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HSNWbyOCNonSNW = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE d_HSNWbyATMonSNW = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE theta(:,:,kSurface,bi,bj) = comlev1_bibj,
+CADJ &                       key = iicekey, byte = isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEheatConsFix ) THEN
 c Unlike for evap and precip, the temperature of gained/lost
 c ocean liquid water due to melt/freeze of solid water cannot be chosen
