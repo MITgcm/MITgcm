@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.110 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.111 2012/02/28 00:31:17 gforget Exp $
 C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
@@ -282,7 +283,8 @@ c--   Do the model integration.
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#  if (defined ALLOW_AUTODIFF_TAMC && \
+      (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) )
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
@@ -1162,7 +1164,8 @@ C--   Save state for restarts
       IF (debugMode) CALL DEBUG_CALL('END OF TIMESTEP',myThid)
 #endif /* ALLOW_DEBUG */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#  if (defined ALLOW_AUTODIFF_TAMC && \
+      (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) )
 #ifdef ALLOW_TAMC_CHECKPOINTING
              endif
             enddo
