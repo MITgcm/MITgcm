@@ -1,0 +1,19 @@
+MITgcm variable         Symbol  Value    Unit
+
+ICEFRONTlatentHeat      L       334000   [J/kg]
+ICEFRONTHeatCapacity_Cp CpI     2000     [J/kg/oC ]
+rhoIcefront             rhoI    917      [kg/m3]
+ICEFRONTheatTransCoeff  gammaT  1.0 d-4	 [m/s]
+ICEFRONTheatTransCoeff  gammaS  5.05_d-7 [m/s]
+rUnit2mass              rho     1030     [kg/m3]
+HeatCapacity_Cp         Cp      3994     [J/kg/oC]
+
+thetaFreeze             TB               oC
+tLoc                    T                oC
+thetaIce                Tice             oC
+sLoc                    S                psu
+saltFreeze              SB               psu
+FreshWaterFlux          q                [kg/m2/s]
+HeatFlux                Q                [W/m2]
+icefront_TendT          gT               [oC/s]
+icefront_TendT          gT               [psu/s]
