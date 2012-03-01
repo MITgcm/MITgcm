@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.121 2012/02/28 00:35:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.122 2012/03/01 23:36:38 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -262,8 +261,7 @@ c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef ALLOW_AUTODIFF_OPENAD
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ifdef ALLOW_AUTODIFF
-#  if (defined ALLOW_TAMC_CHECKPOINTING && \
-      (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) )
+#  ifdef ALLOW_TAMC_CHECKPOINTING
 
       max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
       max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
@@ -327,7 +325,6 @@ c**************************************
 
 # endif /* ALLOW_TAMC_CHECKPOINTING */
 
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 c**************************************
 c--
 c--       Initialize storage for the innermost loop.
@@ -418,7 +415,6 @@ CADJ &     = COMMON,nchklev_1*nthreads_chkpt*numItersMax
 #   endif
 c--
 c**************************************
-#endif /* (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) */
 
 #ifdef STORE_LOADEDREC_TEST
           DO bj = myByLo(myThid), myByHi(myThid)
@@ -428,8 +424,7 @@ c**************************************
           ENDDO
 #endif /* STORE_LOADEDREC_TEST */
 
-#if (defined ALLOW_TAMC_CHECKPOINTING && \
-    (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) )
+#ifdef ALLOW_TAMC_CHECKPOINTING
 
           do ilev_1 = 1,nchklev_1
 
@@ -525,8 +520,7 @@ c--     >>> Loop body end <<<
 #ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_AUTODIFF_OPENAD
 
-#  if (defined ALLOW_TAMC_CHECKPOINTING && \
-    (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) )
+#   ifdef ALLOW_TAMC_CHECKPOINTING 
             endif
           enddo
           endif
