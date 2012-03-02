@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.112 2012/03/01 23:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.113 2012/03/02 05:32:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,6 +142,7 @@ c They provide the fields to be stored.
 #  include "SEAICE.h"
 #  include "SEAICE_PARAMS.h"
 #  include "SEAICE_COST.h"
+#  include "SEAICE_TRACER.h"
 # endif
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"

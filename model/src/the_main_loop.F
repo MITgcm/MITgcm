@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.122 2012/03/01 23:36:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.123 2012/03/02 05:34:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,6 +103,7 @@ c They provide the fields to be stored.
 #   include "SEAICE.h"
 #   include "SEAICE_PARAMS.h"
 #   include "SEAICE_COST.h"
+#   include "SEAICE_TRACER.h"
 #  endif
 #  ifdef ALLOW_SALT_PLUME
 #   include "SALT_PLUME.h"
@@ -352,6 +353,8 @@ CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num*nr
 #   endif /* ALLOW_PTRACERS */
 c--
 #   ifndef DISABLE_MULTIDIM_ADVECTION
+CADJ INIT comlev1_bibj_gad = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
