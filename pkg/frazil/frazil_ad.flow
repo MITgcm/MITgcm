@@ -1,0 +1,8 @@
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_ad.flow,v 1.1 2012/03/02 01:45:22 dimitri Exp $
+C $Name:  $
+
+C----------------------------------------
+C subroutine  frazil_diagnostics_state
+C----------------------------------------
+CADJ SUBROUTINE frazil_diagnostics_state INPUT  = 1,2,3
+CADJ SUBROUTINE frazil_diagnostics_state OUTPUT =

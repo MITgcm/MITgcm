@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.245 2012/01/21 18:43:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.246 2012/03/02 01:45:22 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,6 +129,8 @@ C                     use old method by setting useAreaViscLength=.true.
 C     usePickupBeforeC35 :: to restart from old-pickup files (generated with code
 C                   from before checkpoint-35, Feb 08, 2001): disabled (Jan 2007)
 C     debugMode    :: to print debug msg. now read from parameter file eedata
+C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
+C                              (replaced by pkg/frazil)
 C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
@@ -152,6 +154,7 @@ C                     (replaced by SHELFICEtopoFile in SHELFICE.h)
       LOGICAL useAnisotropicViscAgridMax
       LOGICAL usePickupBeforeC35
       LOGICAL saveDebugMode
+      LOGICAL allowInteriorFreezing
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       LOGICAL calendarDumps
@@ -316,6 +319,7 @@ C--   Initialise retired parameters to unlikely value
       useAnisotropicViscAgridMax=.TRUE.
       usePickupBeforeC35    = .FALSE.
       saveDebugMode   = debugMode
+      allowInteriorFreezing = .FALSE.
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
@@ -742,6 +746,13 @@ C     Check for retired parameters still being used
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "debugMode" has been moved to "eedata"',
      &  ' and is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( allowInteriorFreezing ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "allowInteriorFreezing" has been replaced',
+     &  ' by pkg/frazil and is no longer allowed in file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 

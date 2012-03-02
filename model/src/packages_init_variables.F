@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.85 2012/02/04 01:43:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.86 2012/03/02 01:45:22 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,8 @@ C       |
 C       |-- MY82_INIT_VARIA
 C       |
 C       |-- GGL90_INIT_VARIA
+C       |
+C       |-- FRAZIL_INIT_VARIA
 C       |
 C       |-- SEAICE_INIT_VARIA
 C       |
@@ -203,6 +205,15 @@ C--   Initialize GGL90 vertical mixing scheme.
        CALL GGL90_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_GGL90 */
+
+#ifdef ALLOW_FRAZIL
+      IF (useFRAZIL) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('FRAZIL_INIT_VARIA',myThid)
+# endif
+        CALL FRAZIL_INIT_VARIA( myThid)
+      ENDIF
+#endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SEAICE
 C--   Initialize SEAICE model.

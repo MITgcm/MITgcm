@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.77 2012/02/04 01:43:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.78 2012/03/02 01:45:22 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,11 @@ C       |-- PTRACERS_INIT_FIXED
 C       |
 C       |-- GCHEM_INIT_FIXED
 C       |
+C       |-- FRAZIL_INIT_FIXED
+C       |
 C       |-- THSICE_INIT_FIXED
+C       |
+C       |-- SEAICE_INIT_FIXED
 C       |
 C       |-- SHELFICE_INIT_FIXED
 C       |
@@ -443,6 +447,15 @@ C--   Initialise fixed array for Float pkg
         IF (debugMode) CALL DEBUG_CALL('RBCS_INIT_FIXED',myThid)
 # endif
         CALL RBCS_INIT_FIXED(myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_FRAZIL
+      IF (useFRAZIL) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('FRAZIL_INIT_FIXED',myThid)
+# endif
+        CALL FRAZIL_INIT_FIXED(myThid)
       ENDIF
 #endif
 

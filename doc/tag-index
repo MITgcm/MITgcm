@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1602 2012/03/01 23:58:43 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1603 2012/03/02 01:45:22 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o added pkg/frazil - see frazil_description.tex for details
 o pkg/shelfice/shelfice_thermodynamics.F
   - fix exponents for velocity dependent exchange coefficients: change 
     from 2/3(=0) to 0.66666666666666667

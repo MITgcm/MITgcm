@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.258 2012/02/04 00:56:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.259 2012/03/02 01:45:22 dimitri Exp $
 C $Name:  $
 C
 
@@ -339,7 +339,6 @@ C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
 C                        climatology is required.
 C     allowFreezing  :: Allows surface water to freeze and form ice
-C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     periodicExternalForcing :: Set true if forcing is time-dependant
 C- I/O parameters -
@@ -392,7 +391,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & momDissip_In_AB, doAB_onGtGs,
      & balanceEmPmR, balanceQnet, balancePrintMean,
      & doThetaClimRelax, doSaltClimRelax,
-     & allowFreezing, allowInteriorFreezing, useOldFreezing,
+     & allowFreezing, useOldFreezing,
      & periodicExternalForcing,
      & globalFiles,
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
@@ -479,7 +478,6 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
       LOGICAL allowFreezing
-      LOGICAL allowInteriorFreezing
       LOGICAL useOldFreezing
       LOGICAL periodicExternalForcing
       LOGICAL globalFiles
@@ -946,6 +944,7 @@ C Logical flags for selecting packages
       LOGICAL useRBCS
       LOGICAL useOffLine
       LOGICAL useMATRIX
+      LOGICAL useFRAZIL
       LOGICAL useSEAICE
       LOGICAL useSALT_PLUME
       LOGICAL useShelfIce
@@ -971,8 +970,8 @@ C Logical flags for selecting packages
      &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
      &        useGrdchk, useSMOOTH, useECCO, useSBO, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
-     &        useSEAICE, useSALT_PLUME, useShelfIce, useStreamIce,
-     &        useICEFRONT, useThSIce,
+     &        useFRAZIL, useSEAICE, useSALT_PLUME, useShelfIce,
+     &        useStreamIce, useICEFRONT, useThSIce,
      &        useATM2D, useAIM, useLand, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,

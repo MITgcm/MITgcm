@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.59 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.60 2012/03/02 01:45:22 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -351,6 +351,13 @@ C     Add heat in top-layer
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_FRAZIL
+      IF ( useFRAZIL )
+     &     CALL FRAZIL_TENDENCY_APPLY_T(
+     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
+     I     myTime, myThid )
+#endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
