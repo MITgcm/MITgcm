@@ -1,34 +1,29 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_description.tex,v 1.1 2012/03/02 01:45:23 dimitri Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_description.tex,v 1.2 2012/03/02 16:28:22 dimitri Exp $
 %%  $Name:  $
 %%
 
-Package ``FRAZIL'' is:
+Package ``FRAZIL'' is a repackaging and a replacement for subroutine
+interior_freeze.F and for run-time option allowInteriorFreezing, which has
+been retired.  It is meant to represent the formation of frazil at depth due
+to pressure and freshening-related supercooling.
 
-What happens when you have supercooled water in the middle of the water
-column?  Need to generate frazil ice, that floats to the surface (salinity and
-heat source locally plus adds ice to the sea ice and removes water from water
-column).
+The initial functionality of pkg/frazil is similar to that previously provided
+by interior_freeze.F, that is, it checks for water below the freezing point at
+depth and brings the negative heat anomaly to the surface level.
+Specifically, pkg/frazil currently assumes that: (i) supercooling at depth
+creates frazil, which rises to model's surface level in one model time step,
+and (ii) the frazil is porous to salinity as it rises through the water
+column, that is, frazil does not transport salt anomalies.
 
-Packaging of interior_freeze.  There's many reasons for that, including the
-addition of diagnostics and the potential for a more realistic description of
-frazil ice formation and redistribution processes at depth.
+The difference with interior_freeze.F is that rather than directly change
+potential temperature THETA, pkg/frazil instead stores the required
+adjustments in a temperature tendency matrix frazil_TendT.
 
-Initially pkg/frazil will only do what interior_freeze does now, i.e., collect
-negative heat below the freezing point at depth and immediately bring it to
-the surface.  Temperatures below the freezing point at depth will be adjusted
-to the freezing point.  A 2D array containing negative heat in "W/m^2" will be
-generated, which will be passed first to the sea-ice and shelf-ice packages.
-Any residual heat after the "ice" packages are done will be added to Qnet.
+These tendency terms are computed prior to any of the ``ice'' packages and
+routines (i.e., seaice, thsice, shelfice, icefront, and freeze_surface).  This
+allows the ice packages to operate on frazil_TendT, if they need to do so,
+prior to applying this frazil_TendT to THETA in external_forcing.F
 
-It is assumed that frazil ice is porous to salt and immediately adjusts to
-ambient salinity so that it does not carry any salt as it rises through water
-column.
-
-??? Should pkg/frazil collect negative heat from the surface level,
-??? from the level immediately below ice shelves,
-??? or from grid boxes adjacent to ice fronts?
-
-3. I will generate 2 separate diagnostics:
-  a 3-D diagnostic that contains pkg/frazil temperature adjustments divided by dTtracerLev(k) in deg C / s,
-  and a 2-D diagnostic that contains the negative heat passed to the ice packages in Joules.
+Package frazil is enabled with CPP option ALLOW_FRAZIL and runtime parameter
+useFRAZIL, in the usual MITgcm ways.
