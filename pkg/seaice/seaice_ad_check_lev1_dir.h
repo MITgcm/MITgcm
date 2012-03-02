@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.28 2011/11/03 00:27:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.29 2012/03/02 18:53:07 heimbach Exp $
 C $Name:  $
 
 CADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -88,4 +88,10 @@ CADJ &     key=ikey_dynamics, kind=isbyte
 CADJ STORE obwvice,obwvice0,obwvice1 = comlev1, 
 CADJ &     key=ikey_dynamics, kind=isbyte
 # endif
+#endif
+
+#ifdef ALLOW_SITRACER
+CADJ STORE sitracer = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE sitrarea = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE sitrheff = comlev1, key=ikey_dynamics, kind=isbyte
 #endif

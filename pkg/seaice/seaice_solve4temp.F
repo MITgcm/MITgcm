@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.32 2012/02/15 00:47:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.33 2012/03/02 18:56:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -387,6 +387,10 @@ C     d(qh)/d(TICE)
            dqh_dTs(I,J) = cc1*cc3t/((cc2-cc3t*Ppascals)**2 *t2)
           ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ &                     key = iicekey, byte = isbyte
+#endif /*  ALLOW_AUTODIFF_TAMC */
 C     Calculate the flux terms based on the updated tsurfLoc
           F_c(I,J)    = effConduct(I,J)*(tempFrz(I,J)-tsurfLoc(I,J))
           F_lh(I,J)   = D1I*UG(I,J)*(qhice(I,J)-AQH(I,J,bi,bj))
@@ -422,6 +426,10 @@ C-    Update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
           tsurfLoc(I,J) = tsurfLoc(I,J)
      &    + ( F_c(I,J)-F_ia(I,J) ) / ( effConduct(I,J)+dFia_dTs(I,J) )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ &                     key = iicekey, byte = isbyte
+#endif /*  ALLOW_AUTODIFF_TAMC */
           IF ( useMaykutSatVapPoly ) THEN
             tsurfLoc(I,J) = MAX( celsius2K+MIN_TICE, tsurfLoc(I,J) )
           ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.99 2012/02/16 01:22:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.100 2012/03/02 18:56:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -116,12 +116,17 @@ CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_GROWTH_LEGACY
+# ifdef SEAICE_GROWTH_LEGACY
           areaNm1(i,j,bi,bj) = 0. _d 0
           hEffNm1(i,j,bi,bj) = 0. _d 0
-#endif
+# endif
           uIceNm1(i,j,bi,bj) = 0. _d 0
           vIceNm1(i,j,bi,bj) = 0. _d 0
+# ifdef ALLOW_SITRACER
+          DO iTr = 1, SItrMaxNum
+           SItrBucket(i,j,bi,bj,iTr) = 0. _d 0
+          ENDDO
+# endif
          ENDDO
         ENDDO
        ENDDO
@@ -155,6 +160,10 @@ CADJ STORE seaice_sigma2  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaice_sigma12 = comlev1, key=ikey_dynamics, kind=isbyte
 #   endif
 #  endif
+# endif
+# ifdef ALLOW_SITRACER
+CADJ STORE siceload  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE sitracer  = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -225,6 +234,9 @@ C     because of ugly time level business
 #endif /* DISABLE_SEAICE_GROWTH */
 
 #ifdef ALLOW_SITRACER
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sitracer  = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
        CALL SEAICE_TRACER_PHYS ( myTime, myIter, myThid )
 #endif
 

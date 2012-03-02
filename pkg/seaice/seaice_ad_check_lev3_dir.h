@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.17 2011/11/03 00:27:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.18 2012/03/02 18:53:07 heimbach Exp $
 C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev3, key = ilev_3
@@ -40,3 +40,10 @@ CADJ STORE obwuice,obwuice0,obwuice1 = tapelev3, key = ilev_3
 CADJ STORE obwvice,obwvice0,obwvice1 = tapelev3, key = ilev_3
 # endif
 #endif
+
+#ifdef ALLOW_SITRACER
+CADJ STORE sitracer = tapelev3, key = ilev_3
+CADJ STORE sitrarea = tapelev3, key = ilev_3
+CADJ STORE sitrheff = tapelev3, key = ilev_3
+#endif
+
