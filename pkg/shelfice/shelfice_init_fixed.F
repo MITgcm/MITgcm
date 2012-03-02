@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.7 2011/05/13 19:41:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.8 2012/03/02 15:05:50 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -145,6 +145,20 @@ c--   use weight as mask
        diagName  = 'SHIForcS'
        diagTitle = 'Ice shelf forcing for salt, >0 increases salt'
        diagUnits = 'g/m^2/s         '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SHIgammT'
+       diagTitle = 'Ice shelf exchange coefficient for theta'
+       diagUnits = 'm/s             '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SHIgammS'
+       diagTitle = 'Ice shelf exchange coefficient for salt'
+       diagUnits = 'm/s             '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
