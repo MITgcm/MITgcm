@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.26 2012/03/02 13:07:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.27 2012/03/02 15:06:47 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -103,37 +103,10 @@ cph      shiPr = (viscArNr(1)/diffKrNrT(1))**shiTwoThirds
 cph      shiSc = (viscArNr(1)/diffKrNrS(1))**shiTwoThirds
        gammaTmoleT = 12.5 _d 0 * shiPr - 6. _d 0
        gammaTmoleS = 12.5 _d 0 * shiSc - 6. _d 0
+C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
+       etastar = 1. _d 0
        gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
      &      - recip_shiKarman
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1, sNy
-          DO I = 1, sNx
-           K = MAX(1,kTopC(I,J,bi,bj))
-           ustarSq = shiCdrag * MAX( 1D-06,
-     &           (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-     &          *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-     &          +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
-     &          *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
-           ustar   = SQRT(ustarSq)
-C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
-           etastar = 1. _d 0
-           IF ( fCori(I,J,bi,bj) .NE. 0. _d 0 ) THEN
-            gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
-     &           / ABS(fCori(I,J,bi,bj) * 5.0 _d 0 * shiKinVisc))
-     &           * recip_shiKarman 
-     &           + gammaTurbConst
-           ELSE
-            gammaTurb = gammaTurbConst
-           ENDIF
-           shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
-     &          ustar/(gammaTurb + gammaTmoleT) )
-           shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
-     &          ustar/(gammaTurb + gammaTmoleS) )             
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
@@ -237,6 +210,43 @@ C--   to the surface
           tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),0.D0)
          ENDDO
         ENDDO
+
+#ifdef SHI_ALLOW_GAMMAFRICT
+        IF ( SHELFICEuseGammaFrict ) THEN
+         DO J = 1, sNy
+          DO I = 1, sNx
+           K = kTopC(I,J,bi,bj)
+           IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
+            ustarSq = shiCdrag * MAX( 1D-06,
+     &            (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+     &           *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+     &           +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
+     &           *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
+            ustar   = SQRT(ustarSq)
+C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
+C           etastar = 1. _d 0
+C           gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
+C    &           - recip_shiKarman
+            IF ( fCori(I,J,bi,bj) .NE. 0. _d 0 ) THEN
+             gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
+     &            / ABS(fCori(I,J,bi,bj) * 5.0 _d 0 * shiKinVisc))
+     &            * recip_shiKarman 
+     &            + gammaTurbConst
+C     Do we need to catch the unlikely case of very small ustar 
+C     that can lead to negative gammaTurb?
+C            gammaTurb = MAX(0.D0, gammaTurb)
+            ELSE
+             gammaTurb = gammaTurbConst
+            ENDIF
+            shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
+     &           ustar/(gammaTurb + gammaTmoleT) )
+            shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
+     &           ustar/(gammaTurb + gammaTmoleS) )
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SHI_ALLOW_GAMMAFRICT */
 
 #ifdef ALLOW_ISOMIP_TD
         IF ( useISOMIPTD ) THEN
@@ -412,11 +422,16 @@ C     endif (not) useISOMIPTD
 C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
        tmpFac = HeatCapacity_Cp*rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL(shelficeForcingT,tmpFac,1,
-     &      'SHIForcT',0, 1,0,1,1,myThid)
+     &      'SHIForcT',0,1,0,1,1,myThid)
 C     SHIForcS (Ice shelf forcing for salt [g/m2/s], >0 increases salt)
        tmpFac = rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL(shelficeForcingS,tmpFac,1,
-     &      'SHIForcS',0, 1,0,1,1,myThid)
+     &      'SHIForcS',0,1,0,1,1,myThid)
+C     Transfer coefficients
+       CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
+     &      0,1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
