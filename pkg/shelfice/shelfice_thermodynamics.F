@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.25 2012/03/01 23:57:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.26 2012/03/02 13:07:21 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -109,29 +109,27 @@ cph      shiSc = (viscArNr(1)/diffKrNrS(1))**shiTwoThirds
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO J = 1, sNy
           DO I = 1, sNx
-           K = kTopC(I,J,bi,bj)
-           IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-            ustarSq = shiCdrag * MAX( 1D-06,
+           K = MAX(1,kTopC(I,J,bi,bj))
+           ustarSq = shiCdrag * MAX( 1D-06,
      &           (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
      &          *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
      &          +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
      &          *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
-            ustar     = SQRT(ustarSq)
+           ustar   = SQRT(ustarSq)
 C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
-            etastar   = 1. _d 0
-            IF ( fCori(I,J,bi,bj) .NE. 0. _d 0 ) THEN
-             gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
-     &            / ABS(fCori(I,J,bi,bj) * 5.0 _d 0 * shiKinVisc))
+           etastar = 1. _d 0
+           IF ( fCori(I,J,bi,bj) .NE. 0. _d 0 ) THEN
+            gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
+     &           / ABS(fCori(I,J,bi,bj) * 5.0 _d 0 * shiKinVisc))
      &           * recip_shiKarman 
      &           + gammaTurbConst
-            ELSE
-             gammaTurb = gammaTurbConst
-            ENDIF
-            shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
-     &           ustar/(gammaTurb + gammaTmoleT) )
-            shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
-     &           ustar/(gammaTurb + gammaTmoleS) )             
+           ELSE
+            gammaTurb = gammaTurbConst
            ENDIF
+           shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
+     &          ustar/(gammaTurb + gammaTmoleT) )
+           shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
+     &          ustar/(gammaTurb + gammaTmoleS) )             
           ENDDO
          ENDDO
         ENDDO
