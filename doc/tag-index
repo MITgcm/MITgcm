@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1603 2012/03/02 01:45:22 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1604 2012/03/03 03:46:25 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice : 
+  - final version of turbulent flux params, as agreed at MIT ice meet:
+       SEAICE_mcPheePiston (default is ~ 0.000875)
+       SEAICE_mcPheeTaper (default is 0.)
+       SEAICE_frazilFrac (defualt is 1.)
+       SEAICE_mcPheeStepFunc (default is false)
+  - changes results at trunction error level.
 o added pkg/frazil - see frazil_description.tex for details
 o pkg/shelfice/shelfice_thermodynamics.F
   - fix exponents for velocity dependent exchange coefficients: change 
