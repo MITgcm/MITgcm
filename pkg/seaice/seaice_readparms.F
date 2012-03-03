@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.115 2012/03/03 03:33:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.116 2012/03/03 05:35:03 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -251,7 +251,11 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_wetSnowAlb_south = UNSET_RL
       HO_south                = UNSET_RL
       SEAICE_wetAlbTemp  = -1. _d -3
+#ifdef SEAICE_EXTERNAL_FLUXES
+      SEAICE_waterAlbedo = UNSET_RL
+#else /* if undef SEAICE_EXTERNAL_FLUXES */
       SEAICE_waterAlbedo = 0.1    _d +00
+#endif /* SEAICE_EXTERNAL_FLUXES */
       SEAICE_strength    = 2.75   _d +04
       SEAICE_eccen       = 2.     _d 0
 C     coefficients for flux computations/bulk formulae

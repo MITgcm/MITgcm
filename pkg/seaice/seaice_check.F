@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.63 2012/03/03 03:33:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.64 2012/03/03 05:35:03 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -646,16 +646,25 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #ifdef SEAICE_EXTERNAL_FLUXES
-#if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
+# if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
-     &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf '
+     &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
-#else
+# endif /* !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE) */
+         IF ( SEAICE_waterAlbedo .NE. UNSET_RL ) THEN
+          WRITE(msgBuf,'(A)')
+     &      'SEAICE_waterAlbedo is not used with SEAICE_EXTERNAL_FLUXES'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          WRITE(msgBuf,'(A)')
+     &      'Set exf_albedo in data.exf EXF_NML_01 instead'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+         ENDIF
+#else /* if undef SEAICE_EXTERNAL_FLUXES */
          WRITE(msgBuf,'(3A)') 'S/R SEAICE_CHECK: ',
-     &     'SEAICE_EXTERNAL_FLUXES is defined, so we assume you know ',
-     &     'what you are doing.'
+     &     'SEAICE_EXTERNAL_FLUXES is undefined, so we assume you ',
+     &     'know what you are doing.'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          CALL PRINT_ERROR( msgBuf, myThid )
