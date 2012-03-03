@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.27 2012/03/02 19:00:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.28 2012/03/03 15:38:39 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -16,8 +16,9 @@ sub_list_jobs()
      case $i in
        'mth') sfx='ifc_'${i}  ;;
        'tuv') sfx='op64_'${i} ;;
-       'mp2') sfx=${i}'_mth'  ;;
+       'opa') sfx='op64_adm'  ;;
        'g77') sfx=${i}'_adm'  ;;
+       'mp2') sfx=${i}'_mth'  ;;
            *) sfx=${i}'_mpi'  ;;
      esac
      if test -f $SUB_DIR/aces_test_$sfx ; then
