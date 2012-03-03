@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_calc_rhs.F,v 1.1 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_calc_rhs.F,v 1.2 2012/03/03 16:04:38 dimitri Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -48,13 +48,13 @@ C     Tfreezing :: Freezing threshold temperature.
       EXTERNAL SW_TEMP
 CEOP
 
-C--   Loops on tile indices bi,bj
+C--   Check for water below freezing point.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k = 2, Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-C     Check for water below freezing point.
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          kTop = kSurfC(i,j,bi,bj)
+          DO k = (kTop+1), Nr
            IF ( maskC(i,j,k-1,bi,bj) .NE. 0. _d 0 .AND.
      &          maskC(i,j,k,  bi,bj) .NE. 0. _d 0 ) THEN
 
@@ -78,20 +78,20 @@ C  CHECKVALUE: TF= -2.588567 DEG. C FOR S=40.0, P=500. DECIBARS
 
             IF (tLoc .LT. Tfreezing) THEN
 C     Move the negative heat to surface level.
-               kTop = kSurfC(i,j,bi,bj)
-               Tresid = Tfreezing - tloc
-               frazil_TendT(i,j,k,bi,bj) = Tresid / dTtracerLev(k)
-               frazil_TendT(i,j,kTop,bi,bj) = - Tresid *
-     &              ( hFacC(i,j,k,bi,bj) * dRf(k) *
-     &              recip_hFacC(i,j,kTop,bi,bj) * recip_drF(kTop) ) /
-     &              dTtracerLev(kTop)
+             Tresid = Tfreezing - tloc
+             FrazilForcingT(i,j,k,bi,bj) =
+     &            Tresid / dTtracerLev(k)
+     &            * HeatCapacity_Cp * rUnit2mass
+     &            * drF(k) * _hFacC(i,j,k,bi,bj)
+             FrazilForcingT(i,j,kTop,bi,bj) =
+     &            - Tresid / dTtracerLev(kTop)
+     &            * HeatCapacity_Cp * rUnit2mass
+     &            * drF(k) * _hFacC(i,j,k,bi,bj)
             ENDIF
-
            ENDIF
           ENDDO
          ENDDO
         ENDDO
-C--   end bi,bj loops.
        ENDDO
       ENDDO
 

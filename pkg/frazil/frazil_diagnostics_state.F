@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/Attic/frazil_diagnostics_state.F,v 1.1 2012/03/02 01:45:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/Attic/frazil_diagnostics_state.F,v 1.2 2012/03/03 16:04:38 dimitri Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -22,7 +22,7 @@ C     !USES:
 C  put following include within #ifdef in case this file is copied to local
 C  code dir but pkg/frazil is not compiled (missing file FRAZIL.h).
 #ifdef ALLOW_FRAZIL
-#include "FRAZIL.h"
+# include "FRAZIL.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -34,17 +34,12 @@ C     myThid   :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_FRAZIL
-C     !LOCAL VARIABLES:
-
-#ifdef ALLOW_DIAGNOSTICS
+# ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-
-         CALL DIAGNOSTICS_FILL( frazil_TendT,'FRAZdTdt',
+         CALL DIAGNOSTICS_FILL( FrazilForcingT, 'FrzForcT',
      &                          0,Nr, 0, 1, 1, myThid )
-
       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
+# endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_FRAZIL */
 
       RETURN

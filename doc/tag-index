@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1604 2012/03/03 03:46:25 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1605 2012/03/03 16:04:38 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,7 +10,8 @@ o pkg/seaice :
        SEAICE_mcPheeTaper (default is 0.)
        SEAICE_frazilFrac (defualt is 1.)
        SEAICE_mcPheeStepFunc (default is false)
-  - changes results at trunction error level.
+  - changes results at trunction error level
+  - ifdef SEAICE_EXTERNAL_FLUXES, disallow SEAICE_waterAlbedo
 o added pkg/frazil - see frazil_description.tex for details
 o pkg/shelfice/shelfice_thermodynamics.F
   - fix exponents for velocity dependent exchange coefficients: change 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_diagnostics_init.F,v 1.1 2012/03/02 01:45:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_diagnostics_init.F,v 1.2 2012/03/03 16:04:38 dimitri Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -45,10 +45,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c     IF ( useDiagnotics ) THEN
 
-        diagName  = 'FRAZdTdt'
-        diagTitle = ' Pot.Temp. tendency from package FRAZIL'
-        diagUnits = 'K/s             '
-        diagCode  = 'SMR     MR      '
+        diagName  = 'FrzForcT'
+        diagTitle = 'Frazil temperature forcing, > 0 increases theta'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
