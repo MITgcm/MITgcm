@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.62 2012/02/16 01:28:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.63 2012/03/03 03:33:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,6 +26,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
@@ -47,8 +48,16 @@ C     msgBuf     :: Informational/error message buffer
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
+      _RL SEAICE_mcphee_max
+      INTEGER kSurface
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       kSurface        = Nr
+      ELSE
+       kSurface        = 1
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 
@@ -110,25 +119,83 @@ C--   check ice cover fraction formula
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
-C--   check concistency of turbulent flux term specification
+C--   deal with the old ways of specifying mcPheePiston & frazilFrac terms
 
-      IF ( ( SEAICE_availHeatFrac .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_availHeatFrac .GT. 1. _d 0 ) .OR.
-     &     ( SEAICE_availHeatFracFrz .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_availHeatFracFrz .GT. 1. _d 0 ) ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' SEAICE_availHeatFrac or SEAICE_availHeatFracFrz '
+C     a) check that the short lived SEAICEturbFluxFormula was not
+C     specified
+      IF   ( SEAICEturbFluxFormula .NE. UNSET_I ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: SEAICEturbFluxFormula ',
+     &  ' was retired. Instead set SEAICE_mcPheePiston for the '
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' out of bounds; they must lie within 0. and 1. '
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: turbulent flux (melt only)',
+     &  ' SEAICE_frazilFrac (case of T below freezing temperature). '
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
-      IF ( ( SEAICE_availHeatTaper .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_availHeatTaper .GT. 1. _d 0 ) ) THEN
+C     b) if specified then use the old way (short lived) of specifying
+C     SEAICE_mcPheeTaper
+      IF   ( SEAICE_availHeatTaper .NE. UNSET_RL ) THEN
+       SEAICE_mcPheeTaper = SEAICE_availHeatTaper
+C issue warning
+      ENDIF
+
+C     c) if specified then use the original way of specifying this
+        IF ( SEAICE_availHeatFrac .NE. UNSET_RL ) then
+          SEAICE_mcPheePiston = SEAICE_availHeatFrac * 
+     &      dRf(kSurface)/SEAICE_deltaTtherm
+          IF ( SEAICE_availHeatFracFrz .EQ. UNSET_RL ) THEN
+            SEAICE_frazilFrac = SEAICE_availHeatFrac
+          ELSE
+            SEAICE_frazilFrac = SEAICE_availHeatFracFrz
+          ENDIF
+c ? need something for the case of just specifying SEAICE_availHeatFracFrz
+c ? issue warning
+        ENDIF
+
+C     d) if specified then use the second oldest way of specifying this
+        IF ( SEAICE_gamma_t .NE. UNSET_RL ) then      
+          SEAICE_mcPheePiston = dRf(kSurface)/SEAICE_gamma_t
+          IF ( SEAICE_gamma_t_frz .EQ. UNSET_RL ) THEN
+            SEAICE_frazilFrac = SEAICE_deltaTtherm/SEAICE_gamma_t
+          ELSE
+            SEAICE_frazilFrac = SEAICE_deltaTtherm/SEAICE_gamma_t_frz
+          ENDIF
+C ? need something for the case of just specifying SEAICE_gamma_t_frz
+C ? issue warning
+        ENDIF
+
+
+C--   check concistency of turbulent flux term etc. specification
+
+      SEAICE_mcphee_max=dRf(kSurface)/SEAICE_deltaTtherm
+      IF ( ( ( SEAICE_mcPheePiston .LT. 0. _d 0 ).OR.
+     &       ( SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) ).AND.
+     &     ( usePW79thermodynamics ) ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' SEAICE_mcPheePiston is out of bounds.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' They must lie within 0. and drf(1)/SEAICE_deltaTtherm '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+      IF ( ( SEAICE_frazilFrac .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_frazilFrac .GT. 1. _d 0 ) ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' SEAICE_frazilFrac is out of bounds.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' They must lie within 0. and 1. '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+      IF ( ( SEAICE_mcPheeTaper .LT. 0. _d 0 ) .OR.
+     &     ( SEAICE_mcPheeTaper .GT. 1. _d 0 ) ) THEN
          WRITE(msgBuf,'(A)')
-     &      'SEAICE_availHeatTaper cannot be specified  '//
+     &      'SEAICE_mcPheeTaper cannot be specified  '//
      &      'outside of the [0. 1.] range'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
@@ -430,19 +497,61 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_ALLOW_TD_IF */
 
-C--   MCPHEE_OCEAN_ICE_HEAT_FLUX is obsolete: issue warning and stop.
-#ifdef MCPHEE_OCEAN_ICE_HEAT_FLUX
-         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
-     &     'MCPHEE_OCEAN_ICE_HEAT_FLUX option is obsolete'
+#ifndef MCPHEE_OCEAN_ICE_HEAT_FLUX    
+        WRITE(msgBuf,'(A)') ' --- '
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &    'SEAICE_CHECK: MCPHEE_OCEAN_ICE_HEAT_FLUX option is now'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   '  the unified way of specifying the turb. ocean-ice flux'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   '  for which the default options have changed.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') ' --- '
+        CALL PRINT_ERROR( msgBuf , myThid)
+
+        WRITE(msgBuf,'(2A)') 'To recover the old default : 1) in ',
+     &   ' SEAICE_OPTIONS.h, define MCPHEE_OCEAN_ICE_HEAT_FLUX and '
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)')
+     &   ' GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR; 2) in data.seaice',
+     &   ' set SEAICE_mcPheePiston to the first ocn level thickness'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') ' divided by SEAICE_deltaTtherm, ',
+     &   ' and set SEAICE_frazilFrac to 1.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') ' --- '
+        CALL PRINT_ERROR( msgBuf , myThid)
+
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif
+
+#if (defined MCPHEE_OCEAN_ICE_HEAT_FLUX) && \
+    !(defined GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR)
+        WRITE(msgBuf,'(A)') ' --- '
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)')
+     &    'SEAICE_CHECK: GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR option',
+     &   ' is now the unified way of specif. the ocn-ice flux tapering.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+
+        WRITE(msgBuf,'(A)') ' --- '
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: by default the tapering',
+     &   ' is not active (SEAICE_mcPheeTaper = 0.). If you activate '
+        CALL PRINT_ERROR( msgBuf , myThid)
+
+         WRITE(msgBuf,'(3A)') 'SEAICE_CHECK: it, you could replace',
+     &   'linear tapering (default) with a step function (not re',
+     &   'commended) by setting SEAICE_mcPheeStepFunc to true'
          CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(2A)') 'it is now done by setting ',
-     &     ' SEAICEturbFluxFormula to 3 '
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(2A)') '(for retired',
-     &     ' GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR) or 4'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif /* MCPHEE_OCEAN_ICE_HEAT_FLUX */
+
+        WRITE(msgBuf,'(A)') ' --- '
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif
 
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
 #if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.114 2012/02/16 01:28:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.115 2012/03/03 03:33:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -92,7 +92,7 @@ C--   SEAICE parameters
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
-     & SEAICE_initialHEFF, SEAICEturbFluxFormula,
+     & SEAICE_initialHEFF, SEAICEturbFluxFormula, 
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
      & SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
@@ -112,10 +112,10 @@ C--   SEAICE parameters
      & SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
      & SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
-     & SIsalFRAC, SIsal0, SEAICEstressFactor,
-     & SEAICE_gamma_t, SEAICE_gamma_t_frz,
+     & SIsalFRAC, SIsal0, SEAICEstressFactor, SEAICE_availHeatTaper,
+     & SEAICE_mcPheePiston, SEAICE_frazilFrac, SEAICE_mcPheeTaper,
+     & SEAICE_mcPheeStepFunc, SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     & SEAICE_availHeatTaper,
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS, LSR_mixIniGuess,
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
@@ -286,15 +286,14 @@ C     old default value of 0.97001763668430343479
       SEAICE_snowConduct = 3.1    _d -01
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
-      SEAICE_freeze      = UNSET_RL
       SIsalFRAC          = 0.0    _d 0
       SIsal0             = 0.0    _d 0
-      SEAICEturbFluxFormula = 1
-      SEAICE_gamma_t     = UNSET_RL
-      SEAICE_gamma_t_frz = UNSET_RL
-      SEAICE_availHeatFrac = UNSET_RL
-      SEAICE_availHeatFracFrz = UNSET_RL
-      SEAICE_availHeatTaper = 0.0 _d 0
+      SEAICE_mcPheePiston  = 
+     &      MCPHEE_TAPER_FAC * STANTON_NUMBER * USTAR_BASE
+      SEAICE_frazilFrac    = 1. _d 0
+      SEAICE_mcPheeStepFunc= .FALSE.
+      SEAICE_mcPheeTaper= 0.0 _d 0
+      SEAICE_availHeatTaper = UNSET_RL
 #ifndef SEAICE_GROWTH_LEGACY
       SEAICE_doOpenWaterGrowth=.TRUE.
       SEAICE_doOpenWaterMelt=.FALSE.
@@ -381,6 +380,12 @@ c     MAX_TICE           = 30.     _d 0
       IceAgeTrFile(2)    = ' '
       IceAgeTrFile(3)    = ' '
       IceAgeTrFile(4)    = ' '
+      SEAICEturbFluxFormula =UNSET_I
+      SEAICE_gamma_t     = UNSET_RL
+      SEAICE_gamma_t_frz = UNSET_RL
+      SEAICE_availHeatFrac = UNSET_RL
+      SEAICE_availHeatFracFrz = UNSET_RL      
+      SEAICE_freeze      = UNSET_RL
 C-    end retired parameters
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
@@ -512,24 +517,6 @@ C
 #endif /* SEAICE_ALLOW_FREEDRIFT */
 
 C     Check the consitency of a few parameters
-      IF ( ( SEAICE_availHeatFrac  .NE. UNSET_RL .OR.
-     &       SEAICE_availHeatFracFrz .NE. UNSET_RL ) .AND.
-     &     ( SEAICEturbFluxFormula   .NE. 1 ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SEAICE_availHeatFrac and SEAICE_availHeatFracFrz '//
-     &      'cannot be set unless SEAICEturbFluxFormula is set to 1'
-         CALL PRINT_ERROR( msgBuf , myThid)
-         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
-      IF ( ( SEAICE_gamma_t     .NE. UNSET_RL .OR.
-     &       SEAICE_gamma_t_frz .NE. UNSET_RL ) .AND.
-     &     ( SEAICEturbFluxFormula .NE. 2 ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SEAICE_gamma_t and SEAICE_gamma_t_frz '//
-     &      'cannot be set unless SEAICEturbFluxFormula is set to 2'
-         CALL PRINT_ERROR( msgBuf , myThid)
-         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
       IF ( SEAICE_emissivity .LT. 1. _d -04 ) THEN
        WRITE(msgBuf,'(A)')
      &      'SEAICE_emissivity is no longer emissivity*(boltzmann '//

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.45 2012/02/16 01:31:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.46 2012/03/03 03:33:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -211,36 +211,15 @@ C--  Thermodynamics parameters
      & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')
       CALL WRITE_0D_RL( SEAICE_lhFusion   ,INDEX_NONE,
      & 'SEAICE_lhFusion   =', ' /* latent heat of fusion */')
-c print the various values meining for SEAICEturbFluxFormula
-      WRITE(msgBuf,'(2A)') 'SEAICEturbFluxFormula =', 
-     & ' /* turbulent flux formula (1,2,3,4)*/'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      buffI(1) = SEAICEturbFluxFormula
-      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
-     &                   .FALSE., .TRUE., ioUnit )
-      WRITE(msgBuf,'(2A)') '    1=direct spec. of ',
-     &     'SEAICE_availHeatFrac/Frz and SEAICE_availHeatTaper'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '    2=indirect spec. via ',
-     &     'SEAICE_gamma_t/Frz (in s) and SEAICE_availHeatTaper'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '    3=hard coded McPhee formula ',
-     &     'with linear tapering'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '    4=hard coded McPhee formula ',
-     &     'with step function'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-c
-      CALL WRITE_0D_RL ( SEAICE_availHeatFrac,   INDEX_NONE,
-     & 'SEAICE_availHeatFrac =',
-     & ' /* melting efficiency due turbulent flux (0< <1)*/')
-      CALL WRITE_0D_RL ( SEAICE_availHeatFracFrz,   INDEX_NONE,
-     & 'SEAICE_availHeatFracFrz =',
-     & ' /* freezing efficiency due turbulent flux (0< <1)*/')
-      CALL WRITE_0D_RL ( SEAICE_availHeatTaper,     INDEX_NONE,
-     & 'SEAICE_availHeatTaper =',
-     & ' /* tapering of turbulent flux (0< <1) for AREA=1. */')
+      CALL WRITE_0D_RL ( SEAICE_mcPheePiston,   INDEX_NONE,
+     & 'SEAICE_mcPheePiston =',
+     & ' /* turbulent flux "piston velocity" a la McPhee (m/s) */')
+      CALL WRITE_0D_RL ( SEAICE_mcPheeTaper,     INDEX_NONE,
+     & 'SEAICE_mcPheeTaper =',
+     & ' /* tapering of turbulent flux (0.< <1.) for AREA=1. */')
+      CALL WRITE_0D_RL ( SEAICE_frazilFrac,   INDEX_NONE,
+     & 'SEAICE_frazilFrac =',
+     & ' /* frazil (T<tempFrz) to seaice conversion rate (0.< <1.) */')
       CALL WRITE_0D_RL( SEAICE_tempFrz0   ,INDEX_NONE,
      & 'SEAICE_tempFrz0   =',
      & ' /* freezing temp. of sea water (intercept) */')

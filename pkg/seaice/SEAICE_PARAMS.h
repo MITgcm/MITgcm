@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.87 2012/02/16 01:22:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.88 2012/03/03 03:33:02 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -41,6 +41,7 @@ C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law; def=F.
+C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in ocean-ice turbulent flux
 C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
 C                                 (when false cool ocean, and grow later if needed)
 C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
@@ -68,6 +69,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, useMaykutSatVapPoly,
+     &     SEAICE_mcPheeStepFunc,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce,
@@ -84,6 +86,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, useMaykutSatVapPoly,
+     &     SEAICE_mcPheeStepFunc,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce,
@@ -108,11 +111,6 @@ C                         (=volume), snow thickness, and salt if available
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
 C     SEAICEadvSchSalt  :: sets the advection scheme for sea ice salinity
 C     SEAICEadvSchSnow  :: sets the advection scheme for snow on sea-ice
-C     SEAICEturbFluxFormula :: selects formula for ocean-ice turbulent flux
-C                        :: 1=direct spec. of SEAICE_availHeatFrac/Frz
-C                        :: 2=spec. via SEAICE_gamma_t/_frz
-C                        :: 3=McPhee with linear tapering
-C                        :: 4=McPhee with step function
 C     SEAICE_areaLossFormula :: selects formula for ice cover loss from melt
 C                        :: 1=from all but only melt conributions by ATM and OCN
 C                        :: 2=from net melt-growth>0 by ATM and OCN
@@ -235,21 +233,13 @@ C     SEAICE_freeze      :: FREEZING TEMP. OF SEA WATER
 C     SIsalFRAC          :: salinity of newly formed sea ice defined as a fraction
 C                           of the ocean surface salinity at the time of freezing
 C     SIsal0             :: prescribed salinity of seaice (in g/kg).
-C     SEAICE_gamma_t     :: timescale for melting ice from a warm mixed layer (s),
-C                           3d = 259200s is a reasonable value, default=unset
-C     SEAICE_gamma_t_frz :: timescale for freezing ice from a cold mixed layer (s),
-C                           3h = 10800s is a reasonable value, default=SEAICE_gamma_t
-C     SEAICE_availHeatFrac :: Fraction of surface level heat content used to
-C                          melt ice; default=1 if SEAICE_gamma_t is unset, otherwise
-C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t
-C     SEAICE_availHeatFracFrz :: Fraction of surface level heat content used to
-C                          freeze ice; default=SEAICE_availHeatFrac
-C                          if SEAICE_gamma_t_frz is unset, otherwise
-C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t_frz
 C     facOpenGrow        :: 0./1. version of logical switch SEAICE_doOpenWaterGrowth
 C     facOpenMelt        :: 0./1. version of logical switch SEAICE_doOpenWaterMelt
-C     SEAICE_availHeatTaper :: tapering down of turbulent flux term with ice concentration
-C                           The 100% cover turb. flux is multiplied by 1.-SEAICE_availHeatTaper
+C     SEAICE_mcPheePiston:: ocean-ice turbulent flux "piston velocity" (m/s) that sets melt efficiency.
+C     SEAICE_mcPheeTaper :: tapering down of turbulent flux term with ice concentration
+C                           The 100% cover turb. flux is multiplied by 1.-SEAICE_mcPheeTaper
+C     SEAICE_frazilFrac  :: Fraction of surface level negative heat content anomalies (relative to the
+C                           local freezing point) may contribute as frazil over one time step.
 C     SEAICE_tempFrz0    :: sea water freezing point is
 C     SEAICE_dTempFrz_dS ::     tempFrz = SEAICE_tempFrz0 + salt * SEAICE_dTempFrz_dS
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
@@ -290,6 +280,7 @@ C
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
       _RL SIsalFRAC, SIsal0, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
+      _RL SEAICE_mcPheePiston, SEAICE_frazilFrac
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
       _RL facOpenGrow, facOpenMelt
       _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
@@ -302,6 +293,7 @@ C
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
       _RL SEAICE_availHeatTaper
+      _RL SEAICE_mcPheeTaper
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -325,6 +317,7 @@ C
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SIsalFRAC, SIsal0, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
+     &    SEAICE_mcPheePiston, SEAICE_frazilFrac,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      &    facOpenGrow, facOpenMelt,
      &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
@@ -334,6 +327,7 @@ C
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt,
      &    SEAICE_availHeatTaper,
+     &    SEAICE_mcPheeTaper,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.156 2012/02/28 18:05:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.157 2012/03/03 03:33:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -853,25 +853,25 @@ c         FREEZING TEMP. OF SEA WATER (deg C)
      &              SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
 c efficiency of turbulent fluxes : dependency to sign of THETA-TBC
           IF ( theta(I,J,kSurface,bi,bj) .GE. tempFrz ) THEN
-           tmpscal1 = SEAICE_availHeatFrac
+           tmpscal1 = SEAICE_mcPheePiston
           ELSE
-           tmpscal1 = SEAICE_availHeatFracFrz
+           tmpscal1 =SEAICE_frazilFrac*dRf(kSurface)/SEAICE_deltaTtherm
           ENDIF
 c efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
-          IF ( (SEAICEturbFluxFormula.NE.4).AND.
-     &         (AREApreTH(I,J) .GT. 0. _d 0) ) THEN
+          IF ( (AREApreTH(I,J) .GT. 0. _d 0).AND.
+     &         (.NOT.SEAICE_mcPheeStepFunc) ) THEN
            MixedLayerTurbulenceFactor = ONE -
-     &          SEAICE_availHeatTaper * AREApreTH(I,J)
-          ELSEIF ( (SEAICEturbFluxFormula.EQ.4).AND.
-     &        (AREApreTH(I,J) .GT. 0. _d 0) ) THEN
-           MixedLayerTurbulenceFactor = ONE - SEAICE_availHeatTaper
+     &          SEAICE_mcPheeTaper * AREApreTH(I,J)
+          ELSEIF ( (AREApreTH(I,J) .GT. 0. _d 0).AND.
+     &             (SEAICE_mcPheeStepFunc) ) THEN
+           MixedLayerTurbulenceFactor = ONE - SEAICE_mcPheeTaper
           ELSE
            MixedLayerTurbulenceFactor = ONE
           ENDIF
 c maximum turbulent flux, in ice meters
           tmpscal2= - (HeatCapacity_Cp*rhoConst * recip_QI)
      &         * (theta(I,J,kSurface,bi,bj)-tempFrz)
-     &         * dRf(kSurface) * maskC(i,j,kSurface,bi,bj)
+     &         * SEAICE_deltaTtherm * maskC(i,j,kSurface,bi,bj)
 c available turbulent flux
           a_QbyOCN(i,j) =
      &         tmpscal1 * tmpscal2 * MixedLayerTurbulenceFactor
