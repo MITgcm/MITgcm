@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SEAICE_OPTIONS.h,v 1.12 2012/02/13 23:44:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SEAICE_OPTIONS.h,v 1.13 2012/03/03 03:39:39 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -66,6 +66,11 @@ C--   The freezing point of water is a simple linear dependence to salinity.
 C     The flag below is now obsolete, but kept to ease the transition
 C     from the old constant freezing point default (see seaice_check.F).
 #define SEAICE_VARIABLE_FREEZING_POINT
+
+C--   The flags below are obsolete, but kept to ease the transition
+C     from the old default to the new one (see seaice_check.F).
+#define MCPHEE_OCEAN_ICE_HEAT_FLUX
+#define GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #undef SEAICE_VARIABLE_SALINITY
