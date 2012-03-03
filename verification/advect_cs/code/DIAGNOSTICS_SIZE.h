@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/DIAGNOSTICS_SIZE.h,v 1.1 2008/02/12 22:32:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/DIAGNOSTICS_SIZE.h,v 1.2 2012/03/03 16:42:26 jmc Exp $
 C $Name:  $
 
 
@@ -22,7 +22,7 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       INTEGER    diagSt_size
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
-      PARAMETER( numDiags = 10*Nr )
+      PARAMETER( numDiags = 20*Nr )
       PARAMETER( nRegions = 0 , sizRegMsk = 1 , nStats = 4 )
       PARAMETER( diagSt_size = 20*Nr )
 
