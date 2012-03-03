@@ -14,13 +14,9 @@
       SEAICEadvSnow      = .FALSE.,
       LSR_ERROR          = 1.E-6,
       SEAICE_EPS         = 1.E-8,
-      SEAICEturbFluxFormula = 3,
-#SEAICEturbFluxFormula=3 is equivalent to
-#     SEAICEturbFluxFormula = 1,
-#     SEAICE_availHeatFrac = 0.314999999999999946709294817992,
-#     SEAICE_availHeatFracFrz = 0.,
-#     SEAICE_availHeatTaper = 0.92,
-#
+      SEAICE_mcPheePiston= 0.0008749999999999999,
+      SEAICE_mcPheeTaper = 0.92,
+      SEAICE_frazilFrac  = 0.,
       SIsalFRAC          = 0.30,
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
