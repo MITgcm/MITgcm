@@ -21,9 +21,9 @@
  OCEAN_drag         = 8.1541e-04,
  SEAICE_waterDrag   = 5.3508,
  SIsalFRAC          = 0.3,
- SEAICEturbFluxFormula = 2,
- SEAICE_gamma_t     = 259200.,
- SEAICE_gamma_t_frz = 10800.,
+# use the new standard way of specifying SEAICE_gamma_t and SEAICE_gamma_t_frz
+ SEAICE_mcPheePiston= 0.00003858024691358025,
+ SEAICE_frazilFrac  = 0.33333333333333333333,
  SEAICE_clipVelocities= .TRUE.,
  SEAICEwriteState   = .TRUE.,
 # For backward compatibility only:

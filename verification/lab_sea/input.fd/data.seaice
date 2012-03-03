@@ -12,6 +12,8 @@
 #- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
   useMaykutSatVapPoly = .TRUE.,
   postSolvTempIter  =  0,
+#- use the old way of specifying SEAICE_mcPheePiston to the old default
+ SEAICE_availHeatFrac = 1.,
  SEAICEwriteState   = .TRUE.,
  &
 

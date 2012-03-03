@@ -15,6 +15,7 @@
  SEAICEadvSnow         = .TRUE.,
  SEAICEadvScheme       = 30,
  SEAICE_areaLossFormula=2,
+ SEAICE_mcPheePiston   = 0.0005787037037037037,
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
  &
