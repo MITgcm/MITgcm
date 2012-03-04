@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1606 2012/03/04 23:11:20 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1607 2012/03/04 23:32:55 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -13,7 +13,7 @@ o pkg/seaice :
   - changes results at trunction error level
   - ifdef SEAICE_EXTERNAL_FLUXES, disallow SEAICE_waterAlbedo
 o added pkg/frazil - see frazil_description.tex for details
-  - verification experiment is global_with_exf/input.yearly; changes output
+  - verification experiment is global_with_exf/input.yearly; changes output.yearly.txt
 o pkg/shelfice/shelfice_thermodynamics.F
   - fix exponents for velocity dependent exchange coefficients: change 
     from 2/3(=0) to 0.66666666666666667
