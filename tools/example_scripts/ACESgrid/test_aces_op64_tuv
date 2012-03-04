@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_tuv.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.5 2011/11/03 17:37:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.6 2012/03/04 21:40:08 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -33,9 +33,12 @@ sfx='tuv'
 #export OMP_SLAVE_STACK_SIZE=400m
 #export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
  ulimit -s unlimited
+#- need this to get "staf":
+export PATH="$PATH:$HOME/bin"
 
-#dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
-#if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
+
+dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
+if [ $dAlt -eq 1 ] ; then options="-adm -do -devel" ; fi
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
