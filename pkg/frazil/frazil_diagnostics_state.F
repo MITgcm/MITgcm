@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/Attic/frazil_diagnostics_state.F,v 1.2 2012/03/03 16:04:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/Attic/frazil_diagnostics_state.F,v 1.3 2012/03/04 23:11:20 dimitri Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -16,30 +16,31 @@ C     Fill-in diagnostics array for FRAZIL state variables
 
 C     !USES:
       IMPLICIT NONE
-#include "SIZE.h"
 #include "EEPARAMS.h"
+#include "SIZE.h"
 #include "PARAMS.h"
-C  put following include within #ifdef in case this file is copied to local
-C  code dir but pkg/frazil is not compiled (missing file FRAZIL.h).
 #ifdef ALLOW_FRAZIL
 # include "FRAZIL.h"
 #endif
 
-C     !INPUT PARAMETERS:
-C     myTime   :: Current time of simulation ( s )
-C     myIter   :: Current iteration number in simulation
-C     myThid   :: my Thread Id number
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime :: current time of simulation
+C     myIter :: current iteration number in simulation
+C     myThid :: my Thread Id number
       _RL     myTime
-      INTEGER myIter, myThid
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 #ifdef ALLOW_FRAZIL
+
 # ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( FrazilForcingT, 'FrzForcT',
      &                          0,Nr, 0, 1, 1, myThid )
       ENDIF
 # endif /* ALLOW_DIAGNOSTICS */
+
 #endif /* ALLOW_FRAZIL */
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_init_fixed.F,v 1.1 2012/03/02 01:45:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_init_fixed.F,v 1.2 2012/03/04 23:11:20 dimitri Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -11,22 +11,18 @@ C !INTERFACE:
       SUBROUTINE FRAZIL_INIT_FIXED( myThid )
 
 C     !DESCRIPTION:
-C     Initialize FRAZIL variables that are kept fixed during the run.
+C     Initialize FRAZIL variables that are kept fixed during the run
 
 C     !USES:
       IMPLICIT NONE
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "FRAZIL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid ::  my Thread Id number
+C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
-
-C     !LOCAL VARIABLES:
-C     === Local variables ===
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

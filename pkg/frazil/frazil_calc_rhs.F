@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_calc_rhs.F,v 1.2 2012/03/03 16:04:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_calc_rhs.F,v 1.3 2012/03/04 23:11:20 dimitri Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -16,26 +16,29 @@ C point bring excess negative heat to the surface.
 
 C !USES: ===============================================================
       IMPLICIT NONE
-#include "SIZE.h"
 #include "EEPARAMS.h"
+#include "SIZE.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "FRAZIL.h"
+#ifdef ALLOW_FRAZIL
+# include "FRAZIL.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid :: Thread no. that called this routine.
-      _RL myTime
+C     myTime :: current time in simulation
+C     myIter :: current iteration number in simulation
+C     myThid :: my Thread Id number
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_FRAZIL
-C !LOCAL VARIABLES: ====================================================
-C     Tfreezing :: Freezing threshold temperature.
+
+C     !LOCAL VARIABLES:
+C     Tfreezing :: freezing threshold temperature
       INTEGER bi,bj,i,j,k,kTop
       _RL Tfreezing, Tresid, pLoc, sLoc, tLoc
       _RL a0, a1, a2, b
@@ -46,15 +49,23 @@ C     Tfreezing :: Freezing threshold temperature.
 
       _RL SW_TEMP
       EXTERNAL SW_TEMP
-CEOP
 
-C--   Check for water below freezing point.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          kTop = kSurfC(i,j,bi,bj)
-          DO k = (kTop+1), Nr
+
+C     Initialize FrazilForcingT to zero
+        DO k=1,Nr
+         DO j=1-Oly,sNy+OLy
+          DO i=1-Olx,sNx+Olx
+           FrazilForcingT(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+
+C     Check for water below freezing point.
+        DO k = 2, Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF ( maskC(i,j,k-1,bi,bj) .NE. 0. _d 0 .AND.
      &          maskC(i,j,k,  bi,bj) .NE. 0. _d 0 ) THEN
 
@@ -78,15 +89,14 @@ C  CHECKVALUE: TF= -2.588567 DEG. C FOR S=40.0, P=500. DECIBARS
 
             IF (tLoc .LT. Tfreezing) THEN
 C     Move the negative heat to surface level.
-             Tresid = Tfreezing - tloc
-             FrazilForcingT(i,j,k,bi,bj) =
-     &            Tresid / dTtracerLev(k)
+             kTop = kSurfC(i,j,bi,bj)
+             Tresid = ( Tfreezing - tloc )
      &            * HeatCapacity_Cp * rUnit2mass
      &            * drF(k) * _hFacC(i,j,k,bi,bj)
+             FrazilForcingT(i,j,k,bi,bj) = Tresid / dTtracerLev(k)
              FrazilForcingT(i,j,kTop,bi,bj) =
+     &            FrazilForcingT(i,j,kTop,bi,bj)
      &            - Tresid / dTtracerLev(kTop)
-     &            * HeatCapacity_Cp * rUnit2mass
-     &            * drF(k) * _hFacC(i,j,k,bi,bj)
             ENDIF
            ENDIF
           ENDDO
