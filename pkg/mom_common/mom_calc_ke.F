@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.4 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.5 2012/03/04 23:13:07 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -44,7 +44,7 @@ C  KE                   :: Kinetic energy
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER I,J
+      INTEGER i,j
 CEOP
 
 C       This defn of KE should not ever be used. Just to let you know.
@@ -53,14 +53,22 @@ C                 1  /  ___I    ___J   \
 C           KE = --- |   U    +  V     |
 C                 2  \                 /
 C
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         KE(i,j) = 0.
+       ENDDO
+      ENDDO
+#endif
+
       IF (KEscheme.EQ.-1) THEN
-       DO J=1-OLy,sNy+OLy-1
-        DO I=1-OLx,sNx+OLx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          KE(i,j) = 0.125*(
      &             ( uFld(i,j)+uFld(i+1, j ) )**2
      &            +( vFld(i,j)+vFld( i ,j+1) )**2 )
+        ENDDO
        ENDDO
-      ENDDO
 
       ELSEIF (KEscheme.EQ.0) THEN
 C       This defn of KE should be used for the vector invariant equations.
@@ -69,8 +77,8 @@ C                 1  /     2       2   \
 C           KE = --- |   U    +  V     |
 C                 2  \                 /
 C
-       DO J=1-OLy,sNy+OLy-1
-        DO I=1-OLx,sNx+OLx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
      &           ( uFld( i , j )*uFld( i , j )
      &            +uFld(i+1, j )*uFld(i+1, j ) )
@@ -82,8 +90,8 @@ C
 
       ELSEIF (KEscheme.EQ.1) THEN
 C       As above but including the area
-       DO J=1-OLy,sNy+OLy-1
-        DO I=1-OLx,sNx+OLx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
      &           ( uFld(i, j )*uFld(i, j )*rAw(i ,j, bi,bj)
      &            +uFld(i+1,j)*uFld(i+1,j)*rAw(i+1,j,bi,bj) )
@@ -96,8 +104,8 @@ C       As above but including the area
       ELSEIF (KEscheme.EQ.2) THEN
 C       As KEscheme=0 but including the lopping factors and should be used
 C       for the conservative form of the momentum equations.
-       DO J=1-OLy,sNy+OLy-1
-        DO I=1-OLx,sNx+OLx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
      &           ( uFld( i , j )*uFld( i , j )*_hFacW(i,j,k,bi,bj)
      &            +uFld(i+1, j )*uFld(i+1, j )*_hFacW(i+1,j,k,bi,bj) )
@@ -109,15 +117,15 @@ C       for the conservative form of the momentum equations.
 
       ELSEIF (KEscheme.EQ.3) THEN
 C       As above but including the area
-       DO J=1-OLy,sNy+OLy-1
-        DO I=1-OLx,sNx+OLx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
      &           (
      &    uFld(i, j )*uFld(i, j )
      &        *_hFacW(i ,j, k,bi,bj)*rAw(i ,j, bi,bj)
      &   +uFld(i+1,j)*uFld(i+1,j)
      &        *_hFacW(i+1,j,k,bi,bj)*rAw(i+1,j,bi,bj)
-     &           )  
+     &           )
      &         + (
      &    vFld(i, j )*vFld(i, j )
      &        *_hFacS(i, j, k,bi,bj)*rAs(i ,j, bi,bj)
