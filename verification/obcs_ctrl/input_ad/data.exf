@@ -2,29 +2,21 @@
 # External Forcing Data
 # *********************
  &EXF_NML_01
-#
  useExfCheckRange = .FALSE.,
  exf_iprec         = 32,
  exf_monFreq=0.,
  &
-#
+
  &EXF_NML_02
-#
-#
  &
-#
+
  &EXF_NML_03
-#
-#
  &
-#
- &EXF_NML_04
-#
-#
- &
-#
+
+#&EXF_NML_04
+#&
+
  &EXF_NML_OBCS
-#
  obcsNstartdate1     = 20061231,
  obcsNstartdate2     = 00000,
  obcsNperiod         = 00.0,
@@ -40,5 +32,4 @@
  obcsEstartdate1     = 20061231,
  obcsEstartdate2     = 00000,
  obcsEperiod         = 00.0,
-#
  &

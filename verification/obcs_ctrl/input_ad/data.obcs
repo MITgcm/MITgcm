@@ -38,9 +38,9 @@
 # *****************************************
 # Orlanski Boundary Condition Parameters.
 # *****************************************
- &OBCS_PARM02
+#&OBCS_PARM02
 # cvelTimeScale = 2000.,
- &
+#&
 
 # *****************************************
 # Sponge Layer Parameters.
