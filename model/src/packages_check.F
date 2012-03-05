@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.56 2012/02/04 01:43:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.57 2012/03/05 17:56:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -195,6 +195,10 @@ C---  Continue with standard packages (with standard usePKG flag)
 
 #ifndef ALLOW_CHEAPAML
       IF (useCheapAML) CALL PACKAGES_ERROR_MSG('CheapAML',' ',myThid)
+#endif
+
+#ifndef ALLOW_FRAZIL
+      IF (useFRAZIL) CALL PACKAGES_ERROR_MSG('FRAZIL',' ',myThid)
 #endif
 
 #ifdef ALLOW_THSICE
