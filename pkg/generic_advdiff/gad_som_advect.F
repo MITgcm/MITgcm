@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.9 2011/06/06 15:44:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.10 2012/03/05 17:59:15 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -81,7 +81,6 @@ C  afx           :: 2-D array for horizontal advective flux, x direction
 C  afy           :: 2-D array for horizontal advective flux, y direction
 C  afr           :: 2-D array for vertical advective flux
 C  fVerT         :: 2 1/2D arrays for vertical advective flux
-C  localTij      :: 2-D array, temporary local copy of tracer fld
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
 C  interiorOnly  :: only update the interior of myTile, but not the edges
@@ -106,7 +105,6 @@ C  msgBuf        :: Informational/error meesage buffer
       _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-ccc   _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  smVol  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  smTr0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  alp    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -329,6 +327,7 @@ C-     Solve advection in X and update moments
      I                     overlapOnly, interiorOnly,
      I                     N_edge, S_edge, E_edge, W_edge,
      I                     deltaTLev(k), uTrans,
+     I                     maskInC(1-OLx,1-OLy,bi,bj),
      U                     smVol(1-OLx,1-OLy,k),
      U                     smTr0(1-OLx,1-OLy,k),
      U                     smTr(1-OLx,1-OLy,k,bi,bj,1),
@@ -344,24 +343,6 @@ C-     Solve advection in X and update moments
           ELSE
            STOP 'GAD_SOM_ADVECT: adv. scheme incompatibale with SOM'
           ENDIF
-
-#ifdef ALLOW_OBCS
-C-     Apply open boundary conditions
-c         IF ( useOBCS ) THEN
-ccc        localTij(i,j) = smTr0(i,j)/smVol(i,j)
-c          IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-c           CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
-c          ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
-c           CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
-#ifdef ALLOW_PTRACERS
-c          ELSEIF (tracerIdentity.GE.GAD_TR1) THEN
-c           CALL OBCS_APPLY_PTRACER( bi, bj, k,
-c    &             tracerIdentity-GAD_TR1+1, localTij, myThid )
-#endif /* ALLOW_PTRACERS */
-c          ENDIF
-ccc        smTr0(i,j) = localTij(i,j)*smVol(i,j)
-c         ENDIF
-#endif /* ALLOW_OBCS */
 
 C--   End of X direction
         ENDIF
@@ -393,6 +374,7 @@ C-     Solve advection in Y and update moments
      I                     overlapOnly, interiorOnly,
      I                     N_edge, S_edge, E_edge, W_edge,
      I                     deltaTLev(k), vTrans,
+     I                     maskInC(1-OLx,1-OLy,bi,bj),
      U                     smVol(1-OLx,1-OLy,k),
      U                     smTr0(1-OLx,1-OLy,k),
      U                     smTr(1-OLx,1-OLy,k,bi,bj,1),
@@ -408,24 +390,6 @@ C-     Solve advection in Y and update moments
           ELSE
            STOP 'GAD_SOM_ADVECT: adv. scheme incompatibale with SOM'
           ENDIF
-
-#ifdef ALLOW_OBCS
-C-     Apply open boundary conditions
-c         IF (useOBCS) THEN
-ccc        localTij(i,j) = smTr0(i,j)/smVol(i,j)
-c          IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-c           CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
-c          ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
-c           CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
-#ifdef ALLOW_PTRACERS
-c          ELSEIF (tracerIdentity.GE.GAD_TR1) THEN
-c           CALL OBCS_APPLY_PTRACER( bi, bj, k,
-c    &             tracerIdentity-GAD_TR1+1, localTij, myThid )
-#endif /* ALLOW_PTRACERS */
-c          ENDIF
-ccc        smTr0(i,j) = localTij(i,j)*smVol(i,j)
-c         ENDIF
-#endif /* ALLOW_OBCS */
 
 C--   End of Y direction
         ENDIF
@@ -593,6 +557,7 @@ C-    Compute vertical advective flux in the interior:
            CALL GAD_SOM_ADV_R(
      I                     bi,bj,k, kUp, kDown,
      I                     deltaTLev(k), rTrans, maskUp,
+     I                     maskInC(1-OLx,1-OLy,bi,bj),
      U                     smVol,
      U                     smTr0,
      U                     smTr(1-OLx,1-OLy,1,bi,bj,1),

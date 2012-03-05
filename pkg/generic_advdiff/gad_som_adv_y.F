@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_y.F,v 1.5 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_y.F,v 1.6 2012/03/05 17:59:15 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I           bi,bj,k, limiter,
      I           overlapOnly, interiorOnly,
      I           N_edge, S_edge, E_edge, W_edge,
-     I           deltaTloc, vTrans,
+     I           deltaTloc, vTrans, maskIn,
      U           sm_v, sm_o, sm_x, sm_y, sm_z,
      U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
      O           vT,
@@ -46,6 +46,7 @@ C  overlapOnly   :: only update the edges of myTile, but not the interior
 C  interiorOnly  :: only update the interior of myTile, but not the edges
 C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 C  vTrans        :: zonal volume transport
+C  maskIn        :: 2-D array Interior mask
 C  myThid        :: my Thread Id. number
       INTEGER bi,bj,k
       INTEGER limiter
@@ -53,6 +54,7 @@ C  myThid        :: my Thread Id. number
       LOGICAL N_edge, S_edge, E_edge, W_edge
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskIn(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -123,36 +125,28 @@ CEOP
 
 C-    Set loop ranges for updating tracer field (splitted in 2 strips)
       nbStrips   = 1
-      iMinUpd(1) = 1-Olx
-      iMaxUpd(1) = sNx+Olx
-      jMinUpd(1) = 1-Oly+1
-      jMaxUpd(1) = sNy+Oly-1
+      iMinUpd(1) = 1-OLx
+      iMaxUpd(1) = sNx+OLx
+      jMinUpd(1) = 1-OLy+1
+      jMaxUpd(1) = sNy+OLy-1
       IF ( overlapOnly ) THEN
 C     update in overlap-Only
         IF ( S_edge ) jMinUpd(1) = 1
         IF ( N_edge ) jMaxUpd(1) = sNy
         IF ( W_edge ) THEN
-          iMinUpd(1) = 1-Olx
+          iMinUpd(1) = 1-OLx
           iMaxUpd(1) = 0
         ENDIF
         IF ( E_edge ) THEN
           IF ( W_edge ) nbStrips = 2
           iMinUpd(nbStrips) = sNx+1
-          iMaxUpd(nbStrips) = sNx+Olx
+          iMaxUpd(nbStrips) = sNx+OLx
         ENDIF
       ELSE
 C     do not only update the overlap
         IF ( interiorOnly .AND. W_edge ) iMinUpd(1) = 1
         IF ( interiorOnly .AND. E_edge ) iMaxUpd(1) = sNx
       ENDIF
-
-C-    Internal exchange for calculations in Y
-c     IF ( overlapOnly ) THEN
-c         CALL GAD_SOM_FILL_CS_CORNER( .FALSE.,
-c    U           sm_v,  sm_o,  sm_x,  sm_y,  sm_z,
-c    U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
-c    I           bi, bj, myThid )
-c     ENDIF
 
 C--   start 1rst loop on strip number "ns"
       DO ns=1,nbStrips
@@ -228,14 +222,6 @@ C--    Save zero-order flux:
 C--   end 1rst loop on strip number "ns"
 c     ENDDO
 
-C-    Internal exchange for next calculations in X
-c     IF ( overlapOnly ) THEN
-c         CALL GAD_SOM_FILL_CS_CORNER( .TRUE.,
-c    U           sm_v,  sm_o,  sm_x,  sm_y,  sm_z,
-c    U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
-c    I           bi, bj, myThid )
-c     ENDIF
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   start 2nd loop on strip number "ns"
 c     DO ns=1,nbStrips
@@ -244,6 +230,9 @@ C---  part.2 : re-adjust moments remaining in the box
 C      take off from grid box (j): negative V(j) and positive V(j+1)
       DO j=jMinUpd(1),jMaxUpd(1)
        DO i=iMinUpd(ns),iMaxUpd(ns)
+#ifdef ALLOW_OBCS
+        IF ( maskIn(i,j).NE.0. ) THEN
+#endif /* ALLOW_OBCS */
         alf1  = 1. _d 0 - aln(i,j) - alp(i,j+1)
         alf1q = alf1*alf1
         alpmn = alp(i,j+1) - aln(i,j)
@@ -258,6 +247,9 @@ C      take off from grid box (j): negative V(j) and positive V(j+1)
         sm_z (i,j) = sm_z (i,j) - fn_z (i,j) - fp_z (i,j+1)
         sm_zz(i,j) = sm_zz(i,j) - fn_zz(i,j) - fp_zz(i,j+1)
         sm_xz(i,j) = sm_xz(i,j) - fn_xz(i,j) - fp_xz(i,j+1)
+#ifdef ALLOW_OBCS
+        ENDIF
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
 
@@ -266,6 +258,9 @@ C---  part.3 : Put the temporary moments into appropriate neighboring boxes
 C      add into grid box (j): positive V(j) and negative V(j+1)
       DO j=jMinUpd(1),jMaxUpd(1)
        DO i=iMinUpd(ns),iMaxUpd(ns)
+#ifdef ALLOW_OBCS
+        IF ( maskIn(i,j).NE.0. ) THEN
+#endif /* ALLOW_OBCS */
         sm_v (i,j) = sm_v (i,j) + fp_v (i,j) + fn_v (i,j+1)
         alfp = fp_v(i, j )/sm_v(i,j)
         alfn = fn_v(i,j+1)/sm_v(i,j)
@@ -300,6 +295,9 @@ C      add into grid box (j): positive V(j) and negative V(j+1)
         sm_z (i,j) = sm_z (i,j) + fp_z (i,j) + fn_z (i,j+1)
         sm_zz(i,j) = sm_zz(i,j) + fp_zz(i,j) + fn_zz(i,j+1)
         sm_xz(i,j) = sm_xz(i,j) + fp_xz(i,j) + fn_xz(i,j+1)
+#ifdef ALLOW_OBCS
+        ENDIF
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
 

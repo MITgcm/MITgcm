@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.5 2008/08/12 22:25:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.6 2012/03/05 17:59:15 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: GAD_SOM_ADV_R
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_SOM_ADV_R(
      I           bi,bj,k, kUp, kDw,
-     I           deltaTloc, rTrans, maskUp,
+     I           deltaTloc, rTrans, maskUp, maskIn,
      U           sm_v,  sm_o,  sm_x,  sm_y,  sm_z,
      U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
      U           alp,   aln,   fp_v,  fn_v,  fp_o,  fn_o,
@@ -50,12 +50,13 @@ C  kUp          :: index into 2 1/2D array, toggles between 1 and 2
 C  kDw          :: index into 2 1/2D array, toggles between 2 and 1
 C  rTrans       :: vertical volume transport
 C  maskUp       :: 2-D array mask for W points
+C  maskIn       :: 2-D array Interior mask
 C  myThid       :: my Thread Id. number
       INTEGER bi,bj,k, kUp, kDw
       _RL deltaTloc
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskIn(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -249,6 +250,9 @@ C---  part.2 : re-adjust moments remaining in the box
 C      take off from grid box (k): negative W(kDw) and positive W(kUp)
       DO j=jMinAdvR,jMaxAdvR
        DO i=iMinAdvR,iMaxAdvR
+#ifdef ALLOW_OBCS
+        IF ( maskIn(i,j).NE.0. ) THEN
+#endif /* ALLOW_OBCS */
         alf1  = 1. _d 0 - aln(i,j,kDw) - alp(i,j,kUp)
         alf1q = alf1*alf1
         alpmn = alp(i,j,kUp) - aln(i,j,kDw)
@@ -263,6 +267,9 @@ C      take off from grid box (k): negative W(kDw) and positive W(kUp)
         sm_y (i,j,k) = sm_y (i,j,k) - fn_y (i,j,kDw) - fp_y (i,j,kUp)
         sm_yy(i,j,k) = sm_yy(i,j,k) - fn_yy(i,j,kDw) - fp_yy(i,j,kUp)
         sm_xy(i,j,k) = sm_xy(i,j,k) - fn_xy(i,j,kDw) - fp_xy(i,j,kUp)
+#ifdef ALLOW_OBCS
+        ENDIF
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
 
@@ -271,6 +278,9 @@ C---  part.3 : Put the temporary moments into appropriate neighboring boxes
 C      add into grid box (k): positive W(kDw) and negative W(kUp)
       DO j=jMinAdvR,jMaxAdvR
        DO i=iMinAdvR,iMaxAdvR
+#ifdef ALLOW_OBCS
+        IF ( maskIn(i,j).NE.0. ) THEN
+#endif /* ALLOW_OBCS */
         sm_v (i,j,k) = sm_v (i,j,k) + fp_v (i,j,kDw) + fn_v (i,j,kUp)
         alfp = fp_v(i,j,kDw)/sm_v(i,j,k)
         alfn = fn_v(i,j,kUp)/sm_v(i,j,k)
@@ -306,6 +316,9 @@ C      add into grid box (k): positive W(kDw) and negative W(kUp)
         sm_y (i,j,k) = sm_y (i,j,k) + fp_y (i,j,kDw) + fn_y (i,j,kUp)
         sm_yy(i,j,k) = sm_yy(i,j,k) + fp_yy(i,j,kDw) + fn_yy(i,j,kUp)
         sm_xy(i,j,k) = sm_xy(i,j,k) + fp_xy(i,j,kDw) + fn_xy(i,j,kUp)
+#ifdef ALLOW_OBCS
+        ENDIF
+#endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
 
