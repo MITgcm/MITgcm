@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.88 2012/03/03 03:33:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.89 2012/03/05 09:40:50 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -16,8 +16,9 @@ C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
 C                          1998) set this parameter to true, default is false
 C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
 C                          if true use elastic viscous plastic solver
-C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP or LSR
-C     SEAICEheatConsFix ::  If true then fix ocn<->seaice advective heat flux.
+C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP 
+C                           or LSR
+C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
@@ -41,12 +42,14 @@ C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law; def=F.
-C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in ocean-ice turbulent flux
+C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in 
+C                           ocean-ice turbulent flux
 C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
-C                                 (when false cool ocean, and grow later if needed)
+C                           (when false cool ocean, and grow later if needed)
 C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
-C                                 (when false warm ocean, and melt later if needed)
-C     SEAICE_salinityTracer    :: use SItracer to exchange and trace ocean salt in ice
+C                           (when false warm ocean, and melt later if needed)
+C     SEAICE_salinityTracer    :: use SItracer to exchange and trace ocean 
+C                           salt in ice
 C     SEAICE_age Tracer        :: use SItracer to trace the age of ice
 C     SEAICErestoreUnderIce :: restore surface T/S also underneath ice
 C                          ( default is false )
@@ -185,7 +188,7 @@ C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
 C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
 C     SEAICE_zetaMaxFac  :: factor determining the maximum viscosity    (s)
 C                          (default = 5.e+12/2.e4 = 2.5e8)
-C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)     (N s/m^2)
+C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)    (N s/m^2)
 C     SEAICE_monFreq     :: SEAICE monitor frequency.                   (s)
 C     SEAICE_dumpFreq    :: SEAICE dump frequency.                      (s)
 C     SEAICE_taveFreq    :: SEAICE time-averaging frequency.            (s)
@@ -203,8 +206,17 @@ C     SEAICE_dryIceAlb   :: winter albedo
 C     SEAICE_wetIceAlb   :: summer albedo
 C     SEAICE_drySnowAlb  :: dry snow albedo
 C     SEAICE_wetSnowAlb  :: wet snow albedo
-C     HO                 :: demarcation thickness between thin and
-C                           thick ice: HO is a key ice-growth parameter
+C     HO                 :: AKA "lead closing parameter", demarcation thickness 
+C                           between thin and thick ice. Alternatively, HO (in
+C                           meters) can be interpreted as the thickness of ice
+C                           formed in open water.
+C                           HO is a key ice-growth parameter that determines
+C                           the partition between vertical and lateral growth.
+C                           The default is 0.5m, increasing this value leads
+C                           slower formation of a closed ice cover and thus to
+C                           more ice (and thicker) ice, decreasing to faster
+C                           formation of a closed ice cover (leads are closing
+C                           faster) and thus less (thinner) ice.
 C
 C     SEAICE_drag_south       :: Southern Ocean SEAICE_drag
 C     SEAICE_waterDrag_south  :: Southern Ocean SEAICE_waterDrag
@@ -230,23 +242,28 @@ C     SEAICE_boltzmann   :: Stefan-Boltzman constant (not a run time parameter)
 C     SEAICE_snowThick   :: cutoff snow thickness (for snow-albedo)
 C     SEAICE_shortwave   :: ice penetration shortwave radiation factor
 C     SEAICE_freeze      :: FREEZING TEMP. OF SEA WATER
-C     SIsalFRAC          :: salinity of newly formed sea ice defined as a fraction
-C                           of the ocean surface salinity at the time of freezing
+C     SIsalFRAC          :: salinity of newly formed sea ice defined as a 
+C                           fraction of the ocean surface salinity at the time
+C                           of freezing
 C     SIsal0             :: prescribed salinity of seaice (in g/kg).
-C     facOpenGrow        :: 0./1. version of logical switch SEAICE_doOpenWaterGrowth
-C     facOpenMelt        :: 0./1. version of logical switch SEAICE_doOpenWaterMelt
-C     SEAICE_mcPheePiston:: ocean-ice turbulent flux "piston velocity" (m/s) that sets melt efficiency.
-C     SEAICE_mcPheeTaper :: tapering down of turbulent flux term with ice concentration
-C                           The 100% cover turb. flux is multiplied by 1.-SEAICE_mcPheeTaper
-C     SEAICE_frazilFrac  :: Fraction of surface level negative heat content anomalies (relative to the
-C                           local freezing point) may contribute as frazil over one time step.
+C     facOpenGrow        :: 0./1. version of logical SEAICE_doOpenWaterGrowth
+C     facOpenMelt        :: 0./1. version of logical SEAICE_doOpenWaterMelt
+C     SEAICE_mcPheePiston:: ocean-ice turbulent flux "piston velocity" (m/s) 
+C                           that sets melt efficiency.
+C     SEAICE_mcPheeTaper :: tapering down of turbulent flux term with ice 
+C                           concentration. The 100% cover turb. flux is 
+C                           multiplied by 1.-SEAICE_mcPheeTaper
+C     SEAICE_frazilFrac  :: Fraction of surface level negative heat content 
+C                           anomalies (relative to the local freezing point) 
+C                           may contribute as frazil over one time step.
 C     SEAICE_tempFrz0    :: sea water freezing point is
-C     SEAICE_dTempFrz_dS ::     tempFrz = SEAICE_tempFrz0 + salt * SEAICE_dTempFrz_dS
+C     SEAICE_dTempFrz_dS :: tempFrz = SEAICE_tempFrz0 + salt*SEAICE_dTempFrz_dS
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
-C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1. specifies
-C                           the minimun amount of leads (1-areaMax) in the ice pack.
+C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1 specifies
+C                           the minimun amount of leads (1-areaMax) in the 
+C                           ice pack.
 C     SEAICE_area_floor  :: usually set to 1x10^-5. Specifies a minimun
 C                           ice fraction in the ice pack.
 C     SEAICE_area_reg    :: usually set to 1x10^-5. Specifies a minimun
