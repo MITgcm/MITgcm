@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_weights.F,v 1.5 2005/06/22 00:25:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_weights.F,v 1.6 2012/03/05 01:17:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,16 +7,17 @@ CBOP
 C !ROUTINE: CONVECTIVE_WEIGHTS
 C !INTERFACE:
       SUBROUTINE CONVECTIVE_WEIGHTS(
-     I                              bi,bj,k,rhoKm1,rhoK,
-     O                              weightA,weightB,ConvectCount,
-     I                              myThid)
+     I                              bi, bj, k, rhoKm1, rhoK,
+     O                              weightA, weightB, convectCount,
+     I                              myThid )
+
 C !DESCRIPTION:
 C Calculates the weights used to represent convective mixing
 C between two layers.
-C 
+C
 C Mixing is represented by:
-C                       T(k-1) = T(k-1) + B * ( T(k) - T(k-1) )
-C                       T(k)   = T(k)   + A * ( T(k-1) - T(k) )
+C                       T(k-1) = T(k-1) + A * ( T(k) - T(k-1) )
+C                       T(k)   = T(k)   + B * ( T(k-1) - T(k) )
 C
 C In the stable case, A = B = 0
 C In the unstable case, A and B are non-zero and are chosen so as to
@@ -30,19 +31,19 @@ C !USES:
 #include "GRID.h"
 
 C !INPUT/OUTPUT PARAMETERS:
-C     bi,bj,k - indices
-C     rhoKm1  - rho in layer above
-C     rhoK    - rho in layer below
-C     weightA - weight for level K
-C     weightB - weight for level K+1
-C     ConvectCount - counter to diagnose where convection occurs
-C     myThid  - thread number
+C     bi,bj,k :: indices
+C     rhoKm1  :: rho in level k-1
+C     rhoK    :: rho in level  k
+C     weightA :: weight for tracer @ level k-1
+C     weightB :: weight for tracer @ level  k
+C     convectCount :: counter to diagnose where convection occurs
+C     myThid  :: my Thread Id number
       INTEGER bi,bj,k
-      _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoKm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoK   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL weightA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL weightB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL convectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 #ifdef INCLUDE_CONVECT_CALL
@@ -54,11 +55,10 @@ C     dS,d1,d2 :: Layer thicknesses
       _RL dS,d1,d2
 CEOP
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-         IF ( _hFacC(i,j,k-1,bi,bj)
-     &       *_hFacC(i,j,k,bi,bj) .GT. 0.
-     &  .AND. (rhokm1(i,j)-rhok(i,j))*rkSign*gravitySign .GT. 0.
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         IF ( _hFacC(i,j,k-1,bi,bj)* _hFacC(i,j,k,bi,bj) .GT. 0. .AND.
+     &        (rhok(i,j)-rhokm1(i,j))*rkSign*gravitySign .LT. 0.
      &      ) THEN
 
 C      Where statically unstable, mix the tracers conserving volume
@@ -67,11 +67,12 @@ C      Where statically unstable, mix the tracers conserving volume
           dS = d1+d2
           weightA(i,j) = d2/dS
           weightB(i,j) = d1/dS
-          ConvectCount(i,j,k) = ConvectCount(i,j,k) + 1.
+          convectCount(i,j,k) = 1.
          ELSE
 C      Where statically stable, do nothing
           weightA(i,j) = 0.
           weightB(i,j) = 0.
+          convectCount(i,j,k) = 0.
          ENDIF
        ENDDO
       ENDDO
