@@ -6,9 +6,9 @@
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint63j
-(PID.TID 0000.0001) // Build user:        dimitri
-(PID.TID 0000.0001) // Build host:        forge
-(PID.TID 0000.0001) // Build date:        Sun Mar  4 18:17:03 EST 2012
+(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // Build host:        baudelaire
+(PID.TID 0000.0001) // Build date:        Mon Mar  5 05:55:48 EST 2012
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -20,7 +20,7 @@
 (PID.TID 0000.0001) > &EEPARMS
 (PID.TID 0000.0001) > nTx=1,
 (PID.TID 0000.0001) > nTy=1,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) ># Note: Some systems use & as the
 (PID.TID 0000.0001) ># namelist terminator. Other systems
 (PID.TID 0000.0001) ># use a / character (as shown here).
@@ -119,14 +119,14 @@
 (PID.TID 0000.0001) >#- not safe to use globalFiles in multi-processors runs
 (PID.TID 0000.0001) >#globalfiles=.TRUE.
 (PID.TID 0000.0001) > usesinglecpuio=.TRUE.
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Elliptic solver parameters
 (PID.TID 0000.0001) > &PARM02
 (PID.TID 0000.0001) > cg2dMaxIters=500,
 (PID.TID 0000.0001) > cg2dTargetResidual=1.E-13,
 (PID.TID 0000.0001) > useSRCGSolver = .TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Time stepping parameters
 (PID.TID 0000.0001) > &PARM03
@@ -151,7 +151,7 @@
 (PID.TID 0000.0001) > taveFreq=   311040000.,
 (PID.TID 0000.0001) > taveFreq=   864000.,
 (PID.TID 0000.0001) > monitorFreq=1.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Gridding parameters
 (PID.TID 0000.0001) > &PARM04
@@ -162,14 +162,14 @@
 (PID.TID 0000.0001) > ygOrigin=-80.,
 (PID.TID 0000.0001) > dySpacing=4.,
 (PID.TID 0000.0001) > dxSpacing=4.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Input datasets
 (PID.TID 0000.0001) > &PARM05
 (PID.TID 0000.0001) > bathyFile=      'bathymetry.bin',
 (PID.TID 0000.0001) > hydrogThetaFile='lev_t.bin',
 (PID.TID 0000.0001) > hydrogSaltFile= 'lev_s.bin',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  INI_PARMS ; starts to read PARM01
 (PID.TID 0000.0001)  INI_PARMS ; read PARM01 : OK
@@ -195,7 +195,7 @@
 (PID.TID 0000.0001) >  useGMRedi      = .TRUE.,
 (PID.TID 0000.0001) >  useFRAZIL      = .TRUE.,
 (PID.TID 0000.0001) >  usediagnostics = .TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
@@ -212,7 +212,7 @@
 (PID.TID 0000.0001) > TheCalendar='model',
 (PID.TID 0000.0001) > startDate_1=19920101,
 (PID.TID 0000.0001) > startDate_2=000000,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) CAL_READPARMS: finished reading data.cal
 (PID.TID 0000.0001) 
@@ -283,7 +283,7 @@
 (PID.TID 0000.0001) > exf_iprec         = 32,
 (PID.TID 0000.0001) > useEXFYearlyFields= .TRUE.,
 (PID.TID 0000.0001) > exf_verbose       = .TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &EXF_NML_02
@@ -322,11 +322,11 @@
 (PID.TID 0000.0001) > climsstfile  = 'lev_sst.bin',
 (PID.TID 0000.0001) > climsssfile  = 'lev_sss.bin',
 (PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &EXF_NML_03
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &EXF_NML_04
@@ -372,7 +372,7 @@
 (PID.TID 0000.0001) > climsss_nlon    = 90
 (PID.TID 0000.0001) > climsss_nlat    = 40
 (PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
 (PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
@@ -409,11 +409,21 @@
 (PID.TID 0000.0001) ># GM_Visbeck_length  = 2.e+5,
 (PID.TID 0000.0001) ># GM_Visbeck_depth   = 1.e+3,
 (PID.TID 0000.0001) ># GM_Visbeck_maxval_K= 2.5e+3,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
+(PID.TID 0000.0001) PROFILES_READPARMS: opening data.profiles
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.profiles
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.profiles"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) > &PROFILES_NML
+(PID.TID 0000.0001) > profilesfiles(1)= 'prof_exemple',
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) PROFILES_READPARMS: finished reading data.profiles
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: opening data.diagnostics
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
 (PID.TID 0000.0001) // =======================================================
@@ -440,21 +450,21 @@
 (PID.TID 0000.0001) >#--------------------
 (PID.TID 0000.0001) ># This example dumps EXF diagnostics as snapshot after 30 days
 (PID.TID 0000.0001) > &DIAGNOSTICS_LIST
-(PID.TID 0000.0001) >  fields(1  ,1) = 'EXFtaux ','EXFtauy ','EXFqnet ','EXFempmr',
+(PID.TID 0000.0001) >  fields(1:4,1) = 'EXFtaux ','EXFtauy ','EXFqnet ','EXFempmr',
 (PID.TID 0000.0001) >   fileName(1) = 'diagsEXF',
 (PID.TID 0000.0001) >  frequency(1) = -864000.,
-(PID.TID 0000.0001) >  fields(1  ,2)  = 'THETA   ','SALT    ',
+(PID.TID 0000.0001) >  fields(1:2,2)  = 'THETA   ','SALT    ',
 (PID.TID 0000.0001) >   levels(1,2) = 1.,
 (PID.TID 0000.0001) >   fileName(2) = 'diagSurf',
 (PID.TID 0000.0001) >  frequency(2) = -864000.,
-(PID.TID 0000.0001) >  fields(1  ,3)  = 'UVEL    ', 'VVEL    ',
+(PID.TID 0000.0001) >  fields(1:2,3)  = 'UVEL    ', 'VVEL    ',
 (PID.TID 0000.0001) >   levels(1,3) = 2.,
 (PID.TID 0000.0001) >   fileName(3) = 'diag_vel_k2',
 (PID.TID 0000.0001) >  frequency(3) = -864000.,
 (PID.TID 0000.0001) >  fields(1,4)  = 'FrzForcT',
 (PID.TID 0000.0001) >   fileName(4) = 'FrzForcT',
 (PID.TID 0000.0001) >  frequency(4) = 864000.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) >#--------------------
 (PID.TID 0000.0001) ># Parameter for Diagnostics of per level statistics:
@@ -478,7 +488,7 @@
 (PID.TID 0000.0001) ># stat_fName(1) = 'dynStDiag',
 (PID.TID 0000.0001) >#  stat_freq(1) = -864000.,
 (PID.TID 0000.0001) ># stat_phase(1) = 0.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": start
 (PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": OK
@@ -1016,6 +1026,52 @@
 (PID.TID 0000.0001) // External forcing (EXF) configuration  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) Profiles num_file is    1 prof_exemple
+(PID.TID 0000.0001) Opening num_file    1 prof_exemple.nc
+(PID.TID 0000.0001)  fid, num_file, ProfNo, ProfDepthNo      65536        1      218       55
+(PID.TID 0000.0001) fid dimid ProfNo     65536  2  1  108
+(PID.TID 0000.0001) Profiles num_file is    2  empty
+(PID.TID 0000.0001) Profiles num_file is    3  empty
+(PID.TID 0000.0001) Profiles num_file is    4  empty
+(PID.TID 0000.0001) Profiles num_file is    5  empty
+(PID.TID 0000.0001) Profiles num_file is    6  empty
+(PID.TID 0000.0001) Profiles num_file is    7  empty
+(PID.TID 0000.0001) Profiles num_file is    8  empty
+(PID.TID 0000.0001) Profiles num_file is    9  empty
+(PID.TID 0000.0001) Profiles num_file is   10  empty
+(PID.TID 0000.0001) Profiles num_file is   11  empty
+(PID.TID 0000.0001) Profiles num_file is   12  empty
+(PID.TID 0000.0001) Profiles num_file is   13  empty
+(PID.TID 0000.0001) Profiles num_file is   14  empty
+(PID.TID 0000.0001) Profiles num_file is   15  empty
+(PID.TID 0000.0001) Profiles num_file is   16  empty
+(PID.TID 0000.0001) Profiles num_file is   17  empty
+(PID.TID 0000.0001) Profiles num_file is   18  empty
+(PID.TID 0000.0001) Profiles num_file is   19  empty
+(PID.TID 0000.0001) Profiles num_file is   20  empty
+(PID.TID 0000.0001) Profiles num_file is    1 prof_exemple
+(PID.TID 0000.0001) Opening num_file    1 prof_exemple.nc
+(PID.TID 0000.0001)  fid, num_file, ProfNo, ProfDepthNo     131072        1      218       55
+(PID.TID 0000.0001) fid dimid ProfNo    131072  2  1  110
+(PID.TID 0000.0001) Profiles num_file is    2  empty
+(PID.TID 0000.0001) Profiles num_file is    3  empty
+(PID.TID 0000.0001) Profiles num_file is    4  empty
+(PID.TID 0000.0001) Profiles num_file is    5  empty
+(PID.TID 0000.0001) Profiles num_file is    6  empty
+(PID.TID 0000.0001) Profiles num_file is    7  empty
+(PID.TID 0000.0001) Profiles num_file is    8  empty
+(PID.TID 0000.0001) Profiles num_file is    9  empty
+(PID.TID 0000.0001) Profiles num_file is   10  empty
+(PID.TID 0000.0001) Profiles num_file is   11  empty
+(PID.TID 0000.0001) Profiles num_file is   12  empty
+(PID.TID 0000.0001) Profiles num_file is   13  empty
+(PID.TID 0000.0001) Profiles num_file is   14  empty
+(PID.TID 0000.0001) Profiles num_file is   15  empty
+(PID.TID 0000.0001) Profiles num_file is   16  empty
+(PID.TID 0000.0001) Profiles num_file is   17  empty
+(PID.TID 0000.0001) Profiles num_file is   18  empty
+(PID.TID 0000.0001) Profiles num_file is   19  empty
+(PID.TID 0000.0001) Profiles num_file is   20  empty
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
 (PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   225
@@ -1195,11 +1251,11 @@
 (PID.TID 0000.0001)   1  13.497  32.600  24.548  -0.202   0.773  -0.005  -0.002   0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)   2  13.488  32.600  24.819  -0.204   0.773  -0.005  -0.002   0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)   3  13.476  32.600  25.201  -0.205   0.772  -0.005  -0.002   0.000   0.000   0.000   0.000   0.000
-(PID.TID 0000.0001)   4   8.469  35.150  28.642  -0.163   0.784  -0.005  -0.002   0.000   0.000   0.000   0.000   0.000
-(PID.TID 0000.0001)   5   8.451  35.150  29.393  -0.167   0.782  -0.005  -0.002   0.000   0.000   0.000   0.000   0.000
+(PID.TID 0000.0001)   4   8.469  35.150  28.642  -0.163   0.784  -0.005  -0.002  -0.000   0.000   0.000   0.000   0.000
+(PID.TID 0000.0001)   5   8.451  35.150  29.393  -0.167   0.782  -0.005  -0.002  -0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)   6   5.940  34.900  30.563  -0.144   0.786  -0.005  -0.002  -0.001   0.000   0.000   0.000   0.000
-(PID.TID 0000.0001)   7   4.425  34.900  31.985  -0.134   0.788  -0.005  -0.003   0.000   0.000   0.000   0.000   0.000
-(PID.TID 0000.0001)   8   2.911  34.750  33.505  -0.125   0.789  -0.006  -0.003   0.000   0.000   0.000   0.000   0.000
+(PID.TID 0000.0001)   7   4.425  34.900  31.985  -0.134   0.788  -0.005  -0.003  -0.000   0.000   0.000   0.000   0.000
+(PID.TID 0000.0001)   8   2.911  34.750  33.505  -0.125   0.789  -0.006  -0.003  -0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)   9   1.893  34.800  35.341  -0.123   0.789  -0.006  -0.003   0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  10   1.367  34.800  37.299  -0.129   0.787  -0.006  -0.003   0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  11   1.327  34.800  39.405  -0.141   0.783  -0.005  -0.003   0.000   0.000   0.000   0.000   0.000
@@ -2324,8 +2380,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =  -0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
@@ -2384,7 +2440,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      0     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  EXF_INTERP_READ: opening file: lev_sst.bin_1991
@@ -2396,7 +2452,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) S.edge (j=-1,0,1) : proc= 0.0 0.0 0.0, yIn=  -86.000000  -82.000000  -78.000000
 (PID.TID 0000.0001) N.edge (j=+0,+1,+2) proc= 0.0 0.0 0.0, yIn=   78.000000   82.000000   86.000000
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      0     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  EXF_INTERP_READ: opening file: lev_sss.bin_1991
@@ -2408,7 +2464,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) S.edge (j=-1,0,1) : proc= 0.0 0.0 0.0, yIn=  -86.000000  -82.000000  -78.000000
 (PID.TID 0000.0001) N.edge (j=+0,+1,+2) proc= 0.0 0.0 0.0, yIn=   78.000000   82.000000   86.000000
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      0     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  EXF_INTERP_READ: opening file: trenberth_taux.bin_1991
@@ -2420,7 +2476,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) S.edge (j=-1,0,1) : proc= 0.0 0.0 0.0, yIn=  -86.000000  -82.000000  -78.000000
 (PID.TID 0000.0001) N.edge (j=+0,+1,+2) proc= 0.0 0.0 0.0, yIn=   78.000000   82.000000   86.000000
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      0     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  EXF_INTERP_READ: opening file: trenberth_tauy.bin_1991
@@ -2432,7 +2488,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) S.edge (j=-1,0,1) : proc= 0.0 0.0 0.0, yIn=  -88.000000  -84.000000  -80.000000
 (PID.TID 0000.0001) N.edge (j=+0,+1,+2) proc= 0.0 0.0 0.0, yIn=   76.000000   80.000000   84.000000
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.50000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      0     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  EXF_INTERP_READ: opening file: ncep_qnet.bin_1991
@@ -2488,7 +2544,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsst_mean             =   1.8364821435178E+01
 (PID.TID 0000.0001) %MON exf_climsst_sd               =   9.2122803951938E+00
 (PID.TID 0000.0001) %MON exf_climsst_del2             =   2.4303814016692E-02
-(PID.TID 0000.0001) %MON exf_climsss_max              =   3.7451293945312E+01
+(PID.TID 0000.0001) %MON exf_climsss_max              =   3.7451293945313E+01
 (PID.TID 0000.0001) %MON exf_climsss_min              =   2.9661429405212E+01
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   3.4846753273918E+01
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   9.6901487505657E-01
@@ -2581,23 +2637,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      1     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      1     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      1     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      1     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.48333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      1     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -2737,23 +2793,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      2     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      2     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      2     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      2     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.46666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      2     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -2893,23 +2949,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      3     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      3     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      3     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      3     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.45000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      3     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3049,23 +3105,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      4     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      4     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      4     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      4     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.43333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      4     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3205,23 +3261,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      5     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      5     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      5     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      5     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.41666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      5     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3361,23 +3417,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      6     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      6     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      6     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      6     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.40000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      6     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3517,23 +3573,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      7     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      7     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      7     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      7     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.38333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      7     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3673,23 +3729,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      8     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      8     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      8     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      8     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.36666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      8     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3829,23 +3885,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      9     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      9     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      9     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      9     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.35000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:      9     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -3985,23 +4041,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     10     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     10     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     10     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     10     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.33333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     10     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -4151,23 +4207,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #     31  VVEL         Counter:       1   Parms: VVR     MR      
            Vector  Mate for  VVEL         Diagnostic #     30  UVEL     exists 
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     11     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     11     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     11     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     11     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.31666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     11     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -4307,23 +4363,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     12     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     12     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     12     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     12     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.30000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     12     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -4341,7 +4397,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_vstress_mean             =  -6.0825274740630E-03
 (PID.TID 0000.0001) %MON exf_vstress_sd               =   4.5574538967973E-02
 (PID.TID 0000.0001) %MON exf_vstress_del2             =   4.2380813588099E-04
-(PID.TID 0000.0001) %MON exf_hflux_max                =   4.3217993164062E+02
+(PID.TID 0000.0001) %MON exf_hflux_max                =   4.3217993164063E+02
 (PID.TID 0000.0001) %MON exf_hflux_min                =  -1.8422400970459E+02
 (PID.TID 0000.0001) %MON exf_hflux_mean               =  -1.6625133603452E+01
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.1159198929743E+02
@@ -4418,7 +4474,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4716495795970E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9608742703006E-01
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.0054295975098E-03
-(PID.TID 0000.0001) %MON forcing_qnet_max             =   4.3217993164062E+02
+(PID.TID 0000.0001) %MON forcing_qnet_max             =   4.3217993164063E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =  -1.8422400970459E+02
 (PID.TID 0000.0001) %MON forcing_qnet_mean            =  -1.6625133603452E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   1.1159198929743E+02
@@ -4463,23 +4519,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     13     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     13     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     13     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     13     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.28333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     13     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -4619,23 +4675,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     14     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     14     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     14     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     14     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.26666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     14     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -4775,23 +4831,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     15     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     15     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     15     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     15     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.25000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     15     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -4931,23 +4987,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     16     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     16     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     16     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     16     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.23333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     16     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -5087,23 +5143,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     17     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     17     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     17     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     17     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.21666667D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     17     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -5243,23 +5299,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     18     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     18     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     18     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     18     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.20000000D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     18     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -5399,23 +5455,23 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     19     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     19     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     19     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     19     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
-(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333E+00
+(PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.18333333D+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec: myiter, count0, count1:     19     12      1
 (PID.TID 0000.0001)  exf_GetFFieldsRec:
 (PID.TID 0000.0001) // =======================================================
@@ -5559,137 +5615,149 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic #    225  FrzForcT     Counter:      20   Parms: SM      MR      
 (PID.TID 0000.0001) %CHECKPOINT        20 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  18.4032025
-(PID.TID 0000.0001)         System time:  0.233963993
-(PID.TID 0000.0001)     Wall clock time:  19.7484441
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   19.400000000000002
+(PID.TID 0000.0001)         System time:  0.13000000000000000
+(PID.TID 0000.0001)     Wall clock time:   19.731491804122925
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.182973001
-(PID.TID 0000.0001)         System time:  0.0319949989
-(PID.TID 0000.0001)     Wall clock time:  0.423261881
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  0.95999999999999996
+(PID.TID 0000.0001)         System time:  0.10000000000000001
+(PID.TID 0000.0001)     Wall clock time:   1.0663440227508545
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  18.2202295
-(PID.TID 0000.0001)         System time:  0.201968994
-(PID.TID 0000.0001)     Wall clock time:  19.325084
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   18.440000000000001
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   18.665096998214722
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.369943023
-(PID.TID 0000.0001)         System time:  0.0659900047
-(PID.TID 0000.0001)     Wall clock time:  0.532025814
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  0.23999999999999999
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  0.25285887718200684
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  17.8502865
-(PID.TID 0000.0001)         System time:  0.135978989
-(PID.TID 0000.0001)     Wall clock time:  18.792964
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   18.200000000000003
+(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
+(PID.TID 0000.0001)     Wall clock time:   18.412208080291748
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  17.8482881
-(PID.TID 0000.0001)         System time:  0.135978989
-(PID.TID 0000.0001)     Wall clock time:  18.7923028
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:   18.139999999999993
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   18.345584869384766
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0369921327
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.033135891
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)           User time:  2.99999999999975842E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.89847850799560547E-002
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
+(PID.TID 0000.0001)   Seconds in section "PROFILES_INLOOP    [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:   1.3800000000000026
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.4026956558227539
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.360943139
-(PID.TID 0000.0001)         System time:  0.00699899346
-(PID.TID 0000.0001)     Wall clock time:  0.39102602
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.25000000000000000
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.24844527244567871
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.358943224
-(PID.TID 0000.0001)         System time:  0.00699899346
-(PID.TID 0000.0001)     Wall clock time:  0.389785051
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.25000000000000000
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.24806284904479980
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.000999450684
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000616550446
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.84774398803710938E-004
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.26265776
-(PID.TID 0000.0001)         System time:  0.00199998915
-(PID.TID 0000.0001)     Wall clock time:  2.2691412
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:   1.9100000000000001
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.8894431591033936
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.17536485
-(PID.TID 0000.0001)         System time:  0.00899799913
-(PID.TID 0000.0001)     Wall clock time:  4.19035625
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:   4.1499999999999915
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   4.1897985935211182
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.74612999
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  5.7810626
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:   6.0299999999999976
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   6.0178391933441162
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.835870266
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.841297626
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.99000000000000199
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.0069100856781006
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.117980957
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.114896774
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.10000000000000142
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.11229658126831055
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.179977059
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.180285215
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.19999999999999929
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.19730687141418457
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0789875984
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0753707886
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  6.99999999999967315E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  5.81657886505126953E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.100984454
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.105020046
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  7.99999999999947420E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  7.74481296539306641E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.24581075
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  1.24432635
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.99000000000000199
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.98734331130981445
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.02869523
-(PID.TID 0000.0001)         System time:  0.00100000203
-(PID.TID 0000.0001)     Wall clock time:  2.03271461
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:   1.6699999999999982
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.8301224708557129
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.48492527
-(PID.TID 0000.0001)         System time:  0.0579920039
-(PID.TID 0000.0001)     Wall clock time:  1.09294415
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  0.23000000000000398
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.23665642738342285
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.18197298
-(PID.TID 0000.0001)         System time:  0.057990998
-(PID.TID 0000.0001)     Wall clock time:  0.429523468
-(PID.TID 0000.0001)          No. starts: 20
-(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)           User time:  5.99999999999987210E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  5.84359169006347656E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
+(PID.TID 0000.0001)   Seconds in section "PROFILES_INLOOP    [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  6.00000000000022737E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  6.64219856262207031E-002
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
@@ -5716,9 +5784,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           8734
+(PID.TID 0000.0001) //            No. barriers =           8736
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           8734
+(PID.TID 0000.0001) //     Total barrier spins =           8736
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
