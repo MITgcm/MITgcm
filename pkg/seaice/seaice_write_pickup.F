@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.13 2012/02/16 01:23:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.14 2012/03/05 15:21:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,19 +79,19 @@ C     record number < 0 : a hack not to write meta files now:
 
 C--   write Sea-Ice Thermodynamics State variables, starting with 3-D fields:
        IF ( .NOT.useThSIce ) THEN
-#ifdef SEAICE_MULTICATEGORY
-        j = j + 1
-        nj = nj-1
-        CALL WRITE_REC_3D_RL(fn,fp,MULTDIM,TICES, nj, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'siTICES '
+        IF (SEAICE_multDim.GT.1) THEN
+         j = j + 1
+         nj = nj-1
+         CALL WRITE_REC_3D_RL(fn,fp,MULTDIM,TICES, nj, myIter, myThid )
+         IF (j.LE.listDim) wrFldList(j) = 'siTICES '
 C-    switch to 2-D fields:
-        nj = nj*MULTDIM
-#else
-        j = j + 1
-        nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp,  1, TICE  , nj, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'siTICE  '
-#endif /* SEAICE_MULTICATEGORY */
+         nj = nj*MULTDIM
+        ELSE
+         j = j + 1
+         nj = nj-1
+         CALL WRITE_REC_3D_RL( fn, fp,  1, TICE  , nj, myIter, myThid )
+         IF (j.LE.listDim) wrFldList(j) = 'siTICE  '
+        ENDIF
 
 C---  continue to write 2-D fields:
         j = j + 1

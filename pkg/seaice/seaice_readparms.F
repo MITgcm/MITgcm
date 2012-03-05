@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.116 2012/03/03 05:35:03 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.117 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,6 +24,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
+#ifdef SEAICE_MULTICATEGORY
+# include "SEAICE.h"
+#endif
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_TRACER.h"
 #ifdef ALLOW_COST
@@ -119,7 +122,7 @@ C--   SEAICE parameters
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS, LSR_mixIniGuess,
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
-     & SEAICEheatConsFix,
+     & SEAICEheatConsFix, SEAICE_multDim,
      & SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
@@ -292,6 +295,11 @@ C     old default value of 0.97001763668430343479
       SEAICE_shortwave   = 0.30   _d 0
       SIsalFRAC          = 0.0    _d 0
       SIsal0             = 0.0    _d 0
+#ifdef SEAICE_MULTICATEGORY
+      SEAICE_multDim     = MULTDIM
+#else
+      SEAICE_multDim     = 1
+#endif
       SEAICE_mcPheePiston  = 
      &      MCPHEE_TAPER_FAC * STANTON_NUMBER * USTAR_BASE
       SEAICE_frazilFrac    = 1. _d 0

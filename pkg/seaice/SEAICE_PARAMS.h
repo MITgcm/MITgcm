@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.89 2012/03/05 09:40:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.90 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -121,6 +121,7 @@ C                        :: 3=from predicted melt by ATM
 C     SEAICE_areaGainFormula :: selects formula for ice cover gain from open water growth
 C                        :: 1=from growth by ATM
 C                        :: 2=from predicted growth by ATM
+C     SEAICE_multDim     :: number of ice categories
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
@@ -137,6 +138,7 @@ C
       INTEGER SEAICEturbFluxFormula
       INTEGER SEAICE_areaLossFormula
       INTEGER SEAICE_areaGainFormula      
+      INTEGER SEAICE_multDim
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
       COMMON /SEAICE_PARM_I/
@@ -153,6 +155,7 @@ C
      &     SEAICEturbFluxFormula,
      &     SEAICE_areaLossFormula,
      &     SEAICE_areaGainFormula,
+     &     SEAICE_multDim,
      &     SEAICE_debugPointI,
      &     SEAICE_debugPointJ
 

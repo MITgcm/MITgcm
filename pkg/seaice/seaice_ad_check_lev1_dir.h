@@ -1,12 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.29 2012/03/02 18:53:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.30 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 CADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE tice    = comlev1, key=ikey_dynamics, kind=isbyte
-
-#ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices      = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
 
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte

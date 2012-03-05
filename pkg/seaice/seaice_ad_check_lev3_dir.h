@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.18 2012/03/02 18:53:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.19 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev3, key = ilev_3
-
-#ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices      =     tapelev3, key = ilev_3
-#endif
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
 CADJ STORE area  = tapelev3, key = ilev_3

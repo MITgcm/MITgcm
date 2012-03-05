@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.24 2012/02/16 01:22:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.25 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,10 +51,8 @@ C     == Local variables ==
       _RL sigII(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sig1, sig2, sig12, sigTmp, recip_prs
 #endif
-#ifdef SEAICE_MULTICATEGORY
       INTEGER k
-      _RL recip_multdim
-#endif
+      _RL recip_multDim
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
       CHARACTER*8   diagName
@@ -73,7 +71,6 @@ C     == Local variables ==
        IF ( DIAGNOSTICS_IS_ON('SItices ',myThid) ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef SEAICE_MULTICATEGORY
 C     use TICE as a temporary field, as it is done in seaice_growth
           DO j=1,sNy
            DO i=1,sNx
@@ -81,16 +78,15 @@ C     use TICE as a temporary field, as it is done in seaice_growth
            ENDDO
           ENDDO
 C     division by zero is not possible
-          recip_multdim = 1. _d 0/MULTDIM
-          DO k=1,MULTDIM
+          recip_multDim = 1. _d 0/SEAICE_multDim
+          DO k=1,SEAICE_multDim
            DO j=1,sNy
             DO i=1,sNx
              TICE(I,J,bi,bj) = TICE(I,J,bi,bj)
-     &            + TICES(I,J,K,bi,bj)*recip_multdim
+     &            + TICES(I,J,K,bi,bj)*recip_multDim
             ENDDO
            ENDDO
           ENDDO
-#endif /* SEAICE_MULTICATEGORY */
          ENDDO
         ENDDO
         CALL DIAGNOSTICS_FRACT_FILL(

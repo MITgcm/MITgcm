@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.33 2012/03/02 18:56:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.34 2012/03/05 15:21:45 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -14,7 +14,8 @@ C     !INTERFACE:
 #ifdef SEAICE_CAP_SUBLIM
      I   F_lh_max,
 #endif
-     U   TSURF,
+     I   TSURFin,
+     O   TSURFout,
      O   F_ia, IcePenetSW,
      O   FWsublim,
      I   bi, bj, myTime, myIter, myThid )
@@ -73,7 +74,8 @@ C----------
 #ifdef SEAICE_CAP_SUBLIM
       _RL F_lh_max    (1:sNx,1:sNy)
 #endif
-      _RL TSURF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TSURFin     (1:sNx,1:sNy)
+      _RL TSURFout    (1:sNx,1:sNy)
       _RL F_ia        (1:sNx,1:sNy)
       _RL IcePenetSW  (1:sNx,1:sNy)
       _RL FWsublim    (1:sNx,1:sNy)
@@ -228,8 +230,9 @@ C     here in a separate array
         F_lwu    (I,J) = 0. _d 0
         F_sens   (I,J) = 0. _d 0
 C     Make a local copy of LW, surface & atmospheric temperatures
-        tsurfLoc (I,J) = TSURF(I,J,bi,bj)
-c       tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURF(I,J,bi,bj) )
+        tsurfLoc (I,J) = TSURFin(I,J)
+        TSURFout (I,J) = TSURFin(I,J)
+c       tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURFin(I,J) )
         lwdownLoc(I,J) = MAX( MIN_LWDOWN, LWDOWN(I,J,bi,bj) )
         atempLoc (I,J) = MAX( celsius2K+MIN_ATEMP, ATEMP(I,J,bi,bj) )
 
@@ -327,7 +330,7 @@ c        hice_tmp = max(HICE_ACTUAL(I,J),5. _d -2)
           print '(A,i6)','ibi merged initialization ', myIter
           print '(A,i6,4(1x,D24.15))',
      &         'ibi iter, TSL, TS     ',myIter,
-     &         tsurfLoc(I,J), TSURF(I,J,bi,bj)
+     &         tsurfLoc(I,J), TSURFin(I,J)
           print '(A,i6,4(1x,D24.15))',
      &         'ibi iter, TMELT       ',myIter,TMELT
           print '(A,i6,4(1x,D24.15))',
@@ -462,17 +465,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( iceOrNot(I,J) ) THEN
 
 C     Save updated tsurf and finalize the flux terms
-         TSURF(I,J,bi,bj) = tsurfLoc(I,J)
+         TSURFout(I,J) = tsurfLoc(I,J)
 
 #ifdef SEAICE_MODIFY_GROWTH_ADJ
 Cgf no additional dependency through solver, snow, etc.
          IF ( SEAICEadjMODE.GE.2 ) THEN
-          CALL ZERO_ADJ_1D( 1, TSURF(I,J,bi,bj), myThid)
+          CALL ZERO_ADJ_1D( 1, TSURFin(I,J), myThid)
           absorbedSW(I,J) = 0.3 _d 0 *SWDOWN(I,J,bi,bj)
           IcePenetSW(I,J)= 0. _d 0
          ENDIF
          IF ( postSolvTempIter.EQ.2 .OR. SEAICEadjMODE.GE.2 ) THEN
-          t1 = TSURF(I,J,bi,bj)
+          t1 = TSURFin(I,J)
 #else /* SEAICE_MODIFY_GROWTH_ADJ */
 
          IF ( postSolvTempIter.EQ.2 ) THEN
@@ -542,7 +545,7 @@ C     Calculate the net ice-ocean and ice-atmosphere fluxes
           print '(A,i6)','ibi complete ', myIter
           print '(A,4(1x,D24.15))',
      &         'ibi T(SURF, surfLoc,atmos) ',
-     &         TSURF(I,J,bi,bj), tsurfLoc(I,J),atempLoc(I,J)
+     &         TSURFout(I,J), tsurfLoc(I,J),atempLoc(I,J)
           print '(A,4(1x,D24.15))',
      &         'ibi LWL                    ', lwdownLoc(I,J)
           print '(A,4(1x,D24.15))',

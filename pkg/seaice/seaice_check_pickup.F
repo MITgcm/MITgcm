@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.6 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.7 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,12 +59,7 @@ C     bi,bj       :: tile indices
 c     LOGICAL oldIceAge
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(8) fldName
-#if (defined SEAICE_MULTICATEGORY) 
-      INTEGER i,j,bi,bj
-#endif
-#ifdef SEAICE_MULTICATEGORY
-      INTEGER k
-#endif
+      INTEGER i,j,k,bi,bj
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
       CHARACTER*(2) fldNum
@@ -96,7 +91,7 @@ c        IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
           ENDIF
          ELSEIF ( fldName.EQ.'siTICES '
      &                      .AND. tIceFlag.LE.2 ) THEN
-#ifdef SEAICE_MULTICATEGORY
+          IF (SEAICE_multDim.GT.1) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &      ' restart from single category Tice (copied to TICES)'
@@ -114,7 +109,7 @@ C      copy TICE -> TICES
             ENDDO
            ENDDO
           ENDIF
-#endif
+          ENDIF
          ELSEIF ( fldName(1:6).EQ.'siSigm' ) THEN
 C- Note: try to restart without Sigma1,2,12 (as if SEAICEuseEVPpickup=F)
 C        An alternative would be to restart only if SEAICEuseEVPpickup=F:

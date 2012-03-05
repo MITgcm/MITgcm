@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.15 2012/02/16 03:32:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.16 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,6 +54,7 @@ C     bi,bj       :: tile indices
       CHARACTER*(8) missFldList(missFldDim)
       INTEGER nj, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER i,j,k,bi,bj
 #ifdef ALLOW_SITRACER
       CHARACTER*(8) fldName
       INTEGER iTrac
@@ -134,13 +135,13 @@ C---   Old way to read seaice fields:
 
 C--    Read ice model fields
         nj = 1
-#ifdef SEAICE_MULTICATEGORY
-        CALL READ_REC_3D_RL( fn,fp,MULTDIM, TICES, nj, nIter0, myThid )
-        nj = nj + MULTDIM
-#else
-        CALL READ_REC_3D_RL( fn, fp, 1, TICE     , nj, nIter0, myThid )
-        nj = nj + 1
-#endif /* SEAICE_MULTICATEGORY */
+        IF (SEAICE_multDim.GT.1) THEN
+          CALL READ_REC_3D_RL(fn,fp,MULTDIM,TICES,nj,nIter0,myThid)
+          nj = nj + MULTDIM
+        ELSE
+          CALL READ_REC_3D_RL(fn,fp,1,TICE,nj,nIter0,myThid)
+         nj = nj + 1
+        ENDIF
 c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         nj = nj + 1
         CALL READ_REC_3D_RL( fn, fp, 1, HSNOW    , nj, nIter0, myThid )
@@ -173,7 +174,7 @@ C---   New way to read model fields:
          nj = 0
 C--    read Sea-Ice Thermodynamics State variables, starting with 3-D fields:
         IF ( .NOT.useThSIce ) THEN
-#ifdef SEAICE_MULTICATEGORY
+        IF (SEAICE_multDim.GT.1) THEN
          CALL READ_MFLDS_3D_RL( 'siTICES ', TICES,
      &                                nj, fp, MULTDIM, nIter0, myThid )
          nj = nj*MULTDIM
@@ -181,14 +182,27 @@ C--    read Sea-Ice Thermodynamics State variables, starting with 3-D fields:
          CALL READ_MFLDS_3D_RL( 'siTICE  ', TICE,
      &                                      nj, fp, 1, nIter0, myThid )
          ENDIF
-#else /* SEAICE_MULTICATEGORY */
+        ELSE
          CALL READ_MFLDS_3D_RL( 'siTICE  ', TICE,
      &                                      nj, fp, 1, nIter0, myThid )
+C        map to TICES(1)
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO k=1,MULTDIM
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              TICES(i,j,k,bi,bj) = TICE(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+
          IF ( nj.EQ.0 ) THEN
          CALL READ_MFLDS_3D_RL( 'siTICES ', TICE,
      &                                      nj, fp, 1, nIter0, myThid )
          ENDIF
-#endif /* SEAICE_MULTICATEGORY */
+       ENDIF
 C--    continue with 2-D fields:
          CALL READ_MFLDS_3D_RL( 'siAREA  ', AREA,
      &                                      nj, fp, 1, nIter0, myThid )
@@ -257,11 +271,8 @@ C--    Update overlap regions
        CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
        _EXCH_XY_RL( HEFF, myThid )
        _EXCH_XY_RL( AREA, myThid )
-#ifdef SEAICE_MULTICATEGORY
        CALL EXCH_3D_RL   ( TICES, MULTDIM, myThid )
-#else
        _EXCH_XY_RL(TICE , myThid )
-#endif /* SEAICE_MULTICATEGORY */
 c      _EXCH_XY_RL(YNEG , myThid )
        _EXCH_XY_RL(HSNOW, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))

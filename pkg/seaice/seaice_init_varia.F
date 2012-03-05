@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.69 2012/02/03 13:34:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.70 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -45,9 +45,7 @@ C     i,j,k,bi,bj :: Loop counters
 #ifdef SEAICE_CGRID
       _RS  mask_uice
 #endif
-#ifdef SEAICE_MULTICATEGORY
       INTEGER k
-#endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr, jTh
 #endif
@@ -81,19 +79,6 @@ C
           areaNm1(i,j,bi,bj)=0. _d 0
           hEffNm1(i,j,bi,bj)=0. _d 0
 #endif
-         ENDDO
-        ENDDO
-#ifdef SEAICE_MULTICATEGORY
-        DO k=1,MULTDIM
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           TICES(i,j,k,bi,bj)=0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-#endif
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
           ETA (i,j,bi,bj)   = 0. _d 0
           ZETA(i,j,bi,bj)   = 0. _d 0
           DRAGS(i,j,bi,bj)  = 0. _d 0
@@ -146,6 +131,9 @@ c "ice concentration" tracer that should remain .EQ.1.
           ENDDO
 #endif
           TICE(i,j,bi,bj)   = 0. _d 0
+          DO k=1,MULTDIM
+            TICES(i,j,k,bi,bj)=0. _d 0
+          ENDDO
           TAUX(i,j,bi,bj)   = 0. _d 0
           TAUY(i,j,bi,bj)   = 0. _d 0
 #ifdef ALLOW_SEAICE_COST_EXPORT
@@ -229,11 +217,9 @@ C Western boundary
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           TICE(i,j,bi,bj)=273.0 _d 0
-#ifdef SEAICE_MULTICATEGORY
           DO k=1,MULTDIM
            TICES(i,j,k,bi,bj)=273.0 _d 0
           ENDDO
-#endif /* SEAICE_MULTICATEGORY */
 #ifndef SEAICE_CGRID
           AMASS      (i,j,bi,bj)=1000.0 _d 0
 #else

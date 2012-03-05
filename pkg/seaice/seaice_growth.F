@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.158 2012/03/05 14:52:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.159 2012/03/05 15:21:44 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -167,6 +167,7 @@ C                     as EVAP (positive upward)
 C     The latent heat flux which will sublimate all snow and ice
 C     over one time step
       _RL latentHeatFluxMax   (1:sNx,1:sNy)
+      _RL latentHeatFluxMaxMult  (1:sNx,1:sNy,MULTDIM)
 #endif
 
 C     actual ice thickness (with upper and lower limit)
@@ -207,24 +208,17 @@ C temporary variables available for the various computations
       _RL saltFluxAdjust      (1:sNx,1:sNy)
 #endif
 
-      INTEGER nDim
-#ifdef SEAICE_MULTICATEGORY
       INTEGER ilockey
-      PARAMETER ( nDim = MULTDIM )
       INTEGER it
       _RL pFac
-      _RL heffActualP         (1:sNx,1:sNy)
-      _RL a_QbyATMmult_cover  (1:sNx,1:sNy)
-      _RL a_QSWbyATMmult_cover(1:sNx,1:sNy)
-      _RL a_FWbySublimMult    (1:sNx,1:sNy)
-# ifdef SEAICE_CAP_SUBLIM
-      _RL latentHeatFluxMaxP  (1:sNx,1:sNy)
-# endif
-#else
-      PARAMETER ( nDim = 1 )
-#endif /* SEAICE_MULTICATEGORY */
+      _RL ticeInMult          (1:sNx,1:sNy,MULTDIM)
+      _RL ticeOutMult         (1:sNx,1:sNy,MULTDIM)
+      _RL heffActualMult      (1:sNx,1:sNy,MULTDIM)
+      _RL a_QbyATMmult_cover  (1:sNx,1:sNy,MULTDIM)
+      _RL a_QSWbyATMmult_cover(1:sNx,1:sNy,MULTDIM)
+      _RL a_FWbySublimMult    (1:sNx,1:sNy,MULTDIM)
 C     Helper variables: reciprocal of some constants
-      _RL recip_nDim
+      _RL recip_multDim
       _RL recip_deltaTtherm
       _RL recip_rhoIce
 
@@ -258,10 +252,10 @@ C ===================================================================
       ENDIF
 
 C     avoid unnecessary divisions in loops
-      recip_nDim        = nDim
-      recip_nDim        = ONE / recip_nDim
-C     above/below: double/single precision calculation of recip_nDim
-c     recip_nDim        = 1./float(nDim)
+      recip_multDim        = SEAICE_multDim
+      recip_multDim        = ONE / recip_multDim
+C     above/below: double/single precision calculation of recip_multDim
+c     recip_multDim        = 1./float(SEAICE_multDim)
       recip_deltaTtherm = ONE / SEAICE_deltaTtherm
       recip_rhoIce      = ONE / SEAICE_rhoIce
 
@@ -358,14 +352,16 @@ c
 #ifdef SEAICE_VARIABLE_SALINITY
           saltFluxAdjust(I,J)        = 0.0 _d 0
 #endif
-#ifdef SEAICE_MULTICATEGORY
-          a_QbyATMmult_cover(I,J)    = 0.0 _d 0
-          a_QSWbyATMmult_cover(I,J)  = 0.0 _d 0
-          a_FWbySublimMult(I,J)      = 0.0 _d 0
+          DO IT=1,SEAICE_multDim
+            ticeInMult(I,J,IT)            = 0.0 _d 0
+            ticeOutMult(I,J,IT)           = 0.0 _d 0
+            a_QbyATMmult_cover(I,J,IT)    = 0.0 _d 0
+            a_QSWbyATMmult_cover(I,J,IT)  = 0.0 _d 0
+            a_FWbySublimMult(I,J,IT)      = 0.0 _d 0
 # ifdef SEAICE_CAP_SUBLIM
-          latentHeatFluxMaxP(I,J)    = 0.0 _d 0
+            latentHeatFluxMaxMult(I,J,IT) = 0.0 _d 0
 # endif
-#endif /* SEAICE_MULTICATEGORY */
+          ENDDO
          ENDDO
         ENDDO
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
@@ -436,11 +432,9 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
             TICE(I,J,bi,bj)=celsius2K
-#ifdef SEAICE_MULTICATEGORY
-            DO IT=1,MULTDIM
+            DO IT=1,SEAICE_multDim
               TICES(I,J,IT,bi,bj)=celsius2K
             ENDDO
-#endif
           endif
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+tmpscal2
           d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
@@ -699,68 +693,89 @@ CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnowActual = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heffActual  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
-# ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
-# endif /* SEAICE_MULTICATEGORY */
 CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Start loop over multi-categories, if SEAICE_MULTICATEGORY is undefined
-C     nDim = 1, and there is only one loop iteration
-#ifdef SEAICE_MULTICATEGORY
-        DO IT=1,nDim
-#ifdef ALLOW_AUTODIFF_TAMC
-C     Why do we need this store directive when we have just stored
-C     TICES before the loop?
-         ilockey = (iicekey-1)*nDim + IT
-CADJ STORE tices(:,:,it,bi,bj) = comlev1_multdim,
-CADJ &                           key = ilockey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-         pFac = (2.0 _d 0*real(IT)-1.0 _d 0)*recip_nDim
+C--   Start loop over multi-categories
+        DO IT=1,SEAICE_multDim
+c        homogeneous distribution between 0 and 2 x heffActual
+         pFac = (2.0 _d 0*real(IT)-1.0 _d 0)*recip_multDim
          DO J=1,sNy
           DO I=1,sNx
-           heffActualP(I,J)= heffActual(I,J)*pFac
+           heffActualMult(I,J,IT)= heffActual(I,J)*pFac
 #ifdef SEAICE_CAP_SUBLIM
-           latentHeatFluxMaxP(I,J) = latentHeatFluxMax(I,J)*pFac
+           latentHeatFluxMaxMult(I,J,IT) = latentHeatFluxMax(I,J)*pFac
 #endif
-           TICE(I,J,bi,bj)=TICES(I,J,IT,bi,bj)
-          ENDDO
-         ENDDO
-         CALL SEAICE_SOLVE4TEMP(
-     I        UG, heffActualP, hsnowActual,
-#ifdef SEAICE_CAP_SUBLIM
-     I        latentHeatFluxMaxP,
-#endif
-     U        TICE,
-     O        a_QbyATMmult_cover, a_QSWbyATMmult_cover,
-     O        a_FWbySublimMult,
-     I        bi, bj, myTime, myIter, myThid )
-         DO J=1,sNy
-          DO I=1,sNx
-C     average over categories
-           a_QbyATM_cover   (I,J) = a_QbyATM_cover(I,J)
-     &          + a_QbyATMmult_cover(I,J)*recip_nDim
-           a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J)
-     &          + a_QSWbyATMmult_cover(I,J)*recip_nDim
-           a_FWbySublim     (I,J) = a_FWbySublim(I,J)
-     &          + a_FWbySublimMult(I,J)*recip_nDim
-           TICES(I,J,IT,bi,bj) = TICE(I,J,bi,bj)
+           ticeInMult(I,J,IT)=TICES(I,J,IT,bi,bj)
+           ticeOutMult(I,J,IT)=TICES(I,J,IT,bi,bj)
+           TICE(I,J,bi,bj) = ZERO
+           TICES(I,J,IT,bi,bj) = ZERO          
           ENDDO
          ENDDO
         ENDDO
-#else
-        CALL SEAICE_SOLVE4TEMP(
-     I       UG, heffActual, hsnowActual,
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heffActualMult = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE ticeInMult     = comlev1_bibj, key = iicekey, byte = isbyte
+# ifdef SEAICE_CAP_SUBLIM
+CADJ STORE latentHeatFluxMaxMult 
+CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
+# endif
+CADJ STORE a_QbyATMmult_cover   = 
+CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QSWbyATMmult_cover = 
+CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_FWbySublimMult     = 
+CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+        DO IT=1,SEAICE_multDim
+         CALL SEAICE_SOLVE4TEMP(
+     I        UG, heffActualMult(1,1,IT), hsnowActual,
 #ifdef SEAICE_CAP_SUBLIM
-     I        latentHeatFluxMax,
+     I        latentHeatFluxMaxMult(1,1,IT),
 #endif
-     U       TICE,
-     O       a_QbyATM_cover, a_QSWbyATM_cover, a_FWbySublim,
-     I       bi, bj, myTime, myIter, myThid )
-#endif /* SEAICE_MULTICATEGORY */
-C--  End loop over multi-categories
+     U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
+     O        a_QbyATMmult_cover(1,1,IT), a_QSWbyATMmult_cover(1,1,IT),
+     O        a_FWbySublimMult(1,1,IT),
+     I        bi, bj, myTime, myIter, myThid )
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heffActualMult = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE ticeOutMult    = comlev1_bibj, key = iicekey, byte = isbyte
+# ifdef SEAICE_CAP_SUBLIM
+CADJ STORE latentHeatFluxMaxMult 
+CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
+# endif
+CADJ STORE a_QbyATMmult_cover   = 
+CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_QSWbyATMmult_cover = 
+CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE a_FWbySublimMult     = 
+CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+         
+        DO IT=1,SEAICE_multDim
+         DO J=1,sNy
+          DO I=1,sNx
+C     update TICE & TICES
+           TICE(I,J,bi,bj) = TICE(I,J,bi,bj) 
+     &          +  ticeOutMult(I,J,IT)*recip_multDim
+           TICES(I,J,IT,bi,bj) = ticeOutMult(I,J,IT)
+C     average over categories
+           a_QbyATM_cover   (I,J) = a_QbyATM_cover(I,J)
+     &          + a_QbyATMmult_cover(I,J,IT)*recip_multDim
+           a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J)
+     &          + a_QSWbyATMmult_cover(I,J,IT)*recip_multDim
+           a_FWbySublim     (I,J) = a_FWbySublim(I,J)
+     &          + a_FWbySublimMult(I,J,IT)*recip_multDim
+          ENDDO
+         ENDDO
+        ENDDO
 
 #ifdef SEAICE_CAP_SUBLIM
 # ifdef ALLOW_DIAGNOSTICS
