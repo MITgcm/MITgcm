@@ -1,10 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1607 2012/03/04 23:32:55 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1608 2012/03/05 02:14:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice : 
+o array initialisation in adjoint mode:
+  1) pkg/mom_common/mom_calc_ke.F:
+    add full array initialisation of KE inside mom_calc_ke.F (ALLOW_AUTODIFF_TAMC):
+    The S/R which calls MOM_CALC_KE initialises KE but in some recomputation
+    part this initialisation is gone, resulting in Floating Point Exception
+    (caught by open64 compiler with debug option).
+  2) model/src/convective_weights.F
+    set output convectCount over the full array range (instead of doing
+    an update): this fix a similar issue when called within recomputation (adjoint)
+    which could by-pass the initialisation (normally done in the caller S/R).
+o pkg/seaice:
   - final version of turbulent flux params, as agreed at MIT ice meet:
        SEAICE_mcPheePiston (default is ~ 0.000875)
        SEAICE_mcPheeTaper (default is 0.)
@@ -12,12 +22,13 @@ o pkg/seaice :
        SEAICE_mcPheeStepFunc (default is false)
   - changes results at trunction error level
   - ifdef SEAICE_EXTERNAL_FLUXES, disallow SEAICE_waterAlbedo
-o added pkg/frazil - see frazil_description.tex for details
+o added pkg/frazil:
+  - see frazil_description.tex for details
   - verification experiment is global_with_exf/input.yearly; changes output.yearly.txt
 o pkg/shelfice/shelfice_thermodynamics.F
-  - fix exponents for velocity dependent exchange coefficients: change 
+  - fix exponents for velocity dependent exchange coefficients: change
     from 2/3(=0) to 0.66666666666666667
-  - move computation of velocity dependent exchange coefficients into 
+  - move computation of velocity dependent exchange coefficients into
     separate loop, so that it applies to both thermodynamics
   - move some divisions by constants out of loops
 
