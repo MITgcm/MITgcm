@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.157 2012/03/03 03:33:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.158 2012/03/05 14:52:16 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -436,6 +436,11 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
             tmpscal2=-HEFF(I,J,bi,bj)
             tmpscal3=-HSNOW(I,J,bi,bj)
             TICE(I,J,bi,bj)=celsius2K
+#ifdef SEAICE_MULTICATEGORY
+            DO IT=1,MULTDIM
+              TICES(I,J,IT,bi,bj)=celsius2K
+            ENDDO
+#endif
           endif
           HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+tmpscal2
           d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
