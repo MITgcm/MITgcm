@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.17 2010/12/23 02:41:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.18 2012/03/05 23:48:33 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -43,7 +43,7 @@ C  "fName.xxx.yyy.meta". If jrecord > 0, a meta-file is created.
 C Currently, the meta-files are not read because it is difficult
 C  to parse files in fortran. We should read meta information before
 C  adding records to an existing multi-record file.
-C The precision of the file is decsribed by filePrec, set either
+C The precision of the file is described by filePrec, set either
 C  to floatPrec32 or floatPrec64. The char*(2) string arrType, either
 C  "RL" or "RS", selects which array is written, either fldRL or fldRS.
 C (kSize,kLo,kHi) allows for both 2-D and 3-D arrays to be handled, with
@@ -234,6 +234,13 @@ C Assign special directory
          WRITE(pfName,'(2A)') mdsioLocalDir(1:pIL), fName(1:IL)
         ENDIF
         pIL=ILNBLNK( pfName )
+        IF ( debugLevel .GE. debLevC ) THEN
+          WRITE(msgBuf,'(A,I8,I6,3I4,2A)')
+     &      ' MDS_WRITE_FIELD: it,rec,kS,kL,kH=', myIter, jrecord,
+     &      kSize, kLo, kHi, ' file=', pfName(1:pIL)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+        ENDIF
 
 C Assign a free unit number as the I/O channel for this routine
         CALL MDSFINDUNIT( dUnit, myThid )
