@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1608 2012/03/05 02:14:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1609 2012/03/05 15:34:58 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice :
+  - merging SEAICE_MULTICATEGORY define and undef cases. Now the same code is compiled either 
+    way, and is tested in all exps (multidim was only tested in lab_sea ad before).
+  - cosmetic change to prepare for future addition of ITD. no change to results. no defaults change.
+  - added run time param SEAICE_multDim (7 for SEAICE_MULTICATEGORY, 1 otherwise).
+  - by lack of adequate verification experiments, I further used custom versions of 
+    global_ocean.cs32x15 to test multicat or not, with pickup or not. All should be correct.
+  - avoid recomputations in ad.
 o array initialisation in adjoint mode:
   1) pkg/mom_common/mom_calc_ke.F:
     add full array initialisation of KE inside mom_calc_ke.F (ALLOW_AUTODIFF_TAMC):
