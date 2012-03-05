@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.160 2011/12/01 14:22:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.161 2012/03/05 18:21:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,8 +123,6 @@ C      |-- MOM_VECINV
 C      |
 C      |-- TIMESTEP
 C      |
-C      |-- OBCS_APPLY_UV
-C      |
 C      |-- MOM_U_IMPLICIT_R
 C      |-- MOM_V_IMPLICIT_R
 C      |
@@ -180,14 +178,14 @@ C                      index into fVerTerm.
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHydF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiHydC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL guDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gvDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -265,7 +263,7 @@ C   if desired:
 #endif
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-      CALL DUMMY_IN_DYNAMICS( mytime, myiter, myThid )
+      CALL DUMMY_IN_DYNAMICS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -299,7 +297,7 @@ CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
-C     These inital values do not alter the numerical results. They
+C     These initial values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
@@ -355,11 +353,11 @@ C--     Start computation of dynamics
         jMax = sNy+1
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wvel (:,:,:,bi,bj) =
+CADJ STORE wVel (:,:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--     Explicit part of the Surface Potentiel Gradient (add in TIMESTEP)
+C--     Explicit part of the Surface Potential Gradient (add in TIMESTEP)
 C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
         IF (implicSurfPress.NE.1.) THEN
           CALL CALC_GRAD_PHI_SURF(
@@ -370,8 +368,8 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
+CADJ STORE uVel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
+CADJ STORE vVel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
 #ifdef ALLOW_KPP
 CADJ STORE KPPviscAz (:,:,:,bi,bj)
 CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
@@ -407,8 +405,8 @@ C--   For Stevens boundary conditions velocities need to be extrapolated
 C     (copied) to a narrow strip outside the domain
          IF ( useOBCS ) THEN
           CALL OBCS_COPY_UV_N(
-     U         uVel(1-Olx,1-Oly,1,bi,bj),
-     U         vVel(1-Olx,1-Oly,1,bi,bj),
+     U         uVel(1-OLx,1-OLy,1,bi,bj),
+     U         vVel(1-OLx,1-OLy,1,bi,bj),
      I         Nr, bi, bj, myThid )
          ENDIF
 #endif /* ALLOW_OBCS */
@@ -428,17 +426,17 @@ C--       kDown  Cycles through 2,1 to point to current layer
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (idynkey-1)*Nr + k
 c
-CADJ STORE totphihyd (:,:,k,bi,bj)
+CADJ STORE totPhiHyd (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE phihydlow (:,:,bi,bj)
+CADJ STORE phiHydLow (:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE theta (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt  (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gt(:,:,k,bi,bj)
+CADJ STORE gT(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gs(:,:,k,bi,bj)
+CADJ STORE gS(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # ifdef NONLIN_FRSURF
 cph-test
@@ -446,37 +444,37 @@ CADJ STORE  phiHydC (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE  phiHydF (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  gudissip (:,:)
+CADJ STORE  guDissip (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  gvdissip (:,:)
+CADJ STORE  gvDissip (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE  fVerU (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE  fVerV (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gu(:,:,k,bi,bj)
+CADJ STORE gU(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gv(:,:,k,bi,bj)
+CADJ STORE gV(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gunm1(:,:,k,bi,bj)
+CADJ STORE guNm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gvnm1(:,:,k,bi,bj)
+CADJ STORE gvNm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  else
-CADJ STORE gunm(:,:,k,bi,bj,1)
+CADJ STORE guNm(:,:,k,bi,bj,1)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gunm(:,:,k,bi,bj,2)
+CADJ STORE guNm(:,:,k,bi,bj,2)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gvnm(:,:,k,bi,bj,1)
+CADJ STORE gvNm(:,:,k,bi,bj,1)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gvnm(:,:,k,bi,bj,2)
+CADJ STORE gvNm(:,:,k,bi,bj,2)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 #  ifdef ALLOW_CD_CODE
-CADJ STORE unm1(:,:,k,bi,bj)
+CADJ STORE uNM1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE vnm1(:,:,k,bi,bj)
+CADJ STORE vNM1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE uVelD(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
