@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.117 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.118 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,9 +24,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
-#ifdef SEAICE_MULTICATEGORY
-# include "SEAICE.h"
-#endif
+c#ifdef SEAICE_MULTICATEGORY
+c# include "SEAICE.h"
+c#endif
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_TRACER.h"
 #ifdef ALLOW_COST
@@ -95,7 +95,7 @@ C--   SEAICE parameters
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
-     & SEAICE_initialHEFF, SEAICEturbFluxFormula, 
+     & SEAICE_initialHEFF, SEAICEturbFluxFormula,
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
      & SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
@@ -148,7 +148,7 @@ C--   SEAICE parameters
 #ifdef ALLOW_SITRACER
       NAMELIST /SEAICE_PARM03/
      &  SItrFile, SItrName, SItrNameLong, SItrUnit, SItrMate,
-     &  SItrFromOcean0, SItrFromOceanFrac, SItrFromFlood0, 
+     &  SItrFromOcean0, SItrFromOceanFrac, SItrFromFlood0,
      &  SItrFromFloodFrac, SItrExpand0,
      &  IceAgeTrFile, SItrNumInUse
 #endif
@@ -300,7 +300,7 @@ C     old default value of 0.97001763668430343479
 #else
       SEAICE_multDim     = 1
 #endif
-      SEAICE_mcPheePiston  = 
+      SEAICE_mcPheePiston  =
      &      MCPHEE_TAPER_FAC * STANTON_NUMBER * USTAR_BASE
       SEAICE_frazilFrac    = 1. _d 0
       SEAICE_mcPheeStepFunc= .FALSE.
@@ -396,7 +396,7 @@ c     MAX_TICE           = 30.     _d 0
       SEAICE_gamma_t     = UNSET_RL
       SEAICE_gamma_t_frz = UNSET_RL
       SEAICE_availHeatFrac = UNSET_RL
-      SEAICE_availHeatFracFrz = UNSET_RL      
+      SEAICE_availHeatFracFrz = UNSET_RL
       SEAICE_freeze      = UNSET_RL
 C-    end retired parameters
       SEAICE_debugPointI = UNSET_I

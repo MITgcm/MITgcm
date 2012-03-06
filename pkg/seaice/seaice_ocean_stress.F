@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.29 2010/11/24 15:51:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.30 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -6,12 +6,12 @@ C $Name:  $
 CStartOfInterface
       SUBROUTINE SEAICE_OCEAN_STRESS(
      I     myTime, myIter, myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE SEAICE_OCEAN_STRESS                           |
 C     | o Calculate ocean surface stresses                       |
 C     |   - C-grid version                                       |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -21,8 +21,9 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 
 C     === Routine arguments ===
 C     myTime - Simulation time

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.3 2011/07/19 11:23:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.4 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,18 +8,19 @@ C $Name:  $
 
 CStartOfInterface
       SUBROUTINE SEAICE_MAP_THSICE( myTime, myIter, myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE SEAICE_MAP_THSICE                             |
 C     | o Map thermodynamic thsice variable iceMask and          |
 C     |   to seaice variables HEFF and AREA                      |
-C     |==========================================================|
+C     *==========================================================*
 C     | written by Martin Losch, June 2006                       |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_VARS.h"
@@ -51,13 +52,13 @@ CADJ STORE iceheight = comlev1, key=ikey_dynamics, kind=isbyte
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           AREA(i,j,bi,bj) = iceMask(i,j,bi,bj)
           HEFF(i,j,bi,bj) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
          ENDDO
         ENDDO
-       ENDDO   
+       ENDDO
       ENDDO
 
 #endif /* ALLOW_THSICE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.6 2010/03/23 19:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.7 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -25,6 +25,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #ifdef ALLOW_COST
+# include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 # include "SEAICE_COST.h"
 #endif
@@ -93,4 +94,3 @@ c
 
       return
       end
-

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.47 2011/10/30 22:20:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.48 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,8 +30,9 @@ C     === Global variables ===
 #include "SURFACE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -58,7 +59,7 @@ C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
       _RL PSTAR
-      _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  mask_uice, mask_vice
 
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -67,8 +68,8 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
       PSTAR = SEAICE_strength
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
@@ -108,8 +109,8 @@ C--   FIRST SET UP BASIC CONSTANTS
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           seaiceMassC(I,J,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
           seaiceMassU(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
      &          HEFF(i,j,bi,bj) + HEFF(i-1,j  ,bi,bj) )
@@ -125,8 +126,8 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
 C     dynamic masking of areas with no ice
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx+1,sNx+Olx
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
            seaiceMaskU(I,J,bi,bj)=AREA(i,j,bi,bj)+AREA(I-1,J,bi,bj)
            mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
            IF ( (seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0) .AND.
@@ -156,8 +157,8 @@ C--   NOW SET UP FORCING FIELDS
 C     initialise fields
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           TAUX (I,J,bi,bj)= 0. _d 0
           TAUY (I,J,bi,bj)= 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -185,16 +186,16 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   Compute surface pressure at z==0:
 C-    use actual sea surface height for tilt computations
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
           ENDDO
         ENDDO
 #ifdef ATMOSPHERIC_LOADING
 C-    add atmospheric loading and Sea-Ice loading
         IF ( useRealFreshWaterFlux ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + ( pload(i,j,bi,bj)
      &                      +sIceLoad(i,j,bi,bj)*gravity
@@ -202,16 +203,16 @@ C-    add atmospheric loading and Sea-Ice loading
            ENDDO
           ENDDO
         ELSE
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + pload(i,j,bi,bj)*recip_rhoConst
            ENDDO
           ENDDO
         ENDIF
 #endif /* ATMOSPHERIC_LOADING */
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
 C--   now add in wind stress ant tilt
           FORCEX0(I,J,bi,bj)=TAUX(I,J,bi,bj)
      &         -seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
@@ -222,8 +223,8 @@ C--   now add in wind stress ant tilt
          ENDDO
         ENDDO
 
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C--   now set up ice pressure and viscosities
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.69 2011/12/28 20:55:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.70 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,9 +42,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "SEAICE.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -89,45 +89,45 @@ C     XX: double derivative in X
 C     YY: double derivative in Y
 C     XM: metric term with derivative in X
 C     YM: metric term with derivative in Y
-      _RL UXX  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL UYY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL UXM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL UYM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL VXX  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL VYY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL VXM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL VYM  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL UXX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL UYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL UXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL UYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VXX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     diagonals of coefficient matrices
-      _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL BU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL CU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL AV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL BV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     RHS
-      _RL rhsU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL rhsV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL rhsU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL rhsV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     coefficients for lateral points, u(j+/-1)
-      _RL uRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL uRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     coefficients for lateral points, v(i+/-1)
-      _RL vRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     abbreviations
-      _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL etaMeanZ    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL etaMeanZ    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     contribution of sigma on righ hand side
-      _RL sig11(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL sig22(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL sig12(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxillary fields
-      _RL URT  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL CUU  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL VRT  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL CVV  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL uTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL URT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CUU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VRT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CVV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER itmpkey, itmpkey2
 #endif
@@ -142,8 +142,8 @@ C     auxillary fields
       _RL massU, massV
       _RL residUini, residVini, residUend, residVend
 #ifdef SEAICE_ALLOW_FREEDRIFT
-      _RL uRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uRes (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vRes (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL errIni, errFD, errSum
       _RL residU_fd, residV_fd
       _RL residUmix, residVmix
@@ -872,7 +872,7 @@ CADJ LOOP = iteration uice, vice
 
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef SEAICE_LSR_ADJOINT_ITER
-         itmpkey2 = (itmpkey-1)*SOLV_MAX_FIXED + 
+         itmpkey2 = (itmpkey-1)*SOLV_MAX_FIXED +
      &              MIN(m,SOLV_MAX_FIXED)
 CADJ STORE utmp, vtmp = comlev1_dyniter, kind=isbyte,
 CADJ &     key = itmpkey2
@@ -1133,8 +1133,8 @@ C--   Calculate final residual of the linearised system
 C     APPLY MASKS
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           uIce(I,J,bi,bj)=uIce(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
           vIce(I,J,bi,bj)=vIce(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
@@ -1195,8 +1195,8 @@ C     compute strain rate from latest velocities
 C     compute internal stresses with updated ice velocities
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            sig11(I,J) = 0. _d 0
            sig22(I,J) = 0. _d 0
            sig12(I,J) = 0. _d 0
@@ -1272,6 +1272,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -1280,30 +1281,30 @@ C     calcMeanResid :: also compute mean residual (=RMS)
 C     myIter        :: Simulation timestep number
 C     myThid        :: my Thread Id. number
 C--   RHS
-      _RL rhsU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL rhsV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL rhsU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL rhsV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C-    coefficients for lateral points, u(j+/-1)
-      _RL uRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL uRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C-    coefficients for lateral points, v(i+/-1)
-      _RL vRt1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vRt2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C-    diagonals of coefficient matrices
-      _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL BU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL CU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL AV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL BV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C--   seaice velocity
-      _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C-    Integrated seaice mass (input-output)
       _RL massU, massV
 C-    residual (output)
       _RL residU, residV
-      _RL uRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vRes (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uRes (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vRes (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       LOGICAL calcMeanResid
       INTEGER myIter
       INTEGER myThid

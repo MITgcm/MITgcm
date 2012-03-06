@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.4 2012/02/02 15:06:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.5 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -17,8 +17,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"

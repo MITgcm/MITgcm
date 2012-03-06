@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.14 2009/11/20 22:33:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.15 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
-
 
       subroutine seaice_cost_final( mythid )
 
@@ -152,4 +151,5 @@ c--   Each process has calculated the global part for itself.
 
 #endif /* ALLOW_COST */
 
+      return
       end

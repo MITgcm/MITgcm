@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.5 2009/06/24 08:25:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.6 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -27,6 +27,7 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
@@ -164,4 +165,3 @@ c--   Update the tile edges.
 
       return
       end
-

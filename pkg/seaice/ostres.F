@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.24 2011/12/21 12:55:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.25 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,7 +9,6 @@ C     *==========================================================*
 C     | SUBROUTINE ostres                                        |
 C     | o Calculate ocean surface stress                         |
 C     *==========================================================*
-C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,8 +16,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.

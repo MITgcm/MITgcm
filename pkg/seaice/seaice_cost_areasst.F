@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.4 2011/12/28 20:54:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.5 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_COST
 #include "COST_CPPOPTIONS.h"
 #endif
-
 
       subroutine seaice_cost_areasst(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
@@ -38,8 +37,9 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 #include "SEAICE_COST.h"
 #ifdef ALLOW_COST
 # ifdef ALLOW_ECCO

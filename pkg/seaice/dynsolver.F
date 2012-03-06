@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.40 2012/03/05 16:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.41 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,8 +20,9 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "SEAICE.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"

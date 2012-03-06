@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.4 2010/03/16 00:23:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.5 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
       subroutine seaice_cost_export( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | subroutine seaice_cost_export
 C     | o Poor man ice export through Fram Strait
 C     |   Parameters currently hard-wired for arctic210x192x50
-C     \==========================================================/
+C     *==========================================================*
        implicit none
 
 C     == Global variables ===
@@ -16,6 +16,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #include "SEAICE_COST.h"
 
@@ -67,4 +68,5 @@ c--   end of bi,bj loop
 
 #endif
 
+      return
       end

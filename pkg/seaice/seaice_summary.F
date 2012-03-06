@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.46 2012/03/03 03:33:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.47 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -16,11 +16,11 @@ C     *==========================================================*
 C     !USES:
       IMPLICIT NONE
 C     == global variables ==
+#include "SIZE.h"
 #include "EEPARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_SITRACER
-# include "SIZE.h"
-# include "SEAICE_SIZE.h"
 # include "SEAICE_TRACER.h"
 #endif
 
@@ -83,7 +83,7 @@ C--  Time-stepping related param.
       WRITE(msgBuf,'(A)')
      &'   ----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)      
+     &                    SQUEEZE_RIGHT , myThid)
 
       CALL WRITE_0D_RL( SEAICE_deltaTtherm,INDEX_NONE,
      & 'SEAICE_deltaTtherm=', ' /* thermodynamic timestep */')
@@ -107,7 +107,7 @@ C--  Time-stepping related param.
       WRITE(msgBuf,'(A)')
      &'   ------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)      
+     &                    SQUEEZE_RIGHT , myThid)
 
 C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
@@ -167,7 +167,7 @@ C--  Seaice-Dynamics parameters
        CALL WRITE_0D_RL( LSR_ERROR         ,INDEX_NONE,
      & 'LSR_ERROR         =', ' /* sets accuracy of LSR solver */')
        CALL WRITE_0D_I ( SOLV_NCHECK,       INDEX_NONE,
-     & 'SOLV_NCHECK       =', ' /* test interval for LSR solver */')     
+     & 'SOLV_NCHECK       =', ' /* test interval for LSR solver */')
        CALL WRITE_0D_I ( NPSEUDOTIMESTEPS,  INDEX_NONE,
      & 'NPSEUDOTIMESTEPS  =', ' /* num. of extra pseudo time steps */')
 #ifdef SEAICE_ALLOW_EVP
@@ -184,7 +184,7 @@ C--  Seaice-Dynamics parameters
       endif
 
       endif
-      
+
 C--  Thermodynamics parameters
       WRITE(msgBuf,'(A)')
      &' '
@@ -197,7 +197,7 @@ C--  Thermodynamics parameters
       WRITE(msgBuf,'(A)')
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)      
+     &                    SQUEEZE_RIGHT , myThid)
 
       CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
      & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
@@ -291,7 +291,7 @@ c
       WRITE(msgBuf,'(A)')
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)      
+     &                    SQUEEZE_RIGHT , myThid)
 
       CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
      & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
@@ -302,7 +302,7 @@ c
 #ifdef SEAICE_VARIABLE_SALINITY
       CALL WRITE_0D_L ( SEAICEadvSalt, INDEX_NONE,
      & 'SEAICEadvSalt =', ' /* advect salinity together with ice */')
-#endif     
+#endif
       CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
      & 'SEAICEadvScheme   =', ' /* advection scheme for ice */')
       IF ( SEAICEadvScheme .EQ. 2 )
@@ -331,7 +331,7 @@ c
      & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
       CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
      &                  ' /* parameter used in advect.F [m/s] */')
-     
+
       WRITE(msgBuf,'(A)')
      &' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -343,14 +343,14 @@ c
       WRITE(msgBuf,'(A)')
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)      
+     &                    SQUEEZE_RIGHT , myThid)
 
 
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
      & 'IMAX_TICE         =', ' /* iterations for ice surface temp */')
       CALL WRITE_0D_I ( postSolvTempIter,  INDEX_NONE,
      & 'postSolvTempIter=',
-     & ' /* flux calculation after surf. temp iter */')     
+     & ' /* flux calculation after surf. temp iter */')
 #ifndef SEAICE_EXTERNAL_FLUXES
       CALL WRITE_0D_RL( SEAICE_waterAlbedo,INDEX_NONE,
      & 'SEAICE_waterAlbedo=', ' /* water albedo */')
@@ -418,7 +418,7 @@ C endif usePW79thermodynamics
       WRITE(msgBuf,'(A)')
      &'   -------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)      
+     &                    SQUEEZE_RIGHT , myThid)
 
 C--  Initial Condition/Input related param.
       CALL WRITE_0D_RL( SEAICE_initialHEFF,INDEX_NONE,
@@ -453,7 +453,7 @@ C--  Output related param.
      & 'SEAICE_dump_mnc   =',' /* write snap-shot   using MNC */')
       CALL WRITE_0D_L ( SEAICE_tave_mnc,  INDEX_NONE,
      & 'SEAICE_tave_mnc   =',' /* write TimeAverage using MNC */')
- 
+
 #ifdef ALLOW_SITRACER
       DO iTracer = 1, SItrNumInUse
        if (SItrName(iTracer).NE.' ') then
@@ -484,8 +484,8 @@ C--  Output related param.
 
        endif
       ENDDO
-#endif /* ALLOW_SITRACER */    
-     
+#endif /* ALLOW_SITRACER */
+
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

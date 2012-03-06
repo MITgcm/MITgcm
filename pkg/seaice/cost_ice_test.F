@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.10 2010/03/24 03:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.11 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,6 +53,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_COST.h"
 #include "SEAICE.h"
 #include "DYNVARS.h"

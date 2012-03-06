@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.6 2010/03/24 03:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.7 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,8 +9,6 @@ C     *==========================================================*
 C     | subroutine seaice_cost_accumulate_mean                   |
 C     | o accumulate time-mean state for cost evalualtion        |
 C     *==========================================================*
-C     |                                                          |
-C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -19,6 +17,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #ifdef ALLOW_COST
 # include "cost.h"

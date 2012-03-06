@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.17 2012/03/03 03:33:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.18 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,11 +18,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-#ifdef ALLOW_SITRACER
-# include "SEAICE_SIZE.h"
-#endif
 #include "SEAICE_TRACER.h"
 
 C     === Routine arguments ===
@@ -77,7 +75,7 @@ C     Initialize MNC variable information for SEAICE
        SWFracB = 0. _d 0
 #endif /* SHORTWAVE_HEATING */
       _END_MASTER(myThid)
-      
+
 C--   SItracer specifications for basic tracers
 #ifdef ALLOW_SITRACER
       DO iTracer = 1, SItrNumInUse
@@ -96,7 +94,7 @@ C age tracer: no age in ocean, or effect from ice cover changes
          SItrExpand0(iTracer)       =ZERO
          SItrFromOceanFrac(iTracer) =ZERO
          SItrFromFloodFrac(iTracer) =ZERO
-      endif 
+      endif
 C salinity tracer:
       if (SItrName(iTracer).EQ.'salinity') then
          SItrMate(iTracer)          ='HEFF'
@@ -105,7 +103,7 @@ C salinity tracer:
            SIsal0=ZERO
            SIsalFrac=ZERO
          endif
-      endif 
+      endif
 c simple, made up, ice surface roughness index prototype
       if (SItrName(iTracer).EQ.'ridge') then
          SItrMate(iTracer)          ='AREA'
@@ -114,7 +112,7 @@ c simple, made up, ice surface roughness index prototype
          SItrExpand0(iTracer)       =ZERO
          SItrFromOceanFrac(iTracer) =ZERO
          SItrFromFloodFrac(iTracer) =ZERO
-      endif 
+      endif
 C
       ENDDO
 #endif
@@ -319,6 +317,6 @@ C--   Choose a proxy level for geostrophic velocity,
 
 C--   Summarise pkg/seaice configuration
       CALL SEAICE_SUMMARY( myThid )
-      
+
       RETURN
       END

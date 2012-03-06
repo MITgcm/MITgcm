@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.18 2011/10/21 17:32:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.19 2012/03/06 16:45:20 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -33,6 +33,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
@@ -51,8 +52,8 @@ C     iStep  :: Sub-time-step number
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
 C     myThid :: My Thread Id. number
-      _RL uFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e11Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12Loc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -88,31 +89,31 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     abbreviations on C-points, need to do them in separate loops
 C     for vectorization
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           dudx(i,j) = _recip_dxF(i,j,bi,bj) *
      &         (uFld(i+1,j,bi,bj)-uFld(i,j,bi,bj))
           uave(i,j) = 0.5 _d 0 * (uFld(i,j,bi,bj)+uFld(i+1,j,bi,bj))
          ENDDO
         ENDDO
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           dvdy(i,j) = _recip_dyF(i,j,bi,bj) *
      &         (vFld(i,j+1,bi,bj)-vFld(i,j,bi,bj))
           vave(i,j) = 0.5 _d 0 * (vFld(i,j,bi,bj)+vFld(i,j+1,bi,bj))
          ENDDO
         ENDDO
 C     evaluate strain rates at C-points
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           e11Loc(i,j,bi,bj) = dudx(i,j) + vave(i,j) * k2AtC(i,j,bi,bj)
           e22Loc(i,j,bi,bj) = dvdy(i,j) + uave(i,j) * k1AtC(i,j,bi,bj)
          ENDDO
         ENDDO
 #ifndef OBCS_UVICE_OLD
 C--     for OBCS: assume no gradient beyong OB
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           e11Loc(i,j,bi,bj) = e11Loc(i,j,bi,bj)*maskInC(i,j,bi,bj)
           e22Loc(i,j,bi,bj) = e22Loc(i,j,bi,bj)*maskInC(i,j,bi,bj)
          ENDDO
@@ -121,23 +122,23 @@ C--     for OBCS: assume no gradient beyong OB
 
 C     abbreviations at Z-points, need to do them in separate loops
 C     for vectorization
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           dudy(i,j) = ( uFld(i,j,bi,bj) - uFld(i  ,j-1,bi,bj) )
      &         * _recip_dyU(i,j,bi,bj)
           uave(i,j) = 0.5 _d 0 * (uFld(i,j,bi,bj)+uFld(i  ,j-1,bi,bj))
          ENDDO
         ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           dvdx(i,j) = ( vFld(i,j,bi,bj) - vFld(i-1,j  ,bi,bj) )
      &         * _recip_dxV(i,j,bi,bj)
           vave(i,j) = 0.5 _d 0 * (vFld(i,j,bi,bj)+vFld(i-1,j  ,bi,bj))
          ENDDO
         ENDDO
 C     evaluate strain rates at Z-points
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
           hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
           e12Loc(i,j,bi,bj) = 0.5 _d 0 * (
