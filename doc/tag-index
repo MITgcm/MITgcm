@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1610 2012/03/05 16:23:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1611 2012/03/06 00:08:18 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix writing of output file DiagnosCost_ClimSalt/Theta
+    and DiagnosCost_DriftSalt/Theta (if multi-tiles per proc).
 o pkg/seaice :
   - add missing initialisation of COR_ICE array in dynsolver.F
   - merging SEAICE_MULTICATEGORY define and undef cases. Now the same code is
