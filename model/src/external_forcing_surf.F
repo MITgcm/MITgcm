@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.54 2011/12/15 22:45:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.55 2012/03/06 15:10:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,11 +29,12 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #ifdef ALLOW_SEAICE
-#include "SEAICE_PARAMS.h"
-#include "SEAICE.h"
+# include "SEAICE_SIZE.h"
+# include "SEAICE_PARAMS.h"
+# include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
-#include "SHELFICE.h"
+# include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"

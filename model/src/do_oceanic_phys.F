@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.113 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.114 2012/03/06 15:10:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,7 @@ C     == Global variables ===
 #  endif
 # endif
 # ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
 #  include "SEAICE.h"
 # endif
 # ifdef ALLOW_THSICE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.201 2012/01/06 16:58:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.202 2012/03/06 15:10:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,6 +117,7 @@ C     == Global variables ==
 #  include "THSICE_VARS.h"
 # endif
 # ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
 #  include "SEAICE.h"
 #  include "SEAICE_COST.h"
 # endif
