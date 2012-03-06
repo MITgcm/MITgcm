@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.18 2011/06/07 21:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.19 2012/03/06 15:37:24 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -23,6 +23,7 @@ C     == GLobal variables ==
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 #endif
 
@@ -144,8 +145,8 @@ C--   end if-block for loading new time-records
        IF ( useEXF ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 C     sh = max(wspeed,umin), with default umin=0.5m/s
 C           pisvel(i,j,bi,bj)=(0.31 _d 0*wspeed(i,j,bi,bj)**2)/3.6 _d 5
            pisvel(i,j,bi,bj)=(0.31 _d 0*sh(i,j,bi,bj)**2)/3.6 _d 5
@@ -159,8 +160,8 @@ C           pisvel(i,j,bi,bj)=(0.31 _d 0*wspeed(i,j,bi,bj)**2)/3.6 _d 5
 #endif /* ALLOW_EXF */
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF ( CFC_windFile .NE. ' '  ) THEN
              wind = bWght*wind0(i,j,bi,bj)
      &                           +aWght*wind1(i,j,bi,bj)
@@ -179,8 +180,8 @@ c following Wannikof (1992)
 C
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF ( CFC_atmospFile .NE. ' '  ) THEN
              ATMOSP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
      &                          +aWght*atmosp1(i,j,bi,bj)
@@ -195,8 +196,8 @@ C
        IF (useSEAICE) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            FIce(I,J,bi,bj) = AREA(I,J,bi,bj)
           ENDDO
          ENDDO
@@ -208,8 +209,8 @@ C
 #endif /* ALLOW_SEAICE */
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF ( CFC_iceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)

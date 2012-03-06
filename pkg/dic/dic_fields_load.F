@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.31 2011/06/07 21:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.32 2012/03/06 15:37:24 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,10 +22,11 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
 #ifdef ALLOW_THSICE
-#include "THSICE_VARS.h"
+# include "THSICE_VARS.h"
 #endif
 #ifdef ALLOW_SEAICE
-#include "SEAICE.h"
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -166,8 +167,8 @@ C-     end if-bloc (time to load new fields)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          IF ( DIC_windFile .NE. ' '  ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              WIND(i,j,bi,bj) = bWght*dicwind0(i,j,bi,bj)
      &                       + aWght*dicwind1(i,j,bi,bj)
             ENDDO
@@ -179,8 +180,8 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #ifndef USE_PLOAD
          IF ( DIC_atmospFile .NE. ' '  ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              AtmosP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
      &                         + aWght*atmosp1(i,j,bi,bj)
             ENDDO
@@ -188,16 +189,16 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #endif
          IF ( DIC_silicaFile .NE. ' '  ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              SILICA(i,j,bi,bj) = bWght*silica0(i,j,bi,bj)
      &                         + aWght*silica1(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
          IF ( DIC_iceFile .NE. ' '  ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
      &                       + aWght*ice1(i,j,bi,bj)
             ENDDO
@@ -206,8 +207,8 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
 
 #ifdef READ_PAR
          IF ( Filename1 .NE. ' '  ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              PAR(i,j,bi,bj) = bWght*par0(i,j,bi,bj)
      &                      + aWght*par1(i,j,bi,bj)
             ENDDO
@@ -222,8 +223,8 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
 #endif
 #ifdef ALLOW_FE
          IF ( DIC_ironFile .NE. ' '  ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              InputFe(i,j,bi,bj) = bWght*feinput0(i,j,bi,bj)
      &                          + aWght*feinput1(i,j,bi,bj)
             ENDDO
@@ -240,8 +241,8 @@ C endif for DIC_forcingCycle
        DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef ALLOW_SEAICE
          IF ( useSEAICE ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              FIce(i,j,bi,bj) = AREA(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -249,8 +250,8 @@ C endif for DIC_forcingCycle
 #endif
 #ifdef ALLOW_THSICE
          IF ( useThSIce ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
             ENDDO
            ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_velocity.F,v 1.2 2009/06/24 08:02:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_velocity.F,v 1.3 2012/03/06 15:37:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -33,7 +33,7 @@ C     === Global variables ===
 c#include "THSICE_SIZE.h"
 c#include "THSICE_PARAMS.h"
 #ifdef ALLOW_SEAICE
-c# include "SEAICE_PARAMS.h"
+# include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
 

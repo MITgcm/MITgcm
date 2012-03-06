@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.35 2011/12/21 01:38:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.36 2012/03/06 15:37:24 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -50,6 +50,7 @@ c     == global variables ==
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 # include "SEAICE_COST.h"
 #endif
@@ -597,7 +598,7 @@ CMM  now integrate to get round trip travel time
             enddo
           enddo
         enddo
-cmm   accumulate averate   
+cmm   accumulate average
       call cost_averagesgeneric(
      &     iestaubarfile,
      &     iestaubar, iestau(1-Olx,1-Oly,1,1),

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.9 2011/05/25 21:06:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.10 2012/03/06 15:37:24 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -28,8 +28,9 @@ c#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_SEAICE.h"
 #ifdef ALLOW_SEAICE
-# include "SEAICE.h"
+# include "SEAICE_SIZE.h"
 # include "SEAICE_PARAMS.h"
+# include "SEAICE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -56,7 +57,7 @@ C     == Local variables ==
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C     Set model variables to OB values on Northern Boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(I,bi,bj)
           IF ( Jobc.NE.0 ) THEN
             HEFF (i,Jobc,bi,bj) = OBNh (i,bi,bj)
@@ -73,7 +74,7 @@ C     Set model variables to OB values on Northern Boundary
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) ) THEN
 C     Set model variables to OB values on Southern Boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(I,bi,bj)
           IF ( Jobc.NE.0 ) THEN
             HEFF (i,Jobc,bi,bj) = OBSh (i,bi,bj)
@@ -90,7 +91,7 @@ C     Set model variables to OB values on Southern Boundary
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) ) THEN
 C     Set model variables to OB values on Eastern Boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(J,bi,bj)
           IF (Iobc.NE.0) THEN
             HEFF (Iobc,j,bi,bj) = OBEh (j,bi,bj)
@@ -107,7 +108,7 @@ C     Set model variables to OB values on Eastern Boundary
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) ) THEN
 C     Set model variables to OB values on Western Boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc=OB_Iw(j,bi,bj)
           IF (Iobc.NE.0) THEN
             HEFF (Iobc,j,bi,bj) = OBWh (j,bi,bj)
@@ -129,7 +130,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C     Northern Boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(I,bi,bj)
           IF ( Jobc.NE.0 ) THEN
            IF ( _maskS(i,Jobc-1,k,bi,bj) .NE. 0. ) THEN
@@ -168,7 +169,7 @@ C     Northern Boundary
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) ) THEN
 C     Southern Boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(I,bi,bj)
           IF ( Jobc.NE.0 ) THEN
            IF ( _maskS(i,Jobc+2,k,bi,bj) .NE. 0. ) THEN
@@ -207,7 +208,7 @@ C     Southern Boundary
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) ) THEN
 C     Eastern Boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(J,bi,bj)
           IF (Iobc.NE.0) THEN
            IF ( _maskW(Iobc-1,j,k,bi,bj) .NE. 0. ) THEN
@@ -246,7 +247,7 @@ C     Eastern Boundary
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) ) THEN
 C     Western Boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc=OB_Iw(j,bi,bj)
           IF (Iobc.NE.0) THEN
            IF ( _maskW(Iobc+2,j,k,bi,bj) .NE. 0. ) THEN
