@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.9 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.10 2012/03/06 00:02:36 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
-
 
       subroutine cost_theta( myiter, mytime, mythid )
 
@@ -49,6 +48,11 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ALLOW_THETA_COST_CONTRIBUTION
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
+
 c     == local variables ==
 
       integer bi,bj
@@ -81,11 +85,6 @@ c     == local variables ==
 
       _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 
       jtlo = mybylo(mythid)
@@ -103,8 +102,6 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
-#ifdef ALLOW_THETA_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
@@ -210,21 +207,18 @@ c             the temperature field.
             enddo
 c--         End of loop over layers.
 
-            call mdswritefield( 'DiagnosCost_ClimTheta',
-     &           writeBinaryPrec, globalfiles, 'RL', Nr,
-     &           diagnosfld3d, irec, optimcycle, mythid )
-
             fcthread         = fcthread         + fctile
             objf_temp(bi,bj) = objf_temp(bi,bj) + fctile
 
           enddo
         enddo
+        CALL WRITE_REC_XYZ_RL( 'DiagnosCost_ClimTheta',
+     &                 diagnosfld3d, irec, optimcycle, mythid )
 
       enddo
 c--   End of loop over records.
 
-#endif
+#endif /* ALLOW_THETA_COST_CONTRIBUTION */
 
-      return
-      end
-
+      RETURN
+      END

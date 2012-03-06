@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.8 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.9 2012/03/06 00:02:36 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
-
 
       subroutine cost_drift( myiter, mytime, mythid )
 
@@ -43,8 +42,12 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
-c     == local variables ==
+#ifdef ALLOW_DRIFT_COST_CONTRIBUTION
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       _RS        one_rs
       parameter( one_rs = 1. )
 
@@ -77,11 +80,6 @@ c     == local variables ==
 
       _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 
       jtlo = mybylo(mythid)
@@ -96,8 +94,6 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
-#ifdef ALLOW_DRIFT_COST_CONTRIBUTION
 
 c--   Rescale error read from data.err to convert to error/year
 c--   (e.g. 0.08 degC year based on Levitus decadal drift 0.8 degC)
@@ -202,14 +198,11 @@ c--     Read time averages and the monthly mean data.
 
       enddo
 
-
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
 c--       Loop over the model layers
           fctiles = 0. _d 0
-          fctilet = 0. _d 0
-
           do k = 1,nr
             do j = jmin,jmax
              do i = imin,imax
@@ -235,11 +228,18 @@ c
              enddo
             enddo
           enddo
+          fcthread_tdrifs    = fcthread_tdrifs    + fctiles
+          objf_sdrift(bi,bj) = objf_sdrift(bi,bj) + fctiles
 
-          call mdswritefield( 'DiagnosCost_DriftSalt',
-     &         writeBinaryPrec, globalfiles, 'RL', Nr,
-     &         diagnosfld3d, 1, optimcycle, mythid )
+        enddo
+      enddo
+      CALL WRITE_REC_XYZ_RL( 'DiagnosCost_DriftSalt',
+     &               diagnosfld3d, 1, optimcycle, mythid )
 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+
+          fctilet = 0. _d 0
           do k = 1,nr
             do j = jmin,jmax
              do i = imin,imax
@@ -265,21 +265,15 @@ c
              enddo
             enddo
           enddo
-
-          call mdswritefield( 'DiagnosCost_DriftTheta',
-     &         writeBinaryPrec, globalfiles, 'RL', Nr,
-     &         diagnosfld3d, 1, optimcycle, mythid )
-
           fcthread_tdrift    = fcthread_tdrift    + fctilet
-          fcthread_tdrifs    = fcthread_tdrifs    + fctiles
           objf_tdrift(bi,bj) = objf_tdrift(bi,bj) + fctilet
-          objf_sdrift(bi,bj) = objf_sdrift(bi,bj) + fctiles
 
         enddo
       enddo
+      CALL WRITE_REC_XYZ_RL( 'DiagnosCost_DriftTheta',
+     &               diagnosfld3d, 1, optimcycle, mythid )
 
-#endif
+#endif /* ALLOW_DRIFT_COST_CONTRIBUTION */
 
-      return
-      end
-
+      RETURN
+      END
