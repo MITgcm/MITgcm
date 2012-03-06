@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.4 2010/09/05 22:32:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.5 2012/03/06 15:21:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,12 +29,17 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #ifdef ALLOW_SEAICE
-#include "SEAICE_PARAMS.h"
-#include "SEAICE.h"
+# include "SEAICE_SIZE.h"
+# include "SEAICE_PARAMS.h"
+# include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
-#include "SHELFICE.h"
+# include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -71,10 +76,37 @@ C     relaxForcingS :: Salt forcing due to surface relaxation
        ks        = 1
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        surfaceForcingS(i,j,bi,bj) = 0. _d 0
+        surfaceForcingT(i,j,bi,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
 C--   Start with surface restoring term :
+
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
+CADJ &     key=ikey, kind = isbyte
+# endif
 
 #ifdef ALLOW_SEAICE
        IF ( useSEAICE .AND. (.NOT. SEAICErestoreUnderIce) ) THEN
@@ -129,10 +161,27 @@ C     of surf.thickness (hFac): account for change in surf.thickness
           ENDDO
          ENDDO
 # endif /* DISABLE_RSTAR_CODE */
+        ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+# ifndef DISABLE_SIGMA_CODE
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &        *( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &                    *dBHybSigF(ks)*recip_drF(ks)
+     &                    *recip_hFacC(i,j,ks,bi,bj)
+     &         )
+            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &        *( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &                    *dBHybSigF(ks)*recip_drF(ks)
+     &                    *recip_hFacC(i,j,ks,bi,bj)
+     &         )
+          ENDDO
+         ENDDO
+# endif /* DISABLE_SIGMA_CODE */
         ELSE
          DO j=jMin,jMax
           DO i=iMin,iMax
-           IF (ks.EQ.ksurfC(i,j,bi,bj)) THEN
+           IF (ks.EQ.kSurfC(i,j,bi,bj)) THEN
             surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &             *_recip_hFacC(i,j,ks,bi,bj)*hFac_surfC(i,j,bi,bj)
             surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
@@ -176,6 +225,10 @@ C--   end restoring / no restoring block.
       ENDIF
 
 #ifdef ALLOW_PTRACERS
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
+CADJ &     key=ikey, kind = isbyte
+# endif
       IF ( usePTRACERS ) THEN
 C--   save salt forcing due to surface relaxation
        DO j = jMin, jMax
@@ -230,15 +283,12 @@ C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Fresh-water flux
 
-C-    Apply mask on Fresh-Water flux
-C      (needed for SSH forcing, whether or not exactConserv is used)
-      IF ( useRealFreshWaterFlux ) THEN
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskInC(i,j,bi,bj)
-         ENDDO
-        ENDDO
-      ENDIF
+C-    Apply mask on Fresh-Water flux (if useRealFreshWaterFlux)
+C     <== removed: maskInC is applied directly in S/R SOLVE_FOR_PRESSURE
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
+cCADJ &     key=ikey, kind = isbyte
+c#endif
 
 #ifdef EXACT_CONSERV
 C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
@@ -408,17 +458,6 @@ c       ENDDO
        ENDIF
       ENDIF
 #endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_EBM
-c--    Values for surfaceForcingT, surfaceForcingS
-c      are overwritten by those produced by EBM
-cph    AD recomputation problems if these IF useEBM are used
-cph      IF ( useEBM ) THEN
-       CALL EBM_FORCING_SURF(
-     I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
-cph      ENDIF
-#endif
 
       RETURN
       END
