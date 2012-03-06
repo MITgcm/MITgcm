@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.34 2012/03/05 15:21:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.35 2012/03/06 01:28:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -217,21 +217,23 @@ c     SurfMeltTemp = 273.159 _d +00
 C     Initialize variables
       DO J=1,sNy
        DO I=1,sNx
+C     initialise output arrays:
+        TSURFout (I,J) = TSURFin(I,J)
+        F_ia     (I,J) = 0. _d 0
+        IcePenetSW(I,J)= 0. _d 0
+        FWsublim (I,J) = 0. _d 0
 C     HICE_ACTUAL is modified in this routine, but at the same time
 C     used to decided where there is ice, therefore we save this information
 C     here in a separate array
         iceOrNot  (I,J) = HICE_ACTUAL(I,J) .GT. 0. _d 0
-        IcePenetSW(I,J) = 0. _d 0
         absorbedSW(I,J) = 0. _d 0
         qhice    (I,J) = 0. _d 0
         dqh_dTs  (I,J) = 0. _d 0
-        F_ia     (I,J) = 0. _d 0
         F_lh     (I,J) = 0. _d 0
         F_lwu    (I,J) = 0. _d 0
         F_sens   (I,J) = 0. _d 0
 C     Make a local copy of LW, surface & atmospheric temperatures
         tsurfLoc (I,J) = TSURFin(I,J)
-        TSURFout (I,J) = TSURFin(I,J)
 c       tsurfLoc (I,J) = MIN( celsius2K+MAX_TICE, TSURFin(I,J) )
         lwdownLoc(I,J) = MAX( MIN_LWDOWN, LWDOWN(I,J,bi,bj) )
         atempLoc (I,J) = MAX( celsius2K+MIN_ATEMP, ATEMP(I,J,bi,bj) )
