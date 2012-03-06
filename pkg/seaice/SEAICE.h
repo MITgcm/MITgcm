@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.61 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.62 2012/03/06 16:51:21 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -138,8 +138,6 @@ C     frWtrAtm contains freshwater flux from the atmosphere
       _RL saltWtrIce (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL frWtrIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      INTEGER MULTDIM
-      PARAMETER (MULTDIM=7)
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,MULTDIM,nSx,nSy)
 
