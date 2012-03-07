@@ -39,7 +39,6 @@ forward_step.f
 freesurf_rescale_g.f
 freeze.f
 freeze_surface.f
-freeze_interior.f
 grad_sigma.f	
 impldiff.f	
 ini_autodiff.f	

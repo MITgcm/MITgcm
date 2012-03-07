@@ -1,22 +1,22 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_description.tex,v 1.4 2012/03/04 23:11:20 dimitri Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_description.tex,v 1.5 2012/03/07 14:59:51 dimitri Exp $
 %%  $Name:  $
 %%
 
 Package ``FRAZIL'' is a repackaging and a replacement for subroutine
-interior_freeze.F and for run-time option allowInteriorFreezing, which has
+freeze_interior.F and for run-time option allowInteriorFreezing, which has
 been retired.  It is meant to represent the formation of frazil at depth due
 to pressure and freshening-related supercooling.
 
 The initial functionality of pkg/frazil is similar to that previously provided
-by interior_freeze.F, that is, it checks for water below the freezing point at
+by freeze_interior.F, that is, it checks for water below the freezing point at
 depth and brings the negative heat anomaly to the surface level.
 Specifically, pkg/frazil currently assumes that: (i) supercooling at depth
 creates frazil, which rises to the model's surface level in one model time
 step, and (ii) the frazil is porous to salinity as it rises through the water
 column, that is, frazil does not generate or transport salt anomalies.
 
-The difference with interior_freeze.F is that rather than directly change
+The difference with freeze_interior.F is that rather than directly change
 potential temperature THETA, pkg/frazil instead stores the required
 adjustments in a frazil temperature forcing matrix:
 FrazilForcingT (> 0 increases theta [W/m^2]).
