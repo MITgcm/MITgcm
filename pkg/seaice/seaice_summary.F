@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.47 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.48 2012/03/07 02:56:10 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -127,7 +127,7 @@ C--  Seaice-Dynamics parameters
      & 'model grid type   =', ' /* type of sea ice model grid */')
 #endif /* SEAICE_CGRID */
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
-     & 'SEAICEuseEVP      =', ' /* use EVP solver */')
+     & 'SEAICEuseEVP      =', ' /* use EVP solver rather than LSR */')
 #ifdef SEAICE_ALLOW_FREEDRIFT
       CALL WRITE_0D_L ( SEAICEuseFREEDRIFT, INDEX_NONE,
      & 'SEAICEuseFREEDRIFT =', ' /* use free drift solution */')
@@ -148,6 +148,14 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_strength   =', ' /* sea-ice strength Pstar */')
       CALL WRITE_0D_RL( SEAICE_zetaMin  ,INDEX_NONE,
      & 'SEAICE_zetaMin    =', ' /* lower bound for viscosity */')
+      CALL WRITE_0D_RL( SEAICE_eccen,INDEX_NONE,'SEAICE_eccen    =',
+     & ' /* elliptical yield curve eccent */')
+      CALL WRITE_0D_RL( SEAICEstressFactor,INDEX_NONE,
+     & 'SEAICEstressFactor    =',' /* wind stress scaling factor */')
+      CALL WRITE_0D_RL( SEAICE_airTurnAngle,INDEX_NONE,
+     & 'SEAICE_airTurnAngle    =',' /* air-ice turning angle */')
+      CALL WRITE_0D_RL( SEAICE_waterTurnAngle,INDEX_NONE,
+     & 'SEAICE_waterTurnAngle  =',' /* ice-water turning angle */')
       CALL WRITE_0D_L ( SEAICEuseMetricTerms, INDEX_NONE,
      & 'SEAICEuseMetricTerms =', ' /* use metric terms */')
       CALL WRITE_0D_L ( SEAICE_no_slip, INDEX_NONE,
@@ -178,9 +186,9 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_evpTauRelax=', ' /* EVP relaxation timescale */')
        CALL WRITE_0D_RL( SEAICE_evpDampC  ,INDEX_NONE,
      & 'SEAICE_evpDampC   =', ' /* EVP damping parameter */')
+      CALL WRITE_0D_L ( SEAICEuseEVPpickup, INDEX_NONE,
+     & 'SEAICEuseEVPpickup=', ' /* start EVP solver with EVP pickup*/')
 #endif /* SEAICE_ALLOW_EVP */
-      CALL WRITE_0D_RL( SEAICE_EPS        ,INDEX_NONE,
-     & 'SEAICE_EPS        =', ' /* reduce derivative singularities */')
       endif
 
       endif
@@ -207,6 +215,12 @@ C--  Thermodynamics parameters
      &                    SQUEEZE_RIGHT , myThid)
       else
 
+      CALL WRITE_0D_RL( SEAICE_rhoIce     ,INDEX_NONE,
+     & 'SEAICE_rhoIce     =', ' /* density of sea ice (kg/m3) */')
+      CALL WRITE_0D_RL( SEAICE_rhoSnow     ,INDEX_NONE,
+     & 'SEAICE_rhoSnow    =', ' /* density of snow (kg/m3) */')
+      CALL WRITE_0D_RL( SEAICE_rhoAir     ,INDEX_NONE,
+     & 'SEAICE_rhoAir     =', ' /* density of air (kg/m3) */')
       CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
      & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')
       CALL WRITE_0D_RL( SEAICE_lhFusion   ,INDEX_NONE,
@@ -217,6 +231,9 @@ C--  Thermodynamics parameters
       CALL WRITE_0D_RL ( SEAICE_mcPheeTaper,     INDEX_NONE,
      & 'SEAICE_mcPheeTaper =',
      & ' /* tapering of turbulent flux (0.< <1.) for AREA=1. */')
+      CALL WRITE_0D_L ( SEAICE_mcPheeStepFunc,   INDEX_NONE,
+     & 'SEAICE_mcPheeStepFunc =',
+     & ' /* replace linear tapering with step funct. */')
       CALL WRITE_0D_RL ( SEAICE_frazilFrac,   INDEX_NONE,
      & 'SEAICE_frazilFrac =',
      & ' /* frazil (T<tempFrz) to seaice conversion rate (0.< <1.) */')
@@ -258,6 +275,9 @@ c
      & 'HO                =', ' /* nominal thickness of new ice */')
       CALL WRITE_0D_RL( HO_south          ,INDEX_NONE,
      & 'HO_south               =', ' /* Southern Ocean HO */')
+      CALL WRITE_0D_RL( SEAICE_area_max          ,INDEX_NONE,
+     & 'SEAICE_area_max        =', 
+     & ' /* set to les than 1. to mimic open leads */')
 #ifdef SEAICE_VARIABLE_SALINITY
       WRITE(msgBuf,'(A)')
      &'   Sea ice has a variable salinity such that '
@@ -269,6 +289,8 @@ c
       CALL WRITE_0D_RL( SIsal0,   INDEX_NONE,
      & 'SIsal0   =', ' /* constant sea ice salinity */')
 #endif
+      CALL WRITE_0D_L ( SEAICE_salinityTracer,   INDEX_NONE,
+     & 'SEAICE_salinityTracer =', ' /* test SITR varia. salinity */')
       CALL WRITE_0D_L ( SEAICEuseFlooding, INDEX_NONE,
      & 'SEAICEuseFlooding =', ' /* turn submerged snow into ice */')
 #ifndef SEAICE_CAP_HEFF
@@ -317,9 +339,11 @@ c
       IF ( SEAICEadvSnow )
      &CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
      & 'SEAICEadvSchSnow   =', ' /* advection scheme for snow */')
+#ifdef SEAICE_VARIABLE_SALINITY
       IF ( SEAICEadvSalt )
      &CALL WRITE_0D_I ( SEAICEadvSchSalt,   INDEX_NONE,
      & 'SEAICEadvSchSalt   =', ' /* advection scheme for salt */')
+#endif
       CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
      & 'SEAICEdiffKhArea   =', ' /* diffusivity (m^2/s) for area */')
       CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
@@ -345,7 +369,11 @@ c
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 
-
+      CALL WRITE_0D_L ( SEAICEheatConsFix,  INDEX_NONE,
+     & 'SEAICEheatConsFix  =',
+     & ' /* accound for ocn<->seaice advect. heat flux */')
+      CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
+     & , ' /* number of ice categories (1 or 7) */')
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
      & 'IMAX_TICE         =', ' /* iterations for ice surface temp */')
       CALL WRITE_0D_I ( postSolvTempIter,  INDEX_NONE,
@@ -427,6 +455,12 @@ C--  Initial Condition/Input related param.
      &  'AreaFile =', ' /* Initial ice concentration File */')
       CALL WRITE_0D_C( HeffFile, -1, INDEX_NONE,
      &  'HeffFile =', ' /* Initial effective ice thickness File */')
+      CALL WRITE_0D_C( HsnowFile, -1, INDEX_NONE,
+     &  'HsnowFile =', ' /* Initial snow thickness File */')
+#ifdef SEAICE_VARIABLE_SALINITY
+      CALL WRITE_0D_C( HsaltFile, -1, INDEX_NONE,
+     &  'HsaltFile =', ' /* Initial HSALT File */')
+#endif     
       CALL WRITE_0D_C( uIceFile, -1, INDEX_NONE,
      &  'uIceFile =', ' /* Initial U-ice velocity File */')
       CALL WRITE_0D_C( vIceFile, -1, INDEX_NONE,
@@ -447,14 +481,19 @@ C--  Output related param.
      & 'SEAICE_dump_mdsio =',' /* write snap-shot   using MDSIO */')
       CALL WRITE_0D_L ( SEAICE_tave_mdsio,  INDEX_NONE,
      & 'SEAICE_tave_mdsio =',' /* write TimeAverage using MDSIO */')
+#ifdef ALLOW_MNC
       CALL WRITE_0D_L ( SEAICE_mon_mnc,  INDEX_NONE,
      & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
       CALL WRITE_0D_L ( SEAICE_dump_mnc,  INDEX_NONE,
      & 'SEAICE_dump_mnc   =',' /* write snap-shot   using MNC */')
       CALL WRITE_0D_L ( SEAICE_tave_mnc,  INDEX_NONE,
      & 'SEAICE_tave_mnc   =',' /* write TimeAverage using MNC */')
+#endif /* ALLOW_MNC */
 
 #ifdef ALLOW_SITRACER
+       CALL WRITE_0D_I ( SItrNumInUse, INDEX_NONE,
+     & 'SItrNumInUse =',
+     & ' /* number of tracers that are in use (<SItrMaxNum) */')
       DO iTracer = 1, SItrNumInUse
        if (SItrName(iTracer).NE.' ') then
       WRITE(msgBuf,'(A,I3,A)') '== SItracer no. ',iTracer,
@@ -485,6 +524,30 @@ C--  Output related param.
        endif
       ENDDO
 #endif /* ALLOW_SITRACER */
+
+      WRITE(msgBuf,'(A)')
+     &' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
+     &'   Seaice regularization numbers,   > START <  '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
+     &'   -----------------------------------------------'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+
+      CALL WRITE_0D_RL( SEAICE_EPS        ,INDEX_NONE,
+     & 'SEAICE_EPS        =', ' /* reduce derivative singularities */')
+      CALL WRITE_0D_RL( SEAICE_EPS_SQ        ,INDEX_NONE,
+     & 'SEAICE_EPS_SQ     =', ' /* reduce derivative singularities */')
+      CALL WRITE_0D_RL( SEAICE_area_reg        ,INDEX_NONE,
+     & 'SEAICE_area_reg   =', ' /* reduce derivative singularities */')
+      CALL WRITE_0D_RL( SEAICE_hice_reg        ,INDEX_NONE,
+     & 'SEAICE_hice_reg   =', ' /* reduce derivative singularities */')
+      CALL WRITE_0D_RL( SEAICE_area_floor        ,INDEX_NONE,
+     & 'SEAICE_area_floor =', ' /* reduce derivative singularities */')
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
