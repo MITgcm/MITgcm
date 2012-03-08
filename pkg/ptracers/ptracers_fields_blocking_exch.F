@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.11 2011/04/28 23:19:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_fields_blocking_exch.F,v 1.1 2012/03/08 17:12:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 #include "GAD_OPTIONS.h"
 
 CBOP
-C !ROUTINE: PTRACERS_FIELDS_BLOCKING_EXCHANGES
+C !ROUTINE: PTRACERS_FIELDS_BLOCKING_EXCH
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_FIELDS_BLOCKING_EXCH( myThid )
@@ -21,6 +21,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -43,9 +44,10 @@ CEOP
 
 C Loop over passive tracers
       DO iTracer=1,PTRACERS_numInUse
+       IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 C Exchange overlaps
-        CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+        CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &                   Nr, myThid )
 #ifdef PTRACERS_ALLOW_DYN_STATE
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
@@ -54,18 +56,8 @@ C Exchange overlaps
         ENDIF
 #endif /* PTRACERS_ALLOW_DYN_STATE */
 
-#ifdef ALLOW_OBCS
-c     IF ( useOBCS ) THEN
-c      DO bj = myByLo(myThid), myByHi(myThid)
-c       DO bi = myBxLo(myThid), myBxHi(myThid)
-c        CALL OBCS_COPY_TRACER( pTracer(1-Olx,1-Oly,1,bi,bj,iTracer),
-c    I                          Nr, bi, bj, myThid )
-c       ENDDO
-c      ENDDO
-c     ENDIF
-#endif /* ALLOW_OBCS */
-
 C End of tracer loop
+       ENDIF
       ENDDO
 
 #endif /* ALLOW_PTRACERS */
