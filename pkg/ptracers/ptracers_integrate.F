@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.44 2011/11/07 20:23:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.45 2012/03/08 17:08:36 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -30,7 +30,7 @@ C !USES: ===============================================================
 #endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_RESTART.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -65,7 +65,7 @@ C  myThid               :: thread number
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRtr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
+      _RL KappaRtr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
       _RL rFlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       _RL myTime
       INTEGER myIter
@@ -110,6 +110,7 @@ C Loop ranges for daughter routines
 
 C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
+      IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
@@ -154,9 +155,9 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   uTrans, vTrans, rTrans, rTransKp1,
      I                   PTRACERS_diffKh(iTracer),
      I                   PTRACERS_diffK4(iTracer),
-     I                   KappaRtr(1-Olx,1-Oly,iTracer),
-     I                   gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
-     I                   pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     I                   KappaRtr(1-OLx,1-OLy,iTracer),
+     I                   gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
+     I                   pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      I                   PTRACERS_dTLev, GAD_TR,
      I                   PTRACERS_advScheme(iTracer),
      I                   PTRACERS_advScheme(iTracer),
@@ -164,16 +165,16 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   .FALSE.,
      I                   PTRACERS_useGMRedi(iTracer),
      I                   PTRACERS_useKPP(iTracer),
-     U                   rFlx(1-Olx,1-Oly,1,iTracer),
-     U                   gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     U                   rFlx(1-OLx,1-OLy,1,iTracer),
+     U                   gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I                   myTime, myIter, myThid )
 
 C External forcing term(s)
        IF ( tracForcingOutAB.NE.1 )
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
-     U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                      surfaceForcingPTr(1-Olx,1-Oly,1,1,iTracer),
+     U                      gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I                      surfaceForcingPTr(1-OLx,1-OLy,1,1,iTracer),
      I                      myIter,myTime,myThid)
 
 C If using Adams-Bashforth II, then extrapolate tendencies
@@ -196,8 +197,8 @@ C       compute iter at beginning of ptracer time step
 #endif
         CALL ADAMS_BASHFORTH2(
      I                      bi,bj,k,
-     U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     U                      gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     U                      gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     U                      gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      U                      gTr_AB,
      I                      PTRACERS_startAB(iTracer), iterNb, myThid )
 #ifdef ALLOW_DIAGNOSTICS
@@ -213,8 +214,8 @@ C External forcing term(s)
        IF ( tracForcingOutAB.EQ.1 )
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
-     U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                      surfaceForcingPTr(1-Olx,1-Oly,1,1,iTracer),
+     U                      gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I                      surfaceForcingPTr(1-OLx,1-OLy,1,1,iTracer),
      I                      myIter,myTime,myThid)
 
 #ifdef NONLIN_FRSURF
@@ -222,12 +223,12 @@ C Account for change in level thickness
       IF (nonlinFreeSurf.GT.0) THEN
         CALL FREESURF_RESCALE_G(
      I                          bi,bj,k,
-     U                          gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     U                          gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I                          myThid )
         IF ( PTRACERS_AdamsBashGtr(iTracer) )
      &  CALL FREESURF_RESCALE_G(
      I                          bi,bj,k,
-     U                          gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     U                          gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */
@@ -235,11 +236,12 @@ C Account for change in level thickness
 C Integrate forward in time, storing in gPtr:  G=T+dt*G
          CALL TIMESTEP_TRACER(
      I                        bi, bj, k, PTRACERS_dTLev(k),
-     I                        pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I                        pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U                        gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I                        myIter, myThid )
 
 C end of tracer loop
+      ENDIF
       ENDDO
 
 #endif /* ALLOW_PTRACERS */
