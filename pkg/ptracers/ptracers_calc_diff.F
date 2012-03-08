@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.9 2011/09/20 22:29:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.10 2012/03/08 17:13:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -35,7 +35,7 @@ C     == GLobal variables ==
 #endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-c #include "PTRACERS_FIELDS.h"
+#include "PTRACERS_START.h"
 #include "GAD.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -48,8 +48,8 @@ C     myThid    :: Instance number for this innvocation of PTRACERS_CALC_DIFF
 C     KappaRtr  :: Net diffusivity for temperature
 C     KappaRS   :: Net diffusivity for salinity
       INTEGER bi,bj,iMin,iMax,jMin,jMax,k
-      _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL KappaRtr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
+      _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KappaRtr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -71,12 +71,13 @@ CEOP
 
 C Loop over tracers
       DO iTr=1,PTRACERS_numInUse
+       IF ( PTRACERS_StepFwd(iTr) ) THEN
 
        trIdentity = iTr + GAD_TR1 - 1
 
        IF ( .NOT. PTRACERS_useKPP(iTr) ) THEN
-        DO j = 1-Oly, sNy+Oly
-         DO i = 1-Olx, sNx+Olx
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
           KappaRtr(i,j,iTr) =
 #ifdef ALLOW_LONGSTEP
      &         LS_IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
@@ -101,7 +102,7 @@ C Loop over tracers
 C--   Set vertical diffusivity contribution from KPP
          CALL KPP_CALC_DIFF_PTR(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
-     O        KappaRtr(1-Olx,1-Oly,iTr),
+     O        KappaRtr(1-OLx,1-OLy,iTr),
      I        iTr, myThid )
         ENDIF
 #endif
@@ -110,7 +111,7 @@ C--   Set vertical diffusivity contribution from KPP
         IF ( PTRACERS_useGMRedi(iTr) ) THEN
          CALL GMREDI_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,k,1,
-     U        KappaRtr(1-Olx,1-Oly,iTr),
+     U        KappaRtr(1-OLx,1-OLy,iTr),
      I        trIdentity,myThid)
         ENDIF
 #endif
@@ -119,7 +120,7 @@ C--   Set vertical diffusivity contribution from KPP
         IF (usePP81) THEN
          CALL PP81_CALC_DIFF(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
-     U        KappaRtr(1-Olx,1-Oly,iTr),
+     U        KappaRtr(1-OLx,1-OLy,iTr),
      I        myThid)
         ENDIF
 #endif
@@ -128,7 +129,7 @@ C--   Set vertical diffusivity contribution from KPP
         IF (useMY82) THEN
          CALL MY82_CALC_DIFF(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
-     U        KappaRtr(1-Olx,1-Oly,iTr),
+     U        KappaRtr(1-OLx,1-OLy,iTr),
      I        myThid)
         ENDIF
 #endif
@@ -137,7 +138,7 @@ C--   Set vertical diffusivity contribution from KPP
         IF (useGGL90) THEN
          CALL GGL90_CALC_DIFF(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
-     U        KappaRtr(1-Olx,1-Oly,iTr),
+     U        KappaRtr(1-OLx,1-OLy,iTr),
      I        myThid)
         ENDIF
 #endif
@@ -145,13 +146,14 @@ C--   Set vertical diffusivity contribution from KPP
 C-    Apply mask to vertical diffusivity
 C jmc: do not have the impression that masking is needed
 C      but could be removed later if it is the case.
-        DO j = 1-Oly, sNy+Oly
-         DO i = 1-Olx, sNx+Olx
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
           KappaRtr(i,j,iTr) = maskUp(i,j)*KappaRtr(i,j,iTr)
          ENDDO
         ENDDO
 
 C end of tracer loop
+       ENDIF
       ENDDO
 
       RETURN

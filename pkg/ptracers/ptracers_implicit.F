@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.9 2011/12/01 14:27:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.10 2012/03/08 17:13:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -30,6 +30,7 @@ C !USES: ===============================================================
 #endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -72,6 +73,7 @@ CEOP
 
 C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
+       IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
@@ -146,6 +148,7 @@ C--     Apply open boundary conditions
 #endif /* ALLOW_OBCS */
 
 C End of tracer loop
+       ENDIF
       ENDDO
 
 #endif /* ALLOW_PTRACERS */

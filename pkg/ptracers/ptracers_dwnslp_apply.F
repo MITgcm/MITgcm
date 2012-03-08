@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_dwnslp_apply.F,v 1.2 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_dwnslp_apply.F,v 1.3 2012/03/08 17:13:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -23,6 +23,7 @@ c#include "PTRACERS_MOD.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 #include "GAD.h"
 
@@ -49,6 +50,7 @@ CEOP
 
 C Loop over tracers
       DO iTr=1,PTRACERS_numInUse
+       IF ( PTRACERS_StepFwd(iTr) ) THEN
 
         IF ( PTRACERS_useDWNSLP(iTr) ) THEN
           IF ( usingPCoords ) THEN
@@ -56,21 +58,22 @@ C Loop over tracers
      I                  GAD_TR1+iTr-1, bi, bj, kSurfC,
      I                  recip_drF, recip_hFacC, recip_rA,
      I                  PTRACERS_dTLev,
-     I                  pTracer(1-Olx,1-Oly,1,1,1,iTr),
-     O                  gPtr(1-Olx,1-Oly,1,1,1,iTr),
+     I                  pTracer(1-OLx,1-OLy,1,1,1,iTr),
+     O                  gPtr(1-OLx,1-OLy,1,1,1,iTr),
      I                  myTime, myIter, myThid )
           ELSE
             CALL DWNSLP_APPLY(
      I                  GAD_TR1+iTr-1, bi, bj, kLowC,
      I                  recip_drF, recip_hFacC, recip_rA,
      I                  PTRACERS_dTLev,
-     I                  pTracer(1-Olx,1-Oly,1,1,1,iTr),
-     O                  gPtr(1-Olx,1-Oly,1,1,1,iTr),
+     I                  pTracer(1-OLx,1-OLy,1,1,1,iTr),
+     O                  gPtr(1-OLx,1-OLy,1,1,1,iTr),
      I                  myTime, myIter, myThid )
           ENDIF
         ENDIF
 
 C end of tracer loop
+       ENDIF
       ENDDO
 
 #endif /* ALLOW_DOWN_SLOPE */

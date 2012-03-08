@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.6 2007/12/17 21:20:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.7 2012/03/08 17:13:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: PTRACERS_CYCLE
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_CYCLE(bi,bj,myTime,myIter,myThid)
+      SUBROUTINE PTRACERS_CYCLE( bi,bj,myTime,myIter,myThid )
 
 C !DESCRIPTION:
 C     Cycle time-stepping arrays
@@ -18,6 +18,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -42,15 +43,17 @@ CEOP
 
 C Loop over passive tracers
       DO iTracer=1,PTRACERS_numInUse
+       IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 C Cycle time-stepping arrays
-      CALL CYCLE_TRACER(
-     I           bi,bj,
-     U           pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     U           gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I           myTime,myIter,myThid )
+        CALL CYCLE_TRACER(
+     I             bi,bj,
+     U             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U             gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I             myTime,myIter,myThid )
 
 C End of tracer loop
+       ENDIF
       ENDDO
 
 #endif /* ALLOW_PTRACERS */

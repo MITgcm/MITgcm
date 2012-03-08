@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.6 2011/01/18 19:37:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.7 2012/03/08 17:13:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,6 +18,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -46,6 +47,7 @@ CEOP
 
 C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
+       IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
@@ -67,12 +69,13 @@ CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-       CALL CONVECTIVELY_MIXTRACER(
-     I         bi,bj,k,weightA,weightB,
-     U         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     I         myThid)
+         CALL CONVECTIVELY_MIXTRACER(
+     I           bi,bj,k,weightA,weightB,
+     U           pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     I           myThid )
 
 C End of tracer loop
+       ENDIF
       ENDDO
 
 #endif /* ALLOW_PTRACERS */

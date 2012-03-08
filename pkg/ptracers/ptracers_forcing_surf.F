@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.10 2010/09/05 22:28:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.11 2012/03/08 17:13:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -28,6 +28,7 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -62,13 +63,14 @@ CEOP
 
 C Example of how to add forcing at the surface
       DO iTrc=1,PTRACERS_numInUse
+c       IF ( PTRACERS_StepFwd(iTrc) ) THEN
           DO j = jMin, jMax
            DO i = iMin, iMax
-             surfaceForcingPTr(i,j,bi,bj,iTrc) =
-     &               0. _d 0
-c    &               surfaceForcingS(i,j,bi,bj)
+             surfaceForcingPTr(i,j,bi,bj,iTrc) = 0. _d 0
+c    &                        + surfaceForcingS(i,j,bi,bj)
            ENDDO
           ENDDO
+c       ENDIF
       ENDDO
 
 C--   Option to convert Salt-relaxation into additional EmP contribution
@@ -122,7 +124,8 @@ c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
 c   the water column height ; temp., salt, (tracer) flux associated
 c   with this input/output of water is added here to the surface tendency.
 c
-         IF (PTRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+         IF ( PTRACERS_StepFwd(iTrc) .AND.
+     &        PTRACERS_EvPrRn(iTrc).NE.UNSET_RL ) THEN
           DO j = jMin, jMax
            DO i = iMin, iMax
              surfaceForcingPTr(i,j,bi,bj,iTrc) =
@@ -150,7 +153,8 @@ C-    use local surface tracer field to calculate forcing term:
 
         DO iTrc=1,PTRACERS_numInUse
 
-         IF (PTRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+         IF ( PTRACERS_StepFwd(iTrc) .AND.
+     &        PTRACERS_EvPrRn(iTrc).NE.UNSET_RL ) THEN
 C        account for Rain/Evap tracer content (PTRACERS_EvPrRn) using
 C        local surface tracer
           DO j = jMin, jMax
@@ -171,7 +175,8 @@ C-    use uniform tracer value to calculate forcing term:
 
         DO iTrc=1,PTRACERS_numInUse
 
-         IF (PTRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+         IF ( PTRACERS_StepFwd(iTrc) .AND.
+     &        PTRACERS_EvPrRn(iTrc).NE.UNSET_RL ) THEN
 C     account for Rain/Evap tracer content (PTRACERS_EvPrRn) assuming uniform
 C     surface tracer (=PTRACERS_ref)
           DO j = jMin, jMax
