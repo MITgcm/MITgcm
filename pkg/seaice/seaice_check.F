@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.64 2012/03/03 05:35:03 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.65 2012/03/08 01:15:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -497,61 +497,19 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_ALLOW_TD_IF */
 
-#ifndef MCPHEE_OCEAN_ICE_HEAT_FLUX    
-        WRITE(msgBuf,'(A)') ' --- '
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK: MCPHEE_OCEAN_ICE_HEAT_FLUX option is now'
+     &    'SEAICE_CHECK: turbulent ice-ocn heat flux default changed.'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &   '  the unified way of specifying the turb. ocean-ice flux'
+        WRITE(msgBuf,'(A)') 
+     &   'SEAICE_CHECK:    To recover the old default : set '
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &   '  for which the default options have changed.'
+        WRITE(msgBuf,'(A)') 
+     &   'SEAICE_CHECK:    SEAICE_mcPheePiston to the first ocn level'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') ' --- '
+        WRITE(msgBuf,'(A)') 
+     &   'SEAICE_CHECK:    thickness divided by SEAICE_deltaTtherm.'
         CALL PRINT_ERROR( msgBuf , myThid)
-
-        WRITE(msgBuf,'(2A)') 'To recover the old default : 1) in ',
-     &   ' SEAICE_OPTIONS.h, define MCPHEE_OCEAN_ICE_HEAT_FLUX and '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)')
-     &   ' GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR; 2) in data.seaice',
-     &   ' set SEAICE_mcPheePiston to the first ocn level thickness'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)') ' divided by SEAICE_deltaTtherm, ',
-     &   ' and set SEAICE_frazilFrac to 1.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') ' --- '
-        CALL PRINT_ERROR( msgBuf , myThid)
-
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
-
-#if (defined MCPHEE_OCEAN_ICE_HEAT_FLUX) && \
-    !(defined GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR)
-        WRITE(msgBuf,'(A)') ' --- '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)')
-     &    'SEAICE_CHECK: GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR option',
-     &   ' is now the unified way of specif. the ocn-ice flux tapering.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-
-        WRITE(msgBuf,'(A)') ' --- '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: by default the tapering',
-     &   ' is not active (SEAICE_mcPheeTaper = 0.). If you activate '
-        CALL PRINT_ERROR( msgBuf , myThid)
-
-         WRITE(msgBuf,'(3A)') 'SEAICE_CHECK: it, you could replace',
-     &   'linear tapering (default) with a step function (not re',
-     &   'commended) by setting SEAICE_mcPheeStepFunc to true'
-         CALL PRINT_ERROR( msgBuf, myThid )
-
-        WRITE(msgBuf,'(A)') ' --- '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
 
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
 #if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \
@@ -714,21 +672,18 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
       ENDIF
 #endif
 
-#ifndef SEAICE_VARIABLE_FREEZING_POINT
         WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK: SEAICE_VARIABLE_FREEZING_POINT option is now'
+     &    'SEAICE_CHECK: variable freezing point is new default.'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)') 
-     &   '  the unified way of specifying sea water freezing point.'
+     &    'SEAICE_CHECK:    To recover old constant freezing : '
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)') '  To recover old constant freezing : ',
-     &                       'set SEAICE_tempFrz0 = -1.96 and '
+        WRITE(msgBuf,'(A)') 
+     &    'SEAICE_CHECK:    set SEAICE_tempFrz0 = -1.96 and '
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)') '  SEAICE_dTempFrz_dS = 0. and define ',
-     &   'SEAICE_VARIABLE_FREEZING_POINT (that is unchnaged)'
+        WRITE(msgBuf,'(A)') 
+     &    'SEAICE_CHECK:    SEAICE_dTempFrz_dS = 0.'
         CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
 
 #ifndef SEAICE_ALLOW_CLIPVELS
       IF ( SEAICE_clipVelocities ) THEN
