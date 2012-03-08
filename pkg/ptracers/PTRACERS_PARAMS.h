@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.8 2010/09/05 22:28:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.9 2012/03/08 17:16:14 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -13,43 +13,50 @@ C Contains passive tracer parameters.
 
 CEOP
 
-C     COMMON /PTRACERS_PARAMS/  PTRACERS parameters:
+C--   COMMON /PTRACERS_PARAMS_R/ PTRACERS real-type parameters:
+C     PTRACERS_dTLev    :: Timestep for ptracers ( s ), function of level k
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
 C     PTRACERS_ref      :: vertical profile for passive tracers, in
 C                          analogy to tRef and sRef, hence the name
+C     PTRACERS_startStepFwd :: time to start stepping forward this tracer
 C     PTRACERS_EvPrRn   :: tracer concentration in Rain, Evap & RunOff
 C       notes: a) used if both NonLin_FrSurf & useRealFreshWater are set.
 C              b) use pTracer surface (local) value if = UNSET_RL (default)
-C     PTRACERS_Iter0    :: timestep number when tracers are initialized
-C     PTRACERS_dTLev    :: Timestep for ptracers ( s ), function of level k
 
+      _RL PTRACERS_dTLev(Nr)
       _RL PTRACERS_dumpFreq
       _RL PTRACERS_taveFreq
       _RL PTRACERS_monitorFreq
+      _RL PTRACERS_startStepFwd(PTRACERS_num)
       _RL PTRACERS_diffKh(PTRACERS_num)
       _RL PTRACERS_diffK4(PTRACERS_num)
       _RL PTRACERS_diffKrNr(Nr,PTRACERS_num)
       _RL PTRACERS_ref(Nr,PTRACERS_num)
       _RL PTRACERS_EvPrRn(PTRACERS_num)
-      _RL PTRACERS_dTLev(Nr)
       COMMON /PTRACERS_PARAMS_R/
+     &     PTRACERS_dTLev,
      &     PTRACERS_dumpFreq,
      &     PTRACERS_taveFreq,
      &     PTRACERS_monitorFreq,
+     &     PTRACERS_startStepFwd,
      &     PTRACERS_diffKh,
      &     PTRACERS_diffK4,
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
-     &     PTRACERS_EvPrRn,
-     &     PTRACERS_dTLev
+     &     PTRACERS_EvPrRn
 
+#ifdef ALLOW_COST
 C     COMMON /PTRACERS_OLD_R/ Old (real type) PTRACERS parameters
 C        (to be removed 1 day ...)
       _RL lambdaTr1ClimRelax
       COMMON /PTRACERS_OLD_R/
      &     lambdaTr1ClimRelax
+#endif
 
+C--   COMMON /PTRACERS_PARAMS_I/ PTRACERS integer-type parameters:
+C     PTRACERS_numInUse :: number of tracers to use
+C     PTRACERS_Iter0    :: timestep number when tracers are initialized
       INTEGER PTRACERS_Iter0
       INTEGER PTRACERS_numInUse
       INTEGER PTRACERS_advScheme(PTRACERS_num)
@@ -58,6 +65,7 @@ C        (to be removed 1 day ...)
      &     PTRACERS_numInUse,
      &     PTRACERS_advScheme
 
+C--   COMMON /PTRACERS_PARAMS_L/ PTRACERS logical-type parameters:
 C     PTRACERS_MultiDimAdv   :: internal flag (depend on the advection scheme),
 C                               true if this tracer uses Multi-Dim advection
 C     PTRACERS_SOM_Advection :: internal flag (depend on the advection scheme),
@@ -65,7 +73,7 @@ C                               true if this tracer uses 2nd-order moment advect
 C     PTRACERS_AdamsBashGtr  :: internal flag (depend on the advection scheme),
 C                               true if applies Adams-Bashforth on tracer tendency
 C     PTRACERS_useDWNSLP(n)  :: true if Down-Sloping flow applies to pTracer n
-C     PTRACERS_addSrelax2EmP :: add Salt relaxation to EmP
+C     PTRACERS_startAllTrc   :: internal flag, all tracers start at startTime
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
       LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
       LOGICAL PTRACERS_SOM_Advection(PTRACERS_num)
@@ -74,6 +82,7 @@ C     PTRACERS_addSrelax2EmP :: add Salt relaxation to EmP
       LOGICAL PTRACERS_useDWNSLP(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
       LOGICAL PTRACERS_addSrelax2EmP
+      LOGICAL PTRACERS_startAllTrc
       LOGICAL PTRACERS_useRecords
       LOGICAL
      &     PTRACERS_monitor_mnc, PTRACERS_monitor_stdio,
@@ -89,14 +98,16 @@ C     PTRACERS_addSrelax2EmP :: add Salt relaxation to EmP
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
-     &     PTRACERS_useRecords,
      &     PTRACERS_addSrelax2EmP,
+     &     PTRACERS_startAllTrc,
+     &     PTRACERS_useRecords,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
      &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
      &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,
      &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
      &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
 
+C--   COMMON /PTRACERS_PARAMS_C/ PTRACERS character-type parameters:
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_initialFile(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_long_names(PTRACERS_num)

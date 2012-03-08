@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.38 2010/12/13 20:27:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.39 2012/03/08 17:16:14 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -53,9 +53,10 @@ C                          are written to post-processing files.
 C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
       NAMELIST /PTRACERS_PARM01/
      &     tauTr1ClimRelax,
-     &     PTRACERS_dumpFreq,
-     &     PTRACERS_taveFreq,
-     &     PTRACERS_monitorFreq,
+     &     PTRACERS_numInUse,
+     &     PTRACERS_Iter0,
+     &     PTRACERS_addSrelax2EmP,
+     &     PTRACERS_startStepFwd,
      &     PTRACERS_advScheme,
      &     PTRACERS_ImplVertAdv,
      &     PTRACERS_diffKh,
@@ -64,17 +65,17 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
      &     PTRACERS_EvPrRn,
-     &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
-     &     PTRACERS_Iter0,
-     &     PTRACERS_numInUse,
      &     PTRACERS_initialFile,
-     &     PTRACERS_useRecords,
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
+     &     PTRACERS_useRecords,
+     &     PTRACERS_dumpFreq,
+     &     PTRACERS_taveFreq,
+     &     PTRACERS_monitorFreq,
      &     PTRACERS_timeave_mnc,
      &     PTRACERS_snapshot_mnc,
      &     PTRACERS_monitor_mnc,
@@ -102,6 +103,7 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_Iter0   = 0
       PTRACERS_numInUse=-1
       DO iTracer=1,PTRACERS_num
+        PTRACERS_startStepFwd(iTracer) = baseTime
         PTRACERS_advScheme(iTracer)=saltAdvScheme
         PTRACERS_ImplVertAdv(iTracer) = .FALSE.
         PTRACERS_diffKh(iTracer)=diffKhS
@@ -163,21 +165,29 @@ C     Open and read the data.ptracers file
 C     Close the open data file
       CLOSE(iUnit)
 
-C     Now set-up any remaining parameters that result from the input
-C     parameters
-
+C     Check for retired parameters:
 C     Tracer 1 climatology relaxation time scale (<- but the code is gone !)
-      IF ( tauTr1ClimRelax .EQ. 0. ) THEN
-       lambdaTr1ClimRelax = 0.
-      ELSE
+      IF ( tauTr1ClimRelax .NE. 0. ) THEN
+#ifndef ALLOW_COST
+        WRITE(msgBuf,'(2A)')' PTRACERS_READPARMS: ',
+     &       'tauTr1ClimRelax has been removed (code is gone)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+#else
        lambdaTr1ClimRelax = 1./tauTr1ClimRelax
+      ELSE
+       lambdaTr1ClimRelax = 0.
+#endif
       ENDIF
+
+C--   Now set-up any remaining parameters that result from other params
 
 C     If PTRACERS_numInUse was not set in data.ptracers then we can
 C     assume that all PTRACERS fields will be in use
       IF (PTRACERS_numInUse.LT.0) THEN
         PTRACERS_numInUse=PTRACERS_num
       ENDIF
+
 C     Check we are not trying to use more tracers than allowed
       IF (PTRACERS_numInUse.GT.PTRACERS_num) THEN
         WRITE(msgBuf,'(A,I4,A,I4,A)')
@@ -187,6 +197,23 @@ C     Check we are not trying to use more tracers than allowed
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
+C     Set flag to check when each tracer starts
+      PTRACERS_startAllTrc = .TRUE.
+      DO iTracer=1,PTRACERS_numInUse
+        IF ( PTRACERS_startStepFwd(iTracer) .NE. baseTime )
+     &    PTRACERS_startAllTrc = .FALSE.
+      ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF ( .NOT.PTRACERS_startAllTrc ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'PTRACERS_READPARMS: Compiling AD code does not allow'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'to use different starting time (PTRACERS_startStepFwd)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+      ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 C     Check for valid advection-scheme number
       DO iTracer=1,PTRACERS_numInUse
         validNum = GAD_VALID_ADVSCHEME( PTRACERS_advScheme(iTracer) )
@@ -302,6 +329,8 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_I( PTRACERS_Iter0, INDEX_NONE,
      &   'PTRACERS_Iter0 =',
      &   ' /* timestep number when tracers are initialized */')
+      CALL WRITE_0D_L( PTRACERS_startAllTrc, INDEX_NONE,
+     &   'PTRACERS_startAllTrc =','/* all tracers start @ startTime */')
       CALL WRITE_0D_L( PTRACERS_addSrelax2EmP, INDEX_NONE,
      &   'PTRACERS_addSrelax2EmP =','/* add Salt relaxation to EmP */')
       CALL WRITE_1D_RL( PTRACERS_dTLev, Nr, INDEX_K,
@@ -340,6 +369,9 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_long_names =', ' /* Tracer long name */')
         CALL WRITE_0D_C( PTRACERS_ioLabel(iTracer), 0, INDEX_NONE,
      &     'PTRACERS_ioLabel =', ' /* tracer IO Label */')
+        IF ( .NOT.PTRACERS_startAllTrc )
+     &  CALL WRITE_0D_RL( PTRACERS_startStepFwd(iTracer), INDEX_NONE,
+     &     'PTRACERS_startStepFwd =', ' /* tracer starting time */')
         CALL WRITE_0D_I( PTRACERS_advScheme(iTracer), INDEX_NONE,
      &     'PTRACERS_advScheme =', ' /* Advection Scheme */')
         CALL WRITE_0D_L( PTRACERS_ImplVertAdv(iTracer), INDEX_NONE,
