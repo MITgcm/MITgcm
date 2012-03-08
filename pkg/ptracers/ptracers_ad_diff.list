@@ -2,9 +2,10 @@ ptracers_advection.f
 ptracers_calc_diff.f
 ptracers_convect.f
 ptracers_cycle.f	
-ptracers_fields_blocking_exchanges.f
+ptracers_fields_blocking_exch.f
 ptracers_forcing.f
 ptracers_forcing_surf.f
 ptracers_implicit.f
 ptracers_init_varia.f	
 ptracers_integrate.f
+ptracers_switch_onoff.f
