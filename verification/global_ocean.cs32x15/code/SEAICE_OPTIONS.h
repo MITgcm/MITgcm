@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.15 2012/03/03 03:39:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.16 2012/03/08 01:19:21 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -61,16 +61,6 @@ C-    to ensure heat conservation in the coupled ocean-seaice system
 C-    to preclude infinitesimal ice concentrations:
 # undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 #endif
-
-C--   The freezing point of water is a simple linear dependence to salinity.
-C     The flag below is now obsolete, but kept to ease the transition
-C     from the old constant freezing point default (see seaice_check.F).
-#define SEAICE_VARIABLE_FREEZING_POINT
-
-C--   The flags below are obsolete, but kept to ease the transition
-C     from the old default to the new one (see seaice_check.F).
-#define MCPHEE_OCEAN_ICE_HEAT_FLUX
-#define GRADIENT_MIXED_LAYER_TURBULENCE_FACTOR
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #undef SEAICE_VARIABLE_SALINITY
