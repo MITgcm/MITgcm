@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.9 2010/01/02 23:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.10 2012/03/08 17:06:36 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -24,6 +24,7 @@ C     !USES:
 #include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 
 C     !INPUT PARAMETERS:
@@ -39,6 +40,15 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER n
 #endif
 CEOP
+
+C     Initialise internal parameter in common block:
+      _BEGIN_MASTER( myThid )
+      DO iTracer = 1, PTRACERS_num
+        PTRACERS_StepFwd(iTracer) = .TRUE.
+        PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
+      ENDDO
+      _END_MASTER( myThid )
+      _BARRIER
 
 C     Loop over tracers
       DO iTracer = 1, PTRACERS_num
@@ -90,8 +100,8 @@ C     Now read initial conditions and always exchange
        DO iTracer = 1, PTRACERS_numInUse
         IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
          CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
-     &        pTracer(1-Olx,1-Oly,1,1,1,iTracer),0,myThid)
-         _EXCH_XYZ_RL(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+     &        pTracer(1-OLx,1-OLy,1,1,1,iTracer),0,myThid)
+         _EXCH_XYZ_RL(pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDIF
        ENDDO
       ENDIF

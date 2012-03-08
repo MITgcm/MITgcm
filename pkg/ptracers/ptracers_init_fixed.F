@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.8 2010/11/16 17:48:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.9 2012/03/08 17:06:36 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -22,7 +22,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_RESTART.h"
 #include "GAD.h"
 
 C     !INPUT PARAMETERS:
@@ -44,7 +43,6 @@ C     Initialise internal parameter in common block:
         PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
         PTRACERS_SOM_Advection(iTracer) = .FALSE.
         PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
-        PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
       ENDDO
 
 C--   Loop over tracers
@@ -102,7 +100,7 @@ C--   end of Tracer loop
 
 C--   Constrain on size of the overlap :
       IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
-C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
+C-    multi-dim-advection on CS-grid requires to double the size of OLx,OLy
         GAD_OlMinSize(3) = MAX( GAD_OlMinSize(3), 2 )
       ENDIF
       WRITE(msgBuf,'(2A,9I3)') 'PTRACERS_INIT_FIXED: ',
