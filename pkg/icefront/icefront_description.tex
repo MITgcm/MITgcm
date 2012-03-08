@@ -1,22 +1,28 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_description.tex,v 1.1 2010/01/20 23:33:45 dimitri Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_description.tex,v 1.2 2012/03/08 18:41:06 yunx Exp $
 %%  $Name:  $
 %%
 
 Package ``ICEFRONT'' is an extension of pkg/shelfice that deals with vertical
-ice fronts for application to Greenland glaciers.  It includes
+ice fronts for application to tidewater glaciers.
+(Xu et al., Numerical experiments on subaqueous melting of Greenland tidewater 
+ glaciers in response to ocean warming and enhanced subglacial discharge. 
+ Annals of Glaciology, 2012. http://ecco2.org/manuscripts/2012/Xu2012.pdf)
 
-1) a routine (similar to dwnslp_init_fixed.F) which locates 3 things:
-  a) horizontal locations of wet grid points adjacent to glacier calving faces
-  b) vertical location of points in a)
-  c) ratio of vertical face area to horizontal grid area for points in a)
+It includes
 
-2) a routine similar to shelfice_thermodynamics which applies the ice shelf
-   melt/freeze equations to locations detected in 1) above and which scales
-   them by 1c
+1) a routine (icefront_init_fixed.F), which loads two 2-D variables:
+  a) R_icefront: depth of the submerged vertical ice wall in or at the edge of 
+     each wet grid of points
+  b) icefrontlength: ratio of the horizontal length of vertical ice front to 
+     horizontal grid area for points in a)
 
-3) a routine similar to shelfice_forcing which applies the forcing computed
-   in 2) to locations computed in 1)
+2) a routine (icefront_thermodynamics.F) similar to shelfice_thermodynamics 
+   which applies the ice shelf melt/freeze equations to horizontal locations 
+   with vertical ice wall, i.e., containing non-zero values for 1a) and 1b). 
+
+3) a routine (icefront_tendency_apply.F) which applies the forcing computed
+   in 2) to grids of ice wall.
 
 The package can be used in conjunction with pkg/shelfice, if both the
 horizontal and vertical termini of glaciers need to be represented, or it can
@@ -28,22 +34,15 @@ Pkg/icefront is separated from pkg/shelfice because
 (i) rather than search 2D space for ice shelf cavities, the icefront package
 needs to search a 3D space for the ice fronts,
 
-(ii) probably best to save position of the ice fronts in vectors during
-initialization in the same way as is done in pkg/downslope,
+(ii) each grid box can have up to three separate contributions from ice
+fronts while ice shelf cavities only have one contribution from the top, and
 
-(iii) each grid box can have up to three separate contributions from ice
-fronts while ice shelf cavities only have one contribution from the top,
-
-(iv) shelfice_thermodynamics.F can be rewritten using the downslope
-formulation (and also shelfice_u_drag.F and shelfice_v_drag.F I think) but
-they would be radically different and harder to read than they are right now,
-
-(v) eventually the physics of the two packages may diverge to include
+(iii) eventually the physics of the two packages may diverge to include
 different processes, for example, a fancier boundary layer scheme for shelfice
-and a calving scheme for icefront, and
+and a calving scheme for icefront.
 
-(vi) it's less coding effort to separate the two packages.
-
-Pkg/icefront is mostly designed to represent Greenland glaciers in model
-configurations that can resolve the Greenland fjords and glacier outlets,
+Pkg/icefront is mostly designed to represent Greenland or Alaska tidewater 
+glaciers in model configurations that can resolve the fjords and glacier outlets,
 i.e., that have horizontal grid spacing of O(1km) or less.
+
+Verification experiment for pkg/icefront is verification/isomip/input.icefront/
