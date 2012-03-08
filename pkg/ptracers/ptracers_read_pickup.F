@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.14 2010/01/02 23:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.15 2012/03/08 17:05:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -22,7 +22,7 @@ C     !USES:
 #include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_RESTART.h"
+#include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
 
 C     !INPUT PARAMETERS:
@@ -73,14 +73,14 @@ C       Read variables from the pickup file
         DO iTracer = 1, PTRACERS_numInUse
           CALL MNC_CW_RL_R('D',fn,0,0, PTRACERS_names(iTracer),
      &         gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
-          CALL EXCH_3D_RL( gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
         ENDDO
         CALL MNC_CW_SET_UDIM(fn, 2, myThid)
         DO iTracer = 1, PTRACERS_numInUse
           CALL MNC_CW_RL_R('D',fn,0,0, PTRACERS_names(iTracer),
      &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
-          CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
         ENDDO
       ENDIF
@@ -167,9 +167,9 @@ C       Read fields as consecutive records
         DO iTracer = 1, PTRACERS_numInUse
           iRec = iTracer
           CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     O         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      I         iRec, myIter, myThid )
-          CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
         ENDDO
 
@@ -177,17 +177,17 @@ C       Read historical tendencies as consecutive records
 c       DO iTracer = 1,PTRACERS_numInUse
 c         iRec = iTracer + PTRACERS_num
 c         CALL READ_REC_3D_RL( fn, prec, Nr,
-c    O         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+c    O         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
 c    I         iRec, myIter, myThid )
-c         CALL EXCH_3D_RL( gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+c         CALL EXCH_3D_RL( gPtr(1-OLx,1-OLy,1,1,1,iTracer),
 c    &                     Nr, myThid )
 c       ENDDO
         DO iTracer = 1, PTRACERS_numInUse
           iRec = iTracer + PTRACERS_num*2
           CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     O         gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      I         iRec, myIter, myThid )
-          CALL EXCH_3D_RL( gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
         ENDDO
 
@@ -200,15 +200,15 @@ C       tracers, with write_pickup dumping all of them (PTRACERS_num).
         DO iTracer = 1, PTRACERS_numInUse
           iRec = 2*iTracer -1
           CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     O         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      I         iRec, myIter, myThid )
           iRec = 2*iTracer
           CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     O         gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      I         iRec, myIter, myThid )
-          CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
-          CALL EXCH_3D_RL( gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
         ENDDO
 
@@ -219,9 +219,9 @@ C---   New way to read ptracer pickup:
 C---    read pTracer 3-D fields for restart
           fldName = 'pTr'//PTRACERS_ioLabel(iTracer)//'   '
           CALL READ_MFLDS_3D_RL( fldName,
-     O                     pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     O                     pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &                     nj, prec, Nr, myIter, myThid )
-          CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
         ENDDO
         DO iTracer = 1, PTRACERS_numInUse
@@ -229,9 +229,9 @@ C---    read pTracer 3-D tendencies for AB-restart
          IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
           fldName = 'gPtr'//PTRACERS_ioLabel(iTracer)//'m1'
           CALL READ_MFLDS_3D_RL( fldName,
-     O                     gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     O                     gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &                     nj, prec, Nr, myIter, myThid )
-          CALL EXCH_3D_RL( gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+          CALL EXCH_3D_RL( gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &                     Nr, myThid )
          ENDIF
         ENDDO

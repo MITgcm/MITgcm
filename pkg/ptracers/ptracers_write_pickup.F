@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.12 2011/08/25 22:19:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.13 2012/03/08 17:05:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -23,7 +23,6 @@ C !USES: ===============================================================
 #include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_RESTART.h"
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -135,7 +134,7 @@ C     record number < 0 : a hack not to write meta files now:
         DO iTracer = 1, PTRACERS_numInUse
           j = j + 1
           CALL WRITE_REC_3D_RL( fn, prec, Nr,
-     &         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      &         -j, myIter, myThid )
           IF (j.LE.listDim)
      &      wrFldList(j) = 'pTr'//PTRACERS_ioLabel(iTracer)//'   '
@@ -146,7 +145,7 @@ C       Then write ptracer tendencies (if this tracer is using AB time-stepping)
          IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
           j = j + 1
           CALL WRITE_REC_3D_RL( fn, prec, Nr,
-     &         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     &         gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &         -j, myIter, myThid )
           IF (j.LE.listDim)
      &      wrFldList(j) = 'gPtr'//PTRACERS_ioLabel(iTracer)//'m1'

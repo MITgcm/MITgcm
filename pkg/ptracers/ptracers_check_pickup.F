@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check_pickup.F,v 1.2 2011/10/28 21:21:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check_pickup.F,v 1.3 2012/03/08 17:05:44 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -24,7 +24,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_RESTART.h"
+#include "PTRACERS_START.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     missFldList :: List of missing fields   (attempted to read but not found)
