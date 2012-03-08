@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.202 2012/03/06 15:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.203 2012/03/08 17:19:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -243,6 +243,13 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_PTRACERS
+C--   Switch on/off individual tracer time-stepping
+      IF ( usePTRACERS ) THEN
+        CALL PTRACERS_SWITCH_ONOFF( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_PTRACERS */
+
 C--   Switch on/off diagnostics for snap-shot output:
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -252,7 +259,7 @@ C--   State-variables diagnostics
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_NEST_CHILD
       IF ( useNEST_CHILD) THEN
