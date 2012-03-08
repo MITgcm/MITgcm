@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1612 2012/03/06 16:59:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1613 2012/03/08 17:29:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers:
+  - rename PTRACERS_RESTART.h -> PTRACERS_START.h
+  - rename ptracers_fields_blocking_exchanges.F -> ptracers_fields_blocking_exch.F
+  - add parameter to decide when to start a tracer; use internal flag to
+    know which tracer to step-forward; switch this internal flag at the top
+    of forward_step.F (new S/R PTRACERS_SWITCH_ONOFF); for now, not enabled
+    for adjoint built.
 o pkg/seaice:
   - add SEAICE_SIZE.h anywhere in the code where SEAICE.h is included ;
   - move MULTDIM declaration and setting from SEAICE.h to SEAICE_SIZE.h ;
