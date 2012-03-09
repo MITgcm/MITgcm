@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.70 2011/12/12 15:33:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.71 2012/03/09 20:13:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -10,7 +10,7 @@ C !ROUTINE: GAD_ADVECTION
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_ADVECTION(
      I     implicitAdvection, advectionScheme, vertAdvecScheme,
-     I     tracerIdentity, deltaTLev,
+     I     trIdentity, deltaTLev,
      I     uVel, vVel, wVel, tracer,
      O     gTracer,
      I     bi,bj, myTime,myIter,myThid)
@@ -57,7 +57,7 @@ C !INPUT PARAMETERS: ===================================================
 C  implicitAdvection :: implicit vertical advection (later on)
 C  advectionScheme   :: advection scheme to use (Horizontal plane)
 C  vertAdvecScheme   :: advection scheme to use (vertical direction)
-C  tracerIdentity    :: tracer identifier (required only for OBCS)
+C  trIdentity        :: tracer identifier
 C  uVel              :: velocity, zonal component
 C  vVel              :: velocity, meridional component
 C  wVel              :: velocity, vertical component
@@ -68,12 +68,12 @@ C  myIter            :: iteration number
 C  myThid            :: thread number
       LOGICAL implicitAdvection
       INTEGER advectionScheme, vertAdvecScheme
-      INTEGER tracerIdentity
+      INTEGER trIdentity
       _RL deltaTLev(Nr)
-      _RL uVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL vVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL wVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER bi,bj
       _RL myTime
       INTEGER myIter
@@ -81,7 +81,7 @@ C  myThid            :: thread number
 
 C !OUTPUT PARAMETERS: ==================================================
 C  gTracer           :: tendency array
-      _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array for mask at W points
@@ -162,7 +162,7 @@ C-    Functions:
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = tracerIdentity
+          act0 = trIdentity
           max0 = maxpass
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -176,10 +176,10 @@ CEOP
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
-          IF (tracerIdentity.GT.maxpass) THEN
+          IF (trIdentity.GT.maxpass) THEN
            WRITE(msgBuf,'(A,2I3)')
-     &      'GAD_ADVECTION: maxpass < tracerIdentity ',
-     &      maxpass, tracerIdentity
+     &      'GAD_ADVECTION: maxpass < trIdentity ',
+     &      maxpass, trIdentity
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R GAD_ADVECTION'
           ENDIF
@@ -191,7 +191,7 @@ C--   Set diagnostics flags and suffix for the current tracer
       doDiagAdvY = .FALSE.
       doDiagAdvR = .FALSE.
       IF ( useDiagnostics ) THEN
-        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
+        diagSufx = GAD_DIAG_SUFX( trIdentity, myThid )
         diagName = 'ADVx'//diagSufx
         doDiagAdvX = DIAGNOSTICS_IS_ON( diagName, myThid )
         diagName = 'ADVy'//diagSufx
@@ -277,7 +277,7 @@ C--   Residual transp = Bolus transp + Eulerian transp
 C--   Make local copy of tracer array and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-         localTij(i,j)=tracer(i,j,k,bi,bj)
+         localTij(i,j) = tracer(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
          maskLocW(i,j) = _maskW(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
          maskLocS(i,j) = _maskS(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
@@ -336,8 +336,8 @@ C-    not CubedSphere
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
 C-     Advective flux in X
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
@@ -373,9 +373,9 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
-     I                           deltaTLev(k),uTrans,uFld,localTij,
-     O                           af, myThid )
+          CALL GAD_DST2U1_ADV_X(    bi,bj,k, advectionScheme, .TRUE.,
+     I                              deltaTLev(k),uTrans,uFld,localTij,
+     O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
@@ -398,6 +398,15 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
         ENDIF
 
+#ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
+C-      replace advective flux with 1st order upwind scheme estimate
+          CALL OBCS_U1_ADV_TRACER( .TRUE., trIdentity, bi, bj, k,
+     I                             maskLocW, uTrans, localTij,
+     U                             af, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
+
 C-     Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
@@ -412,15 +421,15 @@ C      use "maksInC" to prevent updating tracer field in OB regions
 
 C      update in overlap-Only
        IF ( overlapOnly ) THEN
-        iMinUpd = 1-Olx+1
-        iMaxUpd = sNx+Olx-1
+        iMinUpd = 1-OLx+1
+        iMaxUpd = sNx+OLx-1
 C- notes: these 2 lines below have no real effect (because recip_hFac=0
 C         in corner region) but safer to keep them.
         IF ( W_edge ) iMinUpd = 1
         IF ( E_edge ) iMaxUpd = sNx
 
         IF ( S_edge ) THEN
-         DO j=1-Oly,0
+         DO j=1-OLy,0
           DO i=iMinUpd,iMaxUpd
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
@@ -433,7 +442,7 @@ C         in corner region) but safer to keep them.
          ENDDO
         ENDIF
         IF ( N_edge ) THEN
-         DO j=sNy+1,sNy+Oly
+         DO j=sNy+1,sNy+OLy
           DO i=iMinUpd,iMaxUpd
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
@@ -448,12 +457,12 @@ C         in corner region) but safer to keep them.
 
        ELSE
 C      do not only update the overlap
-        jMinUpd = 1-Oly
-        jMaxUpd = sNy+Oly
+        jMinUpd = 1-OLy
+        jMaxUpd = sNy+OLy
         IF ( interiorOnly .AND. S_edge ) jMinUpd = 1
         IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
         DO j=jMinUpd,jMaxUpd
-         DO i=1-Olx+1,sNx+Olx-1
+         DO i=1-OLx+1,sNx+OLx-1
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -464,8 +473,8 @@ C      do not only update the overlap
          ENDDO
         ENDDO
 C-      keep advective flux (for diagnostics)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           afx(i,j) = af(i,j)
          ENDDO
         ENDDO
@@ -480,8 +489,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
 cph-test
 C-     Advective flux in Y
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
@@ -509,8 +518,8 @@ C-     Internal exchange for calculations in Y
         ENDIF
 
 C-     Advective flux in Y
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
@@ -524,9 +533,9 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
-     I                           deltaTLev(k),vTrans,vFld,localTij,
-     O                           af, myThid )
+          CALL GAD_DST2U1_ADV_Y(    bi,bj,k, advectionScheme, .TRUE.,
+     I                              deltaTLev(k),vTrans,vFld,localTij,
+     O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
@@ -549,6 +558,15 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
         ENDIF
 
+#ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
+C-      replace advective flux with 1st order upwind scheme estimate
+          CALL OBCS_U1_ADV_TRACER( .FALSE., trIdentity, bi, bj, k,
+     I                             maskLocS, vTrans, localTij,
+     U                             af, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
+
 C-     Internal exchange for next calculations in X
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
@@ -563,8 +581,8 @@ C      use "maksInC" to prevent updating tracer field in OB regions
 
 C      update in overlap-Only
        IF ( overlapOnly ) THEN
-        jMinUpd = 1-Oly+1
-        jMaxUpd = sNy+Oly-1
+        jMinUpd = 1-OLy+1
+        jMaxUpd = sNy+OLy-1
 C- notes: these 2 lines below have no real effect (because recip_hFac=0
 C         in corner region) but safer to keep them.
         IF ( S_edge ) jMinUpd = 1
@@ -572,7 +590,7 @@ C         in corner region) but safer to keep them.
 
         IF ( W_edge ) THEN
          DO j=jMinUpd,jMaxUpd
-          DO i=1-Olx,0
+          DO i=1-OLx,0
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -585,7 +603,7 @@ C         in corner region) but safer to keep them.
         ENDIF
         IF ( E_edge ) THEN
          DO j=jMinUpd,jMaxUpd
-          DO i=sNx+1,sNx+Olx
+          DO i=sNx+1,sNx+OLx
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -599,11 +617,11 @@ C         in corner region) but safer to keep them.
 
        ELSE
 C      do not only update the overlap
-        iMinUpd = 1-Olx
-        iMaxUpd = sNx+Olx
+        iMinUpd = 1-OLx
+        iMaxUpd = sNx+OLx
         IF ( interiorOnly .AND. W_edge ) iMinUpd = 1
         IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
-        DO j=1-Oly+1,sNy+Oly-1
+        DO j=1-OLy+1,sNy+OLy-1
          DO i=iMinUpd,iMaxUpd
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
@@ -615,8 +633,8 @@ C      do not only update the overlap
          ENDDO
         ENDDO
 C-      keep advective flux (for diagnostics)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           afy(i,j) = af(i,j)
          ENDDO
         ENDDO
@@ -632,17 +650,17 @@ C--   End of ipass loop
 
       IF ( implicitAdvection ) THEN
 C-    explicit advection is done ; store tendency in gTracer:
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           gTracer(i,j,k,bi,bj)=
      &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
          ENDDO
         ENDDO
       ELSE
 C-    horizontal advection done; store intermediate result in 3D array:
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          localTijk(i,j,k)=localTij(i,j)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          localTijk(i,j,k) = localTij(i,j)
          ENDDO
         ENDDO
       ENDIF
@@ -650,17 +668,17 @@ C-    horizontal advection done; store intermediate result in 3D array:
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagAdvX ) THEN
           diagName = 'ADVx'//diagSufx
-          CALL DIAGNOSTICS_FILL(afx,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( afx, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
         IF ( doDiagAdvY ) THEN
           diagName = 'ADVy'//diagSufx
-          CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( afy, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #endif
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevC
-     &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
+     &   .AND. trIdentity.EQ.GAD_TEMPERATURE
      &   .AND. k.LE.3 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
      &   .AND. useCubedSphereExchange ) THEN
@@ -699,7 +717,7 @@ C-- Compute Vertical transport
 #ifdef ALLOW_AIM
 C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
         IF ( k.EQ.1 .OR.
-     &     (useAIM .AND. tracerIdentity.EQ.GAD_SALINITY .AND. k.EQ.Nr)
+     &     (useAIM .AND. trIdentity.EQ.GAD_SALINITY .AND. k.EQ.Nr)
      &              ) THEN
 #else
         IF ( k.EQ.1 ) THEN
@@ -711,8 +729,8 @@ cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Surface interface :
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            rTransKp1(i,j) = kp1Msk*rTrans(i,j)
            wFld(i,j)   = 0.
            rTrans(i,j) = 0.
@@ -728,8 +746,8 @@ cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Interior interface :
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            rTransKp1(i,j) = kp1Msk*rTrans(i,j)
            wFld(i,j)   = wVel(i,j,k,bi,bj)
            rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
@@ -757,26 +775,26 @@ cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 C-    Compute vertical advective flux in the interior:
          IF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &      .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
-           CALL GAD_DST2U1_ADV_R( bi,bj,k, advectionScheme,
-     I                            deltaTLev(k),rTrans,wFld,localTijk,
-     O                            fVerT(1-Olx,1-Oly,kUp), myThid )
+           CALL GAD_DST2U1_ADV_R(    bi,bj,k, advectionScheme,
+     I                          deltaTLev(k),rTrans,wFld,localTijk,
+     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
-     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
            CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
-     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
-     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
          ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
-     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
 #endif
          ELSE
           STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
@@ -799,8 +817,8 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Divergence of vertical fluxes
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           localTij(i,j) = localTijk(i,j,k)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -816,8 +834,8 @@ C--   Divergence of vertical fluxes
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagAdvR ) THEN
           diagName = 'ADVr'//diagSufx
-          CALL DIAGNOSTICS_FILL( fVerT(1-Olx,1-Oly,kUp),
-     &                           diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( fVerT(1-OLx,1-OLy,kUp),
+     &                           diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #endif
 

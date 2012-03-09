@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.59 2011/12/12 15:33:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.60 2012/03/09 20:13:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE: ==========================================================
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKh, diffK4, KappaR, TracerN, TracAB,
-     I           deltaTLev, tracerIdentity,
+     I           deltaTLev, trIdentity,
      I           advectionScheme, vertAdvecScheme,
      I           calcAdvection, implicitAdvection, applyAB_onTracer,
      I           trUseGMRedi, trUseKPP,
@@ -73,7 +73,7 @@ C TracerN          :: tracer field @ time-step n (Note: only used
 C                     if applying AB on tracer field rather than on tendency gTr)
 C TracAB           :: current tracer field (@ time-step n if applying AB on gTr
 C                     or extrapolated fwd in time to n+1/2 if applying AB on Tr)
-C tracerIdentity   :: tracer identifier (required for KPP,GM)
+C trIdentity       :: tracer identifier (required for KPP,GM)
 C advectionScheme  :: advection scheme to use (Horizontal plane)
 C vertAdvecScheme  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
@@ -101,7 +101,7 @@ C myThid           :: thread number
       _RL TracerN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL deltaTLev(Nr)
-      INTEGER tracerIdentity
+      INTEGER trIdentity
       INTEGER advectionScheme, vertAdvecScheme
       LOGICAL calcAdvection
       LOGICAL implicitAdvection, applyAB_onTracer
@@ -115,6 +115,12 @@ C fVerT            :: 2 1/2D arrays for vertical advective flux
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
 
+C !FUNCTIONS:       ====================================================
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+#endif /* ALLOW_DIAGNOSTICS */
+
 C !LOCAL VARIABLES: ====================================================
 C i,j              :: loop indices
 C df4              :: used for storing del^2 T for bi-harmonic term
@@ -124,11 +130,6 @@ C af               :: advective flux
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
 C locABT           :: local copy of (AB-extrapolated) tracer field
-#ifdef ALLOW_DIAGNOSTICS
-      CHARACTER*8 diagName
-      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
-      EXTERNAL    GAD_DIAG_SUFX
-#endif
       INTEGER i,j
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -143,6 +144,10 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
 #ifdef GAD_SMOLARKIEWICZ_HACK
       _RL outFlux, trac, fac, gTrFac
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*8 diagName
+      CHARACTER*4 diagSufx
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -154,7 +159,7 @@ C--   the kDown is still required
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostic suffix for the current tracer
       IF ( useDiagnostics ) THEN
-        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
+        diagSufx = GAD_DIAG_SUFX( trIdentity, myThid )
       ENDIF
 #endif
 
@@ -194,8 +199,8 @@ C--   Unless we have already calculated the advection terms we initialize
 C     the tendency to zero.
 C     <== now done earlier at the beginning of thermodynamics.
 c     IF (calcAdvection) THEN
-c      DO j=1-Oly,sNy+Oly
-c       DO i=1-Olx,sNx+Olx
+c      DO j=1-OLy,sNy+OLy
+c       DO i=1-OLx,sNx+OLx
 c        gTracer(i,j,k,bi,bj)=0. _d 0
 c       ENDDO
 c      ENDDO
@@ -209,8 +214,8 @@ C--   Pre-calculate del^2 T if bi-harmonic coefficient is non-zero
       ENDIF
 
 C--   Initialize net flux in X direction
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         fZon(i,j) = 0. _d 0
        ENDDO
       ENDDO
@@ -271,15 +276,24 @@ cph with limiters in forward, but without limiters in reverse.
           STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
          ENDIF
         ENDIF
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+#ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
+C-      replace advective flux with 1st order upwind scheme estimate
+          CALL OBCS_U1_ADV_TRACER( .TRUE., trIdentity, bi, bj, k,
+     I                             maskW(1-OLx,1-OLy,k,bi,bj),
+     I                             uTrans, locABT,
+     U                             af, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           fZon(i,j) = fZon(i,j) + af(i,j)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           diagName = 'ADVx'//diagSufx
-          CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( af, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #endif
       ENDIF
@@ -288,8 +302,8 @@ C-    Diffusive flux in X
       IF (diffKh.NE.0.) THEN
        CALL GAD_DIFF_X(bi,bj,k,xA,diffKh,localT,df,myThid)
       ELSE
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
@@ -307,21 +321,21 @@ C *note* should update GMREDI_XTRANSPORT to set df  *aja*
         IF ( applyAB_onTracer ) THEN
           CALL GMREDI_XTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         xA,TracerN,tracerIdentity,
+     I         xA,TracerN,trIdentity,
      U         df,
      I         myThid)
         ELSE
           CALL GMREDI_XTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         xA,TracAB, tracerIdentity,
+     I         xA,TracAB, trIdentity,
      U         df,
      I         myThid)
         ENDIF
       ENDIF
 #endif
 C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         fZon(i,j) = fZon(i,j) + df(i,j)*rhoFacC(k)
        ENDDO
       ENDDO
@@ -332,13 +346,13 @@ C       excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. trUseGMRedi) ) THEN
           diagName = 'DFxE'//diagSufx
-          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
       ENDIF
 #endif
 
 C--   Initialize net flux in Y direction
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         fMer(i,j) = 0. _d 0
        ENDDO
       ENDDO
@@ -399,15 +413,24 @@ cph with limiters in forward, but without limiters in reverse.
            STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
          ENDIF
         ENDIF
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+#ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
+C-      replace advective flux with 1st order upwind scheme estimate
+          CALL OBCS_U1_ADV_TRACER( .FALSE., trIdentity, bi, bj, k,
+     I                             maskS(1-OLx,1-OLy,k,bi,bj),
+     I                             vTrans, locABT,
+     U                             af, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           fMer(i,j) = fMer(i,j) + af(i,j)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           diagName = 'ADVy'//diagSufx
-          CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( af, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #endif
       ENDIF
@@ -416,8 +439,8 @@ C-    Diffusive flux in Y
       IF (diffKh.NE.0.) THEN
        CALL GAD_DIFF_Y(bi,bj,k,yA,diffKh,localT,df,myThid)
       ELSE
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
@@ -435,21 +458,21 @@ C *note* should update GMREDI_YTRANSPORT to set df  *aja*
         IF ( applyAB_onTracer ) THEN
           CALL GMREDI_YTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         yA,TracerN,tracerIdentity,
+     I         yA,TracerN,trIdentity,
      U         df,
      I         myThid)
         ELSE
           CALL GMREDI_YTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         yA,TracAB, tracerIdentity,
+     I         yA,TracAB, trIdentity,
      U         df,
      I         myThid)
         ENDIF
       ENDIF
 #endif
 C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         fMer(i,j) = fMer(i,j) + df(i,j)*rhoFacC(k)
        ENDDO
       ENDDO
@@ -460,7 +483,7 @@ C       excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. trUseGMRedi) ) THEN
           diagName = 'DFyE'//diagSufx
-          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
       ENDIF
 #endif
 
@@ -469,63 +492,63 @@ C-    Advective flux in R
 #ifdef ALLOW_AIM
 C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
       IF (calcAdvection .AND. .NOT.implicitAdvection .AND. k.GE.2 .AND.
-     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.k.LT.Nr)
+     &     (.NOT.useAIM .OR. trIdentity.NE.GAD_SALINITY .OR. k.LT.Nr)
      &   ) THEN
 #else
       IF (calcAdvection .AND. .NOT.implicitAdvection .AND. k.GE.2) THEN
 #endif
 C-    Compute vertical advective flux in the interior:
         IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
-          CALL GAD_C2_ADV_R(bi,bj,k,rTrans,TracAB,af,myThid)
+           CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_R( bi,bj,k, vertAdvecScheme,
-     I         deltaTLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
-     O         af, myThid )
+           CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
+     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k,
-     I         deltaTLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
-     O         af, myThid )
+           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
-          CALL GAD_U3_ADV_R(bi,bj,k,rTrans,TracAB,af,myThid)
+           CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
-          CALL GAD_C4_ADV_R(bi,bj,k,rTrans,TracAB,af,myThid)
+           CALL GAD_C4_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_R( bi,bj,k,
-     I         deltaTLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
-     O         af, myThid )
+           CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
 cph This block is to trick the adjoint:
 cph IF inAdExact=.FALSE., we want to use DST3
 cph with limiters in forward, but without limiters in reverse.
           IF ( inAdMode ) THEN
-           CALL GAD_DST3_ADV_R( bi,bj,k,
-     I         deltaTLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
-     O         af, myThid )
+           CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
           ELSE
-           CALL GAD_DST3FL_ADV_R( bi,bj,k,
-     I         deltaTLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
-     O         af, myThid )
+           CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
           ENDIF
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
-           CALL GAD_OS7MP_ADV_R( bi,bj,k,
-     I         deltaTLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
-     O         af, myThid )
+           CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
 #endif
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
         ENDIF
 C-     add the advective flux to fVerT
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)*maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           diagName = 'ADVr'//diagSufx
-          CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( af, diagName, k,1, 2,bi,bj, myThid )
 C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
           IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
@@ -537,8 +560,8 @@ C-    Diffusive flux in R
 C     Note: For K=1 then KM1=1 and this gives a dT/dr = 0 upper
 C           boundary condition.
       IF (implicitDiffusion) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
@@ -557,21 +580,21 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
         IF ( applyAB_onTracer ) THEN
           CALL GMREDI_RTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         TracerN,tracerIdentity,
+     I         TracerN,trIdentity,
      U         df,
      I         myThid)
         ELSE
           CALL GMREDI_RTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         TracAB, tracerIdentity,
+     I         TracAB, trIdentity,
      U         df,
      I         myThid)
         ENDIF
       ENDIF
 #endif
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
        ENDDO
       ENDDO
@@ -582,43 +605,43 @@ C       Explicit terms only & excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (.NOT.implicitDiffusion .OR. trUseGMRedi) ) THEN
           diagName = 'DFrE'//diagSufx
-          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_KPP
 C-    Set non local KPP transport term (ghat):
       IF ( trUseKPP .AND. k.GE.2 ) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
-       IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
+       IF (trIdentity.EQ.GAD_TEMPERATURE) THEN
         CALL KPP_TRANSPORT_T(
      I           iMin,iMax,jMin,jMax,bi,bj,k,km1,
      O           df,
      I           myTime, myIter, myThid )
-       ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
+       ELSEIF (trIdentity.EQ.GAD_SALINITY) THEN
         CALL KPP_TRANSPORT_S(
      I           iMin,iMax,jMin,jMax,bi,bj,k,km1,
      O           df,
      I           myTime, myIter, myThid )
 #ifdef ALLOW_PTRACERS
-       ELSEIF (tracerIdentity .GE. GAD_TR1) THEN
+       ELSEIF (trIdentity .GE. GAD_TR1) THEN
         CALL KPP_TRANSPORT_PTR(
      I           iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I           tracerIdentity-GAD_TR1+1,
+     I           trIdentity-GAD_TR1+1,
      O           df,
      I           myTime, myIter, myThid )
 #endif
        ELSE
         WRITE(errorMessageUnit,*)
-     &    'tracer identity =', tracerIdentity, ' is not valid => STOP'
+     &    'tracer identity =', trIdentity, ' is not valid => STOP'
         STOP 'ABNORMAL END: S/R GAD_CALC_RHS: invalid tracer identity'
        ENDIF
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          fVerT(i,j,kUp) = fVerT(i,j,kUp)
      &                  + df(i,j)*maskUp(i,j)*rhoFacF(k)
         ENDDO
@@ -642,10 +665,10 @@ coj   (see Smolarkiewicz MWR 1989 and Bott MWR 1989).
 coj   Only works if 'down' is k+1 and k loop in thermodynamics is k=Nr,1,-1
 coj
 coj   Apply to all tracers except temperature
-      IF (tracerIdentity.NE.GAD_TEMPERATURE .AND.
-     &    tracerIdentity.NE.GAD_SALINITY) THEN
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+      IF ( trIdentity.NE.GAD_TEMPERATURE .AND.
+     &     trIdentity.NE.GAD_SALINITY ) THEN
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
 coj   Add outgoing fluxes
          outFlux=deltaTLev(k)*
      &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -717,8 +740,8 @@ coj   ... and reapply
 C--   Divergence of fluxes
 C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unchanged
 C     for Stevens OBC: keep only vertical diffusive contribution on boundaries
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx-1
         gTracer(i,j,k,bi,bj)=gTracer(i,j,k,bi,bj)
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -735,7 +758,7 @@ C     for Stevens OBC: keep only vertical diffusive contribution on boundaries
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevC
-     &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
+     &   .AND. trIdentity.EQ.GAD_TEMPERATURE
      &   .AND. k.EQ.2 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
      &   .AND. useCubedSphereExchange ) THEN
