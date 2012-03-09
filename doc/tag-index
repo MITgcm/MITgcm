@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1613 2012/03/08 17:29:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1614 2012/03/09 20:16:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - allow to switch to upwind 1rst order advection scheme for the advective
+    flux computation at the open-boundary; disabled for adjoint built.
 o pkg/ptracers:
   - rename PTRACERS_RESTART.h -> PTRACERS_START.h
   - rename ptracers_fields_blocking_exchanges.F -> ptracers_fields_blocking_exch.F
