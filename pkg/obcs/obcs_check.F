@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.25 2011/10/28 21:28:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.26 2012/03/09 20:13:03 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -59,6 +59,8 @@ C--   Print OBCS set-up summary:
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: start summary:'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
+      CALL WRITE_0D_L( useOBCSprescribe, INDEX_NONE,
+     &   'useOBCSprescribe =', ' /* prescribe OB values */')
       CALL WRITE_0D_L( useOBCSbalance, INDEX_NONE,
      &   'useOBCSbalance =', ' /* balance the flow through OB */')
       IF ( useOBCSbalance ) THEN
@@ -78,6 +80,10 @@ C--   Print OBCS set-up summary:
       CALL WRITE_0D_RL( OBCS_uvApplyFac, INDEX_NONE,
      &   'OBCS_uvApplyFac =',
      &   ' /* Factor to apply to U,V 2nd column/row */')
+      CALL WRITE_0D_I( OBCS_u1_adv_T, INDEX_NONE,
+     &   'OBCS_u1_adv_T =', ' /* Temp uses upwind adv-scheme @ OB */')
+      CALL WRITE_0D_I( OBCS_u1_adv_S, INDEX_NONE,
+     &   'OBCS_u1_adv_S =', ' /* Salt uses upwind adv-scheme @ OB */')
       CALL WRITE_0D_RL( OBCS_monitorFreq, INDEX_NONE,
      &   'OBCS_monitorFreq =', ' /* monitor output frequency [s] */')
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',
@@ -97,19 +103,19 @@ C--   Print OBCS set-up summary:
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(A)') ' OB_Jn = /* Northern OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         CALL PRINT_LIST_I( OB_Jn(1-Olx,bi,bj), 1-Olx, sNx+Olx, INDEX_I,
+         CALL PRINT_LIST_I( OB_Jn(1-OLx,bi,bj), 1-OLx, sNx+OLx, INDEX_I,
      &                     .FALSE., .TRUE., ioUnit )
          WRITE(msgBuf,'(A)') ' OB_Js = /* Southern OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         CALL PRINT_LIST_I( OB_Js(1-Olx,bi,bj), 1-Olx, sNx+Olx, INDEX_I,
+         CALL PRINT_LIST_I( OB_Js(1-OLx,bi,bj), 1-OLx, sNx+OLx, INDEX_I,
      &                     .FALSE., .TRUE., ioUnit )
          WRITE(msgBuf,'(A)') ' OB_Ie = /* Eastern OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         CALL PRINT_LIST_I( OB_Ie(1-Oly,bi,bj), 1-Oly, sNy+Oly, INDEX_J,
+         CALL PRINT_LIST_I( OB_Ie(1-OLy,bi,bj), 1-OLy, sNy+OLy, INDEX_J,
      &                     .FALSE., .TRUE., ioUnit )
          WRITE(msgBuf,'(A)') ' OB_Iw = /* Western OB local indices */'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         CALL PRINT_LIST_I( OB_Iw(1-Oly,bi,bj), 1-Oly, sNy+Oly, INDEX_J,
+         CALL PRINT_LIST_I( OB_Iw(1-OLy,bi,bj), 1-OLy, sNy+OLy, INDEX_J,
      &                     .FALSE., .TRUE., ioUnit )
         ENDDO
        ENDDO

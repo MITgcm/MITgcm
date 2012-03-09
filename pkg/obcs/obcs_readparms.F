@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.37 2012/01/20 01:26:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.38 2012/03/09 20:13:03 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -126,6 +126,7 @@ C     retired parameters
      &          useOrlanskiEast,useOrlanskiWest,
      &          useStevensNorth,useStevensSouth,
      &          useStevensEast,useStevensWest,
+     &          OBCS_u1_adv_T, OBCS_u1_adv_S,
      &          OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &          OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
@@ -137,6 +138,7 @@ C     retired parameters
      &          OBNetaFile, OBSetaFile, OBEetaFile, OBWetaFile,
      &          OBNwFile, OBSwFile, OBEwFile, OBWwFile,
 #ifdef ALLOW_PTRACERS
+     &          OBCS_u1_adv_Tr,
      &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
 #endif
      &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
@@ -204,6 +206,8 @@ C--   Default flags and values for OBCS
       OBCS_balanceFacS   = 1. _d 0
       OBCS_balanceFacE   = 1. _d 0
       OBCS_balanceFacW   = 1. _d 0
+      OBCS_u1_adv_T      = 0
+      OBCS_u1_adv_S      = 0
       useOBCSprescribe   =.FALSE.
       OBCSfixTopo        =.FALSE.
       OBCS_uvApplyFac    = 1. _d 0
@@ -261,6 +265,7 @@ C--   Default flags and values for OBCS
       OBWwFile = ' '
 #ifdef ALLOW_PTRACERS
       DO iTracer = 1, PTRACERS_num
+       OBCS_u1_adv_Tr(iTracer) = 0
        OBNptrFile(iTracer) = ' '
        OBSptrFile(iTracer) = ' '
        OBEptrFile(iTracer) = ' '
@@ -298,7 +303,7 @@ C-    retired parameter
 #ifdef ALLOW_ORLANSKI
 C     Default Orlanski radiation parameters
       CMAX = 0.45 _d 0 /* maximum allowable phase speed-CFL for AB-II */
-      cvelTimeScale = 2000.0 _d 0 /* Averaging period for phase speed in sec. */
+      cvelTimeScale = 2000.0 _d 0 /* Averaging period for phase speed (s) */
       CFIX = 0.8 _d 0 /* Fixed boundary phase speed in m/s */
       useFixedCEast=.FALSE.
       useFixedCWest=.FALSE.
