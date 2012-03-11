@@ -1,13 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.5 2011/10/24 16:11:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.6 2012/03/11 22:55:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CMLC o Switch to code that has the k-loop inside the 
 CMLC   ij-loops, which matters in adjoint mode.
-CML#ifdef ALLOW_AUTODIFF 
-CML#define ALLOW_SOLVERS_KLOOPINSIDE
-CML#endif
+#ifdef ALLOW_AUTODIFF 
+# define SOLVE_DIAGONAL_AUTODIFF
+# undef SOLVE_DIAGONAL_KINNER
+#endif
 
 CBOP
 C     !ROUTINE: SOLVE_TRIDIAGONAL
@@ -52,106 +53,63 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
       _RL tmpvar
-#ifndef ALLOW_SOLVERS_KLOOPINSIDE
-      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
-C     This field is required for efficient adjoint vector code
-C     The extra storage that is involved is avoided in the case
-C     of forward simulations at the cost of even uglier code.
-      _RL y3dloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-# endif 
-#else
-      _RL c3d_prime(Nr), y3d_prime(Nr),y3d_update(Nr)
+#ifdef SOLVE_DIAGONAL_AUTODIFF
       _RL c3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL y3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-#endif
+# ifdef SOLVE_DIAGONAL_KINNER
+      _RL c3d_prime(Nr)
+      _RL y3d_prime(Nr)
+      _RL y3d_update(Nr)
+# else
+      _RL c3d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL y3d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL y3d_update(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+# endif
+#else /* SOLVE_DIAGONAL_AUTODIFF */
+      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+#endif /* SOLVE_DIAGONAL_AUTODIFF */
 CEOP
-
-#ifndef ALLOW_SOLVERS_KLOOPINSIDE      
 
       errCode = 0
 
-# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
-      DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         y3dloc(i,j,k)       = y3d(i,j,k,bi,bj)
-         y3d   (i,j,k,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX */
+#ifndef SOLVE_DIAGONAL_AUTODIFF
+
 C--   Beginning of forward sweep (top level)
-# ifdef TARGET_NEC_SX
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-# else
       DO j=jMin,jMax
        DO i=iMin,iMax
-# endif 
          IF ( b3d(i,j,1).NE.0. _d 0 ) THEN 
            bet(i,j,1) = 1. _d 0 / b3d(i,j,1)
          ELSE
            bet(i,j,1) = 0. _d 0
-# ifndef TARGET_NEC_SX
-C     keep your fingers crossed and enjoy the better performance
            errCode = 1
-# endif
          ENDIF
        ENDDO
       ENDDO
 
 C--   Middle of forward sweep
-CADJ loop = sequential
       DO k=2,Nr
-# ifdef TARGET_NEC_SX
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-# else
        DO j=jMin,jMax
         DO i=iMin,iMax
-# endif
          tmpvar = b3d(i,j,k) - a3d(i,j,k)*c3d(i,j,k-1)*bet(i,j,k-1)
          IF ( tmpvar .NE. 0. _d 0 ) THEN
            bet(i,j,k) = 1. _d 0 / tmpvar
          ELSE
            bet(i,j,k) = 0. _d 0
-# ifndef TARGET_NEC_SX
-C     keep your fingers crossed and enjoy the better performance
            errCode = 1
-# endif
          ENDIF
         ENDDO
        ENDDO
       ENDDO
 
-# ifdef TARGET_NEC_SX
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-# else
       DO j=jMin,jMax
        DO i=iMin,iMax
-# endif
-# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
-         y3d(i,j,1,bi,bj) = y3dloc(i,j,1)*bet(i,j,1)
-# else
          y3d(i,j,1,bi,bj) = y3d(i,j,1,bi,bj)*bet(i,j,1)
-# endif 
        ENDDO
       ENDDO
       DO k=2,Nr
-# ifdef TARGET_NEC_SX
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-# else
        DO j=jMin,jMax
         DO i=iMin,iMax
-# endif
-# if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
-         y3d(i,j,k,bi,bj) = ( y3dloc(i,j,k) 
-# else
          y3d(i,j,k,bi,bj) = ( y3d(i,j,k,bi,bj) 
-# endif
      &                      - a3d(i,j,k)*y3d(i,j,k-1,bi,bj)
      &                      )*bet(i,j,k) 
         ENDDO
@@ -161,45 +119,40 @@ C     keep your fingers crossed and enjoy the better performance
 C--    Backward sweep
 CADJ loop = sequential
       DO k=Nr-1,1,-1
-# ifdef TARGET_NEC_SX
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-# else
        DO j=jMin,jMax
         DO i=iMin,iMax
-# endif
           y3d(i,j,k,bi,bj) = y3d(i,j,k,bi,bj)
      &         - c3d(i,j,k)*bet(i,j,k)*y3d(i,j,k+1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
 
-#else  /* ALLOW_SOLVERS_KLOOPINSIDE */
-
-      errCode = 0
+#else /* def SOLVE_DIAGONAL_AUTODIFF */
 
 C--   Temporary array
       DO j=jMin,jMax
-      DO i=iMin,iMax
-      DO k=1,Nr
+       DO i=iMin,iMax
+        DO k=1,Nr
          c3d_m1(i,j,k) = c3d(i,j,k)
          y3d_m1(i,j,k) = y3d(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
       ENDDO
-      ENDDO
-      ENDDO
+
+#ifdef SOLVE_DIAGONAL_KINNER      
 
 C--   Main loop
       DO j=jMin,jMax
-      DO i=iMin,iMax
+       DO i=iMin,iMax
 
-      DO k=1,Nr
-        c3d_prime(k) = 0. _d 0
-        y3d_prime(k) = 0. _d 0
-        y3d_update(k) = 0. _d 0
-      ENDDO
+        DO k=1,Nr
+         c3d_prime(k) = 0. _d 0
+         y3d_prime(k) = 0. _d 0
+         y3d_update(k) = 0. _d 0
+        ENDDO
 
 C--   Forward sweep
-      DO k=1,Nr
+        DO k=1,Nr
          IF ( k.EQ.1 ) THEN
            IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
              c3d_prime(1) = c3d_m1(i,j,1) / b3d(i,j,1)
@@ -221,26 +174,100 @@ C--   Forward sweep
              errCode = 1
            ENDIF
          ENDIF
-      ENDDO
+        ENDDO
 
 C--   Backward sweep
-      DO k=Nr,1,-1
+        DO k=Nr,1,-1
          IF ( k.EQ.Nr ) THEN
           y3d_update(k)=y3d_prime(k)
          ELSE
           y3d_update(k)=y3d_prime(k)-c3d_prime(k)*y3d_update(k+1)
          ENDIF
+        ENDDO
+
+C--   Update array
+        DO k=1,Nr
+         y3d(i,j,k,bi,bj)=y3d_update(k)
+        ENDDO
+
+       ENDDO
+      ENDDO
+
+#else  /* ndef SOLVE_DIAGONAL_KINNER */
+
+C--   Init.
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         c3d_prime(i,j,k) = 0. _d 0
+         y3d_prime(i,j,k) = 0. _d 0
+         y3d_update(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+
+CADJ loop = sequential
+C--   Forward sweep
+      DO k=1,Nr
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( k.EQ.1 ) THEN
+           IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
+             c3d_prime(i,j,1) = c3d_m1(i,j,1) / b3d(i,j,1)
+             y3d_prime(i,j,1) = y3d_m1(i,j,1) / b3d(i,j,1)
+           ELSE
+             c3d_prime(i,j,1) = 0. _d 0
+             y3d_prime(i,j,1) = 0. _d 0
+             errCode = 1
+           ENDIF
+         ELSE
+           tmpvar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(i,j,k-1)
+           IF ( tmpvar .NE. 0. _d 0 ) THEN
+             c3d_prime(i,j,k) = c3d_m1(i,j,k) / tmpvar
+             y3d_prime(i,j,k) = ( y3d_m1(i,j,k) 
+     &                            - y3d_prime(i,j,k-1)*a3d(i,j,k) )
+     &                          / tmpvar
+           ELSE
+             c3d_prime(i,j,k) = 0. _d 0
+             y3d_prime(i,j,k) = 0. _d 0
+             errCode = 1
+           ENDIF
+         ENDIF
+        ENDDO
+       ENDDO
+C-- k-loop
+      ENDDO
+
+CADJ loop = sequential
+C--   Backward sweep
+      DO k=Nr,1,-1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( k.EQ.Nr ) THEN
+          y3d_update(i,j,k)=y3d_prime(i,j,k)
+         ELSE
+          y3d_update(i,j,k)=y3d_prime(i,j,k)
+     &                      -c3d_prime(i,j,k)*y3d_update(i,j,k+1)
+         ENDIF
+        ENDDO
+       ENDDO
+C-- k-loop
       ENDDO
 
 C--   Update array
       DO k=1,Nr
-         y3d(i,j,k,bi,bj)=y3d_update(k)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         y3d(i,j,k,bi,bj)=y3d_update(i,j,k)
+        ENDDO
+       ENDDO
+C-- k-loop
       ENDDO
 
-      ENDDO
-      ENDDO
+#endif /* SOLVE_DIAGONAL_KINNER */
 
-#endif  /* ALLOW_SOLVERS_KLOOPINSIDE */
+#endif /* SOLVE_DIAGONAL_AUTODIFF */
 
       RETURN
       END
