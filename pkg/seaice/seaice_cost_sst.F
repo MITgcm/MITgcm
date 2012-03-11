@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sst.F,v 1.5 2010/03/23 18:50:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sst.F,v 1.6 2012/03/11 13:45:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,6 +113,11 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
+
+C- jmc: params SEAICE_freeze has been retired; set it locally until someone
+C       who knows what this cost-cointribution means fix it.
+      _RL SEAICE_freeze
+      SEAICE_freeze  = -1.96  _d 0
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
