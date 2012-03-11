@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1614 2012/03/09 20:16:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1615 2012/03/11 14:34:03 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - rename parameters: SIsalFrac to SEAICE_saltFrac & SIsal0 to SEAICE_salt0;
+  - remove old parameters ( SEAICE_freeze, SEAICEturbFluxFormula, SEAICE_gamma_t,
+     SEAICE_gamma_t_frz, SEAICE_availHeatTaper & SEAICE_availHeatFracFrz)
+    from SEAICE_PARMS.h ; still need to fix seaice_cost_sst.F (broken when
+    SEAICE_freeze got retired) but already better than previously with
+    SEAICE_freeze=123456.7 deg.C;
+  - move setting of facOpenGrow/Melt from SEAICE_INIT_FIXED to SEAICE_READPARMS
+    (safer multi-threaded setting); always set SEAICEuseEVP;
+  - setting of ocean-ice turb. flux coeff: moved from SEAICE_CHECK to
+    SEAICE_READPARMS & SEAICE_INIT_FIXED (this fixes wrong summary report);
+    stop if multiple specifications for the same coeff; make sure default
+    SEAICE_mcPheePiston is compatible with drF(1) & deltaT.
 o pkg/obcs:
   - allow to switch to upwind 1rst order advection scheme for the advective
     flux computation at the open-boundary; disabled for adjoint built.
