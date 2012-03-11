@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.48 2012/03/07 02:56:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.49 2012/03/11 13:43:46 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,11 +113,11 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
      & 'SEAICEuseDYNAMICS =', ' /* use dynamics */')
 
-      if (.NOT.SEAICEuseDYNAMICS) then
+      IF (.NOT.SEAICEuseDYNAMICS) THEN
       WRITE(msgBuf,'(A)') '   pkg/seaice dynamics is OFF  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
-      else
+      ELSE
 
 #ifdef SEAICE_CGRID
       CALL WRITE_0D_C( 'C-GRID', -1, INDEX_NONE,
@@ -166,7 +166,7 @@ C--  Seaice-Dynamics parameters
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
       CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,
      & 'SEAICE_maskRHS    =', ' /* mask RHS of solver */')
-      if (.NOT.SEAICEuseEVP) then
+      IF (.NOT.SEAICEuseEVP) THEN
        CALL WRITE_0D_I ( LSR_mixIniGuess, INDEX_NONE,
      & 'LSR_mixIniGuess =',
      & ' /* mix free-drift sol. into LSR initial Guess */')
@@ -179,7 +179,7 @@ C--  Seaice-Dynamics parameters
        CALL WRITE_0D_I ( NPSEUDOTIMESTEPS,  INDEX_NONE,
      & 'NPSEUDOTIMESTEPS  =', ' /* num. of extra pseudo time steps */')
 #ifdef SEAICE_ALLOW_EVP
-      else
+      ELSE
        CALL WRITE_0D_RL( SEAICE_elasticParm  ,INDEX_NONE,
      & 'SEAICE_elasticParm=', ' /* EVP elastic parameter */')
        CALL WRITE_0D_RL( SEAICE_evpTauRelax  ,INDEX_NONE,
@@ -189,9 +189,10 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEuseEVPpickup, INDEX_NONE,
      & 'SEAICEuseEVPpickup=', ' /* start EVP solver with EVP pickup*/')
 #endif /* SEAICE_ALLOW_EVP */
-      endif
+      ENDIF
 
-      endif
+C     end if SEAICEuseDYNAMICS bloc
+      ENDIF
 
 C--  Thermodynamics parameters
       WRITE(msgBuf,'(A)')
@@ -206,21 +207,22 @@ C--  Thermodynamics parameters
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
-
-      CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
-     & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
-      if (.NOT.usePW79thermodynamics) then
-      WRITE(msgBuf,'(A)') '   pkg/seaice thermodynamics is OFF  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      else
-
+C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
       CALL WRITE_0D_RL( SEAICE_rhoIce     ,INDEX_NONE,
      & 'SEAICE_rhoIce     =', ' /* density of sea ice (kg/m3) */')
       CALL WRITE_0D_RL( SEAICE_rhoSnow     ,INDEX_NONE,
      & 'SEAICE_rhoSnow    =', ' /* density of snow (kg/m3) */')
       CALL WRITE_0D_RL( SEAICE_rhoAir     ,INDEX_NONE,
      & 'SEAICE_rhoAir     =', ' /* density of air (kg/m3) */')
+
+      CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
+     & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
+      IF (.NOT.usePW79thermodynamics) THEN
+      WRITE(msgBuf,'(A)') '   pkg/seaice thermodynamics is OFF  '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      ELSE
+
       CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
      & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')
       CALL WRITE_0D_RL( SEAICE_lhFusion   ,INDEX_NONE,
@@ -276,18 +278,19 @@ c
       CALL WRITE_0D_RL( HO_south          ,INDEX_NONE,
      & 'HO_south               =', ' /* Southern Ocean HO */')
       CALL WRITE_0D_RL( SEAICE_area_max          ,INDEX_NONE,
-     & 'SEAICE_area_max        =', 
+     & 'SEAICE_area_max        =',
      & ' /* set to les than 1. to mimic open leads */')
 #ifdef SEAICE_VARIABLE_SALINITY
       WRITE(msgBuf,'(A)')
      &'   Sea ice has a variable salinity such that '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
-      CALL WRITE_0D_RL( SIsalFrac,   INDEX_NONE,
-     & 'SIsalFrac   =', ' /* fraction of ocn salinity in new ice */')
+      CALL WRITE_0D_RL( SEAICE_saltFrac, INDEX_NONE,
+     & 'SEAICE_saltFrac =',
+     & ' /* fraction of ocn salinity in new ice */')
 #else
-      CALL WRITE_0D_RL( SIsal0,   INDEX_NONE,
-     & 'SIsal0   =', ' /* constant sea ice salinity */')
+      CALL WRITE_0D_RL( SEAICE_salt0,   INDEX_NONE,
+     & 'SEAICE_salt0   =', ' /* constant sea ice salinity */')
 #endif
       CALL WRITE_0D_L ( SEAICE_salinityTracer,   INDEX_NONE,
      & 'SEAICE_salinityTracer =', ' /* test SITR varia. salinity */')
@@ -431,9 +434,8 @@ c
       CALL WRITE_0D_RL( MIN_TICE          ,INDEX_NONE,
      & 'MIN_TICE          =', ' /* minimum ice temperature */')
 
-C endif usePW79thermodynamics
-      endif
-
+C     end if usePW79thermodynamics bloc
+      ENDIF
 
       WRITE(msgBuf,'(A)')
      &' '
@@ -460,7 +462,7 @@ C--  Initial Condition/Input related param.
 #ifdef SEAICE_VARIABLE_SALINITY
       CALL WRITE_0D_C( HsaltFile, -1, INDEX_NONE,
      &  'HsaltFile =', ' /* Initial HSALT File */')
-#endif     
+#endif
       CALL WRITE_0D_C( uIceFile, -1, INDEX_NONE,
      &  'uIceFile =', ' /* Initial U-ice velocity File */')
       CALL WRITE_0D_C( vIceFile, -1, INDEX_NONE,
@@ -495,7 +497,7 @@ C--  Output related param.
      & 'SItrNumInUse =',
      & ' /* number of tracers that are in use (<SItrMaxNum) */')
       DO iTracer = 1, SItrNumInUse
-       if (SItrName(iTracer).NE.' ') then
+       IF (SItrName(iTracer).NE.' ') THEN
       WRITE(msgBuf,'(A,I3,A)') '== SItracer no. ',iTracer,
      &' is in use and defined as'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -521,7 +523,7 @@ C--  Output related param.
       CALL WRITE_0D_RL ( SItrExpand0(iTracer),     INDEX_NONE,
      & '  -- SItrExpand0 =',' /* for ice cover thermo. expans. */')
 
-       endif
+       ENDIF
       ENDDO
 #endif /* ALLOW_SITRACER */
 
@@ -564,7 +566,6 @@ C--  Output related param.
       WRITE(msgBuf,'(A)')
 
       _END_MASTER(myThid)
-      _BARRIER
 
       RETURN
       END

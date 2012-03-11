@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.70 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.71 2012/03/11 13:43:46 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -370,8 +370,8 @@ C--   Read initial snow thickness from file if available.
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)*
-     &            SEAICE_rhoIce*SIsalFRAC
-cif     &            ICE2WATR*rhoConstFresh*SIsalFRAC
+     &            SEAICE_rhoIce*SEAICE_saltFrac
+cif     &            ICE2WATR*rhoConstFresh*SEAICE_saltFrac
 
           ENDDO
          ENDDO
