@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.16 2011/04/18 18:08:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.17 2012/03/11 23:04:59 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -16,7 +16,7 @@ C o Nonlinear free-surface code (but without rStar)
 #define DISABLE_RSTAR_CODE
 #define DISABLE_SIGMA_CODE
 C o Include/exclude Implicit vertical advection code
-#undef INCLUDE_IMPLVERTADV_CODE
+#define INCLUDE_IMPLVERTADV_CODE
 cph)
 
 #ifdef ALLOW_KPP
