@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.6 2012/03/11 22:55:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.7 2012/03/11 23:13:23 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -130,9 +130,11 @@ CADJ loop = sequential
 #else /* def SOLVE_DIAGONAL_AUTODIFF */
 
 C--   Temporary array
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        DO k=1,Nr
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+ccc       DO j=jMin,jMax
+ccc        DO i=iMin,iMax
          c3d_m1(i,j,k) = c3d(i,j,k)
          y3d_m1(i,j,k) = y3d(i,j,k,bi,bj)
         ENDDO
@@ -142,8 +144,10 @@ C--   Temporary array
 #ifdef SOLVE_DIAGONAL_KINNER      
 
 C--   Main loop
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+ccc      DO j=jMin,jMax
+ccc       DO i=iMin,iMax
 
         DO k=1,Nr
          c3d_prime(k) = 0. _d 0
@@ -197,8 +201,10 @@ C--   Update array
 
 C--   Init.
       DO k=1,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+ccc       DO j=jMin,jMax
+ccc        DO i=iMin,iMax
          c3d_prime(i,j,k) = 0. _d 0
          y3d_prime(i,j,k) = 0. _d 0
          y3d_update(i,j,k) = 0. _d 0
@@ -210,8 +216,10 @@ CADJ loop = sequential
 C--   Forward sweep
       DO k=1,Nr
 
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+ccc       DO j=jMin,jMax
+ccc        DO i=iMin,iMax
          IF ( k.EQ.1 ) THEN
            IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
              c3d_prime(i,j,1) = c3d_m1(i,j,1) / b3d(i,j,1)
@@ -242,8 +250,10 @@ C-- k-loop
 CADJ loop = sequential
 C--   Backward sweep
       DO k=Nr,1,-1
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+ccc       DO j=jMin,jMax
+ccc        DO i=iMin,iMax
          IF ( k.EQ.Nr ) THEN
           y3d_update(i,j,k)=y3d_prime(i,j,k)
          ELSE
@@ -257,8 +267,10 @@ C-- k-loop
 
 C--   Update array
       DO k=1,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+ccc       DO j=jMin,jMax
+ccc        DO i=iMin,iMax
          y3d(i,j,k,bi,bj)=y3d_update(i,j,k)
         ENDDO
        ENDDO
