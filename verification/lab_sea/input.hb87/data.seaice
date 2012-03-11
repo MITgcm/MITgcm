@@ -1,25 +1,32 @@
 # SEAICE parameters
  &SEAICE_PARM01
- SEAICE_initialHEFF = 1.0,
- SEAICE_deltaTtherm = 3600.,
- SEAICE_deltaTdyn   = 3600.,
-#LSR_ERROR          = 1.E-12,
- SEAICE_deltaTevp   = 30.,
- useHB87stressCoupling = .TRUE.,
- SEAICE_no_slip     = .TRUE.,
- SEAICEdiffKhArea   = 200.,
-#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
-  useMaykutSatVapPoly = .TRUE.,
-  postSolvTempIter  =  0,
-#- use the old way of specifying SEAICE_mcPheePiston to the old default
- SEAICE_availHeatFrac = 1.,
- AreaFile           = 'AREA.0000008760',
- HsnowFile          = 'HSNOW.0000008760',
- HsaltFile          = 'HSALT.0000008760',
- HeffFile           = 'HEFF.0000008760',
- SEAICEwriteState   = .TRUE.,
+#- seaice dynamics params:
+  SEAICE_deltaTdyn   = 3600.,
+  SEAICE_deltaTevp   = 30.,
+  useHB87stressCoupling = .TRUE.,
+  SEAICE_no_slip     = .TRUE.,
+  SEAICE_drag        = 0.001,
+# Depending on vertical resolution this angle should have a value > 0
+#  (e.g., 25deg for drF(1)=10m)
+# SEAICE_waterTurnAngle = 0.0,
+#- seaice state & transport params:
+  SEAICE_salt0       = 4.0,
+#- old DIFF1 default:
+  DIFF1 = 4.E-3,
+#- seaice thermodyn params:
+  SEAICE_deltaTtherm = 3600.,
+  SEAICE_multDim     = 1,
+# strong ice-ocean turb-flux coeff:
+  SEAICE_mcPheePiston= 0.001,
+  SEAICE_frazilFrac  = 0.5,
+#- seaice I/O params:
+  AreaFile           = 'AREA.0000008760',
+  HsnowFile          = 'HSNOW.0000008760',
+  HsaltFile          = 'HSALT.0000008760',
+  HeffFile           = 'HEFF.0000008760',
+  SEAICEwriteState   = .TRUE.,
  &
 
  &SEAICE_PARM03
- SItrNumInUse          = 0,
+  SItrNumInUse      = 0,
  &

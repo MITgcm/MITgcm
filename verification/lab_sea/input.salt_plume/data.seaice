@@ -1,40 +1,42 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#- old DIFF1 default:
- DIFF1 = 4.E-3,
- SEAICE_initialHEFF = 1.0,
- SEAICE_deltaTtherm = 3600.,
- SEAICE_deltaTdyn   = 3600.,
+#- seaice dynamics params:
+  LSR_ERROR          = 1.E-12,
 # LSR_mixIniGuess=1 : compute free-drift residual; =2,4 mix into initial guess
- LSR_mixIniGuess    = 1,
- LSR_ERROR          = 1.E-12,
-#SEAICE_deltaTevp   = 30.,
+  LSR_mixIniGuess    = 1,
+#- seaice state & transport params:
+  SEAICEadvScheme    = 7,
+# for adjoint simulations you will need
+# SEAICEadvScheme    = 30,
+# add small diffKh to test diffusion with multi-dim advect.
+  SEAICEdiffKhArea   = 20.,
+  SEAICE_salinityTracer = .TRUE.,
+# SEAICE_saltFrac    = 0.3,
+#- seaice thermodyn params:
+  SEAICE_multDim     = 7,
+#- constant seawater freezing point:
+  SEAICE_tempFrz0    = -1.96,
+  SEAICE_dTempFrz_dS = 0.,
 #- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
-  useMaykutSatVapPoly = .TRUE.,
-  postSolvTempIter  =  0,
- SEAICE_dryIceAlb   = 0.8756,
- SEAICE_wetIceAlb   = 0.7856,
- SEAICE_drySnowAlb  = 0.9656,
- SEAICE_wetSnowAlb  = 0.8256,
- SEAICE_strength    = 2.6780e+04,
- SEAICE_waterDrag   = 5.3508,
- SEAICE_saltFrac    = 0.3,
-# use the new standard way of specifying SEAICE_gamma_t and SEAICE_gamma_t_frz
- SEAICE_mcPheePiston= 0.00003858024691358025,
- SEAICE_frazilFrac  = 0.33333333333333333333,
- SEAICE_clipVelocities= .TRUE.,
- SEAICEwriteState   = .TRUE.,
-# For backward compatibility only:
-# emissivities should be inherited from exf and setting them here does
-# not set a good example
-# SEAICE_snow_emiss  = 0.97001763668430343479,
-# SEAICE_ice_emiss   = 0.97001763668430343479,
+    useMaykutSatVapPoly = .TRUE.,
+    postSolvTempIter    =  0,
+  SEAICE_dryIceAlb   = 0.8756,
+  SEAICE_wetIceAlb   = 0.7856,
+  SEAICE_drySnowAlb  = 0.9656,
+  SEAICE_wetSnowAlb  = 0.8256,
+  SEAICE_strength    = 2.6780e+04,
+  SEAICE_waterDrag   = 5.3508,
+# use the new standard way of specifying ocean-ice turb. flux coeff:
+  SEAICE_mcPheePiston= 0.00004,
+  SEAICE_frazilFrac  = 0.3,
+#- seaice I/O params:
+  SEAICEwriteState   = .TRUE.,
  &
 
  &SEAICE_PARM03
- SItrNumInUse          = 2,
- siTrName(1)           = 'ridge',
- siTrMate(1)           = 'AREA',
- siTrName(2)           = 'one',
- siTrMate(2)           = 'AREA',
+  SItrNumInUse       = 2,
+  SItrName(1)        = 'ridge',
+  SItrMate(1)        = 'AREA',
+  SItrName(2)        = 'salinity',
+  SItrFromOceanFrac(2) = 0.3,
  &

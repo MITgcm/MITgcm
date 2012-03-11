@@ -1,26 +1,31 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#- old default for useFluxForm and DIFF1:
- SEAICEuseFluxForm  = .FALSE.,
- DIFF1 = 4.E-3,
- SEAICE_initialHEFF = 1.0,
- SEAICE_deltaTtherm = 3600.,
- SEAICE_deltaTdyn   = 3600.,
- LSR_ERROR          = 1.E-12,
-# SEAICE_deltaTevp   = 30.,
-#- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
-  useMaykutSatVapPoly = .TRUE.,
-  postSolvTempIter  =  0,
-#- use the old way of specifying SEAICE_mcPheePiston to the old default
- SEAICE_availHeatFrac = 1.,
- SEAICEwriteState   = .TRUE.,
+#- seaice dynamics params:
+# LSR_ERROR          = 1.E-12,
+  SEAICE_no_slip     = .TRUE.,
+  SEAICE_drag        = 0.001,
+# Depending on vertical resolution this angle should have a value > 0
+#  (e.g., 25deg for drF(1)=10m)
+# SEAICE_waterTurnAngle = 0.0,
+#- seaice state & transport params:
+  SEAICE_salt0       = 4.0,
+  SEAICEadvScheme    = 7,
+# for adjoint simulations you will need
+# SEAICEadvScheme    = 30,
+#- seaice thermodyn params:
+  SEAICE_multDim     = 7,
+  SEAICE_wetAlbTemp  = 0.0,
+# this value should be default for the McPhee parameterization
+  SEAICE_mcPheeTaper = 0.92,
+  SEAICEheatConsFix  = .TRUE.,
+#- seaice I/O params:
+  SEAICEwriteState   = .TRUE.,
  &
 
  &SEAICE_PARM03
- SItrNumInUse          = 2,
- siTrName(1)           = 'age',
- siTrMate(1)           = 'AREA',
- siTrUnit(1)           = 's',
- siTrName(2)           = 'one',
+  SItrNumInUse       = 2,
+  SItrName(1)        = 'age',
+  SItrMate(1)        = 'AREA',
+  SItrUnit(1)        = 's',
+  SItrName(2)        = 'one',
  &
-
