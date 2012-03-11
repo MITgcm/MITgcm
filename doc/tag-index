@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1615 2012/03/11 14:34:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1616 2012/03/11 20:02:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/lab_sea (fwd):
+  - update the 4 fwd lab_sea test experiment: no longer SEAICE_GROWTH_LEGACY,
+    use 7 categories (except hb87), new solve4temp params (except salt_plume),
+    constant salinity (=4) or variable salinity (salt_plume) done through
+    SItracer.
 o pkg/seaice:
   - rename parameters: SIsalFrac to SEAICE_saltFrac & SIsal0 to SEAICE_salt0;
   - remove old parameters ( SEAICE_freeze, SEAICEturbFluxFormula, SEAICE_gamma_t,
