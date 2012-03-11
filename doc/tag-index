@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1616 2012/03/11 20:02:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1617 2012/03/11 23:24:25 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Modify diagonal solvers, now three versions (upon request):
+  #ifndef SOLVE_DIAGONAL_AUTODIFF
+    1. default version (dating back a while ago)
+  #else /* def SOLVE_DIAGONAL_AUTODIFF */
+  # ifdef SOLVE_DIAGONAL_KINNER
+    2. adjoinable version with k-innermost loop (G. Forget)
+  # else
+    3. adjoinable vectorized version of 2.
+  # endif
+  #endif /* SOLVE_DIAGONAL_AUTODIFF */
+  All flags are currently set within routines, but could/should be moved to CPP-options.
+  Array bounds for 1. are as before, for 2.,3. cover the entire domain
+  (could be changed for 1. too).
 o verification/lab_sea (fwd):
   - update the 4 fwd lab_sea test experiment: no longer SEAICE_GROWTH_LEGACY,
     use 7 categories (except hb87), new solve4temp params (except salt_plume),
