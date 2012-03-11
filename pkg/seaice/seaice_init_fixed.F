@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.18 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.19 2012/03/11 13:41:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,52 +76,65 @@ C     Initialize MNC variable information for SEAICE
 #endif /* SHORTWAVE_HEATING */
       _END_MASTER(myThid)
 
+C--   Set mcPheePiston coeff (if still unset)
+      _BEGIN_MASTER(myThid)
+      IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
+        IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
+          SEAICE_mcPheePiston = SEAICE_availHeatFrac
+     &                        * drF(kSurface)/SEAICE_deltaTtherm
+        ELSE
+          SEAICE_mcPheePiston = MCPHEE_TAPER_FAC
+     &                        * STANTON_NUMBER * USTAR_BASE
+          SEAICE_mcPheePiston = MIN( SEAICE_mcPheePiston,
+     &                          drF(kSurface)/SEAICE_deltaTtherm )
+        ENDIF
+      ENDIF
+      _END_MASTER(myThid)
+
 C--   SItracer specifications for basic tracers
 #ifdef ALLOW_SITRACER
+      _BEGIN_MASTER(myThid)
       DO iTracer = 1, SItrNumInUse
-C "ice concentration" tracer that should remain .EQ.1.
-      if (SItrName(iTracer).EQ.'one') then
+C     "ice concentration" tracer that should remain .EQ.1.
+       IF (SItrName(iTracer).EQ.'one') THEN
          SItrFromOcean0(iTracer)    =ONE
          SItrFromFlood0(iTracer)    =ONE
          SItrExpand0(iTracer)       =ONE
          SItrFromOceanFrac(iTracer) =ZERO
          SItrFromFloodFrac(iTracer) =ZERO
-      endif
-C age tracer: no age in ocean, or effect from ice cover changes
-      if (SItrName(iTracer).EQ.'age') then
+       ENDIF
+C     age tracer: no age in ocean, or effect from ice cover changes
+       IF (SItrName(iTracer).EQ.'age') THEN
          SItrFromOcean0(iTracer)    =ZERO
          SItrFromFlood0(iTracer)    =ZERO
          SItrExpand0(iTracer)       =ZERO
          SItrFromOceanFrac(iTracer) =ZERO
          SItrFromFloodFrac(iTracer) =ZERO
-      endif
-C salinity tracer:
-      if (SItrName(iTracer).EQ.'salinity') then
+       ENDIf
+C     salinity tracer:
+       IF (SItrName(iTracer).EQ.'salinity') THEN
          SItrMate(iTracer)          ='HEFF'
          SItrExpand0(iTracer)       =ZERO
-         if ( SEAICE_salinityTracer ) then
-           SIsal0=ZERO
-           SIsalFrac=ZERO
-         endif
-      endif
-c simple, made up, ice surface roughness index prototype
-      if (SItrName(iTracer).EQ.'ridge') then
+         IF ( SEAICE_salinityTracer ) THEN
+           SEAICE_salt0    = ZERO
+           SEAICE_saltFrac = ZERO
+         ENDIF
+       ENDIF
+C     simple, made up, ice surface roughness index prototype
+       IF (SItrName(iTracer).EQ.'ridge') THEN
          SItrMate(iTracer)          ='AREA'
          SItrFromOcean0(iTracer)    =ZERO
          SItrFromFlood0(iTracer)    =ZERO
          SItrExpand0(iTracer)       =ZERO
          SItrFromOceanFrac(iTracer) =ZERO
          SItrFromFloodFrac(iTracer) =ZERO
-      endif
-C
+       ENDIF
       ENDDO
+      _END_MASTER(myThid)
 #endif
 
-C--   convert SEAICE_doOpenWaterGrowth/Melt logical switch to numerical facOpenGrow/Melt
-        facOpenGrow=0. _d 0
-        facOpenMelt=0. _d 0
-        if (SEAICE_doOpenWaterGrowth) facOpenGrow=1. _d 0
-        if (SEAICE_doOpenWaterMelt)   facOpenMelt=1. _d 0
+C--   all threads wait for master to finish initialisation of shared params
+      _BARRIER
 
 C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)

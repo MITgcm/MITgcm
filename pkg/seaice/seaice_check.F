@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.65 2012/03/08 01:15:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.66 2012/03/11 13:41:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -95,7 +95,7 @@ C--   check ice cover fraction formula
      &     (SEAICE_areaLossFormula.NE.3).OR.SEAICE_doOpenWaterGrowth
      &     .OR.SEAICE_doOpenWaterMelt ) ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
-     &       'to use SEAICE_GROWTH_LEGACY, you need to set' 
+     &       'to use SEAICE_GROWTH_LEGACY, you need to set'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &   'SEAICE_areaGainFormula.EQ.2, SEAICE_areaLossFormula.EQ.3, '
@@ -119,64 +119,17 @@ C--   check ice cover fraction formula
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
-C--   deal with the old ways of specifying mcPheePiston & frazilFrac terms
-
-C     a) check that the short lived SEAICEturbFluxFormula was not
-C     specified
-      IF   ( SEAICEturbFluxFormula .NE. UNSET_I ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: SEAICEturbFluxFormula ',
-     &  ' was retired. Instead set SEAICE_mcPheePiston for the '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: turbulent flux (melt only)',
-     &  ' SEAICE_frazilFrac (case of T below freezing temperature). '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-
-C     b) if specified then use the old way (short lived) of specifying
-C     SEAICE_mcPheeTaper
-      IF   ( SEAICE_availHeatTaper .NE. UNSET_RL ) THEN
-       SEAICE_mcPheeTaper = SEAICE_availHeatTaper
-C issue warning
-      ENDIF
-
-C     c) if specified then use the original way of specifying this
-        IF ( SEAICE_availHeatFrac .NE. UNSET_RL ) then
-          SEAICE_mcPheePiston = SEAICE_availHeatFrac * 
-     &      dRf(kSurface)/SEAICE_deltaTtherm
-          IF ( SEAICE_availHeatFracFrz .EQ. UNSET_RL ) THEN
-            SEAICE_frazilFrac = SEAICE_availHeatFrac
-          ELSE
-            SEAICE_frazilFrac = SEAICE_availHeatFracFrz
-          ENDIF
-c ? need something for the case of just specifying SEAICE_availHeatFracFrz
-c ? issue warning
-        ENDIF
-
-C     d) if specified then use the second oldest way of specifying this
-        IF ( SEAICE_gamma_t .NE. UNSET_RL ) then      
-          SEAICE_mcPheePiston = dRf(kSurface)/SEAICE_gamma_t
-          IF ( SEAICE_gamma_t_frz .EQ. UNSET_RL ) THEN
-            SEAICE_frazilFrac = SEAICE_deltaTtherm/SEAICE_gamma_t
-          ELSE
-            SEAICE_frazilFrac = SEAICE_deltaTtherm/SEAICE_gamma_t_frz
-          ENDIF
-C ? need something for the case of just specifying SEAICE_gamma_t_frz
-C ? issue warning
-        ENDIF
-
-
 C--   check concistency of turbulent flux term etc. specification
 
-      SEAICE_mcphee_max=dRf(kSurface)/SEAICE_deltaTtherm
-      IF ( ( ( SEAICE_mcPheePiston .LT. 0. _d 0 ).OR.
-     &       ( SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) ).AND.
-     &     ( usePW79thermodynamics ) ) THEN
+      SEAICE_mcphee_max=drF(kSurface)/SEAICE_deltaTtherm
+      IF ( usePW79thermodynamics .AND.
+     &     ( SEAICE_mcPheePiston .LT. 0. _d 0 .OR.
+     &       SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' SEAICE_mcPheePiston is out of bounds.'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' They must lie within 0. and drf(1)/SEAICE_deltaTtherm '
+     &  ' They must lie within 0. and drF(1)/SEAICE_deltaTtherm '
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
@@ -194,8 +147,8 @@ C--   check concistency of turbulent flux term etc. specification
 
       IF ( ( SEAICE_mcPheeTaper .LT. 0. _d 0 ) .OR.
      &     ( SEAICE_mcPheeTaper .GT. 1. _d 0 ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SEAICE_mcPheeTaper cannot be specified  '//
+         WRITE(msgBuf,'(2A)')
+     &      'SEAICE_mcPheeTaper cannot be specified  ',
      &      'outside of the [0. 1.] range'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
@@ -258,8 +211,8 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
 
       IF ( ( SItrFromOceanFrac(iTracer) .LT. 0. _d 0 ) .OR.
      &     ( SItrFromOceanFrac(iTracer) .GT. 1. _d 0 ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SItrFromOceanFrac cannot be specified  '//
+         WRITE(msgBuf,'(2A)')
+     &      'SItrFromOceanFrac cannot be specified  ',
      &      'outside of the [0. 1.] range'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
@@ -267,8 +220,8 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
 
       IF ( ( SItrFromFloodFrac(iTracer) .LT. 0. _d 0 ) .OR.
      &     ( SItrFromFloodFrac(iTracer) .GT. 1. _d 0 ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SItrFromFloodFrac cannot be specified  '//
+         WRITE(msgBuf,'(2A)')
+     &      'SItrFromFloodFrac cannot be specified  ',
      &      'outside of the [0. 1.] range'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
@@ -276,8 +229,8 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
 
 c      IF ( (SItrName(iTracer).EQ.'salinity') .AND.
 c     &     (SItrMate(iTracer).NE.'HEFF') ) THEN
-c         WRITE(msgBuf,'(A)')
-c     &      'SItrName = "salinity" requires  '//
+c         WRITE(msgBuf,'(2A)')
+c     &      'SItrName = "salinity" requires  ',
 c     &      'SItrMate = "HEFF" '
 c         CALL PRINT_ERROR( msgBuf , myThid)
 c         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
@@ -286,16 +239,16 @@ c      ENDIF
       IF ( (SItrName(iTracer).NE.'salinity').AND.
      &     ( (SItrFromOceanFrac(iTracer).NE.ZERO).OR.
      &       (SItrFromFloodFrac(iTracer).NE.ZERO) ) ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SItrFromOceanFrac / SItrFromFloodFrac is only  '//
+         WRITE(msgBuf,'(2A)')
+     &      'SItrFromOceanFrac / SItrFromFloodFrac is only  ',
      &      'available for SItrName = "salinity" (for now)'
          CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
       ENDDO
-#endif      
-      
+#endif
+
 C--   Check advection schemes
       checkAdvSchArea = SEAICEadvArea .AND. (
      &     SEAICEadvSchArea.NE.ENUM_UPWIND_1RST .AND.
@@ -501,19 +454,19 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
         WRITE(msgBuf,'(A)')
      &    'SEAICE_CHECK: turbulent ice-ocn heat flux default changed.'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'SEAICE_CHECK:    To recover the old default : set '
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'SEAICE_CHECK:    SEAICE_mcPheePiston to the first ocn level'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'SEAICE_CHECK:    thickness divided by SEAICE_deltaTtherm.'
         CALL PRINT_ERROR( msgBuf , myThid)
 
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
 #if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \
-    defined(SEAICE_DO_OPEN_WATER_MELT)
+      defined(SEAICE_DO_OPEN_WATER_MELT)
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &     'SEAICE_DO_OPEN_WATER_GROWTH / MELT options are obsolete'
          CALL PRINT_ERROR( msgBuf, myThid )
@@ -675,13 +628,13 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         WRITE(msgBuf,'(A)')
      &    'SEAICE_CHECK: variable freezing point is new default.'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &    'SEAICE_CHECK:    To recover old constant freezing : '
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &    'SEAICE_CHECK:    set SEAICE_tempFrz0 = -1.96 and '
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &    'SEAICE_CHECK:    SEAICE_dTempFrz_dS = 0.'
         CALL PRINT_ERROR( msgBuf , myThid)
 

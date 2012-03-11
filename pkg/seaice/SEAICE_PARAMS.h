@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.90 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.91 2012/03/11 13:41:38 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -16,7 +16,7 @@ C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
 C                          1998) set this parameter to true, default is false
 C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
 C                          if true use elastic viscous plastic solver
-C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP 
+C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP
 C                           or LSR
 C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
@@ -42,13 +42,13 @@ C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law; def=F.
-C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in 
+C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in
 C                           ocean-ice turbulent flux
 C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
 C                           (when false cool ocean, and grow later if needed)
 C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
 C                           (when false warm ocean, and melt later if needed)
-C     SEAICE_salinityTracer    :: use SItracer to exchange and trace ocean 
+C     SEAICE_salinityTracer    :: use SItracer to exchange and trace ocean
 C                           salt in ice
 C     SEAICE_age Tracer        :: use SItracer to trace the age of ice
 C     SEAICErestoreUnderIce :: restore surface T/S also underneath ice
@@ -135,9 +135,8 @@ C
       INTEGER SEAICEadvSchSnow
       INTEGER SEAICEadvSchSalt
       INTEGER SEAICEadjMODE
-      INTEGER SEAICEturbFluxFormula
       INTEGER SEAICE_areaLossFormula
-      INTEGER SEAICE_areaGainFormula      
+      INTEGER SEAICE_areaGainFormula
       INTEGER SEAICE_multDim
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
@@ -152,7 +151,6 @@ C
      &     SEAICEadvSchSnow,
      &     SEAICEadvSchSalt,
      &     SEAICEadjMODE,
-     &     SEAICEturbFluxFormula,
      &     SEAICE_areaLossFormula,
      &     SEAICE_areaGainFormula,
      &     SEAICE_multDim,
@@ -209,7 +207,7 @@ C     SEAICE_dryIceAlb   :: winter albedo
 C     SEAICE_wetIceAlb   :: summer albedo
 C     SEAICE_drySnowAlb  :: dry snow albedo
 C     SEAICE_wetSnowAlb  :: wet snow albedo
-C     HO                 :: AKA "lead closing parameter", demarcation thickness 
+C     HO                 :: AKA "lead closing parameter", demarcation thickness
 C                           between thin and thick ice. Alternatively, HO (in
 C                           meters) can be interpreted as the thickness of ice
 C                           formed in open water.
@@ -244,20 +242,19 @@ C     SEAICE_snow_emiss  :: longwave snow-surface emissivity (-)
 C     SEAICE_boltzmann   :: Stefan-Boltzman constant (not a run time parameter)
 C     SEAICE_snowThick   :: cutoff snow thickness (for snow-albedo)
 C     SEAICE_shortwave   :: ice penetration shortwave radiation factor
-C     SEAICE_freeze      :: FREEZING TEMP. OF SEA WATER
-C     SIsalFRAC          :: salinity of newly formed sea ice defined as a 
+C     SEAICE_saltFrac    :: salinity of newly formed seaice defined as a
 C                           fraction of the ocean surface salinity at the time
 C                           of freezing
-C     SIsal0             :: prescribed salinity of seaice (in g/kg).
+C     SEAICE_salt0       :: prescribed salinity of seaice (in g/kg).
 C     facOpenGrow        :: 0./1. version of logical SEAICE_doOpenWaterGrowth
 C     facOpenMelt        :: 0./1. version of logical SEAICE_doOpenWaterMelt
-C     SEAICE_mcPheePiston:: ocean-ice turbulent flux "piston velocity" (m/s) 
+C     SEAICE_mcPheePiston:: ocean-ice turbulent flux "piston velocity" (m/s)
 C                           that sets melt efficiency.
-C     SEAICE_mcPheeTaper :: tapering down of turbulent flux term with ice 
-C                           concentration. The 100% cover turb. flux is 
+C     SEAICE_mcPheeTaper :: tapering down of turbulent flux term with ice
+C                           concentration. The 100% cover turb. flux is
 C                           multiplied by 1.-SEAICE_mcPheeTaper
-C     SEAICE_frazilFrac  :: Fraction of surface level negative heat content 
-C                           anomalies (relative to the local freezing point) 
+C     SEAICE_frazilFrac  :: Fraction of surface level negative heat content
+C                           anomalies (relative to the local freezing point)
 C                           may contribute as frazil over one time step.
 C     SEAICE_tempFrz0    :: sea water freezing point is
 C     SEAICE_dTempFrz_dS :: tempFrz = SEAICE_tempFrz0 + salt*SEAICE_dTempFrz_dS
@@ -265,7 +262,7 @@ C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
 C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1 specifies
-C                           the minimun amount of leads (1-areaMax) in the 
+C                           the minimun amount of leads (1-areaMax) in the
 C                           ice pack.
 C     SEAICE_area_floor  :: usually set to 1x10^-5. Specifies a minimun
 C                           ice fraction in the ice pack.
@@ -297,11 +294,10 @@ C
       _RL SEAICE_iceConduct, SEAICE_snowConduct
       _RL SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss
       _RL SEAICE_boltzmann
-      _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
-      _RL SIsalFRAC, SIsal0, SEAICEstressFactor
-      _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
-      _RL SEAICE_mcPheePiston, SEAICE_frazilFrac
-      _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
+      _RL SEAICE_snowThick, SEAICE_shortwave
+      _RL SEAICE_saltFrac, SEAICE_salt0, SEAICEstressFactor
+      _RL SEAICE_mcPheeTaper, SEAICE_mcPheePiston
+      _RL SEAICE_frazilFrac, SEAICE_availHeatFrac
       _RL facOpenGrow, facOpenMelt
       _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
       _RL OCEAN_drag, LSR_ERROR, DIFF1
@@ -312,8 +308,6 @@ C
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
-      _RL SEAICE_availHeatTaper
-      _RL SEAICE_mcPheeTaper
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -334,11 +328,10 @@ C
      &    SEAICE_iceConduct, SEAICE_snowConduct,
      &    SEAICE_emissivity, SEAICE_ice_emiss, SEAICE_snow_emiss,
      &    SEAICE_boltzmann,
-     &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
-     &    SIsalFRAC, SIsal0, SEAICEstressFactor,
-     &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
-     &    SEAICE_mcPheePiston, SEAICE_frazilFrac,
-     &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
+     &    SEAICE_snowThick, SEAICE_shortwave,
+     &    SEAICE_saltFrac, SEAICE_salt0, SEAICEstressFactor,
+     &    SEAICE_mcPheeTaper, SEAICE_mcPheePiston,
+     &    SEAICE_frazilFrac, SEAICE_availHeatFrac,
      &    facOpenGrow, facOpenMelt,
      &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
@@ -346,8 +339,6 @@ C
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt,
-     &    SEAICE_availHeatTaper,
-     &    SEAICE_mcPheeTaper,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
@@ -375,10 +366,10 @@ C--   Constants used by sea-ice model
       PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   Constants needed by McPhee formulas for turbulent ocean fluxes :
-C        Stanton number (dimensionless), typical friction velocity 
+C        Stanton number (dimensionless), typical friction velocity
 C        beneath sea ice (m/s), and tapering factor (dimensionless)
       _RL STANTON_NUMBER, USTAR_BASE, MCPHEE_TAPER_FAC
-      PARAMETER ( MCPHEE_TAPER_FAC = 12.5 _d 0 , STANTON_NUMBER = 
+      PARAMETER ( MCPHEE_TAPER_FAC = 12.5 _d 0 , STANTON_NUMBER =
      &            0.0056 _d 0, USTAR_BASE = 0.0125 _d 0 )
 
 C--   identifiers for advected properties
