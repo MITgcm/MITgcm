@@ -10,7 +10,7 @@
   SEAICE_wetAlbTemp = 0.,
   SEAICE_snowThick  = 0.,
 #
- SIsal0                = 4.,
+ SEAICE_salt0          = 4.,
  SEAICEadvHeff         = .TRUE.,
  SEAICEadvArea         = .TRUE.,
  SEAICEadvSnow         = .TRUE.,

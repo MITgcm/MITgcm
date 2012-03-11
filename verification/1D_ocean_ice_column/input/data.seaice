@@ -17,7 +17,7 @@
       SEAICE_mcPheePiston= 0.0008749999999999999,
       SEAICE_mcPheeTaper = 0.92,
       SEAICE_frazilFrac  = 0.,
-      SIsalFRAC          = 0.30,
+      SEAICE_saltFrac    = 0.30,
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
       SEAICEuseFlooding  = .TRUE.,

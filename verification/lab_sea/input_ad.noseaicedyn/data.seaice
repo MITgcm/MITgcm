@@ -17,7 +17,7 @@
 #- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
   useMaykutSatVapPoly = .TRUE.,
   postSolvTempIter  =  0,
-      SIsalFRAC          = 0.3,
+      SEAICE_saltFrac    = 0.3,
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
       SEAICE_availHeatFrac = 0.8,

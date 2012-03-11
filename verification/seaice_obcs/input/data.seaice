@@ -17,7 +17,7 @@
  SEAICEadvSalt      = .TRUE.,
  SEAICEuseFlooding  = .TRUE.,
  SEAICE_no_Slip     = .FALSE.,
- SIsalFRAC          = 0.3,
+ SEAICE_saltFrac    = 0.3,
  SEAICE_tempFrz0    = -1.96,
  SEAICE_dTempFrz_dS = 0.,
  SEAICE_mcPheePiston= 0.00003858024691358025,
