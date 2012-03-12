@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_adm.stderr
 #PBS -o /home/jmc/test_aces/output/tst_adm.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.15 2011/11/07 15:27:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.16 2012/03/12 20:46:02 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint MPI test using ifort (default=v8) & mpich
@@ -57,7 +57,7 @@ if [ $dsp -le 1000000 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/tr_${dNam}-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
