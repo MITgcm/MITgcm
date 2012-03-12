@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.2 2011/05/10 07:49:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.3 2012/03/12 16:45:53 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,6 +45,13 @@ C     == Local variables
       integer jtlo,jthi
       integer ifc
       character*(25) cfname
+      
+      _RL f_shelfice
+      _RL f_shifwflx
+
+      _RL no_shelfice
+      _RL no_shifwflx
+
 #ifdef ALLOW_ECCO
 #if  (defined ALLOW_SHIFWFLX_CONTROL && \
       defined ALLOW_SHIFWFLX_COST_CONTRIBUTION)
@@ -84,6 +91,7 @@ ccc          end do
         end do
       end do
 #endif /* ALLOW_ECCO */
+c--   Sum up all contributions.
       do bj = jtlo,jthi
        do bi = itlo,ithi
         write(standardmessageunit,'(A,D22.15)')
@@ -93,8 +101,21 @@ ccc          end do
         fc = fc 
      &       + mult_shelfice * objf_shelfice(bi,bj)
      &       + mult_shifwflx * objf_shifwflx(bi,bj)
+
+        f_shelfice = f_shelfice + objf_shelfice(bi,bj)
+        f_shifwflx = f_shifwflx + objf_shifwflx(bi,bj)
+        
+CML        no_shelfice = no_shelfice + num_shelfice(bi,bj)
+        no_shifwflx = no_shifwflx + num_shifwflx(bi,bj)
+
        enddo
       enddo
+
+      _GLOBAL_SUM_RL( f_shelfice , myThid )
+      _GLOBAL_SUM_RL( f_shifwflx , myThid )
+
+CML      _GLOBAL_SUM_RL( no_shelfice , myThid )
+      _GLOBAL_SUM_RL( no_shifwflx , myThid )
 
 c--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
@@ -104,6 +125,9 @@ c--   Each process has calculated the global part for itself.
        OPEN(unit=ifc,file=cfname)
 
        WRITE(ifc,*) 'fc =', fc
+CML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
+       WRITE(ifc,*) 'f_shelfice =', f_shelfice
+       WRITE(ifc,*) 'f_shifwflx =', f_shifwflx, no_shifwflx
 
        CLOSE(ifc)
 
