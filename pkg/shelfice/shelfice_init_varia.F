@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.8 2012/01/06 09:34:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.9 2012/03/12 16:57:47 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -44,12 +44,25 @@ CEOP
           shelficeForcingS      (i,j,bi,bj) = 0. _d 0
           shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
           shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
-          shiTransCoeffT        (i,j,bi,bj) = SHELFICEheatTransCoeff
-          shiTransCoeffS        (i,j,bi,bj) = SHELFICEsaltTransCoeff
+          shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
+          shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+      IF ( .NOT. SHELFICEuseGammaFrict ) THEN
+C     set coefficients to constant values
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
+           shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_COST
       DO bj = myByLo(myThid), myByHi(myThid)
