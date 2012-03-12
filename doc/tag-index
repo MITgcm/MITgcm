@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1617 2012/03/11 23:24:25 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1618 2012/03/12 16:51:37 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice
+ - improve computation of friction velocity for velocity dependent
+   exchange coefficients: include velocities into SHELFICEBoundaryLayer
+   block to average velocities vertically
+ - add TAF store directives for SHI_ALLOW_GAMMAFRICT
 o Modify diagonal solvers, now three versions (upon request):
   #ifndef SOLVE_DIAGONAL_AUTODIFF
     1. default version (dating back a while ago)
