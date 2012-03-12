@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.27 2012/03/02 15:06:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.28 2012/03/12 16:48:29 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -34,6 +34,12 @@ C     === Global variables ===
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SHI_ALLOW_GAMMAFRICT
+#  include "tamc.h"
+#  include "tamc_keys.h"
+# endif /* SHI_ALLOW_GAMMAFRICT */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -67,6 +73,8 @@ C     drKp1, recip_drLoc
       _RL tLoc(1:sNx,1:sNy)
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
+      _RL uLoc(1:sNx,1:sNy)
+      _RL vLoc(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze
       _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
@@ -92,6 +100,19 @@ C     drKp1, recip_drLoc
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef SHI_ALLOW_GAMMAFRICT
+#ifdef ALLOW_AUTODIFF_TAMC
+C     re-initialize here again, curtesy to TAF
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J = 1-Oly,sNy+Oly
+         DO I = 1-Olx,sNx+Olx
+          shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
+          shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
+         ENDDO
+        ENDDO
+        ENDDO
+       ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SHELFICEuseGammaFrict ) THEN
 C     Implement friction velocity-dependent transfer coefficient
 C     of Holland and Jenkins, JPO, 1999
@@ -107,6 +128,18 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
        etastar = 1. _d 0
        gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
      &      - recip_shiKarman
+#ifdef ALLOW_AUTODIFF_TAMC
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO J = 1-Oly,sNy+Oly
+          DO I = 1-Olx,sNx+Olx
+           shiTransCoeffT(i,j,bi,bj) = 0. _d 0
+           shiTransCoeffS(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
@@ -169,6 +202,20 @@ C     where this value is part of the protocol
 #endif /* ALLOW_SHIFWFLX_CONTROL */
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SHI_ALLOW_GAMMAFRICT
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        ikey = (act1 + 1) + act2*max1
+     &                    + act3*max1*max2
+     &                    + act4*max1*max2*max3
+# endif /* SHI_ALLOW_GAMMAFRICT */
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO J = 1, sNy
          DO I = 1, sNx
 C--   make local copies of temperature, salinity and depth (pressure)
@@ -177,6 +224,12 @@ C--   underneath the ice
           pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+          uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
+     &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
+     &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
+          vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
+     &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
+     &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
          ENDDO
         ENDDO
         IF ( SHELFICEBoundaryLayer ) THEN
@@ -198,6 +251,16 @@ C--   lower cell may not be as thick as required
             sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
      &           * recip_drLoc
+            uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
+     &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
+     &           + uVel(I+1,J,Kp1,bi,bj) * _hFacW(I+1,J,Kp1,bi,bj) )
+     &           ) * recip_drLoc
+            vLoc(I,J) = ( vLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
+     &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
+     &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
+     &           ) * recip_drLoc
            ENDIF
           ENDDO
          ENDDO
@@ -217,11 +280,8 @@ C--   to the surface
           DO I = 1, sNx
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-            ustarSq = shiCdrag * MAX( 1D-06,
-     &            (uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-     &           *(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-     &           +(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
-     &           *(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj)) )
+            ustarSq = shiCdrag * MAX( 1.D-06,
+     &           0.25 _d 0 *(uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
             ustar   = SQRT(ustarSq)
 C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
 C           etastar = 1. _d 0
@@ -248,6 +308,14 @@ C            gammaTurb = MAX(0.D0, gammaTurb)
         ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SHI_ALLOW_GAMMAFRICT
+CADJ STORE shiTransCoeffS(:,:,bi,bj) = comlev1_bibj,
+CADJ &     key=ikey, byte=isbyte
+CADJ STORE shiTransCoeffT(:,:,bi,bj) = comlev1_bibj,
+CADJ &     key=ikey, byte=isbyte
+# endif /* SHI_ALLOW_GAMMAFRICT */
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_ISOMIP_TD
         IF ( useISOMIPTD ) THEN
          DO J = 1, sNy
