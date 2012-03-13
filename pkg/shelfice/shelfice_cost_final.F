@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.4 2012/03/13 15:21:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.5 2012/03/13 16:17:33 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -48,31 +48,30 @@ C     == Local variables
 
       _RL f_shelfice
       _RL f_shifwflx
-      _RL no_shelfice
+
+CML      _RL no_shelfice
       _RL no_shifwflx
+
+#ifndef ALLOW_ECCO
+      integer i, j
+#endif
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+
+      f_shelfice = 0. _d 0
+      f_shifwflx = 0. _d 0
+CML      no_shelfice= 0. _d 0
+      no_shifwflx= 0. _d 0
 
 #ifdef ALLOW_ECCO
 #if  (defined ALLOW_SHIFWFLX_CONTROL && \
       defined ALLOW_SHIFWFLX_COST_CONTRIBUTION)
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
       CALL SHELFICE_COST_SHIFWFLX( mythid )
 #endif /* ALLOW_SHIFWFLX_CONTROL and ALLOW_SHIFWFLX_COST_CONTRIBUTION */
 #else
-      integer i, j
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      f_shelfice = 0.
-      f_shifwflx = 0.
-      no_shelfice = 0.
-      no_shifwflx = 0.
-
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
        do bi = itlo,ithi
@@ -90,6 +89,7 @@ ccc          end do
         end do
       end do
 #endif /* ALLOW_ECCO */
+
 c--   Sum up all contributions.
       do bj = jtlo,jthi
        do bi = itlo,ithi
