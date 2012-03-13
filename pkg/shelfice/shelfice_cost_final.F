@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.3 2012/03/12 16:45:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.4 2012/03/13 15:21:27 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,10 +45,9 @@ C     == Local variables
       integer jtlo,jthi
       integer ifc
       character*(25) cfname
-      
+
       _RL f_shelfice
       _RL f_shifwflx
-
       _RL no_shelfice
       _RL no_shifwflx
 
@@ -62,17 +61,17 @@ C     == Local variables
       CALL SHELFICE_COST_SHIFWFLX( mythid )
 #endif /* ALLOW_SHIFWFLX_CONTROL and ALLOW_SHIFWFLX_COST_CONTRIBUTION */
 #else
-      _RL thetaRef
-      _RL drLoc
-
-      integer i, j, k
-      integer ig, jg
-      integer kp1, klev
+      integer i, j
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
+
+      f_shelfice = 0.
+      f_shifwflx = 0.
+      no_shelfice = 0.
+      no_shifwflx = 0.
 
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
@@ -98,13 +97,12 @@ c--   Sum up all contributions.
      &       ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
         write(standardmessageunit,'(A,D22.15)')
      &       ' --> objf_shifwflx(bi,bj) = ', objf_shifwflx(bi,bj)
-        fc = fc 
+        fc = fc
      &       + mult_shelfice * objf_shelfice(bi,bj)
      &       + mult_shifwflx * objf_shifwflx(bi,bj)
 
         f_shelfice = f_shelfice + objf_shelfice(bi,bj)
         f_shifwflx = f_shifwflx + objf_shifwflx(bi,bj)
-        
 CML        no_shelfice = no_shelfice + num_shelfice(bi,bj)
         no_shifwflx = no_shifwflx + num_shifwflx(bi,bj)
 
@@ -113,7 +111,6 @@ CML        no_shelfice = no_shelfice + num_shelfice(bi,bj)
 
       _GLOBAL_SUM_RL( f_shelfice , myThid )
       _GLOBAL_SUM_RL( f_shifwflx , myThid )
-
 CML      _GLOBAL_SUM_RL( no_shelfice , myThid )
       _GLOBAL_SUM_RL( no_shifwflx , myThid )
 
