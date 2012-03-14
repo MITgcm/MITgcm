@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1619 2012/03/14 03:51:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1620 2012/03/14 20:05:37 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o another iteration on solve_*diagonal.F
+  Make choices independent of AUTODIFF
+  Default is now the adjoinable vectorized version
+  Alternative choices are:
+  * still adjoinable but lower memory (k as inner-most loop)
+  SOLVE_DIAGONAL_KINNER
+  * non-adjoinable legacy version with low memory footprint
+  SOLVE_DIAGONAL_LOWMEMORY
 o testreport
  - add option to use a home made wrapper around "make"
  - remove MITGCM_IEEE env. variable (no longer active)
