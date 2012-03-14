@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.170 2011/12/22 12:55:05 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.171 2012/03/14 02:34:20 jmc Exp $
 #  $Name:  $
 #
 
@@ -492,7 +492,11 @@ makemodel()
 	cd $1;
 	if test -r Makefile ; then
 	    printf 'make ... '
-	    $MAKE $TARG >> make.tr_log 2>&1
+	    if test "x$REPLMAKE" = x ; then
+		$MAKE $TARG >> make.tr_log 2>&1
+	    else
+		$REPLMAKE $TARG >> make.tr_log 2>&1
+	    fi
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.tr_log
@@ -926,10 +930,6 @@ debug=0
 verbose=1
 NBLINES_MKLOG=16000
 
-IEEE=true
-if test "x$MITGCM_IEEE" != x ; then
-    IEEE=$MITGCM_IEEE
-fi
 OptLev=1
 GSL=f
 
@@ -955,6 +955,7 @@ MKDEPEND=
 if test "x$MAKE" = x ; then
     MAKE=make
 fi
+REPLMAKE=
 if test "x$CC" = x ; then
     CC=cc
 fi
@@ -1018,6 +1019,9 @@ for ac_option ; do
 
 	-make | --make | -m | --m) ac_prev=MAKE ;;
 	-make=* | --make=* | -m=* | --m=*) MAKE=$ac_optarg ;;
+
+	-repl_mk | --repl_mk ) ac_prev=REPLMAKE ;;
+	-repl_mk=* | --repl_mk=*) REPLMAKE=$ac_optarg ;;
 
 	-odir | --odir) ac_prev=OUTDIR ;;
 	-odir=* | --odir=*) OUTDIR=$ac_optarg ;;
