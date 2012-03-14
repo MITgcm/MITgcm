@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.44 2009/11/23 16:13:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.45 2012/03/14 19:55:25 heimbach Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -56,6 +56,12 @@ C   this implies that surface thickness (hFactors) vary with time
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
 #undef ALLOW_ADDFLUID
+
+C o Choices for implicit solver routines solve_*diagonal.F
+C   The following has low memory footprint, but not suitable for AD
+#undef SOLVE_DIAGONAL_LOWMEMORY
+C   The following one suitable for AD but does not vectorize
+#undef SOLVE_DIAGONAL_KINNER
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
 C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
