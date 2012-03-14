@@ -1,14 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.7 2012/03/11 23:13:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.8 2012/03/14 19:51:41 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CMLC o Switch to code that has the k-loop inside the 
 CMLC   ij-loops, which matters in adjoint mode.
-#ifdef ALLOW_AUTODIFF 
-# define SOLVE_DIAGONAL_AUTODIFF
+# undef SOLVE_DIAGONAL_LOWMEMORY
 # undef SOLVE_DIAGONAL_KINNER
-#endif
 
 CBOP
 C     !ROUTINE: SOLVE_TRIDIAGONAL
@@ -53,7 +51,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
       _RL tmpvar
-#ifdef SOLVE_DIAGONAL_AUTODIFF
+#ifndef SOLVE_DIAGONAL_LOWMEMORY
       _RL c3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL y3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 # ifdef SOLVE_DIAGONAL_KINNER
@@ -65,14 +63,14 @@ C     == Local variables ==
       _RL y3d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL y3d_update(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 # endif
-#else /* SOLVE_DIAGONAL_AUTODIFF */
+#else /* SOLVE_DIAGONAL_LOWMEMORY */
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-#endif /* SOLVE_DIAGONAL_AUTODIFF */
+#endif /* SOLVE_DIAGONAL_LOWMEMORY */
 CEOP
 
       errCode = 0
 
-#ifndef SOLVE_DIAGONAL_AUTODIFF
+#ifdef SOLVE_DIAGONAL_LOWMEMORY
 
 C--   Beginning of forward sweep (top level)
       DO j=jMin,jMax
@@ -127,7 +125,7 @@ CADJ loop = sequential
        ENDDO
       ENDDO
 
-#else /* def SOLVE_DIAGONAL_AUTODIFF */
+#else /* ndef SOLVE_DIAGONAL_LOWMEMORY */
 
 C--   Temporary array
       DO k=1,Nr
@@ -279,7 +277,7 @@ C-- k-loop
 
 #endif /* SOLVE_DIAGONAL_KINNER */
 
-#endif /* SOLVE_DIAGONAL_AUTODIFF */
+#endif /* SOLVE_DIAGONAL_LOWMEMORY */
 
       RETURN
       END
