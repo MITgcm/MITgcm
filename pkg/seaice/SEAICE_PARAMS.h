@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.91 2012/03/11 13:41:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.92 2012/03/14 22:55:53 heimbach Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -276,6 +276,8 @@ C     SEAICEdiffKhSnow   :: sets the diffusivity for snow on sea-ice (m^2/s)
 C     SEAICEdiffKhSalt   :: sets the diffusivity for sea ice salinity (m^2/s)
 C     SEAICE_airTurnAngle   :: turning angles of air-ice interfacial stress
 C     SEAICE_waterTurnAngle :: and ice-water interfacial stress (in degrees)
+C     SEAICE_tauAreaObsRelax :: Timescale of relaxation to observed 
+C                               sea ice concentration (s), default=unset
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
@@ -308,6 +310,7 @@ C
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
+      _RL SEAICE_tauAreaObsRelax
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -338,7 +341,7 @@ C
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
-     &    SEAICEdiffKhSalt,
+     &    SEAICEdiffKhSalt, SEAICE_tauAreaObsRelax,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.62 2012/03/06 16:51:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.63 2012/03/14 22:55:53 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -100,6 +100,13 @@ C
       _RL uIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+C--   Dynamical variables
+      COMMON/SEAICE_DYNVARS_COST/ AREAforAtmFW, frWtrAtm
+      _RL AREAforAtmFW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)   
+      _RL frWtrAtm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
 #ifndef SEAICE_CGRID
       COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN
       _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -131,10 +138,6 @@ C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
 C              that is, ice due to precipitation or snow
 C     frWtrAtm contains freshwater flux from the atmosphere
       COMMON/ICEFLUX/ saltWtrIce, frWtrIce
-#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-     &     , frWtrAtm
-      _RL frWtrAtm   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
       _RL saltWtrIce (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL frWtrIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 

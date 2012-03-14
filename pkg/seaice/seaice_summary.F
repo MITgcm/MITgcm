@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.49 2012/03/11 13:43:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.50 2012/03/14 22:55:53 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,6 +132,9 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEuseFREEDRIFT, INDEX_NONE,
      & 'SEAICEuseFREEDRIFT =', ' /* use free drift solution */')
 #endif /* SEAICE_ALLOW_FREEDRIFT */
+      CALL WRITE_0D_RL( SEAICE_tauAreaObsRelax,INDEX_NONE,
+     & 'SEAICE_tauAreaObsRelax=',
+     & ' /* relaxation timescale of sea-ice concentration */')
       CALL WRITE_0D_RL( OCEAN_drag        ,INDEX_NONE,
      & 'OCEAN_drag        =', ' /* air-ocean drag coefficient */')
       CALL WRITE_0D_RL( SEAICE_drag       ,INDEX_NONE,

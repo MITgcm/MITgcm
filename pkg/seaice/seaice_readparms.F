@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.119 2012/03/11 13:41:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.120 2012/03/14 22:55:53 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -126,7 +126,7 @@ C--   SEAICE parameters
      & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT,
      & SEAICEheatConsFix, SEAICE_multDim,
      & SEAICE_area_reg, SEAICE_hice_reg,
-     & SEAICE_area_floor, SEAICE_area_max,
+     & SEAICE_area_floor, SEAICE_area_max, SEAICE_tauAreaObsRelax,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
@@ -316,6 +316,7 @@ C     old default for constant freezing point
 c     SEAICE_tempFrz0    = -1.96 _d 0
 c     SEAICE_dTempFrz_dS = 0. _d 0
       SEAICEstressFactor = 1.     _d 0
+      SEAICE_tauAreaObsRelax = -999. _d 0
       AreaFile   = ' '
       HsnowFile  = ' '
       HsaltFile  = ' '

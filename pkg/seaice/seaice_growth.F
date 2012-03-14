@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.160 2012/03/11 13:43:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.161 2012/03/14 22:55:53 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -128,6 +128,13 @@ C ICE/SNOW stocks tendencies associated with the various melt/freeze processes
       _RL d_AREAbyATM         (1:sNx,1:sNy)
       _RL d_AREAbyOCN         (1:sNx,1:sNy)
       _RL d_AREAbyICE         (1:sNx,1:sNy)
+#endif
+
+#ifdef SEAICE_ALLOW_AREA_RELAXATION
+C     ICE/SNOW stocks tendency associated with relaxation towards observation
+      _RL d_AREAbyRLX         (1:sNx,1:sNy)
+c     The change of mean ice thickness due to relaxation 
+      _RL d_HEFFbyRLX         (1:sNx,1:sNy)
 #endif
 
 c     The change of mean ice thickness due to out-of-bounds values following
@@ -325,6 +332,11 @@ C =====================
           d_AREAbyOCN(I,J)           = 0.0 _d 0
 #endif
 
+#ifdef SEAICE_ALLOW_AREA_RELAXATION
+          d_AREAbyRLX(I,J)           = 0.0 _d 0
+          d_HEFFbyRLX(I,J)           = 0.0 _d 0
+#endif
+
           d_HEFFbyNEG(I,J)           = 0.0 _d 0
           d_HEFFbyOCNonICE(I,J)      = 0.0 _d 0
           d_HEFFbyATMonOCN(I,J)      = 0.0 _d 0
@@ -364,7 +376,7 @@ c
           ENDDO
          ENDDO
         ENDDO
-#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
         DO J=1-oLy,sNy+oLy
          DO I=1-oLx,sNx+oLx
           frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
@@ -401,6 +413,32 @@ C =====================================================================
 Cgf no dependency through pathological cases treatment
         IF ( SEAICEadjMODE.EQ.0 ) THEN
 #endif
+
+#ifdef SEAICE_ALLOW_AREA_RELAXATION
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+C 0) relax sea ice concentration towards observation
+        IF (SEAICE_tauAreaObsRelax .GT. 0.) THEN
+        DO J=1,sNy
+         DO I=1,sNx
+C         d_AREAbyRLX(i,j) = 0. _d 0
+C         d_HEFFbyRLX(i,j) = 0. _d 0
+           IF ( obsSIce(I,J,bi,bj).GT.AREA(I,J,bi,bj)) THEN
+            d_AREAbyRLX(i,j) =
+     &       SEAICE_deltaTtherm/SEAICE_tauAreaObsRelax
+     &       * (obsSIce(I,J,bi,bj) - AREA(I,J,bi,bj))
+           ENDIF
+           IF ( obsSIce(I,J,bi,bj).GT.0. _d 0 .AND. 
+     &          AREA(I,J,bi,bj).EQ.0. _d 0) THEN
+C           d_HEFFbyRLX(i,j) = 1. _d 1 * siEps * d_AREAbyRLX(i,j)
+            d_HEFFbyRLX(i,j) = 1. _d 1 * siEps
+           ENDIF
+            AREA(I,J,bi,bj) = AREA(I,J,bi,bj) +  d_AREAbyRLX(i,j)
+            HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) +  d_HEFFbyRLX(i,j)
+         ENDDO
+        ENDDO
+        ENDIF
+#endif /* SEAICE_ALLOW_AREA_RELAXATION */
 
 C 1) treat the case of negative values:
 
@@ -564,6 +602,14 @@ Cgf no additional dependency of air-sea fluxes to ice
           ENDDO
          ENDDO
         ENDIF
+#endif
+
+#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+        DO J=1,sNy
+         DO I=1,sNx
+          AREAforAtmFW(I,J,bi,bj) = AREApreTH(I,J)
+         ENDDO
+        ENDDO
 #endif
 
 C 4) COMPUTE ACTUAL ICE/SNOW THICKNESS; USE MIN/MAX VALUES
@@ -1278,6 +1324,9 @@ CADJ &                       key = iicekey, byte = isbyte
           tmpscal1 = d_HEFFbyNEG(I,J) + d_HEFFbyOCNonICE(I,J) +
      &               d_HEFFbyATMonOCN(I,J) + d_HEFFbyFLOODING(I,J)
      &             + d_HEFFbySublim(I,J)
+#ifdef SEAICE_ALLOW_AREA_RELAXATION
+                   + d_HEFFbyRLX(I,J)
+#endif
           tmpscal2 = tmpscal1 * SEAICE_salt0 * HEFFM(I,J,bi,bj)
      &            * recip_deltaTtherm * SEAICE_rhoIce
           saltFlux(I,J,bi,bj) = tmpscal2
@@ -1483,6 +1532,9 @@ C for backward compatibility it is left out of the LEGACY branch
      &         - ( d_HEFFbyOCNonICE(I,J) +
      &             d_HSNWbyOCNonSNW(I,J)*SNOW2ICE +
      &             d_HEFFbyNEG(I,J) +
+#idef SEAICE_ALLOW_AREA_RELAXATION
+     &             d_HEFFbyRLX(I,J) +
+#endif
      &             d_HSNWbyNEG(I,J)*SNOW2ICE )
      &         * maskC(I,J,kSurface,bi,bj)
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) + a_QSWbyATM_open(I,J)
@@ -1570,6 +1622,9 @@ C ==================================================
      &             +d_HEFFbyOCNonICE(I,J)
      &             +d_HEFFbyATMonOCN(I,J)
      &             +d_HEFFbyNEG(I,J)
+#ifdef SEAICE_ALLOW_AREA_RELAXATION
+     &             +d_HEFFbyRLX(I,J)
+#endif
      &             +d_HSNWbyNEG(I,J)*SNOW2ICE
 C     If r_FWbySublim>0, then it is evaporated from ocean.
      &             +r_FWbySublim(I,J)
@@ -1584,21 +1639,43 @@ C     If r_FWbySublim>0, then it is evaporated from ocean.
          ENDDO
         ENDDO
 
-#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
+C--
+          DO J=1,sNy
+           DO I=1,sNx
+            frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
+     &           PRECIP(I,J,bi,bj)
+     &           - EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+# ifdef ALLOW_RUNOFF
+     &           + RUNOFF(I,J,bi,bj)
+# endif /* ALLOW_RUNOFF */
+     &           )*rhoConstFresh
+# ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
+     &           - a_FWbySublim(I,J)*AREApreTH(I,J)
+# endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
+           ENDDO
+          ENDDO
+C--
+#else  /* ndef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
+C--
+# ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
         DO J=1,sNy
          DO I=1,sNx
           frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
      &         PRECIP(I,J,bi,bj)
      &         - EVAP(I,J,bi,bj)
      &         *( ONE - AREApreTH(I,J) )
-#ifdef ALLOW_RUNOFF
+#  ifdef ALLOW_RUNOFF
      &         + RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
+#  endif /* ALLOW_RUNOFF */
      &         )*rhoConstFresh
      &     - a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
          ENDDO
         ENDDO
-#endif
+# endif
+C--
+#endif /* ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
+
 #endif /* ALLOW_ATM_TEMP */
 
 #ifdef SEAICE_DEBUG

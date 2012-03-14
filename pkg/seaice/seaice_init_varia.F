@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.71 2012/03/11 13:43:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.72 2012/03/14 22:55:53 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -142,8 +142,9 @@ c "ice concentration" tracer that should remain .EQ.1.
 #endif
           saltWtrIce(i,j,bi,bj) = 0. _d 0
           frWtrIce(i,j,bi,bj)   = 0. _d 0
-#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
           frWtrAtm(i,j,bi,bj)   = 0. _d 0
+          AREAforAtmFW(i,j,bi,bj)=0. _d 0
 #endif
          ENDDO
         ENDDO
@@ -397,6 +398,18 @@ C--   Read initial sea ice age from file if available.
 #endif /* ALLOW_SITRACER */
 
       ENDIF
+
+#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          AREAforAtmFW(i,j,bi,bj) = AREA(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
 #ifdef ALLOW_OBCS
 C--   In case we use scheme with a large stencil that extends into overlap:
