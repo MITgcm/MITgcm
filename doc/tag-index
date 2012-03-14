@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1618 2012/03/12 16:51:37 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1619 2012/03/14 03:51:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport
+ - add option to use a home made wrapper around "make"
+ - remove MITGCM_IEEE env. variable (no longer active)
 o pkg/shelfice
  - improve computation of friction velocity for velocity dependent
    exchange coefficients: include velocities into SHELFICEBoundaryLayer
