@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1620 2012/03/14 20:05:37 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1621 2012/03/14 22:59:05 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o ECCO-CLIVAR merge:
+  1. seaice AREA relaxation 
+     * CPP option: SEAICE_ALLOW_AREA_RELAXATION
+     * runtime flag: SEAICE_tauAreaObsRelax
+  2. modified global mean cost imbalance code: CPP option ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
 o another iteration on solve_*diagonal.F
   Make choices independent of AUTODIFF
   Default is now the adjoinable vectorized version
