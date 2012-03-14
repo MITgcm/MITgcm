@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.123 2012/03/02 05:34:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.124 2012/03/14 20:02:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,6 +71,7 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_PTRACERS
 #   include "PTRACERS_SIZE.h"
 #   include "PTRACERS_FIELDS.h"
+#   include "PTRACERS_START.h"
 #  endif
 # ifdef ALLOW_GCHEM
 #  include "GCHEM_FIELDS.h"

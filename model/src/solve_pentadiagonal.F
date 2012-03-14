@@ -1,12 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.8 2012/03/14 19:51:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.9 2012/03/14 20:02:22 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-
-CMLC o Switch to code that has the k-loop inside the 
-CMLC   ij-loops, which matters in adjoint mode.
-# undef SOLVE_DIAGONAL_LOWMEMORY
-# undef SOLVE_DIAGONAL_KINNER
 
 CBOP
 C     !ROUTINE: SOLVE_PENTADIAGONAL
