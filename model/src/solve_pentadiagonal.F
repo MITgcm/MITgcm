@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.9 2012/03/14 20:02:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.10 2012/03/15 15:25:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: SOLVE_PENTADIAGONAL
 C     !INTERFACE:
-      SUBROUTINE SOLVE_PENTADIAGONAL( 
+      SUBROUTINE SOLVE_PENTADIAGONAL(
      I                     iMin,iMax, jMin,jMax,
      U                     a5d, b5d, c5d, d5d, e5d,
      U                     y5d,
@@ -14,7 +14,7 @@ C     !INTERFACE:
      I                     bi, bj, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R SOLVE_PENTADIAGONAL                                  
+C     | S/R SOLVE_PENTADIAGONAL
 C     | o Solve a penta-diagonal system A*X=Y (dimension Nr)
 C     *==========================================================*
 C     | o Used to solve implicitly vertical advection & diffusion
@@ -36,7 +36,7 @@ C     b5d    :: 1rst lower diagonal of the pentadiagonal matrix
 C     c5d    :: main diagonal       of the pentadiagonal matrix
 C     d5d    :: 1rst upper diagonal of the pentadiagonal matrix
 C     e5d    :: 2nd  upper diagonal of the pentadiagonal matrix
-C     y5d    :: Y vector (R.H.S.); 
+C     y5d    :: Y vector (R.H.S.);
 C     bi,bj  :: tile indices
 C     myThid :: thread number
 C     OUTPUT:
@@ -45,24 +45,21 @@ C     a5d,b5d,c5d,d5d,e5d :: modified to enable to find Xp solution of
 C                        A*Xp=Yp without solving the full system again
 C     errCode :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
-      _RL a5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER errCode
       INTEGER bi, bj, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
-
-      _RL tmpval
-      _RL c5dtmp
-
 #ifndef SOLVE_DIAGONAL_LOWMEMORY
-      _RL y5d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL tmpVar, recVar
+      _RL y5d_m1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 # ifdef SOLVE_DIAGONAL_KINNER
       _RL c5d_prime(Nr)
       _RL d5d_prime(Nr)
@@ -70,11 +67,11 @@ C     == Local variables ==
       _RL y5d_prime(Nr)
       _RL y5d_update(Nr)
 # else
-      _RL c5d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL d5d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL e5d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y5d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y5d_update(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL c5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL d5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL e5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y5d_update(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 # endif
 #endif /* SOLVE_DIAGONAL_LOWMEMORY */
 CEOP
@@ -88,7 +85,7 @@ C--   forward sweep (starting from top)
        IF (k.EQ.1) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF ( c5d(i,j,k).NE.0. _d 0 ) THEN 
+          IF ( c5d(i,j,k).NE.0. _d 0 ) THEN
            c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
           ELSE
            c5d(i,j,k) = 0. _d 0
@@ -106,7 +103,7 @@ C--       [k] <- [k] - b_k/c_k-1 * [k-1]
           d5d(i,j,k) = d5d(i,j,k) - b5d(i,j,k)*e5d(i,j,k-1)
           y5d(i,j,k,bi,bj) = y5d(i,j,k,bi,bj)
      &                     - b5d(i,j,k)*y5d(i,j,k-1,bi,bj)
-          IF ( c5d(i,j,k).NE.0. _d 0 ) THEN 
+          IF ( c5d(i,j,k).NE.0. _d 0 ) THEN
            c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
           ELSE
            c5d(i,j,k) = 0. _d 0
@@ -120,7 +117,7 @@ C--   Middle of forward sweep
         DO j=jMin,jMax
          DO i=iMin,iMax
 C--       [k] <- [k] - a_k/c_k-2 * [k-2]
-          a5d(i,j,k) = a5d(i,j,k)*c5d(i,j,k-2) 
+          a5d(i,j,k) = a5d(i,j,k)*c5d(i,j,k-2)
           b5d(i,j,k) = b5d(i,j,k) - a5d(i,j,k)*d5d(i,j,k-2)
           c5d(i,j,k) = c5d(i,j,k) - a5d(i,j,k)*e5d(i,j,k-2)
 C--       [k] <- [k] - b_k/c_k-1 * [k-1]
@@ -130,7 +127,7 @@ C--       [k] <- [k] - b_k/c_k-1 * [k-1]
           y5d(i,j,k,bi,bj) = y5d(i,j,k,bi,bj)
      &                     - b5d(i,j,k)*y5d(i,j,k-1,bi,bj)
      &                     - a5d(i,j,k)*y5d(i,j,k-2,bi,bj)
-          IF ( c5d(i,j,k).NE.0. _d 0 ) THEN 
+          IF ( c5d(i,j,k).NE.0. _d 0 ) THEN
            c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
           ELSE
            c5d(i,j,k) = 0. _d 0
@@ -175,10 +172,10 @@ C-      end if k= .. ; end of k loop
 
 C--   Temporary array
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          y5d_m1(i,j,k) = y5d(i,j,k,bi,bj)
         ENDDO
        ENDDO
@@ -187,10 +184,8 @@ ccc        DO i=iMin,iMax
 #ifdef SOLVE_DIAGONAL_KINNER
 
 C--   Main loop
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-ccc      DO j=jMin,jMax
-ccc       DO i=iMin,iMax
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 
         DO k=1,Nr
          c5d_prime(k) = 0. _d 0
@@ -232,14 +227,13 @@ c subtract two terms
           ENDIF
 
 c normalization
-          tmpval=c5d_prime(k)
-          IF ( tmpval.NE.0. _d 0 ) THEN
-           c5d_prime(k) = c5d_prime(k) / tmpval
-           d5d_prime(k) = d5d_prime(k) / tmpval
-           e5d_prime(k) = e5d_prime(k) / tmpval
-           y5d_prime(k) = y5d_prime(k) / tmpval
+          tmpVar = c5d_prime(k)
+          IF ( tmpVar.NE.0. _d 0 ) THEN
+           recVar = 1. _d 0 / tmpVar
+           d5d_prime(k) = d5d_prime(k)*recVar
+           e5d_prime(k) = e5d_prime(k)*recVar
+           y5d_prime(k) = y5d_prime(k)*recVar
           ELSE
-           c5d_prime(k) = 0. _d 0
            d5d_prime(k) = 0. _d 0
            e5d_prime(k) = 0. _d 0
            y5d_prime(k) = 0. _d 0
@@ -276,10 +270,10 @@ C-- i,j loop
 
 C--   Init.
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          c5d_prime(i,j,k) = 0. _d 0
          d5d_prime(i,j,k) = 0. _d 0
          e5d_prime(i,j,k) = 0. _d 0
@@ -294,10 +288,10 @@ CADJ loop = sequential
 C--   forward sweep (starting from top)
 
 C--   Main loop
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
 
           IF (k.EQ.1) THEN
 c just copy terms
@@ -331,14 +325,13 @@ c subtract two terms
           ENDIF
 
 c normalization
-          tmpval = c5d_prime(i,j,k)
-          IF ( tmpval.NE.0. _d 0 ) THEN
-           c5d_prime(i,j,k) = c5d_prime(i,j,k) / tmpval
-           d5d_prime(i,j,k) = d5d_prime(i,j,k) / tmpval
-           e5d_prime(i,j,k) = e5d_prime(i,j,k) / tmpval
-           y5d_prime(i,j,k) = y5d_prime(i,j,k) / tmpval
+          tmpVar = c5d_prime(i,j,k)
+          IF ( tmpVar.NE.0. _d 0 ) THEN
+           recVar = 1. _d 0 / tmpVar
+           d5d_prime(i,j,k) = d5d_prime(i,j,k)*recVar
+           e5d_prime(i,j,k) = e5d_prime(i,j,k)*recVar
+           y5d_prime(i,j,k) = y5d_prime(i,j,k)*recVar
           ELSE
-           c5d_prime(i,j,k) = 0. _d 0
            d5d_prime(i,j,k) = 0. _d 0
            e5d_prime(i,j,k) = 0. _d 0
            y5d_prime(i,j,k) = 0. _d 0
@@ -354,10 +347,10 @@ c-- k-loop
 CADJ loop = sequential
 C--   Backward sweep (starting from bottom)
       DO k=Nr,1,-1
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          IF (k.EQ.Nr) THEN
           y5d_update(i,j,k) =   y5d_prime(i,j,k)
          ELSEIF (k.EQ.Nr-1) THEN
@@ -375,10 +368,10 @@ c-- k-loop
 
 C--   Update array
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          y5d(i,j,k,bi,bj)=y5d_update(i,j,k)
         ENDDO
        ENDDO
