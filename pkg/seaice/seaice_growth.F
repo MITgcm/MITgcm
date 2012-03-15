@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.161 2012/03/14 22:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.162 2012/03/15 03:07:31 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -133,7 +133,7 @@ C ICE/SNOW stocks tendencies associated with the various melt/freeze processes
 #ifdef SEAICE_ALLOW_AREA_RELAXATION
 C     ICE/SNOW stocks tendency associated with relaxation towards observation
       _RL d_AREAbyRLX         (1:sNx,1:sNy)
-c     The change of mean ice thickness due to relaxation 
+c     The change of mean ice thickness due to relaxation
       _RL d_HEFFbyRLX         (1:sNx,1:sNy)
 #endif
 
@@ -370,9 +370,9 @@ c
             a_QbyATMmult_cover(I,J,IT)    = 0.0 _d 0
             a_QSWbyATMmult_cover(I,J,IT)  = 0.0 _d 0
             a_FWbySublimMult(I,J,IT)      = 0.0 _d 0
-# ifdef SEAICE_CAP_SUBLIM
+#ifdef SEAICE_CAP_SUBLIM
             latentHeatFluxMaxMult(I,J,IT) = 0.0 _d 0
-# endif
+#endif
           ENDDO
          ENDDO
         ENDDO
@@ -428,7 +428,7 @@ C         d_HEFFbyRLX(i,j) = 0. _d 0
      &       SEAICE_deltaTtherm/SEAICE_tauAreaObsRelax
      &       * (obsSIce(I,J,bi,bj) - AREA(I,J,bi,bj))
            ENDIF
-           IF ( obsSIce(I,J,bi,bj).GT.0. _d 0 .AND. 
+           IF ( obsSIce(I,J,bi,bj).GT.0. _d 0 .AND.
      &          AREA(I,J,bi,bj).EQ.0. _d 0) THEN
 C           d_HEFFbyRLX(i,j) = 1. _d 1 * siEps * d_AREAbyRLX(i,j)
             d_HEFFbyRLX(i,j) = 1. _d 1 * siEps
@@ -587,9 +587,9 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
      I          ONE, 1, diagName,0,1,2,bi,bj,myThid )
           ENDIF
          ENDDO
-#endif
+#endif /* ALLOW_SITRACER */
         ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf no additional dependency of air-sea fluxes to ice
@@ -629,7 +629,7 @@ CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
             hsnowActual(I,J) = HSNWpreTH(I,J)/tmpscal1
             tmpscal2         = HEFFpreTH(I,J)/tmpscal1
             heffActual(I,J)  = MAX(tmpscal2,SEAICE_hice_reg)
-#else
+#else /* SEAICE_GROWTH_LEGACY */
 cif        regularize AREA with SEAICE_area_reg
            tmpscal1 = SQRT(AREApreTH(I,J)* AREApreTH(I,J) + area_reg_sq)
 cif        heffActual calculated with the regularized AREA
@@ -638,7 +638,7 @@ cif        regularize heffActual with SEAICE_hice_reg (add lower bound)
            heffActual(I,J) = SQRT(tmpscal2 * tmpscal2 + hice_reg_sq)
 cif        hsnowActual calculated with the regularized AREA
            hsnowActual(I,J) = HSNWpreTH(I,J) / tmpscal1
-#endif
+#endif /* SEAICE_GROWTH_LEGACY */
 cif        regularize the inverse of heffActual by hice_reg
            recip_heffActual(I,J)  = AREApreTH(I,J) /
      &                 sqrt(HEFFpreTH(I,J)*HEFFpreTH(I,J) + hice_reg_sq)
@@ -675,7 +675,7 @@ c        step (W/m^2)
           ENDIF
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_CAP_SUBLIM */
 
 C ===================================================================
 C ================PART 2: determine heat fluxes/stocks===============
@@ -731,7 +731,7 @@ C     Compute relative wind speed over sea ice.
           ENDDO
          ENDDO
         ENDIF
-#endif
+#endif /* ALLOW_ATM_WIND */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tice(:,:,bi,bj)
@@ -838,8 +838,8 @@ cif     The actual vs. maximum latent heat flux
           CALL DIAGNOSTICS_FILL(latentHeatFluxMax,
      &     'SImaxLHF',0,1,3,bi,bj,myThid)
         ENDIF
-# endif
-#endif
+# endif /* ALLOW_DIAGNOSTICS */
+#endif /* SEAICE_CAP_SUBLIM */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE AREApreTH       = comlev1_bibj, key = iicekey, byte = isbyte
@@ -1170,7 +1170,7 @@ c needs to be here to allow use also with LEGACY branch
           SItrHEFF(I,J,bi,bj,4)=HEFF(I,J,bi,bj)
          ENDDO
         ENDDO
-#endif
+#endif /* ALLOW_SITRACER */
 
 C convert snow to ice if submerged.
 C =================================
@@ -1277,7 +1277,7 @@ C apply tendency
           ENDIF
 #ifdef ALLOW_SITRACER
           SItrAREA(I,J,bi,bj,3)=AREA(I,J,bi,bj)
-#endif
+#endif /* ALLOW_SITRACER */
 #ifdef ALLOW_DIAGNOSTICS
           d_AREAbyATM(I,J)=
      &       recip_HO*MAX(ZERO,d_HEFFbyATMonOCN_open(I,J))
@@ -1286,7 +1286,7 @@ C apply tendency
      &        HALF*recip_HH*MIN(0. _d 0,d_HEFFbyATMonOCN_cover(I,J))
           d_AREAbyOCN(I,J)=
      &        HALF*recip_HH*MIN( 0. _d 0,d_HEFFbyOCNonICE(I,J) )
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
          ENDDO
         ENDDO
 
@@ -1338,7 +1338,7 @@ CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_SALT_PLUME */
          ENDDO
         ENDDO
-#endif
+#endif /* ndef SEAICE_VARIABLE_SALINITY */
 
 #ifdef SEAICE_VARIABLE_SALINITY
 
@@ -1506,7 +1506,7 @@ c needs to be here to allow use also with LEGACY branch
           SItrHEFF(I,J,bi,bj,5)=HEFF(I,J,bi,bj)
          ENDDO
         ENDDO
-#endif
+#endif /* ALLOW_SITRACER */
 
 C ===================================================================
 C ==============PART 7: determine ocean model forcing================
@@ -1532,7 +1532,7 @@ C for backward compatibility it is left out of the LEGACY branch
      &         - ( d_HEFFbyOCNonICE(I,J) +
      &             d_HSNWbyOCNonSNW(I,J)*SNOW2ICE +
      &             d_HEFFbyNEG(I,J) +
-#idef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef SEAICE_ALLOW_AREA_RELAXATION
      &             d_HEFFbyRLX(I,J) +
 #endif
      &             d_HSNWbyNEG(I,J)*SNOW2ICE )
@@ -1607,7 +1607,7 @@ c back out the eventual TFLUX adjustement and fill diag
      &      'SIaaflux',0,1,3,bi,bj,myThid)
 #endif
       ENDIF
-#endif
+#endif /* ndef SEAICE_DISABLE_HEATCONSFIX */
 
 C compute net fresh water flux leaving/entering
 C the ocean, accounting for fresh/salt water stocks.
