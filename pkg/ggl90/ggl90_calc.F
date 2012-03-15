@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.19 2010/08/19 23:52:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.20 2012/03/15 15:23:22 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -98,9 +98,9 @@ c     _RL     SQRTTKE
       _RL     totalDepth       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C-    tri-diagonal matrix
-      _RL     a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER errCode
 #ifdef ALLOW_GGL90_HORIZDIFF
 C     xA, yA   :: area of lateral faces
@@ -139,6 +139,11 @@ C     Initialize local fields
          TKEPrandtlNumber(i,j,k)  = 1. _d 0
          GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
          GGL90visctmp(i,j,k)      = 0. _d 0
+#ifndef SOLVE_DIAGONAL_LOWMEMORY
+         a3d(i,j,k) = 0. _d 0
+         b3d(i,j,k) = 1. _d 0
+         c3d(i,j,k) = 0. _d 0
+#endif
         ENDDO
        ENDDO
       ENDDO
@@ -454,7 +459,7 @@ C     set up matrix
 C--   Lower diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
-         a(i,j,1) = 0. _d 0
+         a3d(i,j,1) = 0. _d 0
        ENDDO
       ENDDO
       DO k=2,Nr
@@ -464,7 +469,7 @@ C--   Lower diagonal
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k-1) with recip_hFacC(k-1)
-         a(i,j,k) = -deltaTggl90
+         a3d(i,j,k) = -deltaTggl90
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
      &        *recip_drC(k)*maskC(i,j,k,bi,bj)
@@ -474,7 +479,7 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
 C--   Upper diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
-         c(i,j,1)  = 0. _d 0
+         c3d(i,j,1)  = 0. _d 0
        ENDDO
       ENDDO
       DO k=2,Nr
@@ -484,7 +489,7 @@ C--   Upper diagonal
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k) with recip_hFacC(k)
-          c(i,j,k) = -deltaTggl90
+          c3d(i,j,k) = -deltaTggl90
      &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
      &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
      &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)
@@ -496,7 +501,7 @@ C--   Center diagonal
        km1 = MAX(k-1,1)
        DO j=jMin,jMax
         DO i=iMin,iMax
-          b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
+          b3d(i,j,k) = 1. _d 0 - c3d(i,j,k) - a3d(i,j,k)
      &        + implDissFac*deltaTggl90*GGL90ceps*SQRTTKE(i,j,k)
      &        * rMixingLength(i,j,k)
      &        * maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
@@ -520,19 +525,19 @@ C     Dirichlet surface boundary condition for TKE
         GGL90TKE(i,j,kSurf,bi,bj) = maskC(i,j,kSurf,bi,bj)
      &           *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare)
         GGL90TKE(i,j,kp1,bi,bj) = GGL90TKE(i,j,kp1,bi,bj)
-     &               - a(i,j,kp1)*GGL90TKE(i,j,kSurf,bi,bj)
-        a(i,j,kp1) = 0. _d 0
+     &               - a3d(i,j,kp1)*GGL90TKE(i,j,kSurf,bi,bj)
+        a3d(i,j,kp1) = 0. _d 0
 C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
         kBottom   = MAX(kLowC(i,j,bi,bj),1)
         GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
-     &                              - GGL90TKEbottom*c(i,j,kBottom)
-        c(i,j,kBottom) = 0. _d 0
+     &                              - GGL90TKEbottom*c3d(i,j,kBottom)
+        c3d(i,j,kBottom) = 0. _d 0
        ENDDO
       ENDDO
 
 C     solve tri-diagonal system
       CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
-     I                        a, b, c,
+     I                        a3d, b3d, c3d,
      U                        GGL90TKE,
      O                        errCode,
      I                        bi, bj, myThid )
