@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/vermix/code/CPP_OPTIONS.h,v 1.2 2009/11/10 02:59:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/vermix/code/CPP_OPTIONS.h,v 1.3 2012/03/15 00:57:07 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -28,6 +28,9 @@ C o Include/exclude Implicit vertical advection code
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
 
+C o Include/exclude code for single reduction cg-solver
+#undef ALLOW_SRCG
+
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
 
@@ -53,6 +56,12 @@ C   this implies that surface thickness (hFactors) vary with time
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
 #undef ALLOW_ADDFLUID
+
+C o Choices for implicit solver routines solve_*diagonal.F
+C   The following has low memory footprint, but not suitable for AD
+#define SOLVE_DIAGONAL_LOWMEMORY
+C   The following one suitable for AD but does not vectorize
+#undef SOLVE_DIAGONAL_KINNER
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
 C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
