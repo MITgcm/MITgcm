@@ -12,9 +12,8 @@
  diffKhS=0.0,
  diffKrS=3.E-5,
 #ph(
-#ph Many of the following params. are
-#ph just for AD testing; not necesarily
-#ph meaningful in a 4x4 deg. setting.
+#ph Many of the following params. are just for AD testing;
+#ph not necesarily meaningful in a 4x4 deg. setting.
  viscC4Leith=1.5,
  viscC4Leithd=1.5,
  viscA4GridMax=0.5,
@@ -22,15 +21,14 @@
  bottomDragQuadratic = 0.0021,
 #ph)
  rhonil=1035.,
- rotationPeriod=86400.,
  gravity=9.81,
  eosType = 'JMD95Z',
- ivdc_kappa=100.,
+ ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
- exactConserv=.TRUE.
+ exactConserv=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
@@ -42,14 +40,12 @@
  hFacInf=0.2,
  hFacSup=2.0,
  nonlinFreeSurf=2,
- exactConserv=.TRUE.
- useRealFreshWaterFlux=.TRUE.,
  staggerTimeStep=.TRUE.,
- multiDimAdvection=.TRUE,
+ multiDimAdvection=.TRUE.,
  tempAdvScheme=30,
  saltAdvScheme=30,
- tempVertAdvScheme=30,
- saltVertAdvScheme=30,
+ tempVertAdvScheme=20,
+ saltVertAdvScheme=20,
  tempImplVertAdv=.TRUE.,
  saltImplVertAdv=.TRUE.,
  inAdExact=.TRUE.,
@@ -73,11 +69,7 @@
  tauCD =     321428.,
  deltaTtracer= 43200.0,
  deltaTClock = 43200.0,
-# if you are using a version later than checkpoint45d on the main branch
-# you can uncomment the following line and increase the time step
-# deltaTtracer and deltaTClock to 172800.0 as well to speed up the
-# asynchronous time stepping
-# deltaTfreesurf = 172800.0,
+#deltaTfreesurf= 43200.,
  abEps = 0.1,
  pChkptFreq= 311040000.,
  dumpFreq=   311040000.,
