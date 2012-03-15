@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1622 2012/03/15 16:01:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1623 2012/03/15 20:42:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,8 +6,11 @@ $Name:  $
 
 o model/src: solve_*diagonal.F
    - replace division with multiplication by inverse (similar to original version)
+     update output of AD exp. global_ocean.90x40x15.
    - fix pkg/gmredi/gmredi_calc_psi_bvp.F & pkg/ggl90/ggl90_calc.F
      to enable the use of the vectorized & differentiable solve_tridiagonal.F
+   - test exp. global_ocean.90x40x15/input_ad: switch to advection scheme 20 for
+     vertical advection (to get solve_tridiagonal tested in AD mode).
 o pkg/seaice: ECCO-CLIVAR merge:
   1. seaice AREA relaxation
      * CPP option: SEAICE_ALLOW_AREA_RELAXATION
