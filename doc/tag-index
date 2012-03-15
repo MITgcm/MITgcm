@@ -1,22 +1,27 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1621 2012/03/14 22:59:05 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1622 2012/03/15 16:01:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o ECCO-CLIVAR merge:
-  1. seaice AREA relaxation 
+o model/src: solve_*diagonal.F
+   - replace division with multiplication by inverse (similar to original version)
+   - fix pkg/gmredi/gmredi_calc_psi_bvp.F & pkg/ggl90/ggl90_calc.F
+     to enable the use of the vectorized & differentiable solve_tridiagonal.F
+o pkg/seaice: ECCO-CLIVAR merge:
+  1. seaice AREA relaxation
      * CPP option: SEAICE_ALLOW_AREA_RELAXATION
      * runtime flag: SEAICE_tauAreaObsRelax
-  2. modified global mean cost imbalance code: CPP option ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
+  2. modified global mean cost imbalance code: CPP option
+      ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
 o another iteration on solve_*diagonal.F
-  Make choices independent of AUTODIFF
-  Default is now the adjoinable vectorized version
-  Alternative choices are:
-  * still adjoinable but lower memory (k as inner-most loop)
-  SOLVE_DIAGONAL_KINNER
-  * non-adjoinable legacy version with low memory footprint
-  SOLVE_DIAGONAL_LOWMEMORY
+   Make choices independent of AUTODIFF
+   Default will be the adjoinable vectorized version.
+   Alternative choices are:
+   * non-adjoinable original version with low memory footprint:
+     #define SOLVE_DIAGONAL_LOWMEMORY
+   * still adjoinable but does not vectorize (k as inner-most loop):
+     #define SOLVE_DIAGONAL_KINNER (keeping SOLVE_DIAGONAL_LOWMEMORY undef)
 o testreport
  - add option to use a home made wrapper around "make"
  - remove MITGCM_IEEE env. variable (no longer active)
