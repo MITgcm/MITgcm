@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.9 2012/03/14 20:02:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.10 2012/03/15 15:25:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: SOLVE_TRIDIAGONAL
 C     !INTERFACE:
-      SUBROUTINE SOLVE_TRIDIAGONAL( 
+      SUBROUTINE SOLVE_TRIDIAGONAL(
      I                     iMin,iMax, jMin,jMax,
      I                     a3d, b3d, c3d,
      U                     y3d,
@@ -14,7 +14,7 @@ C     !INTERFACE:
      I                     bi, bj, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R SOLVE_TRIDIAGONAL                                              
+C     | S/R SOLVE_TRIDIAGONAL
 C     | o Solve a tri-diagonal system A*X=Y (dimension Nr)
 C     *==========================================================*
 C     | o Used to solve implicitly vertical advection & diffusion
@@ -35,31 +35,30 @@ C     c3d :: matrix upper diagnonal
 C     y3d :: Input = Y vector ; Output = X = solution of A*X=Y
 C     errCode :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
-      _RL a3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER errCode
       INTEGER bi, bj, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
-      _RL tmpvar
+      _RL tmpVar
 #ifndef SOLVE_DIAGONAL_LOWMEMORY
-      _RL c3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y3d_m1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL recVar
+      _RL c3d_m1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y3d_m1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 # ifdef SOLVE_DIAGONAL_KINNER
       _RL c3d_prime(Nr)
       _RL y3d_prime(Nr)
       _RL y3d_update(Nr)
 # else
-      _RL c3d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y3d_prime(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL y3d_update(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL c3d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y3d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL y3d_update(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 # endif
-#else /* SOLVE_DIAGONAL_LOWMEMORY */
-      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 #endif /* SOLVE_DIAGONAL_LOWMEMORY */
 CEOP
 
@@ -70,10 +69,10 @@ CEOP
 C--   Beginning of forward sweep (top level)
       DO j=jMin,jMax
        DO i=iMin,iMax
-         IF ( b3d(i,j,1).NE.0. _d 0 ) THEN 
-           bet(i,j,1) = 1. _d 0 / b3d(i,j,1)
+         IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
+           b3d(i,j,1) = 1. _d 0 / b3d(i,j,1)
          ELSE
-           bet(i,j,1) = 0. _d 0
+           b3d(i,j,1) = 0. _d 0
            errCode = 1
          ENDIF
        ENDDO
@@ -83,11 +82,11 @@ C--   Middle of forward sweep
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         tmpvar = b3d(i,j,k) - a3d(i,j,k)*c3d(i,j,k-1)*bet(i,j,k-1)
-         IF ( tmpvar .NE. 0. _d 0 ) THEN
-           bet(i,j,k) = 1. _d 0 / tmpvar
+         tmpVar = b3d(i,j,k) - a3d(i,j,k)*c3d(i,j,k-1)*b3d(i,j,k-1)
+         IF ( tmpVar .NE. 0. _d 0 ) THEN
+           b3d(i,j,k) = 1. _d 0 / tmpVar
          ELSE
-           bet(i,j,k) = 0. _d 0
+           b3d(i,j,k) = 0. _d 0
            errCode = 1
          ENDIF
         ENDDO
@@ -96,26 +95,25 @@ C--   Middle of forward sweep
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-         y3d(i,j,1,bi,bj) = y3d(i,j,1,bi,bj)*bet(i,j,1)
+         y3d(i,j,1,bi,bj) = y3d(i,j,1,bi,bj)*b3d(i,j,1)
        ENDDO
       ENDDO
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         y3d(i,j,k,bi,bj) = ( y3d(i,j,k,bi,bj) 
+         y3d(i,j,k,bi,bj) = ( y3d(i,j,k,bi,bj)
      &                      - a3d(i,j,k)*y3d(i,j,k-1,bi,bj)
-     &                      )*bet(i,j,k) 
+     &                      )*b3d(i,j,k)
         ENDDO
        ENDDO
       ENDDO
 
 C--    Backward sweep
-CADJ loop = sequential
       DO k=Nr-1,1,-1
        DO j=jMin,jMax
         DO i=iMin,iMax
           y3d(i,j,k,bi,bj) = y3d(i,j,k,bi,bj)
-     &         - c3d(i,j,k)*bet(i,j,k)*y3d(i,j,k+1,bi,bj)
+     &         - c3d(i,j,k)*b3d(i,j,k)*y3d(i,j,k+1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -124,23 +122,21 @@ CADJ loop = sequential
 
 C--   Temporary array
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          c3d_m1(i,j,k) = c3d(i,j,k)
          y3d_m1(i,j,k) = y3d(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
 
-#ifdef SOLVE_DIAGONAL_KINNER      
+#ifdef SOLVE_DIAGONAL_KINNER
 
 C--   Main loop
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-ccc      DO j=jMin,jMax
-ccc       DO i=iMin,iMax
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 
         DO k=1,Nr
          c3d_prime(k) = 0. _d 0
@@ -160,11 +156,12 @@ C--   Forward sweep
              errCode = 1
            ENDIF
          ELSE
-           tmpvar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(k-1)
-           IF ( tmpvar .NE. 0. _d 0 ) THEN
-             c3d_prime(k) = c3d_m1(i,j,k) / tmpvar
+           tmpVar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(k-1)
+           IF ( tmpVar .NE. 0. _d 0 ) THEN
+             recVar = 1. _d 0 / tmpVar
+             c3d_prime(k) = c3d_m1(i,j,k)*recVar
              y3d_prime(k) = (y3d_m1(i,j,k) - y3d_prime(k-1)*a3d(i,j,k))
-     &                      / tmpvar
+     &                      *recVar
            ELSE
              c3d_prime(k) = 0. _d 0
              y3d_prime(k) = 0. _d 0
@@ -194,10 +191,10 @@ C--   Update array
 
 C--   Init.
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          c3d_prime(i,j,k) = 0. _d 0
          y3d_prime(i,j,k) = 0. _d 0
          y3d_update(i,j,k) = 0. _d 0
@@ -209,26 +206,28 @@ CADJ loop = sequential
 C--   Forward sweep
       DO k=1,Nr
 
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          IF ( k.EQ.1 ) THEN
            IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
-             c3d_prime(i,j,1) = c3d_m1(i,j,1) / b3d(i,j,1)
-             y3d_prime(i,j,1) = y3d_m1(i,j,1) / b3d(i,j,1)
+             recVar = 1. _d 0 / b3d(i,j,1)
+             c3d_prime(i,j,1) = c3d_m1(i,j,1)*recVar
+             y3d_prime(i,j,1) = y3d_m1(i,j,1)*recVar
            ELSE
              c3d_prime(i,j,1) = 0. _d 0
              y3d_prime(i,j,1) = 0. _d 0
              errCode = 1
            ENDIF
          ELSE
-           tmpvar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(i,j,k-1)
-           IF ( tmpvar .NE. 0. _d 0 ) THEN
-             c3d_prime(i,j,k) = c3d_m1(i,j,k) / tmpvar
-             y3d_prime(i,j,k) = ( y3d_m1(i,j,k) 
-     &                            - y3d_prime(i,j,k-1)*a3d(i,j,k) )
-     &                          / tmpvar
+           tmpVar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(i,j,k-1)
+           IF ( tmpVar .NE. 0. _d 0 ) THEN
+             recVar = 1. _d 0 / tmpVar
+             c3d_prime(i,j,k) = c3d_m1(i,j,k)*recVar
+             y3d_prime(i,j,k) = ( y3d_m1(i,j,k)
+     &                          - a3d(i,j,k)*y3d_prime(i,j,k-1)
+     &                          )*recVar
            ELSE
              c3d_prime(i,j,k) = 0. _d 0
              y3d_prime(i,j,k) = 0. _d 0
@@ -243,15 +242,15 @@ C-- k-loop
 CADJ loop = sequential
 C--   Backward sweep
       DO k=Nr,1,-1
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
          IF ( k.EQ.Nr ) THEN
-          y3d_update(i,j,k)=y3d_prime(i,j,k)
+          y3d_update(i,j,k) = y3d_prime(i,j,k)
          ELSE
-          y3d_update(i,j,k)=y3d_prime(i,j,k)
-     &                      -c3d_prime(i,j,k)*y3d_update(i,j,k+1)
+          y3d_update(i,j,k) = y3d_prime(i,j,k)
+     &                      - c3d_prime(i,j,k)*y3d_update(i,j,k+1)
          ENDIF
         ENDDO
        ENDDO
@@ -260,11 +259,11 @@ C-- k-loop
 
 C--   Update array
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-ccc       DO j=jMin,jMax
-ccc        DO i=iMin,iMax
-         y3d(i,j,k,bi,bj)=y3d_update(i,j,k)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
+         y3d(i,j,k,bi,bj) = y3d_update(i,j,k)
         ENDDO
        ENDDO
 C-- k-loop
