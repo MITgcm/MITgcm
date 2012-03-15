@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.45 2012/03/14 19:55:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.46 2012/03/15 00:41:29 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -59,7 +59,7 @@ C   (3-D generalisation of oceanic real-fresh water flux)
 
 C o Choices for implicit solver routines solve_*diagonal.F
 C   The following has low memory footprint, but not suitable for AD
-#undef SOLVE_DIAGONAL_LOWMEMORY
+#define SOLVE_DIAGONAL_LOWMEMORY
 C   The following one suitable for AD but does not vectorize
 #undef SOLVE_DIAGONAL_KINNER
 
