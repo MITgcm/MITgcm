@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.2 2011/02/10 23:22:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.3 2012/03/15 15:18:02 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -38,9 +38,9 @@ C     sigmaY  :: Meridional gradient of density
 C     sigmaR  :: Vertical   gradient of Pot.density (locally referenced)
 C     myThid  :: My Thread Id number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 CEOP
 
@@ -55,8 +55,8 @@ C     !LOCAL VARIABLES:
       _RL sigmaY_W
       _RL dSigmaDrW
       _RL dSigmaDrS
-      _RL wkb_cW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL wkb_cS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL wkb_cW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL wkb_cS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rPI, c2
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
@@ -66,9 +66,9 @@ C     !LOCAL VARIABLES:
       PARAMETER ( rPI    = 0.318309886183791 _d 0 )
 
 C-    Matrix elements for tri-diagonal solver
-      _RL GM_a3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL GM_b3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL GM_c3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL GM_a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL GM_b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL GM_c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C-    Initialization : <= done in S/R gmredi_init
       IF (GM_UseBVP) THEN
@@ -76,31 +76,40 @@ C-    Initialization : <= done in S/R gmredi_init
 C     Initialize the WKB wave speeds to zero
 C     We use c = int_{-H}^0 N dz/(GM_BVP_ModeNumber*PI) and have absorbed
 C     a factor of g/rhoConst
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         wkb_cW(i,j) = 0. _d 0
-         wkb_cS(i,j) = 0. _d 0
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          wkb_cW(i,j) = 0. _d 0
+          wkb_cS(i,j) = 0. _d 0
         ENDDO
        ENDDO
 
 C      Surface BC : set to zero
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         GM_a3d(i,j,1) = 0. _d 0
-         GM_b3d(i,j,1) = 1. _d 0
-         GM_c3d(i,j,1) = 0. _d 0
-         GM_PsiX(i,j,1,bi,bj) = 0. _d 0
-         GM_PsiY(i,j,1,bi,bj) = 0. _d 0
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          GM_PsiX(i,j,1,bi,bj) = 0. _d 0
+          GM_PsiY(i,j,1,bi,bj) = 0. _d 0
+C      and set matrix to identity
+          GM_a3d(i,j,1) = 0. _d 0
+          GM_b3d(i,j,1) = 1. _d 0
+          GM_c3d(i,j,1) = 0. _d 0
         ENDDO
        ENDDO
 
        DO k=2,Nr
         km1 = k-1
+C-     Reset matrix to identity
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          GM_a3d(i,j,k) = 0. _d 0
+          GM_b3d(i,j,k) = 1. _d 0
+          GM_c3d(i,j,k) = 0. _d 0
+         ENDDO
+        ENDDO
         half_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
 C      Gradient of Sigma below U and V points
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           sigmaX_W = op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
      &                  *maskW(i,j,k,bi,bj)
           dSigmaDrW = op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
@@ -111,7 +120,8 @@ C      Gradient of Sigma below U and V points
      &                 *drC(k)*GM_BVP_rModeNumber*rPI
 
 C      Part of main diagonal coming from zeroth order derivative
-          GM_b3d(i,j,k) = MAX( -dSigmaDrW, GM_Small_Number )
+          IF ( maskW(i,j,k,bi,bj).NE.0. )
+     &    GM_b3d(i,j,k) = MAX( -dSigmaDrW, GM_Small_Number )
 
 C      This is initially the RHS
           GM_PsiX(i,j,k,bi,bj) = half_K*sigmaX_W
@@ -129,14 +139,9 @@ C       should substract c3d(k=Nr)*Psi(k=Nr+1) to RHS @ k=Nr ;
 C       However in our case this term is zero since Psi(k=Nr+1)=0
        DO k=2,Nr
         km1 = k-1
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-          IF ( maskW(i,j,k,bi,bj).EQ.0. ) THEN
-C-     at Bottom and below, use identity matrix
-            GM_a3d(i,j,k) = 0. _d 0
-            GM_b3d(i,j,k) = 1. _d 0
-            GM_c3d(i,j,k) = 0. _d 0
-          ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
+          IF ( maskW(i,j,k,bi,bj).NE.0. ) THEN
             c2 = MAX( wkb_cW(i,j)*wkb_cW(i,j), GM_BVP_cHat2Min )
             GM_a3d(i,j,k) = -c2*recip_drC(k)
      &                      *recip_drF(km1)*recip_hFacW(i,j,km1,bi,bj)
@@ -167,10 +172,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        DO k=2,Nr
         km1 = k-1
+C-     Reset matrix to identity
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          GM_a3d(i,j,k) = 0. _d 0
+          GM_b3d(i,j,k) = 1. _d 0
+          GM_c3d(i,j,k) = 0. _d 0
+         ENDDO
+        ENDDO
         half_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           sigmaY_W = op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
      &                  *maskS(i,j,k,bi,bj)
           dSigmaDrS = op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
@@ -181,7 +194,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                 *drC(k)*GM_BVP_rModeNumber*rPI
 
 C      Part of main diagonal coming from zeroth order derivative
-          GM_b3d(i,j,k) = MAX( -dSigmaDrS, GM_Small_Number )
+          IF ( maskS(i,j,k,bi,bj).NE.0. )
+     &    GM_b3d(i,j,k) = MAX( -dSigmaDrS, GM_Small_Number )
 
 C      This is initially the RHS
           GM_PsiY(i,j,k,bi,bj) = half_K*sigmaY_W
@@ -192,14 +206,9 @@ C      This is initially the RHS
 
        DO k=2,Nr
         km1 = k-1
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          IF ( maskS(i,j,k,bi,bj).EQ.0. ) THEN
-C-     at Bottom and below, use identity matrix
-            GM_a3d(i,j,k) = 0. _d 0
-            GM_b3d(i,j,k) = 1. _d 0
-            GM_c3d(i,j,k) = 0. _d 0
-          ELSE
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF ( maskS(i,j,k,bi,bj).NE.0. ) THEN
             c2 = MAX( wkb_cS(i,j)*wkb_cS(i,j), GM_BVP_cHat2Min )
             GM_a3d(i,j,k) = -c2*recip_drC(k)
      &                      *recip_drF(km1)*recip_hFacS(i,j,km1,bi,bj)
