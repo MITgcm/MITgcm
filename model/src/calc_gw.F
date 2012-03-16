@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.47 2011/11/23 09:29:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.48 2012/03/16 21:40:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,8 +139,8 @@ C-    Initialise gwDiss to zero
       ENDDO
       IF (momViscosity) THEN
 C-    Initialize del2w to zero:
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            del2w(i,j) = 0. _d 0
          ENDDO
         ENDDO
@@ -166,8 +166,8 @@ C---  Sweep down column
         IF ( k.GT.1 ) THEN
 C--   Compute grid factor arround a W-point:
 #ifdef CALC_GW_NEW_THICK
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF ( maskC(i,j,k-1,bi,bj).EQ.0. .OR.
      &          maskC(i,j, k ,bi,bj).EQ.0. ) THEN
              recip_rThickC(i,j) = 0.
@@ -181,16 +181,16 @@ C-    valid in z & p coord.; also accurate if Interface @ middle between 2 cente
           ENDDO
          ENDDO
          IF (momViscosity) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            rThickC_C(i,j) = MAX( zeroRS,
      &                           MIN( Ro_surf(i,j,bi,bj), rC(k-1) )
      &                          -MAX(   R_low(i,j,bi,bj),  rC(k)  )
      &                         )
           ENDDO
          ENDDO
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx+1,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
            rThickC_W(i,j) = MAX( zeroRS,
      &                           MIN( rSurfW(i,j,bi,bj), rC(k-1) )
      &                          -MAX(  rLowW(i,j,bi,bj), rC(k)   )
@@ -200,8 +200,8 @@ C     W-Cell Western face area:
 c    &                              *deepFacF(k)
           ENDDO
          ENDDO
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            rThickC_S(i,j) = MAX( zeroRS,
      &                           MIN( rSurfS(i,j,bi,bj), rC(k-1) )
      &                          -MAX(  rLowS(i,j,bi,bj), rC(k)   )
@@ -215,8 +215,8 @@ C this gives deepFacF*recip_deepFacF => cancel each other (and therefore omitted
          ENDDO
          ENDIF
 #else /* CALC_GW_NEW_THICK */
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate !
            IF ( maskC(i,j,k,bi,bj).EQ.0. ) THEN
              recip_rThickC(i,j) = 0.
@@ -255,8 +255,8 @@ c          ENDIF
          ENDDO
 #endif /* CALC_GW_NEW_THICK */
         ELSEIF ( selectNHfreeSurf.GE.1 ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            recip_rThickC(i,j) = recip_drC(k)
 c          rThickC_C(i,j) = drC(k)
 c          rThickC_W(i,j) = drC(k)
@@ -268,8 +268,8 @@ c          yA(i,j) = _dxG(i,j,bi,bj)*drC(k)
         ENDIF
 
 C--   local copy of wVel:
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             wFld(i,j) = wVel(i,j,k,bi,bj)
           ENDDO
         ENDDO
@@ -284,9 +284,9 @@ C     to compute d/dx(W), fill corners with appropriate values:
             CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                                 wFld, bi,bj, myThid )
           ENDIF
-          DO j=1-Oly,sNy+Oly
-           flx_EW(1-Olx,j)=0.
-           DO i=1-Olx+1,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           flx_EW(1-OLx,j)=0.
+           DO i=1-OLx+1,sNx+OLx
             flx_EW(i,j) =
      &               ( wFld(i,j) - wFld(i-1,j) )
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
@@ -305,11 +305,11 @@ C     to compute d/dy(W), fill corners with appropriate values:
             CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                                 wFld, bi,bj, myThid )
           ENDIF
-          DO i=1-Olx,sNx+Olx
-           flx_NS(i,1-Oly)=0.
+          DO i=1-OLx,sNx+OLx
+           flx_NS(i,1-OLy)=0.
           ENDDO
-          DO j=1-Oly+1,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             flx_NS(i,j) =
      &               ( wFld(i,j) - wFld(i,j-1) )
      &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
@@ -326,8 +326,8 @@ C     to compute d/dy(W), fill corners with appropriate values:
 
 C     del^2 W
 C     Divergence of horizontal fluxes
-          DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx-1
+          DO j=1-OLy,sNy+OLy-1
+           DO i=1-OLx,sNx+OLx-1
             del2w(i,j) = ( ( flx_EW(i+1,j)-flx_EW(i,j) )
      &                    +( flx_NS(i,j+1)-flx_NS(i,j) )
      &                   )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
@@ -514,6 +514,7 @@ c            flxAdvUp(i,j) = 0.
             ENDDO
            ENDDO
          ENDIF
+
          IF ( k.GT.1 .OR. selectNHfreeSurf.GE.1 ) THEN
 C     Tendency is minus divergence of advective fluxes:
 C     anelastic: all transports & advect. fluxes are scaled by rhoFac
@@ -529,6 +530,20 @@ c            IF (k.EQ.2) flxAdvUp(i,j) = 0.
      &          *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
+#ifdef ALLOW_ADDFLUID
+          IF ( selectAddFluid.GE.1 ) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
+     &        + wVel(i,j,k,bi,bj)*mass2rUnit*0.5 _d 0
+     &          *( addMass(i,j,k,bi,bj)
+     &            +addMass(i,j,km1,bi,bj)*mskM1 )
+     &          *recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
+     &          *recip_deepFac2F(k)*recip_rhoFacF(k)
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* ALLOW_ADDFLUID */
          ENDIF
 
          DO j=jMin,jMax
