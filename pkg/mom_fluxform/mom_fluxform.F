@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.42 2010/03/16 00:16:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.43 2012/03/16 21:35:09 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -284,8 +284,8 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
         CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
         CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN
              vort3(i,j)  = sideMaskFac*vort3(i,j)
              strain(i,j) = sideMaskFac*strain(i,j)
@@ -421,7 +421,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
         IF ( useDiagnostics ) THEN
           CALL DIAGNOSTICS_FILL(fZon,'ADVx_Um ',k,1,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL(fMer,'ADVy_Um ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(fVerU(1-Olx,1-Oly,kUp),
+          CALL DIAGNOSTICS_FILL(fVerU(1-OLx,1-OLy,kUp),
      &                               'ADVrE_Um',k,1,2,bi,bj,myThid)
         ENDIF
 #endif
@@ -448,6 +448,20 @@ C-- account for 3.D divergence of the flow in rStar coordinate:
         ENDIF
 # endif /* DISABLE_RSTAR_CODE */
 #endif /* NONLIN_FRSURF */
+
+#ifdef ALLOW_ADDFLUID
+        IF ( selectAddFluid.GE.1 ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+     &     + uVel(i,j,k,bi,bj)*mass2rUnit*0.5 _d 0
+     &      *( addMass(i-1,j,k,bi,bj) + addMass(i,j,k,bi,bj) )
+     &      *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)*recip_rhoFacC(k)
+     &      * recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_ADDFLUID */
 
       ELSE
 C-    if momAdvection / else
@@ -637,7 +651,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
         IF ( useDiagnostics ) THEN
           CALL DIAGNOSTICS_FILL(fZon,'ADVx_Vm ',k,1,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL(fMer,'ADVy_Vm ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(fVerV(1-Olx,1-Oly,kUp),
+          CALL DIAGNOSTICS_FILL(fVerV(1-OLx,1-OLy,kUp),
      &                               'ADVrE_Vm',k,1,2,bi,bj,myThid)
         ENDIF
 #endif
@@ -664,6 +678,20 @@ C-- account for 3.D divergence of the flow in rStar coordinate:
         ENDIF
 # endif /* DISABLE_RSTAR_CODE */
 #endif /* NONLIN_FRSURF */
+
+#ifdef ALLOW_ADDFLUID
+        IF ( selectAddFluid.GE.1 ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+     &     + vVel(i,j,k,bi,bj)*mass2rUnit*0.5 _d 0
+     &      *( addMass(i,j-1,k,bi,bj) + addMass(i,j,k,bi,bj) )
+     &      *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)*recip_rhoFacC(k)
+     &      * recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_ADDFLUID */
 
       ELSE
 C-    if momAdvection / else
@@ -862,9 +890,9 @@ C--   Set du/dt & dv/dt on boundaries to zero
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
+        CALL DIAGNOSTICS_FILL(gU(1-OLx,1-OLy,k,bi,bj),
      &                               'Um_Advec',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
+        CALL DIAGNOSTICS_FILL(gV(1-OLx,1-OLy,k,bi,bj),
      &                               'Vm_Advec',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
         CALL DIAGNOSTICS_FILL(guDiss,'Um_Diss ',k,1,2,bi,bj,myThid)
