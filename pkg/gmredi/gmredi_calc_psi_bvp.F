@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.3 2012/03/15 15:18:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.4 2012/03/16 20:55:28 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -88,16 +88,11 @@ C      Surface BC : set to zero
         DO i=1-OLx,sNx+OLx
           GM_PsiX(i,j,1,bi,bj) = 0. _d 0
           GM_PsiY(i,j,1,bi,bj) = 0. _d 0
-C      and set matrix to identity
-          GM_a3d(i,j,1) = 0. _d 0
-          GM_b3d(i,j,1) = 1. _d 0
-          GM_c3d(i,j,1) = 0. _d 0
         ENDDO
        ENDDO
 
-       DO k=2,Nr
-        km1 = k-1
-C-     Reset matrix to identity
+C      Initialise matrix to identity
+       DO k=1,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           GM_a3d(i,j,k) = 0. _d 0
@@ -105,6 +100,10 @@ C-     Reset matrix to identity
           GM_c3d(i,j,k) = 0. _d 0
          ENDDO
         ENDDO
+       ENDDO
+
+       DO k=2,Nr
+        km1 = k-1
         half_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
 C      Gradient of Sigma below U and V points
@@ -120,8 +119,7 @@ C      Gradient of Sigma below U and V points
      &                 *drC(k)*GM_BVP_rModeNumber*rPI
 
 C      Part of main diagonal coming from zeroth order derivative
-          IF ( maskW(i,j,k,bi,bj).NE.0. )
-     &    GM_b3d(i,j,k) = MAX( -dSigmaDrW, GM_Small_Number )
+          GM_b3d(i,j,k) = MAX( -dSigmaDrW, GM_Small_Number )
 
 C      This is initially the RHS
           GM_PsiX(i,j,k,bi,bj) = half_K*sigmaX_W
@@ -151,6 +149,8 @@ C       However in our case this term is zero since Psi(k=Nr+1)=0
      &                      +recip_drF(k)*recip_hFacW(i,j,k,bi,bj) )
             GM_c3d(i,j,k) = -c2*recip_drC(k)
      &                      *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
+          ELSE
+            GM_b3d(i,j,k) = 1. _d 0
           ENDIF
          ENDDO
         ENDDO
@@ -170,9 +170,8 @@ C       However in our case this term is zero since Psi(k=Nr+1)=0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C      Reset matrix to identity
        DO k=2,Nr
-        km1 = k-1
-C-     Reset matrix to identity
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           GM_a3d(i,j,k) = 0. _d 0
@@ -180,6 +179,10 @@ C-     Reset matrix to identity
           GM_c3d(i,j,k) = 0. _d 0
          ENDDO
         ENDDO
+       ENDDO
+C      cut k loop in 2 to prevent bad optimisation with some compilers
+       DO k=2,Nr
+        km1 = k-1
         half_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
         DO j=1-OLy+1,sNy+OLy
@@ -194,8 +197,7 @@ C-     Reset matrix to identity
      &                 *drC(k)*GM_BVP_rModeNumber*rPI
 
 C      Part of main diagonal coming from zeroth order derivative
-          IF ( maskS(i,j,k,bi,bj).NE.0. )
-     &    GM_b3d(i,j,k) = MAX( -dSigmaDrS, GM_Small_Number )
+          GM_b3d(i,j,k) = MAX( -dSigmaDrS, GM_Small_Number )
 
 C      This is initially the RHS
           GM_PsiY(i,j,k,bi,bj) = half_K*sigmaY_W
@@ -218,6 +220,8 @@ C      This is initially the RHS
      &                      +recip_drF(k)*recip_hFacS(i,j,k,bi,bj) )
             GM_c3d(i,j,k) = -c2*recip_drC(k)
      &                      *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
+          ELSE
+            GM_b3d(i,j,k) = 1. _d 0
           ENDIF
          ENDDO
         ENDDO
