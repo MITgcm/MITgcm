@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1624 2012/03/16 21:58:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1625 2012/03/17 14:58:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63k (2012/03/17)
 o model/src:
    - selectAddFluid (ALLOW_ADDFLUID): add missing term in horizontal momentum
      flux-form (mom_fluxform.F) and vertical momentum (calc_gw.F) equations.
