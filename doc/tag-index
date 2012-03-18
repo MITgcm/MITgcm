@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1625 2012/03/17 14:58:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1626 2012/03/18 23:29:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o momentum:
+  - separate fVer?(:,:,kUp) & fVer?(:,:,kDown) in argument list of MOM_FLUXFORM
+    & MOM_VECINV subroutines (to help TAF). This fixes Pb of uninitialised
+    fVer?(kUp) in admom_fluxform with non-lin free-surf or bottom control.
 
 checkpoint63k (2012/03/17)
 o model/src:
