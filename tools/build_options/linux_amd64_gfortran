@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.16 2011/12/02 15:19:38 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.17 2012/03/18 22:46:08 jmc Exp $
 #  $Name:  $
 
 # Build options for gfortran compiler (GNU) on Linux AMD64 platform
@@ -81,8 +81,8 @@ else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0'
   else                          #- development/check options:
-    FOPTIM='-O0'
-    FOPTIM="$FOPTIM -g -ffpe-trap=invalid,zero,overflow -fbounds-check"
+    FOPTIM='-O0 -g -fbounds-check'
+    FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
   fi
 fi
 
