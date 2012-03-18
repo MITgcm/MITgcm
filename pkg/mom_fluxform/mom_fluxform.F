@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.43 2012/03/16 21:35:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.44 2012/03/18 22:21:31 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -32,11 +32,12 @@ C !ROUTINE: MOM_FLUXFORM
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_FLUXFORM(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
+     I        bi,bj,k,iMin,iMax,jMin,jMax,
      I        KappaRU, KappaRV,
-     U        fVerU, fVerV,
+     U        fVerUkm, fVerVkm,
+     O        fVerUkp, fVerVkp,
      O        guDiss, gvDiss,
-     I        myTime, myIter, myThid)
+     I        myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C Calculates all the horizontal accelerations except for the implicit surface
@@ -59,26 +60,28 @@ C     == Global variables ==
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  iMin,iMax,jMin,jMAx  :: loop ranges
-C  k                    :: vertical level
-C  kUp                  :: =1 or 2 for consecutive k
-C  kDown                :: =2 or 1 for consecutive k
+C  bi,bj                :: current tile indices
+C  k                    :: current vertical level
+C  iMin,iMax,jMin,jMax  :: loop ranges
 C  KappaRU              :: vertical viscosity
 C  KappaRV              :: vertical viscosity
-C  fVerU                :: vertical flux of U, 2 1/2 dim for pipe-lining
-C  fVerV                :: vertical flux of V, 2 1/2 dim for pipe-lining
+C  fVerUkm              :: vertical advective flux of U, interface above (k-1/2)
+C  fVerVkm              :: vertical advective flux of V, interface above (k-1/2)
+C  fVerUkp              :: vertical advective flux of U, interface below (k+1/2)
+C  fVerVkp              :: vertical advective flux of V, interface below (k+1/2)
 C  guDiss               :: dissipation tendency (all explicit terms), u component
 C  gvDiss               :: dissipation tendency (all explicit terms), v component
 C  myTime               :: current time
 C  myIter               :: current time-step number
-C  myThid               :: thread number
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k,kUp,kDown
+C  myThid               :: my Thread Id number
+      INTEGER bi,bj,k
+      INTEGER iMin,iMax,jMin,jMax
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fVerUkm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerVkm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerUkp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerVkp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL guDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gvDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     myTime
@@ -96,7 +99,7 @@ C  cF                   :: Coriolis acceleration
 C  mT                   :: Metric terms
 C  fZon                 :: zonal fluxes
 C  fMer                 :: meridional fluxes
-C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k-1 & k
+C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k & k+1
       INTEGER i,j
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER imomkey
@@ -302,7 +305,7 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
 #endif
       ENDIF
 
-C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
+C---  First call (k=1): compute vertical adv. flux fVerUkm & fVerVkm
       IF (momAdvection.AND.k.EQ.1) THEN
 
 #ifdef MOM_BOUNDARY_CONSERVE
@@ -333,10 +336,10 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 
 C-    Free surface correction term (flux at k=1)
         CALL MOM_U_ADV_WU( bi,bj,k,uVel,wVel,rTransU,
-     O                     fVerU(1-OLx,1-OLy,kUp), myThid )
+     O                     fVerUkm, myThid )
 
         CALL MOM_V_ADV_WV( bi,bj,k,vVel,wVel,rTransV,
-     O                     fVerV(1-OLx,1-OLy,kUp), myThid )
+     O                     fVerVkm, myThid )
 
 C---  endif momAdvection & k=1
       ENDIF
@@ -382,7 +385,7 @@ C---  Calculate mean fluxes (advection)   between cells for zonal flow.
      O                     fMer,myThid )
         CALL MOM_U_ADV_WU(
      I                     bi,bj,k+1,uBnd,wVel,rTransU,
-     O                     fVerU(1-OLx,1-OLy,kDown), myThid )
+     O                     fVerUkp, myThid )
 #else /* MOM_BOUNDARY_CONSERVE */
 C--   Zonal flux (fZon is at east face of "u" cell)
 C     Mean flow component of zonal flux -> fZon
@@ -396,7 +399,7 @@ C--   Vertical flux (fVer is at upper face of "u" cell)
 C     Mean flow component of vertical flux (at k+1) -> fVer
         CALL MOM_U_ADV_WU(
      I                     bi,bj,k+1,uVel,wVel,rTransU,
-     O                     fVerU(1-OLx,1-OLy,kDown), myThid )
+     O                     fVerUkp, myThid )
 #endif /* MOM_BOUNDARY_CONSERVE */
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
@@ -410,19 +413,18 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &     -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &     *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
 #endif
-     &     *( ( fZon(i,j  )     - fZon(i-1,j) )*uDudxFac
-     &       +( fMer(i,j+1)     - fMer(i,  j) )*vDudyFac
-     &       +(fVerU(i,j,kDown) - fVerU(i,j,kUp))*rkSign*rVelDudrFac
+     &     *( ( fZon(i,j  )  - fZon(i-1,j)  )*uDudxFac
+     &       +( fMer(i,j+1)  - fMer(i,  j)  )*vDudyFac
+     &       +( fVerUkp(i,j) - fVerUkm(i,j) )*rkSign*rVelDudrFac
      &     )
          ENDDO
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL(fZon,'ADVx_Um ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(fMer,'ADVy_Um ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(fVerU(1-OLx,1-OLy,kUp),
-     &                               'ADVrE_Um',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL( fZon,  'ADVx_Um ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL( fMer,  'ADVy_Um ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fVerUkm,'ADVrE_Um',k,1,2,bi,bj,myThid)
         ENDIF
 #endif
 
@@ -610,23 +612,21 @@ C---- Meridional momentum equation starts here
      O                     fZon,myThid )
         CALL MOM_V_ADV_VV( bi,bj,k,vTrans,vBnd(1-OLx,1-OLy,k,bi,bj),
      O                     fMer,myThid )
-        CALL MOM_V_ADV_WV(
-     I                     bi,bj,k+1,vBnd,wVel,rTransV,
-     O                     fVerV(1-OLx,1-OLy,kDown), myThid )
+        CALL MOM_V_ADV_WV( bi,bj,k+1,vBnd,wVel,rTransV,
+     O                     fVerVkp, myThid )
 #else /* MOM_BOUNDARY_CONSERVE */
 C---  Calculate mean fluxes (advection)   between cells for meridional flow.
 C     Mean flow component of zonal flux -> fZon
-        CALL MOM_V_ADV_UV(bi,bj,k,uTrans,vFld,fZon,myThid)
+        CALL MOM_V_ADV_UV( bi,bj,k,uTrans,vFld,fZon,myThid )
 
 C--   Meridional flux (fMer is at north face of "v" cell)
 C     Mean flow component of meridional flux -> fMer
-        CALL MOM_V_ADV_VV(bi,bj,k,vTrans,vFld,fMer,myThid)
+        CALL MOM_V_ADV_VV( bi,bj,k,vTrans,vFld,fMer,myThid )
 
 C--   Vertical flux (fVer is at upper face of "v" cell)
 C     Mean flow component of vertical flux (at k+1) -> fVerV
-        CALL MOM_V_ADV_WV(
-     I                     bi,bj,k+1,vVel,wVel,rTransV,
-     O                     fVerV(1-OLx,1-OLy,kDown), myThid )
+        CALL MOM_V_ADV_WV( bi,bj,k+1,vVel,wVel,rTransV,
+     O                     fVerVkp, myThid )
 #endif /* MOM_BOUNDARY_CONSERVE */
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
@@ -640,19 +640,18 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &     -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &     *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
 #endif
-     &     *( ( fZon(i+1,j)     - fZon(i,j  ) )*uDvdxFac
-     &       +( fMer(i,  j)     - fMer(i,j-1) )*vDvdyFac
-     &       +(fVerV(i,j,kDown) - fVerV(i,j,kUp))*rkSign*rVelDvdrFac
+     &     *( ( fZon(i+1,j)  - fZon(i,j  )  )*uDvdxFac
+     &       +( fMer(i,  j)  - fMer(i,j-1)  )*vDvdyFac
+     &       +( fVerVkp(i,j) - fVerVkm(i,j) )*rkSign*rVelDvdrFac
      &     )
          ENDDO
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL(fZon,'ADVx_Vm ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(fMer,'ADVy_Vm ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(fVerV(1-OLx,1-OLy,kUp),
-     &                               'ADVrE_Vm',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL( fZon,  'ADVx_Vm ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL( fMer,  'ADVy_Vm ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fVerVkm,'ADVrE_Vm',k,1,2,bi,bj,myThid)
         ENDIF
 #endif
 

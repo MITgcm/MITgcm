@@ -1,18 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.65 2011/06/07 22:22:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.66 2012/03/18 22:24:01 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VECINV(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
+     I        bi,bj,k,iMin,iMax,jMin,jMax,
      I        KappaRU, KappaRV,
-     U        fVerU, fVerV,
+     I        fVerUkm, fVerVkm,
+     O        fVerUkp, fVerVkp,
      O        guDiss, gvDiss,
-     I        myTime, myIter, myThid)
-C     /==========================================================\
+     I        myTime, myIter, myThid )
+C     *==========================================================*
 C     | S/R MOM_VECINV                                           |
 C     | o Form the right hand-side of the momentum equation.     |
-C     |==========================================================|
+C     *==========================================================*
 C     | Terms are evaluated one layer at a time working from     |
 C     | the bottom to the top. The vertically integrated         |
 C     | barotropic flow tendency term is evluated by summing the |
@@ -23,7 +24,7 @@ C     | for the diffusion equation bc with lopping. The present  |
 C     | form produces a diffusive flux that does not scale with  |
 C     | open-area. Need to do something to solidfy this and to   |
 C     | deal "properly" with thin walls.                         |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -44,25 +45,34 @@ C     == Global variables ==
 #endif
 
 C     == Routine arguments ==
-C     fVerU  :: Flux of momentum in the vertical direction, out of the upper
-C     fVerV  :: face of a cell K ( flux into the cell above ).
-C     guDiss :: dissipation tendency (all explicit terms), u component
-C     gvDiss :: dissipation tendency (all explicit terms), v component
-C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
-C                                      results will be set.
-C     kUp, kDown                     - Index for upper and lower layers.
-C     myThid :: my Thread Id number
+C     bi,bj   :: current tile indices
+C     k       :: current vertical level
+C     iMin,iMax,jMin,jMax :: loop ranges
+C     fVerU   :: Flux of momentum in the vertical direction, out of the upper
+C     fVerV   :: face of a cell K ( flux into the cell above ).
+C     fVerUkm :: vertical viscous flux of U, interface above (k-1/2)
+C     fVerVkm :: vertical viscous flux of V, interface above (k-1/2)
+C     fVerUkp :: vertical viscous flux of U, interface below (k+1/2)
+C     fVerVkp :: vertical viscous flux of V, interface below (k+1/2)
+
+C     guDiss  :: dissipation tendency (all explicit terms), u component
+C     gvDiss  :: dissipation tendency (all explicit terms), v component
+C     myTime  :: current time
+C     myIter  :: current time-step number
+C     myThid  :: my Thread Id number
+      INTEGER bi,bj,k
+      INTEGER iMin,iMax,jMin,jMax
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fVerUkm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerVkm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerUkp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerVkp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL guDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gvDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER kUp,kDown
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
 
 #ifdef ALLOW_MOM_VECINV
 
@@ -93,9 +103,9 @@ C     == Local variables ==
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     i,j,k  :: Loop counters
-      INTEGER i,j,k
-C     xxxFac - On-off tracer parameters used for switching terms off.
+C     i,j    :: Loop counters
+      INTEGER i,j
+C     xxxFac :: On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
       _RL  ArDvdrFac
       _RL  sideMaskFac
@@ -116,8 +126,8 @@ C--   only the kDown part of fverU/V is set in this subroutine
 C--   the kUp is still required
 C--   In the case of mom_fluxform Kup is set as well
 C--   (at least in part)
-      fVerU(1,1,kUp) = fVerU(1,1,kUp)
-      fVerV(1,1,kUp) = fVerV(1,1,kUp)
+      fVerUkm(1,1) = fVerUkm(1,1)
+      fVerVkm(1,1) = fVerVkm(1,1)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -248,8 +258,8 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
        CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
 
 C-     account for no-slip / free-slip BC:
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           IF ( hFacZ(i,j).EQ.0. ) THEN
             vort3(i,j)  = sideMaskFac*vort3(i,j)
             strain(i,j) = sideMaskFac*strain(i,j)
@@ -308,8 +318,8 @@ C---   Calculate dissipation terms for U and V equations
 C      in terms of tension and strain
        IF (useStrainTensionVisc) THEN
 C        mask strain as if free-slip since side-drag is computed separately
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             IF ( hFacZ(i,j).EQ.0. ) strain(i,j) = 0. _d 0
           ENDDO
          ENDDO
@@ -345,19 +355,17 @@ C     Eddy component of vertical flux (interior component only) -> vrF
 C     Combine fluxes
        DO j=jMin,jMax
         DO i=iMin,iMax
-         fVerU(i,j,kDown) = ArDudrFac*vrF(i,j)
+         fVerUkp(i,j) = ArDudrFac*vrF(i,j)
         ENDDO
        ENDDO
 
 C--   Tendency is minus divergence of the fluxes
-       DO j=2-Oly,sNy+Oly-1
-        DO i=2-Olx,sNx+Olx-1
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
          guDiss(i,j) = guDiss(i,j)
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rAw(i,j,bi,bj)
-     &  *(
-     &    fVerU(i,j,kDown) - fVerU(i,j,kUp)
-     &   )*rkSign
+     &   *( fVerUkp(i,j) - fVerUkm(i,j) )*rkSign
         ENDDO
        ENDDO
       ENDIF
@@ -410,7 +418,7 @@ C     Eddy component of vertical flux (interior component only) -> vrF
 C     Combine fluxes -> fVerV
        DO j=jMin,jMax
         DO i=iMin,iMax
-         fVerV(i,j,kDown) = ArDvdrFac*vrF(i,j)
+         fVerVkp(i,j) = ArDvdrFac*vrF(i,j)
         ENDDO
        ENDDO
 
@@ -419,10 +427,8 @@ C--   Tendency is minus divergence of the fluxes
         DO i=iMin,iMax
          gvDiss(i,j) = gvDiss(i,j)
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &    *recip_rAs(i,j,bi,bj)
-     &  *(
-     &    fVerV(i,j,kDown) - fVerV(i,j,kUp)
-     &   )*rkSign
+     &   *recip_rAs(i,j,bi,bj)
+     &   *( fVerVkp(i,j) - fVerVkm(i,j) )*rkSign
         ENDDO
        ENDDO
       ENDIF
@@ -486,8 +492,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---  Prepare for Advection & Coriolis terms:
 C-    Mask relative vorticity and calculate absolute vorticity
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
          IF ( hFacZ(i,j).EQ.0. ) vort3(i,j) = 0.
        ENDDO
       ENDDO
@@ -758,9 +764,9 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(guDiss, 'Um_Diss ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gvDiss, 'Vm_Diss ',k,1,2,bi,bj,myThid)
        ENDIF
-        CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
+        CALL DIAGNOSTICS_FILL(gU(1-OLx,1-OLy,k,bi,bj),
      &                                'Um_Advec',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
+        CALL DIAGNOSTICS_FILL(gV(1-OLx,1-OLy,k,bi,bj),
      &                                'Vm_Advec',k,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.161 2012/03/05 18:21:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.162 2012/03/18 22:19:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -168,12 +168,13 @@ C     guDissip   :: dissipation tendency (all explicit terms), u component
 C     gvDissip   :: dissipation tendency (all explicit terms), v component
 C     KappaRU    :: vertical viscosity
 C     KappaRV    :: vertical viscosity
-C     iMin, iMax     - Ranges and sub-block indices on which calculations
-C     jMin, jMax       are applied.
-C     bi, bj
-C     k, kup,        - Index for layer above and below. kup and kDown
-C     kDown, km1       are switched with layer to be the appropriate
-C                      index into fVerTerm.
+C     iMin, iMax :: Ranges and sub-block indices on which calculations
+C     jMin, jMax    are applied.
+C     bi, bj     :: tile indices
+C     k          :: current level index
+C     km1, kp1   :: index of level above (k-1) and below (k+1)
+C     kUp, kDown :: Index for interface above and below. kUp and kDown are
+C                   are switched with k to be the appropriate index into fVerU,V
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHydF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -191,7 +192,7 @@ C                      index into fVerTerm.
       INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j
-      INTEGER k, km1, kp1, kup, kDown
+      INTEGER k, km1, kp1, kUp, kDown
 
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL dPhiHydDiagIsOn
@@ -521,8 +522,8 @@ C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined NONLIN_FRSURF) && (defined ALLOW_MOM_FLUXFORM)
-#  ifndef DISABLE_RSTAR_CODE
+# ifdef NONLIN_FRSURF
+#  if (defined ALLOW_MOM_FLUXFORM) && !(defined DISABLE_RSTAR_CODE)
 CADJ STORE dWtransC(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dWtransU(:,:,bi,bj)
@@ -530,34 +531,29 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dWtransV(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
-# endif
-#endif
+CADJ STORE fVerU(:,:,:)
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fVerV(:,:,:)
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif /* NONLIN_FRSURF */
+#endif /* ALLOW_AUTODIFF_TAMC */
            IF (.NOT. vectorInvariantMomentum) THEN
 #ifdef ALLOW_MOM_FLUXFORM
-C
               CALL MOM_FLUXFORM(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
+     I         bi,bj,k,iMin,iMax,jMin,jMax,
      I         KappaRU, KappaRV,
-     U         fVerU, fVerV,
+     U         fVerU(1-OLx,1-OLy,kUp),   fVerV(1-OLx,1-OLy,kUp),
+     O         fVerU(1-OLx,1-OLy,kDown), fVerV(1-OLx,1-OLy,kDown),
      O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
 #endif
            ELSE
 #ifdef ALLOW_MOM_VECINV
-C
-# ifdef ALLOW_AUTODIFF_TAMC
-#  ifdef NONLIN_FRSURF
-CADJ STORE fVerU(:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fVerV(:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#  endif
-# endif /* ALLOW_AUTODIFF_TAMC */
-C
              CALL MOM_VECINV(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
+     I         bi,bj,k,iMin,iMax,jMin,jMax,
      I         KappaRU, KappaRV,
-     U         fVerU, fVerV,
+     I         fVerU(1-OLx,1-OLy,kUp),   fVerV(1-OLx,1-OLy,kUp),
+     O         fVerU(1-OLx,1-OLy,kDown), fVerV(1-OLx,1-OLy,kDown),
      O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
 #endif
