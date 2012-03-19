@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.13 2011/09/20 15:40:21 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.14 2012/03/19 15:08:32 mlosch Exp $
 # $Name:  $
 
 # Tested on MacBook Pro with Snow Leopard
@@ -52,7 +52,10 @@ if test "x$IEEE" = x ; then     #- with optimisation:
     FFLAGS="$FFLAGS -Wunused -Wuninitialized"
     FOPTIM='-O3 -funroll-loops'
     NOOPTFLAGS='-O2 -funroll-loops'
-    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
+# do we still need these?
+#    NOOPTFILES="$NOOPTFILES gad_c4_adv_x.F gad_u3_adv_x.F"
+# add more optimization if you are bold enough
+#    FOPTIM="$FOPTIM -ftree-vectorize"
 # with gcc version 4.6.0 20101106 (experimental) (GCC) I needed this
 # for better optimization (with bugs), more recent versions of gfortran
 # might not need this any longer
