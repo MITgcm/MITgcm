@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.66 2012/03/18 22:24:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.67 2012/03/19 14:39:53 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -360,8 +360,8 @@ C     Combine fluxes
        ENDDO
 
 C--   Tendency is minus divergence of the fluxes
-       DO j=2-OLy,sNy+OLy-1
-        DO i=2-OLx,sNx+OLx-1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          guDiss(i,j) = guDiss(i,j)
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rAw(i,j,bi,bj)
