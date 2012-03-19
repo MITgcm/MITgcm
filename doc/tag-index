@@ -1,12 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1628 2012/03/19 21:48:27 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1629 2012/03/19 22:58:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/icefront: fix bug and reorder loop in icefront_init_varia.F
-o model/src: move k-loop outside of i/j-loops when (re-)computing R_low 
-  in ini/update_masks_etc.F in order to avoid -O3 optimization problems with 
+o pkg/mom_vecinv:
+  - fix 1 loop range in mom_vecinv.F to be like all the other loops which
+    set/update gu,gv/Diss (fix Pb of uninitialised fVerUkp in admom_vecinv
+    with non-lin free-surf).
+o model/src: move k-loop outside of i/j-loops when (re-)computing R_low
+  in ini/update_masks_etc.F in order to avoid -O3 optimization problems with
   some compilers (gfortran 4.6.0 on MacOS)
 o momentum:
   - separate fVer?(:,:,kUp) & fVer?(:,:,kDown) in argument list of MOM_FLUXFORM
