@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.49 2011/06/08 01:18:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.50 2012/03/19 14:32:47 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -116,7 +116,11 @@ C-    Re-calculate lower-R Boundary position, taking into account hFacC
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           R_low(i,j,bi,bj) = rF(1)
-          DO k=Nr,1,-1
+         ENDDO
+        ENDDO
+        DO k=Nr,1,-1
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            R_low(i,j,bi,bj) = R_low(i,j,bi,bj)
      &                      - drF(k)*hFacC(i,j,k,bi,bj)
           ENDDO

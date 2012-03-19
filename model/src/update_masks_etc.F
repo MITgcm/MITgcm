@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.6 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.7 2012/03/19 14:32:47 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -121,10 +121,14 @@ C-  Re-calculate lower-R Boundary position, taking into account hFacC
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          R_low(I,J,bi,bj) = rF(1)
-          DO K=Nr,1,-1
+          R_low(i,j,bi,bj) = rF(1)
+         ENDDO
+        ENDDO
+        DO K=Nr,1,-1
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
            R_low(I,J,bi,bj) = R_low(I,J,bi,bj)
-     &                      - drF(k)*hFacC(I,J,K,bi,bj)
+     &                      - drF(K)*hFacC(I,J,K,bi,bj)
           ENDDO
          ENDDO
         ENDDO
