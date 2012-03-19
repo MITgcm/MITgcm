@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.7 2010/05/12 01:08:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.8 2012/03/19 21:45:29 dimitri Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -36,9 +36,9 @@ CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1, OLy
-         DO I = 1, OLx
-          DO K = 1, Nr
+        DO K = 1, Nr
+         DO J = 1-OLy, sNy+OLy
+          DO I = 1-OLx, sNx+OLx
            icefront_TendT (i,j,k,bi,bj) = 0. _d 0
            icefront_TendS (i,j,k,bi,bj) = 0. _d 0
           ENDDO
