@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.4 2011/08/24 02:23:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.5 2012/03/19 18:22:09 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -91,14 +91,14 @@ CEOP
       _RS  pW  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pS  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  q2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL  q2d(0:sNx+1,0:sNy+1,nSx,nSy)
 #ifdef DEBUG_DIAG_CG2D
       CHARACTER*(10) sufx
       _RL  r2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
-      _RL  r2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL  r2d(0:sNx+1,0:sNy+1,nSx,nSy)
 #endif
-      _RL  s2d(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL  s2d(0:sNx+1,0:sNy+1,nSx,nSy)
       _RL  x2dm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_DEBUG
@@ -109,8 +109,8 @@ C--   Set matrice main diagnonal:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Initialise overlap regions (in case EXCH call do not fill them all)
-        DO j = 1-Oly,sNy+Oly
-         DO i = 1-Olx,sNx+Olx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
            aC2d(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
@@ -166,8 +166,9 @@ C--   Initialise inverter
 C--   Initial residual calculation
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-1,sNy+1
-         DO i=1-1,sNx+1
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          r2d(i,j,bi,bj) = 0.
           s2d(i,j,bi,bj) = 0.
           x2dm(i,j,bi,bj) = x2d(i,j,bi,bj)
          ENDDO
