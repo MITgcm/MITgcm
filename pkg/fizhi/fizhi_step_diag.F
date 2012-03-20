@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.19 2006/03/09 00:00:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.20 2012/03/20 19:50:45 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pk,dp,
-     .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
-     .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
-     .  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
-     .  im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer)
+      SUBROUTINE FIZHI_STEP_DIAG(myid,p,uphy,vphy,thphy,sphy,qq,pk,dp,
+     &  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
+     &  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
+     &  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
+     &  im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer)
 C***********************************************************************
-      implicit none
+      IMPLICIT NONE
 
-      integer myid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
+      INTEGER myid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
       _RL p(im2,jm2,Nbi,Nbj)
       _RL uphy(im2,jm2,Nrphys)
       _RL vphy(im2,jm2,Nrphys)
@@ -38,15 +38,15 @@ C***********************************************************************
       _RL swdtclr(im2,jm2,Nrphys,Nbi,Nbj)
       _RL dlwdtg(im2,jm2,Nrphys,Nbi,Nbj)
 
-      integer  i,j,L
+      INTEGER  i,j,L
       _RL getcon, gravity
       _RL pinv(im2,jm2), qbar(im2,jm2),tmpdiag(im2,jm2)
 #ifdef ALLOW_DIAGNOSTICS
-      logical  diagnostics_is_on
-      external diagnostics_is_on
+      LOGICAL  diagnostics_is_on
+      EXTERNAL diagnostics_is_on
 #endif
 
-C **********************************************************************        
+C **********************************************************************
 
 #ifdef ALLOW_DIAGNOSTICS
       do j=jm1,jm2
@@ -57,15 +57,12 @@ C **********************************************************************
 
 c Surface Pressure (mb)
 c ---------------------------------
-      if(diagnostics_is_on('PS      ',myid) ) then
-       call diagnostics_fill(p(1,1,bi,bj),'PS      ',0,1,3,bi,bj,myid)
-      endif
+      call diagnostics_fill(p(1,1,bi,bj),'PS      ',0,1,3,bi,bj,myid)
 
 c Incident Solar Radiation (W/m**2)
 c ---------------------------------
-      if(diagnostics_is_on('RADSWT  ',myid) ) then
-       call diagnostics_fill(radswt,'RADSWT  ',0,1,3,bi,bj,myid)
-      endif
+      call diagnostics_fill(radswt(1,1,bi,bj),'RADSWT  ',
+     &                      0,1,3,bi,bj,myid)
 
 c Net Solar Radiation at the Ground (W/m**2)
 c ------------------------------------------
@@ -77,7 +74,7 @@ c ------------------------------------------
        enddo
        call diagnostics_fill(tmpdiag,'RADSWG  ',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Net Clear Sky Solar Radiation at the Ground (W/m**2)
 c ----------------------------------------------------
       if(diagnostics_is_on('SWGCLR  ',myid) ) then
@@ -88,7 +85,7 @@ c ----------------------------------------------------
        enddo
        call diagnostics_fill(tmpdiag,'SWGCLR  ',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Outgoing Solar Radiation at top (W/m**2)
 c -----------------------------------------
       if(diagnostics_is_on('OSR     ',myid) ) then
@@ -99,7 +96,7 @@ c -----------------------------------------
        enddo
        call diagnostics_fill(tmpdiag,'OSR     ',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Outgoing Clear Sky Solar Radiation at top (W/m**2)
 c ---------------------------------------------------
       if(diagnostics_is_on('OSRCLR  ',myid) ) then
@@ -110,7 +107,7 @@ c ---------------------------------------------------
        enddo
        call diagnostics_fill(tmpdiag,'OSRCLR  ',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Planetary Albedo
 c ----------------
       if(diagnostics_is_on('PLALBEDO',myid) ) then
@@ -125,44 +122,44 @@ c ----------------
        enddo
        call diagnostics_fill(tmpdiag,'PLALBEDO',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Upward Longwave Flux at the Ground (W/m**2)
 c -------------------------------------------
       if(diagnostics_is_on('LWGUP   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = st4(i,j,bi,bj) 
-     .                 + dst4(i,j,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
+        tmpdiag(i,j) = st4(i,j,bi,bj)
+     &                 + dst4(i,j,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'LWGUP   ',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Net Longwave Flux at the Ground (W/m**2)
 c ----------------------------------------
       if(diagnostics_is_on('RADLWG  ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = radlwg(i,j,bi,bj) + 
-     .                  dst4(i,j,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
+        tmpdiag(i,j) = radlwg(i,j,bi,bj) +
+     &                  dst4(i,j,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'RADLWG  ',0,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Net Longwave Flux at the Ground Clear Sky (W/m**2)
 c --------------------------------------------------
       if(diagnostics_is_on('LWGCLR  ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = lwgclr(i,j,bi,bj) + 
-     .                  dst4(i,j,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
+        tmpdiag(i,j) = lwgclr(i,j,bi,bj) +
+     &                  dst4(i,j,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'LWGCLR  ',0,1,3,bi,bj,myid)
       endif
-                                                                                
-C **********************************************************************        
+
+C **********************************************************************
       do L=1,Nrphys
 
 c Total Diabatic U-Tendency (m/sec/day)
@@ -192,12 +189,12 @@ c -----------------------------------
       if(diagnostics_is_on('DIABT   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = 
-     .   ( turbt(i,j,L,bi,bj) + moistt(i,j,L,bi,bj) +
-     .      lwdt(i,j,L,bi,bj) +
-     .      dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
-     .      swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )
-     .      * pk(i,j,L,bi,bj)*pinv(i,j)*86400
+        tmpdiag(i,j) =
+     &   ( turbt(i,j,L,bi,bj) + moistt(i,j,L,bi,bj) +
+     &      lwdt(i,j,L,bi,bj) +
+     &      dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
+     &      swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )
+     &      * pk(i,j,L,bi,bj)*pinv(i,j)*86400
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'DIABT   ',L,1,3,bi,bj,myid)
@@ -208,23 +205,23 @@ c ------------------------------------
       if(diagnostics_is_on('DIABQ   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = 
-     . ( turbq(i,j,L,1,bi,bj) + moistq(i,j,L,1,bi,bj) ) * 
-     .                                      pinv(i,j)*86400*1000
+        tmpdiag(i,j) =
+     & ( turbq(i,j,L,1,bi,bj) + moistq(i,j,L,1,bi,bj) ) *
+     &                                      pinv(i,j)*86400*1000
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'DIABQ   ',L,1,3,bi,bj,myid)
       endif
-    
+
 c Longwave Heating (deg/day)
 c --------------------------
       if(diagnostics_is_on('RADLW   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = 
-     . ( lwdt(i,j,l,bi,bj) + 
-     .            dlwdtg (i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) )
-     .                      * pk(i,j,l,bi,bj)*pinv(i,j)*86400
+        tmpdiag(i,j) =
+     & ( lwdt(i,j,l,bi,bj) +
+     &            dlwdtg (i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) )
+     &                      * pk(i,j,l,bi,bj)*pinv(i,j)*86400
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'RADLW   ',L,1,3,bi,bj,myid)
@@ -235,41 +232,41 @@ c ------------------------------------
       if(diagnostics_is_on('LWCLR   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = 
-     . ( lwdtclr(i,j,l,bi,bj) + 
-     .            dlwdtg (i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) )
-     .                      * pk(i,j,l,bi,bj)*pinv(i,j)*86400
+        tmpdiag(i,j) =
+     & ( lwdtclr(i,j,l,bi,bj) +
+     &            dlwdtg (i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) )
+     &                      * pk(i,j,l,bi,bj)*pinv(i,j)*86400
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'LWCLR   ',L,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Solar Radiative Heating (deg/day)
 c ---------------------------------
       if(diagnostics_is_on('RADSW   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = 
-     .  + swdt(i,j,l,bi,bj)*radswt(i,j,bi,bj)*
-     .                   pk(i,j,l,bi,bj)*pinv(i,j)*86400
+        tmpdiag(i,j) =
+     &  + swdt(i,j,l,bi,bj)*radswt(i,j,bi,bj)*
+     &                   pk(i,j,l,bi,bj)*pinv(i,j)*86400
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'RADSW   ',L,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Clear Sky Solar Radiative Heating (deg/day)
 c -------------------------------------------
       if(diagnostics_is_on('SWCLR   ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = 
-     .  + swdtclr(i,j,l,bi,bj)*radswt(i,j,bi,bj)*
-     .                   pk(i,j,l,bi,bj)*pinv(i,j)*86400
+        tmpdiag(i,j) =
+     &  + swdtclr(i,j,l,bi,bj)*radswt(i,j,bi,bj)*
+     &                   pk(i,j,l,bi,bj)*pinv(i,j)*86400
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'SWCLR   ',L,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Averaged U-Field (m/sec)
 c ------------------------
       if(diagnostics_is_on('UWND    ',myid) ) then
@@ -302,7 +299,7 @@ c ----------------------
        enddo
        call diagnostics_fill(tmpdiag,'TMPU    ',L,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Averaged QQ-Field (m/sec)**2
 c ----------------------------
       if(diagnostics_is_on('TKE     ',myid) ) then
@@ -313,7 +310,7 @@ c ----------------------------
        enddo
        call diagnostics_fill(tmpdiag,'TKE     ',L,1,3,bi,bj,myid)
       endif
-                                                                                
+
 c Averaged Q-Field (g/kg)
 c -----------------------
       if(diagnostics_is_on('SPHU    ',myid) ) then
@@ -324,10 +321,10 @@ c -----------------------
        enddo
        call diagnostics_fill(tmpdiag,'SPHU    ',L,1,3,bi,bj,myid)
       endif
-                                                                                
+
       enddo
 
-C **********************************************************************        
+C **********************************************************************
 
 c Vertically Averaged Moist-T Increment (K/day)
 c ---------------------------------------------
@@ -340,8 +337,8 @@ c ---------------------------------------------
        do L=1,Nrphys
        do j=jm1,jm2
        do i=im1,im2
-       qbar(i,j) = qbar(i,j) + 
-     .             moistt(i,j,L,bi,bj)*pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
+       qbar(i,j) = qbar(i,j) +
+     &             moistt(i,j,L,bi,bj)*pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
        enddo
        enddo
        enddo
@@ -364,8 +361,8 @@ c --------------------------------------------
        do L=1,Nrphys
        do j=jm1,jm2
        do i=im1,im2
-       qbar(i,j) = qbar(i,j) + 
-     .             turbt(i,j,L,bi,bj)*pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
+       qbar(i,j) = qbar(i,j) +
+     &             turbt(i,j,L,bi,bj)*pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
        enddo
        enddo
        enddo
@@ -389,8 +386,8 @@ c -------------------------------------------------------
        do j=jm1,jm2
        do i=im1,im2
         qbar(i,j) = qbar(i,j) + ( lwdt(i,j,L,bi,bj) +
-     .  dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) )
-     .             *pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
+     &  dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) )
+     &             *pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
        enddo
        enddo
        enddo
@@ -413,15 +410,15 @@ c -------------------------------------------------------
        do L=1,Nrphys
        do j=jm1,jm2
        do i=im1,im2
-        qbar(i,j) = qbar(i,j) + 
-     .             swdt(i,j,L,bi,bj)*pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
+        qbar(i,j) = qbar(i,j) +
+     &             swdt(i,j,L,bi,bj)*pk(i,j,l,bi,bj)*dp(i,j,L,bi,bj)
        enddo
        enddo
        enddo
        do j=jm1,jm2
        do i=im1,im2
        tmpdiag(i,j) = qbar(i,j) *
-     .             radswt(i,j,bi,bj) * pinv(i,j) * pinv(i,j) * 86400
+     &             radswt(i,j,bi,bj) * pinv(i,j) * pinv(i,j) * 86400
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'VDTRADSW',0,1,3,bi,bj,myid)
@@ -439,8 +436,8 @@ c ---------------------------------------------
        do L=1,Nrphys
        do j=jm1,jm2
        do i=im1,im2
-       qbar(i,j) = qbar(i,j) + 
-     .             sphy(i,j,L)*dp(i,j,L,bi,bj)
+       qbar(i,j) = qbar(i,j) +
+     &             sphy(i,j,L)*dp(i,j,L,bi,bj)
        enddo
        enddo
        enddo
