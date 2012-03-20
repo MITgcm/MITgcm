@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.17 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.18 2012/03/20 23:38:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,6 +85,12 @@ C                    and stagger/synchronous TimeStep
           CALL PTRACERS_DIAGNOSTICS_STATE( myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_PTRACERS */
+
+#ifdef ALLOW_GMREDI
+       IF ( seqFlag.EQ.2 .AND. useGMRedi ) THEN
+         CALL GMREDI_DIAGNOSTICS_IMPL( myTime, myIter, myThid )
+       ENDIF
+#endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_BBL
        IF ( seqFlag.EQ.0 .AND. useBBL ) THEN
