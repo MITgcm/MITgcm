@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1629 2012/03/19 22:58:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1630 2012/03/20 20:17:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/fizhi:
+  - fix few initialisation and multi-tile Pb: aqualev & gridalt now pass the
+    (old)aces open64 tuv test.
 o pkg/icefront: fix bug and reorder loop in icefront_init_varia.F
 o pkg/mom_vecinv:
   - fix 1 loop range in mom_vecinv.F to be like all the other loops which
