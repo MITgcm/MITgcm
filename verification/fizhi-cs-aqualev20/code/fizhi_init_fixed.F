@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/fizhi_init_fixed.F,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/fizhi_init_fixed.F,v 1.2 2012/03/20 19:47:21 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-       subroutine fizhi_init_fixed (myThid)
+       SUBROUTINE FIZHI_INIT_FIXED (myThid)
 c-----------------------------------------------------------------------
 c  Routine to initialise the fizhi package.
-c  
+c
 c  Input: myThid       - Process number calling this routine
 c
-c  Notes: 
+c  Notes:
 c   1) This routine is the interface to read input datasets and set
 c      other fixed variables for fizhi
 c      the datasets are:
@@ -21,7 +21,7 @@ c         CO2, CFC11, CFC12, CFC22 (set to a global value)
 c   3) For now, the fizhi package contains the alarms and clocks
 c      routines, so this routine will also initialize the alarms.
 c-----------------------------------------------------------------------
-       implicit none
+       IMPLICIT NONE
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
@@ -35,16 +35,16 @@ c-----------------------------------------------------------------------
 #include "GRID.h"
 #include "PARAMS.h"
 
-       integer myThid
+       INTEGER myThid
 
-       integer i,j,L,bi,bj
-       integer im1, im2, jm1, jm2, idim2, jdim2
-       integer nymdb,nhmsb
-       character*40 vegdata
+       INTEGER i,j,L,bi,bj
+       INTEGER im1, im2, jm1, jm2, idim2, jdim2
+       INTEGER nymdb,nhmsb
+       CHARACTER*40 vegdata
        _RL pressure0(Nrphys+1)
        _RL pressure(Nrphys)
-       _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
-       _RL fracland(sNx,sNy,Nsx,Nsy)
+       _RL lats(sNx,sNy,nSx,nSy), lons(sNx,sNy,nSx,nSy)
+       _RL fracland(sNx,sNy,nSx,nSy)
 
        idim2 = sNx+OLx
        jdim2 = sNy+OLy
@@ -80,27 +80,27 @@ c-----------------------------------------------------------------------
        enddo
        enddo
        vegdata = 'veg19232.data'
-       call fizhi_init_veg ( mythid, vegdata,im2,jm2,Nsx,Nsy,
-     .         nSx*nPx,nSy*nPy,maxtyp,nchp,nchptot,nchpland,lons,lats,
-     .         surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
+       call fizhi_init_veg ( myThid, vegdata,im2,jm2,nSx,nSy,
+     &         nSx*nPx,nSy*nPy,maxtyp,nchp,nchptot,nchpland,lons,lats,
+     &         surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
 
 C And now fill the earth export landtype
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
-        call get_landfrac(im2,jm2,Nsx,Nsy,bi,bj,maxtyp,
-     .        surftype,tilefrac,fracland(1,1,bi,bj))
+        call get_landfrac(im2,jm2,nSx,nSy,bi,bj,maxtyp,
+     &        surftype,tilefrac,fracland(1,1,bi,bj))
         do j=jm1,jm2
         do i=im1,im2
          landtype(i,j,bi,bj) = surftype(i,j,1,bi,bj)
          if(fracland(i,j,bi,bj).ge.0.3.and.surftype(i,j,1,bi,bj).ge.100)
-     .            landtype(i,j,bi,bj) = surftype(i,j,2,bi,bj)
+     &            landtype(i,j,bi,bj) = surftype(i,j,2,bi,bj)
          if(sice(i,j,bi,bj).ne.0.0)landtype(i,j,bi,bj) = 101
         enddo
         enddo
        enddo
        enddo
 
-C Compute pressure profile to get methane and n2o values 
+C Compute pressure profile to get methane and n2o values
 C     - First bottom-up (in mb)
 
        pressure0(1)=1000.
@@ -113,10 +113,10 @@ C     to send to fizhi init chem
         pressure(L)=(pressure0(Nrphys+2-L)+pressure0(Nrphys+1-L))/2.
        enddo
 
-       call fizhi_init_chem(mythid,
-     .      nlatsoz,nlevsoz,ntimesoz,latsoz,levsoz,ozone,
-     .      nlatsq,nlevsq,ntimesq,latsq,levsq,stratq,
-     .      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
+       call fizhi_init_chem(myThid,
+     &      nlatsoz,nlevsoz,ntimesoz,latsoz,levsoz,ozone,
+     &      nlatsq,nlevsq,ntimesq,latsq,levsq,stratq,
+     &      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
