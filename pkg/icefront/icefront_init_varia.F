@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.8 2012/03/19 21:45:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.9 2012/03/20 14:56:05 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
 
 CBOP
       SUBROUTINE ICEFRONT_INIT_VARIA( myThid )
-C     /============================================================\
+C     *============================================================*
 C     | SUBROUTINE ICEFRONT_INIT_VARIA                             |
 C     | o Routine to initialize ICEFRONT variables.                |
-C     |============================================================|
+C     *============================================================*
 C     | Initialize ICEFRONT parameters and variables.              |
-C     \============================================================/
+C     *============================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -37,8 +37,8 @@ CEOP
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K = 1, Nr
-         DO J = 1-OLy, sNy+OLy
-          DO I = 1-OLx, sNx+OLx
+         DO J = 1, sNy
+          DO I = 1, sNx
            icefront_TendT (i,j,k,bi,bj) = 0. _d 0
            icefront_TendS (i,j,k,bi,bj) = 0. _d 0
           ENDDO
@@ -48,10 +48,10 @@ CEOP
       ENDDO
 
 #ifdef ALLOW_SUBGLACIAL_RUNOFF
-      call exf_init_runoff (
+      CALL EXF_INIT_RUNOFF (
      &     sgrunofffile, sgrunoffperiod,
      &     exf_inscal_sgrunoff, sgrunoffmask, sgrunoffconst,
-     &     sgrunoff, sgrunoff0, sgrunoff1, mythid )
+     &     sgrunoff, sgrunoff0, sgrunoff1, myThid )
 #endif /* ALLOW_SUBGLACIAL_RUNOFF */
 
 #endif /* ALLOW_ICEFRONT */
