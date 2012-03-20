@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1630 2012/03/20 20:17:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1631 2012/03/20 23:45:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - add diagnostic of Redi (main diagnonal) vertical diffusive flux of Temp
 o pkg/fizhi:
   - fix few initialisation and multi-tile Pb: aqualev & gridalt now pass the
     (old)aces open64 tuv test.
