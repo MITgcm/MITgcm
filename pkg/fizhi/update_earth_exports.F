@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.30 2012/03/21 20:48:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.31 2012/03/21 21:08:12 jmc Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
 
@@ -122,7 +122,8 @@ C                      Compute Surface Emissivity
 C **********************************************************************
 
        if( alarm('radlw') ) then
-        call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchptot(bi,bj))
+        call grd2msc(fraci,im2,jm2,igrd(1,bi,bj),ficetile,
+     &               nchp,nchptot(bi,bj))
         call getemiss(fracl,im2,jm2,nchp,nchptot(bi,bj),nSx,nSy,bi,bj,
      &   igrd,ityp,chfr,snodep,ficetile,emiss)
        endif
@@ -895,7 +896,7 @@ C-    local variables:
 
 C and now some conversions from grid space to tile space before sibalb
 
-      call grd2msc(cosz,im,jm,igrd,zenith,nchp,nchpland)
+      call grd2msc(cosz,im,jm,igrd(1,bi,bj),zenith,nchp,nchpland)
 
 C and now call sibalb
 
