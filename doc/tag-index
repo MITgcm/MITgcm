@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1631 2012/03/20 23:45:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1632 2012/03/21 21:42:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/fizhi:
+  - fix 2 calls to S/R GRD2MSC (argument igrd) in update_earth_exports.F
+    update results of exp. fizhi-cs-32x32x40 (fail with only 6 digits for cg2d)
 o pkg/gmredi:
   - add diagnostic of Redi (main diagnonal) vertical diffusive flux of Temp
 o pkg/fizhi:
