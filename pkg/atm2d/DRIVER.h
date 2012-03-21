@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.9 2011/06/03 21:13:11 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.10 2012/03/21 15:39:34 jscott Exp $
 C $Name:  $
 
       COMMON /DRIVER_VARS/
@@ -46,8 +46,9 @@ C       REAL*8 fluxco2mn(jm0)
 #endif
 
 #ifdef IPCC_EMI
-      COMMON /DRIVER_VAR_IPCC/nemis
+      COMMON /DRIVER_VAR_IPCC/nemis, tcumn
        INTEGER nemis
+       REAL*8 tcumn
 
 C      COMMON/ BACKGRGHG/ghgbgr
 C       REAL*8 ghgbgr(5)
