@@ -1,20 +1,32 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.29 2010/03/16 00:19:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.30 2012/03/21 20:48:53 jmc Exp $
 C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
-       subroutine update_earth_exports (myTime, myIter, myThid)
-c----------------------------------------------------------------------
-c  Subroutine update_earth_exports - 'Wrapper' routine to update
-c        the fields related to the earth surface that are needed
-c        by fizhi.
-c
-c Call:  getlgr    (Set the leaf area index and surface greenness,
-c                              based on veg type and month)
-c        getalb    (Set the 4 albedos based on veg type, snow and time)
-c        getemiss  (Set the surface emissivity based on the veg type
-c                              and the snow depth)
-c-----------------------------------------------------------------------
-       implicit none
+
+C--  File update_earth_exports.F:
+C--   Contents
+C--   o UPDATE_EARTH_EXPORTS
+C--   o SIBALB
+C--   o GETLGR
+C--   o GETALB
+C--   o GETEMISS
+C--   o EMISSIVITY
+C--   o GET_LANDFRAC
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE UPDATE_EARTH_EXPORTS (myTime, myIter, myThid)
+C----------------------------------------------------------------------
+C  Subroutine update_earth_exports - 'Wrapper' routine to update
+C        the fields related to the earth surface that are needed
+C        by fizhi.
+C
+C Call:  getlgr    (Set the leaf area index and surface greenness,
+C                              based on veg type and month)
+C        getalb    (Set the 4 albedos based on veg type, snow and time)
+C        getemiss  (Set the surface emissivity based on the veg type
+C                              and the snow depth)
+C-----------------------------------------------------------------------
+       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "fizhi_land_SIZE.h"
@@ -27,21 +39,21 @@ c-----------------------------------------------------------------------
 #include "fizhi_ocean_coms.h"
 #include "EEPARAMS.h"
 
-      integer myIter, myThid
+      INTEGER myIter, myThid
       _RL myTime
 
-      logical alarm
-      external alarm
+      LOGICAL alarm
+      EXTERNAL alarm
       _RL lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
       _RL fraci(sNx,sNy), fracl(sNx,sNy)
       _RL ficetile(nchp)
       _RL radius
       _RL tmpij(sNx,sNy)
       _RL tmpchp(nchp)
-      integer i, j, n, bi, bj
-      integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-      integer sec, day, month
-      integer nmonf,ndayf,nsecf
+      INTEGER i, j, n, bi, bj
+      INTEGER im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+      INTEGER sec, day, month
+      INTEGER nmonf,ndayf,nsecf
       nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
       nmonf(n) = mod(n,10000)/100
       ndayf(n) = mod(n,100)
@@ -144,6 +156,8 @@ C*********************************************************************
       return
       end
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE SIBALB ( AVISDR, ANIRDR, AVISDF, ANIRDF,
      &                    VLAI, VGRN, ZTH, SNW, ITYP, IRUN )
 
@@ -177,7 +191,7 @@ C*******************************************************************
       _RL ALVDRDD, ALIDRDD
       _RL ALVDRI,  ALIDRI
       _RL minval
-      external     minval
+      EXTERNAL     minval
 
 C Albedo of soil         for visible   direct solar radiation.
       PARAMETER (  ALVDRS  = 0.100 )
@@ -196,7 +210,7 @@ C Albedo of ice          for visible   direct solar radiation.
 C Albedo of ice          for infra-red direct solar radiation.
       PARAMETER (  ALIDRI  = 0.800 )
 
-* --------------------------------------------------------------------------------------------
+* ----------------------------------------------------------------------
 
       INTEGER NTYPS
       INTEGER NLAI
@@ -210,7 +224,6 @@ C Albedo of ice          for infra-red direct solar radiation.
       PARAMETER (ZERO=0., ONE=1.0)
       PARAMETER (ALATRM = BLAI + (NLAI - 1) * DLAI - EPSLN)
       PARAMETER (NTYPS=10)
-
 
 C ITYP: Vegetation type as follows:
 C                  1:  BROADLEAF EVERGREEN TREES
@@ -287,7 +300,6 @@ C    DWARF TREES, OR TUNDRA (ITYP=6); GREEN=0.67,LAI=.5-7
         DATA (ALVDR (I, 2, 6), I = 1, 14)
      &    /0.0781, 0.0771, 0.0767, 0.0765, 0.0765, 9*0.0764/
 
-
 C    BARE SOIL
         DATA (ALVDR (I, 1, 7), I = 1, 14) /14*ALVDRS/
         DATA (ALVDR (I, 2, 7), I = 1, 14) /14*ALVDRS/
@@ -303,7 +315,6 @@ C    ICE
 C    DARK DESERT (AUSTRALIA, EG)
         DATA (ALVDR (I, 1, 10), I = 1, 14) /14*ALVDRDD/
         DATA (ALVDR (I, 2, 10), I = 1, 14) /14*ALVDRDD/
-C****
 C**** -------------------------------------------------
         DATA (BTVDR (I, 1, 1), I = 1, 14)
      &    /0.0153, 0.0372, 0.0506, 0.0587, 0.0630, 0.0652, 0.0663,
@@ -369,7 +380,6 @@ C**** -------------------------------------------------
         DATA (BTVDR (I, 1, 10), I = 1, 14) /14*0./
         DATA (BTVDR (I, 2, 10), I = 1, 14) /14*0./
 
-C****
 C**** -----------------------------------------------------------
         DATA (GMVDR (I, 1, 1), I = 1, 14)
      &    /0.0814, 0.1361, 0.2078, 0.2650, 0.2986, 0.3169,  0.3265,
@@ -435,7 +445,6 @@ C**** -----------------------------------------------------------
         DATA (GMVDR (I, 1, 10), I = 1, 14) /14*1./
         DATA (GMVDR (I, 2, 10), I = 1, 14) /14*1./
 
-C****
 C****  -----------------------------------------------------------
 
         DATA (ALIDR (I, 1, 1), I = 1, 14)
@@ -487,7 +496,6 @@ C****  -----------------------------------------------------------
         DATA (ALIDR (I, 1, 10), I = 1, 14) /14*ALIDRDD/
         DATA (ALIDR (I, 2, 10), I = 1, 14) /14*ALIDRDD/
 
-C****
 C**** -----------------------------------------------------------
         DATA (BTIDR (I, 1, 1), I = 1, 14)
      &    /0.1291, 0.1707, 0.1969, 0.2125, 0.2216,   0.2267, 0.2295,
@@ -554,7 +562,6 @@ C**** -----------------------------------------------------------
         DATA (BTIDR (I, 1, 10), I = 1, 14) /14*0./
         DATA (BTIDR (I, 2, 10), I = 1, 14) /14*0./
 
-C****
 C**** --------------------------------------------------------------
         DATA (GMIDR (I, 1, 1), I = 1, 14)
      &    /0.1582, 0.2581, 0.3227, 0.3635, 0.3882, 0.4026, 0.4108,
@@ -619,7 +626,6 @@ C**** --------------------------------------------------------------
 
         DATA (GMIDR (I, 1, 10), I = 1, 14) /14*1./
         DATA (GMIDR (I, 2, 10), I = 1, 14) /14*1./
-
 
 C**** -----------------------------------------------------------
 
@@ -693,23 +699,25 @@ cfpp$ expand (coeff)
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE GETLGR(sec,IMON,IDAY,ALAT,ITYP,NCHPS,nchpdim,
      &    nSx,nSy,bi,bj,ALAI,AGRN)
 C*********************************************************************
-      implicit none
+      IMPLICIT NONE
 
-      integer ntyps
+      INTEGER ntyps
       _RL one,daylen
       PARAMETER (NTYPS=10)
-      parameter (one = 1.)
-      parameter (daylen = 86400.)
+      PARAMETER (one = 1.)
+      PARAMETER (daylen = 86400.)
 
-      integer sec, imon, iday, nchps, nchpdim, nSx, nSy, bi, bj
+      INTEGER sec, imon, iday, nchps, nchpdim, nSx, nSy, bi, bj
       _RL ALAI(nchpdim,nSx,nSy), AGRN(nchpdim,nSx,nSy)
       _RL ALAT(nchpdim,nSx,nSy)
-      integer ITYP(nchpdim,nSx,nSy)
+      INTEGER ITYP(nchpdim,nSx,nSy)
 
-      integer i,midmon,midm,midp,id,k1,k2,kk1,kk2
+      INTEGER i,midmon,midm,midp,id,k1,k2,kk1,kk2
       _RL fac
 
       INTEGER     DAYS(12)
@@ -740,7 +748,6 @@ C*********************************************************************
      1    0.001, 0.001, 0.001, 0.001
      &  /
 
-
       DATA VGGR
      1  /0.905, 0.905, 0.905, 0.905, 0.905, 0.905, 0.905, 0.905,
      1   0.905, 0.905, 0.905, 0.905,
@@ -764,9 +771,7 @@ C*********************************************************************
      1   0.001, 0.001, 0.001, 0.001
      &  /
 
-
       MIDMON = DAYS(IMON)/2 + 1
-
 
       IF (IDAY .LT. MIDMON) THEN
         K2 = IMON
@@ -809,7 +814,9 @@ C*********************************************************************
       RETURN
       END
 
-      subroutine getalb(sec,month,day,cosz,snodep,fraci,fracg,im,jm,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE GETALB(sec,month,day,cosz,snodep,fraci,fracg,im,jm,
      &        nchp,nchptot,nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,
      &        alai,agrn,albvr,albvf,albnr,albnf)
 C***********************************************************************
@@ -849,16 +856,17 @@ C albnr    - real array [im,jm] of near-ir direct beam albedo
 C albnf    - real array [im,jm] of near-ir diffuse beam albedo
 C
 C***********************************************************************
-      implicit none
+      IMPLICIT NONE
 
-      integer sec,month,day,im,jm,nchp,nchptot,nchpland,nSx,nSy,bi,bj
+      INTEGER sec,month,day,im,jm,nchp,nchptot,nchpland,nSx,nSy,bi,bj
       _RL cosz(im,jm),fraci(im,jm),fracg(im,jm)
       _RL snodep(nchp,nSx,nSy),chfr(nchp,nSx,nSy),chlt(nchp,nSx,nSy)
-      integer igrd(nchp,nSx,nSy),ityp(nchp,nSx,nSy)
+      INTEGER igrd(nchp,nSx,nSy),ityp(nchp,nSx,nSy)
       _RL alai(nchp,nSx,nSy),agrn(nchp,nSx,nSy)
       _RL albvr(im,jm,nSx,nSy),albvf(im,jm,nSx,nSy)
       _RL albnr(im,jm,nSx,nSy),albnf(im,jm,nSx,nSy)
 
+C-    local variables:
       _RL one,a0,a1,a2,a3,ocnalb,albsi
       PARAMETER (one = 1.)
       PARAMETER (A0= 0.40670980)
@@ -869,11 +877,11 @@ C***********************************************************************
       PARAMETER (ALBSI=0.7)
 
       _RL alboc(im,jm)
-      _RL AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
-      _RL ANIRDF(nchp)
+      _RL avisdr(nchp),anirdr(nchp),avisdf(nchp)
+      _RL anirdf(nchp)
       _RL zenith(nchp)
       _RL tmpij(im,jm)
-      integer i,j
+      INTEGER i,j
 
       DO I=1,IM
       DO J=1,JM
@@ -949,7 +957,9 @@ C finally some transformations back to grid space for albedos
       return
       end
 
-      subroutine getemiss(fracg,im,jm,nchp,nchptot,nSx,nSy,bi,bj,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE GETEMISS(fracg,im,jm,nchp,nchptot,nSx,nSy,bi,bj,
      &   igrd,ityp,chfr,snowdep,fraci,emiss)
 C***********************************************************************
 C  PURPOSE
@@ -979,18 +989,18 @@ C OUTPUT:
 C emiss    - real array [im,jm,10,nSx,nSy] - surface emissivity (frac)
 C
 C***********************************************************************
-      implicit none
-      integer im,jm,nchp,nchptot,nSx,nSy,bi,bj
+      IMPLICIT NONE
+      INTEGER im,jm,nchp,nchptot,nSx,nSy,bi,bj
       _RL fracg(im,jm)
       _RL chfr(nchp,nSx,nSy)
-      integer igrd(nchp,nSx,nSy), ityp(nchp,nSx,nSy)
+      INTEGER igrd(nchp,nSx,nSy), ityp(nchp,nSx,nSy)
       _RL snowdep(nchp,nSx,nSy)
       _RL fraci(nchp)
       _RL emiss(im,jm,10,nSx,nSy)
 
       _RL emisstile(nchp,10)
       _RL tmpij(im,jm)
-      integer i,j,k,n
+      INTEGER i,j,k,n
 
       do i = 1,10
       do n = 1,nchptot
@@ -998,13 +1008,13 @@ C***********************************************************************
       enddo
       enddo
 
-c call emissivity to get values in tile space
-c -------------------------------------------
+C call emissivity to get values in tile space
+C -------------------------------------------
       call emissivity(snowdep(1,bi,bj),fraci,nchp,nchptot,ityp(1,bi,bj),
      &                                                    emisstile)
 
-c transform back to grid space for emissivities
-c ---------------------------------------------
+C transform back to grid space for emissivities
+C ---------------------------------------------
       do k = 1,10
       do j = 1,jm
       do i = 1,im
@@ -1023,71 +1033,73 @@ c ---------------------------------------------
       return
       end
 
-      subroutine emissivity (snowdepth,fraci,nchp,numpts,ityp,newemis)
-      implicit none
-      integer nchp,numpts
-      integer   ityp(nchp)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE EMISSIVITY (snowdepth,fraci,nchp,numpts,ityp,newemis)
+      IMPLICIT NONE
+      INTEGER nchp,numpts
+      INTEGER   ityp(nchp)
       _RL snowdepth(nchp)
       _RL fraci(nchp)
       _RL newemis(nchp,10)
 
       _RL emis(12,11)
       _RL fac
-      integer i,j
+      INTEGER i,j
 
-c-----------------------------------------------------------------------
-c  NOTE: Emissivities were obtained for the following surface types:
-c  ( 1) evergreen needleleaf = conifer
-c  ( 2) evergreen broadleaf = conifer
-c  ( 3) deciduous needleleaf = deciduous
-c  ( 4) deciduous broadleaf = deciduous
-c  ( 5) mixed forests = 1/2 conifer + 1/2 deciduous = tree
-c  ( 6) closed shrublands = 3/4 tree + 1/4 quartz
-c  ( 7) open shrubland = 1/4 tree + 3/4 quartz
-c  ( 8) woody savannas = grass
-c  ( 9) savannas = grass
-c  (10) grasslands = grass
-c  (11) permanent wetlands = 1/2 grass + 1/2 water
-c  (12) croplands = grass
-c  (13) urban = black body
-c  (14) mosaic = 1/2 grass + 1/2 mixed forest
-c  (15) snow/ice
-c  (16) barren/sparsely vegetated = desert(quartz)
-c  (17) water
-c  (18) tundra = frost
-c
-c  NOTE: Translation to Koster-Suarez surface types was as follows:
-c  (  1) broadleaf evergreen  FROM above type 1  (conifer)
-c  (  2) broadleaf deciduous  FROM above type 2  (deciduous)
-c  (  3) needleleaf evergreen FROM above type 1  (conifer)
-c  (  4) groundcover          FROM above type 10 (grass)
-c  (  5) broadleaf shrubs     FROM above type 6  (closed shrublands)
-c  (  6) dwarf trees (tundra) FROM above type 18 (tundra)
-c  (  7) bare soil            FROM above type 16 (desert)
-c  (  8) light desert         FROM above type 16 (desert)
-c  (  9) glacier              FROM above type 15 (snow/ice)
-c  ( 10) dark desert          FROM above type 16 (desert)
-c  (100) ocean                FROM above type 17 (water)
-c
-c  NOTE: snow-covered ground uses interpolated emissivities based on snow depth
-c =============================================================================
-c -----------------------------------------------------------------------------
-c   Emmissivities for 12 bands in Fu/Liou
-c      band 1:   4.5 -  5.3 um
-c      band 2:   5.3 -  5.9 um
-c      band 3:   5.9 -  7.1 um
-c      band 4:   7.1 -  8.0 um
-c      band 5:   8.0 -  9.1 um
-c      band 6:   9.1 - 10.2 um
-c      band 7:  10.2 - 12.5 um
-c      band 8:  12.5 - 14.9 um
-c      band 9:  14.9 - 18.5 um
-c      band 10: 18.5 - 25.0 um
-c      band 11: 25.0 - 35.7 um
-c      band 12: 35.7 -  oo  um
-c
-c-------------------------------------------------------------------------
-      data ((emis(i,j),i=1,12),j=1,11) /
+C-----------------------------------------------------------------------
+C  NOTE: Emissivities were obtained for the following surface types:
+C  ( 1) evergreen needleleaf = conifer
+C  ( 2) evergreen broadleaf = conifer
+C  ( 3) deciduous needleleaf = deciduous
+C  ( 4) deciduous broadleaf = deciduous
+C  ( 5) mixed forests = 1/2 conifer + 1/2 deciduous = tree
+C  ( 6) closed shrublands = 3/4 tree + 1/4 quartz
+C  ( 7) open shrubland = 1/4 tree + 3/4 quartz
+C  ( 8) woody savannas = grass
+C  ( 9) savannas = grass
+C  (10) grasslands = grass
+C  (11) permanent wetlands = 1/2 grass + 1/2 water
+C  (12) croplands = grass
+C  (13) urban = black body
+C  (14) mosaic = 1/2 grass + 1/2 mixed forest
+C  (15) snow/ice
+C  (16) barren/sparsely vegetated = desert(quartz)
+C  (17) water
+C  (18) tundra = frost
+C
+C  NOTE: Translation to Koster-Suarez surface types was as follows:
+C  (  1) broadleaf evergreen  FROM above type 1  (conifer)
+C  (  2) broadleaf deciduous  FROM above type 2  (deciduous)
+C  (  3) needleleaf evergreen FROM above type 1  (conifer)
+C  (  4) groundcover          FROM above type 10 (grass)
+C  (  5) broadleaf shrubs     FROM above type 6  (closed shrublands)
+C  (  6) dwarf trees (tundra) FROM above type 18 (tundra)
+C  (  7) bare soil            FROM above type 16 (desert)
+C  (  8) light desert         FROM above type 16 (desert)
+C  (  9) glacier              FROM above type 15 (snow/ice)
+C  ( 10) dark desert          FROM above type 16 (desert)
+C  (100) ocean                FROM above type 17 (water)
+C
+C  NOTE: snow-covered ground uses interpolated emissivities based on snow depth
+C =============================================================================
+C -----------------------------------------------------------------------------
+C   Emmissivities for 12 bands in Fu/Liou
+C      band 1:   4.5 -  5.3 um
+C      band 2:   5.3 -  5.9 um
+C      band 3:   5.9 -  7.1 um
+C      band 4:   7.1 -  8.0 um
+C      band 5:   8.0 -  9.1 um
+C      band 6:   9.1 - 10.2 um
+C      band 7:  10.2 - 12.5 um
+C      band 8:  12.5 - 14.9 um
+C      band 9:  14.9 - 18.5 um
+C      band 10: 18.5 - 25.0 um
+C      band 11: 25.0 - 35.7 um
+C      band 12: 35.7 -  oo  um
+C
+C-------------------------------------------------------------------------
+      DATA ((emis(i,j),i=1,12),j=1,11) /
 C evergreen needleleaf
      &   0.9891, 0.9892, 0.9900, 0.9914, 0.9908, 0.9903,
      &   0.9898, 0.9948, 1.0000, 1.0000, 1.0000, 1.0000,
@@ -1124,12 +1136,12 @@ C water
 
 #include "snwmid.h"
 
-c Convert to the 10 bands needed by Chou Radiation
-c ------------------------------------------------
+C Convert to the 10 bands needed by Chou Radiation
+C ------------------------------------------------
       do i=1,numpts
 
-c land points
-c------------
+C land points
+C------------
        if(ityp(i).le.10)then
         newemis(i, 1) = (emis( 1,ityp(i))+emis(2,ityp(i)))/2.
         newemis(i, 2) = (emis( 2,ityp(i))+emis(3,ityp(i)))/2.
@@ -1142,8 +1154,8 @@ c------------
         newemis(i, 9) =  emis(12,ityp(i))
         newemis(i,10) =  emis( 4,ityp(i))
 
-c modify emissivity for snow based on snow depth (like albedo)
-c-------------------------------------------------------------
+C modify emissivity for snow based on snow depth (like albedo)
+C-------------------------------------------------------------
         if(snowdepth (i).gt.0.) then
          fac = snowdepth(i) / (snowdepth(i) + snwmid(ityp(i)))
          newemis(i, 1) = newemis(i, 1) + (((emis( 1,9)+emis( 2,9))/2.)
@@ -1168,8 +1180,8 @@ c-------------------------------------------------------------
      &                                           - newemis(i,10)) * fac
         endif
 
-c open water
-c-----------
+C open water
+C-----------
        else
         if(fraci(i).eq.0.)then
          newemis(i, 1) = (emis( 1,11)+emis(2,11))/2.
@@ -1183,8 +1195,8 @@ c-----------
          newemis(i, 9) =  emis(12,11)
          newemis(i,10) =  emis( 4,11)
 
-c sea ice (like glacier and snow)
-c--------------------------------
+C sea ice (like glacier and snow)
+C--------------------------------
         else
          newemis(i, 1) = (emis( 1,9)+emis(2,9))/2.
          newemis(i, 2) = (emis( 2,9)+emis(3,9))/2.
@@ -1202,21 +1214,24 @@ c--------------------------------
 
       return
       end
-      subroutine get_landfrac(im,jm,nSx,nSy,bi,bj,maxtyp,surftype,
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE GET_LANDFRAC(im,jm,nSx,nSy,bi,bj,maxtyp,surftype,
      &                                                    tilefrac,frac)
 C***********************************************************************
 C  Purpose
 C     To compute the total fraction of land within a model grid-box
 C
 C***********************************************************************
-      implicit none
+      IMPLICIT NONE
 
-      integer im,jm,nSx,nSy,bi,bj,maxtyp
-      integer surftype(im,jm,maxtyp,nSx,nSy)
+      INTEGER im,jm,nSx,nSy,bi,bj,maxtyp
+      INTEGER surftype(im,jm,maxtyp,nSx,nSy)
       _RL tilefrac(im,jm,maxtyp,nSx,nSy)
       _RL frac(im,jm)
 
-      integer  i,j,k
+      INTEGER  i,j,k
 
       do j=1,jm
       do i=1,im
