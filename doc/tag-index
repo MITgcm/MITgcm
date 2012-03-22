@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1632 2012/03/21 21:42:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1633 2012/03/22 17:22:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,9 @@ $Name:  $
 o pkg/fizhi:
   - fix 2 calls to S/R GRD2MSC (argument igrd) in update_earth_exports.F
     update results of exp. fizhi-cs-32x32x40 (fail with only 6 digits for cg2d)
+  - by default, use new version of S/R GETPWHERE (#define TRY_NEW_GETPWHERE);
+    fix few out-of-bounds indices in referencing vars (initialise igrd to 1);
+    clean-up fizhi_turb.F (remove unused & uninitialised qdiaglsm array).
 o pkg/gmredi:
   - add diagnostic of Redi (main diagnonal) vertical diffusive flux of Temp
 o pkg/fizhi:
