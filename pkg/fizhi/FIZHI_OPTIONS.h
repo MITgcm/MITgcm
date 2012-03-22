@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/FIZHI_OPTIONS.h,v 1.2 2011/12/24 01:04:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/FIZHI_OPTIONS.h,v 1.3 2012/03/22 14:19:21 jmc Exp $
 C $Name:  $
 
 #ifndef FIZHI_OPTIONS_H
@@ -9,7 +9,11 @@ C $Name:  $
 #ifdef ALLOW_FIZHI
 C     Package-specific options go here
 
-C     #define FIZHI_DEBUG
+C     use fixed day in the year:
+#undef FIZHI_USE_FIXED_DAY
+
+C     use new version of S/R GETPWHERE
+#define TRY_NEW_GETPWHERE
 
 #endif /* ALLOW_FIZHI */
 #endif /* FIZHI_OPTIONS_H */
