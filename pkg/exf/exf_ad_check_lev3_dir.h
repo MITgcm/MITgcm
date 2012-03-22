@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev3_dir.h,v 1.16 2007/10/09 00:04:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev3_dir.h,v 1.17 2012/03/22 04:13:18 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_EXF
@@ -23,6 +23,14 @@ CADJ STORE xx_tauu1      = tapelev3, key = ilev_3
 # ifdef ALLOW_VSTRESS_CONTROL
 CADJ STORE xx_tauv0      = tapelev3, key = ilev_3
 CADJ STORE xx_tauv1      = tapelev3, key = ilev_3
+# endif
+# ifdef ALLOW_SST_CONTROL
+CADJ STORE xx_sst0      = tapelev3, key = ilev_3
+CADJ STORE xx_sst1      = tapelev3, key = ilev_3
+# endif
+# ifdef ALLOW_SSS_CONTROL
+CADJ STORE xx_sss0      = tapelev3, key = ilev_3
+CADJ STORE xx_sss1      = tapelev3, key = ilev_3
 # endif
 
 #endif /* ALLOW_EXF */
