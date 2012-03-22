@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/check_aces_mp2,v 1.3 2011/11/23 09:38:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/check_aces_mp2,v 1.4 2012/03/22 20:05:27 jmc Exp $
 # $Name:  $
 
 sfx='mp2'
@@ -29,7 +29,8 @@ do
       if test "x$p2Z" = "x$p1Z" ; then
         #-- report to permanent log file
         date >> $pLog ; uname -a >> $pLog
-        ps -f -p $p1Z | tee -a $pLog
+        ps -f -p $listZ | tee -a $pLog
+#       ps -f -p $p1Z | tee -a $pLog
         ppZ=`ps -f -p $p1Z | grep $pNam | awk '{print $3}'`
 #--- version-1 : try to kill parent of Zombie proc
 #       echo " try to kill parent proc: $ppZ at:" `date` | tee -a $pLog
@@ -37,10 +38,11 @@ do
 #       out=$?
 #       echo " return code: $out" | tee -a $pLog
 #--- version-2 : try to kill other pNam child proc from same parent
-        echo " list of $pNam proc at:" `date`
+        echo "==> list of $pNam proc at:" `date`
         ps -f -u $uNam | grep $pNam
-        listP=`ps -f -u $uNam | grep $pNam | awk '{print $2 "p" $3}'`
-        echo " try to kill proc from same parent=$ppZ" | tee -a $pLog
+        #listP=`ps -f -u $uNam | grep $pNam | awk '{print $2 "p" $3}'`
+        listP=`ps -f -u $uNam | grep $pNam | grep -v '<defunct>' | awk '{print $2 "p" $3}'`
+        echo "==> pZ=$p1Z : try to kill proc from same parent=$ppZ" | tee -a $pLog
         ps -f -p $ppZ
        #echo " listP='$listP'"
         for xx in $listP
@@ -48,7 +50,8 @@ do
           pc=`echo $xx | sed 's/p/ /' | awk '{print $1}'`
           pp=`echo $xx | sed 's/p/ /' | awk '{print $2}'`
          #echo " xx='$xx' ; child=$pc ; parent=$pp"
-          if test "x$pp" = "x$ppZ" -a "x$pc" != "x$p1Z" ; then
+         #if test "x$pp" = "x$ppZ" -a "x$pc" != "x$p1Z" ; then
+          if test "x$pp" = "x$ppZ" ; then
             ps -f -p $pc | tee -a $pLog
             echo " killing proc: $pc" | tee -a $pLog
             kill -9 $pc
@@ -57,7 +60,7 @@ do
           fi
         done
 #---
-        echo " list of remaining $pNam proc:" | tee -a $pLog
+        echo "==> list of remaining $pNam proc:" | tee -a $pLog
         ps -f -u $uNam | grep $pNam | tee -a $pLog
         echo '--------------------' | tee -a $pLog
       else

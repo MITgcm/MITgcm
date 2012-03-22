@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.11 2012/02/15 15:07:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.12 2012/03/22 20:05:27 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -76,10 +76,12 @@ get_outp_back()
 
    nbJobs=$1
    REJECTED=
-   minutes=0 ; freq=10
-   fsec=`expr $freq \* 60`
+   minutes=0 ; freq=10 ; waitLimit=1800 ; #-- all in minutes
+   #  "long" queue is 24.h = 24*60 = 1440mn ; 36.h = 2160mn ; 30.h = 1800mn
+
    echo "Check every $freq mn for $nbJobs test(s) to finish" | tee -a $LOG_FIL
    echo "- start at :" `date` | tee -a $LOG_FIL
+   fsec=`expr $freq \* 60`
    while test $nbJobs != 0 ; do
 
      sleep $fsec
@@ -167,8 +169,7 @@ get_outp_back()
        fi
      done
 
-     #  "long" queue is 24hrs = 24*60min = 1440min
-     if test $minutes -gt 2160 ; then
+     if test $minutes -gt $waitLimit ; then
         hrs=$(( $minutes / 60 ));
         echo "Time expired after $minutes minutes ($hrs hours)" | tee -a $LOG_FIL
         echo ' ' $nbJobs '/' $NB_SUB_JOBS 'tests not yet finished' | tee -a $LOG_FIL
@@ -192,7 +193,7 @@ case $1 in
  '-getOnly') action=2 ; shift ;;
  '-sub+get') action=3 ; shift ;;
  '-double' ) action=4 ; shift ;;
-          *) action=3 ;;
+          *) action=4 ;;
 esac
 #echo "action= $action , Arg= $# "
 
