@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.30 2012/03/19 21:46:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.31 2012/03/22 14:22:32 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -44,15 +44,21 @@ C
 C***********************************************************************
 
       implicit none
+#include "EEPARAMS.h"
+#include "chronos.h"
+
       character*(*) tag
       integer       freq,datein,timein
 
-#include "chronos.h"
+C-    functions:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
+C-    local variables:
       integer myid
       logical first,set
       data          first /.true./
-      integer n
+      integer n, iL
 
       myid = 1
       if(first) then
@@ -61,7 +67,10 @@ C***********************************************************************
          freqs(1) = freq
          dates(1) = datein
          times(1) = timein
-         if( myid.eq.1 ) write(6,100) datein,timein,freq,tags(1)
+         iL = ILNBLNK(tag)
+         WRITE(standardMessageUnit,'(A,I8,A,I6.6,A,I10,2A)')
+     &    '  Set Alarm for: ', datein, '  ', timein,
+     &    ', with frequency: ', freq, ', and Tag: ',tag(1:iL)
       else
 
       set = .false.
@@ -94,13 +103,14 @@ C***********************************************************************
          freqs(ntags) = freq
          dates(ntags) = datein
          times(ntags) = timein
-         if( myid.eq.1 ) write(6,100) datein,timein,freq,tags(ntags)
+         iL = ILNBLNK(tag)
+         WRITE(standardMessageUnit,'(A,I8,A,I6.6,A,I10,2A)')
+     &    '  Set Alarm for: ', datein, '  ', timein,
+     &    ', with frequency: ', freq, ', and Tag: ',tag(1:iL)
       endif
       endif
 
       first = .false.
-  100 format(1x,'Setting Alarm for: ',i8,2x,i6.6,',  with frequency: ',
-     .       i10,', and Tag: ',a80)
       return
       end
 
@@ -332,7 +342,7 @@ C***********************************************************************
 c     INTEGER  MNDY(12,4)
       INTEGER  MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
-     .           397,34*0 /
+     &           397,34*0 /
 
       integer nsecf,i,nsegm,nsegd,iday,iday2,nday
 
@@ -399,7 +409,7 @@ C -------------------------------------------------
       end
 
       subroutine interp_time ( nymd ,nhms ,
-     .                         nymd1,nhms1, nymd2,nhms2, fac1,fac2 )
+     &                         nymd1,nhms1, nymd2,nhms2, fac1,fac2 )
 C***********************************************************************
 C
 C  PURPOSE:
@@ -449,7 +459,7 @@ C***********************************************************************
       DATA    FIRST/.TRUE./
 
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
-     .           397,34*0 /
+     &           397,34*0 /
 
       integer i,nsecf
 
@@ -615,7 +625,7 @@ C***********************************************************************
 
       integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
-     .           397,34*0 /
+     &           397,34*0 /
 
       integer i,nsecf,iday,iday0,nsec,nsec0,ntime
 
@@ -684,7 +694,7 @@ C***********************************************************************
 
       integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
-     .           397,34*0 /
+     &           397,34*0 /
       INTEGER NDPM(12)
       DATA NDPM /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
 
@@ -762,8 +772,8 @@ C***********************************************************************
         iday0 = (day0-1) + MNDY(month0+12*mod(year0,4) )
         nsec0 = iday0 *nsday + sec0
         if( (testnymd.gt.nymd) .or.
-     .         (testnymd.eq.testnymd) .and. (testnhms.gt.nhms) )
-     .                    go to 200
+     &         (testnymd.eq.testnymd) .and. (testnhms.gt.nhms) )
+     &                    go to 200
         nalarm2 = nsec-nsec0
        enddo
  200   continue
@@ -907,10 +917,10 @@ C ---------------
       SAVE
 
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
-     .           397,34*0 /
+     &           397,34*0 /
 
       FUN(Y,PI,ECC,YRLEN,PER) = (TWO*PI/((ONE-ECC**2)**1.5))*(ONE/YRLEN)
-     .       * (ONE - ECC*COS(Y-PER)) ** 2
+     &       * (ONE - ECC*COS(Y-PER)) ** 2
 
 C***********************************************************************
 C*                         SET SOME CONSTANTS                          *
@@ -1120,7 +1130,7 @@ C***********************************************************************
       integer testnymd
       integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
-     .           397,34*0 /
+     &           397,34*0 /
 
 C***********************************************************************
 C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *
