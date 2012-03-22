@@ -1,8 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.48 2010/01/19 14:24:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.49 2012/03/22 14:20:30 jmc Exp $
 C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
-      subroutine turbio (im,jm,nlay,istrip,nymd,nhms,bi,bj
+
+C--  File fizhi_turb.F:
+C--   Contents
+C--   o TURBIO 
+C--   o TRBFLX 
+C--   o SFCFLX
+C--   o PHI
+C--   o PSI
+C--   o TRBLEN
+C--   o TRBITP
+C--   o TRBL20
+C--   o TRBL25
+C--   o TRBDIF
+C--   o VTRI0
+C--   o VTRI1
+C--   o VTRI2
+C--   o LINADJ
+C--   o ZCSUB
+C--   o SEAICE
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE TURBIO (im,jm,nlay,istrip,nymd,nhms,bi,bj
      1 ,ndturb,nltop,ptop, pz, uz, vz, tz, qz, ntracers,ptracers
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,fracland,landtype
@@ -16,7 +37,6 @@ C $Name:  $
 C-----------------------------------------------------------------------
 C subroutine turbio - model interface routine to trbflx, the turbulence
 C        parameterization, and tile, the land surface parameterization
-C
 C  input:
 C      im      - number of points in the longitude direction
 C      jm      - number of points in the latitude direction
@@ -48,8 +68,6 @@ C      alai    - leaf area index - real[nchp]
 C      agrn    - greenness fraction - real[nchp]
 C      thkz    - sea ice thickness in m (0. for no ice) - real[lon,lat]
 C      tprof   - logical flag for point by point diagnostic output
-C      ndiagsiz- number of diagnostic 2-D arrays allocated
-C      ndlsm   - number of tile diagnostic
 C      radlwg  - net longwave flux at ground (up-down) in w/m**2 - real[lon,lat]
 C      st4     - upward longwave flux at ground in w/m**2 - real[lon,lat]
 C      dst4    - delta-sigma-T**4, ie, derivative of upward lw flux at
@@ -101,34 +119,20 @@ C-----------------------------------------------------------------------
       integer ntracers, ptracers
       integer nchp,nchptot,nchplnd
       _RL ptop
-c     _RL pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
-c     _RL qz(im,jm,nlay,ntracers)
-c     _RL plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
-c     _RL pkht(im,jm,nlay+1),pkz(im,jm,nlay)
       _RL pz(im*jm,1),uz(im*jm,1,nlay),vz(im*jm,1,nlay)
       _RL tz(im*jm,1,nlay),qz(im*jm,1,nlay,ntracers)
       _RL plz(im*jm,1,nlay),plze(im*jm,1,nlay+1),dpres(im*jm,1,nlay)
       _RL pkht(im*jm,1,nlay+1),pkz(im*jm,1,nlay)
       _RL ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
       _RL xlmt(nchp,nlay),khmt(nchp,nlay),tke(nchp,nlay)
-c     _RL tgz(im, jm),fracland(im,jm)
-c     integer landtype(im,jm)
       _RL tgz(im*jm,1),fracland(im*jm,1)
       integer landtype(im*jm,1)
       _RL tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
       _RL swetroot(nchp),swetdeep(nchp),snodep(nchp),capac(nchp)
       _RL chfr(nchp),chlt(nchp),chlon(nchp)
       integer igrd(nchp),ityp(nchp)
-c     _RL alai(nchp),agrn(nchp),thkz(im,jm)
       _RL alai(nchp),agrn(nchp),thkz(im*jm,1)
       logical tprof
-c     _RL duturb(im,jm,nlay),dvturb(im,jm,nlay)
-c     _RL dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
-c     _RL st4(im,jm),dst4(im,jm)
-c     _RL radswg(im,jm),radswt(im,jm),radlwg(im,jm)
-c     _RL fdifpar(im,jm),fdirpar(im,jm)
-c     _RL rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
-c     _RL tempref (im,jm)
       _RL duturb(im*jm,1,nlay),dvturb(im*jm,1,nlay)
       _RL dtturb(im*jm,1,nlay),dqturb(im*jm,1,nlay,ntracers)
       _RL st4(im*jm,1),dst4(im*jm,1)
@@ -137,9 +141,6 @@ c     _RL tempref (im,jm)
       _RL rainlsp(im*jm,1),rainconv(im*jm,1),snowfall(im*jm,1)
       _RL tempref (im*jm,1)
       integer imstturblw, imstturbsw
-c     _RL qliqavesw(im,jm,nlay),qliqavelw(im,jm,nlay)
-c     _RL fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
-c     _RL qqgrid   (im,jm,nlay)
       _RL qliqavesw(im*jm,1,nlay),qliqavelw(im*jm,1,nlay)
       _RL fccavelw (im*jm,1,nlay),fccavesw (im*jm,1,nlay)
       _RL qqgrid   (im*jm,1,nlay)
@@ -158,9 +159,6 @@ C Set fmu and ed to zero for no background diffusion
       parameter ( cti    =   0.0052   )
       parameter ( ed     =   0.0      )
 
-c     _RL qliqtmp(im,jm,nlay)
-c     _RL  fcctmp(im,jm,nlay)
-c     _RL tmpdiag(im,jm)
       _RL qliqtmp(im*jm,1,nlay)
       _RL  fcctmp(im*jm,1,nlay)
       _RL tmpdiag(im*jm,1), tmpFac
@@ -247,17 +245,11 @@ c     _RL tmpdiag(im,jm)
       _RL qliq(istrip,nlay),turbfcc(istrip,nlay)
       _RL qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
 
-      integer ndlsm
-c     parameter ( ndlsm = 1)
-      parameter ( ndlsm = 38)
-      _RL qdiaglsm(nchp,ndlsm)
-
       _RL pi,secday,sdayopi2,rgas,akap,cp,alhl
       _RL faceps,grav,caltoj,virtcon,getcon
       _RL heatw,undef,timstp,delttrb,dttrb,ra
       _RL edle,rmu,cltj10,atimstp,tice,const
       integer istnp1,istnlay,itrtrb,i,L,nn,nt
-c     integer j
       integer nocean, nice
       integer ndmoist,time_left, ndum0,ndum1
       integer ntracedim
@@ -310,7 +302,7 @@ C a value equal to ndturb means one internal iteration
        edle     =   ed * 0.2
 
 C   coefficient of viscosity (background momentum diffusion)
-C
+
        rmu     = fmu * tref * rgas / pref
        cltj10  = 10. * caltoj
        atimstp = 1. / timstp
@@ -331,7 +323,7 @@ C **********************************************************************
 
 #ifdef ALLOW_USE_MPI
       call mpi_allreduce(sum0,const,1,mpi_double_precision,mpi_sum,
-     .                                                mpi_comm_world,n)
+     &                                                mpi_comm_world,n)
 #else
       const = sum0
 #endif
@@ -353,14 +345,6 @@ C **********************************************************************
 
 C Initialize diagnostic for ground temperature change
 C ---------------------------------------------------
-c     if(diagnostics_is_on('DTG     ',myid) ) then
-c      do j =1,jm
-c      do i =1,im
-c       tmpdiag(i,j) =  -tgz(i,j)
-c      enddo
-c      enddo
-c      call diagnostics_fill(tmpdiag,'DTG     ',0,1,-3,bi,bj,myid)
-c     endif
       tmpFac = -1.
       CALL DIAGNOSTICS_SCALE_FILL( tgz,tmpFac,1,
      &                             'DTG     ',0,1,-3,bi,bj,myid)
@@ -423,7 +407,7 @@ C   set water
       enddo
 
 C   roughness length z0
-C
+
       do i =1,nchptot
        if (icethk(i).gt.0.) then
         z0(i) = 1.e-4
@@ -587,7 +571,7 @@ C --------------------------------------------------------------------
       tmpstrip(i) = sh(i,nlay+1)*1000
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'QG      ', 1, 1, bi, bj, myid)
+     & .false., 'QG      ', 1, 1, bi, bj, myid)
       endif
 
 C value of tracers at the ground
@@ -637,7 +621,7 @@ C ------------------------------------------------------------------
         stdiag(i) = ( thv(i,nlay+1)-thv(i,nlay) ) / pke(i,nlay+1)
        enddo
        call diag_vegtile_fill (stdiag,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DTSRF   ', 1, 1, bi, bj, myid)
+     & .false., 'DTSRF   ', 1, 1, bi, bj, myid)
       endif
 
 C call trbflx
@@ -684,9 +668,9 @@ C**********************************************************************
        wspeed(i) = sqrt(u(i,nlay)*u(i,nlay) + v(i,nlay)*v(i,nlay))
        if(wspeed(i) .lt. 1.e-20) wspeed(i) = 1.e-20
 C Note: This LSM precip bug needs to be cleaned up
-ccc   newsnow(i) = newsnow(i)*dtfac
-ccc   raincon(i) = raincon(i)*dtfac
-ccc   rainls (i) = rainls (i)*dtfac
+c      newsnow(i) = newsnow(i)*dtfac
+c      raincon(i) = raincon(i)*dtfac
+c      rainls (i) = rainls (i)*dtfac
       enddo
 
       do i = 1,istrip
@@ -727,61 +711,61 @@ C**********************************************************************
       tmpstrip(i) = newsnow(i)*86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SNOWFALL', 1, 1, bi, bj, myid)
+     & .false., 'SNOWFALL', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('RAINCON ',myid) ) then
       do i = 1,istrip
       tmpstrip(i) = raincon(i)*86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'RAINCON ', 1, 1, bi, bj, myid)
+     & .false., 'RAINCON ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('RAINLSP ',myid) ) then
       do i = 1,istrip
       tmpstrip(i) = rainls(i)*86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'RAINLSP ', 1, 1, bi, bj, myid)
+     & .false., 'RAINLSP ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('GREEN   ',myid) ) then
       call diag_vegtile_fill (grnstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'GREEN   ', 1, 1, bi, bj, myid)
+     & .false., 'GREEN   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('LAI     ',myid) ) then
       call diag_vegtile_fill (laistrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'LAI     ', 1, 1, bi, bj, myid)
+     & .false., 'LAI     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('PARDR   ',myid) ) then
       call diag_vegtile_fill (pardr,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'PARDR   ', 1, 1, bi, bj, myid)
+     & .false., 'PARDR   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('PARDF   ',myid) ) then
       call diag_vegtile_fill (pardf,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'PARDF   ', 1, 1, bi, bj, myid)
+     & .false., 'PARDF   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DLWDTC  ',myid) ) then
       call diag_vegtile_fill (blwrad,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DLWDTC  ', 1, 1, bi, bj, myid)
+     & .false., 'DLWDTC  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DHDTC   ',myid) ) then
       call diag_vegtile_fill (dhsdtc,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DHDTC   ', 1, 1, bi, bj, myid)
+     & .false., 'DHDTC   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DEDTC   ',myid) ) then
       call diag_vegtile_fill (dedtc,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DEDTC   ', 1, 1, bi, bj, myid)
+     & .false., 'DEDTC   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DHDQA   ',myid) ) then
       call diag_vegtile_fill (dhsdqa,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DHDQA   ', 1, 1, bi, bj, myid)
+     & .false., 'DHDQA   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DEDQA   ',myid) ) then
       call diag_vegtile_fill (dedqa,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DEDQA   ', 1, 1, bi, bj, myid)
+     & .false., 'DEDQA   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('LWGDOWN ',myid) ) then
       call diag_vegtile_fill (hlwdwn,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'LWGDOWN ', 1, 1, bi, bj, myid)
+     & .false., 'LWGDOWN ', 1, 1, bi, bj, myid)
       endif
 C**********************************************************************
 
@@ -804,12 +788,12 @@ C**********************************************************************
 
       if( nice.gt.0 ) then
        call seaice ( nocean, timstp,     hice,
-     .               eturb(nland+1),    dedtc(nland+1),
-     .              hsturb(nland+1),   dhsdtc(nland+1),
-     .             qicestr(nland+1), dqicestr(nland+1),
-     .               swnet(nland+1),  lwstrip(nland+1), blwrad(nland+1),
-     .          pke(nland+1,nlay+1),    icest(nland+1),
-     .                  tc(nland+1),       qa(nland+1) )
+     &               eturb(nland+1),    dedtc(nland+1),
+     &              hsturb(nland+1),   dhsdtc(nland+1),
+     &             qicestr(nland+1), dqicestr(nland+1),
+     &               swnet(nland+1),  lwstrip(nland+1), blwrad(nland+1),
+     &          pke(nland+1,nlay+1),    icest(nland+1),
+     &                  tc(nland+1),       qa(nland+1) )
       endif
 
 C***********************************************************************
@@ -818,114 +802,73 @@ C***********************************************************************
 
       if(diagnostics_is_on('RUNOFF  ',myid) ) then
       call diag_vegtile_fill (runoff,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'RUNOFF  ', 1, 1, bi, bj, myid)
+     & .false., 'RUNOFF  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('FWSOIL  ',myid) ) then
       call diag_vegtile_fill (fwsoil,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'FWSOIL  ', 1, 1, bi, bj, myid)
+     & .false., 'FWSOIL  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('GDRAIN  ',myid) ) then
       call diag_vegtile_fill (gdrain,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'GDRAIN  ', 1, 1, bi, bj, myid)
+     & .false., 'GDRAIN  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('SNOWMELT',myid) ) then
       call diag_vegtile_fill (smelt,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SNOWMELT', 1, 1, bi, bj, myid)
+     & .false., 'SNOWMELT', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('EVEG    ',myid) ) then
       call diag_vegtile_fill (eveg,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'EVEG    ', 1, 1, bi, bj, myid)
+     & .false., 'EVEG    ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('ESNOW   ',myid) ) then
       call diag_vegtile_fill (esno,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'ESNOW   ', 1, 1, bi, bj, myid)
+     & .false., 'ESNOW   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('ESOIL   ',myid) ) then
       call diag_vegtile_fill (esoi,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'ESOIL   ', 1, 1, bi, bj, myid)
+     & .false., 'ESOIL   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('ERESV   ',myid) ) then
       call diag_vegtile_fill (eint,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'ERESV   ', 1, 1, bi, bj, myid)
+     & .false., 'ERESV   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('EVPOT   ',myid) ) then
       call diag_vegtile_fill (evpot,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'EVPOT   ', 1, 1, bi, bj, myid)
+     & .false., 'EVPOT   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DTC     ',myid) ) then
       call diag_vegtile_fill (strdg1,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DTC     ', 1, 1, bi, bj, myid)
+     & .false., 'DTC     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('DQC     ',myid) ) then
       call diag_vegtile_fill (strdg2,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'DQC     ', 1, 1, bi, bj, myid)
+     & .false., 'DQC     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('TCDTC   ',myid) ) then
       call diag_vegtile_fill (strdg3,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TCDTC   ', 1, 1, bi, bj, myid)
+     & .false., 'TCDTC   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('RADDTC  ',myid) ) then
       call diag_vegtile_fill (strdg4,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'RADDTC  ', 1, 1, bi, bj, myid)
+     & .false., 'RADDTC  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('SENSDTC ',myid) ) then
       call diag_vegtile_fill (strdg5,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SENSDTC ', 1, 1, bi, bj, myid)
+     & .false., 'SENSDTC ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('LATDTC  ',myid) ) then
       call diag_vegtile_fill (strdg6,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'LATDTC  ', 1, 1, bi, bj, myid)
+     & .false., 'LATDTC  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('TDDTC   ',myid) ) then
       call diag_vegtile_fill (strdg7,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TDDTC   ', 1, 1, bi, bj, myid)
+     & .false., 'TDDTC   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('QCDTC   ',myid) ) then
       call diag_vegtile_fill (strdg8,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'QCDTC   ', 1, 1, bi, bj, myid)
+     & .false., 'QCDTC   ', 1, 1, bi, bj, myid)
       endif
 C***********************************************************************
-
-      if( ndlsm.gt.1 ) then
-      call pstbitint(types,qdiaglsm(1,1),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(chfrstr,qdiaglsm(1,2),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(lats,qdiaglsm(1,3),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(lons,qdiaglsm(1,4),istrip,nchp,nchptot,1,nn)
-c     call pstbmpit(igrdstr,qdiaglsm(1,5),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(tc,qdiaglsm(1,6),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(td,qdiaglsm(1,7),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(qa,qdiaglsm(1,8),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(swet1,qdiaglsm(1,9),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(swet2,qdiaglsm(1,10),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(swet3,qdiaglsm(1,11),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(capacity,qdiaglsm(1,12),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(snowdepth,qdiaglsm(1,13),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(eturb,qdiaglsm(1,14),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(hsturb,qdiaglsm(1,15),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(cd,qdiaglsm(1,16),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(laistrip,qdiaglsm(1,17),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(grnstrip,qdiaglsm(1,18),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(eint,qdiaglsm(1,19),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(esoi,qdiaglsm(1,20),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(eveg,qdiaglsm(1,21),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(esno,qdiaglsm(1,22),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg1,qdiaglsm(1,23),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg2,qdiaglsm(1,24),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg3,qdiaglsm(1,25),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg4,qdiaglsm(1,26),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg5,qdiaglsm(1,27),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg6,qdiaglsm(1,28),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg7,qdiaglsm(1,29),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg8,qdiaglsm(1,30),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(strdg9,qdiaglsm(1,31),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(smelt,qdiaglsm(1,32),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(gdrain,qdiaglsm(1,33),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(runsrf,qdiaglsm(1,34),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(fwsoil,qdiaglsm(1,35),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(evpot,qdiaglsm(1,36),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(stt2m,qdiaglsm(1,37),istrip,nchp,nchptot,1,nn)
-      call pstbmpit(stq2m,qdiaglsm(1,38),istrip,nchp,nchptot,1,nn)
-      endif
 
       call pastit (tc,tground,istrip,nchp,nchptot,1,nn)
       call pastit (td,tdeep,istrip,nchp,nchptot,1,nn)
@@ -1022,29 +965,29 @@ C ------------------------------
       tmpstrip(i) = stqflux(i,nlay) * 86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'EVAP    ', 1, 1, bi, bj, myid)
+     & .false., 'EVAP    ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('EFLUX   ',myid) ) then
       do i=1,istrip
       tmpstrip(i) = stqflux(i,nlay) * alhl
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'EFLUX   ', 1, 1, bi, bj, myid)
+     & .false., 'EFLUX   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('HFLUX   ',myid) ) then
       do i=1,istrip
       tmpstrip(i) = sttflux(i,nlay) * cp
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'HFLUX   ', 1, 1, bi, bj, myid)
+     & .false., 'HFLUX   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('TUFLUX  ',myid) ) then
       call diag_vegtile_fill (stuflux,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TUFLUX  ', 0, nlay, bi, bj, myid)
+     & .false., 'TUFLUX  ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('TVFLUX  ',myid) ) then
       call diag_vegtile_fill (stvflux,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TVFLUX  ', 0, nlay, bi, bj, myid)
+     & .false., 'TVFLUX  ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('TTFLUX  ',myid) ) then
       do l=1,nlay
@@ -1053,7 +996,7 @@ C ------------------------------
       enddo
       enddo
       call diag_vegtile_fill (sttflux,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TTFLUX  ', 0, nlay, bi, bj, myid)
+     & .false., 'TTFLUX  ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('TQFLUX  ',myid) ) then
       do l=1,nlay
@@ -1062,67 +1005,67 @@ C ------------------------------
       enddo
       enddo
       call diag_vegtile_fill (stqflux,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TQFLUX  ', 0, nlay, bi, bj, myid)
+     & .false., 'TQFLUX  ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('RI      ',myid) ) then
       call diag_vegtile_fill (sri,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'RI      ', 0, nlay, bi, bj, myid)
+     & .false., 'RI      ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('KH      ',myid) ) then
       call diag_vegtile_fill (skh,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'KH      ', 0, nlay, bi, bj, myid)
+     & .false., 'KH      ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('KM      ',myid) ) then
       call diag_vegtile_fill (skm,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'KM      ', 0, nlay, bi, bj, myid)
+     & .false., 'KM      ', 0, nlay, bi, bj, myid)
       endif
       if(diagnostics_is_on('CT      ',myid) ) then
       call diag_vegtile_fill (sct,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'CT      ', 1, 1, bi, bj, myid)
+     & .false., 'CT      ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('CU      ',myid) ) then
       call diag_vegtile_fill (scu,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'CU      ', 1, 1, bi, bj, myid)
+     & .false., 'CU      ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('WINDS   ',myid) ) then
       call diag_vegtile_fill (swinds,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'WINDS   ', 1, 1, bi, bj, myid)
+     & .false., 'WINDS   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('UFLUX   ',myid) ) then
       call diag_vegtile_fill (stuflux(1,nlay),igrd,chfrstr,istrip,nchp,
-     . nn,.false., 'UFLUX   ', 1, 1, bi, bj, myid)
+     & nn,.false., 'UFLUX   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('VFLUX   ',myid) ) then
       call diag_vegtile_fill (stvflux(1,nlay),igrd,chfrstr,istrip,nchp,
-     . nn,.false., 'VFLUX   ', 1, 1, bi, bj, myid)
+     & nn,.false., 'VFLUX   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('USTAR   ',myid) ) then
       call diag_vegtile_fill (sustar,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'USTAR   ', 1, 1, bi, bj, myid)
+     & .false., 'USTAR   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('Z0      ',myid) ) then
       call diag_vegtile_fill (sz0,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'Z0      ', 1, 1, bi, bj, myid)
+     & .false., 'Z0      ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('FRQTRB  ',myid) ) then
       call diag_vegtile_fill (frqtrb,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'FRQTRB  ', 0, nlay-1, bi, bj, myid)
+     & .false., 'FRQTRB  ', 0, nlay-1, bi, bj, myid)
       endif
       if(diagnostics_is_on('PBL     ',myid) ) then
       call diag_vegtile_fill (pbldpth,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'PBL     ', 1, 1, bi, bj, myid)
+     & .false., 'PBL     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('U2M     ',myid) ) then
       call diag_vegtile_fill (stu2m,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'U2M     ', 1, 1, bi, bj, myid)
+     & .false., 'U2M     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('V2M     ',myid) ) then
       call diag_vegtile_fill (stv2m,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'V2M     ', 1, 1, bi, bj, myid)
+     & .false., 'V2M     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('T2M     ',myid) ) then
       call diag_vegtile_fill (stt2m,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'T2M     ', 1, 1, bi, bj, myid)
+     & .false., 'T2M     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('Q2M     ',myid) ) then
       do i=1,istrip
@@ -1133,19 +1076,19 @@ C ------------------------------
          endif
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'Q2M     ', 1, 1, bi, bj, myid)
+     & .false., 'Q2M     ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('U10M    ',myid) ) then
       call diag_vegtile_fill (stu10m,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'U10M    ', 1, 1, bi, bj, myid)
+     & .false., 'U10M    ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('V10M    ',myid) ) then
       call diag_vegtile_fill (stv10m,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'V10M    ', 1, 1, bi, bj, myid)
+     & .false., 'V10M    ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('T10M    ',myid) ) then
       call diag_vegtile_fill (stt10m,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'T10M    ', 1, 1, bi, bj, myid)
+     & .false., 'T10M    ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('Q10M    ',myid) ) then
       do i=1,istrip
@@ -1156,7 +1099,7 @@ C ------------------------------
          endif
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'Q10M    ', 1, 1, bi, bj, myid)
+     & .false., 'Q10M    ', 1, 1, bi, bj, myid)
       endif
 
 C**********************************************************************
@@ -1165,31 +1108,31 @@ C**********************************************************************
 
       if(diagnostics_is_on('TDEEP   ',myid) ) then
       call diag_vegtile_fill (td,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'TDEEP   ', 1, 1, bi, bj, myid)
+     & .false., 'TDEEP   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('QCANOPY ',myid) ) then
       call diag_vegtile_fill (qa,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'QCANOPY ', 1, 1, bi, bj, myid)
+     & .false., 'QCANOPY ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('SMSHAL  ',myid) ) then
       call diag_vegtile_fill (swet1,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SMSHAL  ', 1, 1, bi, bj, myid)
+     & .false., 'SMSHAL  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('SMROOT  ',myid) ) then
       call diag_vegtile_fill (swet2,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SMROOT  ', 1, 1, bi, bj, myid)
+     & .false., 'SMROOT  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('SMDEEP  ',myid) ) then
       call diag_vegtile_fill (swet3,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SMDEEP  ', 1, 1, bi, bj, myid)
+     & .false., 'SMDEEP  ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('CAPACITY',myid) ) then
       call diag_vegtile_fill (capacity,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'CAPACITY', 1, 1, bi, bj, myid)
+     & .false., 'CAPACITY', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('SNOW    ',myid) ) then
       call diag_vegtile_fill (snowdepth,igrd,chfrstr,istrip,nchp,nn,
-     . .false., 'SNOW    ', 1, 1, bi, bj, myid)
+     & .false., 'SNOW    ', 1, 1, bi, bj, myid)
       endif
 C**********************************************************************
 C end regions loop
@@ -1239,22 +1182,22 @@ C Return Tendencies and Couplings to Grid Space
 C ---------------------------------------------
       do l = 1,nlay
       call msc2grd(igrd,chfr,dumsc(1,L),nchp,nchptot,fracland,
-     .                                              duturb(1,1,L),im,jm)
+     &                                              duturb(1,1,L),im,jm)
       call msc2grd(igrd,chfr,dvmsc(1,L),nchp,nchptot,fracland,
-     .                                              dvturb(1,1,L),im,jm)
+     &                                              dvturb(1,1,L),im,jm)
       call msc2grd(igrd,chfr,dtmsc(1,L),nchp,nchptot,fracland,
-     .                                              dtturb(1,1,L),im,jm)
+     &                                              dtturb(1,1,L),im,jm)
       do nt = 1,ntracers
       call msc2grd(igrd,chfr,dqmsc(1,L,nt),nchp,nchptot,fracland,
-     .                                           dqturb(1,1,L,nt),im,jm)
+     &                                           dqturb(1,1,L,nt),im,jm)
       enddo
       call msc2grd(igrd,chfr,  tke(1,L),nchp,nchptot,fracland,
-     .                                              qqgrid(1,1,L),im,jm)
+     &                                              qqgrid(1,1,L),im,jm)
 
       call msc2grd(igrd,chfr, fccmsc(1,L),nchp,nchptot,fracland,
-     .                                              fcctmp(1,1,L),im,jm)
+     &                                              fcctmp(1,1,L),im,jm)
       call msc2grd(igrd,chfr,qliqmsc(1,L),nchp,nchptot,fracland,
-     .                                             qliqtmp(1,1,L),im,jm)
+     &                                             qliqtmp(1,1,L),im,jm)
       enddo
 
 C Reduce clouds from conditionally unstable layer
@@ -1264,32 +1207,12 @@ C -----------------------------------------------
 C Bump Total Cloud Liquid Water and Fraction by Instantaneous Values
 C ------------------------------------------------------------------
       do l = 1,nlay
-c      do j=1,jm
-c      do i=1,im
-c        fccavesw(i,j,L) =  fccavesw(i,j,L) +  fcctmp(i,j,L)
-c        fccavelw(i,j,L) =  fccavelw(i,j,L) +  fcctmp(i,j,L)
-c       qliqavelw(i,j,L) = qliqavelw(i,j,L) + qliqtmp(i,j,L)
-c       qliqavesw(i,j,L) = qliqavesw(i,j,L) + qliqtmp(i,j,L)
-c      enddo
-c      enddo
        do i = 1,ijall
          fccavesw(i,1,L) =  fccavesw(i,1,L) +  fcctmp(i,1,L)
          fccavelw(i,1,L) =  fccavelw(i,1,L) +  fcctmp(i,1,L)
         qliqavelw(i,1,L) = qliqavelw(i,1,L) + qliqtmp(i,1,L)
         qliqavesw(i,1,L) = qliqavesw(i,1,L) + qliqtmp(i,1,L)
        enddo
-
-c      if(diagnostics_is_on('TRBFCC  ',myid) ) then
-c       call diagnostics_fill(fcctmp(i,j,L),'TRBFCC  ',L,1,3,bi,bj,myid)
-c      endif
-c      if(diagnostics_is_on('TRBQLIQ ',myid) ) then
-c       do j = 1,jm
-c       do i = 1,im
-c        tmpdiag(i,j) = qliqtmp(i,j,L)*1.e6
-c       enddo
-c       enddo
-c       call diagnostics_fill(tmpdiag,'TRBQLIQ ',L,1,3,bi,bj,myid)
-c      endif
       enddo
       tmpFac = 1.e6
       CALL DIAGNOSTICS_FILL(fcctmp,'TRBFCC  ',0,nlay,3,bi,bj,myid)
@@ -1298,11 +1221,6 @@ c      endif
 C**********************************************************************
 C And some other variables to be transformed back to grid space:
 C Ground Temperature, snow depth and shallow layer ground wetness
-c     do j = 1,jm
-c      do i = 1,im
-c        tgz(i,j) = 0.
-c      enddo
-c     enddo
       do i = 1,ijall
          tgz(i,1) = 0.
       enddo
@@ -1313,27 +1231,17 @@ C **** increment diagnostic array for ground and surface temperatures,
 C ***       ground temp tendency, and ground humidity
 C *********************************************************************
 
-c     if(diagnostics_is_on('TGROUND ',myid) ) then
-       call diagnostics_fill(tgz,'TGROUND ',0,1,3,bi,bj,myid)
-c     endif
-c     if(diagnostics_is_on('TCANOPY ',myid) ) then
-       call diagnostics_fill(tgz,'TCANOPY ',0,1,3,bi,bj,myid)
-c     endif
+      call diagnostics_fill(tgz,'TGROUND ',0,1,3,bi,bj,myid)
+      call diagnostics_fill(tgz,'TCANOPY ',0,1,3,bi,bj,myid)
 
       if(diagnostics_is_on('TS      ',myid) ) then
-c      do j =1,jm
-c      do i =1,im
-c       tmpdiag(i,j) = tz(i,j,nlay) * pkht(i,j,nlay)
-c      enddo
        do i = 1,ijall
         tmpdiag(i,1) = tz(i,1,nlay) * pkht(i,1,nlay)
        enddo
        call diagnostics_fill(tmpdiag,'TS      ',0,1,3,bi,bj,myid)
       endif
 
-c     if(diagnostics_is_on('DTG     ',myid) ) then
-       call diagnostics_fill(tgz,'DTG     ',0,1,3,bi,bj,myid)
-c     endif
+      call diagnostics_fill(tgz,'DTG     ',0,1,3,bi,bj,myid)
 
 C *********************************************************************
 C ****           increment diagnostic arrays for tendencies        ****
@@ -1347,50 +1255,14 @@ C *********************************************************************
       CALL DIAGNOSTICS_SCALE_FILL(dqturb,tmpFac,1,
      &                            'TURBQ   ',0,nlay,3,bi,bj,myid)
 
-c     do L = 1,nlay
-
-c      if(diagnostics_is_on('TURBV   ',myid) ) then
-c       do j = 1,jm
-c       do i = 1,im
-c        tmpdiag(i,j) = dvturb(i,j,l) * atimstp * secday
-c       enddo
-c       enddo
-c       call diagnostics_fill(tmpdiag,'TURBV   ',L,1,3,bi,bj,myid)
-c      endif
-
-c      if(diagnostics_is_on('TURBU   ',myid) ) then
-c       do j = 1,jm
-c       do i = 1,im
-c        tmpdiag(i,j) = duturb(i,j,l) * atimstp * secday
-c       enddo
-c       enddo
-c       call diagnostics_fill(tmpdiag,'TURBU   ',L,1,3,bi,bj,myid)
-c      endif
-
-c      if(diagnostics_is_on('TURBQ   ',myid) ) then
-c       do j = 1,jm
-c       do i = 1,im
-c        tmpdiag(i,j) = dqturb(i,j,l,1) * atimstp * secday * 1000.
-c       enddo
-c       enddo
-c       call diagnostics_fill(tmpdiag,'TURBQ   ',L,1,3,bi,bj,myid)
-c      endif
-
-       if(diagnostics_is_on('TURBT   ',myid) ) then
-c       do j = 1,jm
-c       do i = 1,im
-c        tmpdiag(i,j) = dtturb(i,j,l) * pkz(i,j,l)*atimstp*secday
-c       enddo
-c       enddo
-        do L = 1,nlay
-         do i = 1,ijall
+      if(diagnostics_is_on('TURBT   ',myid) ) then
+       do L = 1,nlay
+        do i = 1,ijall
           tmpdiag(i,1) = dtturb(i,1,l) * pkz(i,1,l)*atimstp*secday
-         enddo
-         call diagnostics_fill(tmpdiag,'TURBT   ',L,1,3,bi,bj,myid)
         enddo
-       endif
-
-c     enddo
+        call diagnostics_fill(tmpdiag,'TURBT   ',L,1,3,bi,bj,myid)
+       enddo
+      endif
 
 C pi-weight the theta and moisture tendencies
 C -------------------------------------------
@@ -1415,13 +1287,6 @@ C ****   zero out the accumulating rainfall and snowfall arrays     ***
 C *********************************************************************
 
       if( time_left.lt.timstp ) then
-c     do j = 1,jm
-c     do i = 1,im
-c        rainlsp(i,j) = 0.
-c       rainconv(i,j) = 0.
-c       snowfall(i,j) = 0.
-c     enddo
-c     enddo
        do i =1,ijall
          rainlsp(i,1) = 0.
         rainconv(i,1) = 0.
@@ -1431,6 +1296,9 @@ c     enddo
 
       return
       end
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE TRBFLX (NN,TH,THV,SH,U,V,QQ,PL,PLE,PLK,PLKE,DPSTR,
      1 IWATER,Z0,tracers,ntrace,ntracedim,DTAU,ITRTRB,KMBG,KHBG,QBEG,
      2 TPROF,WU,WV,SRI,ET,EU,SWINDS,sustar,sz0,freqdg,pbldpth,
@@ -1443,9 +1311,7 @@ C**********************************************************************
 C  SUBROUTINE TRBFLX - COMPUTES TURBULENT ADJUSTMENTS TO ATMOSPHERIC
 C                       PROFILE
 C                    - CALLED FROM PBL DRIVER
-C
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    TH            -         POTENTIAL TEMPERATURE PROFILE
@@ -1476,7 +1342,6 @@ C
 C     OUTPUT:
 C     -------
 C    PROFILES RETURNED WITH UPDATED VALUES
-C
 C**********************************************************************
       implicit none
 
@@ -1639,29 +1504,6 @@ C --------------------------
       IF(QBEG) INIT = 1
 C SET DIAGNOSTIC LOGICALS AND INITIALIZE DIAGNOSTIC ARRAYS
 C --------------------------------------------------------
-c     do I =1,istnlv
-c     wu(i,1) = 0.
-c     enddo
-c     do I =1,istnlv
-c     wv(i,1) = 0.
-c     enddo
-c     do I =1,istnlv
-c     eu(i,1) = 0.
-c     enddo
-c     do I =1,istnlv
-c     et(i,1) = 0.
-c     enddo
-c     if (tprof) then
-c     DO I =1,ISTNM1
-c     XLDIAG(I,1) = 0.
-c     enddo
-c     endif
-c     do I =1,irun
-c     wu(i,nlev) = 0.
-c     enddo
-c     do I =1,irun
-c     wv(i,nlev) = 0.
-c     enddo
       DO L =1,NLEV
         DO I =1,irun
          wu(I,L) = 0.
@@ -1726,10 +1568,6 @@ c     enddo
       enddo
 
       IF (INIT.EQ.1) THEN
-c      DO I = 1,ISTNM1
-c       XLSAVE(I,1) = 0.
-c       KHSAVE(I,1) = 0.
-c      ENDDO
        DO L =1,NLEVM1
         DO I =1,irun
         XLSAVE(I,L) = 0.
@@ -1746,11 +1584,6 @@ c      ENDDO
 
 C COMPUTE VERTICAL GRID
 C ---------------------
-c     DO 9038 I =1,ISTNLV
-c     ADZ1(I,1) = (CP/GRAV)*(PLKE(I,2)-PLKE(I,1))
-c     ADZ1(I,1) = THV(I,1) * ADZ1(I,1)
-c     DZ1TMP(I,1) = ADZ1(I,1)
-9038  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         ADZ1(I,L) = (CP/GRAV)*(PLKE(I,L+1)-PLKE(I,L))
@@ -1758,9 +1591,6 @@ c     DZ1TMP(I,1) = ADZ1(I,1)
         DZ1TMP(I,L) = ADZ1(I,L)
        ENDDO
       ENDDO
-c     DO 9040 I =1,ISTNM1
-c     ADZ2(I,1) = 0.5 * (ADZ1(I,1)+ADZ1(I,2))
-9040  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         ADZ2(I,L) = 0.5 * (ADZ1(I,L)+ADZ1(I,L+1))
@@ -1776,9 +1606,6 @@ C -------------------------------
       DO 9044 I =1,irun
       DZ3(I,1) = HALPHA * ADZ1(I,1)
 9044  CONTINUE
-c     DO 9046 I =1,ISTNM2
-c     DZ3(I,2) = ALPHA * ADZ1(I,2)
-9046  CONTINUE
       DO L =2,NLEVM1
        DO I =1,irun
         DZ3(I,L) = ALPHA * ADZ1(I,L)
@@ -1790,9 +1617,6 @@ c     DZ3(I,2) = ALPHA * ADZ1(I,2)
 
 C VK * HEIGHTS AT MID AND EDGE LEVELS
 C -----------------------------------
-c     DO 9050 I =1,ISTNM1
-c     TEMP(I,2) = VK * ADZ1(I,2)
-9050  CONTINUE
       DO L =2,NLEV
        DO I =1,irun
         TEMP(I,L) = VK * ADZ1(I,L)
@@ -1808,9 +1632,6 @@ c     TEMP(I,2) = VK * ADZ1(I,2)
       VKZE(I,L) = VKZE(I,LP1) + TEMP(I,LP1)
 9054  CONTINUE
  100  CONTINUE
-c     DO 9056 I =1,ISTNM1
-c     VKZM(I,1) = VKZE(I,1) - 0.5 * TEMP(I,2)
-9056  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         VKZM(I,L) = VKZE(I,L) - 0.5 * TEMP(I,L+1)
@@ -1827,17 +1648,6 @@ C ----------------------------------------
        RHODZ2(I,L) = RHODZ2(I,L) + FAC2 * THV(I,L)
 9058  CONTINUE
  200  CONTINUE
-c     DO 9060 I =1,ISTNM1
-c      RHODZ2(I,1) = (RGAS*0.01) * RHODZ2(I,1)
-c      TEMP(I,1)   = PLKE(I,2) * ADZ2(I,1)
-c      RHODZ2(I,1) = TEMP(I,1) * RHODZ2(I,1)
-c      RHODZ2(I,1) = PLE(I,2) / RHODZ2(I,1)
-c      RHOZPK(I,1) = RHODZ2(I,1) * PLKE(I,2)
-c      RHODZ1(I,1) = (RGAS*0.01) * THV(I,2)
-c      TEMP(I,1)   = PLK(I,2) * ADZ1(I,2)
-c      RHODZ1(I,1) = TEMP(I,1) * RHODZ1(I,1)
-c      RHODZ1(I,1) = PL(I,2) / RHODZ1(I,1)
-9060  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         RHODZ2(I,L) = (RGAS*0.01) * RHODZ2(I,L)
@@ -1854,11 +1664,6 @@ c      RHODZ1(I,1) = PL(I,2) / RHODZ1(I,1)
 C COMPUTE FLXFAC FOR LAYERS AND EDGES
 C COMPUTE DTG / DT DUE TO RADIATION AND HEAT CONDUCTION THROUGH ICE
 C -----------------------------------------------------------------
-c     DO 9062 I =1,ISTNLV
-c     FLXFPK(I,1) = PLE(I,2) - PLE(I,1)
-c     FLXFPK(I,1) = FLXFPK(I,1) * PLK(I,1)
-c     FLXFPK(I,1) = (GRAV*DTAU*0.01) / FLXFPK(I,1)
-9062  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         FLXFPK(I,L) = PLE(I,L+1) - PLE(I,L)
@@ -1872,9 +1677,6 @@ c     FLXFPK(I,1) = (GRAV*DTAU*0.01) / FLXFPK(I,1)
       DO 9066 I =1,irun
       IF (IWATER(I).EQ.0 ) FLXFPK(I,NLEVP1) = 1. / PLKE(I,NLEVP1)
 9066  CONTINUE
-c     DO 9068 I =1,ISTNLV
-c     FLXFAC(I,1) = FLXFPK(I,1) * PLK(I,1)
-9068  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         FLXFAC(I,L) = FLXFPK(I,L) * PLK(I,L)
@@ -1886,12 +1688,6 @@ c     FLXFAC(I,1) = FLXFPK(I,1) * PLK(I,1)
       DO 9074 I =1,irun
       FLXFPK(I,NLEVP1) = CP * FLXFPK(I,NLEVP1)
 9074  CONTINUE
-c     DO 9076 I =1,ISTNM1
-c     FLXFCE(I,1) = PL(I,2) - PL(I,1)
-9076  CONTINUE
-c     DO 9078 I =1,ISTNM1
-c     FLXFCE(I,1) = (GRAV*DTAU*0.01) / FLXFCE(I,1)
-9078  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         FLXFCE(I,L) = PL(I,L+1) - PL(I,L)
@@ -1900,17 +1696,11 @@ c     FLXFCE(I,1) = (GRAV*DTAU*0.01) / FLXFCE(I,1)
       ENDDO
 C COMPUTE RECIPROCALS OF DZ1, DZ2, HS
 C -----------------------------------
-c     DO 9084 I =1,ISTNLV
-c     ADZ1(I,1) = 1. / ADZ1(I,1)
-9084  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         ADZ1(I,L) = 1. / ADZ1(I,L)
        ENDDO
       ENDDO
-c     DO 9086 I =1,ISTNM1
-c     ADZ2(I,1) = 1. / ADZ2(I,1)
-9086  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         ADZ2(I,L) = 1. / ADZ2(I,L)
@@ -1921,9 +1711,6 @@ c     ADZ2(I,1) = 1. / ADZ2(I,1)
 9088  CONTINUE
 C COMPUTE GRADIENTS OF P**KAPPA
 C -----------------------------
-c     DO 9090 I =1,ISTNM1
-c     DPK(I,1) = ( PLK(I,2)-PLK(I,1) ) * ADZ2(I,1)
-9090  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         DPK(I,L) = ( PLK(I,L+1)-PLK(I,L) ) * ADZ2(I,L)
@@ -1934,10 +1721,6 @@ c     DPK(I,1) = ( PLK(I,2)-PLK(I,1) ) * ADZ2(I,1)
 9092  CONTINUE
 C INITIALIZE Q ARRAY
 C ------------------
-c     DO 9094 I =1,ISTNM1
-c     Q(I,1) = 2. * QQ(I,1)
-c     Q(I,1) = SQRT( Q(I,1) )
-9094  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         Q(I,L) = 2. * QQ(I,L)
@@ -1949,13 +1732,13 @@ c     Q(I,1) = SQRT( Q(I,1) )
 C**********************************************************************
 C**********************************************************************
 C                              MAIN LOOP
-C
+
       DO 2000 ITER = 1, ITRTRB
-C
+
       IF ( ITER .GE. ITRTRB ) LAST = .TRUE.
-C
+
 C  CODE FOR MOIST BOUNDARY LAYER - NEW CALCULATION OF DTHV
-C
+
       IF(ITER.EQ.1) THEN
        DO I = 1,irun
         CT(I) = CTSAVE(I)
@@ -1964,7 +1747,7 @@ C
         ZETA(I) = ZETASAVE(I)
        ENDDO
       ENDIF
-C
+
       DO I = 1,irun
        TL(I,NLEV) = TH(I,NLEV)*PLK(I,NLEV)
        call qsat ( tl(i,nlev),pl(i,nlev),shsat(i,nlev),dum,.false. )
@@ -2007,7 +1790,7 @@ C
       ENDDO
 
 C   SURFACE FLUX TRANSFER COEFFICIENTS
-C
+
        CALL SFCFLX(NN,U(1,NLEV),V(1,NLEV),
      1   THV(1,NLEV),
      2   THV(1,NLEVP1),TH(1,NLEV),TH(1,NLEVP1),
@@ -2028,24 +1811,20 @@ C
      2   VDXPSIM,VDY,VXNUM2,VDEN,VAWS1,VXNUM3,VXNUM,VDZETA1,VDZETA2,
      3   VZCOEF2,VZCOEF1,VTEMPLIN,VDPSIMC,VDPSIHC)
 CI
-C
+
        N = 1
-C
+
 C   SET VALUES OF TURBULENT VELOCITY AND KINETIC ENERGY AT THE GROUND
-C
+
 CB
       DO 9098 I =1,irun
       Q(I,NLEV) = QBUSTR * USTAR(I)
       QQ(I,NLEV) = 0.5 * Q(I,NLEV) * Q(I,NLEV)
 9098  CONTINUE
 CE
-C
+
 C GRADIENTS
 C ---------
-c     DO 9100 I =1,ISTNM1
-c       DU(I,1) = (   U(I,1)-  U(I,2) ) * ADZ2(I,1)
-c       DV(I,1) = (   V(I,1)-  V(I,2) ) * ADZ2(I,1)
-9100  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         DU(I,L) = (   U(I,L)-  U(I,L+1) ) * ADZ2(I,L)
@@ -2055,23 +1834,15 @@ c       DV(I,1) = (   V(I,1)-  V(I,2) ) * ADZ2(I,1)
 
 
 C    NEW CODE FOR MOIST BOUNDARY LAYER - NEW CALCULATION OF DTHV
-C
+
       IF(ITER.EQ.1) THEN
-c      DO I = 1,ISTNM1
-c       XL(I,1) = XLSAVE(I,1)
-c      ENDDO
        DO L =1,NLEVM1
         DO I =1,irun
          XL(I,L) = XLSAVE(I,L)
         ENDDO
        ENDDO
       ENDIF
-C
-c     DO I =1,ISTNM1
-c      DTH(I,1) = ( TH(I,1)-TH(I,2) ) * ADZ2(I,1)
-c      DSH(I,1) = ( SH(I,1)-SH(I,2) ) * ADZ2(I,1)
-c      TL(I,1) = TH(I,1)*PLK(I,1)
-c     ENDDO
+
       DO L =1,NLEVM1
        DO I =1,irun
         DTH(I,L) = ( TH(I,L)-TH(I,L+1) ) * ADZ2(I,L)
@@ -2084,13 +1855,6 @@ c     ENDDO
        call qsat ( tl(i,LL),pl(i,LL),shsat(i,LL),dum,.false. )
       ENDDO
       ENDDO
-c     DO I = 1,ISTNM1
-c      BB(I,1) = FACEPS*SHSAT(I,1)/(TL(I,1)*TL(I,1))
-c      AA(I,1) = 1. / (1. + CLH * BB(I,1) )
-cCOMMM BB(I,1) = BB(I,1) * AA(I,1) * plke(I,2)
-c      BB(I,1) = BB(I,1) * AA(I,1)
-c      SBAR(I,1) = AA(I,1) * (SH(I,1) - SHSAT(I,1))
-c     ENDDO
       DO L =1,NLEVM1
        DO I =1,irun
         BB(I,L) = FACEPS*SHSAT(I,L)/(TL(I,L)*TL(I,L))
@@ -2108,20 +1872,6 @@ COMMM  SSDEV(I,1) = XL(I,1)*(AA(I,1)*DSH(I,1)-BB(I,1)*DTH(I,1))
        SVAR(I,1) = SQRT(SSDEV(I,1))
        IF ( SVAR(I,1).LT.Z1PEM25) SVAR(I,1) = Z1PEM25
       ENDDO
-c     DO I = 1,ISTNM2
-cCOMMM SSDEV(I,2) = XL(I,1)*(AA(I,2)*DSH(I,1)-BB(I,2)*DTH(I,1))
-c      SSDEV(I,2) = XL(I,1)*(AA(I,2)*DSH(I,1)-
-c    1              BB(I,2)*plke(I,2)*DTH(I,1))
-c      SSDEV(I,2) = B2 * KHSAVE(I,1) * SSDEV(I,1) * SSDEV(I,1)
-c      SVAR(I,2) = SQRT(SSDEV(I,2))
-cCOMMM SSDEV(I,2) = XL(I,2)*(AA(I,2)*DSH(I,2)-BB(I,2)*DTH(I,2))
-c      SSDEV(I,2) = XL(I,2)*(AA(I,2)*DSH(I,2)-
-c    1              BB(I,2)*plke(I,3)*DTH(I,2))
-c      SSDEV(I,2) = B2 * KHSAVE(I,2) * SSDEV(I,2) * SSDEV(I,2)
-c      TEMP(I,2) = SQRT(SSDEV(I,2))
-c      SVAR(I,2) = (1./2.) * (SVAR(I,2) + TEMP(I,2))
-c      IF ( SVAR(I,2).LT.Z1PEM25) SVAR(I,2) = Z1PEM25
-c     ENDDO
       DO L =2,NLEVM1
        DO I =1,irun
 COMMM   SSDEV(I,L) = XL(I,L-1)*(AA(I,L)*DSH(I,L-1)-BB(I,L)*DTH(I,L-1))
@@ -2138,23 +1888,6 @@ COMMM   SSDEV(I,L) = XL(I,L)*(AA(I,L)*DSH(I,L)-BB(I,L)*DTH(I,L))
         IF ( SVAR(I,L).LT.Z1PEM25) SVAR(I,L) = Z1PEM25
        ENDDO
       ENDDO
-c     DO I = 1,ISTNM1
-c      Q1M(I,1) = SBAR(I,1) / SVAR(I,1)
-c      FCC(I,1) = (1./2.) * ( 1. + ERRF( P5SR*Q1M(I,1) ) )
-c      SHL(I,1) =  FCC(I,1) * SBAR(I,1)
-c      ARG(I,1)  = (1./2.)*Q1M(I,1)*Q1M(I,1)
-c      IF(ARG(I,1).LE.ARGMAX)
-c    1       SHL(I,1) =  SHL(I,1)+RSQ2PI*SVAR(I,1)*EXP(-ARG(I,1))
-c      BETAT(I,1) = 1. + VIRTCON * SH(I,1) - VRT1CON * SHL(I,1)
-c      BETAW(I,1) = VIRTCON *
-c    1               ( TH(I,1) + (CLH/plk(I,1)) * SHL(I,1) )
-c      BETAL(I,1) = ( 1. + VIRTCON*SH(I,1) - TWO*VRT1CON*SHL(I,1) )
-c    1    * (CLH/plke(I,2)) - VRT1CON * TH(I,1)
-cCOMMM BETAT1(I,1) = BETAT(I,1) - BB(I,1) * FCC(I,1) * BETAL(I,1)
-c      BETAT1(I,1) = BETAT(I,1) -
-c    1              BB(I,1)*plk(i,1) * FCC(I,1) * BETAL(I,1)
-c      BETAW1(I,1) = BETAW(I,1) + AA(I,1) * FCC(I,1) * BETAL(I,1)
-c     ENDDO
       DO L =1,NLEVM1
        DO I =1,irun
         Q1M(I,L) = SBAR(I,L) / SVAR(I,L)
@@ -2174,10 +1907,6 @@ COMMM   BETAT1(I,L) = BETAT(I,L) - BB(I,L) * FCC(I,L) * BETAL(I,L)
         BETAW1(I,L) = BETAW(I,L) + AA(I,L) * FCC(I,L) * BETAL(I,L)
        ENDDO
       ENDDO
-c     DO I = 1,ISTNM1
-c      DTHV(I,1) =  (1./2.)*((BETAT1(I,1)+BETAT1(I,2))*DTH(I,1)
-c    1              + (BETAW1(I,1)+BETAW1(I,2))*DSH(I,1))
-c     ENDDO
       DO L =1,NLEVM1
        DO I =1,irun
         DTHV(I,L) =  (1./2.)*((BETAT1(I,L)+BETAT1(I,L+1))*DTH(I,L)
@@ -2197,12 +1926,6 @@ C -----------------------------------------
 
 C CALCULATE BRUNT-VAISALA FREQUENCIES, SHEARS, RICHARDSON NUMBERS
 C ---------------------------------------------------------------
-c     DO 9104 I =1,ISTNLV
-c     STRT(I,1) = CP * DTHV(I,1) * DPK(I,1)
-c     DW2(I,1) = DU(I,1) * DU(I,1) + DV(I,1) * DV(I,1)
-c     IF ( DW2(I,1) .LE. 1.e-4 ) DW2(I,1) = 1.e-4
-c     RI(I,1) = STRT(I,1) / DW2(I,1)
-9104  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         STRT(I,L) = CP * DTHV(I,L) * DPK(I,L)
@@ -2214,9 +1937,6 @@ c     RI(I,1) = STRT(I,1) / DW2(I,1)
 C FILL RICHARDSON NUMBER AND SURFACE WIND DIAGNOSTICS
 C       (THOSE NEEDED FROM FIRST TRBFLX ITERATION)
 C ---------------------------------------------------
-c     DO 9106 I =1,ISTNM1
-c     SRI(I,1) = RI(I,1)
-9106  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         SRI(I,L) = RI(I,L)
@@ -2230,29 +1950,6 @@ c     SRI(I,1) = RI(I,1)
 9110  CONTINUE
 C INITIALIZE KH, KM, QE AND P3 AND ELIMINATE SMALL QQ
 C ---------------------------------------------------
-c     DO 9112 I =1,ISTNM1
-c     KH(I,1) = 0.
-c     KM(I,1) = 0.
-c     QQE(I,1) = 0.
-c     QE(I,1) = 0.
-c     P3(I,1) = 0.
-9112  CONTINUE
-c     DO 9414 I = 1,ISTNM1
-c      IBITSTB(I,1) = 0
-c9414 CONTINUE
-c     DO 9314 I = 1,ISTNM1
-c      IF ( QQ(I,1) .GT. 1.e-8 ) THEN
-c       INTQ(I,1) = 1
-c      ELSE
-c       INTQ(I,1) = 0
-c      ENDIF
-c9314 CONTINUE
-c     DO 9114 I = 1,ISTNM1
-c      IF ( QQ(I,1).LE.1.e-8 ) THEN
-c       QQ(I,1) = 0.
-c       Q(I,1) = 0.
-c      ENDIF
-c9114 CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         KH(I,L) = 0.
@@ -2272,7 +1969,7 @@ c9114 CONTINUE
         ENDIF
        ENDDO
       ENDDO
-C
+
        DO 300 LMINQ = 1,NLEVM1
         IBIT = 0
         DO 9116 I = 1,irun
@@ -2301,10 +1998,6 @@ C ----------------------------------------------
 C FOR INITIAL START ONLY : USE EQUILIBRIUM MODEL
 C ----------------------------------------------
       IF ( INIT .EQ. 1 ) THEN
-c     DO 9180 I =1,ISTNM1
-c      QQ(I,1) = QQE(I,1)
-c      Q(I,1) = QE(I,1)
-9180  CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         QQ(I,L) = QQE(I,L)
@@ -2322,14 +2015,6 @@ C DIMENSIONLESS COEFFS AND P3 (Q LE QE)
 C -------------------------------------
       IF( LMIN .LT. NLEV ) THEN
        ISTNML = irun * NLEVML
-c      DO 9320 I = 1,ISTNML
-c       IF (  (IBITSTB(I,LMIN).EQ.1)  .AND.
-c    1            ( Q(I,LMIN) .LE. QE(I,LMIN) ) ) THEN
-c        IBITSTB(I,LMIN) = 1
-c       ELSE
-c        IBITSTB(I,LMIN) = 0
-c       ENDIF
-c9320  CONTINUE
        DO L =LMIN,NLEVM1
         DO I =1,irun
          IF (  (IBITSTB(I,L).EQ.1)  .AND.
@@ -2340,21 +2025,6 @@ c9320  CONTINUE
          ENDIF
         ENDDO
        ENDDO
-c      DO 9220 I = 1,ISTNML
-c       IF(IBITSTB(I,LMIN).EQ.1 ) THEN
-c        TEMP(I,LMIN) = Q(I,LMIN) / QE(I,LMIN)
-c        KH(I,LMIN) = TEMP(I,LMIN) * KH(I,LMIN)
-c        KM(I,LMIN) = TEMP(I,LMIN) * KM(I,LMIN)
-c       ENDIF
-c       TEMP(I,LMIN) = 0.01 * QQE(I,LMIN)
-c       IF((IBITSTB(I,LMIN).EQ.1) .AND.
-c    1        ( QQ(I,LMIN) .LE. TEMP(I,LMIN) )) THEN
-c        QQ(I,LMIN) = TEMP(I,LMIN)
-c        Q(I,LMIN) = 0.1 * QE(I,LMIN)
-c       ENDIF
-c       IF(IBITSTB(I,LMIN).EQ.1 ) P3(I,LMIN) = (2.*B3) *
-c    1            ( QE(I,LMIN) - Q(I,LMIN) )
-c9220  CONTINUE
        DO L =LMIN,NLEVM1
         DO I =1,irun
          IF(IBITSTB(I,L).EQ.1 ) THEN
@@ -2386,11 +2056,6 @@ C ------------------------
        ISTNML = irun * ( NLEV - LMIN )
       ENDIF
       IF( LMIN .LT. NLEV ) THEN
-c     DO 9122 I =1,ISTNML
-c      P3(I,LMIN) = P3(I,LMIN) * DTAU / XL(I,LMIN)
-c      TEMP(I,LMIN) = QQE(I,LMIN) * P3(I,LMIN)
-c      XQ(I,LMIN) = QQE(I,LMIN) - QQ(I,LMIN)
-9122  CONTINUE
        DO L =LMIN,NLEVM1
         DO I =1,irun
          P3(I,L) = P3(I,L) * DTAU / XL(I,L)
@@ -2398,14 +2063,6 @@ c      XQ(I,LMIN) = QQE(I,LMIN) - QQ(I,LMIN)
          XQ(I,L) = QQE(I,L) - QQ(I,L)
         ENDDO
        ENDDO
-c      DO 9216 I = 1,ISTNML
-c       IF( ( (IBITSTB(I,LMIN).EQ.1) .AND.
-c    1            ( XQ(I,LMIN) .LT. TEMP(I,LMIN) ) )
-c    2                  .OR.
-c    3 ( (IBITSTB(I,LMIN).EQ.0) .AND.
-c    4            ( XQ(I,LMIN) .GT. TEMP(I,LMIN) ) ) )
-c    5  P3(I,LMIN) = XQ(I,LMIN) / QQE(I,LMIN)
-c9216  CONTINUE
        DO L =LMIN,NLEVM1
         DO I =1,irun
          IF( ( (IBITSTB(I,L).EQ.1) .AND.
@@ -2430,10 +2087,6 @@ C ---------------------------------------
        Z0IN(I) = Z0(I)
        ZETAIN(I) = ZETA(I)
 9118  CONTINUE
-c     DO 9120 I =1,ISTNLV
-c      RIINIT(I,1) = RI(I,1)
-c      QQINIT(I,1) = QQ(I,1)
-9120  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         RIINIT(I,L) = RI(I,L)
@@ -2445,23 +2098,19 @@ c      QQINIT(I,1) = QQ(I,1)
 C Zero diffusion of TKE above 10 mb
       do L = 1,nlev-1
         do i = 1,irun
-CCC      if(pl(i,L).le.10.) then
-CCC       qxlm(i,L) = 0.
-CCC      endif
+c        if(pl(i,L).le.10.) then
+c         qxlm(i,L) = 0.
+c        endif
          if(pl(i,L).le.150.) then
           qxlm(i,L) = min(qxlm(i,L),5. _d 0)
          endif
         enddo
       enddo
-C
+
 C UPDATE TURBULENT KINETIC ENERGY QQ
 C ----------------------------------
       NLEVMQ = NLEV - LMINQ1
       ISTNMQ = irun * NLEVMQ
-c     DO 9306 I =1,ISTNMQ
-c     RHOKDZ(I,LMINQ1) = RHODZ1(I,LMINQ1)
-c    1      * QXLM(I,LMINQ1)
-9306  CONTINUE
       DO L =LMINQ1,NLEVM1
        DO I =1,irun
         RHOKDZ(I,L) = RHODZ1(I,L) * QXLM(I,L)
@@ -2469,27 +2118,20 @@ c    1      * QXLM(I,LMINQ1)
       ENDDO
        CALL TRBDIF(QQ(1,LMINQ1),P3(1,LMINQ1),RHOKDZ(1,LMINQ1),
      1       FLXFCE(1,LMINQ1),DTHS,DELTHS,NLEVMQ,1,1.0 _d -20,irun)
-C
+
 C SAVE KH BEFORE ADDING DIMENSIONS FOR USE BY MOIST BOUYANCY CALCULATION
-C
-c     DO I = 1,ISTNM1
-c      KHSAVE(I,1) = KH(I,1)
-c     ENDDO
+
       DO L =1,NLEVM1
        DO I =1,irun
         KHSAVE(I,L) = KH(I,L)
        ENDDO
       ENDDO
-C
+
 C   DIMENSIONAL DIFFUSION COEFFS INCLUDING BACKGROUND AMOUNTS
-C
+
       IF(LMINQ1.GT.1)THEN
        ISTLMQ = irun * (LMINQ1-1)
 CB
-c     DO 9124 I =1,ISTLMQ
-c      KM(I,1) = KMBG
-c      KH(I,1) = KHBG
-9124  CONTINUE
        DO L =1,LMINQ1-1
         DO I =1,irun
          KM(I,L) = KMBG
@@ -2498,15 +2140,8 @@ c      KH(I,1) = KHBG
        ENDDO
 CE
       ENDIF
-C
+
 CB
-c     DO 9126 I =1,ISTNMQ
-c     Q(I,LMINQ1) = 2. * QQ(I,LMINQ1)
-c     Q(I,LMINQ1) = SQRT(Q(I,LMINQ1))
-c     XQ(I,LMINQ1) = XL(I,LMINQ1) * Q(I,LMINQ1)
-c     KM(I,LMINQ1)=XQ(I,LMINQ1)*KM(I,LMINQ1)+KMBG
-c     KH(I,LMINQ1)=XQ(I,LMINQ1)*KH(I,LMINQ1)+KHBG
-9126  CONTINUE
       DO L =LMINQ1,NLEVM1
        DO I =1,irun
         Q(I,L) = 2. * QQ(I,L)
@@ -2520,25 +2155,19 @@ CE
 C Zero diffusion of u,v,t,q above 10 mb
       do L = 1,nlev-1
         do i = 1,irun
-CCC      if(pl(i,L).le.10.) then
-CCC       kh(i,L) = 0.
-CCC       km(i,L) = 0.
-CCC      endif
+c        if(pl(i,L).le.10.) then
+c         kh(i,L) = 0.
+c         km(i,L) = 0.
+c        endif
          if(pl(i,L).le.150.) then
           kh(i,L) = min(kh(i,L),5. _d 0)
           km(i,L) = min(km(i,L),5. _d 0)
          endif
         enddo
       enddo
-C
+
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: TH AND S
-C
-c     DO 9128 I =1,ISTNLV
-c     TEMP(I,1) = RHOZPK(I,1) * KH(I,1)
-9128  CONTINUE
-c     DO 9130 I =1,ISTNLV
-c     DELTH(I,1) = 0.
-9130  CONTINUE
+
       DO L =1,NLEV
        DO I =1,irun
         TEMP(I,L) = RHOZPK(I,L) * KH(I,L)
@@ -2564,12 +2193,6 @@ c     DELTH(I,1) = 0.
        enddo
       enddo
 
-c     DO 9134 I =1,ISTNLV
-c     RHOKDZ(I,1) = RHODZ2(I,1) * KH(I,1)
-9134  CONTINUE
-c     DO 9138 I =1,ISTNLV
-c     DELSH(I,1) = 0.
-9138  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         RHOKDZ(I,L) = RHODZ2(I,L) * KH(I,L)
@@ -2581,7 +2204,7 @@ c     DELSH(I,1) = 0.
 9140  CONTINUE
 
        CALL TRBDIF(SH,DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,NLEV,
-     .                                     2,0. _d 0,irun)
+     &                                     2,0. _d 0,irun)
       do i = 1,irun
        eturb(i) = -1.* dthl(i)
        dedqa(i) = -1.* delthl(i)
@@ -2597,9 +2220,8 @@ c     DELSH(I,1) = 0.
        enddo
       enddo
 
-C
 C   Update Tracers Due to Turbulent Diffusion
-C
+
       do i = 1,irun
       rhokdz(i,nlev) = 0.0
       enddo
@@ -2611,12 +2233,9 @@ c     enddo
 c     CALL TRBDIF(tracers(1,1,nt),DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,
 c    .                                         NLEV,4,0. _d 0,irun)
 c     enddo
-C
+
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: U AND V
-C
-c     DO 9172 I =1,ISTNLV
-c     RHOKDZ(I,1) = RHODZ2(I,1) * KM(I,1)
-9172  CONTINUE
+
       DO L =1,NLEV
        DO I =1,irun
         RHOKDZ(I,L) = RHODZ2(I,L) * KM(I,L)
@@ -2624,26 +2243,12 @@ c     RHOKDZ(I,1) = RHODZ2(I,1) * KM(I,1)
       ENDDO
        CALL TRBDIF(U,V,RHOKDZ,FLXFAC,DTHS,DELTHS,NLEV,3,0. _d 0,irun)
 C ( FILL DIAGNOSTIC ARRAYS IF REQUIRED )
-c     DO 9174 I =1,ISTNLV
-c     WU(I,1) = WU(I,1) + RHOKDZ(I,1) * ( U(I,2) - U(I,1) )
-9174  CONTINUE
-c     DO 9176 I =1,ISTNLV
-c     WV(I,1) = WV(I,1) + RHOKDZ(I,1) * ( V(I,2) - V(I,1) )
-9176  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         WU(I,L) = WU(I,L) + RHOKDZ(I,L) * ( U(I,L+1) - U(I,L) )
         WV(I,L) = WV(I,L) + RHOKDZ(I,L) * ( V(I,L+1) - V(I,L) )
        ENDDO
       ENDDO
-c     DO 9300 I = 1,ISTNM1
-c     IF ( QQ(I,1) .GT. QQMIN ) THEN
-c        IBITSTB(I,1) = 1
-c        ELSE
-c        IBITSTB(I,1) = 0
-c     ENDIF
-c     IF( IBITSTB(I,1).EQ.1 ) FREQDG(I,1) = FREQDG(I,1) + aitr
-c9300 CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         IF ( QQ(I,L) .GT. QQMIN ) THEN
@@ -2687,12 +2292,6 @@ c9300 CONTINUE
       do i=1,irun
       sz0(i) = sz0(i) + aitr*z0(i)
       enddo
-c     DO I =1,ISTNLV
-c     EU(I,1) = EU(I,1) + AITR*KM(I,1)
-c     enddo
-c     DO I =1,ISTNLV
-c     ET(I,1) = ET(I,1) + AITR*KH(I,1)
-c     enddo
       DO L =1,NLEV
        DO I =1,irun
         EU(I,L) = EU(I,L) + AITR*KM(I,L)
@@ -2706,9 +2305,6 @@ c     enddo
       sct(I) = sct(I) + AITR*ct(I)
       enddo
       IF(tprof) then
-c     do i=1,ISTNM1
-c     XLDIAG(I,1) = XLDIAG(I,1) + AITR*XL(I,1)
-c     enddo
        DO L =1,NLEVM1
         DO I =1,irun
          XLDIAG(I,L) = XLDIAG(I,L) + AITR*XL(I,L)
@@ -2716,13 +2312,10 @@ c     enddo
        ENDDO
       endif
       FIRST = .FALSE.
-C
+
 C SAVE XL,CT,XX,YY,ZETA FOR USE BY MOIST BOUYANCY CALCULATION
-C
+
       IF(ITER.EQ.ITRTRB)THEN
-c      DO I = 1,ISTNM1
-c       XLSAVE(I,1) = XL(I,1)
-c      ENDDO
        DO L =1,NLEVM1
         DO I =1,irun
          XLSAVE(I,L) = XL(I,L)
@@ -2736,35 +2329,28 @@ c      ENDDO
        ENDDO
       ENDIF
 
-c     do i = 1,istnlv
-c      turbfcc(i,1) = turbfcc(i,1) + fcc(i,1) * aitr
-c     enddo
-c     do i = 1,irun*nlev
-c      qliq(i,1) = qliq(i,1) + shl(i,1) * aitr
-c     enddo
       DO L =1,NLEV
        DO I =1,irun
         turbfcc(I,L) = turbfcc(I,L) + fcc(I,L) * aitr
         qliq(I,L) = qliq(I,L) + shl(I,L) * aitr
        ENDDO
       ENDDO
-C
+
 C   END OF MAIN LOOP
-C
+
  2000 CONTINUE
-c     DO 9194 I =1,ISTNLV
-c      WU(I,1) =  WU(I,1) * AITR
-c      WV(I,1) =  WV(I,1) * AITR
-9194  CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         WU(I,L) =  WU(I,L) * AITR
         WV(I,L) =  WV(I,L) * AITR
        ENDDO
       ENDDO
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
        SUBROUTINE SFCFLX(NN,VUS,VVS,VTHV1,VTHV2,VTH1,VTH2,VSH1,
      1      VSH2,VPK,VPKE,VPE,VZ0,IVWATER,VHS,
      2      VAHS,FIRST,LAST,N,IRUN,aitr,VRHO,VRHOZPK,VKH,VKM,
@@ -2781,9 +2367,7 @@ C
 C**********************************************************************
 C  SUBROUTINE SFCFLX - COMPUTES SURFACE TRANSFER COEFFICIENTS
 C                    - CALLED FROM TRBFLX
-C
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    US            -         U - COMPONENT OF SURFACE WIND
@@ -2815,7 +2399,6 @@ C    XX            -         PHIM(ZETA) - DIMENSIONLESS WIND SHEAR
 C    YY            -         PHIH(ZETA) - DIMENSIONLESS TEMP GRADIENT
 C    CU            -         MOMENTUM TRANSPORT COEFFICIENT
 C    CT            -         HEAT TRANSPORT COEFFICIENT
-C
 C**********************************************************************
       implicit none
 
@@ -2867,14 +2450,14 @@ C Local Variables
       _RL getcon,vk,rvk,vk2,bmdl
       integer iwater,itype
       integer i,iter
-C
+
       vk = getcon('VON KARMAN')
       rvk = 1./vk
       vk2 = vk*vk
       BMDL    = VK * XPFAC * PRFAC / DIFSQT
 
 C     DETERMINE SURFACE WIND MAGNITUDE AND BULK RICHARDSON NUMBER
-C
+
       DO 9000 I = 1,IRUN
        VWS(I) = VUS(I) * VUS(I) + VVS(I) * VVS(I)
        IF ( VWS(I) .LE. 1.e-4) VWS(I) = 1.e-4
@@ -2882,19 +2465,19 @@ C
      1       (VTHV1(I) - VTHV2(I)) / VWS(I)
        VWS(I) = SQRT( VWS(I) )
  9000 CONTINUE
-C
+
 C     INITIALIZATION (FIRST TRBFLX ITERATION)
 C  INITIAL GUESS FOR ROUGHNESS LENGTH Z0 OVER WATER
-C
+
       IF (.NOT. FIRST) GO TO 100
-C
+
       IWATER = 0
       DO 9002 I = 1,IRUN
        IF (IVWATER(I).EQ.1)  IWATER = IWATER + 1
  9002 CONTINUE
       LWATER = .FALSE.
       IF(IWATER.GE.1)LWATER = .TRUE.
-C
+
       IF(LWATER)THEN
        DO 9004 I = 1,IRUN
         IF (IVWATER(I).EQ.1) VZ0(I) = 0.0003
@@ -2906,23 +2489,23 @@ C
        enddo
 
 C     CU AND PSIHG FOR NEUTRALLY STRATIFIED FLOW
-C
+
       DO 9006 I = 1,IRUN
        VHZ(I) = VHS(I) / VZ0(I)
        VPSIM(I) = LOG( VHZ(I) )
        VAPSIM(I) = 1. / VPSIM(I)
        VCU(I) = VK * VAPSIM(I)
        VUSTAR(I) = VCU(I) * VWS(I)
-C
+
        VPSIG(I) = VH0(I) * VUSTAR(I) - USTH0S
        if(VPSIG(I).lt.0.)  VPSIG(I) = 0.
        VPSIG(I) = SQRT( VPSIG(I) )
        VPSIG(I) = BMDL * VPSIG(I)
        VPSIHG(I) = VPSIM(I) + VPSIG(I)
  9006 CONTINUE
-C
+
 C     LINEAR CORRECTION FOR ERROR IN ROUGHNESS LENGTH Z0
-C
+
       IF(LWATER)THEN
        DO 9008 I = 1,IRUN
         VTEMP(I) = 0.
@@ -2953,15 +2536,15 @@ C
         ENDIF
  9010  CONTINUE
       ENDIF
-C
+
 C  INITIAL GUESS FOR STABILITY PARAMETER ZETA
-C
+
       DO 9012 I = 1,IRUN
        VZETA(I) = VK2 * VRIB(I) / (VCU(I) * VCU(I) * VPSIHG(I))
  9012 CONTINUE
-C
+
 C  RECOMPUTE CU, ESTIMATE PSIHG AND UPDATE ZETA AND Z0
-C
+
       DO 9014 I = 1,IRUN
        VZH(I) = VZ0(I) * VAHS(I)
  9014 CONTINUE
@@ -2977,7 +2560,7 @@ C
        VPSIHG(I) = VPSIM(I) + VPSIG(I)
        VZETA(I) = VK2 * VRIB(I) / (VCU(I) * VCU(I) * VPSIHG(I))
  9016 CONTINUE
-C
+
       IF(LWATER)THEN
 CCCOOOMMMM ADDED 'WHERE WATER'
        DO 9018 I = 1,IRUN
@@ -2992,11 +2575,11 @@ CCCOOOMMMM ADDED 'WHERE WATER'
         endif
  9020  CONTINUE
       ENDIF
-C
+
       GO TO 125
-C
+
 C  LINEARLY UPDATE ZETA AND Z0 FOR SECOND OR GREATER TRBFLX ITERATION
-C
+
  100  CONTINUE
 
       CALL LINADJ(NN,VRIB1,VRIB,VWS1,
@@ -3009,13 +2592,13 @@ C
      3 VX0PSIM,VG,VG0,VR1MG0,VZ2,VDZSEA,VAZ0,VXNUM1,VPSIGB2,VDX,
      4 VDXPSIM,VDY,VXNUM2,VDEN,VAWS1,VXNUM3,VXNUM,VDZETA1,VDZETA2,
      5 VZCOEF2,VZCOEF1,VTEMPLIN,VDPSIMC,VDPSIHC)
-C
+
       DO 9022 I = 1,IRUN
        VZETA(I) = VZETA(I) + VZETAL(I) * VDZETA(I)
        IF (IVBITRIB(I).EQ.1 )VZETA(I) =
      1       VPSIM(I) * VPSIM(I) * VRIB(I) * VCT(I) * RVK
  9022 CONTINUE
-C
+
       IF ( LWATER ) THEN
        DO 9024 I = 1,IRUN
         IF (IVWATER(I).EQ.1 ) then
@@ -3025,12 +2608,12 @@ C
         endif
  9024  CONTINUE
       ENDIF
-C
+
  125  CONTINUE
-C
+
 C  ITERATIVE LOOP - N ITERATIONS
 C     COMPUTE CU AND CT
-C
+
       DO 200 ITER = 1,N
        DO 9026 I = 1,IRUN
         VZH(I) = VZ0(I) * VAHS(I)
@@ -3041,24 +2624,24 @@ C
        DO 9028 I = 1,IRUN
         VCU(I) = VK / VPSIM(I)
         VUSTAR(I) = VCU(I) * VWS(I)
-C
+
         VPSIG(I) = VH0(I) * VUSTAR(I) - USTH0S
         if(VPSIG(I).lt.0.)  VPSIG(I) = 0.
         VPSIG(I) = SQRT(VPSIG(I))
         VPSIG(I) = BMDL * VPSIG(I)
         VPSIHG(I) = VPSIH(I) + VPSIG(I)
-C
+
 C  LINEAR CORRECTIONS FOR CU, CT, ZETA, AND Z0
-C
+
         VAPSIM(I) = VCU(I) * RVK
         VAPSIHG(I) = 1. / VPSIHG(I)
         VRIB1(I) = VAPSIM(I) * VAPSIM(I) * VPSIHG(I) * VZETA(I)
  9028  CONTINUE
-C
+
        ITYPE = 3
        IF(ITER.EQ.N) ITYPE = 4
        IF( (ITYPE.EQ.4) .AND. (.NOT.LAST) ) ITYPE = 5
-C
+
        CALL LINADJ(NN,VRIB1,VRIB,VWS,
      1  VWS,VZ0,VUSTAR,IVWATER,
      2  VAPSIM,VAPSIHG,VPSIH,
@@ -3069,22 +2652,22 @@ C
      3 VX0PSIM,VG,VG0,VR1MG0,VZ2,VDZSEA,VAZ0,VXNUM1,VPSIGB2,VDX,
      4 VDXPSIM,VDY,VXNUM2,VDEN,VAWS1,VXNUM3,VXNUM,VDZETA1,VDZETA2,
      5 VZCOEF2,VZCOEF1,VTEMPLIN,VDPSIMC,VDPSIHC)
-C
+
 C  UPDATES OF ZETA, Z0, CU AND CT
-C
+
        IF (ITYPE.EQ.5) THEN
         DO 9030 I = 1,IRUN
          VZETAL(I) = VZETA(I)
          VZ0L(I) = VZ0(I)
  9030   CONTINUE
        ENDIF
-C
+
        DO 9032 I = 1,IRUN
         VZETA(I) = VZETA(I) * ( 1. + VDZETA(I) )
         IF (IVBITRIB(I).EQ.1 ) VZETA(I) =
      1        VPSIM(I) * VPSIM(I) * VRIB(I) * VAPSIHG(I)
  9032  CONTINUE
-C
+
        IF ( LWATER ) THEN
         DO 9034 I = 1,IRUN
          IF (IVWATER(I).EQ.1 ) then
@@ -3094,13 +2677,13 @@ C
          endif
  9034   CONTINUE
        ENDIF
-C
+
        IF ( ITER .EQ. N ) THEN
         DO 9036 I = 1,IRUN
          VPSIM(I) = VPSIM(I) + VDPSIM(I)
          VCU(I) = VK / VPSIM(I)
          VUSTAR(I) = VCU(I) * VWS(I)
-C
+
          VPSIG(I) = VH0(I) * VUSTAR(I) - USTH0S
          if(VPSIG(I).lt.0.)  VPSIG(I) = 0.
          VPSIG(I) = SQRT(VPSIG(I))
@@ -3109,20 +2692,20 @@ C
          VCT(I) = VK / VPSIHG(I)
  9036   CONTINUE
        ENDIF
-C
+
 C  SAVE VALUES OF RIB AND WS FOR NEXT ITERATION OF TRBFLX
-C
+
        IF (ITYPE.EQ.5) THEN
         DO 9038 I = 1,IRUN
          VRIB1(I) = VRIB(I)
          VWS1(I) = VWS(I)
  9038   CONTINUE
        ENDIF
-C
+
  200  CONTINUE
-C
+
 C  CALCULATE RHO-SURFACE ( KG / M**3 )
-C
+
       IF (FIRST) THEN
        DO I = 1,IRUN
         VTEMP(I) =  10. * VAHS(I) * VZETA(I)
@@ -3137,12 +2720,12 @@ C
         VRHO(I) = VPE(I)*100. / ( RGAS * VRHO(I) )
        ENDDO
       ENDIF
-C
+
 C interpolate uvtq to 2m and to 10 meters for diagnostic output
 C  use psih and psim which represent non-dim change from ground
 C                 to specified level
 C and multiply theta by surface p**kappa to get temperatures
-C
+
         do i = 1,irun
          vtemp(i) = 2. * vahs(i) * vzeta(i)
          vzh(i) = vz0(i) * 0.5
@@ -3176,23 +2759,24 @@ C
          stq10m(i) = (vsh2(i) + ((psihdiag(i)+vpsig(i))/vpsihg(i))*
      1                                             (vsh1(i)-vsh2(i)))
         enddo
-C
+
 C  EVALUATE TURBULENT TRANSFER COEFFICIENTS
-C
+
       DO 9044 I = 1,IRUN
        VRHOZPK(I) = VRHO(I) * VPKE(I)
        VKH(I) = VUSTAR(I) * VCT(I)
        VKM(I) = VUSTAR(I) * VCU(I)
  9044 CONTINUE
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE PHI(Z,PHIM,PHIH,IFLAG,N)
 C**********************************************************************
-C
 C  FUNCTION PHI - SOLVES KEYPS EQUATIONS
 C               - CALLED FROM PSI
-C
 C  DESCRIPTION OF PARAMETERS
 C     Z     -  INPUTED VALUE OF MONIN- OBUKHOV STABILITY PARAMETER ZETA
 C               TIMES APPROPRIATE CONSTANT
@@ -3201,7 +2785,6 @@ C     PHIH  -  OUTPUTED SOLUTION OF KEYPS EQUATION FOR SCALARS
 C     IFLAG -  FLAG TO DETERMINE IF X IS NEEDED (IFLAG=2), Y IS NEEDED
 C                  (IFLAG=3), OR BOTH (IFLAG=1)
 C     N     -  LENGTH OF VECTOR TO BE SOLVED
-C
 C**********************************************************************
       implicit none
 
@@ -3212,7 +2795,7 @@ C Argument List Declarations
 C Local Variables
       integer I1(N),I2(N)
       _RL ZSTAR(N),E1(N),E2(N),TEMP1(N)
-C
+
       _RL PHIM0(385),ZLINM1(75),ZLINM2(75),ZLINM3(36)
       _RL ZLOGM1(74),ZLOGM2(75),ZLOGM3(50)
       _RL PHIH0(385),ZLINH1(75),ZLINH2(75),ZLINH3(36)
@@ -3225,94 +2808,94 @@ C
       EQUIVALENCE (PHIH0(151),ZLINH3(1))
       EQUIVALENCE (PHIH0(187),ZLOGH1(1)),(PHIH0(261),ZLOGH2(1))
       EQUIVALENCE (PHIH0(336),ZLOGH3(1))
-C
+
        DATA ZLOGM1/
-     .             0.697894,0.678839,0.659598,0.640260,
-     .  0.620910,0.601628,0.582486,0.563550,0.544877,
-     .  0.526519,0.508516,0.490903,0.473708,0.456951,
-     .  0.440649,0.424812,0.409446,0.394553,0.380133,
-     .  0.366182,0.352695,0.339664,0.327082,0.314938,
-     .  0.303222,0.291923,0.281029,0.270528,0.260409,
-     .  0.250659,0.241267,0.232221,0.223509,0.215119,
-     .  0.207041,0.199264,0.191776,0.184568,0.177628,
-     .  0.170949,0.164519,0.158331,0.152374,0.146641,
-     .  0.141123,0.135813,0.130702,0.125783,0.121048,
-     .  0.116492,0.112107,0.107887,0.103826,0.0999177,
-     .  0.0961563,0.0925364,0.0890528,0.0857003,0.0824739,
-     .  0.0793690,0.0763810,0.0735054,0.0707380,0.0680749,
-     .  0.0655120,0.0630455,0.0606720,0.0583877,0.0561895,
-     .  0.0540740,0.0520382,0.0500790,0.0481936,0.0463791/
+     &             0.697894,0.678839,0.659598,0.640260,
+     &  0.620910,0.601628,0.582486,0.563550,0.544877,
+     &  0.526519,0.508516,0.490903,0.473708,0.456951,
+     &  0.440649,0.424812,0.409446,0.394553,0.380133,
+     &  0.366182,0.352695,0.339664,0.327082,0.314938,
+     &  0.303222,0.291923,0.281029,0.270528,0.260409,
+     &  0.250659,0.241267,0.232221,0.223509,0.215119,
+     &  0.207041,0.199264,0.191776,0.184568,0.177628,
+     &  0.170949,0.164519,0.158331,0.152374,0.146641,
+     &  0.141123,0.135813,0.130702,0.125783,0.121048,
+     &  0.116492,0.112107,0.107887,0.103826,0.0999177,
+     &  0.0961563,0.0925364,0.0890528,0.0857003,0.0824739,
+     &  0.0793690,0.0763810,0.0735054,0.0707380,0.0680749,
+     &  0.0655120,0.0630455,0.0606720,0.0583877,0.0561895,
+     &  0.0540740,0.0520382,0.0500790,0.0481936,0.0463791/
        DATA ZLOGM2/
-     .  0.0446330,0.0429526,0.0413355,0.0397792,0.0382816,
-     .  0.0368403,0.0354533,0.0341185,0.0328340,0.0315978,
-     .  0.0304081,0.0292633,0.0281616,0.0271013,0.0260809,
-     .  0.0250990,0.0241540,0.0232447,0.0223695,0.0215273,
-     .  0.0207168,0.0199369,0.0191862,0.0184639,0.0177687,
-     .  0.0170998,0.0164560,0.0158364,0.0152402,0.0146664,
-     .  0.0141142,0.0135828,0.0130714,0.0125793,0.0121057,
-     .  0.0116499,0.0112113,0.0107892,0.0103830,0.999210E-2,
-     .  0.961590E-2,0.925387E-2,0.890547E-2,0.857018E-2,0.824752E-2,
-     .  0.793701E-2,0.763818E-2,0.735061E-2,0.707386E-2,0.680754E-2,
-     .  0.655124E-2,0.630459E-2,0.606722E-2,0.583880E-2,0.561897E-2,
-     .  0.540742E-2,0.520383E-2,0.500791E-2,0.481937E-2,0.463792E-2,
-     .  0.446331E-2,0.429527E-2,0.413355E-2,0.397793E-2,0.382816E-2,
-     .  0.368403E-2,0.354533E-2,0.341185E-2,0.328340E-2,0.315978E-2,
-     .  0.304082E-2,0.292633E-2,0.281616E-2,0.271013E-2,0.260809E-2/
+     &  0.0446330,0.0429526,0.0413355,0.0397792,0.0382816,
+     &  0.0368403,0.0354533,0.0341185,0.0328340,0.0315978,
+     &  0.0304081,0.0292633,0.0281616,0.0271013,0.0260809,
+     &  0.0250990,0.0241540,0.0232447,0.0223695,0.0215273,
+     &  0.0207168,0.0199369,0.0191862,0.0184639,0.0177687,
+     &  0.0170998,0.0164560,0.0158364,0.0152402,0.0146664,
+     &  0.0141142,0.0135828,0.0130714,0.0125793,0.0121057,
+     &  0.0116499,0.0112113,0.0107892,0.0103830,0.999210E-2,
+     &  0.961590E-2,0.925387E-2,0.890547E-2,0.857018E-2,0.824752E-2,
+     &  0.793701E-2,0.763818E-2,0.735061E-2,0.707386E-2,0.680754E-2,
+     &  0.655124E-2,0.630459E-2,0.606722E-2,0.583880E-2,0.561897E-2,
+     &  0.540742E-2,0.520383E-2,0.500791E-2,0.481937E-2,0.463792E-2,
+     &  0.446331E-2,0.429527E-2,0.413355E-2,0.397793E-2,0.382816E-2,
+     &  0.368403E-2,0.354533E-2,0.341185E-2,0.328340E-2,0.315978E-2,
+     &  0.304082E-2,0.292633E-2,0.281616E-2,0.271013E-2,0.260809E-2/
        DATA ZLOGM3/
-     .  0.250990E-2,0.241541E-2,0.232447E-2,0.223695E-2,0.215273E-2,
-     .  0.207168E-2,0.199369E-2,0.191862E-2,0.184639E-2,0.177687E-2,
-     .  0.170998E-2,0.164560E-2,0.158364E-2,0.152402E-2,0.146664E-2,
-     .  0.141142E-2,0.135828E-2,0.130714E-2,0.125793E-2,0.121057E-2,
-     .  0.116499E-2,0.112113E-2,0.107892E-2,0.103830E-2,0.999210E-3,
-     .  0.961590E-3,0.925387E-3,0.890547E-3,0.857018E-3,0.824752E-3,
-     .  0.793701E-3,0.763818E-3,0.735061E-3,0.707386E-3,0.680754E-3,
-     .  0.655124E-3,0.630459E-3,0.606722E-3,0.583880E-3,0.561897E-3,
-     .  0.540742E-3,0.520383E-3,0.500791E-3,0.481937E-3,0.463792E-3,
-     .  0.446331E-3,0.429527E-3,0.413355E-3,0.397793E-3,0.382816E-3/
+     &  0.250990E-2,0.241541E-2,0.232447E-2,0.223695E-2,0.215273E-2,
+     &  0.207168E-2,0.199369E-2,0.191862E-2,0.184639E-2,0.177687E-2,
+     &  0.170998E-2,0.164560E-2,0.158364E-2,0.152402E-2,0.146664E-2,
+     &  0.141142E-2,0.135828E-2,0.130714E-2,0.125793E-2,0.121057E-2,
+     &  0.116499E-2,0.112113E-2,0.107892E-2,0.103830E-2,0.999210E-3,
+     &  0.961590E-3,0.925387E-3,0.890547E-3,0.857018E-3,0.824752E-3,
+     &  0.793701E-3,0.763818E-3,0.735061E-3,0.707386E-3,0.680754E-3,
+     &  0.655124E-3,0.630459E-3,0.606722E-3,0.583880E-3,0.561897E-3,
+     &  0.540742E-3,0.520383E-3,0.500791E-3,0.481937E-3,0.463792E-3,
+     &  0.446331E-3,0.429527E-3,0.413355E-3,0.397793E-3,0.382816E-3/
        DATA ZLOGH1/
-     .             0.640529,0.623728,0.606937,0.590199,
-     .  0.573552,0.557032,0.540672,0.524504,0.508553,
-     .  0.492843,0.477397,0.462232,0.447365,0.432809,
-     .  0.418574,0.404670,0.391103,0.377878,0.364999,
-     .  0.352468,0.340284,0.328447,0.316954,0.305804,
-     .  0.294992,0.284514,0.274364,0.264538,0.255028,
-     .  0.245829,0.236933,0.228335,0.220026,0.211999,
-     .  0.204247,0.196762,0.189537,0.182564,0.175837,
-     .  0.169347,0.163088,0.157051,0.151231,0.145620,
-     .  0.140211,0.134998,0.129974,0.125133,0.120469,
-     .  0.115975,0.111645,0.107475,0.103458,0.995895E-1,
-     .  0.958635E-1,0.922753E-1,0.888199E-1,0.854925E-1,0.822886E-1,
-     .  0.792037E-1,0.762336E-1,0.733739E-1,0.706208E-1,0.679704E-1,
-     .  0.654188E-1,0.629625E-1,0.605979E-1,0.583217E-1,0.561306E-1,
-     .  0.540215E-1,0.519914E-1,0.500373E-1,0.481564E-1,0.463460E-1/
+     &             0.640529,0.623728,0.606937,0.590199,
+     &  0.573552,0.557032,0.540672,0.524504,0.508553,
+     &  0.492843,0.477397,0.462232,0.447365,0.432809,
+     &  0.418574,0.404670,0.391103,0.377878,0.364999,
+     &  0.352468,0.340284,0.328447,0.316954,0.305804,
+     &  0.294992,0.284514,0.274364,0.264538,0.255028,
+     &  0.245829,0.236933,0.228335,0.220026,0.211999,
+     &  0.204247,0.196762,0.189537,0.182564,0.175837,
+     &  0.169347,0.163088,0.157051,0.151231,0.145620,
+     &  0.140211,0.134998,0.129974,0.125133,0.120469,
+     &  0.115975,0.111645,0.107475,0.103458,0.995895E-1,
+     &  0.958635E-1,0.922753E-1,0.888199E-1,0.854925E-1,0.822886E-1,
+     &  0.792037E-1,0.762336E-1,0.733739E-1,0.706208E-1,0.679704E-1,
+     &  0.654188E-1,0.629625E-1,0.605979E-1,0.583217E-1,0.561306E-1,
+     &  0.540215E-1,0.519914E-1,0.500373E-1,0.481564E-1,0.463460E-1/
        DATA ZLOGH2/
-     .  0.446034E-1,0.429263E-1,0.413120E-1,0.397583E-1,0.382629E-1,
-     .  0.368237E-1,0.354385E-1,0.341053E-1,0.328222E-1,0.315873E-1,
-     .  0.303988E-1,0.292550E-1,0.281541E-1,0.270947E-1,0.260750E-1,
-     .  0.250937E-1,0.241494E-1,0.232405E-1,0.223658E-1,0.215240E-1,
-     .  0.207139E-1,0.199342E-1,0.191839E-1,0.184618E-1,0.177669E-1,
-     .  0.170981E-1,0.164545E-1,0.158351E-1,0.152390E-1,0.146653E-1,
-     .  0.141133E-1,0.135820E-1,0.130707E-1,0.125786E-1,0.121051E-1,
-     .  0.116494E-1,0.112108E-1,0.107888E-1,0.103826E-1,0.999177E-2,
-     .  0.961561E-2,0.925360E-2,0.890523E-2,0.856997E-2,0.824733E-2,
-     .  0.793684E-2,0.763803E-2,0.735048E-2,0.707375E-2,0.680743E-2,
-     .  0.655114E-2,0.630450E-2,0.606715E-2,0.583873E-2,0.561891E-2,
-     .  0.540737E-2,0.520379E-2,0.500787E-2,0.481933E-2,0.463789E-2,
-     .  0.446328E-2,0.429524E-2,0.413353E-2,0.397790E-2,0.382814E-2,
-     .  0.368401E-2,0.354532E-2,0.341184E-2,0.328338E-2,0.315977E-2,
-     .  0.304081E-2,0.292632E-2,0.281615E-2,0.271012E-2,0.260809E-2/
+     &  0.446034E-1,0.429263E-1,0.413120E-1,0.397583E-1,0.382629E-1,
+     &  0.368237E-1,0.354385E-1,0.341053E-1,0.328222E-1,0.315873E-1,
+     &  0.303988E-1,0.292550E-1,0.281541E-1,0.270947E-1,0.260750E-1,
+     &  0.250937E-1,0.241494E-1,0.232405E-1,0.223658E-1,0.215240E-1,
+     &  0.207139E-1,0.199342E-1,0.191839E-1,0.184618E-1,0.177669E-1,
+     &  0.170981E-1,0.164545E-1,0.158351E-1,0.152390E-1,0.146653E-1,
+     &  0.141133E-1,0.135820E-1,0.130707E-1,0.125786E-1,0.121051E-1,
+     &  0.116494E-1,0.112108E-1,0.107888E-1,0.103826E-1,0.999177E-2,
+     &  0.961561E-2,0.925360E-2,0.890523E-2,0.856997E-2,0.824733E-2,
+     &  0.793684E-2,0.763803E-2,0.735048E-2,0.707375E-2,0.680743E-2,
+     &  0.655114E-2,0.630450E-2,0.606715E-2,0.583873E-2,0.561891E-2,
+     &  0.540737E-2,0.520379E-2,0.500787E-2,0.481933E-2,0.463789E-2,
+     &  0.446328E-2,0.429524E-2,0.413353E-2,0.397790E-2,0.382814E-2,
+     &  0.368401E-2,0.354532E-2,0.341184E-2,0.328338E-2,0.315977E-2,
+     &  0.304081E-2,0.292632E-2,0.281615E-2,0.271012E-2,0.260809E-2/
        DATA ZLOGH3/
-     .  0.250990E-2,0.241540E-2,0.232446E-2,0.223695E-2,0.215273E-2,
-     .  0.207168E-2,0.199368E-2,0.191862E-2,0.184639E-2,0.177687E-2,
-     .  0.170997E-2,0.164559E-2,0.158364E-2,0.152402E-2,0.146664E-2,
-     .  0.141142E-2,0.135828E-2,0.130714E-2,0.125793E-2,0.121057E-2,
-     .  0.116499E-2,0.112113E-2,0.107892E-2,0.103830E-2,0.999209E-3,
-     .  0.961590E-3,0.925387E-3,0.890546E-3,0.857018E-3,0.824752E-3,
-     .  0.793700E-3,0.763818E-3,0.735061E-3,0.707386E-3,0.680754E-3,
-     .  0.655124E-3,0.630459E-3,0.606722E-3,0.583880E-3,0.561897E-3,
-     .  0.540742E-3,0.520383E-3,0.500791E-3,0.481937E-3,0.463792E-3,
-     .  0.446331E-3,0.429527E-3,0.413355E-3,0.397793E-3,0.382816E-3/
-C
+     &  0.250990E-2,0.241540E-2,0.232446E-2,0.223695E-2,0.215273E-2,
+     &  0.207168E-2,0.199368E-2,0.191862E-2,0.184639E-2,0.177687E-2,
+     &  0.170997E-2,0.164559E-2,0.158364E-2,0.152402E-2,0.146664E-2,
+     &  0.141142E-2,0.135828E-2,0.130714E-2,0.125793E-2,0.121057E-2,
+     &  0.116499E-2,0.112113E-2,0.107892E-2,0.103830E-2,0.999209E-3,
+     &  0.961590E-3,0.925387E-3,0.890546E-3,0.857018E-3,0.824752E-3,
+     &  0.793700E-3,0.763818E-3,0.735061E-3,0.707386E-3,0.680754E-3,
+     &  0.655124E-3,0.630459E-3,0.606722E-3,0.583880E-3,0.561897E-3,
+     &  0.540742E-3,0.520383E-3,0.500791E-3,0.481937E-3,0.463792E-3,
+     &  0.446331E-3,0.429527E-3,0.413355E-3,0.397793E-3,0.382816E-3/
+
        DATA ZLINM1/
      &  0.964508,0.962277,0.960062,0.957863,0.955680,
      &  0.953512,0.951359,0.949222,0.947100,0.944992,
@@ -3397,21 +2980,21 @@ C
      &  0.657298/
 
       integer ibit1,ibit2,i
-C
+
       IBIT1 = 0
       IBIT2 = 0
-C
+
       DO 9000 I = 1,N
        IF(Z(I).GE.0.15)IBIT1 = IBIT1 + 1
        IF(Z(I).GT.2. )IBIT2 = IBIT2 + 1
  9000 CONTINUE
-C
+
       IF( IBIT1 .LE. 0 ) GO TO 200
-C
+
       DO 9002 I = 1,N
        ZSTAR(I)    = 100. * Z(I) - 14.
  9002 CONTINUE
-C
+
       IF( IBIT2 .LE. 0 ) GO TO 60
       DO 9004 I = 1,N
        TEMP1(I) = Z(I)*0.5
@@ -3421,16 +3004,16 @@ C
        IF( Z(I) .GT. 2. ) ZSTAR(I) = TEMP1(I)
        IF( Z(I).GT.1.78e10 ) ZSTAR(I) = 384.9999
  9004  CONTINUE
-C
+
  60    CONTINUE
-C
+
       DO 9006 I = 1,N
        I1(I) = ZSTAR(I)
        I2(I) = I1(I) + 1
        TEMP1(I) = ZSTAR(I) - I1(I)
-C
+
  9006  CONTINUE
-C
+
       IF( IFLAG .GT. 2 ) GO TO 100
        DO 9008 I = 1,N
        if( z(i).ge.0.15 ) then
@@ -3442,7 +3025,7 @@ C
  9008  CONTINUE
 
   100 CONTINUE
-C
+
       IF( IFLAG .EQ. 2 ) GO TO 200
        DO 9010 I = 1,N
        if( z(i).ge.0.15 ) then
@@ -3455,18 +3038,18 @@ C
 
   200 CONTINUE
       IF( IBIT1 .GE. N ) GO TO 500
-C
+
        DO 9012 I = 1,N
        ZSTAR(I) = -Z(I)
  9012  CONTINUE
-C
+
       IF( IFLAG .GT. 2 ) GO TO 300
        DO 9014 I = 1,N
        IF( Z(I) .LT. 0.15 ) PHIM(I) = 1. + ZSTAR(I)
      2     *(0.25+ZSTAR(I)*(0.09375+ZSTAR(I)*
      3     (0.03125+0.00732422 * ZSTAR(I))))
  9014  CONTINUE
-C
+
   300 CONTINUE
       IF( IFLAG .EQ. 2 ) GO TO 500
        DO 9016 I = 1,N
@@ -3477,17 +3060,18 @@ C
        PHIH(I) = 1. / PHIH(I)
       ENDIF
  9016  CONTINUE
-C
+
   500 CONTINUE
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE PSI(VZZ,VZH,VPSIM,VPSIH,IRUN,VX,VXS,VY,VYS,IFLAG)
 C**********************************************************************
-C
 C  SUBROUTINE PSI - DETERMINES DIMENSIONLESS WIND AND
 C                    SCALAR PROFILES IN SURFACE LAYER
 C                 - CALLED FROM SFCFLX
-C
 C  DESCRIPTION OF PARAMETERS
 C     ZZ   -  INPUTED VALUE OF MONIN- OBUKHOV STABILITY PARAMETER ZETA
 C     ZH   -  INPUTED VALUE OF PBL HEIGHT DIVIDED BY Z0
@@ -3501,7 +3085,6 @@ C     IFLAG-  FLAG TO DETERMINE IF CU IS NEEDED (IFLAG=2),
 C                  IF CT IS NEEDED (IFLAG=3), OR BOTH (IFLAG=1)
 C  SUBPROGRAMS NEEDED
 C     PHI  -  COMPUTES SIMILARITY FUNCTION FOR MOMENTUM AND SCALARS
-C
 C**********************************************************************
       implicit none
 
@@ -3534,12 +3117,12 @@ C Local Variables
       _RL cm3,cm4,cm5,cm8
       integer ibit,indx
       integer i
-C
+
       CM3 =   sqrt( 0.2/CM1-0.01 )
       CM4 =   1./CM3
       CM5 =  (10.-CM1) / (10.*CM1*CM3)
       CM8 =   6. * LOG(CM8ARG)
-C
+
       DO 9000 I = 1,IRUN
        VPSIM(I) = 0.
        VPSIH(I) = 0.
@@ -3560,13 +3143,13 @@ C
         INTSTB(I) = 0
        ENDIF
  9022 CONTINUE
-C
+
 C ****************************************
 C *****    UNSTABLE SURFACE LAYER    *****
 C ****************************************
-C
+
       IF(IBIT.LE.0)  GO TO 100
-C
+
       indx = 0
       DO 9002 I = 1,IRUN
        IF (INTSTB(I).EQ.1)THEN
@@ -3575,7 +3158,7 @@ C
         Z0(indx) = ZZ0(I)
        ENDIF
  9002 CONTINUE
-C
+
       DO 9004 I = 1,IBIT
        Z(I) = -18. * Z(I)
        Z0(I) = -18. * Z0(I)
@@ -3587,18 +3170,18 @@ C
 C ****************************
 C *****    COMPUTE PSIM  *****
 C ****************************
-C
+
       IF(IFLAG.GE.3) GO TO 75
-C
+
       DO 9006 I = 1,IBIT
        ARG1(I) = 1. - X1(I)
        IF ( Z(I) .LT. 0.013 ) ARG1(I) =
      1        Z(I) * ( 0.25 -  0.09375 * Z(I) )
-C
+
        ARG0(I)  = 1. - X0(I)
        IF ( Z0(I) .LT. 0.013 ) ARG0(I) =
      1       Z0(I) * ( 0.25 -  0.09375 * Z0(I) )
-C
+
        ARG1(I) = ARG1(I) * ( 1.+X0(I) )
        ARG0(I) = ARG0(I) * ( 1.+X1(I) )
        DX(I) = X1(I) - X0(I)
@@ -3609,7 +3192,7 @@ C
        PSI2(I) = 2. * ARG0(I) + ARG1(I)
        PSI2(I) = PSI2(I) + DX(I)
  9006 CONTINUE
-C
+
       indx = 0
       DO 9008 I = 1,IRUN
        IF( INTSTB(I).EQ.1 ) THEN
@@ -3619,30 +3202,30 @@ C
         VXS(I) = X0(indx)
        ENDIF
  9008 CONTINUE
-C
+
 C ****************************
 C *****    COMPUTE PSIH  *****
 C ****************************
-C
+
       IF(IFLAG.EQ.2) GO TO 100
-C
+
   75  CONTINUE
       DO 9010 I = 1,IBIT
        ARG1(I) = 1. - Y1(I)
        IF( Z(I) .LT. 0.0065 ) ARG1(I) =
      1       Z(I) * ( 0.5 -  0.625 * Z(I) )
-C
+
        ARG0(I)  = 1. - Y0(I)
        IF( Z0(I) .LT. 0.0065 ) ARG0(I) =
      1       Z0(I) * ( 0.5 -  0.625 * Z0(I) )
-C
+
        ARG1(I) = ARG1(I) * ( 1. + Y0(I) )
        ARG0(I) = ARG0(I) * ( 1. + Y1(I) )
        ARG1(I) = ARG1(I) / ARG0(I)
        PSI2(I) = LOG( ARG1(I) )
        PSI2(I) = PSI2(I) - Y1(I) + Y0(I)
  9010 CONTINUE
-C
+
       indx = 0
       DO 9012 I = 1,IRUN
        IF( INTSTB(I).EQ.1 ) THEN
@@ -3652,11 +3235,11 @@ C
        VYS(I) = Y0(indx)
        ENDIF
  9012 CONTINUE
-C
+
 C **************************************
 C *****    STABLE SURFACE LAYER    *****
 C **************************************
-C
+
   100 CONTINUE
       IBIT = 0
       DO 9114 I = 1,IRUN
@@ -3692,24 +3275,24 @@ CDIR$ VECTOR
        HZ(I) = 1. / ARG1(I)
        Z1(I) = Z(I)
        Z2(I) = ZWM
-C
+
        IF ( Z(I) .GT. ZWM ) THEN
         Z1(I) = ZWM
         Z2(I) = Z(I)
        ENDIF
-C
+
        IF ( Z0(I) .GT. Z0M ) THEN
         Z0(I) = Z0M
         INTZ0(I) = 1
        ELSE
         INTZ0(I) = 0
        ENDIF
-C
+
        X1NUM(I) = 1. + 5. * Z1(I)
        X0NUM(I) = 1. + 5. * Z0(I)
        X1DEN(I) = 1. / (1. + CM1 * (X1NUM(I) * Z1(I)) )
        X0DEN(I) = 1. + CM1 * (X0NUM(I) * Z0(I))
-C
+
        IF ( (INTZ0(I).EQ.1) .OR. (Z(I).GT.ZWM) )
      1      HZ(I) = Z1(I) / Z0(I)
        ARG1(I) = HZ(I)*HZ(I)*X0DEN(I)*X1DEN(I)
@@ -3720,24 +3303,24 @@ C
        ARG0(I) = ( Z1(I) - Z0(I) ) / ARG0(I)
        ARG0(I) = ATAN( ARG0(I) )
        TEMP(I) = ARG1(I) + CM5 * ARG0(I)
-C
+
        X0(I) = X0NUM(I) / X0DEN(I)
        IF ( INTZ0(I).EQ.1 ) X0(I) = 0.
        Z2ZWM(I) = Z2(I) * RZWM
  9018 CONTINUE
-C
+
 C ****************************
 C *****    COMPUTE PSIM  *****
 C ****************************
-C
+
       IF( IFLAG.GE.3 ) GO TO 225
-C
+
       DO 9020 I = 1,IBIT
        X1(I) = X1NUM(I) * X1DEN(I)
        ARG1(I) = LOG( Z2ZWM(I) )
        PSI2(I) = TEMP(I) + CM6 * ARG1(I)
  9020 CONTINUE
-C
+
       indx = 0
       DO 9030 I = 1,IRUN
        IF( INTSTB(I).EQ.1 ) THEN
@@ -3747,13 +3330,13 @@ C
        VXS(I) = X0(indx)
        ENDIF
  9030 CONTINUE
-C
+
 C ****************************
 C *****    COMPUTE PSIH  *****
 C ****************************
-C
+
        IF(IFLAG.EQ.2)GO TO 300
-C
+
   225 CONTINUE
       DO 9024 I = 1,IBIT
        Y1DEN(I) = 1. + CM1 * ( X1NUM(I) * Z(I) )
@@ -3769,7 +3352,7 @@ C
        ARG1(I) = LOG( ARG1(I) )
        PSI2(I) = TEMP(I) + ARG0(I) * ARG1(I)
  9024 CONTINUE
-C
+
       indx = 0
       DO 9026 I = 1,IRUN
        IF( INTSTB(I).EQ.1 ) THEN
@@ -3779,20 +3362,21 @@ C
        VYS(I) = X0(indx)
        ENDIF
  9026 CONTINUE
-C
+
   300 CONTINUE
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE TRBLEN (STRT,DW2,DZ3,Q,VKZE,VKZM,DTHV,DPK,DU,DV,XL,
      1                   QXLM,NLEV,INIT,LMIN,LMINQ,LMINQ1,CP,INT1,INT2,
      2  DZITRP,STBFCN,XL0,Q1,WRKIT1,WRKIT2,WRKIT3,WRKIT4,irun)
 C**********************************************************************
-C
 C  SUBROUTINE TRBLEN - COMPUTES TURBULENT LENGTH SCALE
 C                    - CALLED FROM TRBFLX
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    STRT          -         BRUNT VAISALA FREQUENCY
@@ -3809,7 +3393,6 @@ C    NLEV          -         NUMBER OF ATMOSPHERIC LEVELS
 C    INIT          -         INPUT FLAG : 1 = INITIAL START
 C                                         2 = 2ND CALL FOR INITIAL STAR
 C                                         0 = NON-INITIAL START
-C
 C     OUTPUT:
 C     -------
 C    XL            -         TURBULENT LENGTH SCALE
@@ -3818,9 +3401,7 @@ C    LMIN          -         HIGHEST LAYER WHERE INSTABILITY OCCURS
 C    LMINQ         -         HIGHEST LAYER WHERE TURBULENCE OCCURS
 C
 C   SUBPROGRAMS NEEDED ::
-C
 C     TRBITP -  INTERPOLATES TO HEIGHT WHERE RI = RICR
-C
 C**********************************************************************
       implicit none
 
@@ -3859,21 +3440,16 @@ C Local Variables
       integer ibit,nlevm1,nlevp1,istnlv,istnm1,nlevml,istnml,Lp1
       integer istnmq,istlmq,lminp,lm1,lmin1
       integer i,L,LL
-C
+
       NLEVM1 = NLEV - 1
       NLEVP1 = NLEV + 1
       ISTNLV = irun * NLEV
       ISTNM1 = irun * NLEVM1
-C
+
       IF ( INIT.EQ.2 ) GO TO 1200
-C
+
 C COMPUTE DEPTHS OF UNSTABLE LAYERS
 C =================================
-c     DO 10 I=1,ISTNLV
-c         STBFCN(I,1) = STRT(I,1) - RICR * DW2(I,1)
-c                               INT1(I,1) = 0
-c     IF( STBFCN(I,1).LE.0. ) INT1(I,1) = 1
-c  10 CONTINUE
       DO L =1,NLEV
        DO I =1,irun
          STBFCN(I,L) = STRT(I,L) - RICR * DW2(I,L)
@@ -3882,17 +3458,13 @@ c  10 CONTINUE
        ENDDO
       ENDDO
 
-c     DO 20 I=1,ISTNM1
-c                                               INT2(I,1) = 0
-c     IF( (INT1(I,1).EQ.1) .NEQV. (INT1(I,2).EQ.1) ) INT2(I,1) = 1
-c  20 CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         INT2(I,L) = 0
         IF( (INT1(I,L).EQ.1) .NEQV. (INT1(I,L+1).EQ.1) ) INT2(I,L) = 1
        ENDDO
       ENDDO
-C
+
       DO 40 LMIN = 1,NLEV
       IBIT = 0
       DO 30 I=1,irun
@@ -3903,10 +3475,7 @@ C
       LMIN = NLEVP1
    50 CONTINUE
       LMIN = 1
-C
-c     DO 60 I=1,ISTNM1
-c     XL0(I,1) = 0.
-c  60 CONTINUE
+
       DO L =1,NLEVM1
        DO I =1,irun
         XL0(I,L) = 0.
@@ -3915,41 +3484,30 @@ c  60 CONTINUE
       DO 70 I=1,irun
       XL0(I,NLEV) = DZ3(I,NLEV)
    70 CONTINUE
-C
+
       IF(LMIN.GE.NLEVP1) GOTO 1100
                          LMIN1 = LMIN - 1
       IF(LMIN1.EQ.0)     LMIN1 = 1
          NLEVML = NLEV - LMIN1
          ISTNML = irun*NLEVML
       CALL TRBITP ( STBFCN(1,LMIN1),INT2(1,LMIN1),DTHV(1,LMIN1),
-     .                 DPK(1,LMIN1),  DU(1,LMIN1),  DV(1,LMIN1),
-     .              DZITRP(1,LMIN1),  NLEVML,
-     .              WRKIT1,WRKIT2,WRKIT3,WRKIT4,CP,irun )
+     &                 DPK(1,LMIN1),  DU(1,LMIN1),  DV(1,LMIN1),
+     &              DZITRP(1,LMIN1),  NLEVML,
+     &              WRKIT1,WRKIT2,WRKIT3,WRKIT4,CP,irun )
       LP1 = LMIN1 + 1
-C
-c     DO 80 I=1,ISTNML
-c                                                    INT2(I,LMIN1) = 0
-c     IF( INT1(I,LMIN1).EQ.1 .OR. INT1(I,LP1).EQ.1 ) INT2(I,LMIN1) = 1
-c     IF( INT2(I,LMIN1).EQ.1 )
-c    .     XL0(I,LMIN1) = (0.5+DZITRP(I,LMIN1)) * DZ3(I,LP1)
-c  80 CONTINUE
+
       DO L =LMIN1,NLEVM1
        DO I =1,irun
         INT2(I,L) = 0
         IF ( INT1(I,L).EQ.1 .OR. INT1(I,L+1).EQ.1 ) INT2(I,L) = 1
         IF ( INT2(I,L).EQ.1 )
-     .       XL0(I,L) = (0.5+DZITRP(I,L)) * DZ3(I,L+1)
+     &       XL0(I,L) = (0.5+DZITRP(I,L)) * DZ3(I,L+1)
        ENDDO
       ENDDO
       DO 90 I=1,irun
       INT2(I,NLEVM1) = INT1(I,NLEV)
    90 CONTINUE
-C
-c     DO 100 I=1,ISTNML
-c     IF( INT2(I,LMIN1).EQ.1 ) THEN
-c     XL0(I,LP1) = XL0(I,LP1) + ( (0.5-DZITRP(I,LMIN1)) * DZ3(I,LP1) )
-c     ENDIF
-c 100 CONTINUE
+
       DO L =LMIN1,NLEVM1
        DO I =1,irun
         IF ( INT2(I,L).EQ.1 ) THEN
@@ -3962,7 +3520,7 @@ c 100 CONTINUE
       IF( INT1(I,1).EQ.1 ) XL0(I,1) = XL0(I,1) + DZ3(I,1)
   110 CONTINUE
   400 CONTINUE
-C
+
       LMINP = LMIN + 1
       IF(LMINP.GT.NLEVM1) GOTO 550
       DO 500 L = LMINP,NLEVM1
@@ -3994,27 +3552,21 @@ C
   140 CONTINUE
  1000 CONTINUE
  1100 CONTINUE
-C
-c     DO 150 I = 1,ISTNLV
-c     IF( XL0(I,1).LT.XL0CNV ) XL0(I,1) = XL0CNV
-c 150 CONTINUE
+
       DO L =1,NLEV
        DO I =1,irun
         IF ( XL0(I,L).LT.XL0CNV ) XL0(I,L) = XL0CNV
        ENDDO
       ENDDO
-C
+
 C *********************************************************************
 C ****          DETERMINE MIXING LENGTHS FOR STABLE LAYERS          ***
 C *********************************************************************
-C
+
       IF(INIT.EQ.1) GOTO 1400
-C
+
       IF(LMINQ.GT.1) THEN
                     ISTLMQ = irun * LMINQ1
-c     DO 160 I  = 1,ISTLMQ
-c     INT2(I,1) = 1 - INT1(I,1)
-c 160 CONTINUE
       DO L =1,LMINQ1
        DO I =1,irun
         INT2(I,L) = 1 - INT1(I,L)
@@ -4023,17 +3575,6 @@ c 160 CONTINUE
       ENDIF
       IF(LMINQ.LT.NLEV) THEN
         ISTNMQ = irun * (NLEV-LMINQ)
-c     DO 170 I = 1,ISTNMQ
-c     IF( INT1(I,LMINQ).EQ.0 ) THEN
-c          XL0(I,LMINQ) =         Q(I,LMINQ) / XL0(I,LMINQ)
-c          XL0(I,LMINQ) =       XL0(I,LMINQ) * XL0(I,LMINQ) + 1.0E-20
-c          XL0(I,LMINQ) =    STBFCN(I,LMINQ) + XL0(I,LMINQ)
-c          XL0(I,LMINQ) = SQRT( XL0(I,LMINQ) )
-c          XL0(I,LMINQ) =         Q(I,LMINQ) / XL0(I,LMINQ)
-c     ENDIF
-c                                  INT2(I,LMINQ)  = 0
-c     IF( XL0(I,LMINQ).LT.XL0MIN ) INT2(I,LMINQ)  = 1
-c 170 CONTINUE
        DO L =LMINQ,NLEVM1
         DO I =1,irun
          IF( INT1(I,L).EQ.0 ) THEN
@@ -4048,13 +3589,10 @@ c 170 CONTINUE
         ENDDO
        ENDDO
       ENDIF
-C
+
  1200 CONTINUE
-C
+
       IF(INIT.EQ.2) THEN
-c     DO 180 I = 1,ISTNM1
-c     INT2(I,1) = 1 - INT1(I,1)
-c 180 CONTINUE
        DO L =1,NLEVM1
         DO I =1,irun
          INT2(I,L) = 1 - INT1(I,L)
@@ -4062,45 +3600,30 @@ c 180 CONTINUE
         ENDDO
        ENDDO
       ENDIF
-c     DO 190 I = 1,ISTNM1
-c     IF( INT2(I,1).EQ.1 ) XL0(I,1) = XL0MIN
-c 190 CONTINUE
       DO L =1,NLEVM1
        DO I =1,irun
         IF ( INT2(I,L).EQ.1 ) XL0(I,L) = XL0MIN
        ENDDO
       ENDDO
-C
+
 C *********************************************************************
 C ****             LENGTH SCALE XL FROM XL0 AND VKZE              ****
 C *********************************************************************
-C
+
  1400 CONTINUE
-C
-c     DO 200 I = 1,ISTNM1
-c     XL(I,1) = XL0(I,1) * VKZE(I,1) / ( XL0(I,1)+VKZE(I,1) )
-c 200 CONTINUE
+
       DO L =1,NLEVM1
        DO I =1,irun
         XL(I,L) = XL0(I,L) * VKZE(I,L) / ( XL0(I,L)+VKZE(I,L) )
        ENDDO
       ENDDO
-C
+
 C *********************************************************************
 C ****       CLMT53 TIMES Q TIMES LENGTH SCALE AT MID LEVELS        ***
 C *********************************************************************
-C
+
       IF(INIT.EQ.1) GOTO 1700
                    ISTNMQ = irun * (NLEV-LMINQ1)
-c     DO 210 I = 1,ISTNMQ
-c                                             Q1(I,LMINQ1) = Q(I,LMINQ1)
-c                                           INT1(I,LMINQ1) = 0
-c     IF(    Q(I,LMINQ1).LE.Q(I,LMINQ1+1) ) INT1(I,LMINQ1) = 1
-c     IF( INT1(I,LMINQ1).EQ.1 )  THEN
-c          XL0(I,LMINQ1) = XL0(I,LMINQ1+1)
-c           Q1(I,LMINQ1) =   Q(I,LMINQ1+1)
-c     ENDIF
-c 210 CONTINUE
       DO L =LMINQ1,NLEVM1
        DO I =1,irun
         Q1(I,L) = Q(I,L)
@@ -4112,32 +3635,28 @@ c 210 CONTINUE
         ENDIF
        ENDDO
       ENDDO
-C
-c     DO 240 I = 1,ISTNMQ
-c     QXLM(I,LMINQ1) =   XL0(I,LMINQ1)*VKZM(I,LMINQ1)
-c    .               / ( XL0(I,LMINQ1)+VKZM(I,LMINQ1) )
-c     QXLM(I,LMINQ1) = CLMT53 * Q1(I,LMINQ1)*QXLM(I,LMINQ1)
-c 240 CONTINUE
+
       DO L =LMINQ1,NLEVM1
        DO I =1,irun
         QXLM(I,L) =   XL0(I,L)*VKZM(I,L)
-     .                 / ( XL0(I,L)+VKZM(I,L) )
+     &                 / ( XL0(I,L)+VKZM(I,L) )
         QXLM(I,L) = CLMT53 * Q1(I,L)*QXLM(I,L)
        ENDDO
       ENDDO
-C
+
  1700 CONTINUE
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE TRBITP ( STBFCN,INTCHG,DTHV,DPK,DU,DV,DZITRP,NLEV,
-     .                    AAA,BBB,CCC,DDD,CP,irun )
+     &                    AAA,BBB,CCC,DDD,CP,irun )
 C**********************************************************************
-C
 C  SUBROUTINE TRBITP - INTERPOLATES TO THE HEIGHT WHERE RI EQUALS RICR
 C                    - CALLED FROM TRBLEN
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    STBFCN        -         DTHV * DPK - RICR*( DU*DU + DV*DV)
@@ -4147,11 +3666,9 @@ C    DPK           -         VERTICAL GRADIENT OF PK
 C    DU            -         VERTICAL GRADIENT OF U
 C    DV            -         VERTICAL GRADIENT OF V
 C    NLEV          -         NUMBER OF LEVELS TO BE PROCESSED
-C
 C     OUTPUT:
 C     -------
 C    DZITRP        -         INTERPOLATION COEFFICIENT
-C
 C**********************************************************************
       implicit none
 
@@ -4178,81 +3695,56 @@ C Local Variables
 
       integer istnlv
       integer I,L
-C
+
 C *********************************************************************
 C ****           QUADRATIC INTERPOLATION OF RI TO RICR VIA          ***
 C ****           LINEAR INTERPOLATION OF DTHV, DPK, DU & DV         ***
 C *********************************************************************
-C
+
       ISTNLV = irun*NLEV
-c     DO 10 I=1,ISTNLV
-c     DZITRP(I,1) = 0.
-c  10 CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         DZITRP(I,L) = 0.
        ENDDO
       ENDDO
-c     DO 20 I=1,ISTNLV
-c     IF( INTCHG(I,1).EQ.1 ) THEN
-c     DDD(I,1) = (         CP  *(DTHV(I,2)*DPK(I,1)
-c    .                         + DTHV(I,1)*DPK(I,2)) )
-c    .         - ( (2.*RICR)  * ( DU(I,2)* DU(I,1)
-c    .                         +   DV(I,2)* DV(I,1)) )
-c     AAA(I,1) = STBFCN(I,1) + STBFCN(I,2)
-c     BBB(I,1) = STBFCN(I,1) - STBFCN(I,2)
-c     CCC(I,1) =            1. / BBB(I,1)
-c     DZITRP(I,1) = AAA(I,1) * CCC(I,1)
-c        AAA(I,1) = AAA(I,1) - DDD(I,1)
-c        DDD(I,1) =        (   DDD(I,1) *    DDD(I,1) )
-c    .            - 4. * (STBFCN(I,2) * STBFCN(I,1) )
-c        DDD(I,1) = DDD(I,1)*CCC(I,1)*CCC(I,1)
-c        DDD(I,1) =    SQRT( DDD(I,1) )
-c     ENDIF
-C
-c     IF( INTCHG(I,1).EQ.1 .AND. AAA(I,1).NE.0. ) THEN
-c     DZITRP(I,1) = ( BBB(I,1)*(1.-DDD(I,1)) ) / AAA(I,1)
-c     ENDIF
-C
-c     DZITRP(I,1) = 0.5 * DZITRP(I,1)
-c  20 CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         IF ( INTCHG(I,L).EQ.1 ) THEN
          DDD(I,L) = (         CP  *(DTHV(I,L+1)*DPK(I,L)
-     .                            + DTHV(I,L)*DPK(I,L+1)) )
-     .            - ( (2.*RICR)  * ( DU(I,L+1)* DU(I,L)
-     .                            +   DV(I,L+1)* DV(I,L)) )
+     &                            + DTHV(I,L)*DPK(I,L+1)) )
+     &            - ( (2.*RICR)  * ( DU(I,L+1)* DU(I,L)
+     &                            +   DV(I,L+1)* DV(I,L)) )
          AAA(I,L) = STBFCN(I,L) + STBFCN(I,L+1)
          BBB(I,L) = STBFCN(I,L) - STBFCN(I,L+1)
          CCC(I,L) =            1. / BBB(I,L)
          DZITRP(I,L) = AAA(I,L) * CCC(I,L)
          AAA(I,L) = AAA(I,L) - DDD(I,L)
          DDD(I,L) =        (   DDD(I,L) *    DDD(I,L) )
-     .            - 4. * (STBFCN(I,L+1) * STBFCN(I,L) )
+     &            - 4. * (STBFCN(I,L+1) * STBFCN(I,L) )
          DDD(I,L) = DDD(I,L)*CCC(I,L)*CCC(I,L)
          DDD(I,L) =    SQRT( DDD(I,L) )
         ENDIF
-C
+
         IF( INTCHG(I,L).EQ.1 .AND. AAA(I,L).NE.0. ) THEN
          DZITRP(I,L) = ( BBB(I,L)*(1.-DDD(I,L)) ) / AAA(I,L)
         ENDIF
-C
+
         DZITRP(I,L) = 0.5 * DZITRP(I,L)
        ENDDO
       ENDDO
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE TRBL20 (RI,STRT,DW2,XL,ZKM,ZKH,QE,QQE,INTSTB,NLEV,
      1                        nlay,irun)
 C**********************************************************************
-C
 C  SUBROUTINE TRBL20 - COMPUTES QE AND DIMLESS COEFS FROM
 C                       MELLOR-YAMADA LEVEL 2 MODEL
 C                    - CALLED FROM AND FROM TRBFLX
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    RI            -         RICHARDSON NUMBER
@@ -4260,7 +3752,6 @@ C    STRT          -         BRUNT VAISALA FREQUENCY
 C    DW2           -         SQUARED SHEAR
 C    XL            -         TURBULENT LENGTH SCALE
 C    NLEV          -         NUMBER OF LEVELS TO BE PROCESSED
-C
 C     OUTPUT:
 C     -------
 C    ZKM           -         MOMENTUM TRANSPORT COEFFICIENT
@@ -4268,17 +3759,11 @@ C    ZKH           -         HEAT TRANSPORT COEFFICIENT
 C    QE            -         EQUILIBRIUM TURBULENT VELOCITY SCALE
 C    QQE           -         EQUILIBRIUM TURBULENT KINETIC ENERGY
 C    BITSTB        -         BIT '1' WHERE QE GREATER THAN ZERO
-C
 C**********************************************************************
       implicit none
 
 C Argument List Declarations
       integer nlev,nlay,irun
-c     _RL RI(irun,NLEV),STRT(irun,NLEV),DW2(irun,NLEV)
-c     _RL XL(irun,NLEV),ZKM(irun,NLEV),ZKH(irun,NLEV)
-c     _RL QE(irun,NLEV),QQE(irun,NLEV)
-c     INTEGER INTSTB(irun,nlev)
-c     _RL EE(irun,nlay-1),RF(irun,nlay-1)
       _RL RI(irun*NLEV,1),STRT(irun*NLEV,1),DW2(irun*NLEV,1)
       _RL XL(irun*NLEV,1),ZKM(irun*NLEV,1), ZKH(irun*NLEV,1)
       _RL QE(irun*NLEV,1),QQE(irun*NLEV,1)
@@ -4309,27 +3794,27 @@ C Local Variables
       integer i
 
       ISTNLV = irun * NLEV
-C
+
 C *********************************************************************
 C ****               COMPUTE FLUX RICHARDSON NUMBER                 ***
 C *********************************************************************
-C
+
       DO 10 I=1,ISTNLV
       EE(I,1) = D1HALF * RI(I,1) + D2HALF
       RF(I,1) = EE(I,1)* EE(I,1)
       RF(I,1) = RF(I,1)- D3*RI(I,1)
       RF(I,1) = SQRT( RF(I,1) )
       RF(I,1) = EE(I,1) - RF(I,1)
-C
+
       IF( RI(I,1).LE.1.e-4 .AND. RI(I,1).GE.-1.e-4 ) THEN
           RF(I,1) = D3B2*RI(I,1)
       ENDIF
-C
+
 C *********************************************************************
 C ****           QE AND DIMENSIONLESS DIFFUSION COEFICIENTS         ***
 C ****                   FROM LEVEL 2 CLOSURE MODEL                 ***
 C *********************************************************************
-C
+
       IF( RI(I,1).LT.RICR .AND. RF(I,1).LT.RFC ) THEN
       ZKH(I,1) =   ( RFC-RF(I,1) ) / (1.-RF(I,1))
       ZKM(I,1) =                CM * (RF1-RF(I,1))
@@ -4337,7 +3822,7 @@ C
       ZKH(I,1) = CH      *ZKH(I,1)
        QE(I,1) = ZKM(I,1)*DW2(I,1) - ZKH(I,1)*STRT(I,1)
       ENDIF
-C
+
       IF( QE(I,1).LT.1.e-14 ) THEN
       INTSTB(I,1) = 0
           QE(I,1) = 0.
@@ -4349,19 +3834,19 @@ C
       ENDIF
       QQE(I,1) = 0.5 * QE(I,1) * QE(I,1)
    10 CONTINUE
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE TRBL25(Q,XL,STRT,DW2,INTSTB,INTQ,ZKM,ZKH,P3,NLEV,
      1                      nlay,irun)
 C**********************************************************************
-C
 C  SUBROUTINE TRBL25 - COMPUTES P3 AND DIMLESS COEFS FROM
 C                       MELLOR-YAMADA LEVEL 2.5 MODEL
 C                    - CALLED FROM TRBFLX
-C
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    Q             -         TURBULENCE VELOCITY
@@ -4370,22 +3855,16 @@ C    STRT          -         BRUNT VAISALA FREQUENCY
 C    DW2           -         SQUARED SHEAR
 C    BITSTB        -         BIT '1' WHERE QE GREATER THAN ZERO
 C    NLEV          -         NUMBER OF LEVELS TO BE PROCESSED
-C
 C     OUTPUT:
 C     -------
 C    ZKM           -         MOMENTUM TRANSPORT COEFFICIENT
 C    ZKH           -         HEAT TRANSPORT COEFFICIENT
 C    P3            -         PRODUCTION RATE OF TURBULENT KINETIC ENERG
-C
 C**********************************************************************
       implicit none
 
 C Argument list Declarations
       integer nlev,nlay,irun
-c     _RL Q(irun,NLEV),XL(irun,NLEV),STRT(irun,NLEV)
-c     _RL DW2(irun,NLEV)
-c     INTEGER INTSTB(irun,nlay), INTQ(irun,nlay)
-c     _RL ZKM(irun,NLEV),ZKH(irun,NLEV),P3(irun,NLEV)
       _RL Q(irun*NLEV,1),XL(irun*NLEV,1),STRT(irun*NLEV,1)
       _RL DW2(irun*NLEV,1)
       INTEGER INTSTB(irun*nlay,1), INTQ(irun*nlay,1)
@@ -4411,14 +3890,14 @@ C Local Variables
 
       integer istnlv
       integer i
-C
+
       ISTNLV = irun * NLEV
-C
+
 C *********************************************************************
 C ****           P3 AND DIMENSIONLESS DIFFUSION COEFICIENTS         ***
 C ****                  FROM LEVEL 2.5 CLOSURE MODEL                ***
 C *********************************************************************
-C
+
       DO 10 I=1,ISTNLV
       IF( INTQ(I,1).EQ.1 .AND. INTSTB(I,1).EQ.0 ) THEN
         XQ(I,1) = XL(I,1)  /      Q(I,1)
@@ -4429,28 +3908,29 @@ C
         F3(I,1) = 1.+FF3  *   STRT(I,1)
         F4(I,1) = 1.+FF4  *   STRT(I,1)
        ZKH(I,1) = (F4(I,1) *     F2(I,1))
-     .     + A4 * (F3(I,1) *    DW2(I,1))
+     &     + A4 * (F3(I,1) *    DW2(I,1))
        ZKH(I,1) = (F2(I,1) + A3*DW2(I,1))
-     .          / ZKH(I,1)
+     &          / ZKH(I,1)
        ZKM(I,1) = A1 * (F3(I,1)*ZKH(I,1)+A5)
-     .               /  F2(I,1)
+     &               /  F2(I,1)
        ZKH(I,1) = A2 * ZKH(I,1)
         P3(I,1) = ZKH(I,1)*STRT(I,1) + B3
         P3(I,1) = 2. * ( ZKM(I,1)*DW2(I,1) - P3(I,1) )
         P3(I,1) = P3(I,1)*Q(I,1)
-C
+
       ENDIF
    10 CONTINUE
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE TRBDIF ( XX1,XX2,RHOKDZ,FLXFAC,DXX1G,DXX2G,NLEV,
-     .                    ITYPE,EPSL,irun )
-C
+     &                    ITYPE,EPSL,irun )
+
 C**********************************************************************
-C
 C   ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    XX1           -         FIRST PROPERTY TO BE DIFFUSED
@@ -4472,14 +3952,12 @@ C                              2 = TH OR SH: COMPUTE TENDENCY DUE TO
 C                                  SURFACE PERTURBATION
 C                              3 = U AND V: COMPUTE BOTH FIELDS
 C    EPSL          -         UNDERFLOW CUTOFF CRITERION (QQ ONLY)
-C
 C     OUTPUT:
 C     ------
 C    XX1           -         NEW VALUE RETURNED
 C    XX2           -         NEW VALUE RETURNED
 C    DXX1G         -         SOURCE TERM FOR XX1 AT GROUND
 C    DXX1G         -         SOURCE TERM FOR XX2 AT GROUND
-C
 C**********************************************************************
       implicit none
 
@@ -4489,91 +3967,76 @@ C Argument List Declarations
       _RL RHOKDZ(irun,NLEV),FLXFAC(irun,NLEV+1)
       _RL DXX1G(irun),DXX2G(irun)
       _RL epsl
-C
+
       _RL AA(irun,nlev), BB(irun,nlev), CC(irun,nlev+1)
-c     integer istnlv,istnm1,nlevp1,istnlx
       integer NLEVP1,NLEVX
       integer I,L
-C
-c     ISTNLV = irun * NLEV
-c     ISTNM1 = ISTNLV - irun
+
       NLEVP1 = NLEV + 1
-c     ISTNLX = ISTNM1
-c     IF(ITYPE.EQ.2) ISTNLX = ISTNLV
       NLEVX =  NLEV - 1
       IF(ITYPE.EQ.2) NLEVX =  NLEV
-C
+
 C   DEFINE MATRIX
-C
+
       DO 10 I=1,irun
       CC(I,1) = 0.
    10 CONTINUE
-c     DO 20 I=1,ISTNLX
-c     CC(I,2) = RHOKDZ(I,1) * FLXFAC(I,2)
-c  20 CONTINUE
       DO L =1,NLEVX
        DO I =1,irun
         CC(I,L+1) = RHOKDZ(I,L) * FLXFAC(I,L+1)
        ENDDO
       ENDDO
-c     DO 30 I=1,ISTNLV
-c     BB(I,1) =   RHOKDZ(I,1) * FLXFAC(I,1)
-c     AA(I,1) = 1. + CC(I,1) + BB(I,1)
-c  30 CONTINUE
       DO L =1,NLEV
        DO I =1,irun
         BB(I,L) =   RHOKDZ(I,L) * FLXFAC(I,L)
         AA(I,L) = 1. + CC(I,L) + BB(I,L)
        ENDDO
       ENDDO
-C
+
 C     ADD IMPLICIT BACKWARD FORCING FOR QQ
       IF(ITYPE.EQ.1) THEN
-c     DO 40 I=1,ISTNLV
-c     AA(I,1) = AA(I,1) - XX2(I,1)
-c  40 CONTINUE
        DO L =1,NLEV
         DO I =1,irun
          AA(I,L) = AA(I,L) - XX2(I,L)
         ENDDO
        ENDDO
       ENDIF
-C
+
 C     SOLVE MATRIX EQUATION FOR XX1
       CALL VTRI0(AA,BB,CC,XX1,XX1,NLEV,irun)
-C
+
       IF(ITYPE.EQ.2) THEN
 C     COMPUTE CHANGE AT SURFACE
-C
+
       DO 50 I=1,irun
       DXX1G(I) = CC(I,NLEVP1) * ( XX1(I,NLEV)-XX1(I,NLEVP1) )
    50 CONTINUE
-C
+
 C     SOLVE MATRIX FOR SURFACE PERTURBATION
       CALL VTRI1(AA,BB,XX2,NLEV,irun)
       DO 60 I=1,irun
       DXX2G(I) = CC(I,NLEVP1) * ( XX2(I,NLEV)-XX2(I,NLEVP1) )
    60 CONTINUE
       ENDIF
-C
+
 C     SOLVE MATRIX EQUATION FOR XX2
-C
+
       IF(ITYPE.EQ.3) CALL VTRI2 (AA,BB,CC,XX2,XX2,NLEV,irun)
-C
+
 C     ELIMINATE UNDERFLOW
       IF(ITYPE.EQ.1) THEN
-c     DO 70 I=1,ISTNLV
-c     IF( XX1(I,1).LT.EPSL ) XX1(I,1) = 0.
-c  70 CONTINUE
        DO L =1,NLEV
         DO I =1,irun
          IF ( XX1(I,L).LT.EPSL ) XX1(I,L) = 0.
         ENDDO
        ENDDO
       ENDIF
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE VTRI0 ( A,B,C,F,Y,K,irun)
       implicit none
 
@@ -4582,11 +4045,11 @@ C
       _RL F(irun,K)
 
       integer i,L,Lm1
-C
+
       DO 9000 I = 1,irun
        A(I,1) = 1. / A(I,1)
  9000 CONTINUE
-C
+
       DO 100 L = 2,K
        LM1 = L - 1
        DO 9002 I = 1,irun
@@ -4595,16 +4058,18 @@ C
         F(I,L) = F(I,L) + F(I,LM1) * C(I,L)
  9002  CONTINUE
  100  CONTINUE
-C
+
       DO 200 L = K,1,-1
        DO 9004 I = 1,irun
        Y(I,L) = (F(I,L) + B(I,L) * Y(I,L+1)) * A(I,L)
  9004  CONTINUE
  200  CONTINUE
-C
+
       RETURN
       END
-C
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE VTRI1 ( A,B,Y,K,irun)
       implicit none
 
@@ -4612,16 +4077,18 @@ C
       _RL A(irun,K),B(irun,K),Y(irun,K+1)
 
       integer i,L
-C
+
       DO 200 L = K,1,-1
        DO 9000 I = 1,irun
         Y(I,L) = B(I,L) * Y(I,L+1) * A(I,L)
  9000  CONTINUE
  200  CONTINUE
-C
+
       RETURN
       END
-C
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE VTRI2 ( A,B,C,F,Y,K,irun)
       implicit none
 
@@ -4630,32 +4097,33 @@ C
       _RL Y(irun,K+1)
 
       integer i,L
-C
+
       DO 100 L = 2,K
        DO 9000 I = 1,irun
         F(I,L) = F(I,L) + F(I,L-1) * C(I,L)
  9000  CONTINUE
  100  CONTINUE
-C
+
       DO 200 L = K,1,-1
        DO 9002 I = 1,irun
         Y(I,L) = (F(I,L) + B(I,L) * Y(I,L+1)) *  A(I,L)
  9002  CONTINUE
  200  CONTINUE
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE LINADJ ( NN,VRIB1,VRIB2,VWS1,VWS2,VZ1,VUSTAR,IWATER,
      1 VAPSIM, VAPSIHG,VPSIH,VPSIG,VX,VX0,VY,VY0,ITYPE,LWATER,IRUN,
      2 VDZETA,VDZ0,VDPSIM,VDPSIH,INTRIB,
      3 VX0PSIM,VG,VG0,VR1MG0,VZ2,VDZSEA,VAZ0,VXNUM1,VPSIGB2,VDX,
      4 VDXPSIM,VDY,VXNUM2,VDEN,VAWS1,VXNUM3,VXNUM,VDZETA1,VDZETA2,
      5 VZCOEF2,VZCOEF1,VTEMPLIN,VDPSIMC,VDPSIHC)
-C
+
 C**********************************************************************
-C
 C  ARGUMENTS ::
-C
 C     INPUT:
 C     ------
 C    RIB1          -         BULK RICHARDSON NUMBER OF INPUT STATE
@@ -4680,7 +4148,6 @@ C                               3 - 5 = ADJUSTMENT INSIDE LOOP
 C                               4 - 5 = ADJUST CU AND CT
 C                               5 = PREPARATION FOR ITYPE = 2
 C    LWATER        -         LOGICAL - .TRUE. IF THERE ARE WATER POINTS
-C
 C     OUTPUT:
 C     -------
 C    DZETA         -         D LOG ZETA
@@ -4688,7 +4155,6 @@ C    DZ0           -         D Z0 (ITYPE 1) OR D LOG Z0 (ITYPE 2-5)
 C    DPSIM         -         D PSIM
 C    DPSIH         -         D PSIH
 C    BITRIB        -         BIT ARRAY - '1' WHERE RIB1 = 0
-C
 C**********************************************************************
       implicit none
 
@@ -4725,14 +4191,14 @@ C Local Variables
       integer VINT1(irun),VINT2(irun)
       _RL getcon,vk,bmdl,b2uhs
       integer i
-C
+
       vk = getcon('VON KARMAN')
       BMDL    = VK * XPFAC * PRFAC / DIFSQT
       B2UHS   = BMDL * BMDL * USTH0S
 
 C   COMPUTE X0/PSIM, 1/Z0, G, G0, 1/(1-G0),
 C     DEL LOG Z0, D LOG ZO / D USTAR
-C
+
 CCCOOOMMMM ADDED 'WHERE WATER'
       IF ( (ITYPE.EQ.1) .AND. LWATER ) THEN
        DO 9000 I = 1,IRUN
@@ -4745,17 +4211,17 @@ CCCOOOMMMM ADDED 'WHERE WATER'
  9002  CONTINUE
       ENDIF
       IF ( ITYPE .NE. 2 ) THEN
-C
+
        DO 9004 I = 1,IRUN
         VDZ0(I) = 0.
         VG(I) = 0.
         VG0(I) = 0.
         VR1MG0(I) = 1.
  9004  CONTINUE
-C
+
        IF ( LWATER ) THEN
         CALL ZCSUB ( VUSTAR,VDZSEA,IWATER,.TRUE.,IRUN,VZ2)
-C
+
         DO 9006 I = 1,IRUN
          IF ( IWATER(I).EQ.1) THEN
           VAZ0(I) = 1. / VZ1(I)
@@ -4767,15 +4233,15 @@ C
  9006   CONTINUE
        ENDIF
       ENDIF
-C
+
       IF ( LWATER .AND. (ITYPE.GE.3) ) THEN
        DO 9008 I = 1,IRUN
         IF (IWATER(I).EQ.1) VDZ0(I) = VDZ0(I) * VAZ0(I)
  9008  CONTINUE
       ENDIF
-C
+
 C   COMPUTE NUM1,NUM2,NUM3, DEN
-C
+
       IF (ITYPE.GE.3) THEN
        DO 9010 I = 1,IRUN
         VXNUM1(I) = 0.
@@ -4792,7 +4258,7 @@ C
         VDXPSIM(I) = VDX(I) * VAPSIM(I)
         VDY(I) = VY(I) - VY0(I)
         VXNUM3(I) = - VPSIGB2(I)
-C
+
         IF ( LWATER ) THEN
 CCCOOOMMMM ADDED 'WHERE WATER'
          IF (IWATER(I).EQ.1) THEN
@@ -4803,17 +4269,17 @@ CCCOOOMMMM ADDED 'WHERE WATER'
           VXNUM2(I) = VXNUM2(I) * VDZ0(I)
          ENDIF
         ENDIF
-C
+
         VDEN(I) = VDY(I) + VDXPSIM(I) * VXNUM3(I)
         VDEN(I) = ( 1. + VDEN(I) * VAPSIHG(I) ) - 2. * VDXPSIM(I)
  9010  CONTINUE
       ENDIF
-C
+
       IF (ITYPE.EQ.5) THEN
        DO 9012 I = 1,IRUN
         VAWS1(I) = VR1MG0(I) / VWS1(I)
         VXNUM3(I) = VXNUM3(I) * VAPSIHG(I)
-C
+
         IF ( LWATER ) THEN
 CCCOOOMMMM ADDED 'WHERE WATER'
          IF(IWATER(I).EQ.1) THEN
@@ -4823,9 +4289,9 @@ CCCOOOMMMM ADDED 'WHERE WATER'
         ENDIF
  9012  CONTINUE
       ENDIF
-C
+
 C   COMPUTE D LOG ZETA
-C
+
       IF (ITYPE.GE.2) THEN
        DO 9014 I = 1,IRUN
         VXNUM(I) = VRIB2(I) - VRIB1(I)
@@ -4833,14 +4299,14 @@ C
         VXNUM(I) = VXNUM1(I) * VXNUM(I)
  9014  CONTINUE
       ENDIF
-C
+
       IF ( ITYPE.EQ.2 )THEN
        DO 9016 I = 1,IRUN
         VDZETA1(I) = VDZETA(I)
         VXNUM(I) = VXNUM(I) + VXNUM3(I) * ( VWS2(I) - VWS1(I) )
  9016  CONTINUE
       ENDIF
-C
+
       IF (ITYPE.GE.3) THEN
        DO 9018 I = 1,IRUN
         VDZETA1(I) = VXNUM(I)
@@ -4848,7 +4314,7 @@ C
         IF ( VDEN(I) .LT.0.1 ) VDEN(I) = 0.1
  9018  CONTINUE
       ENDIF
-C
+
       IF (ITYPE.GE.2) THEN
        DO 9020 I = 1,IRUN
         VDZETA(I) = VXNUM(I) / VDEN(I)
@@ -4876,9 +4342,8 @@ C
  9024  CONTINUE
       ENDIF
 
-C
 C   COMPUTE D LOG Z0
-C
+
       IF ( LWATER .AND. (ITYPE.GE.3) )THEN
        DO 9026 I = 1,IRUN
         IF( IWATER(I).EQ.1 ) THEN
@@ -4887,22 +4352,22 @@ C
         ENDIF
  9026  CONTINUE
       ENDIF
-C
+
       IF ( LWATER .AND. (ITYPE.EQ.5) ) THEN
        DO 9028 I = 1,IRUN
         IF(IWATER(I).EQ.1) VZCOEF1(I) = VG(I) * VAWS1(I)
  9028  CONTINUE
       ENDIF
-C
+
       IF ( LWATER .AND. (ITYPE.EQ.2) ) THEN
        DO 9030 I = 1,IRUN
         IF (IWATER(I).EQ.1) VDZ0(I) =
      1   VZCOEF1(I) * ( VWS2(I) - VWS1(I) ) - VZCOEF2(I) * VDZETA(I)
  9030  CONTINUE
       ENDIF
-C
+
 C   CALCULATE D PSIM AND D PSIH
-C
+
       IF ( (ITYPE.EQ.1) .AND. LWATER ) THEN
        DO 9032 I = 1,IRUN
         IF (IWATER(I).EQ.1) THEN
@@ -4911,7 +4376,7 @@ C
         ENDIF
  9032  CONTINUE
       ENDIF
-C
+
       IF (ITYPE.GE.3) THEN
        DO 9034 I = 1,IRUN
         VDPSIM(I) = VDX(I) * VDZETA(I)
@@ -4924,9 +4389,9 @@ C
         ENDIF
  9034  CONTINUE
       ENDIF
-C
+
 C   PREVENT OVERCORRECTION OF PSIM OR PSIH FOR UNSTABLE CASE
-C
+
       IF (ITYPE.GE.4) THEN
        DO 9036 I = 1,IRUN
         VDPSIMC(I) = -0.9 - VDPSIM(I) * VAPSIM(I)
@@ -4958,9 +4423,12 @@ C
         ENDIF
  9036  CONTINUE
       ENDIF
-C
+
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE ZCSUB (VUSTAR,VDZSEA,IWATER,LDZSEA,IRUN,VZSEA)
 C**********************************************************************
 C  FUNCTION ZSEA
@@ -5008,11 +4476,11 @@ C Local Variables
      1         0.784260E-04/
       DATA AA4/-0.343228E-04,0.552305E-03,-0.167541E-02,0.250208E-02,
      1         -0.153259E-03/
-C
+
 C**********************************************************************
 C*****              LOWER CUTOFF CONDITION FOR USTAR                ***
 C**********************************************************************
-C
+
       DO 9000 I = 1,IRUN
        IF(VUSTAR(I) .LT. 1.e-6)THEN
         INT3(I) = 1
@@ -5023,11 +4491,11 @@ C
       DO 9002 I = 1,IRUN
        IF(INT3(I).EQ.1) VUSTAR(I) = 1.e-6
  9002 CONTINUE
-C
+
 C***********************************
 C*****  LOAD THE ARRAY A(I,K)  *****
 C***********************************
-C
+
       DO 9004 I = 1,IRUN
        IF( (VUSTAR(I) .GT. USTMX1) .AND. (IWATER(I).EQ.1) ) THEN
         INT4(I) = 1
@@ -5049,7 +4517,7 @@ C
         INT2(I) = 0
        ENDIF
  9008 CONTINUE
-C
+
       DO 100 K=1,5
        DO 9010 I = 1,IRUN
         AA(I,K) = AA1(K)
@@ -5058,38 +4526,40 @@ C
         IF( INT4(I).EQ.1 )  AA(I,K) = AA4(K)
  9010  CONTINUE
   100 CONTINUE
-C
+
 C********************************************************
 C*****  EVALUATE THE ENHANCED POLYNOMIAL FOR ZSEA  *****
 C********************************************************
-C
+
       DO 9012 I = 1,IRUN
        VDZSEA(I)  =  ( AA(I,4) + AA(I,5) * VUSTAR(I) ) * VUSTAR(I)
        VZSEA(I)  =  AA(I,2) + ( AA(I,3) + VDZSEA(I) ) * VUSTAR(I)
        TEMP(I) = AA(I,1) / VUSTAR(I)
        VZSEA(I)  =  VZSEA(I) + TEMP(I)
  9012 CONTINUE
-C
+
 C**********************************************************************
 C*****        EVALUATE THE DERIVATIVE DZSEA IF LDZSEA IS TRUE       ***
 C**********************************************************************
-C
+
       IF( LDZSEA ) THEN
        DO 9014 I = 1,IRUN
         VDZSEA(I)  =  3. * VDZSEA(I) -(AA(I,4)*VUSTAR(I) - AA(I,3))
         VDZSEA(I)  =  VDZSEA(I) * VUSTAR(I) - TEMP(I)
  9014  CONTINUE
       ENDIF
-C
+
       RETURN
       END
 
-      subroutine seaice ( nocean, timstp, hice,
-     .                     eturb,  dedtc,
-     .                    hsturb, dhsdtc,
-     .                      qice,  dqice,
-     .                     swnet,  lwnet, dst4,
-     .                       pke,  seaic, tc, qa )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE SEAICE ( nocean, timstp, hice,
+     &                     eturb,  dedtc,
+     &                    hsturb, dhsdtc,
+     &                      qice,  dqice,
+     &                     swnet,  lwnet, dst4,
+     &                       pke,  seaic, tc, qa )
       implicit none
       integer  nocean
       _RL timstp
@@ -5116,7 +4586,7 @@ C ----------------
       do i =1,nocean
        if( seaic(i).gt.0.0 ) then
         deltg = ( swnet(i)-lwnet(i)-latent*eturb(i)-hsturb(i)+qice(i) )
-     .          / ( codt+dst4(i)+latent*dedtc(i)+dhsdtc(i)-dqice(i) )
+     &          / ( codt+dst4(i)+latent*dedtc(i)+dhsdtc(i)-dqice(i) )
         qa(i) = qa(i) + (faceps*qa(i)/(tc(i)*tc(i)))*deltg
         tc(i) = tc(i) + deltg
        endif
