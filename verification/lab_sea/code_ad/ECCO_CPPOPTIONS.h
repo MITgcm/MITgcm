@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.10 2012/01/17 15:36:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2012/03/23 15:03:42 heimbach Exp $
 C $Name:  $
 
 C
@@ -11,7 +11,7 @@ C ********************************************************************
 C
 
 cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
-#define  SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
+cph#define  SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
 cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 
 cph#define  ALLOW_ECCO_FORWARD_RUN
@@ -87,7 +87,7 @@ C       >>> Cost function contributions
 # define ALLOW_THETA_COST_CONTRIBUTION
 # define ALLOW_SALT_COST_CONTRIBUTION
 # define ALLOW_SST_COST_CONTRIBUTION
-# undef ALLOW_SSS_COST_CONTRIBUTION
+# define ALLOW_SSS_COST_CONTRIBUTION
 
 # define ALLOW_SSH_MEAN_COST_CONTRIBUTION
 # define ALLOW_SSH_TPANOM_COST_CONTRIBUTION
@@ -167,6 +167,10 @@ C       >>> seaice init. conditions
 #define  ALLOW_SIAREA_CONTROL
 #define  ALLOW_SIHEFF_CONTROL
 #undef  ALLOW_SIHSNOW_CONTROL
+
+C       >>> relaxation terms
+#define  ALLOW_SST_CONTROL
+#define  ALLOW_SSS_CONTROL
 
 C       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined
