@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#PBS -q four
+#PBS -q one
 #PBS -N tst_mp2
 #PBS -l nodes=1:ppn=6
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.8 2012/01/21 15:09:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.9 2012/03/23 21:09:55 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then

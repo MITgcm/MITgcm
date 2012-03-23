@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#PBS -q four
+#PBS -q one
 #PBS -N tst_tuv
 #PBS -l nodes=1:ppn=2
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_tuv.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.6 2012/03/04 21:40:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.7 2012/03/23 21:09:55 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then

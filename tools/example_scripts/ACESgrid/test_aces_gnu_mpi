@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#PBS -q four
+#PBS -q one
 #PBS -N tst_gnu
 #PBS -l nodes=1:ppn=6
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_gnu.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.6 2011/11/03 17:37:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.7 2012/03/23 21:09:55 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -88,9 +88,9 @@ else
   exit
 fi
 
-# avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
+# fizhi-cs-32 & aqualev will not compile because of option "-r8" (genmake_local)
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
- -skd fizhi-cs-32x32x40
+ -skd 'fizhi-cs-32x32x40 fizhi-cs-aqualev20'
 ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
- -skd fizhi-cs-32x32x40
+ -skd 'fizhi-cs-32x32x40 fizhi-cs-aqualev20'
 
