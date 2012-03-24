@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.59 2011/12/01 14:30:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.60 2012/03/24 20:53:36 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -307,6 +307,37 @@ C--   Check parameter consistency :
      &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+C     Overlaps cannot be larger than interior tile except for special
+C     cases
+      IF ( sNx.LT.OLx ) THEN
+#ifdef ALLOW_EXCH2
+       WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: sNx<OLx not allowed with ALLOW_EXCH2 defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+#endif /* ALLOW_EXCH2 */
+       IF ( Nx.NE.1 ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: sNx<OLx not allowed unless Nx=1'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+      ENDIF
+      IF ( sNy.LT.OLy ) THEN
+#ifdef ALLOW_EXCH2
+       WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: sNy<OLy not allowed with ALLOW_EXCH2 defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+#endif /* ALLOW_EXCH2 */
+       IF ( Ny.NE.1 ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: sNy<OLy not allowed unless Ny=1'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
       ENDIF
 
 C--   Deep-Atmosphere & Anelastic limitations:
