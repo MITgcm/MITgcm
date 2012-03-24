@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1634 2012/03/23 15:05:31 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1635 2012/03/24 20:53:47 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/config_check.F: add a check for OLx>sNx/OLy>sNy
 o verification/lab_sea
   * #undef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
   * #define ALLOW_SST_CONTROL & ALLOW_SST_CONTROL
