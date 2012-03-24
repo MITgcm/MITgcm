@@ -5,6 +5,7 @@
 # *********************
  &CTRL_NML
 # doSinglePrecTapelev=.TRUE.,
+# 
  xx_theta_file      ='xx_theta',
  xx_salt_file       ='xx_salt',
  xx_siarea_file     ='xx_siarea',
@@ -90,6 +91,17 @@
  xx_vwindstartdate2 = 000000,
  xx_vwindperiod     = 864000.0,
  xx_vwind_file      = 'xx_vwind',
+#
+ xx_sststartdate1 = 19790101,
+ xx_sststartdate2 = 000000,
+ xx_sstperiod     = 864000.0,
+ xx_sst_file      = 'xx_sst',
+#
+ xx_sssstartdate1 = 19790101,
+ xx_sssstartdate2 = 000000,
+ xx_sssperiod     = 864000.0,
+ xx_sss_file      = 'xx_sss',
+#
  &
 #
 # *********************
