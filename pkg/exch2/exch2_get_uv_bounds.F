@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_get_uv_bounds.F,v 1.2 2009/05/30 21:22:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_get_uv_bounds.F,v 1.3 2012/03/26 19:13:15 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -6,7 +6,7 @@ C     !ROUTINE: EXCH2_GET_UV_BOUNDS
 
 C     !INTERFACE:
       SUBROUTINE EXCH2_GET_UV_BOUNDS(
-     I                 fCode, eWdth,
+     I                 fCode, eWdth, updateCorners,
      I                 tgTile, tgNb,
      O                 tIlo1, tIhi1, tJlo1, tJhi1,
      O                 tIlo2, tIhi2, tJlo2, tJhi2,
@@ -47,7 +47,7 @@ C     myThid        :: my Thread Id. number
 
       CHARACTER*2 fCode
       INTEGER     eWdth
-c     LOGICAL     updateCorners
+      LOGICAL     updateCorners
       INTEGER     tgTile, tgNb
       INTEGER     tIlo1, tIhi1, tJlo1, tJhi1
       INTEGER     tIlo2, tIhi2, tJlo2, tJhi2
@@ -92,8 +92,13 @@ C      Filling a west edge overlap
        ELSE
         tjStride=-1
        ENDIF
+       IF ( updateCorners ) THEN
         tJlo1 = tJlo-tjStride*(eWdth-1)
         tJhi1 = tJhi+tjStride*(eWdth-1)
+       ELSE
+        tJlo1 = tJlo+tjStride
+        tJhi1 = tJhi-tjStride
+       ENDIF
       ENDIF
       IF ( tIlo.EQ.tIhi .AND. tIlo.GT.1 ) THEN
 C      Filling an east edge overlap
@@ -105,8 +110,13 @@ C      Filling an east edge overlap
        ELSE
         tjStride =-1
        ENDIF
+       IF ( updateCorners ) THEN
         tJlo1 = tJlo-tjStride*(eWdth-1)
         tJhi1 = tJhi+tjStride*(eWdth-1)
+       ELSE
+        tJlo1 = tJlo+tjStride
+        tJhi1 = tJhi-tjStride
+       ENDIF
       ENDIF
       IF ( tJlo.EQ.tJhi .AND. tJlo.EQ.0 ) THEN
 C      Filling a south edge overlap
@@ -118,8 +128,13 @@ C      Filling a south edge overlap
        ELSE
         tiStride =-1
        ENDIF
+       IF ( updateCorners ) THEN
         tIlo1 = tIlo-tiStride*(eWdth-1)
         tIhi1 = tIhi+tiStride*(eWdth-1)
+       ELSE
+        tIlo1 = tIlo+tiStride
+        tIhi1 = tIhi-tiStride
+       ENDIF
       ENDIF
       IF ( tJlo.EQ.tJhi .AND. tJlo.GT.1 ) THEN
 C      Filling a north edge overlap
@@ -131,8 +146,13 @@ C      Filling a north edge overlap
        ELSE
         tiStride =-1
        ENDIF
+       IF ( updateCorners ) THEN
         tIlo1 = tIlo-tiStride*(eWdth-1)
         tIhi1 = tIhi+tiStride*(eWdth-1)
+       ELSE
+        tIlo1 = tIlo+tiStride
+        tIhi1 = tIhi-tiStride
+       ENDIF
       ENDIF
 
 C---  copy to 2nd set of indices
@@ -164,6 +184,10 @@ C     if pij(4) is -1 then +j in source aligns with -j in target
         IF ( e2_pij(4) .EQ. -1 ) THEN
          e2_oj2 = e2_oj2 + 1
         ENDIF
+
+C---  adjust index lower and upper bounds (fct of updateCorners):
+       IF ( updateCorners ) THEN
+
 C--   as a consequence, need also to increase the index lower bound
 C     (avoid "out-of bounds" problems ; formerly itlreduce,jtlreduce)
         IF ( e2_pij(1).EQ.-1 .OR. e2_pij(3).EQ.-1 ) tIlo1 = tIlo1+1
@@ -218,6 +242,18 @@ C-      North Edge is touching the face E edge
             tIhi2 = tIhi-1
           ENDIF
         ENDIF
+
+       ELSE
+C---  adjust index lower and upper bounds (updateCorners = F case):
+        IF ( e2_pij(1).EQ.-1 .OR. e2_pij(3).EQ.-1 ) THEN
+          tIlo1 = tIlo1+1
+          tIhi1 = tIhi1+1
+        ENDIF
+        IF ( e2_pij(2).EQ.-1 .OR. e2_pij(4).EQ.-1 ) THEN
+          tJlo2 = tJlo2+1
+          tJhi2 = tJhi2+1
+        ENDIF
+       ENDIF
 
 C---  UV C-Grid specific code: end
 

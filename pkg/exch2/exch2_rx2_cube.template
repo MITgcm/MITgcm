@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.15 2010/05/19 01:25:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.16 2012/03/26 19:13:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -79,6 +79,7 @@ C     Variables for working through W2 topology
       INTEGER tKlo, tKhi, tKStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
       INTEGER i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi
+      LOGICAL updateCorners
 
 #ifdef ALLOW_USE_MPI
       INTEGER iBufr1, iBufr2, nri, nrj
@@ -89,6 +90,7 @@ C     MPI stuff (should be in a routine call)
 #endif
 CEOP
 
+      updateCorners = cornerMode .EQ. EXCH_UPDATE_CORNERS
 C-    Tile size of arrays to exchange:
       i1Lo  = 1-myOLw
       i1Hi  = sNx+myOLe
@@ -124,7 +126,7 @@ C--   Post sends into buffer (buffer level 1):
      &      ' , oIs,oJs=', exch2_oi(N,thisTile), exch2_oj(N,thisTile)
 #endif
           CALL EXCH2_GET_UV_BOUNDS(
-     I               fieldCode, exchWidthX,
+     I               fieldCode, exchWidthX, updateCorners,
      I               farTile, oN,
      O               tIlo1, tIhi1, tJlo1, tJhi1,
      O               tIlo2, tIhi2, tJlo2, tJhi2,
@@ -201,7 +203,7 @@ C--   Receive data (in buffer, level 2) from source Process
 C-    Skip the call if this is an internal exchange
          IF ( W2_myCommFlag(N,bi,bj) .EQ. 'M' ) THEN
           CALL EXCH2_GET_UV_BOUNDS(
-     I               fieldCode, exchWidthX,
+     I               fieldCode, exchWidthX, updateCorners,
      I               thisTile, N,
      O               tIlo1, tIhi1, tJlo1, tJhi1,
      O               tIlo2, tIhi2, tJlo2, tJhi2,
@@ -273,7 +275,7 @@ C                     or level 2 if coming from an other Proc)
      &          exch2_jLo(N,thisTile), exch2_jHi(N,thisTile)
 #endif
           CALL EXCH2_GET_UV_BOUNDS(
-     I               fieldCode, exchWidthX,
+     I               fieldCode, exchWidthX, updateCorners,
      I               thisTile, N,
      O               tIlo1, tIhi1, tJlo1, tJhi1,
      O               tIlo2, tIhi2, tJlo2, tJhi2,
