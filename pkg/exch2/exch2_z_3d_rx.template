@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_z_3d_rx.template,v 1.6 2010/05/06 23:28:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_z_3d_rx.template,v 1.7 2012/03/26 19:43:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -89,7 +89,7 @@ C-     save 2 corners value (in case we find 1 "missing corner")
        CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_IGNORE_CORNERS, myThid )
        CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -108,7 +108,7 @@ C---     Face 2,4,6:
 C--      East edge : shift j <- j-1
           IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN
            DO k=1,myNz
-            DO j=sNy+OLy,2-Oly,-1
+            DO j=sNy+OLy,2-OLy,-1
              DO i=sNx+1,sNx+OLx
                phi(i,j,k,bi,bj)=phi(i,j-1,k,bi,bj)
              ENDDO
@@ -135,7 +135,7 @@ C--      South edge : shift i <- i-1
           IF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
            DO k=1,myNz
             DO j=1-OLy,0
-             DO i=sNx+OLx,2-Olx,-1
+             DO i=sNx+OLx,2-OLx,-1
                phi(i,j,k,bi,bj)=phi(i-1,j,k,bi,bj)
              ENDDO
             ENDDO
@@ -185,7 +185,7 @@ C--      North-west corner
                phi(i,j,k,bi,bj)=e2FillValue_RX
               ENDDO
              ENDDO
-             phi(1-Olx,sNy+1,k,bi,bj)=e2FillValue_RX
+             phi(1-OLx,sNy+1,k,bi,bj)=e2FillValue_RX
 #endif
            ENDDO
           ENDIF
@@ -196,8 +196,8 @@ C---     Face 1,3,5:
 C--      North edge : shift i <- i-1
           IF ( exch2_isNedge(myTile) .EQ. 1 ) THEN
            DO k=1,myNz
-            DO j=sNy+1,sNy+Oly
-             DO i=sNx+OLx,2-Olx,-1
+            DO j=sNy+1,sNy+OLy
+             DO i=sNx+OLx,2-OLx,-1
                phi(i,j,k,bi,bj)=phi(i-1,j,k,bi,bj)
              ENDDO
             ENDDO
@@ -222,8 +222,8 @@ C-       North-East corner
 C--      West edge : shift j <- j-1
           IF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
            DO k=1,myNz
-            DO j=sNy+OLy,2-Oly,-1
-             DO i=1-Olx,0
+            DO j=sNy+OLy,2-OLy,-1
+             DO i=1-OLx,0
                phi(i,j,k,bi,bj)=phi(i,j-1,k,bi,bj)
              ENDDO
             ENDDO
@@ -275,7 +275,7 @@ C-       South-East corner
                phi(i,j,k,bi,bj)=e2FillValue_RX
               ENDDO
              ENDDO
-             phi(sNx+1,1-Oly,k,bi,bj)=e2FillValue_RX
+             phi(sNx+1,1-OLy,k,bi,bj)=e2FillValue_RX
 #endif
             ENDDO
           ENDIF

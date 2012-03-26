@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.7 2010/05/06 23:28:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.8 2012/03/26 19:43:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -75,7 +75,7 @@ C--   First call the exchanges for the two components
        CALL EXCH2_RX1_CUBE( uPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_IGNORE_CORNERS, myThid )
        CALL EXCH2_RX1_CUBE( uPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -84,7 +84,7 @@ C--   First call the exchanges for the two components
        CALL EXCH2_RX1_CUBE( vPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_IGNORE_CORNERS, myThid )
        CALL EXCH2_RX1_CUBE( vPhi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,

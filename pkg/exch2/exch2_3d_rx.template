@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.6 2010/05/06 23:28:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.7 2012/03/26 19:43:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -59,7 +59,7 @@ CEOP
       CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            EXCH_UPDATE_CORNERS, myThid )
+     I            EXCH_IGNORE_CORNERS, myThid )
 
       CALL EXCH2_RX1_CUBE( phi, .FALSE., 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
