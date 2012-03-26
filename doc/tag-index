@@ -1,12 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1636 2012/03/26 01:47:07 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1637 2012/03/26 19:54:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - add argument "updateCorners" to S/R exch2_get_uv_bounds (enable to
+    activate EXCH_IGNORE_CORNERS in vector EXCH S/R).
+  - switch 1rst EXCH call to IGNORE_CORNERS (instead of UPDATE_CORNERS)
+    but keep the 2nd with UPDATE_CORNERS: this prevents overwriting good data
+    with bad ones coming from a not-yet-updated halo.
+    This should fix the problem when sNx <> sNy and GCD(sNx,sNy) < 2*Olx.
 o pkg/frazil:
-  move FrzForcT diag from frazil_diagnostics_state.F to frazil_calc_rhs.F
-  http://mitgcm.org/pipermail/mitgcm-devel/2012-March/005384.html
+    move FrzForcT diag from frazil_diagnostics_state.F to frazil_calc_rhs.F
+    http://mitgcm.org/pipermail/mitgcm-devel/2012-March/005384.html
 o model/src/config_check.F: add a check for OLx>sNx/OLy>sNy
 o verification/lab_sea
   * #undef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
