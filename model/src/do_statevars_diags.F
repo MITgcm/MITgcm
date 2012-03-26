@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.18 2012/03/20 23:38:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.19 2012/03/26 01:47:08 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,12 +97,6 @@ C                    and stagger/synchronous TimeStep
          CALL BBL_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_BBL */
-
-#ifdef ALLOW_FRAZIL
-       IF ( seqFlag.EQ.0 .AND. useFRAZIL ) THEN
-        CALL FRAZIL_DIAGNOSTICS_STATE( myTime, myIter, myThid )
-       ENDIF
-#endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SEAICE
        IF ( seqFlag.EQ.0 .AND. useSEAICE ) THEN
