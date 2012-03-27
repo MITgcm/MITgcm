@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.66 2012/03/11 13:41:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.67 2012/03/27 22:36:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,7 +41,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     ioUnit     :: temp for writing msg unit
 C     msgBuf     :: Informational/error message buffer
+      INTEGER ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
       LOGICAL checkAdvSchSalt
@@ -58,6 +60,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
        kSurface        = 1
       ENDIF
+      ioUnit = errorMessageUnit
 
       _BEGIN_MASTER(myThid)
 
@@ -450,19 +453,18 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_ALLOW_TD_IF */
 
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK: turbulent ice-ocn heat flux default changed.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &   'SEAICE_CHECK:    To recover the old default : set '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &   'SEAICE_CHECK:    SEAICE_mcPheePiston to the first ocn level'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &   'SEAICE_CHECK:    thickness divided by SEAICE_deltaTtherm.'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        'turbulent ice-ocn heat flux default changed.'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        '   To recover the old default : set '
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        '   SEAICE_mcPheePiston to the first ocn level'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        '   thickness divided by SEAICE_deltaTtherm.'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
 #if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \
@@ -625,18 +627,18 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
       ENDIF
 #endif
 
-        WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK: variable freezing point is new default.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK:    To recover old constant freezing : '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK:    set SEAICE_tempFrz0 = -1.96 and '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &    'SEAICE_CHECK:    SEAICE_dTempFrz_dS = 0.'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        'variable freezing point is new default.'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        '   To recover old constant freezing : '
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        '   set SEAICE_tempFrz0 = -1.96 and '
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &        '   SEAICE_dTempFrz_dS = 0.'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 #ifndef SEAICE_ALLOW_CLIPVELS
       IF ( SEAICE_clipVelocities ) THEN
