@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1637 2012/03/26 19:54:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1638 2012/03/27 15:53:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/fizhi:
+    clean-up turbulence cold-start switch: decided in fizhi_init_vars.F, stored
+    in common bloc (fizhi_coms.h) and then passed as argument up to S/R TURBIO.
 o pkg/exch2:
   - add argument "updateCorners" to S/R exch2_get_uv_bounds (enable to
     activate EXCH_IGNORE_CORNERS in vector EXCH S/R).
