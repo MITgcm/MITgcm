@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.49 2012/03/22 14:20:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.50 2012/03/27 15:48:27 jmc Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
 
 C--  File fizhi_turb.F:
 C--   Contents
-C--   o TURBIO 
-C--   o TRBFLX 
+C--   o TURBIO
+C--   o TRBFLX
 C--   o SFCFLX
 C--   o PHI
 C--   o PSI
@@ -23,7 +23,7 @@ C--   o SEAICE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE TURBIO (im,jm,nlay,istrip,nymd,nhms,bi,bj
+      SUBROUTINE TURBIO (im,jm,nlay,istrip,nymd,nhms,bi,bj, qbeg
      1 ,ndturb,nltop,ptop, pz, uz, vz, tz, qz, ntracers,ptracers
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,fracland,landtype
@@ -44,6 +44,7 @@ C      nlay    - number of vertical levels
 C      istrip  - number of horizontal points to be handled at a time on
 C      nymd    - year and date integer in YYMMDD format (ie, 790212)
 C      nhms    - date and time integer in HHMMSS format (ie, 123000)
+C      qbeg    - set to true to indicate a cold start for turbulence
 C      ndturb  - turbulence time step integer in HHMMSS format
 C      nltop   - Top level at which to allow turbulence
 C      ptop    - model top pressure - rigid lid assumed - real
@@ -111,13 +112,10 @@ C      qqgrid    - Gridded Turbulent Kinetic Energy                - real[lon,la
 C-----------------------------------------------------------------------
       implicit none
 
-#ifdef ALLOW_USE_MPI
-#include "mpif.h"
-#endif
-
       integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb,nltop
       integer ntracers, ptracers
       integer nchp,nchptot,nchplnd
+      logical qbeg
       _RL ptop
       _RL pz(im*jm,1),uz(im*jm,1,nlay),vz(im*jm,1,nlay)
       _RL tz(im*jm,1,nlay),qz(im*jm,1,nlay,ntracers)
@@ -253,9 +251,7 @@ C Set fmu and ed to zero for no background diffusion
       integer nocean, nice
       integer ndmoist,time_left, ndum0,ndum1
       integer ntracedim
-      _RL    dtfac,timstp2,sum0
-C logical begin flag - set to true to indicate a cold start
-      logical qbeg
+      _RL    dtfac,timstp2
 
       integer n,nsecf,nmonf,ndayf
       nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
@@ -307,37 +303,6 @@ C   coefficient of viscosity (background momentum diffusion)
        cltj10  = 10. * caltoj
        atimstp = 1. / timstp
        tice = getcon('FREEZING-POINT')
-
-C **********************************************************************
-C   Check for Cold Start (if QQ is zero everywhere)
-C **********************************************************************
-
-      qbeg = .false.
-
-      sum0 = 0.0
-      do L=1,nlay
-      do n=1,nchptot
-      sum0 = sum0 + tke(n,L)
-      enddo
-      enddo
-
-#ifdef ALLOW_USE_MPI
-      call mpi_allreduce(sum0,const,1,mpi_double_precision,mpi_sum,
-     &                                                mpi_comm_world,n)
-#else
-      const = sum0
-#endif
-
-      if( const.eq.0.0 ) then
-      qbeg = .true.
-          if( myid.eq.1 .and. bi.eq.1 ) then
-          print *
-          print *, 'Warning!'
-          print *, 'Turbulent Kinetic Energy has not been initialized.'
-          print *, 'Cold-Start will use Level 2.0 Turbulence.'
-          print *
-          endif
-      endif
 
 C **********************************************************************
 C                            Initialization

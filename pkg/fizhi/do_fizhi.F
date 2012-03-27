@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.54 2012/03/20 19:52:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.55 2012/03/27 15:48:27 jmc Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE DO_FIZHI(myIter,myid,
      & idim1,idim2,jdim1,jdim2,Nrphin,nSxIn,nSyIn,im1,im2,jm1,jm2,bi,bj,
-     & nchp,nchptot,nchpland,
+     & turbStart, nchp,nchptot,nchpland,
      & uphy,vphy,thphy,sphy,pephy,lons,lats,Zsurf,
      & ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      & tgz,sst,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
@@ -33,6 +33,7 @@ c-----------------------------------------------------------------------
 C Argument list declarations
       INTEGER myIter,myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
       INTEGER Nrphin,nSxIn,nSyIn,bi,bj,nchp
+      LOGICAL turbStart
       INTEGER nchptot(nSxIn,nSyIn),nchpland(nSxIn,nSyIn)
       _RL uphy(idim1:idim2,jdim1:jdim2,Nrphin,nSxIn,nSyIn)
       _RL vphy(idim1:idim2,jdim1:jdim2,Nrphin,nSxIn,nSyIn)
@@ -233,8 +234,9 @@ C compute pressures - all pressure are converted here to hPa
       call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      &                                                 pkl(1,1,1,bi,bj))
 
-      call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
-     & xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
+      call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,
+     & turbStart, xlats, xlons,
+     & p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
      & dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),surfZ,
      & fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
      & phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),

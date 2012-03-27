@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.22 2009/05/12 19:56:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.23 2012/03/27 15:48:27 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-       subroutine fizhi_init_vars (myThid)
+       SUBROUTINE FIZHI_INIT_VARS (myThid)
 c-----------------------------------------------------------------------
 c  Routine to initialise the fizhi state.
 c
@@ -20,7 +20,7 @@ c   3) The velocity component physics fields are on an A-Grid
 c
 c Calls: dyn2phys (x4)
 c-----------------------------------------------------------------------
-       implicit none
+       IMPLICIT NONE
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
@@ -39,7 +39,7 @@ c-----------------------------------------------------------------------
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
 
-       integer myThid
+       INTEGER myThid
 
        INTEGER xySize
 #if defined(ALLOW_EXCH2)
@@ -57,11 +57,11 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL vdyntemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
        _RL tempphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,nSx,nSy)
 
-       integer i, j, L, bi, bj, Lbotij
-       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-       integer xsize, ysize
-       logical alarm
-       external alarm
+       INTEGER i, j, L, bi, bj, Lbotij
+       INTEGER im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       INTEGER xsize, ysize
+       LOGICAL alarm
+       EXTERNAL alarm
 
 #if defined(ALLOW_EXCH2)
        xsize = exch2_global_Nx
@@ -83,7 +83,7 @@ c   First Check to see if we can start a fizhi experiment at current time
 c    All Fizhi alarms must be on for the first time step of a segment
 
       if( .not.alarm('moist') .or. .not.alarm('turb')   .or.
-     .    .not.alarm('radsw') .or. .not.alarm('radlw') ) then
+     &    .not.alarm('radsw') .or. .not.alarm('radlw') ) then
        write(15,*) ' Cant Start Fizhi experiment at ',nymd,' ',nhms
        stop
       endif
@@ -106,21 +106,21 @@ C Build pressures on dynamics grid
         enddo
         do j = 1,sNy
         do i = 1,sNx
-         Lbotij = ksurfC(i,j,bi,bj)
+         Lbotij = kSurfC(i,j,bi,bj)
          if(Lbotij.ne.0.)
-     .    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
+     &    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
         enddo
         enddo
         do j = 1,sNy
         do i = 1,sNx
-         Lbotij = ksurfC(i,j,bi,bj)
+         Lbotij = kSurfC(i,j,bi,bj)
          do L = Lbotij+1,Nr+1
           pedyn(i,j,L,bi,bj) = pedyn(i,j,L-1,bi,bj) -
-     .                        drF(L-1)*hfacC(i,j,L-1,bi,bj)
+     &                        drF(L-1)*hfacC(i,j,L-1,bi,bj)
          enddo
 c Do not use a zero field as the top edge pressure for interpolation
          if(pedyn(i,j,Nr+1,bi,bj).lt.1.e-5)
-     .                               pedyn(i,j,Nr+1,bi,bj) = 1.e-5
+     &                               pedyn(i,j,Nr+1,bi,bj) = 1.e-5
         enddo
         enddo
 C Build pressures on physics grid
@@ -132,7 +132,7 @@ C Build pressures on physics grid
          enddo
 c Do not use a zero field as the top edge pressure for interpolation
          if(pephy(i,j,Nrphys+1,bi,bj).lt.1.e-5)
-     .                               pephy(i,j,Nrphys+1,bi,bj) = 1.e-5
+     &                               pephy(i,j,Nrphys+1,bi,bj) = 1.e-5
         enddo
         enddo
 c
@@ -143,7 +143,7 @@ c   do units and get u = .025*ln(dP*10), with dP in pa.
         do j = 1,sNy
         do i = 1,sNx
          windphy(i,j,L,bi,bj) = 0.025 *
-     .             log((pephy(i,j,1,bi,bj)-pephy(i,j,L+1,bi,bj))*10.)
+     &             log((pephy(i,j,1,bi,bj)-pephy(i,j,L+1,bi,bj))*10.)
         enddo
         enddo
         enddo
@@ -153,14 +153,14 @@ c   do units and get u = .025*ln(dP*10), with dP in pa.
 
 c Create initial fields on phys. grid - Move Dynamics u and v to A-Grid
        call CtoA(myThid,uvel,vvel,maskW,maskS,im1,im2,jm1,jm2,Nr,
-     .                     Nsx,Nsy,1,sNx,1,sNy,udyntemp,vdyntemp)
+     &                     nSx,nSy,1,sNx,1,sNy,udyntemp,vdyntemp)
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 
 c Create initial fields on phys. grid - interpolate from dyn. grid
-        call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+        call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,nSx,nSy,
+     & 1,sNx,1,sNy,bi,bj,windphy,pephy,kSurfC,Nrphys,nlperdyn,1,tempphy)
 c   Note: Interpolation gives bottom-up arrays (level 1 is bottom),
 c         Physics works top-down. so -> need to flip arrays
         do L = 1,Nrphys
@@ -170,8 +170,8 @@ c         Physics works top-down. so -> need to flip arrays
         enddo
         enddo
         enddo
-        call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+        call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,nSx,nSy,
+     & 1,sNx,1,sNy,bi,bj,windphy,pephy,kSurfC,Nrphys,nlperdyn,1,tempphy)
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
@@ -179,8 +179,8 @@ c         Physics works top-down. so -> need to flip arrays
         enddo
         enddo
         enddo
-        call dyn2phys(theta,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,2,tempphy)
+        call dyn2phys(theta,pedyn,im1,im2,jm1,jm2,Nr,nSx,nSy,
+     & 1,sNx,1,sNy,bi,bj,windphy,pephy,kSurfC,Nrphys,nlperdyn,2,tempphy)
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
@@ -188,8 +188,8 @@ c         Physics works top-down. so -> need to flip arrays
         enddo
         enddo
         enddo
-        call dyn2phys(salt,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+        call dyn2phys(salt,pedyn,im1,im2,jm1,jm2,Nr,nSx,nSy,
+     & 1,sNx,1,sNy,bi,bj,windphy,pephy,kSurfC,Nrphys,nlperdyn,0,tempphy)
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
@@ -242,6 +242,7 @@ c Initialize vegetation tile tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
          print *,' Need initial Values for TKE - dont have them! '
          stop
         endif
+        turbStart(bi,bj) = .TRUE.
 
 c Now initialize vegetation tile land state too - tcanopy, etc...
         call fizhi_init_vegsurftiles( globalArr, xsize, ysize,
@@ -292,8 +293,13 @@ C--   Read fizhi package state variables from pickup file
 
        call fizhi_read_pickup( nIter0, myThid )
        CALL FIZHI_READ_VEGTILES( nIter0, 'D', myThid )
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+         turbStart(bi,bj) = .FALSE.
+       enddo
+       enddo
 
       ENDIF
 
-       return
-       end
+      RETURN
+      END

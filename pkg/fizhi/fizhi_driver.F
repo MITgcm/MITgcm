@@ -1,23 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.42 2009/04/01 23:58:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.43 2012/03/27 15:48:27 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine fizhi_driver (myid,im,jm,lm,bi,bj,ptracer,ntracer,
-     . xlats,xlons,
-     . p,u,v,t,q,pl,ple,dpres,pkht,pkl,surfz,fracland,landtype,radswt,
-     . phis_var,tgz,sea_ice,
-     . nchp,chlat,chlon,igrd,nchptot,nchpland,chfr,ityp,
-     . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,capac,snodep,
-     . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     . albvisdr,albvisdf,albnirdr,albnirdf,emiss,alai,agrn,
-     . chemq,chemo3,co2,cfc11,cfc12,cfc22,methane,n2o,
-     . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
-     . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,lwgclr,
-     . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
-     . cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
-     . cldras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
-     . qliqavelw,fccavesw,fccavelw,qq)
+       SUBROUTINE FIZHI_DRIVER (myid,im,jm,lm,bi,bj,ptracer,ntracer,
+     & turbStart, xlats,xlons,
+     & p,u,v,t,q,pl,ple,dpres,pkht,pkl,surfz,fracland,landtype,radswt,
+     & phis_var,tgz,sea_ice,
+     & nchp,chlat,chlon,igrd,nchptot,nchpland,chfr,ityp,
+     & tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,capac,snodep,
+     & ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     & albvisdr,albvisdf,albnirdr,albnirdf,emiss,alai,agrn,
+     & chemq,chemo3,co2,cfc11,cfc12,cfc22,methane,n2o,
+     & lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
+     & moistu,moistv,moistt,moistq,
+     & radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,lwgclr,
+     & st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
+     & cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
+     & cldras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
+     & qliqavelw,fccavesw,fccavelw,qq)
 C***********************************************************************
 C  Purpose
 C  -------
@@ -32,7 +32,7 @@ C     landtype.. Land Vegetation Types
 C     radswt ... Incident Solar Radiation
 C
 C***********************************************************************
-      implicit none
+      IMPLICIT NONE
 
 c Diagnostic Common
 c -----------------
@@ -48,10 +48,11 @@ c -------------
 
 c Input Parameters
 c ----------------
-      integer myid,im,jm,lm,bi,bj,ptracer,ntracer
-      integer nchp,igrd(nchp),nchptot,nchpland,ityp(nchp)
-      integer iras,nlwcld,nlwlz,nswcld,nswlz
-      integer imstturbsw,imstturblw
+      INTEGER myid,im,jm,lm,bi,bj,ptracer,ntracer
+      LOGICAL turbStart
+      INTEGER nchp,igrd(nchp),nchptot,nchpland,ityp(nchp)
+      INTEGER iras,nlwcld,nlwlz,nswcld,nswlz
+      INTEGER imstturbsw,imstturblw
 
       _RL xlats(im,jm), xlons(im,jm)
       _RL p(im,jm)
@@ -62,7 +63,7 @@ c ----------------
       _RL pkl(im,jm,lm)
       _RL surfz(im,jm)
       _RL radswt(im,jm), fracland(im,jm)
-      integer landtype(im,jm)
+      INTEGER landtype(im,jm)
       _RL phis_var(im,jm), sea_ice(im,jm)
       _RL chlat(nchp),chlon(nchp),chfr(nchp)
       _RL tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
@@ -100,25 +101,25 @@ c ----------------
 c Local Variables
 c ---------------
       _RL rfu(im,jm,lm),rfv(im,jm,lm),rft(im,jm,lm)
-      logical     alarm
-      external    alarm
-      integer numpcheck
-      parameter (numpcheck = 5)
-      integer pchecklevs(numpcheck)
+      LOGICAL     alarm
+      EXTERNAL    alarm
+      INTEGER numpcheck
+      PARAMETER (numpcheck = 5)
+      INTEGER pchecklevs(numpcheck)
       _RL pcheckpress(numpcheck)
 C     data pcheckpress/950.,750.,700.,400.,10./
       data pcheckpress/950.,850.,700.,400.,10./
 
-      integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
-      integer ndmoist,ndturb,ndlw,ndsw
-      integer istrip,npcs
-      integer i,j
-      integer ndpnt
+      INTEGER low_level,mid_level,nltop,nsubmin,nsubmax,Lup
+      INTEGER ndmoist,ndturb,ndlw,ndsw
+      INTEGER istrip,npcs
+      INTEGER i,j
+      INTEGER ndpnt
       INTEGER ndum0, ndum1, ndum2
       _RL akap,getcon
       _RL ptop
-      logical lpnt,cumfric
-      integer imglobal
+      LOGICAL lpnt,cumfric
+      INTEGER imglobal
 
       istrip = im*jm
       npcs   = 1
@@ -160,13 +161,13 @@ C ====================
       IF ( alarm('radsw') ) THEN
 
       call swrio ( nymd,nhms,bi,bj,ndsw,myid,istrip,npcs,
-     .   low_level,mid_level,im,jm,lm,
-     .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
-     .   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
-     .   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,
-     .   ptop,nswcld,cldtot_sw,cldras_sw,nswlz,swlz,
-     .   .false.,imstturbsw,qliqavesw,
-     .   fccavesw,landtype,xlats,xlons )
+     &   low_level,mid_level,im,jm,lm,
+     &   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
+     &   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
+     &   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,
+     &   ptop,nswcld,cldtot_sw,cldras_sw,nswlz,swlz,
+     &   .false.,imstturbsw,qliqavesw,
+     &   fccavesw,landtype,xlats,xlons )
 
       ENDIF
 
@@ -183,13 +184,13 @@ c --------------------------------
       enddo
 
       call lwrio ( nymd,nhms,bi,bj,myid,istrip,npcs,
-     .   low_level,mid_level,im,jm,lm,
-     .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
-     .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
-     .   lwdt,dlwdtg,lwdtclr,lwgclr,
-     .   nlwcld,cldtot_lw,cldras_lw,nlwlz,lwlz,
-     .   .false.,imstturblw,qliqavelw,
-     .   fccavelw,landtype )
+     &   low_level,mid_level,im,jm,lm,
+     &   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
+     &   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
+     &   lwdt,dlwdtg,lwdtclr,lwgclr,
+     &   nlwcld,cldtot_lw,cldras_lw,nlwlz,lwlz,
+     &   .false.,imstturblw,qliqavelw,
+     &   fccavelw,landtype )
 
       ENDIF
 
@@ -197,17 +198,18 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-      call turbio (im,jm,lm,istrip,nymd,nhms,bi,bj,ndturb,nltop,
-     .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
-     .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .  tgz,fracland,landtype,
-     .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
-     .  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
-     .  alai,agrn,sea_ice,lpnt,
-     .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
-     .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
-     .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
-     .  myid)
+      call turbio (im,jm,lm,istrip,nymd,nhms,bi,bj,
+     &  turbStart, ndturb,nltop,
+     &  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
+     &  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     &  tgz,fracland,landtype,
+     &  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
+     &  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
+     &  alai,agrn,sea_ice,lpnt,
+     &  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
+     &  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
+     &  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
+     &  myid)
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------
@@ -215,13 +217,13 @@ C Comment this out for now
 
       imglobal = 128
       call gwdrag (myid,p,pl,ple,dpres,pkl,u,v,t,q,phis_var,
-     .   turbu,turbv,turbt,im,jm,lm,bi,bj,istrip,npcs,imglobal)
+     &   turbu,turbv,turbt,im,jm,lm,bi,bj,istrip,npcs,imglobal)
 
 c Add Rayleigh Friction Damping Above 70 Km
 c -----------------------------------------
 
       call rayleigh(myid,pl,pkl,pkht,surfz,u,v,t,q,im,jm,lm,
-     .                                                bi,bj,rfu,rfv,rft)
+     &                                                bi,bj,rfu,rfv,rft)
 C Now Add Rayleigh Friction Tendencies to Turb Tendency
 
 C     do L=1,lm
@@ -240,13 +242,13 @@ C MOIST PROCESSES
 C ===============
       if ( alarm('moist') ) then
       call moistio (ndmoist,istrip,npcs,
-     .    low_level,mid_level,nltop,nsubmin,nsubmax,Lup,
-     .    p,pl,ple,dpres,pkht,pkl,u,v,t,q,bi,bj,ntracer,ptracer,qq,
-     .    moistu,moistv,moistt,moistq,cumfric,im,jm,lm,ptop,iras,
-     .    rainlsp,raincon,snowfall,
-     .    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
-     .    nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
-     .              .false.,myid)
+     &    low_level,mid_level,nltop,nsubmin,nsubmax,Lup,
+     &    p,pl,ple,dpres,pkht,pkl,u,v,t,q,bi,bj,ntracer,ptracer,qq,
+     &    moistu,moistv,moistt,moistq,cumfric,im,jm,lm,ptop,iras,
+     &    rainlsp,raincon,snowfall,
+     &    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
+     &    nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
+     &              .false.,myid)
       endif
 
       return
