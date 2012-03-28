@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.25 2011/12/02 18:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.26 2012/03/28 20:15:21 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -52,7 +52,6 @@ C     GM software and Compaq IMC memory channel technology.
 C
 CEOI
 
-
 C--   Get C preprocessor options
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
@@ -64,7 +63,6 @@ C !ROUTINE: MAIN
 
 C !INTERFACE:
       PROGRAM MAIN
-      IMPLICIT NONE
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -95,6 +93,8 @@ C      |
 C      |--eedie()          :: WRAPPER termination
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global variables ==
 C     Include all the "shared" data here. That means all common
 C     blocks used in the model. On many implementations this is not
@@ -107,15 +107,15 @@ C     necessary but doing this is the safest method.
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 #ifdef HAVE_SIGREG
 #include "SIGREG.h"
 #endif
 
 C     !LOCAL VARIABLES:
-C--   Local variables
+C     msgBuf       :: I/O message buffer
+C     I            :: loop counter
+C     myThid       :: thread Id number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER myThid
       INTEGER I
 
@@ -127,7 +127,7 @@ C--   Local variables
 CEOP
 
 #ifdef USE_GSL_IEEE
-      call fgsl_ieee_env_setup ()
+      CALL FGSL_IEEE_ENV_SETUP ()
 #endif
 
 C--   Set up the execution environment
@@ -212,6 +212,10 @@ C--   Shut down execution environment
 
 C--   Write closedown status
       IF ( fatalError ) THEN
+       WRITE( msgBuf,'(A)') 'PROGRAM MAIN: ends with fatal Error'
+       CALL PRINT_ERROR( msgBuf, 1 )
+       WRITE(standardMessageUnit,'(A)')
+     &      'PROGRAM MAIN: ends with fatal Error'
        STOP 'ABNORMAL END: PROGRAM MAIN'
       ELSE
        WRITE(standardMessageUnit,'(A)')
@@ -235,7 +239,7 @@ C     Re-entry point for a pthreads-based threading mechanism.  The
 C     intent is to produce a threading hack that will work with gcc/g77.
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
@@ -244,15 +248,13 @@ C     !USES:
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 
 C     !INPUT PARAMETERS:
-      integer myThid
+C     myThid       :: my thread Id number
+      INTEGER myThid
 CEOP
 
-      write(*,*) 'myThid = ', myThid
+      WRITE(*,*) 'myThid = ', myThid
       CALL CHECK_THREADS( myThid )
 
 c     CALL THE_MODEL_MAIN(myThid)
