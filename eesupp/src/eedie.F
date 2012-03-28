@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.10 2010/09/25 23:09:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.11 2012/03/28 20:22:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -25,45 +25,49 @@ C     == Global variables ==
 #include "EESUPPORT.h"
 CEOP
 
-C     !FUNCTIONS
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     == Local variables ==
-C     msgBuf       - I/O Buffer
-C     nThreadsDone - Used to count number of completed threads.
-C     I            - Loop counter.
+C     msgBuf       :: I/O Buffer
+C     nThreadsDone :: Used to count number of completed threads.
+C     I            :: Loop counter.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER nThreadsDone
-      INTEGER I, L
+      INTEGER I
 #ifdef ALLOW_USE_MPI
-C     mpiRC            - Error code reporting variable used
-C                        with MPI.
+C     mpiRC        :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
+      IF ( eeBootError ) THEN
+C--   Skip ended threads counting if earlier error was found
+        WRITE(msgBuf,'(2A)')
+     &   'EEDIE: earlier error in multi-proc/thread setting'
+        CALL PRINT_ERROR( msgBuf, 1 )
+        fatalError = .TRUE.
+
+      ELSE
 C--   Check that all the threads have ended
 C     No thread should reach this loop before all threads have set
 C     threadIsComplete to TRUE. If they do then either there is a bug
-C     in the code or the behaviour of the parallel compiler directives 
-C     are not right for this code. In the latter case different 
-C     directives may be available or the compiler itself may have a 
+C     in the code or the behaviour of the parallel compiler directives
+C     are not right for this code. In the latter case different
+C     directives may be available or the compiler itself may have a
 C     bug or you may need a different parallel compiler for main.F
-      nThreadsDone = 0
-      DO I = 1, nThreads
-       IF ( threadIsComplete(I) ) nThreadsDone = nThreadsDone+1
-      ENDDO
-      IF ( nThreadsDone .LT. nThreads ) THEN
-       WRITE(msgBuf,'(A,I5,A,I5,A)')
-     & 'S/R EEDIE: Only ',nThreadsDone,
-     & ' threads have completed, ',nThreads,
-     & ' are expected for this configuration!'
-       L = ILNBLNK(msgBuf)
-       WRITE(*,*) msgBuf(1:L)
-       WRITE(*,*) 
-     & 'Possibly you have different setenv PARALLEL and nThreads?'
-       eeEndError = .TRUE.
-       fatalError = .TRUE.
+        nThreadsDone = 0
+        DO I = 1, nThreads
+         IF ( threadIsComplete(I) ) nThreadsDone = nThreadsDone+1
+        ENDDO
+        IF ( nThreadsDone .LT. nThreads ) THEN
+         WRITE(msgBuf,'(A,I5,A)')
+     &    'S/R EEDIE: Only',nThreadsDone,' threads have completed,'
+         CALL PRINT_ERROR( msgBuf, 1 )
+         WRITE(msgBuf,'(A,I5,A)')
+     &    'S/R EEDIE:',nThreads,' are expected for this config !'
+         CALL PRINT_ERROR( msgBuf, 1 )
+         eeEndError = .TRUE.
+         fatalError = .TRUE.
+        ENDIF
+
+C--   end if/else eebootError
       ENDIF
 
 #ifdef USE_LIBHPM
@@ -96,7 +100,6 @@ C
       ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-
 
       RETURN
       END
