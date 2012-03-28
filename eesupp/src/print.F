@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.32 2010/07/06 23:12:51 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.33 2012/03/28 20:30:26 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -99,52 +99,51 @@ C--    Write single process format
        ENDIF
       ELSEIF ( pidIO .EQ. myProcId ) THEN
 C--    Write multi-process format
+C      PRINT can be called by several threads simultaneously.
+C      The write statement may need to ne marked as a critical section.
 #ifndef FMTFTN_IO_THREAD_SAFE
+# ifdef USE_OMP_THREADING
+C$OMP CRITICAL
+# else
        _BEGIN_CRIT(myThid)
+# endif
 #endif
-        WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
-#ifndef FMTFTN_IO_THREAD_SAFE
-       _END_CRIT(myThid)
-#endif
+       WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
        IF ( message .EQ. ' ' ) THEN
-C       PRINT can be called by several threads simultaneously.
-C       The write statement may need to ne marked as a critical section.
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _BEGIN_CRIT(myThid)
-#endif
-         WRITE(unit,'(A,A,A,A,A,A)',ERR=999)
+        WRITE(unit,'(A,A,A,A,A,A)',ERR=999)
      &   '(',PROCESS_HEADER,' ',idString,')',' '
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _END_CRIT(myThid)
-#endif
        ELSE
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _BEGIN_CRIT(myThid)
-#endif
-         WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999)
-     &   '(',PROCESS_HEADER,' ',idString(1:ILNBLNK(idString)),')',' ',
-     &   message(iStart:iEnd)
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _END_CRIT(myThid)
-#endif
+        WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999)
+     &   '(',PROCESS_HEADER,' ',idString,')',' ',message(iStart:iEnd)
        ENDIF
+       GOTO 1000
+  999  CONTINUE
+       ioErrorCount(myThid) = ioErrorCount(myThid)+1
+ 1000  CONTINUE
+#ifndef FMTFTN_IO_THREAD_SAFE
+# ifdef USE_OMP_THREADING
+C$OMP END CRITICAL
+# else
+       _END_CRIT(myThid)
+# endif
+#endif
       ENDIF
 
 #ifndef DISABLE_WRITE_TO_UNIT_ZERO
 C--   if error message, also write directly to unit 0 :
-      IF ( numberOfProcs .EQ. 1 .AND. nThreads .EQ. 1
-     &     .AND. unit.EQ.errorMessageUnit ) THEN
-        iEnd   = ILNBLNK( message )
-        IF (iEnd.NE.0) WRITE(0,'(A)') message(1:iEnd)
+      IF ( numberOfProcs .EQ. 1 .AND. myThid .EQ. 1
+     &     .AND. unit.EQ.errorMessageUnit
+     &     .AND. message .NE. ' ' ) THEN
+        IF ( nThreads.LE.1 ) THEN
+          WRITE(0,'(A)') message(iStart:iEnd)
+        ELSE
+          WRITE(0,'(A,I4.4,A,A)') '(TID ', myThid, ') ',
+     &                   message(iStart:iEnd)
+        ENDIF
       ENDIF
 #endif
-C
- 1000 CONTINUE
-      RETURN
-  999 CONTINUE
-       ioErrorCount(myThid) = ioErrorCount(myThid)+1
-      GOTO 1000
 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -230,18 +229,20 @@ C--    Write multi-process format
          WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
 
          IF ( iEnd.EQ.0 ) THEN
-c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
-          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)')
+          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
      &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
      &    ' '
          ELSE
-c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
-          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)')
+          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
      &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
      &        message(1:iEnd)
 c    &    message(iStart:iEnd)
          ENDIF
        ENDIF
+       GOTO 1000
+  999  CONTINUE
+       ioErrorCount(myThid) = ioErrorCount(myThid)+1
+ 1000  CONTINUE
 
 #ifndef DISABLE_WRITE_TO_UNIT_ZERO
 C--    also write directly to unit 0 :
@@ -264,12 +265,7 @@ C$OMP END CRITICAL
 #endif
       ENDIF
 
- 1000 CONTINUE
       RETURN
-
-c 999 CONTINUE
-c      ioErrorCount(myThid) = ioErrorCount(myThid)+1
-c     GOTO 1000
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
