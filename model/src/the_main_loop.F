@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.124 2012/03/14 20:02:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.125 2012/03/29 19:08:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,6 +11,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
+#endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
 #endif
 
 CBOP
@@ -116,6 +119,12 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_SHELFICE
 #   include "SHELFICE.h"
 #   include "SHELFICE_COST.h"
+#  endif
+#  ifdef ALLOW_STREAMICE
+#   include "STREAMICE.h"
+#   include "STREAMICE_ADV.h"
+#   include "STREAMICE_BDRY.h"
+#   include "STREAMICE_CG.h"
 #  endif
 #  ifdef ALLOW_EBM
 #   include "EBM.h"
