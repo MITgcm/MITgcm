@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.15 2011/09/01 14:55:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.16 2012/03/30 14:18:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -57,30 +57,73 @@ C                            thinks are running.
 C     nChecks   :: Number of times checked for all threads. After so
 C                  many checks give up and report an error.
 C     msgBuf    :: Informational/error message buffer
-      INTEGER I
-      INTEGER numberThreadsRunning
       INTEGER nChecks
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef USE_OMP_THREADING
+#ifdef ALLOW_USE_MPI
+      INTEGER myErr, mpiRC
+#endif
+#else /* USE_OMP_THREADING */
+      INTEGER I, numberThreadsRunning
+#endif /* USE_OMP_THREADING */
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef USE_OMP_THREADING
 C--   Check early-on that number of threads match
+
       IF ( OMP_GET_NUM_THREADS() .NE. nThreads ) THEN
+C-    This process has problems in multi-threads setting (detected by
+C     all pseudo-threads); note: cannot use any Barrier in this context
+
        WRITE(msgBuf,'(2A,I6)') 'CHECK_THREADS:',
      &              ' from "eedata", nThreads=', nThreads
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A,I6)') ' not equal to ',
      &              'Env.Var. OMP_NUM_THREADS=', OMP_GET_NUM_THREADS()
        CALL PRINT_ERROR( msgBuf, myThid )
-c      CALL ALL_PROC_DIE( myThid )
-c      _BARRIER
-c      STOP 'ABNORMAL END: S/R CHECK_THREADS'
-       IF ( myThid.EQ.1 ) STOP 'ABNORMAL END: S/R CHECK_THREADS'
-       GOTO 11
+       thError(myThid) = .TRUE.
+       eeBootError     = .TRUE.
+       IF ( myThid.EQ.1 ) THEN
+C-    one pseudo-thread (thId=1) export the error to other MPI processes
+        nChecks = 1
+#ifdef ALLOW_USE_MPI
+        IF ( usingMPI ) THEN
+         myErr = nChecks
+         CALL MPI_Allreduce( myErr,nChecks,1,MPI_INTEGER,
+     &                       MPI_SUM,MPI_COMM_MODEL,mpiRC )
+        ENDIF
+#endif /* ALLOW_USE_MPI */
+       ENDIF
+
+      ELSE
+C-    this process has a working multi-threads setting
+
+       threadIsRunning(myThid) = .TRUE.
+       IF ( myThid.EQ.1 ) THEN
+C-    master collects error from other MPI processes
+        nChecks = 0
+#ifdef ALLOW_USE_MPI
+        IF ( usingMPI ) THEN
+         myErr = nChecks
+         CALL MPI_Allreduce( myErr,nChecks,1,MPI_INTEGER,
+     &                       MPI_SUM,MPI_COMM_MODEL,mpiRC )
+        ENDIF
+#endif /* ALLOW_USE_MPI */
+        IF ( nChecks.NE.0 ) THEN
+          WRITE(msgBuf,'(A,I5,A)') 'CHECK_THREADS:', nChecks,
+     &                     ' error(s) from other Processes'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          eeBootError = .TRUE.
+        ENDIF
+       ENDIF
+C-    ensure all threads leave with updated eeBootError (shared) value
+C$OMP BARRIER
+
       ENDIF
-#endif /* USE_OMP_THREADING */
+
+#else /* ndef USE_OMP_THREADING */
 
       threadIsRunning(myThid) = .TRUE.
       nChecks                 = 0
@@ -96,8 +139,8 @@ c      STOP 'ABNORMAL END: S/R CHECK_THREADS'
        thError(myThid) = .TRUE.
        eeBootError     = .TRUE.
        WRITE(msgBuf,'(A,I5,A,I5,A)')
-     &  'S/R INI_CHECK_THREADS: Only ',numberThreadsRunning,
-     &  ' thread(s), ',nThreads,' are needed for this configuration!'
+     &  'CHECK_THREADS: Only ',numberThreadsRunning,
+     &  ' thread(s), ',nThreads,' are needed for this config!'
         CALL PRINT_ERROR( msgBuf, myThid )
 C--     Not enough threads are running so halt the program.
 C       I did not want this here but it is the only place I have found that
@@ -118,8 +161,12 @@ C       but this causes KAP to insert a call to mppjoin - which then deadlocks!
       ENDIF
    11 CONTINUE
 
+#endif /* ndef USE_OMP_THREADING */
+
 C--   check barrier synchronization: 1rst (initial) call.
-      CALL BAR_CHECK( 1, myThid )
+      IF ( .NOT. eeBootError ) THEN
+        CALL BAR_CHECK( 1, myThid )
+      ENDIF
 
       RETURN
       END
