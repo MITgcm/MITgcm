@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1638 2012/03/27 15:53:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1639 2012/03/30 18:48:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+  - PRINT_MESSAGE: use OpenMP critical instruction (similar to PRINT_ERROR);
+    writing to unit 0 (if unit=errorMessageUnit) extended to the case myThid=1
+  - CHECK_THREADS: specific code if using OpenMP threading: improve checking of
+    # of threads across processors (e.g., different env OMP_NUM_THREADS setting)
+  - improve special preliminary call to EESET_PARMS (if eedata is read 2 times).
+  - when using MPI, always set usingMPI=T ; set default accordingly and stop
+    if not consistent.
+  - ALL_PROC_DIE: add a BARRIER after MPI_FINALIZE call ; skip this when thread
+    argument is zero (in case called within single-thread section).
 o pkg/fizhi:
     clean-up turbulence cold-start switch: decided in fizhi_init_vars.F, stored
     in common bloc (fizhi_coms.h) and then passed as argument up to S/R TURBIO.
