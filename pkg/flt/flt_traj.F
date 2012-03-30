@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.13 2011/08/31 21:41:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.14 2012/03/30 18:25:03 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -71,15 +71,15 @@ C--   set number of fields to write
 
 C--   check buffer size
       IF ( nFlds.GT.fltBufDim ) THEN
+         _BEGIN_MASTER(myThid)
          WRITE(msgBuf,'(3(A,I4))') ' FLT_TRAJ: fltBufDim=', fltBufDim,
      &                             ' too small (<', nFlds, ' )'
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(2A)')     ' FLT_TRAJ: => increase fltBufDim',
      &                            ' in "FLT_SIZE.h" & recompile'
          CALL PRINT_ERROR( msgBuf, myThid )
+         _END_MASTER(myThid)
          CALL ALL_PROC_DIE( myThid )
-c        IF (myThid.EQ.1) STOP 'ABNORMAL END: S/R FLT_TRAJ'
-c        _BARRIER
          STOP 'ABNORMAL END: S/R FLT_TRAJ'
       ENDIF
 
@@ -192,7 +192,7 @@ C-       for backward compatibility with old trajectory files:
               WRITE(msgBuf,'(3A,I4,A)')
      &            'previous file (',fn(1:18),') value =',ii
               CALL PRINT_ERROR( msgBuf, myThid )
-              CALL ALL_PROC_DIE( myThid )
+              CALL ALL_PROC_DIE( 0 )
               STOP 'ABNORMAL END: S/R FLT_TRAJ'
             ENDIF
 C-       close the read-unit (safer to use a different unit for writing)
