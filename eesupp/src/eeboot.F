@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.20 2012/03/30 14:17:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.21 2012/03/30 18:13:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -92,22 +92,12 @@ C                     the threads are running.
       modelDataUnit       = 14
       errorMessageUnit    = 15
 cph   errorMessageUnit = 0 is not allowed on some platforms, e.g. SP3
-C
-C     Annoyingly there is no universal way to have the usingMPI
-C     parameter work as one might expect. This is because, on some
-C     systems I/O does not work until MPI_Init has been called. The
-C     solution for now is that the parameter below may need to be changed
-C     manually!
-#ifdef ALLOW_USE_MPI
-      usingMPI = .TRUE.
-#endif
 
-C--   Start minimal environment so that we can do I/O
-C--   to report errors.
+C--   Start minimal environment so that we can do I/O to report errors.
 C     Notes
 C     =====
 C     o Here we start MPI and setup the I/O environment
-C       thatis needed for error reporting.
+C       that is needed for error reporting.
 C     o Under MPI I/O support is very variable until
 C       MPI is started. This makes is hard to trap the case
 C       where mpirun is used to start a non-MPI run or
@@ -159,7 +149,6 @@ C--   Pass attributes to the coupler
 C--   Initialise WRAPPER2 execution environment
       CALL W2_EEBOOT
 #endif /* ALLOW_EXCH2 */
-
 
   999 CONTINUE
       RETURN
