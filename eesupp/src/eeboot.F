@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.19 2010/03/05 19:16:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.20 2012/03/30 14:17:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -52,6 +52,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I :: Loop counter
       INTEGER I
+      LOGICAL doReport
 CEOP
 
 C--   Set error reporting flags and I/O streams
@@ -124,7 +125,8 @@ C--   Now we can write a startup message
       CALL EEINTRO_MSG
 
 C--   Initialise parameters associated with execution environment.
-      CALL EESET_PARMS
+      doReport = .TRUE.
+      CALL EESET_PARMS ( doReport )
       IF ( eeBootError ) GOTO 999
 
 C--   Write summary of execution environment configuration for this run
