@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.30 2011/06/08 01:39:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.31 2012/03/30 14:16:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: EESET_PARMS
 
 C     !INTERFACE:
-      SUBROUTINE EESET_PARMS
+      SUBROUTINE EESET_PARMS ( doReport )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -28,6 +28,12 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+
+C     !INPUT PARAMETERS:
+C     doReport :: if false, skip error stop and any report to std-out/err
+      LOGICAL  doReport
+
+C     !FUNCTIONS:
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
@@ -50,6 +56,7 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
 CEOP
+       INTEGER mpiRC
 
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI,
@@ -97,7 +104,11 @@ C     which sets the stack size to "unlimited" using setrlimit()
       notUsingXPeriodicity       = .FALSE.
       notUsingYPeriodicity       = .FALSE.
       useCubedSphereExchange     = .FALSE.
+#ifdef ALLOW_USE_MPI
+      usingMPI                   = .TRUE.
+#else
       usingMPI                   = .FALSE.
+#endif
       useCoupler                 = .FALSE.
       useNEST_PARENT             = .FALSE.
       useNEST_CHILD              = .FALSE.
@@ -137,78 +148,89 @@ C     Make scratch copies of input data file with and without comments
      &     err=1,IOSTAT=errIO)
       IF ( errIO .GE. 0 ) GOTO 2
     1 CONTINUE
-       WRITE(msgBuf,'(A)')
-     &  'S/R EESET_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Unable to open execution environment'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "eedata"'
-       CALL PRINT_ERROR( msgBuf , 1)
-       CALL EEDATA_EXAMPLE
-       STOP 'ABNORMAL END: S/R EESET_PARMS'
+      IF ( doReport ) THEN
+        WRITE(msgBuf,'(2A)') 'EESET_PARMS: ',
+     &       'Unable to open parameter file "eedata"'
+        CALL PRINT_ERROR( msgBuf, 1 )
+        CALL EEDATA_EXAMPLE
+        STOP 'ABNORMAL END: S/R EESET_PARMS'
+      ELSE
+        RETURN
+      ENDIF
     2 CONTINUE
  1000 CONTINUE
        READ(eeDataUnit,FMT='(A)',END=1001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
-        IF ( RECORD(1:1) .NE. commentCharacter ) THEN
+       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
          CALL NML_SET_TERMINATOR( RECORD )
          WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
-        ENDIF
-        WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
+       ENDIF
+       WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
        GOTO 1000
  1001 CONTINUE
       CLOSE(eeDataUnit)
-C--   Report contents of parameter file
-      WRITE(msgBuf,'(A)')
-     & '// ======================================================='
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)')
-     & '// Execution Environment parameter file "eedata"'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)')
-     & '// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
 
+C--   Report contents of parameter file
       iUnit = scrUnit2
-      REWIND(iUnit)
- 2000 CONTINUE
-       READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
-       IL = MAX(ILNBLNK(RECORD),1)
-       WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT , 1)
-      GOTO 2000
- 2001 CONTINUE
+      IF ( doReport ) THEN
+       WRITE(msgBuf,'(A)')
+     & '// ======================================================='
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A)')
+     & '// Execution Environment parameter file "eedata"'
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A)')
+     & '// ======================================================='
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1)
+
+       REWIND(iUnit)
+ 2000  CONTINUE
+        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
+        IL = MAX(ILNBLNK(RECORD),1)
+        WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
+        GOTO 2000
+ 2001  CONTINUE
+
+       WRITE(msgBuf,'(A)') ' '
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
+      ENDIF
       CLOSE(iUnit)
 
-      WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
-
+C--   Read namelist
       iUnit = scrUnit1
       REWIND(iUnit)
       READ(UNIT=iUnit,NML=EEPARMS,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE
 #ifndef TARGET_PWR3
-       WRITE(msgBuf,'(A)')
-     &  'S/R EESET_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Error reading execution environment '
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "eedata"'
-       CALL PRINT_ERROR( msgBuf , 1)
+      IF ( doReport ) THEN
+       WRITE(msgBuf,'(2A)') 'EESET_PARMS: ',
+     &      'Error reading parameter file "eedata"'
+       CALL PRINT_ERROR( msgBuf, 1 )
        CALL EEDATA_EXAMPLE
        STOP 'ABNORMAL END: S/R EESET_PARMS'
+      ENDIF
 #endif
    4  CONTINUE
 
 C--   Execution Environment parameter file read
       CLOSE(iUnit)
+
+#ifdef ALLOW_USE_MPI
+#ifdef ALWAYS_USE_MPI
+      IF ( doReport .AND. .NOT.usingMPI ) THEN
+       WRITE(msgBuf,'(2A)') 'EESET_PARMS: ',
+     &                      'in eedata: usingMPI=F conflicts'
+       CALL PRINT_ERROR( msgBuf, 1 )
+       WRITE(msgBuf,'(A)') 'EESET_PARMS:  with #define ALWAYS_USE_MPI'
+       CALL PRINT_ERROR( msgBuf, 1 )
+       STOP 'ABNORMAL END: S/R EESET_PARMS'
+c      eeBootError = .TRUE.
+      ENDIF
+      usingMPI = .TRUE.
+#endif
+#endif
 
 Cdbg  eeDataUnit = 42
 Cdbg  OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',IOSTAT=errIO)
@@ -227,7 +249,6 @@ Cdbg  READ(eedataUnit,FMT='(30X,1X,I3)',IOSTAT=errIO) nTx
 Cdbg  IF ( errIO .LT. 0 ) GOTO 11
 Cdbg  READ(eedataUnit,FMT='(30X,1X,I3)',IOSTAT=errIO) nTy
 
-
 Cdbg  IF (errIO .LT. 0 ) eeBootError = .TRUE.
 Cdbg  CLOSE(eeDataUnit,IOSTAT=errIO)
 Cdbg  IF ( eeBootError .OR. errIO .LT. 0 ) THEN
@@ -239,7 +260,6 @@ Cdbg   CALL PRINT_ERROR( msgBuf , 1)
 Cdbg  ELSE
 C--    Write summary of settings that were selected
 Cdbg  ENDIF
-C
-C
+
       RETURN
       END
