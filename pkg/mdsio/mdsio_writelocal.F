@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.20 2010/12/23 02:41:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.21 2012/03/30 18:26:57 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -188,6 +188,7 @@ C Record number must be >= 1
         WRITE(msgBuf,'(A)')
      &    ' MDS_WRITELOCAL: invalid value for irecord'
         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThArg )
         STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
       ENDIF
 C check for 3-D Buffer size:
@@ -208,7 +209,7 @@ C check for 3-D Buffer size:
      &    ' increase "size3dBuf" in "MDSIO_BUFF_3D.h" and recompile'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
-c       CALL ALL_PROC_DIE( myThid )
+        CALL ALL_PROC_DIE( myThArg )
         STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
       ENDIF
 
@@ -229,6 +230,7 @@ C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITELOCAL: illegal value for arrType'
             CALL PRINT_ERROR( msgBuf, myThid )
+            CALL ALL_PROC_DIE( myThArg )
             STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
           ENDIF
       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
@@ -242,12 +244,14 @@ C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITELOCAL: illegal value for arrType'
             CALL PRINT_ERROR( msgBuf, myThid )
+            CALL ALL_PROC_DIE( myThArg )
             STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
           ENDIF
       ELSE
           WRITE(msgBuf,'(A)')
      &         ' MDS_WRITELOCAL: illegal value for filePrec'
           CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThArg )
           STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
       ENDIF
 C-------------------------------------------------
