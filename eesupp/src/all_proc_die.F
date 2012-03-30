@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.5 2011/08/30 21:50:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.6 2012/03/30 18:14:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: ALL_PROC_DIE
 
 C     !INTERFACE:
-      SUBROUTINE ALL_PROC_DIE( myThid )
+      SUBROUTINE ALL_PROC_DIE( myThArg )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -29,8 +29,9 @@ C     == Global variables ==
 #include "EESUPPORT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid  :: my Thread Id number
-      INTEGER myThid
+C     myThArg      :: thread argument (= my Thread Id number
+C                  :: or = 0 if called within single-thread section)
+      INTEGER myThArg
 CEOP
 
 C     !FUNCTIONS
@@ -39,24 +40,26 @@ C     !FUNCTIONS
 
 C     == Local variables ==
 C     msgBuf       :: I/O Buffer
+C     myThid       :: my Thread Id number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER myThid
 #ifdef ALLOW_USE_MPI
 C     mpiRC        :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
+      myThid = MAX(myThArg,1)
 C--   Print message
       WRITE(msgBuf,'(A)') 'S/R ALL_PROC_DIE: ending the run'
       CALL PRINT_ERROR( msgBuf, myThid )
+
+      _BEGIN_MASTER(myThid)
 
 C--   Finishes
       eeEndError = .TRUE.
       fatalError = .TRUE.
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
-#endif
-      _BEGIN_MASTER(myThid)
 C     better to avoid this call if multi-components set-up ; otherwise will
 C     hang here since procs of other comp. are not calling MPI_finalize now.
        IF ( .NOT.( useCoupler
@@ -73,11 +76,26 @@ C     hang here since procs of other comp. are not calling MPI_finalize now.
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
        ENDIF
-      _END_MASTER(myThid)
-#ifndef ALWAYS_USE_MPI
       ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
+
+C-    Some systems do not always flush the IO buffer to disk.
+C     To fix this, can either close these files (implies not to write
+C     anything after) or flush the io-unit.
+C     Note: function "flush" is not standard fortran and might not
+C     be available (genmake2 should check for this)
+c       CLOSE( errorMessageUnit )
+c       CALL FLUSH( errorMessageUnit )
+c     IF ( usingMPI ) THEN
+c       CLOSE( standardMessageUnit )
+c       CALL FLUSH( standardMessageUnit )
+c     ENDIF
+
+      _END_MASTER(myThid)
+
+      IF ( myThArg.GE.1 ) THEN
+        _BARRIER
+      ENDIF
 
       RETURN
       END
