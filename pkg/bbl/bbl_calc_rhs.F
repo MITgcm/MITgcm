@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.2 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.3 2012/03/31 05:38:56 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -71,9 +71,10 @@ C--   Loops on tile indices bi,bj
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C     Initialize tendency terms and make local copy of
-C     bottomost temperature, salinity, and in-situ desnity
-C     and of in-situ BBL density
+C     Initialize tendency terms, make local copy of
+C     bottomost temperature, salinity, in-situ density
+C     and in-situ BBL density, and ensure that bbl_eta
+C     is not thicker than bottom level thickness.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           bbl_TendTheta(i,j,bi,bj) = 0. _d 0
@@ -87,6 +88,8 @@ C     and of in-situ BBL density
           ELSE
            rhoBBL(i,j) = rhoInSitu(i,j,kBot+1, bi,bj)
           ENDIF
+          bbl_eta(i,j,bi,bj) = MIN (bbl_eta(i,j,bi,bj),
+     &         drF(kBot)*hFacC(i,j,kBot,bi,bj))
          ENDDO
         ENDDO
 
@@ -101,9 +104,9 @@ C     in botommost wet grid box.
           IF ( kBot .GT. 0 ) THEN
            resThk = hFacC(i,j,kBot,bi,bj)*drF(kBot) - bbl_eta(i,j,bi,bj)
 
-C     If bbl occupies the complete bottom model grid box or
+C     If bbl occupies most of the bottom model grid box or
 C     if model density is higher than BBL then mix instantly.
-           IF ( (resThk.LE.0) .OR. (rhoLoc(i,j).GE.rhoBBL(i,j)) ) THEN
+           IF ( (resThk.LE.1.) .OR. (rhoLoc(i,j).GE.rhoBBL(i,j)) ) THEN
             bbl_theta(i,j,bi,bj) = tLoc(i,j)
             bbl_salt (i,j,bi,bj) = sLoc(i,j)
 
