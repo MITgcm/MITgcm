@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.4 2011/08/19 22:48:06 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.5 2012/04/01 20:56:21 jmc Exp $
 #  $Name:  $
 #
 # Build options for Open64 Compiler on Linux x86-64
@@ -55,9 +55,10 @@ if test "x$IEEE" = x ; then     #- with optimisation:
    #- full optimisation
    # ("-Ofast" eqv "-O3 -ipa -OPT:Ofast -fno-math-errno -ffast-math" and "-OPT:Ofast"
    #  eqv to "-OPT:roundoff=2 -OPT:Olimit=0 -OPT:div_split=ON -OPT:alias=typed")
-    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3'
+   #FOPTIM='-Ofast -OPT:roundoff=1:IEEE_arithmetic=3 -LNO:fusion=2'
+    FOPTIM='-O3 -OPT:Ofast:roundoff=1:IEEE_arithmetic=3 -ffast-math -LNO:fusion=2'
    #- high optimisation (-O3), might find Pb with few S/R; fully safe: switch to -O2:
-   #FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3'
+   #FOPTIM='-O3 -OPT:roundoff=1:IEEE_arithmetic=3 -LNO:fusion=2'
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
