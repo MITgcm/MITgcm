@@ -1,0 +1,9 @@
+# BBL runtime parameters
+ &BBL_PARM01
+ bbl_RelaxH    = 86400.
+ bbl_RelaxR    = 2592000.
+ bbl_InitEta   = 20.
+ bbl_thetaFile = ' '
+ bbl_saltFile  = ' '
+ bbl_etaFile   = ' '
+ &

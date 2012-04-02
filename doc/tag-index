@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1640 2012/03/31 05:38:56 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1641 2012/04/02 04:34:07 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/bbl: modification so it can work with z*
+o pkg/bbl:
+  - modification so it can work with z*
+  - replace deltaT with dTtracerLev(k) for asynchronous time stepping
+  - global_with_exf/input.yearly verification; changes output.yearly.txt
 o eesupp/src:
   - PRINT_MESSAGE: use OpenMP critical instruction (similar to PRINT_ERROR);
     writing to unit 0 (if unit=errorMessageUnit) extended to the case myThid=1

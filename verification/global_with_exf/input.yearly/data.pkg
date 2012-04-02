@@ -3,6 +3,7 @@
   useEXF         = .TRUE.,
   useGMRedi      = .TRUE.,
   useFRAZIL      = .TRUE.,
+  useBBL         = .TRUE.,
   usediagnostics = .TRUE.,
  &
   

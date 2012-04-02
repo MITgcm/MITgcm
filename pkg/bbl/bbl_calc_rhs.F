@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.3 2012/03/31 05:38:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.4 2012/04/02 04:34:07 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -12,7 +12,6 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Calculate tendency of tracers due to bottom boundary layer.
-C     Scheme is currently coded for dTtracerLev(k) .EQ. deltaT.
 
 C     !USES:
       IMPLICIT NONE
@@ -117,9 +116,11 @@ C     If model density is lower than BBL, slowly diffuse upward.
             resSalt  = ( sLoc(i,j) * (resThk+bbl_eta(i,j,bi,bj)) -
      &           (bbl_salt (i,j,bi,bj)*bbl_eta(i,j,bi,bj)) ) / resThk
             bbl_theta(i,j,bi,bj) = bbl_theta(i,j,bi,bj) +
-     &           deltaT * (resTheta-bbl_theta(i,j,bi,bj)) / bbl_RelaxR
+     &           dTtracerLev(kBot) * (resTheta-bbl_theta(i,j,bi,bj))
+     &           / bbl_RelaxR
             bbl_salt (i,j,bi,bj) = bbl_salt (i,j,bi,bj) +
-     &           deltaT * (resSalt -bbl_salt (i,j,bi,bj)) / bbl_RelaxR
+     &           dTtracerLev(kBot) * (resSalt -bbl_salt (i,j,bi,bj))
+     &           / bbl_RelaxR
            ENDIF
           ENDIF
          ENDDO
@@ -219,9 +220,9 @@ C     for botommost wet grid box.
           kBot = kLowC(i,j,bi,bj)
           IF ( kBot .GT. 0 ) THEN
            bbl_theta(i,j,bi,bj) = bbl_theta(i,j,bi,bj) +
-     &          deltaT * bbl_TendTheta(i,j,bi,bj)
+     &          dTtracerLev(kBot) * bbl_TendTheta(i,j,bi,bj)
            bbl_salt (i,j,bi,bj) = bbl_salt (i,j,bi,bj) +
-     &          deltaT * bbl_TendSalt (i,j,bi,bj)
+     &          dTtracerLev(kBot) * bbl_TendSalt (i,j,bi,bj)
            bbl_TendTheta(i,j,bi,bj) = bbl_TendTheta(i,j,bi,bj) *
      &          bbl_eta(i,j,bi,bj) / (hFacC(i,j,kBot,bi,bj)*drF(kBot))
            bbl_TendSalt (i,j,bi,bj) = bbl_TendSalt (i,j,bi,bj) *
