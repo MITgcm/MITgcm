@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.60 2012/03/24 20:53:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.61 2012/04/02 15:54:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,7 +36,13 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
 CEOP
+
+C--   MPI + multi-threads: seems to be OK to let master-thread check & stop
+C      (as long as all procs finish cleanly by calling ALL_PROC_DIE)
+      _BEGIN_MASTER(myThid)
+      errCount = 0
 
 C-  check that CPP option is "defined" when running-flag parameter is on:
 
@@ -50,7 +56,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'Re-compile with:  #define ALLOW_3D_DIFFKR'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -64,7 +70,7 @@ C       code is being compiled
        IF ( nonHydrostatic ) WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonHydrostatic is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -76,7 +82,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A,1P2E20.7)')
      &   'CONFIG_CHECK: are set to:',alph_AB,beta_AB
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -88,7 +94,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: but momImplVertAdv is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( tempImplVertAdv ) THEN
         WRITE(msgBuf,'(A)')
@@ -97,7 +103,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: but tempImplVertAdv is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( saltImplVertAdv ) THEN
         WRITE(msgBuf,'(A)')
@@ -106,7 +112,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: but saltImplVertAdv is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( dTtracerLev(1).NE.dTtracerLev(Nr) .AND. implicitDiffusion
      &     .AND. ( saltStepping .OR. tempStepping .OR. usePTRACERS )
@@ -117,7 +123,7 @@ C       code is being compiled
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &   'but implicitDiffusion=T with non-uniform dTtracerLev'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -129,7 +135,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: supported in adjoint mode'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -138,13 +144,13 @@ C       code is being compiled
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &       'implicitDiffusion not available with DEPTH_CONTROL'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( useOBCS ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: DEPTH_CONTROL code not compatible with OBCS'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -156,7 +162,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: exactConserv is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -168,7 +174,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonlinFreeSurf is non-zero'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -180,7 +186,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: ==> set #define NONLIN_FRSURF to use it'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* NONLIN_FRSURF */
 
@@ -192,7 +198,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: ==> set #undef DISABLE_RSTAR_CODE to use it'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* DISABLE_RSTAR_CODE */
 
@@ -204,7 +210,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: ==> set #undef DISABLE_SIGMA_CODE to use it'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* DISABLE_SIGMA_CODE */
 
@@ -215,7 +221,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: by useRealFreshWaterFlux=TRUE in data file'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
 #endif
 
 #ifndef ALLOW_ADDFLUID
@@ -226,7 +232,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A,I4,A)') 'CONFIG_CHECK: selectAddFluid=',
      &                           selectAddFluid, ' is not zero'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_ADDFLUID */
 
@@ -243,7 +249,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( useRealFreshWaterFlux .AND. useThSIce ) THEN
         WRITE(msgBuf,'(A)')
@@ -255,7 +261,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -268,7 +274,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'Re-compile with  ALLOW_BALANCE_FLUXES defined'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -281,7 +287,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: Re-compile with ALLOW_SRCG defined'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_SRCG */
 
@@ -297,7 +303,7 @@ C--   Check parameter consistency :
      &  'CONFIG_CHECK: cannot use Biharmonic Visc. (viscA4) with',
      &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
      &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. )
@@ -306,7 +312,7 @@ C--   Check parameter consistency :
      &  'CONFIG_CHECK: cannot use Leith Visc.(div.part) with',
      &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
 C     Overlaps cannot be larger than interior tile except for special
@@ -316,13 +322,13 @@ C     cases
        WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: sNx<OLx not allowed with ALLOW_EXCH2 defined'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
 #endif /* ALLOW_EXCH2 */
        IF ( Nx.NE.1 ) THEN
         WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: sNx<OLx not allowed unless Nx=1'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
       ENDIF
       IF ( sNy.LT.OLy ) THEN
@@ -330,13 +336,13 @@ C     cases
        WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: sNy<OLy not allowed with ALLOW_EXCH2 defined'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
 #endif /* ALLOW_EXCH2 */
        IF ( Ny.NE.1 ) THEN
         WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: sNy<OLy not allowed unless Ny=1'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
       ENDIF
 
@@ -347,7 +353,7 @@ C--   Deep-Atmosphere & Anelastic limitations:
      &  'CONFIG_CHECK: Deep-Atmosphere not yet implemented with',
      &  ' real-Fresh-Water option in P-coordinate'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( select_rStar.NE.0 .AND.
      &        ( deepAtmosphere .OR.
@@ -356,7 +362,7 @@ C--   Deep-Atmosphere & Anelastic limitations:
      &  'CONFIG_CHECK: Deep-Atmosphere or Anelastic',
      &  ' not yet implemented with rStar'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( vectorInvariantMomentum .AND.
      &        ( deepAtmosphere .OR.
@@ -365,7 +371,7 @@ C--   Deep-Atmosphere & Anelastic limitations:
      &  'CONFIG_CHECK: Deep-Atmosphere or Anelastic',
      &  ' not yet implemented in Vector-Invariant momentum code'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
 C--   Free-surface related limitations:
@@ -374,7 +380,7 @@ C--   Free-surface related limitations:
      &  'CONFIG_CHECK: Cannot select both implicitFreeSurface',
      &  ' and rigidLid.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF (rigidLid .AND. exactConserv) THEN
@@ -384,7 +390,7 @@ C--   Free-surface related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( linFSConserveTr .AND. nonlinFreeSurf.NE.0 ) THEN
@@ -394,7 +400,7 @@ C--   Free-surface related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: and Tracer Correction of Lin. Free Surf.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF (rigidLid .AND. useRealFreshWaterFlux) THEN
@@ -404,7 +410,7 @@ C--   Free-surface related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF (nonlinFreeSurf.NE.0 .AND. .NOT.exactConserv) THEN
@@ -414,7 +420,7 @@ C--   Free-surface related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: without exactConserv'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF (select_rStar.NE.0 .AND. .NOT.exactConserv) THEN
@@ -424,7 +430,7 @@ C--   Free-surface related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: without exactConserv'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( selectSigmaCoord.NE.0 ) THEN
@@ -432,19 +438,19 @@ C--   Free-surface related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: Sigma-Coords not yet coded for Oceanic set-up'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
        IF ( nonlinFreeSurf.LE.0 ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: Sigma-Coords not coded for Lin-FreeSurf'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
        IF (select_rStar.NE.0 ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: Sigma-Coords and rStar are not compatible'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: Sigma-Coords code neither complete nor tested'
@@ -478,7 +484,7 @@ c     ENDIF
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: restart not implemented in this config'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
@@ -502,7 +508,7 @@ c     ENDIF
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: requires exactConserv=T'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 #else
       IF (useRealFreshWaterFlux
@@ -525,7 +531,7 @@ c     ENDIF
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &       'should be =0 (Off), 1,2 (Add Mass) or -1 (Virtual Flux)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( selectAddFluid.GE.1 .AND. rigidLid ) THEN
         WRITE(msgBuf,'(A)')
@@ -534,7 +540,7 @@ c     ENDIF
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( selectAddFluid.GE.1 .AND. .NOT.staggerTimeStep ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
@@ -555,7 +561,7 @@ C--   Non-hydrostatic and 3-D solver related limitations:
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: in nonHydrostatic code'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( implicitNHPress*implicSurfPress*implicDiv2Dflow.NE.1.
@@ -566,14 +572,14 @@ C--   Non-hydrostatic and 3-D solver related limitations:
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: To by-pass this',
      &    'STOP, comment this test and re-compile config_check'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( nonHydrostatic .AND. .NOT.exactConserv
      &     .AND. implicDiv2Dflow.NE.1. ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Needs exactConserv=T',
      &               ' for nonHydrostatic with implicDiv2Dflow < 1'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( nonHydrostatic .AND.
      &     implicitNHPress.NE.implicSurfPress ) THEN
@@ -614,14 +620,14 @@ C--   Momentum related limitations:
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &   '"highOrderVorticity" conflicts with "upwindVorticity"'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
       ENDIF
       IF ( selectCoriMap.LT.0 .OR. selectCoriMap.GT.3 ) THEN
         WRITE(msgBuf,'(2A,I4)') 'CONFIG_CHECK: ',
      &       'Invalid option: selectCoriMap=', selectCoriMap
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF (.NOT.useCDscheme .AND. (tauCD.NE.0. .OR. rCD.NE.-1.) ) THEN
@@ -638,7 +644,7 @@ C- jmc: but ultimately, this block can/will be removed.
      &   'CONFIG_CHECK: to turn ON CD-scheme: => "useCDscheme=.TRUE."',
      &   ' in "data", namelist PARM01'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
      &   'CD-scheme is OFF but params(tauCD,rCD) are set'
@@ -657,7 +663,7 @@ C- jmc: but ultimately, this block can/will be removed.
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: CD-scheme not implemented on CubedSphere grid'
         CALL PRINT_ERROR( msgBuf, myThid )
-cph        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+cph        errCount = errCount + 1
       ENDIF
 
 C--   Time-stepping limitations
@@ -668,7 +674,7 @@ C--   Time-stepping limitations
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: momForcingOutAB ',
      &                       'should be =1 (Out of AB) or =0 (In AB)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( tracForcingOutAB.NE.0 .AND. tracForcingOutAB.NE.1 ) THEN
         WRITE(msgBuf,'(A,I10,A)') 'CONFIG_CHECK: tracForcingOutAB=',
@@ -677,7 +683,7 @@ C--   Time-stepping limitations
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: tracForcingOutAB ',
      &                       'should be =1 (Out of AB) or =0 (In AB)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
 C--   Grid limitations:
@@ -687,21 +693,21 @@ C--   Grid limitations:
      &       'CONFIG_CHECK: specifying Euler angles makes only ',
      &       'sense with usingSphericalGrid=.TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
        IF ( useFLT .OR. useZonal_Filt .OR. useECCO ) THEN
         WRITE(msgBuf,'(2A)')
      &       'CONFIG_CHECK: specifying Euler angles will probably ',
      &       'not work with pkgs FLT, ZONAL_FLT, ECCO'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
        ENDIF
 #ifdef ALLOW_PROFILES
         WRITE(msgBuf,'(2A)')
      &       'CONFIG_CHECK: specifying Euler angles will probably ',
      &       'not work with pkg profiles'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
 #endif /* ALLOW_PROFILES */
       ENDIF
 
@@ -710,7 +716,7 @@ C--   Packages conflict
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: cannot set both: useMATRIX & useGCHEM'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( useMATRIX .AND. .NOT.usePTRACERS ) THEN
@@ -718,7 +724,7 @@ C--   Packages conflict
      &       'CONFIG_CHECK: cannot set useMATRIX without ',
      &       'setting usePTRACERS'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( (useSEAICE .OR. useThSIce) .AND. allowFreezing ) THEN
@@ -726,9 +732,21 @@ C--   Packages conflict
      &       'CONFIG_CHECK: cannot set allowFreezing',
      &       ' with pkgs SEAICE or THSICE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        errCount = errCount + 1
       ENDIF
 
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'CONFIG_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      _END_MASTER(myThid)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -743,6 +761,7 @@ C--   Packages conflict
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER(myThid)
 
       RETURN
       END
