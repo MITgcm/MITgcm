@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.13 2012/03/08 17:05:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.14 2012/04/02 00:06:31 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -116,9 +116,9 @@ C       step since we are saving the gpTrNm1 variable first
       ENDIF
 #endif /*  ALLOW_MNC  */
 
+      lChar = ILNBLNK(suff)
       IF ( PTRACERS_pickup_write_mdsio ) THEN
 
-        lChar = ILNBLNK(suff)
         IF ( lChar.EQ.0 ) THEN
           WRITE(fn,'(2A)') 'pickup_ptracers'
         ELSE
@@ -175,6 +175,8 @@ C     uses this specific S/R to write (with more informations) only meta files
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
+      ENDIF
+
 #ifdef PTRACERS_ALLOW_DYN_STATE
 C     write pickup for 2nd-order moment fields
 C     we write a separate file for each Ptracer that uses SOM advection
@@ -186,13 +188,16 @@ C     we write a separate file for each Ptracer that uses SOM advection
             WRITE(fn,'(4A)') 'pickup_somTRAC',PTRACERS_ioLabel(iTracer),
      &                       '.',suff(1:lChar)
           ENDIF
-          WRITE(msgBuf,'(A,I3,A)')'PTRACERS_WRITE_PICKUP: iTracer = ',
-     &                       iTracer,
-     &                       ' : writing 2nd-order moments to file '
+          _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(A,I4,A)')'PTRACERS_WRITE_PICKUP: iTracer =',
+     &                       iTracer, ' : writing 2nd-order moments'
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid)
-          CALL PRINT_MESSAGE( fn, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid)
+     &                        SQUEEZE_RIGHT, myThid )
+          j = ILNBLNK(fn)
+          WRITE(msgBuf,'(A,A)') ' to file: ',fn(1:j)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          _END_MASTER(myThid)
           prec = precFloat64
 C     Write 2nd Order moments as consecutive records
           DO n=1,nSOM
@@ -204,8 +209,6 @@ C     Write 2nd Order moments as consecutive records
          ENDIF
         ENDDO
 #endif /* PTRACERS_ALLOW_DYN_STATE */
-C--------------------------
-      ENDIF
 
 #endif /* ALLOW_PTRACERS */
 
