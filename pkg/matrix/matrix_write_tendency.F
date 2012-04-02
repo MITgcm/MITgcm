@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_write_tendency.F,v 1.4 2011/08/26 19:47:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_write_tendency.F,v 1.5 2012/04/02 21:26:12 jmc Exp $
 C $Name:  $
 
 #include "MATRIX_OPTIONS.h"
@@ -15,7 +15,6 @@ C to file.
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
 #include "MATRIX.h"
 
       _RL myTime
@@ -45,8 +44,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo (myThid),myBxHi(myThid)
              DO k=1,Nr
-              DO j=1-Oly, sNy+Oly
-               DO i=1-Olx, sNx+Olx
+              DO j=1-OLy, sNy+OLy
+               DO i=1-OLx, sNx+OLx
                  MATRIX(i,j,k,bi,bj,iTracer,1) =
      &                   MATRIX(i,j,k,bi,bj,iTracer,1)
      &                   *recipExpDeltaTtracer
@@ -55,15 +54,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
            ENDDO
           ENDDO
+          _BEGIN_MASTER(myThid)
           bj=myByLo(myThid)
           bi=myBxLo(myThid)
           WRITE(msgBuf,'(A,I4,2I6)') 'Writing explicit matrix :',
      &       iTracer, expMatrixWriteCount, expMatrixCounter(bi,bj)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
+          _END_MASTER(myThid)
           WRITE(suff,'(A9,I2.2)') 'MATRIXEXP',iTracer
           CALL WRITE_REC_XYZ_RL(suff,
-     &         MATRIX(1-Olx,1-Oly,1,1,1,iTracer,1),iRec,myIter,myThid)
+     &         MATRIX(1-OLx,1-OLy,1,1,1,iTracer,1),iRec,myIter,myThid)
         ENDDO
         _BARRIER
         _BEGIN_MASTER(myThid)
@@ -80,8 +81,8 @@ C       Reset explicit matrix
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo (myThid),myBxHi(myThid)
              DO k=1,Nr
-              DO j=1-Oly, sNy+Oly
-               DO i=1-Olx, sNx+Olx
+              DO j=1-OLy, sNy+OLy
+               DO i=1-OLx, sNx+OLx
                  MATRIX(i,j,k,bi,bj,iTracer,1) = 0. _d 0
                ENDDO
               ENDDO
@@ -102,8 +103,8 @@ C       Reset explicit matrix
           DO bj=myByLo(myThid), myByHi (myThid)
            DO bi=myBxLo (myThid), myBxHi (myThid)
              DO k=1,Nr
-              DO j=1-Oly, sNy+Oly
-               DO i=1-Olx, sNx+Olx
+              DO j=1-OLy, sNy+OLy
+               DO i=1-OLx, sNx+OLx
                  MATRIX(i,j,k,bi,bj,iTracer,2) =
      &                   MATRIX(i,j,k,bi,bj,iTracer,2)
      &                   *recipImpMatrixCounter
@@ -112,15 +113,17 @@ C       Reset explicit matrix
              ENDDO
            ENDDO
           ENDDO
+          _BEGIN_MASTER(myThid)
           bj=myByLo(myThid)
           bi=myBxLo(myThid)
           WRITE(msgBuf,'(A,I4,2I6)') 'Writing implicit matrix :',
      &       iTracer, impMatrixWriteCount, impMatrixCounter(bi,bj)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
+          _END_MASTER(myThid)
           WRITE(suff,'(A9,I2.2)') 'MATRIXIMP',iTracer
           CALL WRITE_REC_XYZ_RL(suff,
-     &         MATRIX(1-Olx,1-Oly,1,1,1,iTracer,2),iRec,myIter,myThid)
+     &         MATRIX(1-OLx,1-OLy,1,1,1,iTracer,2),iRec,myIter,myThid)
         ENDDO
         _BARRIER
         _BEGIN_MASTER(myThid)
@@ -137,8 +140,8 @@ C       Reset implicit matrix
           DO bj=myByLo(myThid), myByHi (myThid)
            DO bi=myBxLo (myThid), myBxHi (myThid)
              DO k=1,Nr
-              DO j=1-Oly, sNy+Oly
-               DO i=1-Olx, sNx+Olx
+              DO j=1-OLy, sNy+OLy
+               DO i=1-OLx, sNx+OLx
                  MATRIX(i,j,k,bi,bj,iTracer,2) = 0. _d 0
                ENDDO
               ENDDO

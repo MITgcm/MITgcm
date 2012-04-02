@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.2 2010/05/01 16:57:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.3 2012/04/02 21:27:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,10 +59,12 @@ c       ENDIF
       ELSE
 C--   Case where restarting from a pickup
 
+       _BEGIN_MASTER(myThid)
        WRITE(msgBuf,'(A,I4)')
      &   'INI_NH_FIELDS: dPhiNHstatus=', dPhiNHstatus
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+       _END_MASTER(myThid)
        IF ( exactConserv .AND. dPhiNHstatus.EQ.0 ) THEN
 c      IF ( exactConserv ) THEN
 C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
@@ -81,7 +83,7 @@ c             dPhiNH(i,j,bi,bj) = 0.
 C-       Other than Z coordinate: no assumption on surface level index
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             ks = ksurfC(i,j,bi,bj)
+             ks = kSurfC(i,j,bi,bj)
              IF ( ks.LE.Nr ) THEN
               dPhiNH(i,j,bi,bj) = phi_nh(i,j,ks,bi,bj)
              ELSE
@@ -124,8 +126,8 @@ C--   Set the variable viscosities to default value.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k = 1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            viscAh_W(i,j,k,bi,bj) = viscAhW
            viscA4_W(i,j,k,bi,bj) = viscA4W
           ENDDO
