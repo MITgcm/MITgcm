@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.57 2012/03/05 17:56:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.58 2012/04/02 21:30:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,7 +30,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid ::  Number of this instances
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -39,6 +39,7 @@ C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
+      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)')
      &'== Packages configuration : Check & print summary =='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -46,19 +47,22 @@ CEOP
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER(myThid)
 
 C---  Start with non-standard packages (without or with non standard flag)
 
 #ifndef ALLOW_MNC
       IF (useMNC) THEN
-        WRITE(msgBuf,'(2A)') '***WARNING***',
+        _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING **',
      &   ' PACKAGES_CHECK: useMNC is TRUE'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(2A)') '***WARNING***',
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING **',
      &   ' but pkg/mnc has not been compiled (#undef ALLOW_MNC)'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT, myThid )
+        _END_MASTER(myThid)
       ENDIF
 #endif
 
@@ -71,6 +75,7 @@ C---  Start with non-standard packages (without or with non standard flag)
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &   'Re-compile with pkg "mom_vecinv" in packages.conf'
         CALL PRINT_ERROR( msgBuf , myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
 #endif
@@ -83,6 +88,7 @@ C---  Start with non-standard packages (without or with non standard flag)
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &   'Re-compile with pkg "mom_fluxform" in packages.conf'
         CALL PRINT_ERROR( msgBuf , myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
 #endif
@@ -96,6 +102,7 @@ C---  Start with non-standard packages (without or with non standard flag)
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  'Re-compile with pkg "generic_advdiff" in packages.conf'
         CALL PRINT_ERROR( msgBuf , myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
 #endif
@@ -387,6 +394,7 @@ C---  Exclusive packages (which cannot be used together):
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  ' but cannot be used together => need to select only one.'
         CALL PRINT_ERROR( msgBuf , myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
 
@@ -398,6 +406,7 @@ C---  Exclusive packages (which cannot be used together):
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  ' but cannot be used together => need to select only one.'
         CALL PRINT_ERROR( msgBuf , myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
 
