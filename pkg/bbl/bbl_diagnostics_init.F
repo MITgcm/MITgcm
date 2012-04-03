@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_diagnostics_init.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_diagnostics_init.F,v 1.2 2012/04/03 00:22:16 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -35,7 +35,7 @@ C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
-      INTEGER       diagMate
+c     INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits

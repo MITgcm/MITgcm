@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_init_varia.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_init_varia.F,v 1.2 2012/04/03 00:22:16 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -29,15 +29,15 @@ CEOP
 #ifdef ALLOW_BBL
 
 C     !LOCAL VARIABLES:
-C     i,j,k,bi,bj :: loop indices
+C     i,j,bi,bj :: loop indices
 C     kBot      :: k index of bottommost wet grid
-      INTEGER i,j,k,bi,bj,kBot
+      INTEGER i,j,bi,bj,kBot
 
 C     Initialize arrays in common blocks.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+OLy
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           kBot = max(1,kLowC(i,j,bi,bj))
           bbl_theta(i,j,bi,bj)     = theta(i,j,kBot,bi,bj)
           bbl_salt (i,j,bi,bj)     = salt (i,j,kBot,bi,bj)
