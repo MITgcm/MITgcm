@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rho.F,v 1.3 2011/08/07 21:40:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rho.F,v 1.4 2012/04/03 16:46:58 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -79,15 +79,15 @@ C-    Compute rBBL at level k-1 based on bbl_theta and bbl_salt.
       kl = MAX(k-1,1)
       CALL FIND_RHO_2D(
      I     1-OLx, sNx+OLx, 1-OLy, sNy+OLy, kl,
-     I     bbl_theta,
-     I     bbl_salt,
+     I     bbl_theta(1-OLx,1-OLy,bi,bj),
+     I     bbl_salt(1-OLx,1-OLy,bi,bj),
      O     rBBL,
      I     kl, bi, bj, myThid )
 
 C-    For k > kLowC replace rhoLoc with rBBL
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        IF ( k .GT. kLowC(i,j,bi,bj) ) 
+        IF ( k .GT. kLowC(i,j,bi,bj) )
      &       rhoLoc(i,j,k,bi,bj) = rBBL(i,j)
        ENDDO
       ENDDO
@@ -96,8 +96,8 @@ C-    Compute bbl_rho_nr at level Nr based on bbl_theta and bbl_salt.
       IF ( k .EQ. Nr ) THEN
        CALL FIND_RHO_2D(
      I      1-OLx, sNx+OLx, 1-OLy, sNy+OLy, Nr,
-     I      bbl_theta,
-     I      bbl_salt,
+     I      bbl_theta(1-OLx,1-OLy,bi,bj),
+     I      bbl_salt(1-OLx,1-OLy,bi,bj),
      O      bbl_rho_nr(1-OLx,1-OLy,bi,bj),
      I      Nr, bi, bj, myThid )
       ENDIF
