@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1642 2012/04/03 02:41:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1643 2012/04/03 15:30:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cal:
+  - start to clean-up cal_set.F ; fix for the case where baseTime is non-zero.
+  - remove 2 unsused and very short (1 line only) functions ;
+  - remove unsused subroutines from AD-Diff list.
 o model/src:
   - start to implement clean wait to stop in initialization S/R (config_check.F,
      packages_check.F and pkg/obcs/obcs_check.F + pkg/mypackage)
