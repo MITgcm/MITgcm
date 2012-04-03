@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.32 2012/03/30 18:12:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.33 2012/04/03 00:08:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -56,7 +56,6 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
 CEOP
-       INTEGER mpiRC
 
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI,
@@ -153,7 +152,10 @@ C     Make scratch copies of input data file with and without comments
      &       'Unable to open parameter file "eedata"'
         CALL PRINT_ERROR( msgBuf, 1 )
         CALL EEDATA_EXAMPLE
-        STOP 'ABNORMAL END: S/R EESET_PARMS'
+C note: At this early stage, MPI might not be yet fully set-up; for this reason
+C       set error flag and return (to avoid a call to ALL_PROC_DIE before stop)
+c       STOP 'ABNORMAL END: S/R EESET_PARMS'
+        eeBootError = .TRUE.
       ELSE
         RETURN
       ENDIF
@@ -209,7 +211,7 @@ C--   Read namelist
      &      'Error reading parameter file "eedata"'
        CALL PRINT_ERROR( msgBuf, 1 )
        CALL EEDATA_EXAMPLE
-       STOP 'ABNORMAL END: S/R EESET_PARMS'
+       eeBootError = .TRUE.
       ENDIF
 #endif
    4  CONTINUE
@@ -225,8 +227,7 @@ C--   Execution Environment parameter file read
        CALL PRINT_ERROR( msgBuf, 1 )
        WRITE(msgBuf,'(A)') 'EESET_PARMS:  with #define ALWAYS_USE_MPI'
        CALL PRINT_ERROR( msgBuf, 1 )
-       STOP 'ABNORMAL END: S/R EESET_PARMS'
-c      eeBootError = .TRUE.
+       eeBootError = .TRUE.
       ENDIF
       usingMPI = .TRUE.
 #endif
@@ -237,8 +238,7 @@ c      eeBootError = .TRUE.
        CALL PRINT_ERROR( msgBuf, 1 )
        WRITE(msgBuf,'(A)') 'EESET_PARMS:  with #undef ALLOW_USE_MPI'
        CALL PRINT_ERROR( msgBuf, 1 )
-       STOP 'ABNORMAL END: S/R EESET_PARMS'
-c      eeBootError = .TRUE.
+       eeBootError = .TRUE.
       ENDIF
       usingMPI = .FALSE.
 #endif /* ALLOW_USE_MPI */
