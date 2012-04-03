@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.246 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.247 2012/04/03 22:38:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,6 +44,7 @@ C                   :: contribution in (or out of) Adams-Bashforth time stepping
 C     goptCount  :: Used to count the nuber of grid options (only one is allowed!)
 C     msgBuf     :: Informational/error message buffer
 C     errIO      :: IO error flag
+C     errCount   :: error counter (inconsitent params and other errors)
 C     iUnit      :: Work variable for IO unit number
 C     k, i, j    :: Loop counters
 C     xxxDefault :: Default value for variable xxx
@@ -56,7 +57,7 @@ C     xxxDefault :: Default value for variable xxx
       INTEGER goptCount
       INTEGER gridNx, gridNy
       INTEGER k, i, j, iUnit
-      INTEGER errIO
+      INTEGER errIO, errCount
 C     Default values for variables which have vertical coordinate system
 C     dependency.
       _RL viscArDefault
@@ -340,6 +341,7 @@ C--   Open the parameter file
 
 C--   Read settings from iUnit (= a copy of model parameter file "data").
       errIO = 0
+      errCount = 0
 
 C--   Set default "physical" parameters
       viscAhW  = UNSET_RL
@@ -414,7 +416,7 @@ C     according to buoyancyRelation
         WRITE(msgBuf,'(2A)') 'S/R INI_PARMS:',
      &      ' Bad value of buoyancyRelation '
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+        errCount = errCount + 1
       ENDIF
 
       IF ( .NOT.rigidLid .AND.
@@ -456,7 +458,7 @@ C--   Non-hydrostatic/quasi-hydrostatic
        WRITE(msgBuf,'(A)')
      &   'Illegal: both nonHydrostatic = quasiHydrostatic = TRUE'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 C--  Advection and Forcing for Temp and salt
       IF (tempVertAdvScheme.EQ.0) tempVertAdvScheme = tempAdvScheme
@@ -488,12 +490,12 @@ C--   z,p,r coord input switching.
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
      &    'viscArNr and viscAr (or Ap,Az) in param file data'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
        WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
      &       vertSetCount, ' /', Nr, ') of viscArNr is not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 
       IF ( diffKzT .NE. UNSET_RL ) zCoordInputData  = .TRUE.
@@ -514,12 +516,12 @@ C--   z,p,r coord input switching.
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
      &    'diffKrNrT and diffKrT (or Kp,Kz) in param file data'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
        WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
      &       vertSetCount, ' /', Nr, ') of diffKrNrT is not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 
       IF ( diffKzS .NE. UNSET_RL ) zCoordInputData  = .TRUE.
@@ -540,12 +542,12 @@ C--   z,p,r coord input switching.
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
      &    'diffKrNrS and diffKrS (or Kp,Kz) in param file data'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
        WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
      &       vertSetCount, ' /', Nr, ') of diffKrNrS is not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 
       IF (diffKrBLEQsurf .EQ. UNSET_RL) diffKrBLEQsurf = diffKrBL79surf
@@ -574,7 +576,7 @@ C--   for backward compatibility :
      &     'S/R INI_PARMS: selectVortScheme=', selectVortScheme,
      &     ' conflicts with "SadournyCoriolis"'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R INI_PARMS'
+          errCount = errCount + 1
         ENDIF
       ENDIF
 
@@ -583,7 +585,7 @@ C--   for backward compatibility :
      &  'S/R INI_PARMS: To use ivdc_kappa you must enable implicit',
      &  ' vertical diffusion.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 
       coordsSet = 0
@@ -594,13 +596,14 @@ C--   for backward compatibility :
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: Cannot mix z, p and r in the input data.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( rhoConst .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: rhoConst must be greater than 0.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
+       recip_rhoConst = 1. _d 0
       ELSE
        recip_rhoConst = 1. _d 0 / rhoConst
       ENDIF
@@ -608,13 +611,13 @@ C--   for backward compatibility :
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: rhoNil must be greater than 0.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( HeatCapacity_Cp .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: HeatCapacity_Cp must be greater than 0.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ELSE
        recip_Cp = 1. _d 0 / HeatCapacity_Cp
       ENDIF
@@ -622,7 +625,8 @@ C--   for backward compatibility :
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: gravity must be greater than 0.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
+       recip_gravity = 1. _d 0
       ELSE
        recip_gravity = 1. _d 0 / gravity
       ENDIF
@@ -832,7 +836,7 @@ C     o Time step size
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: deltaTtracer & dTtracerLev(1) not equal'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+        errCount = errCount + 1
       ELSEIF ( dTtracerLev(1) .NE. 0. ) THEN
         deltaTtracer = dTtracerLev(1)
       ENDIF
@@ -840,6 +844,16 @@ C     o Time step size
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTtracer
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTmom
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTfreesurf
+      IF ( deltaT       .EQ. 0. ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: ',
+     &   'need to specify in file "data", namelist "PARM03"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: ',
+     &   ' a model timestep (in s) deltaT or deltaTClock= ?'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+        deltaT = 1.
+      ENDIF
       IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
       IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
@@ -857,26 +871,24 @@ C it is better to set deltaTreesurf=deltaTtracer
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle,externForcingPeriod =0'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_PARMS'
-       ENDIF
-       IF ( INT(externForcingCycle/externForcingPeriod) .NE.
-     &          externForcingCycle/externForcingPeriod ) THEN
+        errCount = errCount + 1
+       ELSEIF ( INT(externForcingCycle/externForcingPeriod) .NE.
+     &              externForcingCycle/externForcingPeriod ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle <> N*externForcingPeriod'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_PARMS'
-       ENDIF
-       IF ( externForcingCycle.lt.externForcingPeriod ) THEN
+        errCount = errCount + 1
+       ELSEIF ( externForcingCycle.LT.externForcingPeriod ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle < externForcingPeriod'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+        errCount = errCount + 1
        ENDIF
-       IF ( externForcingPeriod.lt.deltaTclock ) THEN
+       IF ( externForcingPeriod.LT.deltaTclock ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingPeriod < deltaTclock'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+        errCount = errCount + 1
        ENDIF
       ENDIF
 C     o Adams-Bashforth time stepping:
@@ -897,7 +909,7 @@ C     o Convection frequency
      &  'S/R INI_PARMS: You have enabled both ivdc_kappa and',
      &  ' convective adjustment.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF (useCDscheme) THEN
 C     o CD coupling (CD scheme):
@@ -948,7 +960,7 @@ C     o Consistent?
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: Perhaps more than two were set at once'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( nEndIter .NE. nIter0+nTimeSteps ) THEN
        WRITE(msgBuf,'(A)')
@@ -957,7 +969,7 @@ C     o Consistent?
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: Perhaps more than two were set at once'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( nTimeSteps .NE. NINT((endTime-startTime)/deltaTClock)
      &   ) THEN
@@ -967,7 +979,7 @@ C     o Consistent?
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: but are inconsistent'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 
 C     o Monitor (should also add CPP flag for monitor?)
@@ -1055,7 +1067,7 @@ C     X coordinate : Check for multiple definitions
        WRITE(msgBuf,'(A,A)') 'Too many specifications for delX:',
      &   'Specify only one of delX, dxSpacing or delXfile'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( dxSpacing .NE. UNSET_RL ) THEN
        DO i=1,gridNx
@@ -1071,7 +1083,7 @@ C     Y coordinate : Check for multiple definitions
        WRITE(msgBuf,'(A,A)') 'Too many specifications for delY:',
      &   'Specify only one of delY, dySpacing or delYfile'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( dySpacing .NE. UNSET_RL ) THEN
        DO j=1,gridNy
@@ -1089,7 +1101,7 @@ C--   Check for conflicting grid definitions.
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: More than one coordinate system requested'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
       IF ( goptCount .LT. 1 ) THEN
 C-     No horizontal grid is specified => use Cartesian grid as default:
@@ -1135,7 +1147,7 @@ C--   Default origin for  X & Y axis (longitude & latitude origin):
           WRITE(msgBuf,'(A)')
      &    'S/R INI_PARMS: found no coordinate system to set ygOrigin'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R INI_PARMS'
+          errCount = errCount + 1
         ENDIF
       ENDIF
 C--   Make metric term & Coriolis settings consistent with underlying grid.
@@ -1184,7 +1196,7 @@ C--   set cell Center depth and put Interface at the middle between 2 C
          WRITE(msgBuf,'(A,I4)')
      &        'S/R INI_PARMS: No value for delRc at k =', k
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
         ENDIF
        ELSE
         IF ( k.EQ.1 ) setCenterDr = .TRUE.
@@ -1192,7 +1204,7 @@ C--   set cell Center depth and put Interface at the middle between 2 C
          WRITE(msgBuf,'(A,I4)')
      &        'S/R INI_PARMS: No value for delRc at k <', k
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
         ENDIF
        ENDIF
       ENDDO
@@ -1210,7 +1222,7 @@ C--   p, z, r coord parameters
          WRITE(msgBuf,'(A,I4)')
      &        'S/R INI_PARMS: No value for delZ/delP/delR at k =', k
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
         ENDIF
        ELSE
         IF ( k.EQ.1 ) setInterFDr = .TRUE.
@@ -1218,7 +1230,7 @@ C--   p, z, r coord parameters
          WRITE(msgBuf,'(A,I4)')
      &        'S/R INI_PARMS: No value for delZ/delP/delR at k <', k
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
         ENDIF
        ENDIF
       ENDDO
@@ -1231,7 +1243,7 @@ C     Check for multiple coordinate systems
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: Cannot mix z, p and r in the input data.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
       ENDIF
 C-    Check for double definition (file & namelist)
       IF ( delRcFile.NE.' ' ) THEN
@@ -1239,7 +1251,7 @@ C-    Check for double definition (file & namelist)
           WRITE(msgBuf,'(A)')
      &         'S/R INI_PARMS: Cannot set both delRc and delRcFile'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R INI_PARMS'
+          errCount = errCount + 1
         ENDIF
         setCenterDr = .TRUE.
       ENDIF
@@ -1248,16 +1260,10 @@ C-    Check for double definition (file & namelist)
           WRITE(msgBuf,'(A)')
      &         'S/R INI_PARMS: Cannot set both delR and delRFile'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R INI_PARMS'
+          errCount = errCount + 1
         ENDIF
         setInterFDr = .TRUE.
       ENDIF
-c     IF ( setInterFDr .AND. setCenterDr ) THEN
-c       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS:',
-c    &    ' Cannot specify both delRc and delZ/delP/delR'
-c       CALL PRINT_ERROR( msgBuf, myThid )
-c       STOP 'ABNORMAL END: S/R INI_PARMS'
-c     ENDIF
 
 C--   Input files
       WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM05'
@@ -1292,7 +1298,7 @@ C     Check if two conflicting I/O directories have been specified
          WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: specified at the same time'
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
       ENDIF
 
 C     Check for relaxation term:
@@ -1304,7 +1310,7 @@ C     Check for relaxation term:
          WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: thetaClimFile is undefined'
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
        ENDIF
        IF ( (tauSaltClimRelax.GT.0.).AND.
      &      (saltClimFile.EQ.' ') ) THEN
@@ -1314,7 +1320,7 @@ C     Check for relaxation term:
          WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: saltClimFile is undefined'
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R INI_PARMS'
+         errCount = errCount + 1
        ENDIF
 
 C--   Set Units conversion factor required to incorporate
@@ -1351,15 +1357,22 @@ C--   Close the open data file
      &                    SQUEEZE_RIGHT , myThid )
 
 C--   Check whether any retired parameters were found.
-C--   Stop if they were
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: Error reading parameter file "data"'
+     &  'S/R INI_PARMS: Error reading parameter file "data":'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'some out of date parameters were found in the namelist'
+       WRITE(msgBuf,'(I4,A)') nRetired,
+     &      ' out of date parameters were found in the namelist'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+       errCount = errCount + 1
+      ENDIF
+C--   Stop if any error was found (including retired params):
+      IF ( errCount .GE. 1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'S/R INI_PARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
       _END_MASTER(myThid)
