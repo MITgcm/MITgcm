@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.125 2012/03/29 19:08:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.126 2012/04/03 12:00:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -255,6 +255,11 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
+#ifdef ALLOW_ECCO
+cph: avoid renewed call of initialise_varia in recomputation loop
+cph: in some circumstances
+CADJ STORE sbar_gen,tbar_gen  = onetape
+#endif
 
 #ifdef ALLOW_SHOWFLOPS
       CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', mythid)

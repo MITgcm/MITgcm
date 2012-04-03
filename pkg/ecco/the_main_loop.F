@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.113 2012/03/02 05:32:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.114 2012/04/03 12:00:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,33 +32,6 @@ c     checkpointing during the adjoint calculation and to account for the
 c     typical data involved in oceanographic applications a call tree
 c     that is divided into yearly, monthly, daily, and step parts can
 c     be used.
-c
-c     This routine is to be used in conjuction with the MITgcmuv release
-c     checkpoint 24.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 14-Jul-1999
-c
-c              - The call to mapping was moved to initialise_varia,
-c                since this routine has to be called before
-c                ini_predictor.
-c
-c              Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c              Patrick Heimbach heimbach@mit.edu 3-Jun-2000
-c              - corrected computation of ikey_dynamics and
-c                added computation of ikey_dynamics for the case
-c                undef ALLOW_TAMC_CHECKPOINTING
-c
-c              Patrick Heimbach heimbach@mit.edu 6-Jun-2000
-c              - corrected initialisation of comlev1 common blocks
-c
-c              Dimitris Menemenlis  menemenlis@jpl.nasa.gov 26-Feb-2003
-c              - modifications for pkg/seaice
 c
 c     ==================================================================
 c     SUBROUTINE the_main_loop
@@ -267,6 +240,11 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
+#ifdef ALLOW_ECCO
+cph: avoid renewed call of initialise_varia in recomputation loop
+cph: in some circumstances
+CADJ STORE sbar_gen,tbar_gen  = onetape
+#endif
 
       call timer_stop ('ECCO SPIN-UP', mythid)
       _BARRIER
