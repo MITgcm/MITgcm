@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_stepsperday.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_stepsperday.F,v 1.3 2012/04/03 15:20:29 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -55,6 +55,7 @@ c     == local variables ==
       integer final
       integer finalsecs
       integer ierr
+      integer modelstepsperday
 
 c     == end of interface ==
 
@@ -67,6 +68,9 @@ c     == end of interface ==
       final       = modelenddate(1)
 
       if (present .lt. final) then
+C       modelstepsperday = cal_nStepDay(mythid)
+C-jmc: inline Function "cal_nStepDay":
+        modelstepsperday = secondsperday/nint(modelstep)
         numsteps = modelstepsperday -
      &             int(presentsecs/modelstep)
       else if (present .eq. final) then

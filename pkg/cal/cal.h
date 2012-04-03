@@ -1,71 +1,66 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.5 2007/10/08 23:55:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.6 2012/04/03 15:20:29 jmc Exp $
 C $Name:  $
 
-c     ==================================================================
-c     HEADER calendar
-c     ==================================================================
-c
-c     o This header file contains variables that are used by the
-c       calendar tool. The calendar tool can be used in the ECCO
-c       SEALION release of the MITgcmUV.
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  17-Dec-1999
-c              - restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c     ==================================================================
-c     HEADER calendar
-c     ==================================================================
-c
-c     - The calendar version:
-c
-      character*(5) calendarversion
-      parameter(    calendarversion = '0.2.0' )
+C     ==================================================================
+C     HEADER calendar
+C     ==================================================================
+C
+C     o This header file contains variables that are used by the
+C       calendar tool. The calendar tool can be used in the ECCO
+C       SEALION release of the MITgcmUV.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C     changed: Christian Eckert eckert@mit.edu  17-Dec-1999
+C              - restructured the original version in order to have a
+C                better interface to the MITgcmUV.
+C
+C     ==================================================================
+C     HEADER calendar
+C     ==================================================================
+C
+C   - The calendar version:
+      CHARACTER*(5) calendarversion
+      PARAMETER(    calendarversion = '0.2.0' )
 
-c     - Parameters of the numerical model:
-c
-c     modelstart       - start time of the numerical model.
-c     modelstartdate   - start date of the numerical model.
-c     modelend         - end   time of the numerical model.
-c     modelenddate     - end   date of the numerical model.
-c     modelstep        - timestep of the numerical model.
-c     modelintsteps    - number of timestep that are to be performed.
-c     modeliter0       - the numerical models initial timestep number.
-c     modeliterend     - the models last timestep number.
-c     modelstepsperday - number of model time steps per calendar day.
-c
-c
-c     - Parameters used by the calendar:
-c
-c     refdate          - first day of the Gregorian Calendar.
-c     nmonthyear       - number months in a year.
-c     ndaymonth        - days per month depending on the year being a
-c                        leap year or not. If the Gregorian calendar is
-c                        not used a 360 days year with 30 days months is
-c                        used instead.
-c     ndaysnoleap      - number of days in a usual year.
-c     ndaysleap        - number of days in a leap year.
-c     nmaxdaymonth     - maximum number of days in a years month.
-c     hoursperday      - number of hours   in a calendars day.
-c     minutesperday    - number of minutes in a calendars day.
-c     minutesperhour   - number of minutes in a calendars hour.
-c     secondsperday    - number of seconds in a calendars day.
-c     secondsperhour   - number of seconds in a calendars hour.
-c     secondsperminute - number of seconds in a calendars minute.
+C   - Parameters of the numerical model:
+C
+C     modelstart       - start time of the numerical model.
+C     modelstartdate   - start date of the numerical model.
+C     modelend         - end   time of the numerical model.
+C     modelenddate     - end   date of the numerical model.
+C     modelstep        - timestep of the numerical model.
+C     modelintsteps    - number of timestep that are to be performed.
+C     modeliter0       - the numerical models initial timestep number.
+C     modeliterend     - the models last timestep number.
+cC    modelstepsperday - number of model time steps per calendar day.
+C
+C   - Parameters used by the calendar:
+C
+C     refdate          - first day of the Gregorian Calendar.
+C     nmonthyear       - number months in a year.
+C     ndaymonth        - days per month depending on the year being a
+C                        leap year or not. If the Gregorian calendar is
+C                        not used a 360 days year with 30 days months is
+C                        used instead.
+C     ndaysnoleap      - number of days in a usual year.
+C     ndaysleap        - number of days in a leap year.
+C     nmaxdaymonth     - maximum number of days in a years month.
+C     hoursperday      - number of hours   in a calendars day.
+C     minutesperday    - number of minutes in a calendars day.
+C     minutesperhour   - number of minutes in a calendars hour.
+C     secondsperday    - number of seconds in a calendars day.
+C     secondsperhour   - number of seconds in a calendars hour.
+C     secondsperminute - number of seconds in a calendars minute.
 
-
-      common /cal_rl/
+      COMMON /cal_rl/
      &                modelstart,
      &                modelend,
      &                modelstep
-
       _RL modelstart
       _RL modelend
       _RL modelstep
 
-      common /cal_i/
+      COMMON /cal_i/
      &               refdate,
      &               nmonthyear,
      &               ndaymonth,
@@ -83,65 +78,56 @@ c     secondsperminute - number of seconds in a calendars minute.
      &               modeliter0,
      &               modeliterend,
      &               modelintsteps,
-     &               modelstepsperday,
      &               startdate_1,
      &               startdate_2
 
-      integer refdate(4)
-      integer nmonthyear
-      integer ndaymonth(12,2)
-      integer ndaysnoleap
-      integer ndaysleap
-      integer nmaxdaymonth
-      integer hoursperday
-      integer minutesperday
-      integer minutesperhour
-      integer secondsperday
-      integer secondsperhour
-      integer secondsperminute
+      INTEGER refdate(4)
+      INTEGER nmonthyear
+      INTEGER ndaymonth(12,2)
+      INTEGER ndaysnoleap
+      INTEGER ndaysleap
+      INTEGER nmaxdaymonth
+      INTEGER hoursperday
+      INTEGER minutesperday
+      INTEGER minutesperhour
+      INTEGER secondsperday
+      INTEGER secondsperhour
+      INTEGER secondsperminute
 
-      integer modelstartdate(4)
-      integer modelenddate(4)
-      integer modeliter0
-      integer modeliterend
-      integer modelintsteps
-      integer modelstepsperday
+      INTEGER modelstartdate(4)
+      INTEGER modelenddate(4)
+      INTEGER modeliter0
+      INTEGER modeliterend
+      INTEGER modelintsteps
 
-      integer startdate_1
-      integer startdate_2
+      INTEGER startdate_1
+      INTEGER startdate_2
 
 
 C   calendarDumps :: When set, approximate months (30-31 days) and years (360-372 days)
 C                    for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
 C                    KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
 C                    calendar months and years.  Requires pkg/cal.
-
-      common /cal_l/
+      COMMON /cal_l/
      &               calendarDumps,
      &               usingNoCalendar,
      &               usingModelCalendar,
      &               usingJulianCalendar,
      &               usingGregorianCalendar
+      LOGICAL calendarDumps
+      LOGICAL usingNoCalendar
+      LOGICAL usingModelCalendar
+      LOGICAL usingJulianCalendar
+      LOGICAL usingGregorianCalendar
 
-      logical calendarDumps
-      logical usingNoCalendar
-      logical usingModelCalendar
-      logical usingJulianCalendar
-      logical usingGregorianCalendar
-
-
-c     dayofweek   - Week day number one is the week day of refdate.
-c                   For the Gregorian calendar this is Friday, 15-Oct-1582.
-c
-c     monthofyear - Both available calendars are assumed to have twelve
-c                   months.
-
-      common /calendar_ch/
+C     dayofweek   - Week day number one is the week day of refdate.
+C                   For the Gregorian calendar this is Friday, 15-Oct-1582.
+C
+C     monthofyear - Both available calendars are assumed to have twelve
+C                   months.
+      COMMON /calendar_ch/
      &                     dayofweek,
      &                     monthofyear
-
-      character*(3) dayofweek(7)
-      character*(3) monthofyear(12)
-
-
+      CHARACTER*(3) dayofweek(7)
+      CHARACTER*(3) monthofyear(12)
 
