@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.6 2012/04/03 00:22:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.7 2012/04/03 16:45:45 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -228,32 +228,34 @@ C     for botommost wet grid box.
          ENDDO
         ENDDO
 
-#ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) THEN
-C     Check salinity conservation
-         bbl_tend=0
-         DO j=1,sNy
-          DO i=1,sNx
-           kBot = kLowC(i,j,bi,bj)
-           IF ( kBot .GT. 0 ) THEN
-            bbl_tend = bbl_tend + bbl_TendSalt(i,j,bi,bj) *
-     &           hFacC(i,j,kBot,bi,bj) * drF(kBot) *rA(i,j,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-         _GLOBAL_SUM_RL( bbl_tend, myThid )
-         _BEGIN_MASTER(myThid)
-         WRITE(msgBuf,'(2A,E10.2)') 'BBL_CALC_RHS: ',
-     &        'total salt tendency = ', bbl_tend
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         _END_MASTER(myThid)
-        ENDIF
-#endif /* ALLOW_DEBUG */
-
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+      IF ( debugLevel .GE. debLevB ) THEN
+C     Check salinity conservation
+        bbl_tend = 0.
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            kBot = kLowC(i,j,bi,bj)
+            IF ( kBot .GT. 0 ) THEN
+             bbl_tend = bbl_tend + bbl_TendSalt(i,j,bi,bj) *
+     &           hFacC(i,j,kBot,bi,bj) * drF(kBot) *rA(i,j,bi,bj)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        _GLOBAL_SUM_RL( bbl_tend, myThid )
+        _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(2A,E10.2)') 'BBL_CALC_RHS: ',
+     &       'total salt tendency = ', bbl_tend
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        _END_MASTER(myThid)
+      ENDIF
 
       CALL EXCH_XY_RL( bbl_theta, myThid )
       CALL EXCH_XY_RL( bbl_salt , myThid )
