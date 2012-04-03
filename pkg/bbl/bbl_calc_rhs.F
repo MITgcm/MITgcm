@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.5 2012/04/02 05:56:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.6 2012/04/03 00:22:48 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -48,21 +48,17 @@ C     sloc      :: salinity of bottommost wet grid box
 C     tloc      :: temperature of bottommost wet grid box
 C     rholoc    :: in situ density of bottommost wet grid box
 C     rhoBBL    :: in situ density of bottom boundary layer
-C     fZon      :: Zonal flux
-C     fMer      :: Meridional flux
 C     bbl_rho1  :: local (i,j) density
-C     bbl_rho2  :: local (i+1, j) or (i,j+1) density 
+C     bbl_rho2  :: local (i+1, j) or (i,j+1) density
       INTEGER bi, bj
       INTEGER i, j, kBot, kLowC1, kLowC2, kl
       _RL     resThk, resTheta, resSalt
       _RL     deltaRho, deltaDpt, bbl_tend
       _RL     bbl_rho1, bbl_rho2
-      _RL     sloc    ( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly )
-      _RL     tloc    ( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly )
-      _RL     rholoc  ( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly )
-      _RL     rhoBBL  ( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly )
-      _RL     fZon    ( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly )
-      _RL     fMer    ( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly )
+      _RL     sloc    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL     tloc    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL     rholoc  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL     rhoBBL  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -97,8 +93,8 @@ C     residual volume of botommost wet grid box.
 C     This operation does not change total tracer quantity
 C     in botommost wet grid box.
 
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           kBot = kLowC(i,j,bi,bj)
           IF ( kBot .GT. 0 ) THEN
            resThk = hFacC(i,j,kBot,bi,bj)*drF(kBot) - bbl_eta(i,j,bi,bj)
@@ -128,14 +124,14 @@ C     If model density is lower than BBL, slowly diffuse upward.
         ENDDO
 
 C==== Compute zonal bbl exchange.
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx-1
           kLowC1 = kLowC(i,j,bi,bj)
           kLowC2 = kLowC(i+1,j,bi,bj)
           IF ((kLowC1.GT.0).AND.(kLowC2.GT.0)) THEN
 C     Compare the bbl densities at the higher pressure
 C     (highest possible density of given t,s)
-C     bbl in situ density is stored in kLowC + 1 index  
+C     bbl in situ density is stored in kLowC + 1 index
            kl = MAX(kLowC1, kLowC2) + 1
            IF ( kl .GT. Nr ) THEN
             bbl_rho1 = bbl_rho_nr(i,j,bi,bj)
@@ -171,14 +167,14 @@ C     exchange properties laterally.
         ENDDO
 
 C==== Compute meridional bbl exchange.
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx
           kLowC1 = kLowC(i,j,bi,bj)
           kLowC2 = kLowC(i,j+1, bi,bj)
           IF ((kLowC1.GT.0).AND.(kLowC2.GT.0)) THEN
 C     compare the bbl densities at the higher pressure
 C     (highest possible density of given t,s)
-C     bbl in situ density is stored in kLowC + 1 index  
+C     bbl in situ density is stored in kLowC + 1 index
            kl = MAX(kLowC1, kLowC2) + 1
            IF ( kl .GT. Nr ) THEN
             bbl_rho1 = bbl_rho_nr(i,j,bi,bj)
@@ -216,8 +212,8 @@ C     exchange properties laterally.
 
 C==== Apply lateral BBL exchange then scale tendency term
 C     for botommost wet grid box.
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           kBot = kLowC(i,j,bi,bj)
           IF ( kBot .GT. 0 ) THEN
            bbl_theta(i,j,bi,bj) = bbl_theta(i,j,bi,bj) +
@@ -246,9 +242,12 @@ C     Check salinity conservation
           ENDDO
          ENDDO
          _GLOBAL_SUM_RL( bbl_tend, myThid )
-         WRITE(msgBuf,'(A,E10.2)') 'total salt tendency = ', bbl_tend
+         _BEGIN_MASTER(myThid)
+         WRITE(msgBuf,'(2A,E10.2)') 'BBL_CALC_RHS: ',
+     &        'total salt tendency = ', bbl_tend
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT, myThid )
+     &                       SQUEEZE_RIGHT, myThid )
+         _END_MASTER(myThid)
         ENDIF
 #endif /* ALLOW_DEBUG */
 
