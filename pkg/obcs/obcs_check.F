@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.26 2012/03/09 20:13:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.27 2012/04/03 00:17:09 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -45,17 +45,18 @@ C     i, j    :: Loop counters
       INTEGER i, j
       INTEGER ln
       INTEGER ioUnit
-      LOGICAL flag
+      INTEGER errCount
 
       ioUnit = standardMessageUnit
-
-      WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print OBCS set-up summary:
 
       _BEGIN_MASTER(myThid)
+
+      WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: start summary:'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
@@ -129,9 +130,11 @@ C--   Print OBCS set-up summary:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check OBCS set-up
 
+C-    Check each tile set-up
+      errCount = 0
       _BEGIN_MASTER( myThid )
-       DO bj = 1,nSy
-        DO bi = 1,nSx
+      DO bj = 1,nSy
+       DO bi = 1,nSx
 #ifndef ALLOW_OBCS_NORTH
          IF ( tileHasOBN(bi,bj) ) THEN
            WRITE(msgBuf,'(A)')
@@ -140,7 +143,7 @@ C--   Check OBCS set-up
            WRITE(msgBuf,'(A,2I4,A)')
      &      'OBCS_CHECK: tile bi,bj=',bi,bj, ' has Northern OB'
            CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R OBCS_CHECK'
+           errCount = errCount + 1
          ENDIF
 #endif
 #ifndef ALLOW_OBCS_SOUTH
@@ -151,7 +154,7 @@ C--   Check OBCS set-up
            WRITE(msgBuf,'(A,2I4,A)')
      &      'OBCS_CHECK: tile bi,bj=',bi,bj, ' has Southern OB'
            CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R OBCS_CHECK'
+           errCount = errCount + 1
          ENDIF
 #endif
 #ifndef ALLOW_OBCS_EAST
@@ -162,7 +165,7 @@ C--   Check OBCS set-up
            WRITE(msgBuf,'(A,2I4,A)')
      &      'OBCS_CHECK: tile bi,bj=',bi,bj, ' has Eastern OB'
            CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R OBCS_CHECK'
+           errCount = errCount + 1
          ENDIF
 #endif
 #ifndef ALLOW_OBCS_WEST
@@ -173,19 +176,32 @@ C--   Check OBCS set-up
            WRITE(msgBuf,'(A,2I4,A)')
      &      'OBCS_CHECK: tile bi,bj=',bi,bj, ' has Western OB'
            CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R OBCS_CHECK'
+           errCount = errCount + 1
          ENDIF
 #endif
-        ENDDO
        ENDDO
+      ENDDO
       _END_MASTER(myThid)
+      CALL GLOBAL_SUM_INT( errCount, myThid )
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I6,A)')
+     &       'OBCS_CHECK:', errCount,' errors in tile OB set-up'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+
+C----------------------------------
+C-    Check options and parameters
+      _BEGIN_MASTER( myThid )
+      errCount = 0
 
 #ifdef ALLOW_CD_CODE
       IF ( useCDscheme ) THEN
-       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &      'OBCS not yet implemented in CD-Scheme (useCDscheme=T)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_CD_CODE */
 
@@ -201,7 +217,7 @@ C--   Check OBCS set-up
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: one of useOrlanski* logicals is true'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_ORLANSKI */
 
@@ -211,19 +227,19 @@ C--   Check OBCS set-up
         WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &      'nonlinFreeSurf not yet implemented in Orlanski OBC'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
        ENDIF
        IF (usePTracers) THEN
         WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &      ' useOrlanski* OBC not yet implemented for pTracers'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
        ENDIF
        IF (useSEAICE) THEN
         WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &      ' useOrlanski* OBC not yet implemented for SEAICE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
        ENDIF
       ENDIF
 
@@ -235,13 +251,13 @@ C     check compatibility with Orlanski
      &     .OR. ( useStevensSouth.AND.useOrlanskiSouth )
      &     .OR. (  useStevensEast.AND.useOrlanskiEast )
      &     .OR. (  useStevensWest.AND.useOrlanskiWest ) ) THEN
-       WRITE(msgBuf,'(A)')
-     & 'OBCS_CHECK: both useOrlanski* and useStevens* logicals'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: both useOrlanski* and useStevens* logicals'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
      &      'OBCS_CHECK: are true for at least one boundary'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
       IF (useStevensNorth.OR.useStevensSouth.OR.
      &    useStevensEast.OR.useStevensWest) THEN
@@ -249,7 +265,6 @@ C     check compatibility with Orlanski
         WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &    'useStevens OBC with nonlinFreeSurf not yet implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
        IF (usePTracers) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
@@ -275,13 +290,13 @@ CML       IF (usePTracers) THEN
 CML        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
 CML     &  'useStevens* OBC with pTracers not yet implemented'
 CML        CALL PRINT_ERROR( msgBuf, myThid )
-CML        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+CML        errCount = errCount + 1
 CML       ENDIF
 CML       IF (useSEAICE) THEN
 CML        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
 CML     &  'useStevens* OBC with SEAICE not yet implemented'
 CML        CALL PRINT_ERROR( msgBuf, myThid )
-CML        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+CML        errCount = errCount + 1
 CML       ENDIF
       ENDIF
 #else
@@ -293,43 +308,43 @@ CML       ENDIF
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: one of useStevens* logicals is true'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
 
 #ifndef ALLOW_OBCS_PRESCRIBE
       IF (useOBCSprescribe) THEN
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: useOBCSprescribe = .TRUE. for'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CHECK: useOBCSprescribe = .TRUE. for'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
 
 #ifndef ALLOW_OBCS_SPONGE
       IF (useOBCSsponge) THEN
-       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
-     &      'Cannot set useOBCSsponge=.TRUE. (data.obcs)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
-     &  'with ALLOW_OBCS_SPONGE left undefined (OBCS_OPTIONS.h)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &       'Cannot set useOBCSsponge=.TRUE. (data.obcs)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &       'with #undef ALLOW_OBCS_SPONGE (OBCS_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_SPONGE */
 
 #ifndef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance ) THEN
-       WRITE(msgBuf,'(A)')
+        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: useOBCSbalance requires to define'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: ALLOW_OBCS_BALANCE in "OBCS_OPTIONS.h"'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 
@@ -340,7 +355,7 @@ CML       ENDIF
         WRITE(msgBuf,'(2A)')
      &  'OBCS_CHECK: OB*wFile only allowed with nonHydrostatic'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
       ENDIF
       IF ( nonlinFreeSurf.EQ.0 .AND.
      &         ( OBNetaFile.NE.' ' .OR. OBSetaFile.NE.' ' .OR.
@@ -349,17 +364,17 @@ CML       ENDIF
         WRITE(msgBuf,'(2A)')
      &  'OBCS_CHECK: OB*etaFile(s) only allowed with nonlinFreeSurf'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF (useSEAICE .AND. .NOT. useEXF) THEN
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: for SEAICE OBCS, use'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: pkg/exf to read input files'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        WRITE(msgBuf,'(A)')
+     &   'OBCS_CHECK: for SEAICE OBCS, use'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'OBCS_CHECK: pkg/exf to read input files'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #ifndef OBCS_UVICE_OLD
 c     IF ( useSEAICE .AND. SEAICEuseDYNAMICS ) THEN
@@ -368,24 +383,34 @@ c     IF ( useSEAICE .AND. SEAICEuseDYNAMICS ) THEN
       defined (OBCS_SEAICE_AVOID_CONVERGENCE) || \
       defined (OBCS_SEAICE_SMOOTH_UVICE_PERP) || \
       defined (OBCS_SEAICE_SMOOTH_UVICE_PAR) )
-       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
-     &      'needs to define OBCS_UVICE_OLD in OBCS_OPTIONS.h'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
-     &      'to activate such OBCS_SEAICE_[] option'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &       'needs to define OBCS_UVICE_OLD in OBCS_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &       'to activate such OBCS_SEAICE_[] option'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
 #endif
       ENDIF
 #endif /* ndef OBCS_UVICE_OLD */
 
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'OBCS_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: set-up OK'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+      _END_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check if Interior mask is consistent with OB list of indices
 c     IF ( insideOBmaskFile.NE.' ' ) THEN
-       flag = .TRUE.
+       errCount = 0
        WRITE(msgBuf,'(2A)') 'S/R OBCS_CHECK: ',
      &              'Inside Mask and OB locations disagree :'
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -395,45 +420,45 @@ c     IF ( insideOBmaskFile.NE.' ' ) THEN
 C-    Eastern boundary
           i = OB_Ie(j,bi,bj)
           IF ( i.NE.0 .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Ie (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
           ENDIF
           DO i=1,sNx+1
            IF ( maskInC(i-1,j,bi,bj).GT.maskInC(i,j,bi,bj)
      &          .AND.ksurfW(i,j,bi,bj).LE.Nr
      &          .AND. i.NE.OB_Ie(j,bi,bj) ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from insideMask (bi,bj=', bi, ',', bj,
      &        ') expects OBE=', i, ' @ j=', j
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
            ENDIF
           ENDDO
 C-    Western boundary
           i = OB_Iw(j,bi,bj)
           IF ( i.NE.0 .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Iw (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
           ENDIF
           DO i=1,sNx+1
            IF ( maskInC(i-1,j,bi,bj).LT.maskInC(i,j,bi,bj)
      &          .AND.ksurfW(i,j,bi,bj).LE.Nr
      &          .AND. i.NE.OB_Iw(j,bi,bj)+1 ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from insideMask (bi,bj=', bi, ',', bj,
      &        ') expects OBW=', i-1, ' @ j=', j
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
            ENDIF
           ENDDO
          ENDDO
@@ -442,23 +467,23 @@ C-    Western boundary
 C-    Northern boundary
           j = OB_Jn(i,bi,bj)
           IF ( j.NE.0 .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Jn (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
           ENDIF
           DO j=1,sNy+1
            IF ( maskInC(i,j-1,bi,bj).GT.maskInC(i,j,bi,bj)
      &          .AND.ksurfS(i,j,bi,bj).LE.Nr
      &          .AND. j.NE.OB_Jn(i,bi,bj) ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from insideMask (bi,bj=', bi, ',', bj,
      &        ') expects OBN=', j, ' @ i=', i
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
            ENDIF
           ENDDO
 C-    Southern boundary
@@ -466,24 +491,31 @@ C-    Southern boundary
            IF ( maskInC(i,j-1,bi,bj).LT.maskInC(i,j,bi,bj)
      &          .AND.ksurfS(i,j,bi,bj).LE.Nr
      &          .AND. j.NE.OB_Js(i,bi,bj)+1 ) THEN
-            IF ( flag) CALL PRINT_ERROR( msgBuf, myThid )
+            IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from insideMask (bi,bj=', bi, ',', bj,
      &        ') expects OBS=', j-1, ' @ i=', i
             CALL PRINT_ERROR( msgBuf, myThid )
-            flag = .FALSE.
+            errCount = errCount + 1
            ENDIF
           ENDDO
          ENDDO
 
         ENDDO
        ENDDO
-       IF ( flag ) THEN
+       CALL GLOBAL_SUM_INT( errCount, myThid )
+       IF ( errCount.GE.1 ) THEN
+         WRITE(msgBuf,'(A,I6,A)')
+     &       'OBCS_CHECK:', errCount,' errors in OB location vs Mask'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ELSE
+         _BEGIN_MASTER(myThid)
          WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &              'check Inside Mask and OB locations: OK'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-       ELSE
-         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+         _END_MASTER(myThid)
        ENDIF
 c     ENDIF
 
