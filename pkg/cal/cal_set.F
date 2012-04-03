@@ -1,198 +1,172 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.6 2010/03/16 00:11:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.7 2012/04/03 15:12:21 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
 
-      subroutine cal_Set(
-     I                    modstart,
-     I                    modend,
-     I                    modstep,
+      SUBROUTINE CAL_SET(
+     I                    modstart, modend, modstep,
+     I                    moditerini, moditerend, modintsteps,
+     I                    modstartdate_1, modstartdate_2,
      I                    modcalendartype,
-     I                    modstartdate_1,
-     I                    modstartdate_2,
-     I                    modenddate_1,
-     I                    modenddate_2,
-     I                    moditerini,
-     I                    moditerend,
-     I                    modintsteps,
-     I                    mythid
-     &                  )
+     I                    myThid )
 
-c     ==================================================================
-c     SUBROUTINE cal_Set
-c     ==================================================================
-c
-c     o This routine initialises the calendar according to the user
-c       specifications in "data".
-c
-c     Purpose: Precalculations for the calendar.
-c
-c              Given the type of calendar that should be used date
-c              arrays and some additional information is returned.
-c
-c              Check for consistency with other specifications such
-c              as modintsteps.
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
-c
-c              - restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  19-Jan-2000
-c
-c              - Changed the role of the routine arguments. Chris Hill
-c                proposed to make the calendar less "invasive". The tool
-c                now assumes that the MITgcmUV already provides an ade-
-c                quate set of time stepping parameters. The calendar
-c                only associates a date with the given starttime of the
-c                numerical model. startdate corresponds to zero start-
-c                time. So, given niter0 or startdate .ne. zero the actual
-c                startdate of the current integration is shifted by the
-c                time interval correponding to niter0, startdate respec-
-c                tively.
-c
-c              Christian Eckert eckert@mit.edu  03-Feb-2000
-c
-c              - Introduced new routine and function names, cal_<NAME>,
-c                for verion 0.1.3.
-c
-c              Christian Eckert eckert@mit.edu  23-Feb-2000
-c
-c              - Corrected the declaration of *modelrundate*
-c                --> integer modelrundate(4)
-c
-c     ==================================================================
-c     SUBROUTINE cal_Set
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE cal_Set
+C     ==================================================================
+C
+C     o This routine initialises the calendar according to the user
+C       specifications in "data".
+C
+C     Purpose: Precalculations for the calendar.
+C
+C              Given the type of calendar that should be used date
+C              arrays and some additional information is returned.
+C
+C              Check for consistency with other specifications such
+C              as modintsteps.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C
+C     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
+C
+C              - restructured the original version in order to have a
+C                better interface to the MITgcmUV.
+C
+C              Christian Eckert eckert@mit.edu  19-Jan-2000
+C
+C              - Changed the role of the routine arguments. Chris Hill
+C                proposed to make the calendar less "invasive". The tool
+C                now assumes that the MITgcmUV already provides an ade-
+C                quate set of time stepping parameters. The calendar
+C                only associates a date with the given starttime of the
+C                numerical model. startdate corresponds to zero start-
+C                time. So, given niter0 or startdate .ne. zero the actual
+C                startdate of the current integration is shifted by the
+C                time interval correponding to niter0, startdate respec-
+C                tively.
+C
+C              Christian Eckert eckert@mit.edu  03-Feb-2000
+C
+C              - Introduced new routine and function names, cal_<NAME>,
+C                for verion 0.1.3.
+C
+C              Christian Eckert eckert@mit.edu  23-Feb-2000
+C
+C              - Corrected the declaration of *modelrundate*
+C                --> integer modelrundate(4)
+C
+C     ==================================================================
+C     SUBROUTINE cal_Set
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 
 #include "cal.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-c     modcalendartype - the type of calendar that is to be used.
-c                       Available: 'model'
-c                                  'gregorian'
-c     modstartdate_1  - startdate of the integration: yyyymmdd
-c     modstartdate_2  - startdate of the integration: hhmmss
-c     modenddate_1    - enddate   of the integration: yyyymmdd
-c     modenddate_2    - enddate   of the integration: hhmmss
-c     moditerini      - initial iteration number of the model
-c     moditerend      - last iteration number of the model
-c     modstep         - timestep of the numerical model
-c     modintsteps     - number of timesteps that are to be performed.
-c     mythid          - number of this instance of the subrotuine.
+C     modstart        :: start time of the model integration
+C     modend          :: end time of the model integration
+C     modstep         :: timestep of the numerical model
+C     moditerini      :: initial iteration number of the model
+C     moditerend      :: last iteration number of the model
+C     modintsteps     :: number of timesteps that are to be performed.
+C     modstartdate_1  :: startdate of the integration: yyyymmdd
+C     modstartdate_2  :: startdate of the integration: hhmmss
+C     modcalendartype :: the type of calendar that is to be used.
+C                        Available: 'model' or 'gregorian'
+C     myThid          :: my Thread Id number
+C-jmc: should remove modenddate_1 & modenddate_2 (always identically zero in
+C      cal_readparams)
 
       _RL     modstart
       _RL     modend
       _RL     modstep
-      character*(*) modcalendartype
-      integer modstartdate_1
-      integer modstartdate_2
-      integer modenddate_1
-      integer modenddate_2
-      integer moditerini
-      integer moditerend
-      integer modintsteps
-      integer mythid
+      INTEGER moditerini
+      INTEGER moditerend
+      INTEGER modintsteps
+      INTEGER modstartdate_1
+      INTEGER modstartdate_2
+      CHARACTER*(*) modcalendartype
+      INTEGER myThid
 
-c     == local variables ==
-
-      integer i,j,k
-      integer ierr
-      integer datediff(4)
-      integer timediff(4)
-      integer iterinitime(4)
-      integer modelrundate(4)
+C     == local variables ==
+      INTEGER i,j,k
+      INTEGER ierr
+      INTEGER timediff(4)
+      INTEGER iterinitime(4)
+      INTEGER modelrundate(4)
       _RL     runtimesecs
       _RL     iterinisecs
 
-c     == external ==
+C     == end of interface ==
 
-      integer  cal_IntYears
-      external cal_IntYears
-
-      integer  cal_IntMonths
-      external cal_IntMonths
-
-      integer  cal_IntDays
-      external cal_IntDays
-
-      integer  cal_nStepDay
-      external cal_nStepDay
-
-c     == end of interface ==
-
-c     Initialise some variables.
+C     Initialise some variables.
       usingNoCalendar        = .false.
       usingGregorianCalendar = .false.
       usingModelCalendar     = .false.
       usingJulianCalendar    = .false.
 
-c     Map the numerical model parameters. --> common blocks in CALENDAR.h
+C     Map the numerical model parameters. --> common blocks in CALENDAR.h
       modelstart       = modstart
       modelend         = modend
       modelstep        = modstep
       modeliter0       = moditerini
+      modeliterend     = moditerend
       modelintsteps    = modintsteps
 
-      modeliterend     = moditerend
-
-c     Do first consistency checks (most are taken from the MITgcmUV).
-c     o Time step.
+C     Do first consistency checks
+C     o Time step.
       if ( modelstep .le. 0. ) then
         ierr = 102
-        call cal_PrintError( ierr, mythid )
+        call cal_PrintError( ierr, myThid )
         stop ' stopped in cal_Set.'
       endif
       if ( modelstep .lt. 1. ) then
         ierr = 103
-        call cal_PrintError( ierr, mythid )
+        call cal_PrintError( ierr, myThid )
         stop ' stopped in cal_Set.'
       endif
       if ( abs(modelstep - nint(modelstep)) .gt. 0.000001 ) then
         ierr = 104
-        call cal_PrintError( ierr, mythid )
+        call cal_PrintError( ierr, myThid )
         stop ' stopped in cal_Set.'
       else
         modelstep = float(nint(modelstep))
       endif
 
-c     o Start time
-      if ( modeliter0 .ne. 0 .and. modelstart .eq. 0. ) then
-         modelstart = modelstep*float(modeliter0)
-      endif
-c     o modeliter0
-      if ( modeliter0 .eq. 0 .and. modelstart .ne. 0. ) then
-         modeliter0 = int( modelstart/modelstep )
-      endif
+C     o Start time
+c     if ( modeliter0 .ne. 0 .and. modelstart .eq. 0. ) then
+c        modelstart = modelstep*float(modeliter0)
+c     endif
+C     o modeliter0
+c     if ( modeliter0 .eq. 0 .and. modelstart .ne. 0. ) then
+c        modeliter0 = int( modelstart/modelstep )
+c     endif
 
-c     o modelintsteps
-      if ( modelintsteps .eq. 0 .and. modeliterend .ne. 0 )
-     &     modelintsteps = modeliterend - modeliter0
-      if ( modelintsteps .eq. 0 .and. modelend .ne. 0. )
-     &     modelintsteps = int(0.5 + (modelend - modelstart)/modelstep)
+C     o modelintsteps
+c     if ( modelintsteps .eq. 0 .and. modeliterend .ne. 0 )
+c    &     modelintsteps = modeliterend - modeliter0
+c     if ( modelintsteps .eq. 0 .and. modelend .ne. 0. )
+c    &     modelintsteps = int(0.5 + (modelend - modelstart)/modelstep)
 
-c     o modeliterend
-      if ( modeliterend .eq. 0 .and. modelintsteps .ne. 0 )
-     &     modeliterend = modeliter0 + modelintsteps
-      if ( modeliterend .eq. 0 .and. modelend .ne. 0. )
-     &     modeliterend = int(0.5 + modelend/modelstep)
+C     o modeliterend
+c     if ( modeliterend .eq. 0 .and. modelintsteps .ne. 0 )
+c    &     modeliterend = modeliter0 + modelintsteps
+c     if ( modeliterend .eq. 0 .and. modelend .ne. 0. )
+c    &     modeliterend = int(0.5 + modelend/modelstep)
 
-c     o modelend
-      if ( modelend .eq. 0. .and. modelintsteps .ne. 0 )
-     &     modelend = modelstart + modelstep*float(modelintsteps)
-      if ( modelend .eq. 0. .and. modeliterend .ne. 0 )
-     &     modelend = modelstep*float(modeliterend)
+C     o modelend
+c     if ( modelend .eq. 0. .and. modelintsteps .ne. 0 )
+c    &     modelend = modelstart + modelstep*float(modelintsteps)
+c     if ( modelend .eq. 0. .and. modeliterend .ne. 0 )
+c    &     modelend = modelstep*float(modeliterend)
 
-c     Start setting the calendar parameters.
+C     Start setting the calendar parameters.
 
-c     The calendar type.
+C     The calendar type.
       if ( modcalendartype .eq. 'none') then
         usingNoCalendar = .true.
       endif
@@ -207,16 +181,16 @@ c     The calendar type.
       endif
 
       if ( usingGregorianCalendar ) then
-c       The reference date for the Gregorian Calendar.
-c       and its format: ( yymmdd , hhmmss , leap year, weekday )
-c                                             (1/2)    (1 - 7)
-c       The Gregorian calendar starts on Friday, 15 Oct. 1582.
+C       The reference date for the Gregorian Calendar.
+C       and its format: ( yymmdd , hhmmss , leap year, weekday )
+C                                             (1/2)    (1 - 7)
+C       The Gregorian calendar starts on Friday, 15 Oct. 1582.
         refdate(1) = 15821015
         refdate(2) = 0
         refdate(3) = 1
         refdate(4) = 1
 
-c       Number of months per year and other useful numbers.
+C       Number of months per year and other useful numbers.
         nmonthyear       = 12
         ndaysnoleap      = 365
         ndaysleap        = 366
@@ -228,12 +202,12 @@ c       Number of months per year and other useful numbers.
         secondsperhour   = 3600
         secondsperminute = 60
 
-c       Number of days per month.
-c       The "magic" number 2773 derives from the sequence: 101010110101
-c         read in reverse and interpreted as a dual number. An
-c         alternative would be to take 2741 with the loop being
-c         executed in reverse order. Accidentially, the latter
-c         is a prime number.
+C       Number of days per month.
+C       The "magic" number 2773 derives from the sequence: 101010110101
+C         read in reverse and interpreted as a dual number. An
+C         alternative would be to take 2741 with the loop being
+C         executed in reverse order. Accidentially, the latter
+C         is a prime number.
         k=2773
         do i=1,nmonthyear
           j = mod(k,2)
@@ -244,7 +218,7 @@ c         is a prime number.
         ndaymonth(2,1) = 28
         ndaymonth(2,2) = 29
 
-c       Week days.
+C       Week days.
         dayofweek(1) = 'FRI'
         dayofweek(2) = 'SAT'
         dayofweek(3) = 'SUN'
@@ -254,15 +228,15 @@ c       Week days.
         dayofweek(7) = 'THU'
 
       else if ( usingModelCalendar ) then
-c       Assume a model calendar having 12 months with thirty days each.
-c       Reference date is the first day of year 0 at 0am, and model
-c       day 1.
+C       Assume a model calendar having 12 months with thirty days each.
+C       Reference date is the first day of year 0 at 0am, and model
+C       day 1.
         refdate(1) = 00000101
         refdate(2) = 0
         refdate(3) = 1
         refdate(4) = 1
 
-c       Some useful numbers.
+C       Some useful numbers.
         nmonthyear       = 12
         ndaysnoleap      = 360
         ndaysleap        = 360
@@ -278,7 +252,7 @@ c       Some useful numbers.
           ndaymonth(i,2) = 30
         enddo
 
-c       Week days (Model Day 1 - 7).
+C       Week days (Model Day 1 - 7).
         dayofweek(1) = 'MD1'
         dayofweek(2) = 'MD2'
         dayofweek(3) = 'MD3'
@@ -287,168 +261,106 @@ c       Week days (Model Day 1 - 7).
         dayofweek(6) = 'MD6'
         dayofweek(7) = 'MD7'
 
-      else if ( usingJulianCalendar ) then
-
-        ierr = 110
-        call cal_PrintError( ierr, mythid )
-
-        refdate(1) =   -4370
-        refdate(2) = -120000
-        refdate(3) =       0
-        refdate(4) =      -1
-
-c       Some useful numbers.
-        nmonthyear       = 12
-        ndaysnoleap      = 0
-        ndaysleap        = 0
-        nmaxdaymonth     = 0
-        hoursperday      = 24
-        minutesperday    = 1440
-        minutesperhour   = 60
-        secondsperday    = 86400
-        secondsperhour   = 3600
-        secondsperminute = 60
-        do i=1,nmonthyear
-          ndaymonth(i,1) = 0
-          ndaymonth(i,2) = 0
-        enddo
-        stop ' stopped in cal_Set (Julian Calendar).'
-
-      else if ( usingNoCalendar ) then
-
-        ierr = 111
-        call cal_PrintError( ierr, mythid )
-
-        refdate(1) =  0
-        refdate(2) =  0
-        refdate(3) =  0
-        refdate(4) = -1
-
-c       Some useful numbers.
-        nmonthyear       = 12
-        ndaysnoleap      = 0
-        ndaysleap        = 0
-        nmaxdaymonth     = 0
-        hoursperday      = 24
-        minutesperday    = 1440
-        minutesperhour   = 60
-        secondsperday    = 86400
-        secondsperhour   = 3600
-        secondsperminute = 60
-        do i=1,nmonthyear
-          ndaymonth(i,1) = 0
-          ndaymonth(i,2) = 0
-        enddo
-
-        stop ' stopped in cal_Set (No Calendar).'
-
+c     else if ( usingJulianCalendar ) then
+c       stop ' stopped in cal_Set (Julian Calendar).'
+c     else if ( usingNoCalendar ) then
+c       stop ' stopped in cal_Set (No Calendar).'
       else
-
         ierr = 101
-        call cal_PrintError( ierr, mythid )
+        call cal_PrintError( ierr, myThid )
         stop
-
       endif
 
-c     A next set of checks of the user specifications.
-c     Number of possible modelsteps per calendar day.
-      modelstepsperday = cal_nStepDay(mythid)
+C     A next set of checks of the user specifications.
+C     Number of possible modelsteps per calendar day.
+C-jmc: modelstepsperday is not used and can be removed
+c     modelstepsperday = cal_nStepDay(mythid)
 cdm   if (modelstepsperday .eq. 0 ) then
 cdm     ierr = 105
 cdm     call cal_PrintError( ierr, mythid )
 cdm     stop ' stopped in cal_Set.'
 cdm   endif
 
-c     Complete the start date specification to get a full date array.
+C     Complete the start date specification to get a full date array.
       call cal_FullDate( modstartdate_1, modstartdate_2,
-     &                   modelstartdate, mythid )
+     &                   modelstartdate, myThid )
 
-c     From here on, the final calendar settings are determined by the
-c     following variables:
-c
-c           modelstep, modelstart, modelstartdate, and modeliter0.
+C     From here on, the final calendar settings are determined by the
+C     following variables:
+C
+C           modelstep, modelstart, modelstartdate, and modeliter0.
+C-jmc: simplify so that calendar settings only function of:
+C           modelstart, modelstep*modelintsteps & modelstartdate
 
-c     Two scenarios are allowed:
-c
-c     First case:  modelintsteps is given as well, modelenddate is
-c                  set to zero.
-c     Second case: modelintsteps is set to zero, modelenddate is given.
+C     Two scenarios are allowed:
+C
+C     First case:  modelintsteps is given as well, modelenddate is
+C                  set to zero.
+C     Second case: modelintsteps is set to zero, modelenddate is given.
+C-jmc: can only be 1rst case since modelintsteps (coming from model)
+C      is always set and modenddate_1 & 2 are always zero.
 
-      if ( (modelintsteps   .ne. 0)    .and.
-     &     ( (modenddate_1 .eq. 0)     .and.
-     &       (modenddate_2 .eq. 0) ) ) then
+c     if ( (modelintsteps   .ne. 0)    .and.
+c    &     ( (modenddate_1 .eq. 0)     .and.
+c    &       (modenddate_2 .eq. 0) ) ) then
 
-        runtimesecs = float(modelintsteps)*modelstep
-        modelend    = modelstart + runtimesecs
+        runtimesecs = modelintsteps*modelstep
+C-jmc: no need to reset modelend !
+c       modelend    = modelstart + runtimesecs
 
-      else if ( (modelintsteps   .eq. 0)        .and.
-     &          (.not. ( (modenddate_1 .eq. 0 ) .and.
-     &                   (modenddate_2 .eq. 0) ) ) ) then
+c     else
+c      CALL PRINT_ERROR('S/R CAL_SET: you win ! error 106 !!!',myThid)
+c       ierr = 106
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     endif
 
-        call cal_FullDate( modenddate_1, modenddate_2, modelenddate,
-     &                     mythid )
-        call cal_TimePassed( modelstartdate, modelenddate, datediff,
-     &                       mythid )
-        call cal_ToSeconds( datediff, runtimesecs, mythid )
-
-        if ( runtimesecs .lt. 0.) then
-          ierr = 107
-          call cal_PrintError( ierr, mythid )
-          stop ' stopped in cal_Set.'
-        endif
-
-        modelintsteps = int(runtimesecs/modelstep)
-        runtimesecs   = modelintsteps*modelstep
-        modelend      = modelstart + runtimesecs
-
-      else
-        ierr = 106
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      endif
-
-c     Determine the startdate of the integration.
-c     (version 0.1.3 >> START << )
-      iterinisecs = float(modeliter0)*modelstep
-      call cal_TimeInterval( iterinisecs, 'secs', iterinitime, mythid )
+C     Determine the startdate of the integration.
+C     (version 0.1.3 >> START << )
+c     iterinisecs = float(modeliter0)*modelstep
+C-jmc: above does not work if baseTime <> 0 ; fix it below:
+      iterinisecs = modelstart
+      call cal_TimeInterval( iterinisecs, 'secs', iterinitime, myThid )
       call cal_AddTime( modelstartdate, iterinitime, modelrundate,
-     &                  mythid )
-      call cal_CopyDate( modelrundate, modelstartdate, mythid )
-c     (version 0.1.3 >> END << )
+     &                  myThid )
+      call cal_CopyDate( modelrundate, modelstartdate, myThid )
+C     (version 0.1.3 >> END << )
 
-      call cal_TimeInterval( runtimesecs, 'secs', timediff, mythid )
+      call cal_TimeInterval( runtimesecs, 'secs', timediff, myThid )
       call cal_AddTime( modelstartdate, timediff, modelenddate,
-     &                  mythid )
+     &                  myThid )
 
-      modeliterend = modeliter0 + modelintsteps
+C-jmc: no need to reset modeliterend !
+c     modeliterend = modeliter0 + modelintsteps
 
-c     Check consistency of the numerical model and the calendar tool.
-      if ( modelstart .ne. modstart) then
-        ierr = 112
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      else if ( modelend .ne. modend ) then
-        ierr = 113
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      else if ( modelstep .ne. modstep ) then
-        ierr = 114
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      else if ( modeliter0 .ne. moditerini ) then
-        ierr = 115
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      else if ( modeliterend .ne. moditerend ) then
-        ierr = 116
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      else if ( modelintsteps .ne. modintsteps) then
-        ierr = 117
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      endif
+C     Check consistency of the numerical model and the calendar tool.
+C-jmc: all model time/iter were set earlier and have not been changed
+C-jmc ==> removed
+c     if ( modelstart .ne. modstart) then
+c       ierr = 112
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     else if ( modelend .ne. modend ) then
+c       ierr = 113
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     else if ( modelstep .ne. modstep ) then
+c       ierr = 114
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     else if ( modeliter0 .ne. moditerini ) then
+c       ierr = 115
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     else if ( modeliterend .ne. moditerend ) then
+c       ierr = 116
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     else if ( modelintsteps .ne. modintsteps) then
+c       ierr = 117
+c       call cal_PrintError( ierr, mythid )
+c       stop ' stopped in cal_Set.'
+c     endif
 
-      return
-      end
-
+      RETURN
+      END
