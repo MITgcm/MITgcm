@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.7 2011/03/08 16:15:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.8 2012/04/03 00:11:46 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -38,7 +38,6 @@ C     i        :: loop counter
       INTEGER i
 C-    for debug print:
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 C-----
 
 C-    Initialise variables in common block:
@@ -114,7 +113,6 @@ C-    output of MDS_READ_META :
 C-    for debug print:
       INTEGER i, j, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 C-----
 
 C-    Initialise output arguments:
@@ -128,6 +126,7 @@ C-    Initialise output arguments:
         WRITE(msgBuf,'(4A)') 'READ_MFLDS_SET: ',
      &    'MFLDS file-name already set to: ',mFldsFile(1:i)
         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R READ_MFLDS_SET (fileName)'
       ENDIF
       _BARRIER
@@ -178,6 +177,7 @@ C-    here we have a problem
           WRITE(msgBuf,'(A,I5,A,I4,A)')
      &     ' does not match Nb of flds=', nFlds
           CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( 0 )
           STOP 'ABNORMAL END: S/R READ_MFLDS_SET (Nb-records Pb)'
         ENDIF
 c       IF ( nFl3D.EQ.0 ) nFl3D = nFlds
@@ -278,12 +278,12 @@ C     !FUNCTIONS
 
 C     !LOCAL VARIABLES:
       INTEGER j, iL, ioUnit
+      LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RS     dummyRS(1)
       CHARACTER*(2) fType
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 C-----
 
       iL = ILNBLNK(mFldsFile)
@@ -292,11 +292,13 @@ C-----
         WRITE(msgBuf,'(2A,I4)') 'READ_MFLDS_3D_RL: ',
      &    'empty MFLDS file-name'
         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R READ_MFLDS_3D_RL (fileName)'
       ENDIF
 #endif /* RW_SAFE_MFLDS */
 
       ioUnit = standardMessageUnit
+      prtMsg = debugLevel.GE.debLevA .AND. myThid.EQ.1
       IF ( nFlds.GE.1 ) THEN
 C--   Search for "fldName" in list of field-names:
         nj = 0
@@ -310,7 +312,7 @@ C-      record unsuccessful search:
           j = MIN(nMissFld,sizFldList)
           fldMiss(j) = fldName
           _END_MASTER( myThid )
-          IF ( debugLevel.GE.debLevA ) THEN
+          IF ( prtMsg ) THEN
             iL = ILNBLNK(mFldsFile)
             iL = MIN(iL,MAX_LEN_MBUF-54-20)
             WRITE(msgBuf,'(5A)') 'READ_MFLDS_3D_RL: ',
@@ -321,7 +323,7 @@ C-      record unsuccessful search:
 C-      convert from field Number to record number (if mix of 3D & 2D flds)
           j = nj
           IF ( nj.GT.nFl3D ) nj = nj + nFl3D*(thirdDim-1)
-          IF ( debugLevel.GE.debLevA ) THEN
+          IF ( prtMsg ) THEN
             WRITE(msgBuf,'(3A,2(A,I4))') 'READ_MFLDS_3D_RL: ',
      &       'read field: "',fldName,'", #',j,' in fldList, rec=',nj
             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -330,7 +332,7 @@ C-      convert from field Number to record number (if mix of 3D & 2D flds)
       ELSEIF ( nj.GE.0 ) THEN
 C-      increment record number
         nj = nj + 1
-        IF ( debugLevel.GE.debLevA ) THEN
+        IF ( prtMsg ) THEN
             WRITE(msgBuf,'(3A,2(A,I4))') 'READ_MFLDS_3D_RL: ',
      &       'no fldList, try to read field "',fldName, '", rec=',nj
             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -405,12 +407,12 @@ C     !FUNCTIONS
 
 C     !LOCAL VARIABLES:
       INTEGER j, iL, ioUnit
+      LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RS     dummyRS(1)
       CHARACTER*(2) fType
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 C-----
 
       iL = ILNBLNK(mFldsFile)
@@ -419,11 +421,13 @@ C-----
         WRITE(msgBuf,'(2A,I4)') 'READ_MFLDS_LEV_RL: ',
      &    'empty MFLDS file-name'
         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R READ_MFLDS_LEV_RL (fileName)'
       ENDIF
 #endif /* RW_SAFE_MFLDS */
 
       ioUnit = standardMessageUnit
+      prtMsg = debugLevel.GE.debLevA .AND. myThid.EQ.1
       IF ( nFlds.GE.1 ) THEN
 C--   Search for "fldName" in list of field-names:
         nj = 0
@@ -437,7 +441,7 @@ C-      record unsuccessful search:
           j = MIN(nMissFld,sizFldList)
           fldMiss(j) = fldName
           _END_MASTER( myThid )
-          IF ( debugLevel.GE.debLevA ) THEN
+          IF ( prtMsg ) THEN
             iL = ILNBLNK(mFldsFile)
             iL = MIN(iL,MAX_LEN_MBUF-54-20)
             WRITE(msgBuf,'(5A)') 'READ_MFLDS_LEV_RL: ',
@@ -448,7 +452,7 @@ C-      record unsuccessful search:
 C-      convert from field Number to record number (if mix of 3D & 2D flds)
           j = nj
           IF ( nj.GT.nFl3D ) nj = nj + nFl3D*(thirdDim-1)
-          IF ( debugLevel.GE.debLevA ) THEN
+          IF ( prtMsg ) THEN
             WRITE(msgBuf,'(3A,2(A,I4))') 'READ_MFLDS_LEV_RL: ',
      &       'read field: "',fldName,'", #',j,' in fldList, rec=',nj
             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -457,7 +461,7 @@ C-      convert from field Number to record number (if mix of 3D & 2D flds)
       ELSEIF ( nj.GE.0 ) THEN
 C-      increment record number
         nj = nj + 1
-        IF ( debugLevel.GE.debLevA ) THEN
+        IF ( prtMsg ) THEN
             WRITE(msgBuf,'(3A,2(A,I4))') 'READ_MFLDS_LEV_RL: ',
      &       'no fldList, try to read field "',fldName, '", rec=',nj
             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -525,8 +529,8 @@ C     !FUNCTIONS
 
 C     !LOCAL VARIABLES:
       INTEGER i, j, nj, iL, ioUnit
+      LOGICAL prtMsg
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 C-----
 
       iL = ILNBLNK(mFldsFile)
@@ -535,10 +539,10 @@ C-----
         WRITE(msgBuf,'(2A,I4)') 'READ_MFLDS_CHECK: ',
      &    'empty MFLDS file-name'
         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R READ_MFLDS_CHECK (fileName)'
       ENDIF
 #endif /* RW_SAFE_MFLDS */
-
 
 C--   Initialise output arguments
       DO j=1,nbErr
@@ -553,6 +557,7 @@ C       missing fields number & list.
 C--   Attempted to read some fields that were not in the current MFLDS file
 C     => report by printing Error Msg:
          ioUnit = errorMessageUnit
+         _BEGIN_MASTER( myThid )
          WRITE(msgBuf,'(3A)') 'READ_MFLDS_CHECK: ',
      &     'reading from file: ', mFldsFile(1:iL)
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -573,12 +578,14 @@ C     => report by printing Error Msg:
      &     (' >', fldMiss(i), '<', i=j,MIN(j+19,nj) )
           CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          ENDDO
+         _END_MASTER( myThid )
 
 C-       Size problem:
          IF ( nMissFld.GT.sizFldList ) THEN
            WRITE(msgBuf,'(2A,I4)') 'READ_MFLDS_CHECK: ',
      &      'missing fields list has been truncated to', sizFldList
            CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
            STOP 'ABNORMAL END: S/R READ_MFLDS_CHECK (list-size Pb)'
          ENDIF
 
@@ -590,10 +597,9 @@ C-       Fill the error output list (up to the Max size: nbErr)
       ELSE
 C--   Normal end : print msg before resetting "mFldsFile"
         ioUnit = standardMessageUnit
-        IF ( debugLevel .GE. debLevA ) THEN
+        prtMsg = debugLevel.GE.debLevA .AND. myThid.EQ.1
+        IF ( prtMsg ) THEN
          WRITE(msgBuf,'(3A)') 'READ_MFLDS_CHECK: ',
-c    &     '- end reading file: ', mFldsFile(1:iL)
-c    &     '- normal end ; reset mFldsFile: ', mFldsFile(1:iL)
      &     '- normal end ; reset MFLDS file-name: ', mFldsFile(1:iL)
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
