@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1641 2012/04/02 04:34:07 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1642 2012/04/03 02:41:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - start to implement clean wait to stop in initialization S/R (config_check.F,
+     packages_check.F and pkg/obcs/obcs_check.F + pkg/mypackage)
+o folowing PRINT_MESSAGE changes:
+  - remove reminder multiple print to the same file (STDOUT) when multi-threads.
 o pkg/bbl:
   - modification so it can work with z*
   - replace deltaT with dTtracerLev(k) for asynchronous time stepping
