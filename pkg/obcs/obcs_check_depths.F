@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.3 2011/09/02 16:23:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.4 2012/04/03 00:13:02 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -47,9 +47,9 @@ C     topography one grid-point inward from open boundary
      &         ( R_low(I,J,bi,bj) .LT. R_low(I,J-1,bi,bj) ) ) THEN
            ichanged = ichanged + 1
            R_low(I,J,bi,bj) = R_low(I,J-1,bi,bj)
-           WRITE(msgBuf,'(2A,(1X,4I6))')
-     &          'S/R OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj) = ',  I, J, bi, bj
+           WRITE(msgBuf,'(2A,2I6,2I4)')
+     &          'OBCS_CHECK_DEPTHS: fixed topography at ',
+     &          '(i,j,bi,bj)=',  I, J, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
@@ -62,9 +62,9 @@ C     topography one grid-point inward from open boundary
      &         ( R_low(I,J,bi,bj) .LT. R_low(I,J+1,bi,bj) ) ) THEN
            ichanged = ichanged + 1
            R_low(I,J,bi,bj) = R_low(I,J+1,bi,bj)
-           WRITE(msgBuf,'(2A,(1X,4I6))')
-     &          'S/R OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj) = ',  I, J, bi, bj
+           WRITE(msgBuf,'(2A,2I6,2I4)')
+     &          'OBCS_CHECK_DEPTHS: fixed topography at ',
+     &          '(i,j,bi,bj)=',  I, J, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
@@ -77,9 +77,9 @@ C     topography one grid-point inward from open boundary
      &         ( R_low(I,J,bi,bj) .LT. R_low(I-1,J,bi,bj) ) ) THEN
            ichanged = ichanged + 1
            R_low(I,J,bi,bj) = R_low(I-1,J,bi,bj)
-           WRITE(msgBuf,'(2A,(1X,4I6))')
-     &          'S/R OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj) = ',  I, J, bi, bj
+           WRITE(msgBuf,'(2A,2I6,2I4)')
+     &          'OBCS_CHECK_DEPTHS: fixed topography at ',
+     &          '(i,j,bi,bj)=',  I, J, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
@@ -93,9 +93,9 @@ C Western boundary
      &         ( R_low(I,J,bi,bj) .LT. R_low(I+1,J,bi,bj) ) ) THEN
            ichanged = ichanged + 1
            R_low(I,J,bi,bj) = R_low(I+1,J,bi,bj)
-           WRITE(msgBuf,'(2A,(1X,4I6))')
-     &          'S/R OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj) = ',  I, J, bi, bj
+           WRITE(msgBuf,'(2A,2I6,2I4)')
+     &          'OBCS_CHECK_DEPTHS: fixed topography at ',
+     &          '(i,j,bi,bj)=',  I, J, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
@@ -108,12 +108,20 @@ C Western boundary
 C--   some diagnostics to stdout
       CALL GLOBAL_SUM_INT( ichanged, myThid )
       IF ( ichanged .GT. 0 ) THEN
-       WRITE(msgBuf,'(A,I7,A,A)')
-     &      'OBCS message: corrected ', ichanged,
-     &      ' instances of problematic topography gradients',
-     &      ' normal to open boundaries'
+       _BEGIN_MASTER(myThid)
+       WRITE(msgBuf,'(2A,I7,A)') 'OBCS_CHECK_DEPTHS: ',
+     &   'Topography gradients normal to open boundaries:'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT, myThid)
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A,I7,A)') 'OBCS_CHECK_DEPTHS: ',
+     &   '==> corrected ', ichanged,' problematic grid-points'
+c      WRITE(msgBuf,'(A,I7,A,A)')
+c    &      'OBCS message: corrected ', ichanged,
+c    &      ' instances of problematic topography gradients',
+c    &      ' normal to open boundaries'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       _END_MASTER(myThid)
       ENDIF
 
 C     endif (OBCSfixTopo)
