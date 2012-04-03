@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_read_pickup.F,v 1.4 2011/08/25 03:08:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_read_pickup.F,v 1.5 2012/04/03 00:20:14 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -73,6 +73,7 @@ c      IF ( filePrec.NE.0 .AND. filePrec.NE.fp ) THEN
          WRITE(msgBuf,'(A,2(A,I4))') 'MYPACKAGE_READ_PICKUP: ',
      &    'file prec.=', filePrec, ' but expecting prec.=', fp
          CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( 0 )
          STOP 'ABNORMAL END: S/R MYPACKAGE_READ_PICKUP (data-prec Pb)'
        ENDIF
        _END_MASTER( myThid )
@@ -89,6 +90,7 @@ C-      No meta-file or old meta-file without List of Fields
      &      'try with " pickupStrictlyMatch=.FALSE.,"',
      &      ' in file: "data", NameList: "PARM03"'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MYPACKAGE_READ_PICKUP'
         ELSE
           WRITE(msgBuf,'(4A)') 'WARNING >> MYPACKAGE_READ_PICKUP: ',
@@ -110,6 +112,7 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           WRITE(msgBuf,'(4A)') 'MYPACKAGE_READ_PICKUP: ',
      &      'no field-list found in meta-file'
           CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MYPACKAGE_READ_PICKUP'
          ENDIF
         ENDIF
@@ -156,6 +159,7 @@ C--    Check for missing fields:
          WRITE(msgBuf,'(2A,I4)') 'MYPACKAGE_READ_PICKUP: ',
      &     'missing fields list has been truncated to', missFldDim
          CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
          STOP 'ABNORMAL END: S/R MYPACKAGE_READ_PICKUP (list-size Pb)'
        ENDIF
        IF ( nMissing.GE.1 ) THEN
@@ -165,6 +169,7 @@ C--    Check for missing fields:
      &       'cannot restart without field "',missFldList(nj),'"'
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDDO
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MYPACKAGE_READ_PICKUP'
        ENDIF
 

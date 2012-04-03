@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.3 2011/08/24 22:34:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.4 2012/04/03 00:20:14 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -121,6 +121,7 @@ C--------------------------
           WRITE(msgBuf,'(2A,I5,A)') 'MYPACKAGE_WRITE_PICKUP: ',
      &     'field-list dimension (listDim=',listDim,') too small'
           CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MYPACKAGE_WRITE_PICKUP (list-size Pb)'
         ENDIF
 #ifdef ALLOW_MDSIO
