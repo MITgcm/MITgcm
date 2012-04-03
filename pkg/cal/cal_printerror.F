@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.5 2006/10/26 01:22:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.6 2012/04/03 15:26:00 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -107,11 +107,11 @@ c     == end of interface ==
 c     Error in cal_Init
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_Init: Unable to open calendar parameter file'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '            file "data.calendar".'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -121,86 +121,86 @@ c     Error in cal_Init
 c     Error in cal_Set
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_Set: No appropriate calendar has been specified.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 2) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_Set: The time step specified is not valid.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 3) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_Set: The time step is less than a second.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 4) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_Set: The time step contains fractions of a second.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
-        else if (nerrcode .eq. 5) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: Less than one time step per calendar day.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if (nerrcode .eq. 6) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: The specifications are incomplete. Please'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)') 
-     &    '                refer to the documentation.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if (nerrcode .eq. 7) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: The final date of integration is before its'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)') 
-     &    '                start date.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if (nerrcode .eq. 10) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: The Julian Calendar is not implemented yet.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if (nerrcode .eq. 11) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: The No Calendar case is not implemented yet.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if ( nerrcode .eq. 12) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: modelstart .ne. startTime ... please check.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if ( nerrcode .eq. 13 ) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: modelend .ne. endTime ... please check.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if ( nerrcode .eq. 14 ) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: modelstep .ne. deltaTclock ... please check.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if ( nerrcode .eq. 15 ) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: modeliter0 .ne. nIter0 ... please check.'
-        else if ( nerrcode .eq. 16 ) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: modeliterend .ne. nEndIter ... please check.'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        else if ( nerrcode .eq. 17 ) then
-         WRITE(msgBuf,'(A)') 
-     &    '  cal_Set: modelintsteps .ne. nTimeSteps'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
+c       else if (nerrcode .eq. 5) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: Less than one time step per calendar day.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if (nerrcode .eq. 6) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: The specifications are incomplete. Please'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c        WRITE(msgBuf,'(A)')
+c    &    '                refer to the documentation.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if (nerrcode .eq. 7) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: The final date of integration is before its'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c        WRITE(msgBuf,'(A)')
+c    &    '                start date.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if (nerrcode .eq. 10) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: The Julian Calendar is not implemented yet.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if (nerrcode .eq. 11) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: The No Calendar case is not implemented yet.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if ( nerrcode .eq. 12) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: modelstart .ne. startTime ... please check.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if ( nerrcode .eq. 13 ) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: modelend .ne. endTime ... please check.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if ( nerrcode .eq. 14 ) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: modelstep .ne. deltaTclock ... please check.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if ( nerrcode .eq. 15 ) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: modeliter0 .ne. nIter0 ... please check.'
+c       else if ( nerrcode .eq. 16 ) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: modeliterend .ne. nEndIter ... please check.'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       else if ( nerrcode .eq. 17 ) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Set: modelintsteps .ne. nTimeSteps'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
         else
           missingerrcode = .true.
         endif
@@ -224,7 +224,7 @@ c     Error in cal_IsLeap
 c     Error in cal_TimePassed
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    'cal_TimePassed: cal and timeinterval cannot be compared'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -236,7 +236,7 @@ c     Error in cal_TimePassed
 c     Error in cal_AddTime
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_AddTime: not a valid time interval.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -248,7 +248,7 @@ c     Error in cal_AddTime
 c     Error in cal_TimeInterval
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_TimeInterval: not a valid time unit.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -260,11 +260,11 @@ c     Error in cal_TimeInterval
 c     Error in cal_SubDates
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_SubDates: Not a valid combination of calendar dates'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '             or time intervals.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -276,7 +276,7 @@ c     Error in cal_SubDates
 c     Error in cal_ConvDate
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_ConvDate: date specification has mixed signs.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -288,7 +288,7 @@ c     Error in cal_ConvDate
 c     Error in cal_ToSeconds
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_ToSeconds: input not a time interval array.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -300,7 +300,7 @@ c     Error in cal_ToSeconds
 c     Error in cal_StepsPerDay
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_StepsPerDay: nothing else to do.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -312,7 +312,7 @@ c     Error in cal_StepsPerDay
 c     Error in cal_DaysPerMonth
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_DaysPerMonth: current year after final year.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -349,51 +349,51 @@ c     Error in cal_nStepDay
 c     Error in cal_CheckDate
 
         if (nerrcode .eq. 0) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: A valid date specification!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '               --> This only means that the format is ok!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: Last component of array not valid!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 2) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: Third component of interval array not 0'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 3) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: Signs of first two components unequal!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 4) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: Second component not in hhmmss format!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 5) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: Weekday indentifier not correct!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 6) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: Leap year identifier not correct!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 7) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    'cal_CheckDate: Calendar date before predef. reference date'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 8) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '   cal_CheckDate: First component not in yymmdd format!'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -410,7 +410,7 @@ c     Error in cal_PrintError
 c     Error in cal_PrintDate
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_PrintDate: date not a legal calendar array.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
@@ -427,7 +427,7 @@ c     Error in cal_PrintError
 c     Error in cal_NumInts
 
         if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &    '  cal_NumInts: Expected a time interval as third argument.'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
