@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1644 2012/04/03 17:01:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1645 2012/04/04 16:18:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63l (2012/04/04)
 o pkg/bbl:
   - fix call to FIND_RHO_2D in bbl_calc_rho.F (case multi-tiles per proc);
     update global_with_exf output.yearly.txt file.
@@ -13,7 +14,7 @@ o pkg/cal:
   - remove unsused subroutines from AD-Diff list.
 o model/src:
   - start to implement clean wait to stop in initialization S/R (config_check.F,
-     packages_check.F and pkg/obcs/obcs_check.F + pkg/mypackage)
+     packages_check.F, ini_parms.F and pkg/obcs/obcs_check.F + pkg/mypackage)
 o folowing PRINT_MESSAGE changes:
   - remove reminder multiple print to the same file (STDOUT) when multi-threads.
 o pkg/bbl:
