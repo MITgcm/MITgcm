@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.6 2012/04/03 15:20:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.7 2012/04/05 21:59:03 jmc Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -17,10 +17,6 @@ C
 C     ==================================================================
 C     HEADER calendar
 C     ==================================================================
-C
-C   - The calendar version:
-      CHARACTER*(5) calendarversion
-      PARAMETER(    calendarversion = '0.2.0' )
 
 C   - Parameters of the numerical model:
 C
@@ -33,7 +29,7 @@ C     modelintsteps    - number of timestep that are to be performed.
 C     modeliter0       - the numerical models initial timestep number.
 C     modeliterend     - the models last timestep number.
 cC    modelstepsperday - number of model time steps per calendar day.
-C
+
 C   - Parameters used by the calendar:
 C
 C     refdate          - first day of the Gregorian Calendar.
@@ -51,6 +47,7 @@ C     minutesperhour   - number of minutes in a calendars hour.
 C     secondsperday    - number of seconds in a calendars day.
 C     secondsperhour   - number of seconds in a calendars hour.
 C     secondsperminute - number of seconds in a calendars minute.
+C     cal_setStatus    :: status of calendar parms setting (0=none, 3=fully set)
 
       COMMON /cal_rl/
      &                modelstart,
@@ -78,6 +75,7 @@ C     secondsperminute - number of seconds in a calendars minute.
      &               modeliter0,
      &               modeliterend,
      &               modelintsteps,
+     &               cal_setStatus,
      &               startdate_1,
      &               startdate_2
 
@@ -100,9 +98,9 @@ C     secondsperminute - number of seconds in a calendars minute.
       INTEGER modeliterend
       INTEGER modelintsteps
 
+      INTEGER cal_setStatus
       INTEGER startdate_1
       INTEGER startdate_2
-
 
 C   calendarDumps :: When set, approximate months (30-31 days) and years (360-372 days)
 C                    for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
@@ -110,24 +108,24 @@ C                    KPP_taveFreq, and freq in pkg/diagnostics are converted to 
 C                    calendar months and years.  Requires pkg/cal.
       COMMON /cal_l/
      &               calendarDumps,
-     &               usingNoCalendar,
      &               usingModelCalendar,
      &               usingJulianCalendar,
      &               usingGregorianCalendar
       LOGICAL calendarDumps
-      LOGICAL usingNoCalendar
       LOGICAL usingModelCalendar
       LOGICAL usingJulianCalendar
       LOGICAL usingGregorianCalendar
 
+C     TheCalendar - type of calendar to use; available: 'model' or 'gregorian'.
 C     dayofweek   - Week day number one is the week day of refdate.
 C                   For the Gregorian calendar this is Friday, 15-Oct-1582.
-C
 C     monthofyear - Both available calendars are assumed to have twelve
 C                   months.
       COMMON /calendar_ch/
+     &                     TheCalendar,
      &                     dayofweek,
      &                     monthofyear
+      CHARACTER*(9) TheCalendar
       CHARACTER*(3) dayofweek(7)
       CHARACTER*(3) monthofyear(12)
 
