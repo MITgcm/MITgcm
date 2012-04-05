@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.6 2012/04/03 15:26:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.7 2012/04/05 22:01:47 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -76,49 +76,50 @@ c     ==================================================================
 
       implicit none
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-c     mythid - thread number for this instance of the routine.
-c     calerr - error code
+C     mythid - thread number for this instance of the routine.
+C     calerr - error code
 
       integer mythid
       integer calerr
 
-c     == local variables ==
+C     == local variables ==
 
       integer nroutine
       integer nerrcode
       logical missingerrcode
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-c     == end of interface ==
+C     == end of interface ==
 
       nerrcode = mod(calerr,100)
       nroutine = (calerr - nerrcode)/100
       missingerrcode = .false.
 
-      if (nroutine .eq. 0) then
-c     Error in cal_Init
+c     if (nroutine .eq. 0) then
+C     Error in cal_Init
 
-        if (nerrcode .eq. 1) then
-         WRITE(msgBuf,'(A)')
-     &    '  cal_Init: Unable to open calendar parameter file'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)')
-     &    '            file "data.calendar".'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         CALL PRINT_ERROR( msgBuf , 1)
-        endif
+c       if (nerrcode .eq. 1) then
+c        WRITE(msgBuf,'(A)')
+c    &    '  cal_Init: Unable to open calendar parameter file'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c        WRITE(msgBuf,'(A)')
+c    &    '            file "data.calendar".'
+c        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c        CALL PRINT_ERROR( msgBuf , 1)
+c       endif
 
-      else if (nroutine .eq. 1) then
-c     Error in cal_Set
+c     else if (nroutine .eq. 1) then
+      if (nroutine .eq. 1) then
+C     Error in cal_Set
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -206,22 +207,22 @@ c        CALL PRINT_ERROR( msgBuf , 1)
         endif
 
       else if (nroutine .eq. 2) then
-c     Error in cal_GetDate
+C     Error in cal_GetDate
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 3) then
-c     Error in cal_FullDate
+C     Error in cal_FullDate
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 4) then
-c     Error in cal_IsLeap
+C     Error in cal_IsLeap
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 5) then
-c     Error in cal_TimePassed
+C     Error in cal_TimePassed
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -233,7 +234,7 @@ c     Error in cal_TimePassed
         endif
 
       else if (nroutine .eq. 6) then
-c     Error in cal_AddTime
+C     Error in cal_AddTime
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -245,7 +246,7 @@ c     Error in cal_AddTime
         endif
 
       else if (nroutine .eq. 7) then
-c     Error in cal_TimeInterval
+C     Error in cal_TimeInterval
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -257,7 +258,7 @@ c     Error in cal_TimeInterval
         endif
 
       else if (nroutine .eq. 8) then
-c     Error in cal_SubDates
+C     Error in cal_SubDates
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -273,7 +274,7 @@ c     Error in cal_SubDates
         endif
 
       else if (nroutine .eq. 9) then
-c     Error in cal_ConvDate
+C     Error in cal_ConvDate
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -285,7 +286,7 @@ c     Error in cal_ConvDate
         endif
 
       else if (nroutine .eq. 10) then
-c     Error in cal_ToSeconds
+C     Error in cal_ToSeconds
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -297,7 +298,7 @@ c     Error in cal_ToSeconds
         endif
 
       else if (nroutine .eq. 11) then
-c     Error in cal_StepsPerDay
+C     Error in cal_StepsPerDay
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -309,7 +310,7 @@ c     Error in cal_StepsPerDay
         endif
 
       else if (nroutine .eq. 12) then
-c     Error in cal_DaysPerMonth
+C     Error in cal_DaysPerMonth
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -321,32 +322,32 @@ c     Error in cal_DaysPerMonth
         endif
 
       else if (nroutine .eq. 13) then
-c     Error in cal_MonthsPerYear
+C     Error in cal_MonthsPerYear
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 14) then
-c     Error in cal_IntYears
+C     Error in cal_IntYears
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 15) then
-c     Error in cal_IntMonths
+C     Error in cal_IntMonths
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 16) then
-c     Error in cal_IntDays
+C     Error in cal_IntDays
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 17) then
-c     Error in cal_nStepDay
+C     Error in cal_nStepDay
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 18) then
-c     Error in cal_CheckDate
+C     Error in cal_CheckDate
 
         if (nerrcode .eq. 0) then
          WRITE(msgBuf,'(A)')
@@ -402,12 +403,12 @@ c     Error in cal_CheckDate
         endif
 
       else if (nroutine .eq. 19) then
-c     Error in cal_PrintError
+C     Error in cal_PrintError
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 20) then
-c     Error in cal_PrintDate
+C     Error in cal_PrintDate
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -419,12 +420,12 @@ c     Error in cal_PrintDate
         endif
 
       else if (nroutine .eq. 21) then
-c     Error in cal_PrintError
+C     Error in cal_PrintError
 
         missingerrcode = .true.
 
       else if (nroutine .eq. 25) then
-c     Error in cal_NumInts
+C     Error in cal_NumInts
 
         if (nerrcode .eq. 1) then
          WRITE(msgBuf,'(A)')
@@ -448,4 +449,3 @@ c     Error in cal_NumInts
 
       return
       end
-
