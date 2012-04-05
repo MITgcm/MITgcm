@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.26 2012/01/05 20:40:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.27 2012/04/05 00:00:22 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -40,7 +40,6 @@ C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "cal.h"
 #include "EXF_CONSTANTS.h"
 #include "EXF_PARAM.h"
 

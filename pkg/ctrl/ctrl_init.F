@@ -1,7 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.42 2011/07/25 08:20:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.43 2012/04/05 00:00:22 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
+
+C--  File ctrl_init.F:
+C--   Contents
+C--   o CTRL_INIT
+C--   o CTRL_INIT_REC
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine ctrl_init( mythid )
 
@@ -68,9 +75,6 @@ c     == global variables ==
 #include "ctrl.h"
 #include "optim.h"
 
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
 #ifdef ALLOW_DIC_CONTROL
 # include "DIC_CTRL.h"
 #endif
@@ -797,6 +801,8 @@ c----------------------------------------------------------------------
 
       return
       end
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine ctrl_init_rec(
      I     fldstartdate1, fldstartdate2, fldperiod, nfac,
