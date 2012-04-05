@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.78 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.79 2012/04/05 22:01:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -20,6 +20,8 @@ C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_FIXED
 C       |
 C       |-- RUNCLOCK_INIT
+C       |
+C       |-- CAL_INIT_FIXED
 C       |
 C       |-- DIAGNOSTICS_INIT_EARLY
 C       |-- DIAGNOSTICS_MAIN_INIT
@@ -132,6 +134,16 @@ CEOP
         CALL RUNCLOCK_INIT( myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_CAL
+C--   Initialise the calendar package.
+      IF ( useCAL ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CAL_INIT_FIXED',myThid)
+# endif
+        CALL CAL_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_CAL */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
