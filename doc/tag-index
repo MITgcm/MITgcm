@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1645 2012/04/04 16:18:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1646 2012/04/05 22:07:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/cal:
+ - move calendar setting & summary (previously in cal_readparams.F) into new
+   S/R CAL_INIT_FIXED to be called later in the initialisation process, once
+   length of the simulation is set (after SET_PARMS call); This is an attempt
+   to fix Pb when, e.g.: pkg/longstep, modifies the length of the run.
+ - For safety: keep a record of pkg/cal parameter settings status
+           to allow to STOP if one pkg/cal S/R is called too early.
 
 checkpoint63l (2012/04/04)
 o pkg/bbl:
