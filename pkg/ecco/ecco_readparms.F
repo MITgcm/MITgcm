@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.56 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.57 2012/04/07 00:12:03 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -405,57 +405,6 @@ C--   Check parameters:
         IF ( cost_yftype.NE.'RL' ) THEN
           STOP 'ABNORMAL END: S/R ECCO_READPARMS: invalid cost_yftype'
         ENDIF
-
-#ifdef ALLOW_CAL
-c--     Get the complete dates of the ...
-c--     ... SST data.
-        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: start assigning cost dates'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                  SQUEEZE_RIGHT , 1)
-c--     ... SST data.
-        if ( sstdatfile .ne. ' ' )
-     &   call cal_FullDate( sststartdate1,   sststartdate2,
-     &                      sststartdate,    mythid )
-c--     ... TMI data.
-        if ( tmidatfile .ne. ' ' )
-     &   call cal_FullDate( tmistartdate1,   tmistartdate2,
-     &                      tmistartdate,    mythid )
-c--     ... SSS data.
-        if ( sssdatfile .ne. ' ' )
-     &   call cal_FullDate( sssstartdate1,   sssstartdate2,
-     &                      sssstartdate,    mythid )
-c--     ... BP data.
-        if ( bpdatfile .ne. ' ' )
-     &   call cal_FullDate( bpstartdate1,   bpstartdate2,
-     &                      bpstartdate,    mythid )
-c--     ... IES data.
-        if ( iesdatfile .ne. ' ' )
-     &   call cal_FullDate( iesstartdate1,   iesstartdate2,
-     &                      iesstartdate,    mythid )
-c--     ... T/P data.
-        if ( topexfile .ne. ' ' )
-     &  call cal_FullDate( topexstartdate1, topexstartdate2,
-     &                     topexstartdate,  mythid )
-c--     ... ERS data.
-        if ( ersfile .ne. ' ' )
-     &   call cal_FullDate( ersstartdate1,   ersstartdate2,
-     &                      ersstartdate,    mythid )
-c--     ... GFO data.
-        if ( gfofile .ne. ' ' )
-     &   call cal_FullDate( gfostartdate1,   gfostartdate2,
-     &                      gfostartdate,    mythid )
-c--     ... SCAT data.
-        if ( scatxdatfile .ne. ' ' )
-     &   call cal_FullDate( scatstartdate1,   scatstartdate2,
-     &                      scatxstartdate,    mythid )
-        if ( scatydatfile .ne. ' ' )
-     &   call cal_FullDate( scatstartdate1,   scatstartdate2,
-     &                      scatystartdate,    mythid )
-
-        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: end assigning cost dates'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                  SQUEEZE_RIGHT , 1)
-#endif
 
       _END_MASTER( myThid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.25 2011/06/27 13:13:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.26 2012/04/07 00:12:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,6 +103,10 @@ c--     ... BP data.
         if ( bpdatfile .ne. ' ' )
      &   call cal_FullDate( bpstartdate1,   bpstartdate2,
      &                      bpstartdate,    mythid )
+c--     ... IES data.
+        if ( iesdatfile .ne. ' ' )
+     &   call cal_FullDate( iesstartdate1,   iesstartdate2,
+     &                      iesstartdate,    mythid )
 c--     ... T/P data.
         if ( topexfile .ne. ' ' )
      &  call cal_FullDate( topexstartdate1, topexstartdate2,
