@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.9 2010/10/07 15:17:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.10 2012/04/07 16:24:12 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -22,9 +22,6 @@ C     !USES:
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif /* ALLOW_CAL */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id number
@@ -35,6 +32,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_CAL
+      INTEGER locDate(4)
       CHARACTER*(34) timeUnits
 #endif /* ALLOW_CAL */
 
@@ -209,15 +207,15 @@ C     Create MNC definitions for DYNVARS.h variables  ----------------
      &     'long_name','model_time', myThid)
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
+       CALL CAL_GETDATE( -1, startTime, locDate, myThid )
 C     format: seconds since 1992-01-01, 00:00:00
-       WRITE(timeUnits,
-     &'(A14,(I4.4),A1,(I2.2),A1,(I2.2),A2,(I2.2),A1,(I2.2),A1,(I2.2))')
-     &      'seconds since ',startDate_1/10000,         '-',
-     &      (startDate_1 - startDate_1/10000*10000)/100,'-',
-     &      (startDate_1 - startDate_1/100*100),        ', ',
-     &      startDate_2/10000,                          ':',
-     &      (startDate_2 - startDate_2/10000*10000)/100,':',
-     &      (startDate_2 - startDate_2/100*100)
+       WRITE(timeUnits,'(A,I4.4,5(A,I2.2))')
+     &      'seconds since ', locDate(1)/10000,       '-',
+     &      (locDate(1) - locDate(1)/10000*10000)/100,'-',
+     &      (locDate(1) - locDate(1)/100*100),        ', ',
+     &       locDate(2)/10000,                        ':',
+     &      (locDate(2) - locDate(2)/10000*10000)/100,':',
+     &      (locDate(2) - locDate(2)/100*100)
        CALL MNC_CW_ADD_VATTR_TEXT('T',
      &      'units',timeUnits, myThid)
       ELSE

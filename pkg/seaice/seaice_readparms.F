@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.120 2012/03/14 22:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.121 2012/04/07 16:24:52 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,9 +35,6 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_CONSTANTS.h"
 #endif /* ALLOW_EXF */
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -55,6 +52,9 @@ C     iUnit      :: Work variable for IO unit number
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
+#ifdef ALLOW_COST
+      INTEGER locDate(4)
+#endif /* ALLOW_COST */
       INTEGER nRetired
 
 C-    Old parameters (to be retired one day):
@@ -416,8 +416,9 @@ c
       smrareadatfile    =  ' '
       smrarea_errfile   =  ' '
 # ifdef ALLOW_CAL
-      smrareastartdate1 = startDate_1
-      smrareastartdate2 = startDate_2
+      CALL CAL_GETDATE( -1, startTime, locDate, myThid )
+      smrareastartdate1 = locDate(1)
+      smrareastartdate2 = locDate(2)
 # endif
 #endif /* ALLOW_COST */
 
