@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.13 2012/04/05 21:59:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.14 2012/04/07 15:44:49 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -97,15 +97,6 @@ C       Next, read the calendar data file.
 
 C     Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-#ifdef ALLOW_ECCO
-C-    because of few (unfortunate) calendar settings in ECCO_READPARMS
-C     needs this hack until ecco_readparms.F is cleaned up
-      CALL CAL_SET(
-     I              startTime, endTime, deltaTclock,
-     I              nIter0, nEndIter, nTimeSteps,
-     I              myThid )
-#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('CAL_READPARMS',myThid)
