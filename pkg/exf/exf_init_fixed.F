@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.21 2012/01/30 16:43:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.22 2012/04/07 20:06:52 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -25,7 +25,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 #ifdef ALLOW_ICEFRONT
@@ -40,7 +39,6 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-      INTEGER date_array(4), difftime(4), yearStartDate(4)
 #ifdef USE_EXF_INTERPOLATION
       INTEGER j
 #endif
@@ -122,564 +120,286 @@ C     from the beginning of the year.
 #ifdef ALLOW_ATM_WIND
       IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE uwind',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START uwind',myThid)
 # endif
-       CALL CAL_FULLDATE  ( uwindstartdate1, uwindstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   uwindstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   uwindstartdate       ,myThid)
-        uwindstartdate   =  modelstart + uwindstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          uwindstartdate1, uwindstartdate2,
+     O                          uwindstartdate,
+     I                          myThid )
       ENDIF
       IF ( vwindfile .NE. ' ' .AND. vwindperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE vwind',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vwind',myThid)
 # endif
-       CALL CAL_FULLDATE  ( vwindstartdate1, vwindstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   vwindstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   vwindstartdate       ,myThid)
-        vwindstartdate   =  modelstart + vwindstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          vwindstartdate1, vwindstartdate2,
+     O                          vwindstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_ATM_WIND */
       IF ( wspeedfile .NE. ' ' .AND. wspeedperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE wspeed',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START wspeed',myThid)
 # endif
-       CALL CAL_FULLDATE  ( wspeedstartdate1, wspeedstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   wspeedstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   wspeedstartdate      ,myThid)
-        wspeedstartdate  =  modelstart + wspeedstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          wspeedstartdate1, wspeedstartdate2,
+     O                          wspeedstartdate,
+     I                          myThid )
       ENDIF
       IF ( ustressfile .NE. ' ' .AND. ustressperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE ustress',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START ustress',myThid)
 # endif
-       CALL CAL_FULLDATE  ( ustressstartdate1, ustressstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   ustressstartdate     ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   ustressstartdate     ,myThid)
-        ustressstartdate =  modelstart + ustressstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          ustressstartdate1, ustressstartdate2,
+     O                          ustressstartdate,
+     I                          myThid )
       ENDIF
       IF ( vstressfile .NE. ' ' .AND. vstressperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE vstress',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vstress',myThid)
 # endif
-       CALL CAL_FULLDATE  ( vstressstartdate1, vstressstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   vstressstartdate     ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   vstressstartdate     ,myThid)
-        vstressstartdate =  modelstart + vstressstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          vstressstartdate1, vstressstartdate2,
+     O                          vstressstartdate,
+     I                          myThid )
       ENDIF
 
 #ifdef ALLOW_ATM_TEMP
       IF ( atempfile .NE. ' ' .AND. atempperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE atemp',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START atemp',myThid)
 # endif
-       CALL CAL_FULLDATE  ( atempstartdate1, atempstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   atempstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   atempstartdate       ,myThid)
-        atempstartdate   =  modelstart + atempstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          atempstartdate1, atempstartdate2,
+     O                          atempstartdate,
+     I                          myThid )
       ENDIF
       IF ( aqhfile .NE. ' ' .AND. aqhperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE aqh',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START aqh',myThid)
 # endif
-       CALL CAL_FULLDATE  ( aqhstartdate1, aqhstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   aqhstartdate         ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   aqhstartdate         ,myThid)
-        aqhstartdate     =  modelstart + aqhstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          aqhstartdate1, aqhstartdate2,
+     O                          aqhstartdate,
+     I                          myThid )
       ENDIF
       IF ( lwfluxfile .NE. ' ' .AND. lwfluxperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE lwflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START lwflux',myThid)
 # endif
-       CALL CAL_FULLDATE  ( lwfluxstartdate1, lwfluxstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   lwfluxstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   lwfluxstartdate      ,myThid)
-        lwfluxstartdate  =  modelstart + lwfluxstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          lwfluxstartdate1, lwfluxstartdate2,
+     O                          lwfluxstartdate,
+     I                          myThid )
       ENDIF
       IF ( precipfile .NE. ' ' .AND. precipperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE precip',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START precip',myThid)
 # endif
-       CALL CAL_FULLDATE  ( precipstartdate1, precipstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   precipstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   precipstartdate      ,myThid)
-        precipstartdate  =  modelstart + precipstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          precipstartdate1, precipstartdate2,
+     O                          precipstartdate,
+     I                          myThid )
       ENDIF
       IF ( snowprecipfile .NE. ' ' .AND. snowprecipperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE snowprecip',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFIELD_START snowprecip',myThid)
 # endif
-       CALL CAL_FULLDATE( snowprecipstartdate1, snowprecipstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   snowprecipstartdate  ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   snowprecipstartdate  ,myThid)
-        snowprecipstartdate=modelstart + snowprecipstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                   snowprecipstartdate1, snowprecipstartdate2,
+     O                   snowprecipstartdate,
+     I                          myThid )
       ENDIF
 #else /* ifndef ALLOW_ATM_TEMP */
       IF ( hfluxfile .NE. ' ' .AND. hfluxperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE hflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hflux',myThid)
 # endif
-       CALL CAL_FULLDATE  ( hfluxstartdate1, hfluxstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   hfluxstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   hfluxstartdate       ,myThid)
-        hfluxstartdate   =  modelstart + hfluxstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          hfluxstartdate1, hfluxstartdate2,
+     O                          hfluxstartdate,
+     I                          myThid )
       ENDIF
       IF ( sfluxfile .NE. ' ' .AND. sfluxperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE sflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START sflux',myThid)
 # endif
-       CALL CAL_FULLDATE  ( sfluxstartdate1, sfluxstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   sfluxstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   sfluxstartdate       ,myThid)
-        sfluxstartdate   =  modelstart + sfluxstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          sfluxstartdate1, sfluxstartdate2,
+     O                          sfluxstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
       IF ( swfluxfile .NE. ' ' .AND. swfluxperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE swflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START swflux',myThid)
 # endif
-       CALL CAL_FULLDATE  ( swfluxstartdate1, swfluxstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   swfluxstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   swfluxstartdate      ,myThid)
-        swfluxstartdate  =  modelstart + swfluxstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          swfluxstartdate1, swfluxstartdate2,
+     O                          swfluxstartdate,
+     I                          myThid )
       ENDIF
 #endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
 #ifdef EXF_READ_EVAP
       IF ( evapfile .NE. ' ' .AND. evapperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE evap',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START evap',myThid)
 # endif
-       CALL CAL_FULLDATE  ( evapstartdate1, evapstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   evapstartdate        ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   evapstartdate        ,myThid)
-        evapstartdate    =  modelstart + evapstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          evapstartdate1, evapstartdate2,
+     O                          evapstartdate,
+     I                          myThid )
       ENDIF
 #endif /* EXF_READ_EVAP */
 
 #ifdef ALLOW_RUNOFF
       IF ( runofffile .NE. ' ' .AND. runoffperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE runoff',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START runoff',myThid)
 # endif
-       CALL CAL_FULLDATE  ( runoffstartdate1, runoffstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   runoffstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   runoffstartdate      ,myThid)
-        runoffstartdate  =  modelstart + runoffstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          runoffstartdate1, runoffstartdate2,
+     O                          runoffstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_ICEFRONT
       IF ( sgrunofffile .NE. ' ' .AND. sgrunoffperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE sgrunoff',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START sgrunoff',myThid)
 # endif
-       CALL CAL_FULLDATE  ( sgrunoffstartdate1, sgrunoffstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime, sgrunoffstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime, sgrunoffstartdate      ,myThid)
-        sgrunoffstartdate  =  modelstart + sgrunoffstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          sgrunoffstartdate1, sgrunoffstartdate2,
+     O                          sgrunoffstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE swdown',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START swdown',myThid)
 # endif
-       CALL CAL_FULLDATE  ( swdownstartdate1, swdownstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   swdownstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   swdownstartdate      ,myThid)
-        swdownstartdate  =  modelstart + swdownstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          swdownstartdate1, swdownstartdate2,
+     O                          swdownstartdate,
+     I                          myThid )
       ENDIF
       IF ( lwdownfile .NE. ' ' .AND. lwdownperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE lwdown',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START lwdown',myThid)
 # endif
-       CALL CAL_FULLDATE  ( lwdownstartdate1, lwdownstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   lwdownstartdate      ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   lwdownstartdate      ,myThid)
-        lwdownstartdate  =  modelstart + lwdownstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          lwdownstartdate1, lwdownstartdate2,
+     O                          lwdownstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
       IF ( apressurefile .NE. ' ' .AND. apressureperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE apressure',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFIELD_START apressure',myThid)
 # endif
-       CALL CAL_FULLDATE  ( apressurestartdate1,  apressurestartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   apressurestartdate   ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   apressurestartdate   ,myThid)
-        apressurestartdate= modelstart + apressurestartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                   apressurestartdate1, apressurestartdate2,
+     O                   apressurestartdate,
+     I                          myThid )
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_ICE_AREAMASK
       IF ( areamaskfile .NE. ' ' .AND. areamaskperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE areamask',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START areamask',myThid)
 # endif
-       CALL CAL_FULLDATE  ( areamaskstartdate1,  areamaskstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   areamaskstartdate   ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   areamaskstartdate   ,myThid)
-        areamaskstartdate= modelstart + areamaskstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          areamaskstartdate1, areamaskstartdate2,
+     O                          areamaskstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_ICE_AREAMASK */
 
 #ifdef ALLOW_OBCS
       IF ( obcsNperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsN',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsN',myThid)
 # endif
-       CALL CAL_FULLDATE  ( obcsNstartdate1, obcsNstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsNstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsNstartdate       ,myThid)
-        obcsNstartdate   =  modelstart + obcsNstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          obcsNstartdate1, obcsNstartdate2,
+     O                          obcsNstartdate,
+     I                          myThid )
       ENDIF
       IF ( obcsSperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsS',myThid)
 # endif
-       CALL CAL_FULLDATE  ( obcsSstartdate1, obcsSstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsSstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsSstartdate       ,myThid)
-        obcsSstartdate   =  modelstart + obcsSstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          obcsSstartdate1, obcsSstartdate2,
+     O                          obcsSstartdate,
+     I                          myThid )
       ENDIF
       IF ( obcsEperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsE',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsE',myThid)
 # endif
-       CALL CAL_FULLDATE  ( obcsEstartdate1, obcsEstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsEstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsEstartdate       ,myThid)
-        obcsEstartdate   =  modelstart + obcsEstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          obcsEstartdate1, obcsEstartdate2,
+     O                          obcsEstartdate,
+     I                          myThid )
       ENDIF
       IF ( obcsWperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE obcsW',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsW',myThid)
 # endif
-       CALL CAL_FULLDATE  ( obcsWstartdate1, obcsWstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsWstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   obcsWstartdate       ,myThid)
-        obcsWstartdate   =  modelstart + obcsWstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          obcsWstartdate1, obcsWstartdate2,
+     O                          obcsWstartdate,
+     I                          myThid )
       ENDIF
 # ifdef ALLOW_SEAICE
       IF ( siobNperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobN',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobN',myThid)
 # endif
-       CALL CAL_FULLDATE  ( siobNstartdate1, siobNstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobNstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobNstartdate       ,myThid)
-        siobNstartdate   =  modelstart + siobNstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          siobNstartdate1, siobNstartdate2,
+     O                          siobNstartdate,
+     I                          myThid )
       ENDIF
       IF ( siobSperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobS',myThid)
 # endif
-       CALL CAL_FULLDATE  ( siobSstartdate1, siobSstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobSstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobSstartdate       ,myThid)
-        siobSstartdate   =  modelstart + siobSstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          siobSstartdate1, siobSstartdate2,
+     O                          siobSstartdate,
+     I                          myThid )
       ENDIF
       IF ( siobEperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobE',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobE',myThid)
 # endif
-       CALL CAL_FULLDATE  ( siobEstartdate1, siobEstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobEstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobEstartdate       ,myThid)
-        siobEstartdate   =  modelstart + siobEstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          siobEstartdate1, siobEstartdate2,
+     O                          siobEstartdate,
+     I                          myThid )
       ENDIF
       IF ( siobWperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE siobW',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobW',myThid)
 # endif
-       CALL CAL_FULLDATE  ( siobWstartdate1, siobWstartdate2,
-     &      date_array, myThid )
-       IF ( useOBCSYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobWstartdate       ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime,   siobWstartdate       ,myThid)
-        siobWstartdate   =  modelstart + siobWstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          siobWstartdate1, siobWstartdate2,
+     O                          siobWstartdate,
+     I                          myThid )
       ENDIF
 # endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS */
@@ -687,86 +407,46 @@ C     from the beginning of the year.
 #ifdef ALLOW_CLIMSST_RELAXATION
       IF ( climsstfile .NE. ' ' .AND. climsstperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climsst',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climsst',myThid)
 # endif
-       CALL CAL_FULLDATE( climsststartdate1, climsststartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climsststartdate     ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climsststartdate     ,myThid)
-        climsststartdate =  modelstart + climsststartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          climsststartdate1, climsststartdate2,
+     O                          climsststartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSST_RELAXATION */
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
       IF ( climsssfile .NE. ' ' .AND. climsssperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climsss',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climsss',myThid)
 # endif
-       CALL CAL_FULLDATE( climsssstartdate1, climsssstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climsssstartdate     ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climsssstartdate     ,myThid)
-        climsssstartdate =  modelstart + climsssstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          climsssstartdate1, climsssstartdate2,
+     O                          climsssstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSSS_RELAXATION */
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
       IF ( climustrfile .NE. ' ' .AND. climustrperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climustr',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climustr',myThid)
 # endif
-       CALL CAL_FULLDATE( climustrstartdate1, climustrstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climustrstartdate     ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climustrstartdate     ,myThid)
-        climustrstartdate =  modelstart + climustrstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          climustrstartdate1, climustrstartdate2,
+     O                          climustrstartdate,
+     I                          myThid )
       ENDIF
 
       IF ( climvstrfile .NE. ' ' .AND. climvstrperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('CAL_FULLDATE climvstr',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climvstr',myThid)
 # endif
-       CALL CAL_FULLDATE( climvstrstartdate1, climvstrstartdate2,
-     &      date_array, myThid )
-       IF ( useExfYearlyFields ) THEN
-        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climvstrstartdate     ,myThid)
-       ELSE
-        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds (difftime,    climvstrstartdate     ,myThid)
-        climvstrstartdate =  modelstart + climvstrstartdate
-       ENDIF
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          climvstrstartdate1, climvstrstartdate2,
+     O                          climvstrstartdate,
+     I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSTRESS_RELAXATION */
 
