@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1646 2012/04/05 22:07:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1647 2012/04/07 20:07:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+ - new S/R EXF_GETFIELD_START to return starting-time of a forcing field
+   (according to useExfYearlyFields).
 o pkg/cal:
  - move calendar setting & summary (previously in cal_readparams.F) into new
    S/R CAL_INIT_FIXED to be called later in the initialisation process, once
@@ -11,6 +14,10 @@ o pkg/cal:
    to fix Pb when, e.g.: pkg/longstep, modifies the length of the run.
  - For safety: keep a record of pkg/cal parameter settings status
            to allow to STOP if one pkg/cal S/R is called too early.
+ - add a stop in all basic pkg/cal subroutines if called before setting is done.
+ - modify cal_getdate.F: stop when nothing was returned;
+   if called with myIter=-1, simply retrun modelBaseDate (1,2 = startDate_1,_2);
+   this allows to remove "cal.h" from seaice_read_parms.F & init_mnc_vars.F.
 
 checkpoint63l (2012/04/04)
 o pkg/bbl:
