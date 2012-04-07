@@ -1,82 +1,87 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timepassed.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timepassed.F,v 1.3 2012/04/07 16:21:05 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
 
-      subroutine cal_TimePassed(
+      SUBROUTINE CAL_TIMEPASSED(
      I                           initialdate,
      I                           finaldate,
      O                           numdays,
-     I                           mythid
-     &                         )
+     I                           myThid )
 
-c     ==================================================================
-c     SUBROUTINE cal_TimePassed
-c     ==================================================================
-c
-c     o Calculate the time that passed between initialdate and
-c       finaldate.
-c              
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
-c
-c              - restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  03-Feb-2000
-c
-c              - Introduced new routine and function names, cal_<NAME>,
-c                for verion 0.1.3.
-c
-c     ==================================================================
-c     SUBROUTINE cal_TimePassed
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE cal_TimePassed
+C     ==================================================================
+C
+C     o Calculate the time that passed between initialdate and
+C       finaldate.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
+C              - restructured the original version in order to have a
+C                better interface to the MITgcmUV.
+C              Christian Eckert eckert@mit.edu  03-Feb-2000
+C              - Introduced new routine and function names, cal_<NAME>,
+C                for verion 0.1.3.
+C
+C     ==================================================================
+C     SUBROUTINE cal_TimePassed
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
+#include "EEPARAMS.h"
 #include "cal.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+      INTEGER initialdate(4)
+      INTEGER finaldate(4)
+      INTEGER numdays(4)
+      INTEGER myThid
 
-      integer initialdate(4)
-      integer finaldate(4)
-      integer numdays(4)
-      integer mythid
+C     == external ==
+      INTEGER  cal_IsLeap
+      EXTERNAL cal_IsLeap
 
-c     == local variables ==
+C     == local variables ==
+      INTEGER yi,yf
+      INTEGER mi,mf
+      INTEGER di,df
+      INTEGER si,sf
+      INTEGER li,lf
+      INTEGER wi,wf
+      INTEGER cdi,cdf
+      INTEGER csi,csf
+      INTEGER ndays
+      INTEGER nsecs
+      INTEGER hhmmss
+      INTEGER imon
+      INTEGER iyr
+      INTEGER ierr
+      LOGICAL swap
+      LOGICAL caldates
+      LOGICAL nothingtodo
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      integer yi,yf
-      integer mi,mf
-      integer di,df
-      integer si,sf
-      integer li,lf
-      integer wi,wf
-      integer cdi,cdf
-      integer csi,csf
-      integer ndays
-      integer nsecs
-      integer hhmmss
-      integer imon
-      integer iyr
-      integer ierr
+C     == end of interface ==
 
-      logical swap
-      logical caldates
-      logical nothingtodo
-
-c     == external ==
-
-      integer  cal_IsLeap
-      external cal_IsLeap
-
-c     == end of interface ==
+      IF ( cal_setStatus .LT. 1 ) THEN
+        WRITE( msgBuf,'(2A,4I9)') 'CAL_TIMEPASSED: ', 'initialdate=',
+     &    initialdate(1),initialdate(2),initialdate(3),initialdate(4)
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE( msgBuf,'(2A,4I9)') 'CAL_TIMEPASSED: ', 'finaldate=',
+     &    finaldate(1),finaldate(2),finaldate(3),finaldate(4)
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE( msgBuf,'(2A,I2,A)') 'CAL_TIMEPASSED: ',
+     &    'called too early (cal_setStatus=',cal_setStatus,' )'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CAL_TIMEPASSED'
+      ENDIF
 
       nothingtodo = .false.
 
-c     Initialise output.
+C     Initialise output.
       numdays(1) =  0
       numdays(2) =  0
       numdays(3) =  0
@@ -88,7 +93,7 @@ c     Initialise output.
         caldates = (initialdate(4) .gt. 0) .and.
      &             (  finaldate(4) .gt. 0)
 
-c       Check relation between initial and final dates.
+C       Check relation between initial and final dates.
         if (initialdate(1) .eq. finaldate(1)) then
           if (initialdate(2) .eq. finaldate(2)) then
             nothingtodo = .true.
@@ -106,14 +111,14 @@ c       Check relation between initial and final dates.
         if (.not. nothingtodo) then
 
           if (swap) then
-            call cal_ConvDate(   finaldate,yi,mi,di,si,li,wi,mythid )
-            call cal_ConvDate( initialdate,yf,mf,df,sf,lf,wf,mythid )
+            call cal_ConvDate(   finaldate,yi,mi,di,si,li,wi,myThid )
+            call cal_ConvDate( initialdate,yf,mf,df,sf,lf,wf,myThid )
           else
-            call cal_ConvDate( initialdate,yi,mi,di,si,li,wi,mythid )
-            call cal_ConvDate(   finaldate,yf,mf,df,sf,lf,wf,mythid )
+            call cal_ConvDate( initialdate,yi,mi,di,si,li,wi,myThid )
+            call cal_ConvDate(   finaldate,yf,mf,df,sf,lf,wf,myThid )
           endif
 
-c         Determine the time interval.
+C         Determine the time interval.
           if (.not. caldates) then
             ndays = df - di
             nsecs = sf - si
@@ -147,11 +152,11 @@ c         Determine the time interval.
                 ndays = ndays - 1
               endif
             else
-              ndays = (ndaysnoleap - 1) + cal_IsLeap( yi, mythid ) -
+              ndays = (ndaysnoleap - 1) + cal_IsLeap( yi, myThid ) -
      &                cdi - ndaymonth(mi,li)
               do iyr = yi+1,yf-1
                 ndays = ndays + (ndaysnoleap - 1) +
-     &                  cal_IsLeap( iyr, mythid )
+     &                  cal_IsLeap( iyr, myThid )
               enddo
               ndays = ndays + cdf
               csi   = ndaymonth(mi,li)*secondsperday - csi
@@ -159,7 +164,7 @@ c         Determine the time interval.
             endif
           endif
 
-c         Convert to calendar format.
+C         Convert to calendar format.
           numdays(1) = ndays + nsecs/secondsperday
           nsecs      = mod(nsecs,secondsperday)
           hhmmss     = nsecs/secondsperminute
@@ -172,17 +177,16 @@ c         Convert to calendar format.
           endif
 
         else
-c         Dates are equal.
+C         Dates are equal.
         endif
 
       else
 
         ierr = 501
-        call cal_PrintError( ierr, mythid )
+        call cal_PrintError( ierr, myThid )
         stop ' stopped in cal_TimePassed'
 
       endif
 
-      return
-      end
-
+      RETURN
+      END

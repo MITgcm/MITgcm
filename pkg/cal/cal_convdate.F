@@ -1,70 +1,72 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.5 2012/04/07 16:21:05 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
 
-      subroutine cal_ConvDate(
+      SUBROUTINE CAL_CONVDATE(
      I                         date,
      O                         yy, mm, dd, ss,
      O                         lp, wd,
-     I                         mythid
-     &                       )
+     I                         myThid )
 
-c     ==================================================================
-c     SUBROUTINE cal_ConvDate
-c     ==================================================================
-c
-c     o Decompose the first part of a date array.
-c              
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
-c
-c              - restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  03-Feb-2000
-c
-c              - Introduced new routine and function names, cal_<NAME>,
-c                for verion 0.1.3.
-c
-c              21-Sep-2003: fixed check_sign logic to work with
-c              negative intervals (menemenlis@jpl.nasa.gov)
-c
-c     ==================================================================
-c     SUBROUTINE cal_ConvDate
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE cal_ConvDate
+C     ==================================================================
+C
+C     o Decompose the first part of a date array.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
+C              - restructured the original version in order to have a
+C                better interface to the MITgcmUV.
+C              Christian Eckert eckert@mit.edu  03-Feb-2000
+C              - Introduced new routine and function names, cal_<NAME>,
+C                for verion 0.1.3.
+C              21-Sep-2003: fixed check_sign logic to work with
+C              negative intervals (menemenlis@jpl.nasa.gov)
+C
+C     ==================================================================
+C     SUBROUTINE cal_ConvDate
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
+#include "EEPARAMS.h"
 #include "cal.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+      INTEGER date(4)
+      INTEGER myThid
 
-      integer date(4)
-      integer mythid
+C     == local variables ==
+      INTEGER yy
+      INTEGER mm
+      INTEGER dd
+      INTEGER ss
+      INTEGER lp
+      INTEGER wd
+      INTEGER fac
+      INTEGER date_1
+      INTEGER date_2
+      INTEGER ierr
+      INTEGER check_sign
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     == end of interface ==
 
-c     == local variables ==
-
-      integer yy
-      integer mm
-      integer dd
-      integer ss
-      integer lp
-      integer wd
-      integer fac
-      integer date_1
-      integer date_2
-      integer ierr
-      integer check_sign
-
-c     == end of interface ==
+      IF ( cal_setStatus .LT. 1 ) THEN
+        WRITE( msgBuf,'(2A,4I9)') 'CAL_CONVDATE: ',
+     &       'date=',date(1),date(2),date(3),date(4)
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE( msgBuf,'(2A,I2,A)') 'CAL_CONVDATE: ',
+     &    'called too early (cal_setStatus=',cal_setStatus,' )'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CAL_CONVDATE'
+      ENDIF
 
       fac = 1
 
-c     Check the sign of the date.
+C     Check the sign of the date.
 
       check_sign = 1
       if ( ( (date(1).lt.0) .and. date(2).gt.0 ) .or.
@@ -93,12 +95,12 @@ c     Check the sign of the date.
       else
 
         ierr = 901
-        call cal_PrintError( ierr, mythid )
+        call cal_PrintError( ierr, myThid )
         stop ' stopped in cal_ConvDate.'
 
       endif
 
-c     Decompose the entries.
+C     Decompose the entries.
       if (date(4) .ne. -1) then
         yy = date_1/10000
         mm = mod(date_1/100,100)
@@ -112,7 +114,7 @@ c     Decompose the entries.
      &     mod(date_2/100,100)*secondsperminute +
      &     date_2/10000*secondsperhour
 
-c     Include the sign.
+C     Include the sign.
       yy = fac*yy
       mm = fac*mm
       dd = fac*dd
@@ -121,6 +123,6 @@ c     Include the sign.
       lp = date(3)
       wd = date(4)
 
-      return
-      end
+      RETURN
+      END
 

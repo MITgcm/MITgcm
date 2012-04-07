@@ -1,49 +1,54 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_isleap.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_isleap.F,v 1.3 2012/04/07 16:21:05 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
 
-      integer function cal_IsLeap(
+      INTEGER FUNCTION CAL_ISLEAP(
      I                             year,
-     I                             mythid
-     &                           )
+     I                             myThid )
 
-c     ==================================================================
-c     FUNCTION cal_IsLeap
-c     ==================================================================
-c
-c     o In case the Gregorian calendar is used determine whether the
-c       given year is a leap year or not.
-c
-c              
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
-c
-c              - restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  03-Feb-2000
-c
-c              - Introduced new routine and function names, cal_<NAME>,
-c                for verion 0.1.3.
-c
-c     ==================================================================
-c     FUNCTION cal_IsLeap
-c     ==================================================================
+C     ==================================================================
+C     FUNCTION cal_IsLeap
+C     ==================================================================
+C
+C     o In case the Gregorian calendar is used determine whether the
+C       given year is a leap year or not.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
+C              - restructured the original version in order to have a
+C                better interface to the MITgcmUV.
+C              Christian Eckert eckert@mit.edu  03-Feb-2000
+C              - Introduced new routine and function names, cal_<NAME>,
+C                for verion 0.1.3.
+C
+C     ==================================================================
+C     FUNCTION cal_IsLeap
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
+#include "EEPARAMS.h"
 #include "cal.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+      INTEGER year
+      INTEGER myThid
 
-      integer year
-      integer mythid
+C     == local variables ==
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     == end of interface ==
 
-c     == end of interface ==
+      IF ( cal_setStatus .LT. 1 ) THEN
+        WRITE( msgBuf,'(A,2(A,I9))')  'CAL_ISLEAP: ',
+     &          'year=', year
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE( msgBuf,'(2A,I2,A)') 'CAL_ISLEAP: ',
+     &    'called too early (cal_setStatus=',cal_setStatus,' )'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: FUNCTION CAL_ISLEAP'
+      ENDIF
 
       if ( usingGregorianCalendar ) then
         if ( mod(year,4) .ne. 0 ) then
@@ -65,6 +70,5 @@ c     == end of interface ==
        cal_IsLeap = 1
       endif
 
-      return
-      end
-
+      RETURN
+      END
