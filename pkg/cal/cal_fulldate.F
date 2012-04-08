@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_fulldate.F,v 1.4 2012/04/07 16:21:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_fulldate.F,v 1.5 2012/04/08 19:31:46 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -47,7 +47,7 @@ C     == functions ==
 
 C     == local variables ==
       INTEGER theyear
-      INTEGER numberofdays(4)
+      INTEGER numberOfDays(4)
       INTEGER calerr
       LOGICAL valid
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -69,23 +69,40 @@ C     == end of interface ==
       ENDIF
 
 C     Check the input for obvious errors.
-      call cal_CheckDate( date, valid, calerr, myThid )
+      CALL CAL_CHECKDATE( date, valid, calerr, myThid )
+      IF ( calerr.NE.0 ) THEN
+        WRITE( msgBuf,'(A,2(A,I9))')  'CAL_FULLDATE: ',
+     &          'yymmdd=',yymmdd,' , hhmmss=',hhmmss
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL CAL_PRINTERROR( calerr, myThid )
+      ENDIF
 
-      if (valid) then
+      IF (valid) THEN
 C       Determine whether we are in a leap year or not.
         theyear = yymmdd/10000
         date(3) = cal_IsLeap( theyear, myThid )
 
 C       Determine the day of the week.
-        call cal_TimePassed( refdate, date, numberofdays, myThid )
-        date(4) = mod(numberofdays(1),7)+1
-      else
-        call cal_PrintError( calerr, myThid )
-cml   if you want the CheckDate error to stop the model uncomment
-cml   the following line, otherwise there is just going to be a
-cml   warning.
-cml        stop ' stopped in cal_FullDate'
-      endif
+        CALL CAL_TIMEPASSED( refDate, date, numberOfDays, myThid )
+        IF ( numberOfDays(1).LT.0 ) THEN
+C-      when numberOfDays < 0 ,  TIMEPASSED output is not very logical (print);
+C       in addition, in this case, formula below is wrong (skipped).
+          WRITE(errorMessageUnit,'(2A,4I9)') ' in CAL_FULLDATE: ',
+     &     'refDate=', refDate(1), refDate(2), refDate(3), refDate(4)
+          WRITE(errorMessageUnit,'(2A,4I9)') ' in CAL_FULLDATE: ',
+     &     '   date=', date(1), date(2), date(3), date(4)
+          WRITE(errorMessageUnit,'(2A,4I9)') ' in CAL_FULLDATE: ',
+     &     'numDays=', numberOfDays(1), numberOfDays(2),
+     &                 numberOfDays(3), numberOfDays(4)
+        ELSE
+          date(4) = MOD(numberOfDays(1),7)+1
+        ENDIF
+      ELSE
+        WRITE( msgBuf,'(2A)') 'CAL_FULLDATE: ',
+     &    'fatal error from cal_CheckDate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CAL_FULLDATE'
+      ENDIF
 
       RETURN
       END
