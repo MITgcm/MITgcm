@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.5 2012/04/07 16:21:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.6 2012/04/08 19:22:34 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -37,20 +37,16 @@ C     == global variables ==
 
 C     == routine arguments ==
       INTEGER date(4)
+      INTEGER yy, mm, dd
+      INTEGER ss, lp, wd
       INTEGER myThid
 
 C     == local variables ==
-      INTEGER yy
-      INTEGER mm
-      INTEGER dd
-      INTEGER ss
-      INTEGER lp
-      INTEGER wd
       INTEGER fac
       INTEGER date_1
       INTEGER date_2
       INTEGER ierr
-      INTEGER check_sign
+      LOGICAL wrong_sign
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     == end of interface ==
 
@@ -64,26 +60,17 @@ C     == end of interface ==
         STOP 'ABNORMAL END: S/R CAL_CONVDATE'
       ENDIF
 
-      fac = 1
-
 C     Check the sign of the date.
+      fac = 1
+      wrong_sign = ( (date(1).lt.0) .and. date(2).gt.0 )
+     &        .OR. ( (date(1).gt.0) .and. date(2).lt.0 )
 
-      check_sign = 1
-      if ( ( (date(1).lt.0) .and. date(2).gt.0 ) .or.
-     &     ( (date(1).gt.0) .and. date(2).lt.0 ) )
-     &     check_sign = -1
-
-      if ( check_sign .ge. 0 ) then
-        if (date(1) .eq. 0) then
-          date_1 = date(1)
-          if (date(2) .lt. 0) then
-            date_2 = -date(2)
-            fac    = -1
-          else
-            date_2 = date(2)
-            fac    = 1
-          endif
-        else if (date(1) .lt. 0) then
+      if ( wrong_sign ) then
+        ierr = 901
+        call cal_PrintError( ierr, myThid )
+        stop ' stopped in cal_ConvDate.'
+      else
+        if ( date(1).lt.0 .OR. date(2).lt.0 ) then
           date_1 = -date(1)
           date_2 = -date(2)
           fac    = -1
@@ -92,12 +79,6 @@ C     Check the sign of the date.
           date_2 = date(2)
           fac    = 1
         endif
-      else
-
-        ierr = 901
-        call cal_PrintError( ierr, myThid )
-        stop ' stopped in cal_ConvDate.'
-
       endif
 
 C     Decompose the entries.
@@ -111,8 +92,8 @@ C     Decompose the entries.
         dd = date_1
       endif
       ss = mod(date_2,100) +
-     &     mod(date_2/100,100)*secondsperminute +
-     &     date_2/10000*secondsperhour
+     &     mod(date_2/100,100)*secondsPerMinute +
+     &     date_2/10000*secondsPerHour
 
 C     Include the sign.
       yy = fac*yy
@@ -125,4 +106,3 @@ C     Include the sign.
 
       RETURN
       END
-
