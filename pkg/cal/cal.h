@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.7 2012/04/05 21:59:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.8 2012/04/08 19:17:09 jmc Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -20,83 +20,83 @@ C     ==================================================================
 
 C   - Parameters of the numerical model:
 C
-C     modelstart       - start time of the numerical model.
-C     modelstartdate   - start date of the numerical model.
-C     modelend         - end   time of the numerical model.
-C     modelenddate     - end   date of the numerical model.
-C     modelstep        - timestep of the numerical model.
-C     modelintsteps    - number of timestep that are to be performed.
-C     modeliter0       - the numerical models initial timestep number.
-C     modeliterend     - the models last timestep number.
-cC    modelstepsperday - number of model time steps per calendar day.
+C     modelStart       :: start time of the numerical model.
+C     modelStartDate   :: start date of the numerical model.
+C     modelEnd         :: end   time of the numerical model.
+C     modelEndDate     :: end   date of the numerical model.
+C     modelStep        :: timestep of the numerical model.
+C     modelIntSteps    :: number of timestep that are to be performed.
+C     modelIter0       :: the numerical models initial timestep number.
+C     modelIterEnd     :: the models last timestep number.
+C     modelstepsperday :: number of model time steps per day (<- removed).
 
 C   - Parameters used by the calendar:
 C
-C     refdate          - first day of the Gregorian Calendar.
-C     nmonthyear       - number months in a year.
-C     ndaymonth        - days per month depending on the year being a
-C                        leap year or not. If the Gregorian calendar is
-C                        not used a 360 days year with 30 days months is
-C                        used instead.
-C     ndaysnoleap      - number of days in a usual year.
-C     ndaysleap        - number of days in a leap year.
-C     nmaxdaymonth     - maximum number of days in a years month.
-C     hoursperday      - number of hours   in a calendars day.
-C     minutesperday    - number of minutes in a calendars day.
-C     minutesperhour   - number of minutes in a calendars hour.
-C     secondsperday    - number of seconds in a calendars day.
-C     secondsperhour   - number of seconds in a calendars hour.
-C     secondsperminute - number of seconds in a calendars minute.
+C     refDate          :: first day of the Gregorian Calendar.
+C     nMonthYear       :: number months in a year.
+C     nDayMonth        :: days per month depending on the year being a leap
+C                         year or not. If the Model calendar is used a 360
+C                         days year with 30 days months is used instead.
+C     nDaysNoLeap      :: number of days in a usual year.
+C     nDaysLeap        :: number of days in a leap year.
+C     nMaxDayMonth     :: maximum number of days in a years month.
+C     hoursPerDay      :: number of hours   in a calendars day.
+C     minutesPerDay    :: number of minutes in a calendars day.
+C     minutesPerHour   :: number of minutes in a calendars hour.
+C     secondsPerDay    :: number of seconds in a calendars day.
+C     secondsPerHour   :: number of seconds in a calendars hour.
+C     secondsPerMinute :: number of seconds in a calendars minute.
 C     cal_setStatus    :: status of calendar parms setting (0=none, 3=fully set)
 
-      COMMON /cal_rl/
-     &                modelstart,
-     &                modelend,
-     &                modelstep
-      _RL modelstart
-      _RL modelend
-      _RL modelstep
+      INTEGER nMonthYear
+      PARAMETER ( nMonthYear = 12 )
 
-      COMMON /cal_i/
-     &               refdate,
-     &               nmonthyear,
-     &               ndaymonth,
-     &               ndaysnoleap,
-     &               ndaysleap,
-     &               nmaxdaymonth,
-     &               hoursperday,
-     &               minutesperday,
-     &               minutesperhour,
-     &               secondsperday,
-     &               secondsperhour,
-     &               secondsperminute,
-     &               modelstartdate,
-     &               modelenddate,
-     &               modeliter0,
-     &               modeliterend,
-     &               modelintsteps,
+      COMMON /CALENDAR_RL/
+     &                modelStart,
+     &                modelEnd,
+     &                modelStep
+      _RL modelStart
+      _RL modelEnd
+      _RL modelStep
+
+      COMMON /CALENDAR_I/
+     &               refDate,
+     &               nDayMonth,
+     &               nDaysNoLeap,
+     &               nDaysLeap,
+     &               nMaxDayMonth,
+     &               hoursPerDay,
+     &               minutesPerDay,
+     &               minutesPerHour,
+     &               secondsPerDay,
+     &               secondsPerHour,
+     &               secondsPerMinute,
+     &               modelStartDate,
+     &               modelEndDate,
+     &               modelIter0,
+     &               modelIterEnd,
+     &               modelIntSteps,
      &               cal_setStatus,
      &               startdate_1,
      &               startdate_2
 
-      INTEGER refdate(4)
-      INTEGER nmonthyear
-      INTEGER ndaymonth(12,2)
-      INTEGER ndaysnoleap
-      INTEGER ndaysleap
-      INTEGER nmaxdaymonth
-      INTEGER hoursperday
-      INTEGER minutesperday
-      INTEGER minutesperhour
-      INTEGER secondsperday
-      INTEGER secondsperhour
-      INTEGER secondsperminute
+      INTEGER refDate(4)
+      INTEGER nDayMonth(nMonthYear,2)
+      INTEGER nDaysNoLeap
+      INTEGER nDaysLeap
+      INTEGER nMaxDayMonth
+      INTEGER hoursPerDay
+      INTEGER minutesPerDay
+      INTEGER minutesPerHour
+      INTEGER secondsPerDay
+      INTEGER secondsPerHour
+      INTEGER secondsPerMinute
 
-      INTEGER modelstartdate(4)
-      INTEGER modelenddate(4)
-      INTEGER modeliter0
-      INTEGER modeliterend
-      INTEGER modelintsteps
+      INTEGER modelStartDate(4)
+      INTEGER modelEndDate(4)
+      INTEGER modelIter0
+      INTEGER modelIterEnd
+      INTEGER modelIntSteps
 
       INTEGER cal_setStatus
       INTEGER startdate_1
@@ -106,7 +106,7 @@ C   calendarDumps :: When set, approximate months (30-31 days) and years (360-37
 C                    for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
 C                    KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
 C                    calendar months and years.  Requires pkg/cal.
-      COMMON /cal_l/
+      COMMON /CALENDAR_L/
      &               calendarDumps,
      &               usingModelCalendar,
      &               usingJulianCalendar,
@@ -116,16 +116,16 @@ C                    calendar months and years.  Requires pkg/cal.
       LOGICAL usingJulianCalendar
       LOGICAL usingGregorianCalendar
 
-C     TheCalendar - type of calendar to use; available: 'model' or 'gregorian'.
-C     dayofweek   - Week day number one is the week day of refdate.
-C                   For the Gregorian calendar this is Friday, 15-Oct-1582.
-C     monthofyear - Both available calendars are assumed to have twelve
-C                   months.
-      COMMON /calendar_ch/
+C     TheCalendar :: type of calendar to use; available: 'model' or 'gregorian'.
+C     dayOfWeek   :: Week day number one is the week day of refDate.
+C                    For the Gregorian calendar this is Friday, 15-Oct-1582.
+C     monthOfYear :: Both available calendars are assumed to have twelve
+C                    months.
+      COMMON /CALENDAR_C/
      &                     TheCalendar,
-     &                     dayofweek,
-     &                     monthofyear
+     &                     dayOfWeek,
+     &                     monthOfYear
       CHARACTER*(9) TheCalendar
-      CHARACTER*(3) dayofweek(7)
-      CHARACTER*(3) monthofyear(12)
+      CHARACTER*(3) dayOfWeek(7)
+      CHARACTER*(3) monthOfYear(nMonthYear)
 
