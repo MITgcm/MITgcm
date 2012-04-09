@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.22 2012/04/07 20:06:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.23 2012/04/09 14:29:26 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -332,7 +332,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsN',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsNstartdate1, obcsNstartdate2,
      O                          obcsNstartdate,
      I                          myThid )
@@ -341,7 +341,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsS',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsSstartdate1, obcsSstartdate2,
      O                          obcsSstartdate,
      I                          myThid )
@@ -350,7 +350,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsE',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsEstartdate1, obcsEstartdate2,
      O                          obcsEstartdate,
      I                          myThid )
@@ -359,7 +359,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsW',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsWstartdate1, obcsWstartdate2,
      O                          obcsWstartdate,
      I                          myThid )
@@ -369,7 +369,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobN',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobNstartdate1, siobNstartdate2,
      O                          siobNstartdate,
      I                          myThid )
@@ -378,7 +378,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobS',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobSstartdate1, siobSstartdate2,
      O                          siobSstartdate,
      I                          myThid )
@@ -387,7 +387,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobE',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobEstartdate1, siobEstartdate2,
      O                          siobEstartdate,
      I                          myThid )
@@ -396,7 +396,7 @@ C     from the beginning of the year.
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobW',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
+       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobWstartdate1, siobWstartdate2,
      O                          siobWstartdate,
      I                          myThid )
