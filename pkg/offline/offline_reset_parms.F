@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_reset_parms.F,v 1.1 2011/12/27 22:06:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_reset_parms.F,v 1.2 2012/04/09 13:33:23 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -40,33 +40,6 @@ C-    For off-line calculation, switch off Momentum and Active-tracers (=T,S):
       saltStepping = .FALSE.
       momStepping  = .FALSE.
 
-      IF ( Wvelfile .EQ. ' '  ) THEN
-C--   Make sure we compute vertical velocity since it is not read from a file
-        IF ( .NOT.exactConserv ) THEN
-          WRITE(msgBuf,'(A,A)') ' OFFLINE_RESET_PARMS: ',
-     &    '=> turn on exactConserv to compute wVel'
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-          exactConserv = .TRUE.
-        ENDIF
-        IF ( .NOT.staggerTimeStep ) THEN
-          WRITE(msgBuf,'(A,A)') ' OFFLINE_RESET_PARMS: ',
-     &    '=> turn on staggerTimeStep to use computed wVel'
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-          staggerTimeStep = .TRUE.
-        ENDIF
-      ELSE
-C--   Vertical velocity is read from a file: make sure it is not re-computed
-        IF ( exactConserv ) THEN
-          WRITE(msgBuf,'(A,A)') ' OFFLINE_RESET_PARMS: ',
-     &    '=> turn off exactConserv to skip wVel calc'
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-          exactConserv = .FALSE.
-        ENDIF
-      ENDIF
-
 C-    Switch off dynstat monitor (but keep one @ the end)
       IF ( monitorFreq.GT.0. ) THEN
         monitorFreq = endTime
@@ -74,6 +47,39 @@ C-    Switch off dynstat monitor (but keep one @ the end)
      &    '=> reset monitorFreq to:', monitorFreq
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( Wvelfile .EQ. ' '  ) THEN
+C--   Make sure we compute vertical velocity since it is not read from a file
+        IF ( .NOT.exactConserv ) THEN
+          WRITE(msgBuf,'(A,A)') '** WARNING ** OFFLINE_RESET_PARMS: ',
+     &    '=> turn on exactConserv to compute wVel'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          exactConserv = .TRUE.
+        ENDIF
+        IF ( .NOT.staggerTimeStep ) THEN
+          WRITE(msgBuf,'(A,A)') '** WARNING ** OFFLINE_RESET_PARMS: ',
+     &    '=> turn on staggerTimeStep to use computed wVel'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          staggerTimeStep = .TRUE.
+        ENDIF
+      ELSE
+C--   Vertical velocity is read from a file: make sure it is not re-computed
+        IF ( exactConserv ) THEN
+          WRITE(msgBuf,'(A,A)') '** WARNING ** OFFLINE_RESET_PARMS: ',
+     &    '=> turn off exactConserv to skip wVel calc'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          exactConserv = .FALSE.
+        ENDIF
       ENDIF
 
       _END_MASTER(myThid)
