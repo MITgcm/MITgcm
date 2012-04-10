@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.29 2012/03/11 19:20:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.30 2012/04/10 16:32:00 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -36,12 +36,12 @@ C     modified for sea-ice effects by pkg/seaice.
 
 C--   The actual number of ice categories used to solve for seaice flux is
 C     now a run-time parameter (SEAICE_multDim).
-C     This CPP-flag has been removed from main code and is just used to set
-C     default number of category, i.e., =1 if undef, or =MULTDIM (=7 in
-C     default SEAICE_SIZE.h) if defined. To be completely removed soon.
+C     This CPP-flag will be completely removed soon (no longer in main code);
+C     it is just used to set default number of categories, i.e., =1 if undef,
+C     or =MULTDIM if defined (MULTDIM=7 in default SEAICE_SIZE.h).
 C     Note: be aware of pickup_seaice.* compatibility issues when restarting
 C     a simulation with a different number of categories.
-#define SEAICE_MULTICATEGORY
+c#define SEAICE_MULTICATEGORY
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
@@ -54,8 +54,10 @@ C     this flag is needed for backward compatibility
 C--   Suspected missing term in coupled ocn-ice heat budget (to be confirmed)
 #undef SEAICE_DISABLE_HEATCONSFIX
 
-C--   The functionality of this flag has been moved to SItracer making
-C     this flag obsolete.
+C--   Default is constant seaice salinity (SEAICE_salt0); Define the following
+C     flag to consider (space & time) variable salinity: advected and forming
+C     seaice with a fraction (=SEAICE_saltFrac) of freezing seawater salinity.
+C- Note: SItracer also offers an alternative way to handle variable salinity.
 #undef SEAICE_VARIABLE_SALINITY
 
 C--   Tracers of ice and/or ice cover.
@@ -91,20 +93,19 @@ C--   By default for B-grid dynamics solver surface tilt is obtained
 C     indirectly via geostrophic velocities. Define following CPP
 C     in order to use ETAN instead.
 # define EXPLICIT_SSH_SLOPE
-C--   Defining this flag turns on a FV-discretization of the B-grid LSOR
-C     solver. It is smoother and includes all metric terms, similar to the
-C     C-grid solver. It is here for completeness, but its usefulness is
-C     unclear.
+C--   Defining this flag turns on FV-discretization of the B-grid LSOR solver.
+C     It is smoother and includes all metric terms, similar to C-grid solvers.
+C     It is here for completeness, but its usefulness is unclear.
 # undef SEAICE_LSRBNEW
 #endif /* SEAICE_CGRID */
 
-C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth;
+C--   When set use MAX_HEFF to cap seaice thickness in seaice_growth;
 C     currently only relevant for SEAICE_GROWTH_LEGACY
 #undef SEAICE_CAP_HEFF
 C--   When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
 #undef SEAICE_CAP_ICELOAD
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
-C--   not recommended
+C     not recommended
 #undef SEAICE_ALLOW_CLIPVELS
 C--   When set cap the sublimation latent heat flux in solve4temp according
 C     to the available amount of ice+snow. Otherwise this term is treated
@@ -113,7 +114,7 @@ C     the ocean at the end of seaice_growth in a conservative manner.
 C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 #undef SEAICE_CAP_SUBLIM
 
-C--   enable free drift code
+C--   Enable free drift code
 #define SEAICE_ALLOW_FREEDRIFT
 
 #endif /* ALLOW_SEAICE */
