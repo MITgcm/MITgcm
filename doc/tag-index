@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1647 2012/04/07 20:07:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1648 2012/04/10 17:20:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - update comments in SEAICE_OPTIONS.h (+ similar update of lab_sea/code and
+   global_ocean.cs32x15/code versions).
+ - turn on seaice Multi-category (in data.seaice, SEAICE_multDim=7) for
+   verification experiment global_ocean.cs32x15.seaice and update results.
 o pkg/exf:
  - new S/R EXF_GETFIELD_START to return starting-time of a forcing field
    (according to useExfYearlyFields).
