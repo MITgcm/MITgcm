@@ -3,19 +3,17 @@
  LSR_ERROR             = 1.E-12,
 #SEAICE_deltaTevp = 60.,
 #SEAICEuseDynamics = .FALSE.,
-# for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
-#- to reproduce old results with former #undef SEAICE_SOLVE4TEMP_LEGACY code
-  SEAICE_wetAlbTemp = 0.,
-  SEAICE_snowThick  = 0.,
 #
  SEAICE_salt0          = 4.,
  SEAICEadvHeff         = .TRUE.,
  SEAICEadvArea         = .TRUE.,
  SEAICEadvSnow         = .TRUE.,
  SEAICEadvScheme       = 77,
- SEAICE_mcPheePiston   = 0.0005787037037037037,
- SEAICE_areaLossFormula=2,
+ SEAICE_multDim        = 7,
+ SEAICE_wetAlbTemp     = 0.,
+ SEAICE_mcPheePiston   = 0.00057,
+ SEAICE_areaLossFormula= 2,
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
  &

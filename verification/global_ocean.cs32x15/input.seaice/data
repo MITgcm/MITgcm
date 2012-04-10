@@ -61,6 +61,7 @@
  deltaTClock =86400.,
  abEps = 0.1,
  forcing_In_AB=.FALSE.,
+ pickupStrictlyMatch=.FALSE.,
  pChkptFreq   =3110400000.,
  chkptFreq    = 155520000.,
 #tave_lastIter=0.,
