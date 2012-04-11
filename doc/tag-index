@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1648 2012/04/10 17:20:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1649 2012/04/11 12:11:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl/ctrl_init.F: 
+ - add a formal parameter to s/r ctrl_init_rec to print 
+   xx_$(ctrl_valiable)_file for easier debugging
+ - move call of cal_* routines into the if-block where they are really
+   needed so that xx_$(ctrl_variable)_period can be 0 or -12 without having 
+   to specify a startdate
 o pkg/seaice:
  - update comments in SEAICE_OPTIONS.h (+ similar update of lab_sea/code and
    global_ocean.cs32x15/code versions).
