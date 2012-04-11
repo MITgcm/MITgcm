@@ -1,14 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1649 2012/04/11 12:11:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1650 2012/04/11 18:17:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ctrl/ctrl_init.F: 
- - add a formal parameter to s/r ctrl_init_rec to print 
+o model/src:
+ - define internal flag "uniformFreeSurfLev" (=T when free-surface level-index
+   is everywhere k=1) to speed-up some calculations (by pass kSurf reference);
+   temporary set to usingZCoords value (to be changed to F when using shelfice).
+ - hydrostatic pressure: implement partial cell near the surface also for
+   Z-coordinates (for the case where uniformFreeSurfLev=F); replace test on
+   usingZCoords with test on uniformFreeSurfLev where needed (in NonHyd code).
+o pkg/ctrl/ctrl_init.F:
+ - add a formal parameter to s/r ctrl_init_rec to print
    xx_$(ctrl_valiable)_file for easier debugging
  - move call of cal_* routines into the if-block where they are really
-   needed so that xx_$(ctrl_variable)_period can be 0 or -12 without having 
+   needed so that xx_$(ctrl_variable)_period can be 0 or -12 without having
    to specify a startdate
 o pkg/seaice:
  - update comments in SEAICE_OPTIONS.h (+ similar update of lab_sea/code and
