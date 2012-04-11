@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.3 2010/01/23 00:04:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.4 2012/04/11 15:49:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,7 +59,7 @@ C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution
       IF ( nonHydrostatic .AND. exactConserv ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         IF ( select_rStar.EQ.0 .AND. usingZCoords ) THEN
+         IF ( select_rStar.EQ.0 .AND. uniformFreeSurfLev ) THEN
 C-       Z coordinate: assume surface @ level k=1
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -70,7 +70,7 @@ C-       Z coordinate: assume surface @ level k=1
 C-       Other than Z coordinate: no assumption on surface level index
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            ks = ksurfC(i,j,bi,bj)
+            ks = kSurfC(i,j,bi,bj)
             IF ( ks.LE.Nr ) THEN
              dPhiNH(i,j,bi,bj) = phi_nh(i,j,ks,bi,bj)
             ELSE

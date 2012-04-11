@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.3 2012/04/02 21:27:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.4 2012/04/11 15:49:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -71,7 +71,7 @@ C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
 C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          IF ( select_rStar.EQ.0 .AND. usingZCoords ) THEN
+          IF ( select_rStar.EQ.0 .AND. uniformFreeSurfLev ) THEN
 C-       Z coordinate: assume surface @ level k=1
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx

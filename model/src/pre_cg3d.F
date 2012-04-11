@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.4 2011/12/15 22:45:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.5 2012/04/11 15:49:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,7 +89,6 @@ C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
         ENDIF
 
 C--   Update or Add free-surface contribution to cg3d_b:
-c        IF ( select_rStar.EQ.0 .AND. exactConserv ) THEN
          IF ( select_rStar.EQ.0 .AND. .NOT.oldFreeSurfTerm ) THEN
            tmpFac = 0.
            DO j=1,sNy
@@ -138,7 +137,7 @@ c    &                  +freeSurfFac*(etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
             ENDDO
            ENDDO
 #endif /* NONLIN_FRSURF */
-         ELSEIF ( usingZCoords ) THEN
+         ELSEIF ( uniformFreeSurfLev ) THEN
 C-       Z coordinate: assume surface @ level k=1
            tmpFac = freeSurfFac*deepFac2F(1)
          ELSE
