@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.12 2011/12/27 22:10:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.13 2012/04/11 03:55:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,9 @@ C--   On/Off flags for each terms of the momentum equation
       calc_wVelocity   = momStepping .OR. exactConserv
 
 C--   Free-surface & pressure method
+      uniformFreeSurfLev = usingZCoords
+C- note: should be instead:
+c     uniformFreeSurfLev = usingZCoords .AND. .NOT.useShelfIce
       IF ( selectNHfreeSurf.NE.0 .AND.
      &      ( .NOT.nonHydrostatic .OR. usingPCoords
      &        .OR. .NOT.exactConserv

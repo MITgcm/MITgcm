@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.134 2012/01/21 18:45:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.135 2012/04/11 03:55:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -272,19 +272,22 @@ C     i, k   :: Loop counters.
       CALL WRITE_0D_RL( implicDiv2Dflow, INDEX_NONE,
      & 'implicDiv2Dflow =',
      & '  /* Barot. Flow Div. implicit factor (0-1)*/')
+      CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
+     & 'uniformLin_PhiSurf =',
+     &  ' /* use uniform Bo_surf on/off flag*/')
+      CALL WRITE_0D_L( uniformFreeSurfLev, INDEX_NONE,
+     & 'uniformFreeSurfLev =',
+     &  ' /* free-surface level-index is uniform */')
+      CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMin = ',
+     & '  /* minimum partial cell factor (hFac) */')
+      CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMinDr =',
+     &  ' /* minimum partial cell thickness ('//rUnits//') */')
       CALL WRITE_0D_L( exactConserv, INDEX_NONE,
      & 'exactConserv =',
      & '  /* Exact Volume Conservation on/off flag*/')
       CALL WRITE_0D_L( linFSConserveTr, INDEX_NONE,
      & 'linFSConserveTr =',
      &  ' /* Tracer correction for Lin Free Surface on/off flag*/')
-      CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
-     & 'uniformLin_PhiSurf =',
-     &  ' /* use uniform Bo_surf on/off flag*/')
-      CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMin = ',
-     & '  /* minimum partial cell factor (hFac) */')
-      CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMinDr =',
-     &  ' /* minimum partial cell thickness ('//rUnits//') */')
       WRITE(msgBuf,'(2A)') 'nonlinFreeSurf =',
      &  ' /* Non-linear Free Surf. options (-1,0,1,2,3)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -302,9 +305,6 @@ C     i, k   :: Loop counters.
       CALL WRITE_0D_I( select_rStar, INDEX_NONE,
      & 'select_rStar =',
      &  ' /* r* Vertical coord. options (=0 r coord.; >0 uses r*)*/')
-      CALL WRITE_0D_I( selectAddFluid, INDEX_NONE,
-     & 'selectAddFluid =',
-     &  ' /* option for mass source/sink of fluid (=0: off) */')
       CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
      & 'useRealFreshWaterFlux =',
      &  ' /* Real Fresh Water Flux on/off flag*/')
@@ -314,6 +314,9 @@ C     i, k   :: Loop counters.
       CALL WRITE_0D_RL( salt_EvPrRn, INDEX_NONE,
      &  'salt_EvPrRn =',
      &  ' /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/')
+      CALL WRITE_0D_I( selectAddFluid, INDEX_NONE,
+     & 'selectAddFluid =',
+     &  ' /* option for mass source/sink of fluid (=0: off) */')
       CALL WRITE_0D_RL( temp_addMass, INDEX_NONE,
      & 'temp_addMass =',
      &  ' /* Temp. of addMass array (UNSET=use local T)(oC)*/')
