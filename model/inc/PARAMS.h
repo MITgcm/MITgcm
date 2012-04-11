@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.259 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.260 2012/04/11 03:52:43 jmc Exp $
 C $Name:  $
 C
 
@@ -64,9 +64,9 @@ C     viscA4Zfile     :: File containing 3D specification of horizontal viscosit
 C     zonalWindFile   :: File containing zonal wind data
 C     meridWindFile   :: File containing meridional wind data
 C     thetaClimFile   :: File containing surface theta climataology used
-C                       in relaxation term -lambda(theta-theta*)
+C                        in relaxation term -lambda(theta-theta*)
 C     saltClimFile    :: File containing surface salt climataology used
-C                       in relaxation term -lambda(salt-salt*)
+C                        in relaxation term -lambda(salt-salt*)
 C     surfQfile       :: File containing surface heat flux, excluding SW
 C                        (old version, kept for backward compatibility)
 C     surfQnetFile    :: File containing surface net heat flux
@@ -143,15 +143,15 @@ C     the_run_name    :: string identifying the name of the model "run"
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
-C                           two-dimensional con. grad solver.
+C                            two-dimensional con. grad solver.
 C     cg2dChkResFreq      :: Frequency with which to check residual
-C                           in con. grad solver.
+C                            in con. grad solver.
 C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
 C                            (non-linear free-surf.)
 C     cg3dMaxIters        :: Maximum number of iterations in the
-C                           three-dimensional con. grad solver.
+C                            three-dimensional con. grad solver.
 C     cg3dChkResFreq      :: Frequency with which to check residual
-C                           in con. grad solver.
+C                            in con. grad solver.
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
@@ -174,9 +174,9 @@ C     selectAddFluid      :: option to add mass source/sink of fluid in the inte
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
 C     momForcingOutAB     :: =1: take momentum forcing contribution
-C                           out of (=0: in) Adams-Bashforth time stepping.
+C                            out of (=0: in) Adams-Bashforth time stepping.
 C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
-C                           out of (=0: in) Adams-Bashforth time stepping.
+C                            out of (=0: in) Adams-Bashforth time stepping.
 C     tempAdvScheme       :: Temp. Horiz.Advection scheme selector
 C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
@@ -234,19 +234,19 @@ C                            and statistics ; higher -> more writing
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C- Coordinate + Grid params:
 C     fluidIsAir       :: Set to indicate that the fluid major constituent
-C                        is air
+C                         is air
 C     fluidIsWater     :: Set to indicate that the fluid major constituent
-C                        is water
+C                         is water
 C     usingPCoords     :: Set to indicate that we are working in a pressure
-C                        type coordinate (p or p*).
+C                         type coordinate (p or p*).
 C     usingZCoords     :: Set to indicate that we are working in a height
-C                        type coordinate (z or z*)
-C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
-C                         this requires specific code for restart & exchange
+C                         type coordinate (z or z*)
+C     useDynP_inEos_Zc   :: use the dynamical pressure in EOS (with Z-coord.)
+C                           this requires specific code for restart & exchange
 C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian
-C                          coordinate frame.
+C                           coordinate frame.
 C     usingSphericalPolarGrid :: If TRUE grid generation will be in a
-C                               spherical polar frame.
+C                                spherical polar frame.
 C     rotateGrid      :: rotate grid coordinates to geographical coordinates
 C                        according to Euler angles phiEuler, thetaEuler, psiEuler
 C     usingCurvilinearGrid :: If TRUE, use a curvilinear grid (to be provided)
@@ -298,21 +298,22 @@ C     maskIniTemp    :: apply mask to initial Pot.Temp.
 C     maskIniSalt    :: apply mask to initial salinity
 C     checkIniTemp   :: check for points with identically zero initial Pot.Temp.
 C     checkIniSalt   :: check for points with identically zero initial salinity
-C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
-C                         as a real Fresh Water (=> changes the Sea Level)
-C                         if F, converts P+R-E to salt flux (no SL effect)
 C- Pressure solver related parameters (PARM02)
 C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
-C- Time-stepping params:
+C- Time-stepping & free-surface params:
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
+C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
+C                            linear relation Phi_surf = Bo_surf*eta
+C     uniformFreeSurfLev  :: TRUE if free-surface level-index is uniform (=1)
 C     exactConserv        :: Set to true to conserve exactly the total Volume
 C     linFSConserveTr     :: Set to true to correct source/sink of tracer
 C                            at the surface due to Linear Free Surface
-C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
-C                            linear relation Phi_surf = Bo_surf*eta
+C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
+C                         as a real Fresh Water (=> changes the Sea Level)
+C                         if F, converts P+R-E to salt flux (no SL effect)
 C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
 C     nonHydrostatic   :: Using non-hydrostatic algorithm
 C     use3Dsolver      :: set to true to use 3-D pressure solver
@@ -380,9 +381,10 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & tempAdvection, tempIsActiveTr, tempForcing,
      & saltAdvection, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useRealFreshWaterFlux, useSRCGSolver,
-     & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
-     & uniformLin_PhiSurf,
+     & useSRCGSolver,
+     & rigidLid, implicitFreeSurface,
+     & uniformLin_PhiSurf, uniformFreeSurfLev,
+     & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
      & quasiHydrostatic, nonHydrostatic, use3Dsolver,
      & implicitIntGravWave, staggerTimeStep, doResetHFactors,
      & implicitDiffusion, implicitViscosity,
@@ -436,13 +438,14 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL maskIniSalt
       LOGICAL checkIniTemp
       LOGICAL checkIniSalt
-      LOGICAL useRealFreshWaterFlux
       LOGICAL useSRCGSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
+      LOGICAL uniformLin_PhiSurf
+      LOGICAL uniformFreeSurfLev
       LOGICAL exactConserv
       LOGICAL linFSConserveTr
-      LOGICAL uniformLin_PhiSurf
+      LOGICAL useRealFreshWaterFlux
       LOGICAL quasiHydrostatic
       LOGICAL nonHydrostatic
       LOGICAL use3Dsolver
@@ -635,9 +638,9 @@ C                    are referenced to this clock. ( s )
 C     deltaTMom    :: Timestep for momemtum equations ( s )
 C     dTtracerLev  :: Timestep for tracer equations ( s ), function of level k
 C     deltaTfreesurf :: Timestep for free-surface equation ( s )
-C     freesurfFac  :: Parameter to turn implicit free surface term on or off
-C                    freesurfac = 1. uses implicit free surface
-C                    freesurfac = 0. uses rigid lid
+C     freeSurfFac  :: Parameter to turn implicit free surface term on or off
+C                     freeSurFac = 1. uses implicit free surface
+C                     freeSurFac = 0. uses rigid lid
 C     abEps        :: Adams-Bashforth-2 stabilizing weight
 C     alph_AB      :: Adams-Bashforth-3 primary factor
 C     beta_AB      :: Adams-Bashforth-3 secondary factor
@@ -662,9 +665,9 @@ C     endTime       :: Ending time for this integration ( s ).
 C     chkPtFreq     :: Frequency of rolling check pointing ( s ).
 C     pChkPtFreq    :: Frequency of permanent check pointing ( s ).
 C     dumpFreq      :: Frequency with which model state is written to
-C                     post-processing files ( s ).
+C                      post-processing files ( s ).
 C     diagFreq      :: Frequency with which model writes diagnostic output
-C                     of intermediate quantities.
+C                      of intermediate quantities.
 C     afFacMom      :: Advection of momentum term tracer parameter
 C     vfFacMom      :: Momentum viscosity tracer parameter
 C     pfFacMom      :: Momentum pressure forcing tracer parameter
