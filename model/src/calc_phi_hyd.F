@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.40 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.41 2012/04/11 04:02:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,8 +68,8 @@ C     myThid     :: thread number for this instance of the routine.
 c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL phiHydF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL myTime
       INTEGER myIter, myThid
 
@@ -87,7 +87,7 @@ C     == Local variables ==
       LOGICAL useDiagPhiRlow, addSurfPhiAnom
 CEOP
       useDiagPhiRlow = .TRUE.
-      addSurfPhiAnom = select_rStar.EQ.0 .AND. nonlinFreeSurf.GT.3
+      addSurfPhiAnom = select_rStar.EQ.0 .AND. nonlinFreeSurf.GE.4
       surfPhiFac = 0.
       IF (addSurfPhiAnom) surfPhiFac = 1.
 
@@ -123,8 +123,8 @@ C--   Initialize phiHydF to zero :
 C     note: atmospheric_loading or Phi_topo anomaly are incorporated
 C           later in S/R calc_grad_phi_hyd
       IF (k.EQ.1) THEN
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            phiHydF(i,j) = 0.
          ENDDO
         ENDDO
@@ -191,7 +191,8 @@ C Quasi-hydrostatic terms are added in as if they modify the buoyancy
 #endif /* ALLOW_MOM_COMMON */
 
 #ifdef NONLIN_FRSURF
-        IF (k.EQ.1 .AND. addSurfPhiAnom) THEN
+        IF ( addSurfPhiAnom .AND.
+     &       uniformFreeSurfLev .AND. k.EQ.1 ) THEN
           DO j=jMin,jMax
             DO i=iMin,iMax
               phiHydF(i,j) = surfPhiFac*etaH(i,j,bi,bj)
@@ -206,43 +207,82 @@ C----  Hydrostatic pressure at cell centers
        IF (integr_GeoPot.EQ.1) THEN
 C  --  Finite Volume Form
 
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-
 C---------- This discretization is the "finite volume" form
 C           which has not been used to date since it does not
 C           conserve KE+PE exactly even though it is more natural
-C
-           phiHydC(i,j)=phiHydF(i,j)
-     &       + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
-           phiHydF(i,j)=phiHydF(i,j)
-     &            + drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+
+        IF ( uniformFreeSurfLev ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            phiHydC(i,j) = phiHydF(i,j)
+     &            + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+            phiHydF(i,j) = phiHydF(i,j)
+     &                 + drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
+        ELSE
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
+            ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
+#ifdef NONLIN_FRSURF
+            ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
+#endif
+            phiHydC(i,j) = ddRloc*gravity*alphaRho(i,j)*recip_rhoConst
+           ELSE
+            phiHydC(i,j) = phiHydF(i,j)
+     &              + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+           ENDIF
+            phiHydF(i,j) = phiHydC(i,j)
+     &              + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+          ENDDO
+         ENDDO
+        ENDIF
 
        ELSE
 C  --  Finite Difference Form
 
-         dRlocM=half*drC(k)
-         IF (k.EQ.1) dRlocM=rF(k)-rC(k)
-         IF (k.EQ.Nr) THEN
-           dRlocP=rC(k)-rF(k+1)
-         ELSE
-           dRlocP=half*drC(k+1)
-         ENDIF
-
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
-C
-            phiHydC(i,j)=phiHydF(i,j)
+
+        dRlocM=half*drC(k)
+        IF (k.EQ.1) dRlocM=rF(k)-rC(k)
+        IF (k.EQ.Nr) THEN
+          dRlocP=rC(k)-rF(k+1)
+        ELSE
+          dRlocP=half*drC(k+1)
+        ENDIF
+        IF ( uniformFreeSurfLev ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            phiHydC(i,j) = phiHydF(i,j)
      &        +dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
-            phiHydF(i,j)=phiHydC(i,j)
+            phiHydF(i,j) = phiHydC(i,j)
      &        +dRlocP*gravity*alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
+        ELSE
+         rec_dRm = one/(rF(k)-rC(k))
+         rec_dRp = one/(rC(k)-rF(k+1))
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
+            ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
+#ifdef NONLIN_FRSURF
+            ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
+#endif
+            phiHydC(i,j) =( MAX(zero,ddRloc)*rec_dRm*dRlocM
+     &                      +MIN(zero,ddRloc)*rec_dRp*dRlocP
+     &                     )*gravity*alphaRho(i,j)*recip_rhoConst
+           ELSE
+            phiHydC(i,j) = phiHydF(i,j)
+     &        +dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
+           ENDIF
+            phiHydF(i,j) = phiHydC(i,j)
+     &        +dRlocP*gravity*alphaRho(i,j)*recip_rhoConst
+          ENDDO
+         ENDDO
+        ENDIF
 
 C  --  end if integr_GeoPot = ...
        ENDIF
@@ -303,7 +343,7 @@ C  --  Finite Volume Form
 C---------- This discretization is the "finite volume" form
 C           which has not been used to date since it does not
 C           conserve KE+PE exactly even though it is more natural
-C
+
            IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
              ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
 #ifdef NONLIN_FRSURF
