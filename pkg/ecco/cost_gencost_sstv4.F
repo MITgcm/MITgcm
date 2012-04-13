@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.3 2012/02/28 00:51:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.4 2012/04/13 18:04:30 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -67,12 +67,12 @@ c     == local variables ==
       _RL anom_sst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL obs_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL nb_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL msk_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy) 
+      _RL msk_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL tmp_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL spval
 
       integer num_var
-  
+
       _RL junk,junkweight
 
       integer ndaysave
@@ -93,6 +93,7 @@ c     == local variables ==
       integer dayiter
       integer daydate(4)
       integer difftime(4)
+      integer tempDate_1
       integer middate(4)
       integer locstartdate(4)
       integer yday, ymod
@@ -186,8 +187,8 @@ c get observed sst:
              if ( ymod .GE. yday ) then
                 call cal_FullDate(locstartdate(1),0,middate,mythid)
              else
-               middate(1) = yday*10000+100+1
-               call cal_FullDate( middate(1), 0, middate, mythid)
+               tempDate_1 = yday*10000+100+1
+               call cal_FullDate( tempDate_1, 0, middate, mythid)
              endif
              call cal_TimePassed( middate, daydate, difftime, mythid )
              call cal_ToSeconds( difftime, diffsecs, mythid )
@@ -207,7 +208,7 @@ c
         CALL CAL_PRINTDATE(middate,mythid)
         CALL CAL_PRINTDATE(daydate,mythid)
         CALL CAL_PRINTDATE(difftime,mythid)
-#endif  
+#endif
 
              if ( localrec .GT. 0 ) then
                call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
@@ -234,7 +235,7 @@ c accumulate obs and misfit:
                   anom_sst(i,j,bi,bj)= anom_sst(i,j,bi,bj)+
      &               sstbar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
                   obs_sst(i,j,bi,bj)= obs_sst(i,j,bi,bj)+
-     &               tmp_sst(i,j,bi,bj) 
+     &               tmp_sst(i,j,bi,bj)
                   nb_sst(i,j,bi,bj)=nb_sst(i,j,bi,bj)+1. _d 0
                  endif
                 enddo
@@ -250,9 +251,9 @@ c average obs and misfit:
            do j = jmin,jmax
             do i = imin,imax
              if ( nb_sst(i,j,bi,bj) .NE. 0. ) then
-              obs_sst(i,j,bi,bj) = 
+              obs_sst(i,j,bi,bj) =
      &            obs_sst(i,j,bi,bj)/nb_sst(i,j,bi,bj)
-              anom_sst(i,j,bi,bj) =      
+              anom_sst(i,j,bi,bj) =
      &            anom_sst(i,j,bi,bj)/nb_sst(i,j,bi,bj)
               msk_sst(i,j,bi,bj) = 1. _d 0
              endif
@@ -284,12 +285,12 @@ c ----------------------------------------
 
          write(fname2(1:80),'(1a)') 'sstdiff_smooth'
          call mdswritefield(fname2,32,.false.,'RL',
-     &     1,anom_sst,irec,1,mythid) 
+     &     1,anom_sst,irec,1,mythid)
 
          write(fname2(1:80),'(1a)') 'sstobs_smooth'
          call mdswritefield(fname2,32,.false.,'RL',
      &     1,obs_sst,irec,1,mythid)
-#endif      
+#endif
 
 c PART 1.3: compute cost function term
 c ------------------------------------
@@ -301,11 +302,11 @@ c ------------------------------------
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,igen_amsre_lsc)*
      &          maskc(i,j,1,bi,bj)
-             objf_gencost(igen_amsre_lsc,bi,bj) = 
+             objf_gencost(igen_amsre_lsc,bi,bj) =
      &          objf_gencost(igen_amsre_lsc,bi,bj)
      &            +junk*junk*junkweight/ndaysaveRL
              if ( (junkweight.GT.0.).AND.(nb_sst(i,j,bi,bj).GT.0.) )
-     &          num_gencost(igen_amsre_lsc,bi,bj) = 
+     &          num_gencost(igen_amsre_lsc,bi,bj) =
      &          num_gencost(igen_amsre_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
             enddo
            enddo
@@ -338,7 +339,7 @@ c get observed sst:
                call cal_FullDate( middate(1), 0, middate, mythid)
              endif
              call cal_TimePassed( middate, daydate, difftime, mythid )
-             call cal_ToSeconds( difftime, diffsecs, mythid ) 
+             call cal_ToSeconds( difftime, diffsecs, mythid )
 c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
@@ -395,7 +396,7 @@ c compute misfit:
          write(fname2(1:80),'(1a)') 'sstdiff_point'
          call mdswritefield(fname2,32,.false.,'RL',
      &     1,anom_sst,irec,1,mythid)
-#endif     
+#endif
 
 c compute cost:
 

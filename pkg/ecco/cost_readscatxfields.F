@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.8 2012/02/28 00:51:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.9 2012/04/13 18:04:30 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -68,6 +68,7 @@ cnew(
       integer dayiter
       integer daydate(4)
       integer difftime(4)
+      integer tempDate_1
       integer middate(4)
       integer yday, ymod
       integer md, dd, sd, ld, wd
@@ -128,8 +129,8 @@ c-- assume daily fields
            if ( ymod .GE. yday ) then
               call cal_FullDate( scatxstartdate(1), 0, middate, mythid)
            else
-              middate(1) = yday*10000+100+1
-              call cal_FullDate( middate(1), 0, middate, mythid)
+              tempDate_1 = yday*10000+100+1
+              call cal_FullDate( tempDate_1, 0, middate, mythid)
            endif
            call cal_TimePassed( middate, daydate, difftime, mythid )
            call cal_ToSeconds( difftime, diffsecs, mythid )
