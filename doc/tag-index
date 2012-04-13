@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1650 2012/04/11 18:17:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1651 2012/04/13 18:06:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cal (+ pkg/ecco):
+ - avoid calling a S/R with 2 times the same arg (FWD: unless both are only used
+   as input; and for AD, unless both are not differentiable (e.g., k index)).
 o model/src:
  - define internal flag "uniformFreeSurfLev" (=T when free-surface level-index
    is everywhere k=1) to speed-up some calculations (by pass kSurf reference);
