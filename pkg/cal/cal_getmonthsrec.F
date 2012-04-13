@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getmonthsrec.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getmonthsrec.F,v 1.3 2012/04/13 18:03:11 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -51,10 +51,15 @@ c     == local variables ==
       integer currentdate(4)
       integer midtime(4)
       integer middate(4)
+      integer tempDate(4)
+      integer middate0_1, middate0_2
       integer middate0(4)
+      integer middate1_1, middate1_2
       integer middate1(4)
       integer prevdate(4)
       integer shifttime(4)
+      integer startofmonth_1, startofmonth_2
+      integer endofmonth_1,  endofmonth_2
       integer startofmonth(4)
       integer endofmonth(4)
       integer difftime(4)
@@ -86,19 +91,15 @@ c     Determine the current date and the current month.
       call cal_GetDate( myiter, mytime, currentdate, mythid )
 
       present         = mod(currentdate(1)/100,100)
-      startofmonth(1) = (currentdate(1)/100)*100 + 1
-      startofmonth(2) = 0
-      startofmonth(3) = 0
-      startofmonth(4) = 0
-      endofmonth(1)   = (currentdate(1)/100)*100 +
-     &                  ndaymonth(present,currentdate(3))
-      endofmonth(2)   = 235959
-      endofmonth(3)   = 0
-      endofmonth(4)   = 0
-
-      call cal_FullDate( startofmonth(1), startofmonth(2),
+      startofmonth_1  = (currentdate(1)/100)*100 + 1
+      startofmonth_2  = 0
+      call cal_FullDate( startofmonth_1, startofmonth_2,
      &                   startofmonth, mythid )
-      call cal_FullDate( endofmonth(1), endofmonth(2),
+
+      endofmonth_1    = (currentdate(1)/100)*100 +
+     &                  ndaymonth(present,currentdate(3))
+      endofmonth_2    = 235959
+      call cal_FullDate( endofmonth_1, endofmonth_2,
      &                   endofmonth, mythid )
 
 c     Determine middle of current month.
@@ -136,20 +137,18 @@ c--   Set switches for reading new records.
 
         shifttime(1) = -shifttime(1)
         call cal_AddTime( startofmonth, shifttime, middate0, mythid )
-        middate0(1) = (middate0(1)/100)*100 + 1
-        middate0(2) = 0
-        middate0(3) = 0
-        middate0(4) = 0
-        call cal_FullDate( middate0(1), middate0(2), middate0,
+        middate0_1  = (middate0(1)/100)*100 + 1
+        middate0_2  = 0
+        call cal_FullDate( middate0_1, middate0_2, tempDate,
      &                     mythid )
 
-        previous   = mod(middate0(1)/100,100)
+        previous   = mod(tempDate(1)/100,100)
 
-        midsecs_np = float(ndaymonth(previous,middate0(3))*
+        midsecs_np = float(ndaymonth(previous,tempDate(3))*
      &                     secondsperday/2)
 
         call cal_TimeInterval( midsecs_np, 'secs', midtime, mythid )
-        call cal_AddTime( middate0, midtime, middate0, mythid )
+        call cal_AddTime( tempDate, midtime, middate0, mythid )
 
         count1 = present
 
@@ -177,18 +176,16 @@ c--   Set switches for reading new records.
         if ( count1 .EQ. 0 ) count1 = nmonthyear
 
         call cal_AddTime( endofmonth, shifttime, middate1, mythid )
-        middate1(1) = (middate1(1)/100)*100 + 1
-        middate1(2) = 0
-        middate1(3) = 0
-        middate1(4) = 0
+        middate1_1  = (middate1(1)/100)*100 + 1
+        middate1_2  = 0
 
-        call cal_FullDate( middate1(1), middate1(2), middate1,
+        call cal_FullDate( middate1_1, middate1_2, tempDate,
      &                     mythid )
-        next       = mod(middate1(1)/100,100)
-        midsecs_np = float(ndaymonth(next,middate1(3))*
+        next       = mod(tempDate(1)/100,100)
+        midsecs_np = float(ndaymonth(next,tempDate(3))*
      &                     secondsperday/2)
         call cal_TimeInterval( midsecs_np, 'secs', midtime, mythid )
-        call cal_AddTime( middate1, midtime, middate1, mythid )
+        call cal_AddTime( tempDate, midtime, middate1, mythid )
 
       endif
 
