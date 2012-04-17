@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.6 2011/05/24 20:25:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.7 2012/04/17 19:47:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,6 +86,9 @@ C-    should call a S/R OBCS_TURNOFF_IO (like SEAICE) to reset this flag
 
 C--   Disable SBO output
       useSBO       = .FALSE.
+
+C--   Disable layers package
+      useLayers    = .FALSE.
 
 C--   For now, also disable diagnostics output (might need to change
 C     this if we want to use diagnostics to output adjoint-variables)
