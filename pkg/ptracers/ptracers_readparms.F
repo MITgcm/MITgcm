@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.39 2012/03/08 17:16:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.40 2012/04/18 22:05:18 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -83,13 +83,6 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_pickup_read_mnc
 
       _BEGIN_MASTER(myThid)
-
-C     This routine has been called by the main model so we set our
-C     internal flag to indicate we are in business
-c     PTRACERSisON=.TRUE.
-C Note(jmc): remove this flag which is not really usefull (not set properly
-C            when usePTRACERS=F and always TRUE otherwise);
-C            much better to use "usePTRACERS" flag instead.
 
 C     Set ptracer IO & diagnostics labels (2 characters long)
       CALL PTRACERS_SET_IOLABEL(
@@ -197,6 +190,16 @@ C     Check we are not trying to use more tracers than allowed
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
+
+C     Set vertical diffusion array
+      DO iTracer=1,PTRACERS_numInUse
+        IF ( PTRACERS_diffKr(iTracer).NE.UNSET_RL ) THEN
+         DO k=1,Nr
+          PTRACERS_diffKrNr(k,iTracer)=PTRACERS_diffKr(iTracer)
+         ENDDO
+        ENDIF
+      ENDDO
+
 C     Set flag to check when each tracer starts
       PTRACERS_startAllTrc = .TRUE.
       DO iTracer=1,PTRACERS_numInUse
@@ -214,6 +217,7 @@ C     Set flag to check when each tracer starts
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 C     Check for valid advection-scheme number
       DO iTracer=1,PTRACERS_numInUse
         validNum = GAD_VALID_ADVSCHEME( PTRACERS_advScheme(iTracer) )
@@ -225,63 +229,6 @@ C     Check for valid advection-scheme number
      &   'for tracer #', iTracer
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-        ENDIF
-      ENDDO
-#ifndef INCLUDE_IMPLVERTADV_CODE
-      DO iTracer=1,PTRACERS_numInUse
-       IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
-        WRITE(msgBuf,'(A)')
-     &   'PTRACERS_READPARMS: #undef INCLUDE_IMPLVERTADV_CODE'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
-     &   ' but pTracers_ImplVertAdv(',iTracer,' ) is TRUE'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-       ENDIF
-      ENDDO
-      IF ( PTRACERS_dTLev(1).NE.PTRACERS_dTLev(Nr)
-     &     .AND. implicitDiffusion ) THEN
-        WRITE(msgBuf,'(A)')
-     &   'PTRACERS_READPARMS: #undef INCLUDE_IMPLVERTADV_CODE'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)') 'PTRACERS_READPARMS: ',
-     &   'but implicitDiffusion=T with non-uniform PTRACERS_dTLev'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-      ENDIF
-#endif
-      DO iTracer=1,PTRACERS_numInUse
-        IF ( PTRACERS_useGMRedi(iTracer) .AND. .NOT.useGMRedi ) THEN
-          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
-     &     ' pTracers_useGMRedi(',iTracer,' ) is TRUE'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,L5,A)')
-     &     'PTRACERS_READPARMS: But not useGMRedi (=',useGMRedi,')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-        ENDIF
-        IF ( PTRACERS_useDWNSLP(iTracer) .AND. .NOT.useDOWN_SLOPE ) THEN
-          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
-     &     ' pTracers_useDWNSLP(',iTracer,' ) is TRUE'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(2A,L5,A)') 'PTRACERS_READPARMS:',
-     &     ' But not useDOWN_SLOPE (=', useDOWN_SLOPE, ')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-        ENDIF
-        IF ( PTRACERS_useKPP(iTracer) .AND. .NOT.useKPP ) THEN
-          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
-     &     ' pTracers_useKPP(',iTracer,' ) is TRUE'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,L5,A)')
-     &     'PTRACERS_READPARMS: But not useKPP (=',useKPP,')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-        ENDIF
-        IF ( PTRACERS_diffKr(iTracer).NE.UNSET_RL ) THEN
-         DO k=1,Nr
-          PTRACERS_diffKrNr(k,iTracer)=PTRACERS_diffKr(iTracer)
-         ENDDO
         ENDIF
       ENDDO
 
@@ -316,87 +263,6 @@ C     Check for valid advection-scheme number
 #endif
 
 C--   Print a summary of pTracer parameter values:
-      iUnit = standardMessageUnit
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') '// PTRACERS parameters '
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      CALL WRITE_0D_I( PTRACERS_numInUse, INDEX_NONE,
-     &   'PTRACERS_numInUse =',
-     &   ' /* number of tracers */')
-      CALL WRITE_0D_I( PTRACERS_Iter0, INDEX_NONE,
-     &   'PTRACERS_Iter0 =',
-     &   ' /* timestep number when tracers are initialized */')
-      CALL WRITE_0D_L( PTRACERS_startAllTrc, INDEX_NONE,
-     &   'PTRACERS_startAllTrc =','/* all tracers start @ startTime */')
-      CALL WRITE_0D_L( PTRACERS_addSrelax2EmP, INDEX_NONE,
-     &   'PTRACERS_addSrelax2EmP =','/* add Salt relaxation to EmP */')
-      CALL WRITE_1D_RL( PTRACERS_dTLev, Nr, INDEX_K,
-     &   'PTRACERS_dTLev =',
-     &'   /* Ptracer timestep ( s ) */')
-      CALL WRITE_0D_RL(PTRACERS_dumpFreq, INDEX_NONE,
-     &   'PTRACERS_dumpFreq =',
-     &   ' /* Frequency^-1 for snapshot output (s) */')
-      CALL WRITE_0D_RL(PTRACERS_taveFreq, INDEX_NONE,
-     &   'PTRACERS_taveFreq =',
-     &   ' /* Frequency^-1 for time-Aver. output (s) */')
-      CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
-     &   'PTRACERS_useRecords =', ' /* all tracers in 1 file */')
-
-      CALL WRITE_0D_L( PTRACERS_timeave_mnc, INDEX_NONE,
-     &     'PTRACERS_timeave_mnc =',
-     &     ' /* use MNC for Tave output */')
-      CALL WRITE_0D_L( PTRACERS_snapshot_mnc, INDEX_NONE,
-     &     'PTRACERS_snapshot_mnc =',
-     &     ' /* use MNC for snapshot output */')
-      CALL WRITE_0D_L( PTRACERS_pickup_write_mnc, INDEX_NONE,
-     &     'PTRACERS_pickup_write_mnc =',
-     &     ' /* use MNC for writing pickups */')
-      CALL WRITE_0D_L( PTRACERS_pickup_read_mnc, INDEX_NONE,
-     &     'PTRACERS_pickup_read_mnc =',
-     &     ' /* use MNC for reading pickups */')
-
-      DO iTracer=1,PTRACERS_numInUse
-        WRITE(msgBuf,'(A)') ' -----------------------------------'
-        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,I4)') ' tracer number : ',iTracer
-        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
-        CALL WRITE_0D_C( PTRACERS_names(iTracer), -1, INDEX_NONE,
-     &     'PTRACERS_names =', ' /* Tracer short name */')
-        CALL WRITE_0D_C( PTRACERS_long_names(iTracer), -1, INDEX_NONE,
-     &     'PTRACERS_long_names =', ' /* Tracer long name */')
-        CALL WRITE_0D_C( PTRACERS_ioLabel(iTracer), 0, INDEX_NONE,
-     &     'PTRACERS_ioLabel =', ' /* tracer IO Label */')
-        IF ( .NOT.PTRACERS_startAllTrc )
-     &  CALL WRITE_0D_RL( PTRACERS_startStepFwd(iTracer), INDEX_NONE,
-     &     'PTRACERS_startStepFwd =', ' /* tracer starting time */')
-        CALL WRITE_0D_I( PTRACERS_advScheme(iTracer), INDEX_NONE,
-     &     'PTRACERS_advScheme =', ' /* Advection Scheme */')
-        CALL WRITE_0D_L( PTRACERS_ImplVertAdv(iTracer), INDEX_NONE,
-     &     'PTRACERS_ImplVertAdv =',
-     &     ' /* implicit vert. advection flag */')
-        CALL WRITE_0D_RL( PTRACERS_diffKh(iTracer), INDEX_NONE,
-     &     'PTRACERS_diffKh =', ' /* Laplacian Diffusivity */')
-        CALL WRITE_0D_RL( PTRACERS_diffK4(iTracer), INDEX_NONE,
-     &     'PTRACERS_diffK4 =', ' /* Biharmonic Diffusivity */')
-        CALL WRITE_1D_RL( PTRACERS_diffKrNr(1,iTracer), Nr, INDEX_K,
-     &     'PTRACERS_diffKrNr =', ' /* Vertical Diffusivity */')
-        CALL WRITE_0D_L( PTRACERS_useGMRedi(iTracer), INDEX_NONE,
-     &     'PTRACERS_useGMRedi =', ' /* apply GM-Redi */')
-        CALL WRITE_0D_L( PTRACERS_useDWNSLP(iTracer), INDEX_NONE,
-     &     'PTRACERS_useDWNSLP =', ' /* apply DOWN-SLOPE Flow */')
-        CALL WRITE_0D_L( PTRACERS_useKPP(iTracer), INDEX_NONE,
-     &     'PTRACERS_useKPP =', ' /* apply KPP scheme */')
-        CALL WRITE_1D_RL( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
-     &     'PTRACERS_ref =', ' /* Reference vertical profile */')
-        CALL WRITE_0D_RL( PTRACERS_EvPrRn(iTracer), INDEX_NONE,
-     &     'PTRACERS_EvPrRn =', '/* tracer conc. in Evap. & Rain */')
-
-      ENDDO
-        WRITE(msgBuf,'(A)') ' -----------------------------------'
-        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded

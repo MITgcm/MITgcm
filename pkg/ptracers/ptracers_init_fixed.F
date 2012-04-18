@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.9 2012/03/08 17:06:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.10 2012/04/18 22:05:18 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
-#include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -29,7 +28,6 @@ C     !INPUT PARAMETERS:
 CEOP
 
 #ifdef ALLOW_PTRACERS
-
 C     !LOCAL VARIABLES:
 C     iTracer  :: tracer index
 C     msgBuf   :: Informational/error message buffer
@@ -40,8 +38,8 @@ C     msgBuf   :: Informational/error message buffer
 
 C     Initialise internal parameter in common block:
       DO iTracer = 1, PTRACERS_num
-        PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
-        PTRACERS_SOM_Advection(iTracer) = .FALSE.
+        PTRACERS_MultiDimAdv(iTracer)  = multiDimAdvection
+        PTRACERS_SOM_Advection(iTracer)= .FALSE.
         PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
       ENDDO
 
@@ -76,16 +74,6 @@ C--   Loop over tracers
         ENDIF
 #endif /* ndef PTRACERS_ALLOW_DYN_STATE */
 
-        WRITE(msgBuf,'(2A,I4,A,L5)') 'PTRACERS_INIT_FIXED: ',
-     &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
-     &     PTRACERS_SOM_Advection(iTracer)
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-C-    Update Overlap minimum size according to tracer advection
-        GAD_OlMinSize(1) = MAX( GAD_OlMinSize(1),
-     &          GAD_Scheme_olSize(PTRACERS_advScheme(iTracer)) )
-
 C--   end of Tracer loop
       ENDDO
 
@@ -97,16 +85,6 @@ C--   end of Tracer loop
      &                                  nSx, nSy, nSOM,
      &                                  myThid )
 #endif
-
-C--   Constrain on size of the overlap :
-      IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
-C-    multi-dim-advection on CS-grid requires to double the size of OLx,OLy
-        GAD_OlMinSize(3) = MAX( GAD_OlMinSize(3), 2 )
-      ENDIF
-      WRITE(msgBuf,'(2A,9I3)') 'PTRACERS_INIT_FIXED: ',
-     &      'GAD_OlMinSize=', GAD_OlMinSize
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
       _BARRIER
