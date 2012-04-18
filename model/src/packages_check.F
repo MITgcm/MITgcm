@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.58 2012/04/02 21:30:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.59 2012/04/18 22:06:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -234,7 +234,9 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useGridAlt) CALL PACKAGES_ERROR_MSG('GridAlt',' ',myThid)
 #endif
 
-#ifndef ALLOW_PTRACERS
+#ifdef ALLOW_PTRACERS
+      IF (usePTRACERS) CALL PTRACERS_CHECK( myThid )
+#else
       IF (usePTRACERS) CALL PACKAGES_ERROR_MSG('PTRACERS',' ',myThid)
 #endif
 
