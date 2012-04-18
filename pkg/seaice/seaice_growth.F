@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.162 2012/03/15 03:07:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.163 2012/04/18 21:00:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -869,7 +869,7 @@ C     Negative sublimation is resublimation and will be added as snow.
 #ifdef SEAICE_DISABLE_SUBLIM
 cgf just for those who may need to omit this term to reproduce old results
           a_FWbySublim(I,J) = ZERO
-#endif /* SEAICE_CAP_SUBLIM */
+#endif /* SEAICE_DISABLE_SUBLIM */
           a_FWbySublim(I,J) = SEAICE_deltaTtherm*recip_rhoIce
      &           * a_FWbySublim(I,J)*AREApreTH(I,J)
           r_FWbySublim(I,J)=a_FWbySublim(I,J)
