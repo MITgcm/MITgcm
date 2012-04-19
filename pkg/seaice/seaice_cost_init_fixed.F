@@ -1,28 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.5 2009/09/30 15:45:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.6 2012/04/19 23:00:01 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 #include "SEAICE_OPTIONS.h"
+#include "AD_CONFIG.h"
 
       subroutine seaice_cost_init_fixed( mythid )
 
-c     ==================================================================
-c     SUBROUTINE seaice_cost_init_fixed
-c     ==================================================================
-c
-c     o Set contributions to the cost function and the cost function
-c       itself to zero. The cost function and the individual contribu-
-c       tions are defined in the header file "SEAICE_COST.h".
-c
-c     ==================================================================
-c     SUBROUTINE seaice_cost_init_fixed
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE seaice_cost_init_fixed
+C     ==================================================================
+C
+C     o Set contributions to the cost function and the cost function
+C       itself to zero. The cost function and the individual contribu-
+C       tions are defined in the header file "SEAICE_COST.h".
+C
+C     ==================================================================
+C     SUBROUTINE seaice_cost_init_fixed
+C     ==================================================================
 
       implicit none
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -34,49 +32,49 @@ c     == global variables ==
 # include "cal.h"
 #endif
 
-c     == routine arguments ==
-
+C     == routine arguments ==
       integer mythid
 
 #ifdef ALLOW_COST
-c     == local variables ==
-
+C     == local variables ==
       integer tempDate1(4)
       integer tempDate2(4)
-
       logical exst
 
-c     == external functions ==
+C     == external functions ==
+c#ifdef ALLOW_CAL
+c     integer  cal_IntMonths
+c     external cal_IntMonths
+c     integer  cal_IntDays
+c     external cal_IntDays
+c#endif
 
-#ifdef ALLOW_CAL
-      integer  cal_IntMonths
-      external cal_IntMonths
-      integer  cal_IntDays
-      external cal_IntDays
-#endif
-
-c     == end of interface ==
+C     == end of interface ==
 
 #ifdef ALLOW_CAL
 
       _BEGIN_MASTER( myThid )
 
-c--   Sea-ice cost function start and stop times in model seconds.
-c
+C--   Sea-ice cost function start and stop times in model seconds.
         call cal_FullDate  ( costIceStart1 , costIceStart2,
      &                       tempDate1     , mythid )
-        call cal_TimePassed( modelstartdate, tempDate1    ,
+        call cal_TimePassed( modelStartDate, tempDate1    ,
      &                       tempDate2     , mythid )
         call cal_ToSeconds ( tempDate2 , costIceStart , mythid )
         costIceStart = costIceStart + startTime
-c
+
+        if ( costIceEnd1.EQ.0 ) then
+C-      use "modelEndDate" as default value for costIceEnd
+          costIceEnd1 = modelEndDate(1)
+          costIceEnd2 = modelEndDate(2)
+        endif
         call cal_FullDate  ( costIceEnd1   , costIceEnd2  ,
      &                       tempDate1     , mythid )
-        call cal_TimePassed( modelstartdate, tempDate1    ,
+        call cal_TimePassed( modelStartDate, tempDate1    ,
      &                       tempDate2     , mythid )
         call cal_ToSeconds ( tempDate2 , costIceEnd , mythid )
         costIceEnd = costIceEnd + startTime
-c--
+C--
         if ( smrareadatfile .ne. ' ' )
      &   call cal_FullDate( smrareastartdate1, smrareastartdate2,
      &                      smrareastartdate,  mythid )
@@ -85,12 +83,12 @@ c--
 
 #endif /* ALLOW_CAL */
 
-c--   Get the weights that are to be used for the individual cost
-c--   function contributions.
+C--   Get the weights that are to be used for the individual cost
+C--   function contributions.
       call seaice_cost_weights( mythid )
 
-c--   Initialise adjoint of monthly mean files calculated
-c--   in cost_averagesfields (and their ad...).
+C--   Initialise adjoint of monthly mean files calculated
+C--   in cost_averagesfields (and their ad...).
 cph(
 cph   The following init. shoud not be applied if in the middle
 cph   of a divided adjoint run
@@ -109,4 +107,5 @@ cph         call seaice_cost_init_barfiles( mythid )
 
 #endif /* ALLOW_COST */
 
-      end
+      RETURN
+      END
