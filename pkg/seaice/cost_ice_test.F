@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.11 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.12 2012/04/19 16:06:42 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -201,6 +201,21 @@ c     assumed that measurements are AREA=0.5 at all times everywhere.
                         objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                       ( AREA(i,j,bi,bj) - 0.5 _d 0 ) *
      &                       ( AREA(i,j,bi,bj) - 0.5 _d 0 )
+                     enddo
+                  enddo
+               enddo
+            enddo
+
+         elseif ( cost_ice_flag .eq. 7 ) then
+
+            do bj=myByLo(myThid),myByHi(myThid)
+               do bi=myBxLo(myThid),myBxHi(myThid)
+                  do j = 1,sny
+                     do i =  1,snx
+                        objf_ice(bi,bj) = objf_ice(bi,bj) +
+     &                       UICE(i,j,bi,bj) * UICE(i,j,bi,bj) +
+     &                       VICE(i,j,bi,bj) * VICE(i,j,bi,bj)
+
                      enddo
                   enddo
                enddo

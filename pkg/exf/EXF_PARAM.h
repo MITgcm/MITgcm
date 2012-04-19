@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.26 2012/01/05 23:41:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.27 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 c
 c
@@ -615,6 +615,7 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_climsss
       _RL     exf_inscal_climustr
       _RL     exf_inscal_climvstr
+      _RL     exf_inscal_areamask
 
       _RL     exf_outscal_hflux
       _RL     exf_outscal_sflux
@@ -624,6 +625,7 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_outscal_sst
       _RL     exf_outscal_sss
       _RL     exf_outscal_apressure
+      _RL     exf_outscal_areamask
 
       COMMON /EXF_PARAM_SCAL/
      &                      exf_inscal_hflux
@@ -648,6 +650,7 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_inscal_sgrunoff
      &                    , exf_inscal_swdown
      &                    , exf_inscal_lwdown
+     &                    , exf_inscal_areamask
      &                    , exf_outscal_hflux
      &                    , exf_outscal_sflux
      &                    , exf_outscal_ustress
@@ -656,6 +659,7 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_outscal_sst
      &                    , exf_outscal_sss
      &                    , exf_outscal_apressure
+     &                    , exf_outscal_areamask
 
 #ifndef USE_EXF_INTERPOLATION
 c-- set dummy dimension 1

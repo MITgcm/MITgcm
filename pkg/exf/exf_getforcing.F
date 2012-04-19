@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.40 2011/12/22 19:03:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.41 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -235,7 +235,7 @@ c     Update the tile edges.
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_RL(apressure, mythid)
 #endif
-#ifdef ALLOW_ICE_AREAMASK
+#ifdef EXF_ALLOW_SEAICE_RELAX
       _EXCH_XY_RL(areamask, mythid)
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.71 2012/01/05 23:41:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.72 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -144,6 +144,7 @@ c     Surface flux data.
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
+     & exf_inscal_areamask, exf_outscal_areamask,
      &  hfluxconst, atempconst, aqhconst, sfluxconst, evapconst,
      &  precipconst, snowprecipconst, runoffconst, ustressconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
@@ -617,6 +618,7 @@ c     Input scaling factors.
       exf_inscal_climsss   =  1. _d 0
       exf_inscal_climustr  =  1. _d 0
       exf_inscal_climvstr  =  1. _d 0
+      exf_inscal_areamask  =  1. _d 0
 
 c     Output scaling factors.
       exf_outscal_hflux    =  1. _d 0
@@ -627,6 +629,7 @@ c     Output scaling factors.
       exf_outscal_sst      =  1. _d 0
       exf_outscal_sss      =  1. _d 0
       exf_outscal_apressure=  1. _d 0
+      exf_outscal_areamask =  1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
 C--   set default input location to match (in case of simple Lat-Lonp grid)

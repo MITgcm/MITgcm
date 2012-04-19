@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.23 2012/04/09 14:29:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.24 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -315,7 +315,7 @@ C     from the beginning of the year.
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 
-#ifdef ALLOW_ICE_AREAMASK
+#ifdef EXF_ALLOW_SEAICE_RELAX
       IF ( areamaskfile .NE. ' ' .AND. areamaskperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START areamask',myThid)
@@ -325,7 +325,7 @@ C     from the beginning of the year.
      O                          areamaskstartdate,
      I                          myThid )
       ENDIF
-#endif /* ALLOW_ICE_AREAMASK */
+#endif /* EXF_ALLOW_SEAICE_RELAX */
 
 #ifdef ALLOW_OBCS
       IF ( obcsNperiod .GT. 0. ) THEN

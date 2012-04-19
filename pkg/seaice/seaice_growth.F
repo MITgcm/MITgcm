@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.163 2012/04/18 21:00:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.164 2012/04/19 16:06:42 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -130,7 +130,7 @@ C ICE/SNOW stocks tendencies associated with the various melt/freeze processes
       _RL d_AREAbyICE         (1:sNx,1:sNy)
 #endif
 
-#ifdef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef EXF_ALLOW_SEAICE_RELAX
 C     ICE/SNOW stocks tendency associated with relaxation towards observation
       _RL d_AREAbyRLX         (1:sNx,1:sNy)
 c     The change of mean ice thickness due to relaxation
@@ -332,7 +332,7 @@ C =====================
           d_AREAbyOCN(I,J)           = 0.0 _d 0
 #endif
 
-#ifdef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef EXF_ALLOW_SEAICE_RELAX
           d_AREAbyRLX(I,J)           = 0.0 _d 0
           d_HEFFbyRLX(I,J)           = 0.0 _d 0
 #endif
@@ -414,7 +414,7 @@ Cgf no dependency through pathological cases treatment
         IF ( SEAICEadjMODE.EQ.0 ) THEN
 #endif
 
-#ifdef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef EXF_ALLOW_SEAICE_RELAX
 CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 C 0) relax sea ice concentration towards observation
@@ -438,7 +438,7 @@ C           d_HEFFbyRLX(i,j) = 1. _d 1 * siEps * d_AREAbyRLX(i,j)
          ENDDO
         ENDDO
         ENDIF
-#endif /* SEAICE_ALLOW_AREA_RELAXATION */
+#endif /* EXF_ALLOW_SEAICE_RELAX */
 
 C 1) treat the case of negative values:
 
@@ -1324,7 +1324,7 @@ CADJ &                       key = iicekey, byte = isbyte
           tmpscal1 = d_HEFFbyNEG(I,J) + d_HEFFbyOCNonICE(I,J) +
      &               d_HEFFbyATMonOCN(I,J) + d_HEFFbyFLOODING(I,J)
      &             + d_HEFFbySublim(I,J)
-#ifdef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef EXF_ALLOW_SEAICE_RELAX
                    + d_HEFFbyRLX(I,J)
 #endif
           tmpscal2 = tmpscal1 * SEAICE_salt0 * HEFFM(I,J,bi,bj)
@@ -1532,7 +1532,7 @@ C for backward compatibility it is left out of the LEGACY branch
      &         - ( d_HEFFbyOCNonICE(I,J) +
      &             d_HSNWbyOCNonSNW(I,J)*SNOW2ICE +
      &             d_HEFFbyNEG(I,J) +
-#ifdef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef EXF_ALLOW_SEAICE_RELAX
      &             d_HEFFbyRLX(I,J) +
 #endif
      &             d_HSNWbyNEG(I,J)*SNOW2ICE )
@@ -1622,7 +1622,7 @@ C ==================================================
      &             +d_HEFFbyOCNonICE(I,J)
      &             +d_HEFFbyATMonOCN(I,J)
      &             +d_HEFFbyNEG(I,J)
-#ifdef SEAICE_ALLOW_AREA_RELAXATION
+#ifdef EXF_ALLOW_SEAICE_RELAX
      &             +d_HEFFbyRLX(I,J)
 #endif
      &             +d_HSNWbyNEG(I,J)*SNOW2ICE

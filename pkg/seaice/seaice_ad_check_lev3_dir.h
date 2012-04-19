@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.19 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev3_dir.h,v 1.20 2012/04/19 16:06:42 heimbach Exp $
 C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev3, key = ilev_3
@@ -17,6 +17,9 @@ CADJ STORE objf_ice = tapelev3, key = ilev_3
 #ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = tapelev3, key = ilev_3
 CADJ STORE vHeffExportCell = tapelev3, key = ilev_3
+#endif
+#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+CADJ STORE AREAforAtmFW = tapelev3, key = ilev_3
 #endif
 
 #ifdef ALLOW_OBCS

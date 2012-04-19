@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.3 2011/06/17 22:06:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.4 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -161,7 +161,7 @@ cph     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 cph        CALL MON_WRITESTATS_RL( 1, adrunoff,  '_adrunoff',
 cph     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
-#ifdef ALLOW_ICE_AREAMASK
+#ifdef EXF_ALLOW_SEAICE_RELAX
 cph        CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
 cph     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif

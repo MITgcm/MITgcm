@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.17 2010/10/18 19:58:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.18 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 c
@@ -93,6 +93,10 @@ CADJ STORE siceload      = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_RUNOFF
 CADJ STORE runoff0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE runoff1   = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef EXF_ALLOW_SEAICE_RELAX
+CADJ STORE areamask0     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE areamask1     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 
 # ifdef ALLOW_HFLUX_CONTROL

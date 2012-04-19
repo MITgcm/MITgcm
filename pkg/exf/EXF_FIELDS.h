@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.13 2010/04/28 04:45:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.14 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 c
 c
@@ -269,12 +269,14 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL runoff1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#ifdef ALLOW_ICE_AREAMASK
+#ifdef EXF_ALLOW_SEAICE_RELAX
       COMMON /exf_ice_areamask_r/ areamask,
      &                        areamask0, areamask1
       _RL areamask       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areamask0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areamask1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /exf_ice_obsSIce_r/ obsSIce
+      _RS obsSIce        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION

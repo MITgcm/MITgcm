@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.22 2010/04/26 03:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.23 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -155,7 +155,7 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, runoff,  '_runoff',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
-#ifdef ALLOW_ICE_AREAMASK
+#ifdef EXF_ALLOW_SEAICE_RELAX
         CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif

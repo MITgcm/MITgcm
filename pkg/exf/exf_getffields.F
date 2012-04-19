@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.45 2012/01/05 20:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.46 2012/04/19 16:06:43 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -298,7 +298,7 @@ c     Atmos. pressure forcing
      &     mytime, myiter, mythid )
 #endif
 
-#ifdef ALLOW_ICE_AREAMASK
+#ifdef EXF_ALLOW_SEAICE_RELAX
 c     fractional ice-covered area MASK
       call exf_set_gen  (
      &     areamaskfile, areamaskstartdate, areamaskperiod,
@@ -475,6 +475,35 @@ c-- Control variables for atmos. state
 #endif
 
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
+
+#ifdef ALLOW_ATM_MEAN_CONTROL
+      do bj = mybylo(mythid),mybyhi(mythid)
+       do bi = mybxlo(mythid),mybxhi(mythid)
+        do j = 1,sny
+         do i = 1,snx
+# ifdef ALLOW_ATEMP_CONTROL
+          atemp(i,j,bi,bj) =atemp(i,j,bi,bj) +xx_atemp_mean(i,j,bi,bj)
+# endif
+# ifdef ALLOW_AQH_CONTROL
+          aqh(i,j,bi,bj)   =aqh(i,j,bi,bj)   +xx_aqh_mean(i,j,bi,bj)
+# endif
+# ifdef ALLOW_PRECIP_CONTROL
+          precip(i,j,bi,bj)=precip(i,j,bi,bj)+xx_precip_mean(i,j,bi,bj)
+# endif
+# ifdef ALLOW_SWDOWN_CONTROL
+          swdown(i,j,bi,bj)=swdown(i,j,bi,bj)+xx_swdown_mean(i,j,bi,bj)
+# endif
+# ifdef ALLOW_UWIND_CONTROL
+          uwind(i,j,bi,bj) =uwind(i,j,bi,bj) +xx_uwind_mean(i,j,bi,bj)
+# endif
+# ifdef ALLOW_VWIND_CONTROL
+          vwind(i,j,bi,bj) =vwind(i,j,bi,bj) +xx_vwind_mean(i,j,bi,bj)
+# endif
+         enddo
+        enddo
+       enddo
+      enddo
+#endif /* ALLOW_ATM_MEAN_CONTROL */
 
 cdm transferred from exf_init_runoff.F
 cdm functionality needs to be checked before turning on
