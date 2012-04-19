@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.15 2011/05/18 03:17:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.16 2012/04/19 19:49:24 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -103,6 +103,16 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
              endif
 #endif
+
+#ifdef ALLOW_PROFILES_ANOM_COST
+             if (num_var .le. 2) then
+              call profiles_interp_mean(prof_traj1D_mean,
+     &         prof_lon(num_file,prof_num,bi,bj),
+     &         prof_lat(num_file,prof_num,bi,bj),
+     &         num_var,num_file,mytime,bi,bj,myThid)
+             endif
+#endif
+
              call active_read_profile(num_file,
      &           ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
      &           prof_num,.false.,optimcycle,bi,bj,mythid,
