@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.15 2012/02/03 02:46:17 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.16 2012/04/19 20:01:29 heimbach Exp $
 #  $Name:  $
 #
 
@@ -68,7 +68,13 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_siheff_dummy        \
                     xx_sihsnow_dummy        \
                     xx_relaxsst_dummy    \
-                    xx_relaxsss_dummy'     \
+                    xx_relaxsss_dummy    \
+                    xx_atemp_mean_dummy  \
+                    xx_aqh_mean_dummy    \
+                    xx_precip_mean_dummy \
+                    xx_swdown_mean_dummy \
+                    xx_uwind_mean_dummy  \
+                    xx_vwind_mean_dummy'     \
             -output 'fc'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"

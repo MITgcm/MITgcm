@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.12 2012/02/03 02:46:17 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.13 2012/04/19 20:01:29 heimbach Exp $
 #  $Name:  $
 #
 
@@ -66,7 +66,13 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_gen2d_dummy        \
                     xx_gen3d_dummy        \
                     xx_relaxsst_dummy    \
-                    xx_relaxsss_dummy'     \
+                    xx_relaxsss_dummy    \
+                    xx_atemp_mean_dummy  \
+                    xx_aqh_mean_dummy    \
+                    xx_precip_mean_dummy \
+                    xx_swdown_mean_dummy \
+                    xx_uwind_mean_dummy  \
+                    xx_vwind_mean_dummy'     \
             -output 'objf_state_final'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"

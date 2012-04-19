@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.26 2011/12/06 04:14:18 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.27 2012/04/19 20:01:29 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -69,6 +69,7 @@ c     ==================================================================
      &                  , xx_sflux_mean_dummy
      &                  , xx_sstbar_mean_dummy
      &                  , xx_sssbar_mean_dummy
+     &                  , xx_atmfwbar_mean_dummy
      &                  , xx_atemp_mean_dummy
      &                  , xx_aqh_mean_dummy
      &                  , xx_precip_mean_dummy
@@ -154,6 +155,7 @@ c
       _RL xx_sflux_mean_dummy
       _RL xx_sstbar_mean_dummy
       _RL xx_sssbar_mean_dummy
+      _RL xx_atmfwbar_mean_dummy
       _RL xx_taux_mean_dummy
       _RL xx_tauy_mean_dummy
       _RL xx_atemp_mean_dummy

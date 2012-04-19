@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.57 2012/03/22 03:55:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.58 2012/04/19 20:01:29 heimbach Exp $
 C $Name:  $
 
 
@@ -349,6 +349,16 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_aqh1
 #endif
 
+#if (defined (ALLOW_ATM_MEAN_CONTROL))
+      common /controlaux_atm_mean_r/
+     &                      xx_atemp_mean,
+     &                      xx_aqh_mean,
+     &                      xx_uwind_mean,
+     &                      xx_vwind_mean,
+     &                      xx_precip_mean,
+     &                      xx_swdown_mean
+#endif
+
 #if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       common /controlaux_ustress_r/
      &                      xx_tauu0,
@@ -546,6 +556,15 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_sss0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_sss1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
+#if     (defined (ALLOW_ATM_MEAN_CONTROL))
+      _RL xx_atemp_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_aqh_mean   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_uwind_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_vwind_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_precip_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_swdown_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
 
 #ifdef ALLOW_OBCSN_CONTROL
       _RL xx_obcsn0 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
@@ -598,6 +617,12 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_runoff_file
      &                    , xx_uwind_file
      &                    , xx_vwind_file
+     &                    , xx_atemp_mean_file
+     &                    , xx_aqh_mean_file
+     &                    , xx_precip_mean_file
+     &                    , xx_swdown_mean_file
+     &                    , xx_uwind_mean_file
+     &                    , xx_vwind_mean_file
      &                    , xx_obcsn_file
      &                    , xx_obcss_file
      &                    , xx_obcsw_file
@@ -650,6 +675,12 @@ cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_runoff_file
       character*(MAX_LEN_FNAM) xx_uwind_file
       character*(MAX_LEN_FNAM) xx_vwind_file
+      character*(MAX_LEN_FNAM) xx_atemp_mean_file
+      character*(MAX_LEN_FNAM) xx_aqh_mean_file
+      character*(MAX_LEN_FNAM) xx_precip_mean_file
+      character*(MAX_LEN_FNAM) xx_swdown_mean_file
+      character*(MAX_LEN_FNAM) xx_uwind_mean_file
+      character*(MAX_LEN_FNAM) xx_vwind_mean_file
       character*(MAX_LEN_FNAM) xx_obcsn_file
       character*(MAX_LEN_FNAM) xx_obcss_file
       character*(MAX_LEN_FNAM) xx_obcsw_file
@@ -1004,6 +1035,12 @@ c                         control part.
       character*( 80)   fname_runoff(3)
       character*( 80)   fname_uwind(3)
       character*( 80)   fname_vwind(3)
+      character*( 80)   fname_atemp_mean(3)
+      character*( 80)   fname_aqh_mean(3)
+      character*( 80)   fname_precip_mean(3)
+      character*( 80)   fname_swdown_mean(3)
+      character*( 80)   fname_uwind_mean(3)
+      character*( 80)   fname_vwind_mean(3)
       character*( 80)   fname_obcsn(3)
       character*( 80)   fname_obcss(3)
       character*( 80)   fname_obcsw(3)
