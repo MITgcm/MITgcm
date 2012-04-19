@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_mean.F,v 1.3 2007/11/05 19:17:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_mean.F,v 1.4 2012/04/19 19:10:21 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -155,6 +155,24 @@ cgf) spatial interpolation
                tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,1,bi,bj) !SE
                tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,1,bi,bj) !NO
                tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,1,bi,bj) !NZ
+        elseif (type_cur .eq. 1) then
+          tab_coeffs1(1,1)=prof_theta_mean(prof_i,prof_j,k,bi,bj) 
+          tab_coeffs1(1,2)=prof_theta_mean(prof_i+1,prof_j,k,bi,bj)
+          tab_coeffs1(2,1)=prof_theta_mean(prof_i,prof_j+1,k,bi,bj)
+          tab_coeffs1(2,2)=prof_theta_mean(prof_i+1,prof_j+1,k,bi,bj)
+          tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) 
+          tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj)
+          tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) 
+          tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj)
+        elseif (type_cur .eq. 2) then
+          tab_coeffs1(1,1)=prof_salt_mean(prof_i,prof_j,k,bi,bj)
+          tab_coeffs1(1,2)=prof_salt_mean(prof_i+1,prof_j,k,bi,bj)
+          tab_coeffs1(2,1)=prof_salt_mean(prof_i,prof_j+1,k,bi,bj)
+          tab_coeffs1(2,2)=prof_salt_mean(prof_i+1,prof_j+1,k,bi,bj)
+          tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj)
+          tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj)
+          tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj)
+          tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj)
         else
                tab_coeffs1(1,1)=0.
                tab_coeffs1(2,1)=0.

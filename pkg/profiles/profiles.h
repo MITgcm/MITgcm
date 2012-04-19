@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.9 2011/05/20 22:23:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.10 2012/04/19 19:10:21 heimbach Exp $
 C $Name:  $
 
 C============================================================
@@ -39,6 +39,8 @@ C===========================================================
       _RL prof_depth(NFILESPROFMAX,NLEVELMAX,nsx,nsy)
       _RL prof_mask1D_cur(NLEVELMAX,nsx,nsy)
       _RL prof_etan_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL prof_theta_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL prof_salt_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       integer profNo(NFILESPROFMAX,nsx,nsy)
       integer profDepthNo(NFILESPROFMAX,nsx,nsy)
@@ -67,7 +69,8 @@ C Common Blocks
 C===========================================================
 
       COMMON /profiles_r/ prof_time, prof_lon, prof_lat,
-     & prof_depth, prof_mask1D_cur, prof_etan_mean 
+     & prof_depth, prof_mask1D_cur, 
+     & prof_etan_mean, prof_theta_mean, prof_salt_mean
       COMMON /profiles_i/ prof_ind_glob, profNo, profDepthNo,
      & fidforward, fidadjoint, fidtangent, fiddata,
      & prof_num_var_tot, prof_num_var_cur, profilesfile_equi_type
