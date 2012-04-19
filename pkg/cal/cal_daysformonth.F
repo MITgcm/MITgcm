@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_daysformonth.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_daysformonth.F,v 1.3 2012/04/19 19:43:31 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -140,6 +140,9 @@ c--       Somewhere between first and last month.
           do i = 2,imonth-1
 c--         Accumulate days of the intermediate months.
             currentmonth = mod(currentmonth+1,nmonthyear)
+            if ( currentmonth .eq. 0 ) then
+              currentmonth = 12
+            endif
             if ( currentmonth .eq. 1 ) then
               currentyear = currentyear + 1
             endif
@@ -147,6 +150,9 @@ c--         Accumulate days of the intermediate months.
             numdays   = numdays + ndaymonth(currentmonth,lycurrent)
           enddo
           currentmonth = mod(currentmonth+1,nmonthyear)
+          if ( currentmonth .eq. 0 ) then
+             currentmonth = 12
+          endif
           if ( currentmonth .eq. 1 ) then
             currentyear = currentyear + 1
           endif
@@ -161,6 +167,9 @@ c--       The last month of the integration.
           do i = 2,nummonths-1
 c--         Accumulate days of the intermediate months.
             currentmonth = mod(currentmonth+1,nmonthyear)
+            if ( currentmonth .eq. 0 ) then
+              currentmonth = 12
+            endif
             if ( currentmonth .eq. 1 ) then
               currentyear = currentyear + 1
             endif
@@ -169,6 +178,9 @@ c--         Accumulate days of the intermediate months.
           enddo
 c--       Prepare for the last month of integration.
           currentmonth = mod(currentmonth+1,nmonthyear)
+          if ( currentmonth .eq. 0 ) then
+             currentmonth = 12
+          endif
           if ( currentmonth .eq. 1 ) then
             currentyear = currentyear + 1
           endif
