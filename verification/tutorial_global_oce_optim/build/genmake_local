@@ -1,1 +1,1 @@
-AD_OPTFILE='../code_ad/adjoint_hfluxm'
+AD_OPTFILE='../code_ad/ad_optfile.local'
