@@ -1,12 +1,13 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/Attic/adjoint_staf,v 1.8 2010/10/04 03:28:38 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ad_optfile.local,v 1.1 2012/04/20 19:33:23 jmc Exp $
 #  $Name:  $
-#
 
-#  This file contains the default settings for the adjoint and 
-#  tangent-linear compilers.  If you need to change these settings,
-#  please make a separate (local) copy of this file.
+#  This AD option-file contains the settings for the adjoint and
+#  tangent-linear compilers to use for this particular setup.
+#  It is similar to the default AD-optfile except:
+#  a) this set-up requires the extended source flag "-e" for TAF
+#  b) different list of controls (DIFF_FLAGS)
 
 # TAMC=/data43/ralf/tamc/tamc
 # TAF=~fastopt/bin/taf
@@ -16,11 +17,11 @@ TAF=staf
 TAMC=tamc
 
 AD_TAMC_FLAGS="-reverse -admark ad -i4 -r4 -l tamc_ad.log $AD_TAMC_FLAGS"
-AD_TAF_FLAGS="-v1 -e -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log $AD_TAF_FLAGS"
+AD_TAF_FLAGS="-v1 -e -reverse -admark ad -i4 -r4 -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAMC_FLAGS="-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log $FTL_TAMC_FLAGS"
-FTL_TAF_FLAGS="-v1 -e -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log $FTL_TAF_FLAGS"
+FTL_TAF_FLAGS="-v1 -e -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAMC_FLAGS="-reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_FLAGS"
-SVD_TAF_FLAGS="-v1 -reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log $SVD_TAF_FLAGS"
+SVD_TAF_FLAGS="-v1 -reverse -forward -pure -i4 -r4 -l taf_svd.log $SVD_TAF_FLAGS"
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_theta_dummy       \
@@ -54,7 +55,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_vvel_dummy        \
                     xx_etan_dummy        \
                     xx_relaxsst_dummy    \
-                    xx_relaxsss_dummy'     \
+                    xx_relaxsss_dummy'   \
             -output 'fc'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
