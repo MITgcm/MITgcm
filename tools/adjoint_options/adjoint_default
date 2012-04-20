@@ -1,10 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.27 2012/04/19 20:01:29 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.28 2012/04/20 19:49:42 jmc Exp $
 #  $Name:  $
-#
 
-#  This file contains the default settings for the adjoint and 
+#  This AD option-file contains the default settings for the adjoint and
 #  tangent-linear compilers.  If you need to change these settings,
 #  please make a separate (local) copy of this file.
 
@@ -61,8 +60,8 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_uvel_dummy        \
                     xx_vvel_dummy        \
                     xx_etan_dummy        \
-                    xx_gen2d_dummy        \
-                    xx_gen3d_dummy        \
+                    xx_gen2d_dummy       \
+                    xx_gen3d_dummy       \
                     xx_siarea_dummy      \
                     xx_siheff_dummy      \
                     xx_sihsnow_dummy     \
@@ -74,7 +73,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_precip_mean_dummy \
                     xx_swdown_mean_dummy \
                     xx_uwind_mean_dummy  \
-                    xx_vwind_mean_dummy'   \
+                    xx_vwind_mean_dummy' \
             -output 'fc'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
