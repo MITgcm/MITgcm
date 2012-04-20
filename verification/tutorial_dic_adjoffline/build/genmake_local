@@ -1,1 +1,2 @@
-AD_OPTFILE='../code_ad/adjoint_dic'
+AD_OPTFILE='../code_ad/ad_optfile.local'
+AD_TAF_FLAGS='-version 2.2.15'
