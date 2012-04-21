@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1654 2012/04/20 19:47:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1655 2012/04/21 23:55:37 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,7 @@ o pkg/seaice & pkg/exf:
    to be set in EXF_OPTIONS.h since this pkg controls its I/O
    (and avoids second CPP option in SEAICE_OPTIONS.h)
  - change default value of costIceStart & costIceEnd to a valid date.
+ - add snowPrecip to HSNOW in seaice_growth
 o pkg/ptracers:
  - move ptracers summary and setup check into separated S/R ; add a check for
    valid PTRACERS_Iter0 value (error+stop or just warning).
