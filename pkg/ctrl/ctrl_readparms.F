@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.35 2012/03/22 03:55:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.36 2012/04/21 14:56:35 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -100,6 +100,8 @@ c--   Read the namelist input.
      &  xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod,
      &  xx_vwind_file, xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &  xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod,
+     &  xx_aqh_mean_file, xx_atemp_mean_file, xx_precip_mean_file,
+     &  xx_swdown_mean_file, xx_uwind_mean_file, xx_vwind_mean_file,
      &  xx_obcsn_file,
      &  xx_obcsnstartdate1,  xx_obcsnstartdate2,  xx_obcsnperiod,
      &  xx_obcss_file,
@@ -195,6 +197,7 @@ c
         xx_atempstartdate2  =   0
         xx_atempperiod      =   0. _d 0
         xx_atemp_file       = 'xx_atemp'
+        xx_atemp_mean_file  = 'xx_atemp_mean'
         xx_atemp_remo_intercept =   0. _d 0
         xx_atemp_remo_slope =   0. _d 0
 c
@@ -202,6 +205,7 @@ c
         xx_aqhstartdate2    =   0
         xx_aqhperiod        =   0. _d 0
         xx_aqh_file         = 'xx_aqh'
+        xx_aqh_mean_file    = 'xx_aqh_mean'
         xx_aqh_remo_intercept =   0. _d 0
         xx_aqh_remo_slope =   0. _d 0
 c
@@ -209,6 +213,7 @@ c
         xx_precipstartdate2 =   0
         xx_precipperiod     =   0. _d 0
         xx_precip_file      = 'xx_precip'
+        xx_precip_mean_file = 'xx_precip_mean'
         xx_precip_remo_intercept =   0. _d 0
         xx_precip_remo_slope =   0. _d 0
 c
@@ -223,6 +228,7 @@ c
         xx_swdownstartdate2 =   0
         xx_swdownperiod     =   0. _d 0
         xx_swdown_file      = 'xx_swdown'
+        xx_swdown_mean_file = 'xx_swdown_mean'
         xx_swdown_remo_intercept =   0. _d 0
         xx_swdown_remo_slope =   0. _d 0
 c
@@ -272,6 +278,7 @@ c
         xx_uwindstartdate2  =   0
         xx_uwindperiod      =   0. _d 0
         xx_uwind_file       = 'xx_uwind'
+        xx_uwind_mean_file  = 'xx_uwind_mean'
         xx_uwind_remo_intercept =   0. _d 0
         xx_uwind_remo_slope =   0. _d 0
 c
@@ -279,6 +286,7 @@ c
         xx_vwindstartdate2  =   0
         xx_vwindperiod      =   0. _d 0
         xx_vwind_file       = 'xx_vwind'
+        xx_vwind_mean_file  = 'xx_vwind_mean'
         xx_vwind_remo_intercept =   0. _d 0
         xx_vwind_remo_slope =   0. _d 0
 c

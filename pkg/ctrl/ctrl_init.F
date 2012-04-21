@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.44 2012/04/11 12:11:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.45 2012/04/21 14:56:35 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -16,49 +16,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init
 c     ==================================================================
 c
-c     o Set parts of the vector of control variables and initialize the
-c       rest to zero.
-c
-c       The vector of control variables is initialized here. The
-c       temperature and salinity contributions are read from file.
-c       Subsequently, the latter are dimensionalized and the tile
-c       edges are updated.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 23-Feb-2000
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c              Patrick Heimbach heimbach@mit.edu 30-May-2000
-c              - diffsec was falsely declared.
-c
-c              Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - Transferred some filename declarations
-c                from ctrl_pack/ctrl_unpack to here
-c              - Transferred mask-per-tile to here
-c              - computation of control vector length here
-c
-c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
-c              - Added call to ctrl_pack
-c              - Alternatively: transfer writing of scale files to
-c                ctrl_unpack
-c
-c              Dimitris Menemenlis menemenlis@mit.edu 7-Mar-2003
-c              - To be consistent with usage in ctrl_getrec.F,
-c                startrec and endrec need to be referenced to
-c                model time = 0, not to startTime.
-c                Also "- modelstep" -> "+ modelstep/2":
-c old:      startrec = int((modelstart - diffsecs)/
-c old:   &                 xx_???period) + 1
-c old:      endrec = int((modelend   - diffsecs - modelstep)/
-c old:   &                 xx_???period) + 2
-c new:      startrec = int((modelstart + startTime - diffsecs)/
-c new:   &                 xx_???period) + 1
-c new:      endrec = int((modelend + startTime - diffsecs + modelstep/2)/
-c new:   &                 xx_???period) + 2
-c
-c              heimbach@mit.edu totally restructured 28-Oct-2003
+c     o The vector of control variables is defined here. 
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_init
@@ -162,6 +120,7 @@ cph          42                 seaice SIHEFF
 cph          43                 seaice SIHSNOW
 cph          44                 gmredi kapredi
 cph          45                 shelfice shifwflx
+cph          47-52              mean atmos. state
 cph)
 
 c----------------------------------------------------------------------
@@ -750,6 +709,41 @@ c--   freshwater flux underneath ice-shelves
      &     xx_shifwflx_file, 45, 145, diffrec, startrec, endrec,
      &     snx, sny, 1, 'i', 'xy', mythid )
 #endif /* ALLOW_SHIFWFLX_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_ATM_MEAN_CONTROL
+# ifdef ALLOW_ATEMP_CONTROL
+       call ctrl_init_ctrlvar (
+     &       xx_atemp_mean_file, 47, 147, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+# endif
+# ifdef ALLOW_AQH_CONTROL
+       call ctrl_init_ctrlvar (
+     &       xx_aqh_mean_file,   48, 148, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+# endif
+# ifdef ALLOW_UWIND_CONTROL
+       call ctrl_init_ctrlvar (
+     &       xx_uwind_mean_file, 49, 149, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+# endif
+# ifdef ALLOW_VWIND_CONTROL
+       call ctrl_init_ctrlvar (
+     &       xx_vwind_mean_file, 50, 150, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+# endif
+# ifdef ALLOW_PRECIP_CONTROL
+       call ctrl_init_ctrlvar (
+     &       xx_precip_mean_file,51, 151, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+# endif
+# ifdef ALLOW_SWDOWN_CONTROL
+       call ctrl_init_ctrlvar (
+     &       xx_swdown_mean_file,52, 152, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+# endif
+#endif /* ALLOW_ATM_MEAN_CONTROL */
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
