@@ -85,7 +85,7 @@
 #uwindfile         = 'core_u_wind_cs32.bin',
 #vwindfile         = 'core_v_wind_cs32.bin',
  wspeedfile        = 'core_wndSpd_cs32.bin',
- precipfile        = 'core_prec_1_cs32.bin',
+#precipfile        = 'core_prec_1_cs32.bin',
  snowprecipfile    = 'core_snwP_1_cs32.bin',
  lwdownfile        = 'core_dwnLw_cs32.bin',
  swdownfile        = 'core_dwnSw_cs32.bin',
