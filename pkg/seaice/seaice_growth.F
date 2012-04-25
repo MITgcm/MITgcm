@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.167 2012/04/23 18:36:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.168 2012/04/25 22:55:09 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -161,7 +161,7 @@ c     fraction and ice-covered fractions of the grid cell, respectively
       _RL d_HSNWbyRAIN        (1:sNx,1:sNy)
 
       _RL d_HFRWbyRAIN        (1:sNx,1:sNy)
-
+C
 C     a_FWbySublim :: fresh water flux implied by latent heat of
 C                     sublimation to atmosphere, same sign convention
 C                     as EVAP (positive upward)
@@ -1073,7 +1073,8 @@ c         Limit ice growth by potential melt by ocean
          ENDDO
         ENDDO
 
-C add snow precipitation to HSNOW.
+C attribute precip to fresh water or snow stock,
+C depending on atmospheric conditions.
 C =================================================
 #ifdef ALLOW_ATM_TEMP
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1081,42 +1082,28 @@ CADJ STORE a_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE PRECIP(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        IF ( snowPrecipFile .NE. ' ' ) THEN
-C add snowPrecip to HSNOW
-         DO J=1,sNy
-          DO I=1,sNx
-           d_HSNWbyRAIN(I,J) =
-     &          convertPRECIP2HI * ICE2SNOW  * snowPrecip(i,j,bi,bj)
-           d_HFRWbyRAIN(I,J) = ZERO
-           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyRAIN(I,J)
-          ENDDO
-         ENDDO
-        ELSE
-C attribute precip to fresh water or snow stock,
-C depending on atmospheric conditions.
-         DO J=1,sNy
-          DO I=1,sNx
+        DO J=1,sNy
+         DO I=1,sNx
 C possible alternatives to the a_QbyATM_cover criterium
 c          IF (TICE(I,J,bi,bj) .LT. TMIX) THEN
 c          IF (atemp(I,J,bi,bj) .LT. celsius2K) THEN
-           IF ( a_QbyATM_cover(I,J).GE. 0. _d 0 ) THEN
+          IF ( a_QbyATM_cover(I,J).GE. 0. _d 0 ) THEN
 C           add precip as snow
             d_HFRWbyRAIN(I,J)=0. _d 0
             d_HSNWbyRAIN(I,J)=convertPRECIP2HI*ICE2SNOW*
      &            PRECIP(I,J,bi,bj)*AREApreTH(I,J)
-           ELSE
+          ELSE
 C           add precip to the fresh water bucket
             d_HFRWbyRAIN(I,J)=-convertPRECIP2HI*
      &            PRECIP(I,J,bi,bj)*AREApreTH(I,J)
             d_HSNWbyRAIN(I,J)=0. _d 0
-           ENDIF
-           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyRAIN(I,J)
-          ENDDO
+          ENDIF
+          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyRAIN(I,J)
          ENDDO
+        ENDDO
 Cgf note: this does not affect air-sea heat flux,
 Cgf since the implied air heat gain to turn
 Cgf rain to snow is not a surface process.
-        ENDIF
 #endif /* ALLOW_ATM_TEMP */
 
 C compute snow melt due to heat available from ocean.
@@ -1627,10 +1614,9 @@ C the ocean, accounting for fresh/salt water stocks.
 C ==================================================
 
 #ifdef ALLOW_ATM_TEMP
-        IF ( snowPrecipFile .NE. ' ' ) THEN
-         DO J=1,sNy
-          DO I=1,sNx
-           tmpscal1= d_HSNWbyATMonSNW(I,J)*SNOW2ICE
+        DO J=1,sNy
+         DO I=1,sNx
+          tmpscal1= d_HSNWbyATMonSNW(I,J)*SNOW2ICE
      &             +d_HFRWbyRAIN(I,J)
      &             +d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
      &             +d_HEFFbyOCNonICE(I,J)
@@ -1642,42 +1628,16 @@ C ==================================================
      &             +d_HSNWbyNEG(I,J)*SNOW2ICE
 C     If r_FWbySublim>0, then it is evaporated from ocean.
      &             +r_FWbySublim(I,J)
-           EmPmR(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
-     &          EVAP(I,J,bi,bj) * ( ONE - AREApreTH(I,J) ) -
-     &          max( ZERO, precip(i,j,bi,bj)-snowPrecip(i,j,bi,bj) )
+          EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
+     &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
+     &         * ( ONE - AREApreTH(I,J) )
 #ifdef ALLOW_RUNOFF
-     &          - RUNOFF(I,J,bi,bj)
+     &         - RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
-     &          + tmpscal1*convertHI2PRECIP
-     &          )*rhoConstFresh
-          ENDDO
+     &         + tmpscal1*convertHI2PRECIP
+     &         )*rhoConstFresh
          ENDDO
-        ELSE
-         DO J=1,sNy
-          DO I=1,sNx
-           tmpscal1= d_HSNWbyATMonSNW(I,J)*SNOW2ICE
-     &             +d_HFRWbyRAIN(I,J)
-     &             +d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
-     &             +d_HEFFbyOCNonICE(I,J)
-     &             +d_HEFFbyATMonOCN(I,J)
-     &             +d_HEFFbyNEG(I,J)
-#ifdef EXF_ALLOW_SEAICE_RELAX
-     &             +d_HEFFbyRLX(I,J)
-#endif
-     &             +d_HSNWbyNEG(I,J)*SNOW2ICE
-C     If r_FWbySublim>0, then it is evaporated from ocean.
-     &             +r_FWbySublim(I,J)
-           EmPmR(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
-     &          ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
-     &          * ( ONE - AREApreTH(I,J) )
-#ifdef ALLOW_RUNOFF
-     &          - RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
-     &          + tmpscal1*convertHI2PRECIP
-     &          )*rhoConstFresh
-          ENDDO
-         ENDDO
-        ENDIF
+        ENDDO
 
 #ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
 C--
@@ -1855,81 +1815,42 @@ C the latent heat flux
          CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIrsSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIhl    ',0,1,3,bi,bj,myThid)
 
-         IF ( DIAGNOSTICS_IS_ON('SItflux ',myThid) ) THEN
-          IF ( snowPrecipFile .NE. ' ' ) THEN
-           DO J=1,sNy
-            DO I=1,sNx
+         DO J=1,sNy
+          DO I=1,sNx
 c compute ice/snow water going to atm, in precip units
-             tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
-     &            * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)*SNOW2ICE
-     &            + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
+           tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
+     &       * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)*SNOW2ICE
+     &       + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
 c compute ocean water going to atm, in precip units
-             tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj) * (
-     &            EVAP(I,J,bi,bj) * ( ONE - AREApreTH(I,J) ) -
-     &            max( ZERO, precip(i,j,bi,bj)-snowPrecip(i,j,bi,bj) )
+           tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
+     &       ( ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
+     &         * ( ONE - AREApreTH(I,J) )
 #ifdef ALLOW_RUNOFF
-     &            - RUNOFF(I,J,bi,bj)
+     &         - RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
-     &            + ( d_HFRWbyRAIN(I,J) + r_FWbySublim(I,J) )
-     &            *convertHI2PRECIP )
+     &         + ( d_HFRWbyRAIN(I,J) + r_FWbySublim(I,J) )
+     &         *convertHI2PRECIP )
 c factor in the advected specific energy (referenced to 0 for 0deC liquid water)
-             tmpscal1= - tmpscal1*
-     &            ( -SEAICE_lhFusion + HeatCapacity_Cp * ZERO )
-             IF (temp_EvPrRn.NE.UNSET_RL) THEN
-              tmpscal2= - tmpscal2*
-     &             ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
-             ELSE
-              tmpscal2= - tmpscal2*
-     &             ( ZERO + HeatCapacity_Cp*theta(I,J,kSurface,bi,bj) )
-             ENDIF
+           tmpscal1= - tmpscal1*
+     &       ( -SEAICE_lhFusion + HeatCapacity_Cp * ZERO )
+           IF (temp_EvPrRn.NE.UNSET_RL) THEN
+           tmpscal2= - tmpscal2*
+     &       ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
+           ELSE
+           tmpscal2= - tmpscal2*
+     &       ( ZERO + HeatCapacity_Cp * theta(I,J,kSurface,bi,bj) )
+           ENDIF
 c add to SIatmQnt, leading to SItflux, which is analogous to TFLUX
-             DIAGarrayA(I,J)=maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
+           DIAGarrayA(I,J)=maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
 #ifndef SEAICE_GROWTH_LEGACY
      &            a_QSWbyATM_cover(I,J) +
 #endif
      &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
      &            -tmpscal1-tmpscal2
-            ENDDO
-           ENDDO
-          ELSE
-           DO J=1,sNy
-            DO I=1,sNx
-c compute ice/snow water going to atm, in precip units
-             tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
-     &            * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)*SNOW2ICE
-     &            + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
-c compute ocean water going to atm, in precip units
-             tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
-     &            ( ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
-     &            * ( ONE - AREApreTH(I,J) )
-#ifdef ALLOW_RUNOFF
-     &            - RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
-     &            + ( d_HFRWbyRAIN(I,J) + r_FWbySublim(I,J) )
-     &            *convertHI2PRECIP )
-c factor in the advected specific energy (referenced to 0 for 0deC liquid water)
-             tmpscal1= - tmpscal1*
-     &            ( -SEAICE_lhFusion + HeatCapacity_Cp * ZERO )
-             IF (temp_EvPrRn.NE.UNSET_RL) THEN
-              tmpscal2= - tmpscal2*
-     &             ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
-             ELSE
-              tmpscal2= - tmpscal2*
-     &             ( ZERO + HeatCapacity_Cp*theta(I,J,kSurface,bi,bj) )
-             ENDIF
-c add to SIatmQnt, leading to SItflux, which is analogous to TFLUX
-             DIAGarrayA(I,J)=maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
-#ifndef SEAICE_GROWTH_LEGACY
-     &            a_QSWbyATM_cover(I,J) +
-#endif
-     &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
-     &            -tmpscal1-tmpscal2
-            ENDDO
-           ENDDO
-          ENDIF
-          CALL DIAGNOSTICS_FILL(DIAGarrayA,
-     &         'SItflux ',0,1,3,bi,bj,myThid)
-         ENDIF
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &      'SItflux ',0,1,3,bi,bj,myThid)
 #endif /* ALLOW_ATM_TEMP */
 
         ENDIF
