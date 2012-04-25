@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.168 2012/04/25 22:55:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.169 2012/04/25 22:59:36 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1073,37 +1073,52 @@ c         Limit ice growth by potential melt by ocean
          ENDDO
         ENDDO
 
-C attribute precip to fresh water or snow stock,
-C depending on atmospheric conditions.
+C add snow precipitation to HSNOW.
 C =================================================
 #ifdef ALLOW_ATM_TEMP
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE a_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE PRECIP(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-        DO J=1,sNy
-         DO I=1,sNx
+# endif /* ALLOW_AUTODIFF_TAMC */
+        IF ( snowPrecipFile .NE. ' ' ) THEN
+C add snowPrecip to HSNOW
+         DO J=1,sNy
+          DO I=1,sNx
+           d_HSNWbyRAIN(I,J) = convertPRECIP2HI * ICE2SNOW *
+     &          snowPrecip(i,j,bi,bj) * AREApreTH(I,J)
+           d_HFRWbyRAIN(I,J) = -convertPRECIP2HI *
+     &          ( PRECIP(I,J,bi,bj) - snowPrecip(I,J,bi,bj) ) *
+     &          AREApreTH(I,J)
+           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyRAIN(I,J)
+          ENDDO
+         ENDDO
+        ELSE
+C attribute precip to fresh water or snow stock,
+C depending on atmospheric conditions.
+         DO J=1,sNy
+          DO I=1,sNx
 C possible alternatives to the a_QbyATM_cover criterium
 c          IF (TICE(I,J,bi,bj) .LT. TMIX) THEN
 c          IF (atemp(I,J,bi,bj) .LT. celsius2K) THEN
-          IF ( a_QbyATM_cover(I,J).GE. 0. _d 0 ) THEN
+           IF ( a_QbyATM_cover(I,J).GE. 0. _d 0 ) THEN
 C           add precip as snow
             d_HFRWbyRAIN(I,J)=0. _d 0
             d_HSNWbyRAIN(I,J)=convertPRECIP2HI*ICE2SNOW*
      &            PRECIP(I,J,bi,bj)*AREApreTH(I,J)
-          ELSE
+           ELSE
 C           add precip to the fresh water bucket
             d_HFRWbyRAIN(I,J)=-convertPRECIP2HI*
      &            PRECIP(I,J,bi,bj)*AREApreTH(I,J)
             d_HSNWbyRAIN(I,J)=0. _d 0
-          ENDIF
-          HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyRAIN(I,J)
+           ENDIF
+           HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) + d_HSNWbyRAIN(I,J)
+          ENDDO
          ENDDO
-        ENDDO
 Cgf note: this does not affect air-sea heat flux,
 Cgf since the implied air heat gain to turn
 Cgf rain to snow is not a surface process.
+        ENDIF
 #endif /* ALLOW_ATM_TEMP */
 
 C compute snow melt due to heat available from ocean.
@@ -1535,7 +1550,9 @@ C for backward compatibility it is left out of the LEGACY branch
 #ifdef EXF_ALLOW_SEAICE_RELAX
      &             d_HEFFbyRLX(I,J) +
 #endif
-     &             d_HSNWbyNEG(I,J)*SNOW2ICE )
+     &             d_HSNWbyNEG(I,J)*SNOW2ICE -
+     &             convertPRECIP2HI *
+     &             snowPrecip(i,j,bi,bj) * (ONE-AREApreTH(I,J)) )
      &         * maskC(I,J,kSurface,bi,bj)
           QSW(I,J,bi,bj)  = a_QSWbyATM_cover(I,J) + a_QSWbyATM_open(I,J)
          ENDDO
@@ -1579,12 +1596,13 @@ c store unaltered QNET for diagnostic purposes
            DIAGarrayA(I,J)=QNET(I,J,bi,bj)
 #endif
 c compute the ocean water going to ice/snow, in precip units
-           tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
+           tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*(
      &       ( d_HSNWbyATMonSNW(I,J)*SNOW2ICE
      &       + d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
      &       + d_HEFFbyOCNonICE(I,J) + d_HEFFbyATMonOCN(I,J)
      &       + d_HEFFbyNEG(I,J) + d_HSNWbyNEG(I,J)*SNOW2ICE )
      &       * convertHI2PRECIP
+     &       - snowPrecip(i,j,bi,bj) * (ONE-AREApreTH(I,J)) )
 c factor in the heat content that external_forcing_surf.F
 c will associate with EMPMR, and remove it from QNET, so that
 c melt/freez water is in effect consistently gained/lost at 0degC
