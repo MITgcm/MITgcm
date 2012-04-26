@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.46 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.47 2012/04/26 14:19:44 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -224,6 +224,19 @@ c     Snow.
      &     snowprecip_interpMethod,
 #endif
      &     mytime, myiter, mythid )
+c     Take care of case where total precip is not defined
+      IF ( snowPrecipFile .NE. ' ' ) THEN
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j = 1,sny
+          do i = 1,snx
+           precip(i,j,bi,bj) =
+     &          max( precip(i,j,bi,bj), snowPrecip(i,j,bi,bj) )
+          enddo
+         enddo
+        enddo
+       enddo
+      ENDIF
 
 #endif /* ALLOW_ATM_TEMP */
 
