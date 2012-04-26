@@ -60,7 +60,7 @@
  dumpFreq=0.0,
  taveFreq=0.0,
  monitorFreq=1.,
-### monitorSelect=2,
+ monitorSelect=2,
  adjMonitorFreq=1800.,
  &
 
