@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.13 2012/04/11 03:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.14 2012/04/26 13:46:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,8 +64,9 @@ C--   On/Off flags for each terms of the momentum equation
 
 C--   Free-surface & pressure method
       uniformFreeSurfLev = usingZCoords
-C- note: should be instead:
-c     uniformFreeSurfLev = usingZCoords .AND. .NOT.useShelfIce
+C- Note: comment line below to revert to full-cell hydrostatic-pressure
+C        calculation in surface grid-cell below ice-shelf
+      uniformFreeSurfLev = usingZCoords .AND. .NOT.useShelfIce
       IF ( selectNHfreeSurf.NE.0 .AND.
      &      ( .NOT.nonHydrostatic .OR. usingPCoords
      &        .OR. .NOT.exactConserv
