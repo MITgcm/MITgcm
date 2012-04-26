@@ -87,6 +87,16 @@ end
 icetopo = ones(nx,1)*min(Hmax,Hmin + dHdx*(latc-latg(1)));
 fid=fopen('icetopo.exp1','w','b'); fwrite(fid,icetopo,acc);fclose(fid);
 fid=fopen('pload.exp1','w','b'); fwrite(fid,-icetopo,acc);fclose(fid);
+
+% After modifying the code in calc_phi_hyd.F on Apr26,2012 this is the
+% consistent way of computing phi0surf. For this, we need the grid
+% information (hFacC's). For convenience, it's taken from a previous model
+% run.
+%
+% The way of computing phi0surf consistent with code prior to Apr26,2012
+% is recovered by setting drloc*dphi=0
+g=rdmnc('grid.*','HFacC');
+msk=sum(g.HFacC,3); msk(msk>0)=1;
 phi0surf = zeros(nx,ny);
 for ix=1:nx
   for iy=1:ny
@@ -95,7 +105,11 @@ for ix=1:nx
       k=0;
     end
     if k>0
-      phi0surf(ix,iy) = phiHydF(k)*rhoConst;
+      kp1=min(k+1,nz);
+      drloc=1-g.HFacC(ix,iy,k);
+      %drloc=(abs(icetopo(ix,iy))-abs(zg(k)))/dz(k);
+      dphi = phiHydF(kp1)-phiHydF(k);
+      phi0surf(ix,iy) = (phiHydF(k)+drloc*dphi)*rhoConst*msk(ix,iy);
     end
   end
 end
