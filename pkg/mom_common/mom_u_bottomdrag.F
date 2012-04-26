@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.9 2008/10/21 18:04:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.10 2012/04/26 21:23:20 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -83,9 +83,8 @@ c      dragFac = wUnit2rVel(k)
      &      2.*KappaRU(i,j,kDownC)*rdrckp1*viscFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
      &     + bottomdragfld(i,j,bi,bj)*dragFac
-#else
-     &     + bottomDragLinear*dragFac
 #endif
+     &     + bottomDragLinear*dragFac
      &    )*(1.-maskDown)*uFld(i,j)
         IF ( (KE(i,j)+KE(i-1,j)) .NE. 0. ) THEN
          uDragTerms(i,j)=uDragTerms(i,j)
