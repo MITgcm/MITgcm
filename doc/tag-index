@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1656 2012/04/26 13:49:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1657 2012/04/27 16:33:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63m (2012/04/27)
 o pkg/shelfice:
  - account for partical cells in surface level below ice-shelf for hydrostatic
    pressure calculion (set uniformFreeSurfLev to F); update isomip experiments.
