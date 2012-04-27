@@ -100,8 +100,8 @@ fid=fopen('frontcircum.xuyun','w','b'); fwrite(fid,frontcircum,acc);fclose(fid);
 %
 % The way of computing phi0surf consistent with code prior to Apr26,2012
 % is recovered by setting drloc*dphi=0
-g=rdmnc('grid.*','HFacC');
-msk=sum(g.HFacC,3); msk(msk>0)=1;
+hf=rdmds('../tr_run.icefront/hFacC');
+msk=sum(hf,3); msk(msk>0)=1;
 phi0surf = zeros(nx,ny);
 for ix=1:nx
   for iy=1:ny
@@ -111,7 +111,7 @@ for ix=1:nx
     end
     if k>0
       kp1=min(k+1,nz);
-      drloc=1-g.HFacC(ix,iy,k);
+      drloc=1-hf(ix,iy,k);
       %drloc=(abs(icetopo(ix,iy))-abs(zg(k)))/dz(k);
       dphi = phiHydF(kp1)-phiHydF(k);
       phi0surf(ix,iy) = (phiHydF(k)+drloc*dphi)*rhoConst*msk(ix,iy);
