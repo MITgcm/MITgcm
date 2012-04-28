@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.114 2012/03/06 15:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.115 2012/04/28 19:04:57 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -475,6 +475,10 @@ CADJ &     kind = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
+CADJ &     kind = isbyte
+# endif
+# ifdef ALLOW_SALT_PLUME
+CADJ STORE saltplumedepth(:,:,bi,bj) = comlev1_bibj, key=itdkey,
 CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
