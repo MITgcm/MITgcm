@@ -1,0 +1,9 @@
+ &SALT_PLUME_PARM01
+ CriterionType      = 2
+ SaltPlumeCriterion = 0.021D0
+ SPovershoot        = 1.0D0
+ PlumeMethod        = 1
+ Npower             = 4
+# SaltPlumeCriterion = 0.4D0
+ &
+

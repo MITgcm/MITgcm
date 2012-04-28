@@ -106,7 +106,6 @@
  pChkptFreq=36000.,
  chkptFreq= 0.,
  dumpFreq = 0.,
- taveFreq = 36000.,
  monitorFreq=1.,
  adjMonitorFreq=1.,
  adjDumpFreq=1.,

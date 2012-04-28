@@ -1,0 +1,13 @@
+# Packages
+ &PACKAGES
+  useGMRedi = .TRUE.,
+  useKPP    = .TRUE.,
+  useEXF    = .TRUE.,
+  useSEAICE = .TRUE.,
+  useDOWN_SLOPE=.TRUE.,
+  useSALT_PLUME  = .TRUE.,
+  useDiagnostics = .FALSE.,
+# useMNC    = .TRUE.,
+  useECCO   = .TRUE.,
+  useGrdchk = .TRUE.,
+ &
