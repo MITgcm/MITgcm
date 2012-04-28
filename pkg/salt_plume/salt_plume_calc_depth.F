@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.6 2011/05/25 20:39:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.7 2012/04/28 22:18:23 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -28,6 +28,10 @@ C     == Global variables ==
 #include "SURFACE.h"
 #include "DYNVARS.h"
 #include "SALT_PLUME.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     rhoSurf   :: Surface density anomaly
@@ -56,11 +60,26 @@ C     i,j :: Loop counters
       _RL     GG, GGm1
       _RL     SPIND (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        ikey = (act1 + 1) + act2*max1
+     &                    + act3*max1*max2
+     &                    + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C Initializing the saltplume depth to bottom topography
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         SaltPlumeDepth(i,j,bi,bj) = rF(1)-R_low(I,J,bi,bj)
-        SPIND(i,j)=0.
+        SPIND(i,j)  = 0. _d 0
+        rhoKm1(i,j) = 0. _d 0
+        rhoMxL(i,j) = 0. _d 0
        ENDDO
       ENDDO
 
@@ -70,11 +89,24 @@ C CriterionType 1 = use delta_rho to determine salt plume depth
        rhoBigNb  = rhoConst*1. _d 10
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
+         SaltPlumeDepth(i,j,bi,bj) = rF(1)-R_low(I,J,bi,bj)
          rhoKm1(i,j) = rhoSurf(i,j)
          rhoMxL(i,j) = rhoSurf(i,j) + SaltPlumeCriterion
         ENDDO
        ENDDO
+
        DO k = 2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkey = (ikey-1)*Nr + k
+CADJ STORE rhoKm1(:,:) = comlev1_bibj_k, 
+CADJ &     key=kkey, byte=isbyte, kind = isbyte
+CADJ STORE rhoMxL(:,:) = comlev1_bibj_k, 
+CADJ &     key=kkey, byte=isbyte, kind = isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, 
+CADJ &     key=kkey, byte=isbyte, kind = isbyte
+CADJ STORE salt(:,:,k,bi,bj) = comlev1_bibj_k, 
+CADJ &     key=kkey, byte=isbyte, kind = isbyte
+#endif
 C-     potential density (reference level = surface level)
         CALL FIND_RHO_2D(
      I       1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
@@ -103,7 +135,19 @@ C-     potential density (reference level = surface level)
 
       ELSEIF ( CriterionType.EQ.2 ) THEN
 
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          SaltPlumeDepth(i,j,bi,bj) = rF(1)-R_low(I,J,bi,bj)
+          SPIND(i,j)  = 0. _d 0
+         ENDDO
+        ENDDO
+
         DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkey = (ikey-1)*Nr + k
+CADJ STORE SPIND(:,:) = comlev1_bibj_k, 
+CADJ &     key=kkey, byte=isbyte, kind = isbyte
+#endif
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            GG  =-1.0*sigmaR(i,j,k)
