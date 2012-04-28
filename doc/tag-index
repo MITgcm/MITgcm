@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1657 2012/04/27 16:33:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1658 2012/04/28 22:30:14 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/salt_plume added to lab_sea/input_ad.noseaicedyn
 
 checkpoint63m (2012/04/27)
 o pkg/shelfice:
