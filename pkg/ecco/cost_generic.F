@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.15 2012/04/13 18:04:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.16 2012/04/28 19:54:51 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -202,10 +202,13 @@ c-- assume daily fields
            call cal_getdate( dayiter, daytime, daydate, mythid )
            call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
            ymod = localstartdate(1)/10000
+           do k=1,4
+              middate(k)=0
+           enddo
+           tempDate_1 = yday*10000+100+1
            if ( ymod .GE. yday ) then
               call cal_FullDate( localstartdate(1), 0, middate, mythid)
            else
-              tempDate_1 = yday*10000+100+1
               call cal_FullDate( tempDate_1, 0, middate, mythid)
            endif
            call cal_TimePassed( middate, daydate, difftime, mythid )
