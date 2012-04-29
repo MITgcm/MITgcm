@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.13 2011/05/19 13:18:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.14 2012/04/29 22:11:17 jmc Exp $
 # $Name:  $
 
 usage()
@@ -116,7 +116,14 @@ for xx in "$@" ; do nw=`echo $xx | wc -w`
                         else CMDLINE="$CMDLINE '$xx'" ; fi
 done
 #for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
-DATE=`date +%Y%m%d`
+DATE=''
+if test -f tr_out.txt ; then
+#  try to use the date corresponding to 'Start time:' in file "tr_out.txt" :
+  sTime=`grep '^Start time:  ' tr_out.txt 2>/dev/null | sed 's/Start time:  //'`
+  if test "x$sTime" != x ; then DATE=`date -d "$sTime" "+%Y%m%d" 2>/dev/null` ; fi
+fi
+#  otherwise, use current date:
+if test "x$DATE" = x ; then DATE=`date +%Y%m%d`; fi
 BASE="rs_"$OUTDIR"_"$DATE"_"
 xx=0
 DRESULTS="$BASE$xx"
