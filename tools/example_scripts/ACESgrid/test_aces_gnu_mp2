@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.9 2012/03/23 21:09:55 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.10 2012/05/01 13:20:39 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -58,7 +58,21 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
+#- remove previous output tar files and tar & remove previous output-dir
+    /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
+    ( cd $gcmDIR/verification
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_?`
+      for dd in $listD
+      do
+        if test -d $dd ; then
+          tar -cf ${dd}".tar" $dd > /dev/null 2>&1 && gzip ${dd}".tar" && /bin/rm -rf $dd
+          RETVAL=$?
+          if test "x$RETVAL" != x0 ; then
+             echo "ERROR in tar+gzip prev outp-dir: $dd"
+             echo " on '"`hostname`"' (return val=$RETVAL) but continue"
+          fi
+        fi
+      done )
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1

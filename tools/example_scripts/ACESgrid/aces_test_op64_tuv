@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_aces/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.19 2012/03/12 20:46:02 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.20 2012/05/01 13:20:39 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -53,7 +53,21 @@ if [ $dsp -le 1000000 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
-    /bin/rm -rf $gcmDIR/verification/??_${dNam}-${sfx}_????????_?
+#- remove previous output tar files and tar & remove previous output-dir
+    /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
+    ( cd $gcmDIR/verification
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_?`
+      for dd in $listD
+      do
+        if test -d $dd ; then
+          tar -cf ${dd}".tar" $dd > /dev/null 2>&1 && gzip ${dd}".tar" && /bin/rm -rf $dd
+          RETVAL=$?
+          if test "x$RETVAL" != x0 ; then
+             echo "ERROR in tar+gzip prev outp-dir: $dd"
+             echo " on '"`hostname`"' (return val=$RETVAL) but continue"
+          fi
+        fi
+      done )
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
