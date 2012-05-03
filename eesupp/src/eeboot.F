@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.21 2012/03/30 18:13:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.22 2012/05/03 19:45:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -9,7 +9,6 @@ C     !ROUTINE: EEBOOT
 
 C     !INTERFACE:
       SUBROUTINE EEBOOT
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -43,6 +42,7 @@ C       |
 C       |-- w2_eeboot()      :: Initialise WRAPPER2 execution environment
 
 C     !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -129,9 +129,6 @@ C     o Do other miscellaneous multi-processing set up steps. For
 C       example under MPI we create datatypes for communication
 C       of array edges.
       CALL INI_PROCS
-c#ifdef LETS_MAKE_JAM
-c     CALL INI_JAM
-c#endif
       IF ( eeBootError ) GOTO 999
 
 C--   Initialise variables to support "nThreads" of computation.
