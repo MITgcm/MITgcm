@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.11 2011/11/05 13:32:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.12 2012/05/08 15:09:26 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -297,6 +297,8 @@ then
      cat TTT.out.2it
 else $cmdEXE > std_outp.2it
 fi
+if test ! -s std_outp.2it
+then echo "empty or no output file: 'std_outp.2it' => exit" ; exit 1 ; fi
 mv STDERR.0000 std__err.2it
 out=`egrep -c 'STOP ABNORMAL END' std_outp.2it`
 if test $out != 0
@@ -324,6 +326,8 @@ then
      cat TTT.out.1iA
 else $cmdEXE > std_outp.1iA
 fi
+if test ! -s std_outp.1iA
+then echo "empty or no output file: 'std_outp.1iA' => exit" ; exit 2 ; fi
 mv STDERR.0000 std__err.1iA
 out=`egrep -c 'STOP ABNORMAL END' std_outp.1iA`
 if test $out != 0
@@ -350,6 +354,8 @@ then
      cat TTT.out.1iB
 else $cmdEXE > std_outp.1iB
 fi
+if test ! -s std_outp.1iB
+then echo "empty or no output file: 'std_outp.1iB' => exit" ; exit 3 ; fi
 mv STDERR.0000 std__err.1iB
 out=`egrep -c 'STOP ABNORMAL END' std_outp.1iB`
 if test $out != 0
