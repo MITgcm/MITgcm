@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.24 2011/06/08 01:46:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.25 2012/05/11 23:34:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -14,10 +14,8 @@ CBOP
 C     !ROUTINE: CG3D
 C     !INTERFACE:
       SUBROUTINE CG3D(
-     I                cg3d_b,
-     U                cg3d_x,
-     O                firstResidual,
-     O                lastResidual,
+     U                cg3d_b, cg3d_x,
+     O                firstResidual, lastResidual,
      U                numIters,
      I                myIter, myThid )
 C     !DESCRIPTION: \bv
@@ -57,12 +55,15 @@ C     === Global data ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     cg3d_b    :: The source term or "right hand side"
-C     cg3d_x    :: The solution
+C     cg3d_b    :: The source term or "right hand side" (output: normalised RHS)
+C     cg3d_x    :: The solution (input: first guess)
 C     firstResidual :: the initial residual before any iterations
-C     lastResidual  :: the actual residual reached
-C     numIters  :: Entry: the maximum number of iterations allowed
-C               :: Exit:  the actual number of iterations used
+C     minResidualSq :: the lowest residual reached (squared)
+CC    lastResidual  :: the actual residual reached
+C     numIters  :: Inp: the maximum number of iterations allowed
+C                  Out: the actual number of iterations used
+CC    nIterMin  :: Inp: decide to store (if >=0) or not (if <0) lowest res. sol.
+CC                 Out: iteration number corresponding to lowest residual
 C     myIter    :: Current iteration number in simulation
 C     myThid    :: my Thread Id number
       _RL     cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -77,33 +78,32 @@ C     myThid    :: my Thread Id number
 
 C     !LOCAL VARIABLES:
 C     === Local variables ====
-C     actualIts      :: Number of iterations taken
-C     actualResidual :: residual
-C     bi,bj      :: tile indices
-C     eta_qrN    :: Used in computing search directions
-C     eta_qrNM1     suffix N and NM1 denote current and
-C     cgBeta        previous iterations respectively.
-C     alpha
-C     sumRHS     :: Sum of right-hand-side. Sometimes this is a
-C                   useful debuggin/trouble shooting diagnostic.
-C                   For neumann problems sumRHS needs to be ~0.
-C                   or they converge at a non-zero residual.
-C     err        :: Measure of residual of Ax - b, usually the norm.
+C     bi, bj     :: tile index in X and Y.
 C     i, j, k    :: Loop counters
 C     it3d       :: Loop counter for CG iterations
+C     actualIts  :: actual CG iteration number
+C     err_sq     :: Measure of the square of the residual of Ax - b.
+C     eta_qrN    :: Used in computing search directions; suffix N and NM1
+C     eta_qrNM1     denote current and previous iterations respectively.
+C     cgBeta     :: coeff used to update conjugate direction vector "s".
+C     alpha      :: coeff used to update solution & residual
+C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
+C                   debugging/trouble shooting diagnostic. For neumann problems
+C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
+C     cg2d_min   :: used to store solution corresponding to lowest residual.
 C     msgBuf     :: Informational/error message buffer
-      INTEGER actualIts
-      _RL     actualResidual
       INTEGER bi, bj
       INTEGER i, j, k, it3d
+      INTEGER actualIts
       INTEGER km1, kp1
       _RL     maskM1, maskP1
-      _RL     err,    errTile(nSx,nSy)
-      _RL     eta_qrN,eta_qrNtile(nSx,nSy)
+      _RL     cg3dTolerance_sq
+      _RL     err_sq,  errTile(nSx,nSy)
+      _RL     eta_qrN, eta_qrNtile(nSx,nSy)
       _RL     eta_qrNM1
       _RL     cgBeta
-      _RL     alpha , alphaTile(nSx,nSy)
-      _RL     sumRHS, sumRHStile(nSx,nSy)
+      _RL     alpha ,  alphaTile(nSx,nSy)
+      _RL     sumRHS,  sumRHStile(nSx,nSy)
       _RL     rhsMax
       _RL     rhsNorm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -115,6 +115,8 @@ C     msgBuf     :: Informational/error message buffer
 #endif /* NONLIN_FRSURF */
 CEOP
 
+C--   Initialise auxiliary constant, some output variable
+      cg3dTolerance_sq = cg3dTargetResidual*cg3dTargetResidual
       IF ( select_rStar .NE. 0 ) THEN
         surfFac = freeSurfFac
       ELSE
@@ -163,12 +165,9 @@ C--   Normalise RHS
       ENDDO
 
 C--   Update overlaps
-c     _EXCH_XYZ_RL( cg3d_b, myThid )
       _EXCH_XYZ_RL( cg3d_x, myThid )
 
 C--   Initial residual calculation (with free-Surface term)
-      err    = 0. _d 0
-      sumRHS = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         errTile(bi,bj)    = 0. _d 0
@@ -229,8 +228,8 @@ C--   Initial residual calculation (with free-Surface term)
            sumRHStile(bi,bj) = sumRHStile(bi,bj)+cg3d_b(i,j,k,bi,bj)
           ENDDO
          ENDDO
-         DO J=1-1,sNy+1
-          DO I=1-1,sNx+1
+         DO j=0,sNy+1
+          DO i=0,sNx+1
            cg3d_s(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -238,13 +237,15 @@ C--   Initial residual calculation (with free-Surface term)
        ENDDO
       ENDDO
        CALL EXCH_S3D_RL( cg3d_r, Nr, myThid )
-c      CALL EXCH_S3D_RL( cg3d_s, Nr, myThid )
        CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
-       CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+       CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
       IF ( debugLevel.GE.debLevC .AND. diagFreq.GT.0. ) THEN
         CALL WRITE_FLD_S3D_RL(
      I        'cg3d_r_I', 'I10', 1, Nr, cg3d_r, myIter, myThid )
       ENDIF
+
+      actualIts = 0
+      firstResidual = SQRT(err_sq)
 
       printResidual = .FALSE.
       IF ( debugLevel .GE. debLevZero ) THEN
@@ -255,21 +256,17 @@ c      CALL EXCH_S3D_RL( cg3d_s, Nr, myThid )
         _END_MASTER( myThid )
       ENDIF
 
-      actualIts      = 0
-      actualResidual = SQRT(err)
-      firstResidual=actualResidual
+      IF ( err_sq .LT. cg3dTolerance_sq ) GOTO 11
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it3d=1, numIters
 
-       IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
 C      Note. On the next two loops over all tiles the inner loop ranges
 C            in sNx and sNy are expanded by 1 to avoid a communication
 C            step. However this entails a bit of gynamastics because we only
 C            want eta_qrN for the interior points.
-       eta_qrN = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          eta_qrNtile(bi,bj) = 0. _d 0
@@ -277,8 +274,8 @@ C            want eta_qrN for the interior points.
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-          DO j=1-1,sNy+1
-           DO i=1-1,sNx+1
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             cg3d_q(i,j,k,bi,bj) = zMC(i,j,k,bi,bj)
      &                        *cg3d_r(i,j,k,bi,bj)
            ENDDO
@@ -288,8 +285,8 @@ C            want eta_qrN for the interior points.
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-          DO j=1-1,sNy+1
-           DO i=1-1,sNx+1
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             cg3d_q(i,j,k,bi,bj) = zMC(i,j,k,bi,bj)
      &                      *( cg3d_r(i,j,k,bi,bj)
      &                         -zML(i,j,k,bi,bj)*cg3d_q(i,j,k-1,bi,bj)
@@ -312,8 +309,8 @@ C            want eta_qrN for the interior points.
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG3D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-          DO j=1-1,sNy+1
-           DO i=1-1,sNx+1
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             cg3d_q(i,j,k,bi,bj) = cg3d_q(i,j,k,bi,bj)
      &                         -zMU(i,j,k,bi,bj)*cg3d_q(i,j,k+1,bi,bj)
            ENDDO
@@ -332,20 +329,18 @@ C            want eta_qrN for the interior points.
        ENDDO
 
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
-CcnhDebugStarts
-C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' eta_qrN = ',eta_qrN
-CcnhDebugEnds
        cgBeta   = eta_qrN/eta_qrNM1
 CcnhDebugStarts
-C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' beta = ',cgBeta
+c      WRITE(*,*) ' CG3D: Iteration ', it3d-1,
+c    &            ' eta_qrN=', eta_qrN, ' beta=', cgBeta
 CcnhDebugEnds
        eta_qrNM1 = eta_qrN
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
-          DO j=1-1,sNy+1
-           DO i=1-1,sNx+1
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             cg3d_s(i,j,k,bi,bj) = cg3d_q(i,j,k,bi,bj)
      &                   + cgBeta*cg3d_s(i,j,k,bi,bj)
            ENDDO
@@ -356,7 +351,6 @@ CcnhDebugEnds
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
-       alpha = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          alphaTile(bi,bj) = 0. _d 0
@@ -476,16 +470,13 @@ C==    q = A.s
        ENDDO
        CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
 CcnhDebugStarts
-C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' SUM(s*q)= ',alpha
+c      WRITE(*,*) ' CG3D: Iteration ', it3d-1,
+c    &            ' SUM(s*q)=', alpha, ' alpha=', eta_qrN/alpha
 CcnhDebugEnds
        alpha = eta_qrN/alpha
-CcnhDebugStarts
-C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' alpha= ',alpha
-CcnhDebugEnds
 
-C==    Update solution and residual vectors
+C==    Update simultaneously solution and residual vectors (and Iter number)
 C      Now compute "interior" points.
-       err = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          errTile(bi,bj) = 0. _d 0
@@ -506,20 +497,18 @@ C      Now compute "interior" points.
          ENDDO
         ENDDO
        ENDDO
+       actualIts = it3d
 
-       CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
-       err = SQRT(err)
-       actualIts      = it3d
-       actualResidual = err
+       CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
        IF ( printResidual ) THEN
         IF ( MOD( it3d-1, printResidualFreq ).EQ.0 ) THEN
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-     &    ' cg3d: iter=', actualIts, ' ; resid.= ', actualResidual
+     &    ' cg3d: iter=', it3d, ' ; resid.= ', SQRT(err_sq)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ENDIF
        ENDIF
-       IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
+       IF ( err_sq .LT. cg3dTolerance_sq ) GOTO 11
        CALL EXCH_S3D_RL( cg3d_r, Nr, myThid )
 
    10 CONTINUE
@@ -543,7 +532,8 @@ C--   Un-normalise the answer
        ENDDO
       ENDDO
 
-      lastResidual = actualResidual
+C--   Return parameters to caller
+      lastResidual = SQRT(err_sq)
       numIters = actualIts
 
 #endif /* ALLOW_NONHYDROSTATIC */
