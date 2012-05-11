@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.5 2011/12/22 19:00:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_sr.F,v 1.6 2012/05/11 23:28:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -14,11 +14,9 @@ CBOP
 C     !ROUTINE: CG2D_SR
 C     !INTERFACE:
       SUBROUTINE CG2D_SR(
-     I                cg2d_b,
-     U                cg2d_x,
-     O                firstResidual,
-     O                lastResidual,
-     U                numIters,
+     U                cg2d_b, cg2d_x,
+     O                firstResidual, minResidualSq, lastResidual,
+     U                numIters, nIterMin,
      I                myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -56,48 +54,51 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-c#include "GRID.h"
-c#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid    :: Thread on which I am working.
-C     cg2d_b    :: The source term or "right hand side"
-C     cg2d_x    :: The solution
+C     cg2d_b    :: The source term or "right hand side" (output: normalised RHS)
+C     cg2d_x    :: The solution (input: first guess)
 C     firstResidual :: the initial residual before any iterations
+C     minResidualSq :: the lowest residual reached (squared)
 C     lastResidual  :: the actual residual reached
-C     numIters  :: Entry: the maximum number of iterations allowed
-C                  Exit:  the actual number of iterations used
+C     numIters  :: Inp: the maximum number of iterations allowed
+C                  Out: the actual number of iterations used
+C     nIterMin  :: Inp: decide to store (if >=0) or not (if <0) lowest res. sol.
+C                  Out: iteration number corresponding to lowest residual
+C     myThid    :: Thread on which I am working.
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  firstResidual
+      _RL  minResidualSq
       _RL  lastResidual
       INTEGER numIters
+      INTEGER nIterMin
       INTEGER myThid
 
 #ifdef ALLOW_SRCG
 
 C     !LOCAL VARIABLES:
 C     === Local variables ====
-C     actualIts      :: Number of iterations taken
-C     actualResidual :: residual
-C     bi, bj     :: Block index in X and Y.
-C     eta_qrN    :: Used in computing search directions
-C     eta_qrNM1     suffix N and NM1 denote current and
-C     cgBeta        previous iterations respectively.
-C     alpha
-C     sumRHS     :: Sum of right-hand-side. Sometimes this is a
-C                   useful debuggin/trouble shooting diagnostic.
-C                   For neumann problems sumRHS needs to be ~0.
-C                   or they converge at a non-zero residual.
-C     err        :: Measure of residual of Ax - b, usually the norm.
-C     I, J, it2d :: Loop counters ( it2d counts CG iterations )
-      INTEGER actualIts
-      _RL    actualResidual
+C     bi, bj     :: tile index in X and Y.
+C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
+C     actualIts  :: actual CG iteration number
+C     err_sq     :: Measure of the square of the residual of Ax - b.
+C     eta_qrN    :: Used in computing search directions; suffix N and NM1
+C     eta_qrNM1     denote current and previous iterations respectively.
+C     cgBeta     :: coeff used to update conjugate direction vector "s".
+C     alpha      :: coeff used to update solution & residual
+C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
+C                   debugging/trouble shooting diagnostic. For neumann problems
+C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
+C     cg2d_min   :: used to store solution corresponding to lowest residual.
+C     msgBuf     :: Informational/error message buffer
       INTEGER bi, bj
-      INTEGER I, J, it2d
-      _RL    err,    errTile(nSx,nSy)
-      _RL    eta_qrN,eta_qrNtile(nSx,nSy)
+      INTEGER i, j, it2d
+c     INTEGER actualIts
+      _RL    cg2dTolerance_sq
+      _RL    err_sq,  errTile(nSx,nSy)
+      _RL    eta_qrN, eta_qrNtile(nSx,nSy)
       _RL    eta_qrNM1
       _RL    cgBeta
       _RL    alpha,  alphaTile(nSx,nSy)
@@ -106,22 +107,24 @@ C     I, J, it2d :: Loop counters ( it2d counts CG iterations )
       _RL    sumRHS, sumRHStile(nSx,nSy)
       _RL    rhsMax
       _RL    rhsNorm
+      _RL    cg2d_min(1:sNx,1:sNy,nSx,nSy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
 CEOP
 
-
-C--   Initialise inverter
-      eta_qrNM1 = 1. _d 0
+C--   Initialise auxiliary constant, some output variable and inverter
+      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
+      minResidualSq = -1. _d 0
+      eta_qrNM1     =  1. _d 0
 
 C--   Normalise RHS
       rhsMax = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_b(I,J,bi,bj) = cg2d_b(I,J,bi,bj)*cg2dNorm
-          rhsMax = MAX(ABS(cg2d_b(I,J,bi,bj)),rhsMax)
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*cg2dNorm
+          rhsMax = MAX(ABS(cg2d_b(i,j,bi,bj)),rhsMax)
          ENDDO
         ENDDO
        ENDDO
@@ -134,10 +137,10 @@ C-  Normalise RHS :
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_b(I,J,bi,bj) = cg2d_b(I,J,bi,bj)*rhsNorm
-          cg2d_x(I,J,bi,bj) = cg2d_x(I,J,bi,bj)*rhsNorm
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*rhsNorm
+          cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*rhsNorm
          ENDDO
         ENDDO
        ENDDO
@@ -149,13 +152,18 @@ C--   Update overlaps
       CALL EXCH_XY_RL( cg2d_x, myThid )
 
 C--   Initial residual calculation
-      err    = 0. _d 0
-      sumRHS = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-1,sNy+1
-         DO I=1-1,sNx+1
-          cg2d_s(I,J,bi,bj) = 0.
+        IF ( nIterMin.GE.0 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            cg2d_min(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          cg2d_s(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
         sumRHStile(bi,bj) = 0. _d 0
@@ -163,18 +171,18 @@ C--   Initial residual calculation
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
-     &    (aW2d(I  ,J  ,bi,bj)*cg2d_x(I-1,J  ,bi,bj)
-     &    +aW2d(I+1,J  ,bi,bj)*cg2d_x(I+1,J  ,bi,bj)
-     &    +aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J-1,bi,bj)
-     &    +aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J+1,bi,bj)
-     &    +aC2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_r(i,j,bi,bj) = cg2d_b(i,j,bi,bj) -
+     &    (aW2d(i  ,j  ,bi,bj)*cg2d_x(i-1,j  ,bi,bj)
+     &    +aW2d(i+1,j  ,bi,bj)*cg2d_x(i+1,j  ,bi,bj)
+     &    +aS2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j-1,bi,bj)
+     &    +aS2d(i  ,j+1,bi,bj)*cg2d_x(i  ,j+1,bi,bj)
+     &    +aC2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j  ,bi,bj)
      &    )
           errTile(bi,bj)    = errTile(bi,bj)
-     &                      + cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
-          sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(I,J,bi,bj)
+     &                      + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
+          sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -183,11 +191,15 @@ C--   Initial residual calculation
       CALL EXCH_S3D_RL( cg2d_r, 1,  myThid )
 
       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
-      CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+      CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
 
-      err = SQRT(err)
-      actualIts      = 0
-      actualResidual = err
+      it2d      = 0
+c     actualIts = 0
+      firstResidual = SQRT(err_sq)
+      IF ( nIterMin.GE.0 ) THEN
+        nIterMin = 0
+        minResidualSq = err_sq
+      ENDIF
 
       printResidual = .FALSE.
       IF ( debugLevel .GE. debLevZero ) THEN
@@ -197,31 +209,29 @@ C--   Initial residual calculation
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
-      firstResidual=actualResidual
 
-      IF ( err .LT. cg2dTolerance ) GOTO 11
+      IF ( err_sq .LT. cg2dTolerance_sq ) GOTO 11
 
 C DER (1999) do one iteration outside of the loop to start things up.
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
-      eta_qrN = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         eta_qrNtile(bi,bj) = 0. _d 0
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-        DO J=1,sNy
-         DO I=1,sNx
-           cg2d_y(I,J,bi,bj) =
-     &       pC(I  ,J  ,bi,bj)*cg2d_r(I  ,J  ,bi,bj)
-     &      +pW(I  ,J  ,bi,bj)*cg2d_r(I-1,J  ,bi,bj)
-     &      +pW(I+1,J  ,bi,bj)*cg2d_r(I+1,J  ,bi,bj)
-     &      +pS(I  ,J  ,bi,bj)*cg2d_r(I  ,J-1,bi,bj)
-     &      +pS(I  ,J+1,bi,bj)*cg2d_r(I  ,J+1,bi,bj)
-           cg2d_s(I,J,bi,bj)  = cg2d_y(I,J,bi,bj)
+        DO j=1,sNy
+         DO i=1,sNx
+           cg2d_y(i,j,bi,bj) =
+     &       pC(i  ,j  ,bi,bj)*cg2d_r(i  ,j  ,bi,bj)
+     &      +pW(i  ,j  ,bi,bj)*cg2d_r(i-1,j  ,bi,bj)
+     &      +pW(i+1,j  ,bi,bj)*cg2d_r(i+1,j  ,bi,bj)
+     &      +pS(i  ,j  ,bi,bj)*cg2d_r(i  ,j-1,bi,bj)
+     &      +pS(i  ,j+1,bi,bj)*cg2d_r(i  ,j+1,bi,bj)
+           cg2d_s(i,j,bi,bj)  = cg2d_y(i,j,bi,bj)
            eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
-     &      +cg2d_y(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+     &      +cg2d_y(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -234,23 +244,22 @@ C--    conjugate direction vector "s".
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
-      alpha = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         alphaTile(bi,bj) = 0. _d 0
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_q(I,J,bi,bj) =
-     &      aW2d(I  ,J  ,bi,bj)*cg2d_s(I-1,J  ,bi,bj)
-     &     +aW2d(I+1,J  ,bi,bj)*cg2d_s(I+1,J  ,bi,bj)
-     &     +aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J-1,bi,bj)
-     &     +aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J+1,bi,bj)
-     &     +aC2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_q(i,j,bi,bj) =
+     &      aW2d(i  ,j  ,bi,bj)*cg2d_s(i-1,j  ,bi,bj)
+     &     +aW2d(i+1,j  ,bi,bj)*cg2d_s(i+1,j  ,bi,bj)
+     &     +aS2d(i  ,j  ,bi,bj)*cg2d_s(i  ,j-1,bi,bj)
+     &     +aS2d(i  ,j+1,bi,bj)*cg2d_s(i  ,j+1,bi,bj)
+     &     +aC2d(i  ,j  ,bi,bj)*cg2d_s(i  ,j  ,bi,bj)
           alphaTile(bi,bj) = alphaTile(bi,bj)
-     &                     + cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
+     &                     + cg2d_s(i,j,bi,bj)*cg2d_q(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -260,24 +269,25 @@ C==    q = A.s
 
       sigma = eta_qrN/alpha
 
-C==   Update solution and residual vectors
+C==   Update simultaneously solution and residual vectors (and Iter number)
 C     Now compute "interior" points.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        errTile(bi,bj) = 0. _d 0
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_x(I,J,bi,bj)=cg2d_x(I,J,bi,bj)+sigma*cg2d_s(I,J,bi,bj)
-          cg2d_r(I,J,bi,bj)=cg2d_r(I,J,bi,bj)-sigma*cg2d_q(I,J,bi,bj)
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_x(i,j,bi,bj)=cg2d_x(i,j,bi,bj)+sigma*cg2d_s(i,j,bi,bj)
+          cg2d_r(i,j,bi,bj)=cg2d_r(i,j,bi,bj)-sigma*cg2d_q(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+c     actualIts = 1
 
       CALL EXCH_S3D_RL( cg2d_r,1, myThid )
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      DO 10 it2d=1, numIters
+      DO 10 it2d=1, numIters-1
+c      actualIts = it2d
 
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
@@ -287,14 +297,14 @@ C--    z = M^-1 r
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-         DO J=1,sNy
-          DO I=1,sNx
-           cg2d_y(I,J,bi,bj) =
-     &       pC(I  ,J  ,bi,bj)*cg2d_r(I  ,J  ,bi,bj)
-     &      +pW(I  ,J  ,bi,bj)*cg2d_r(I-1,J  ,bi,bj)
-     &      +pW(I+1,J  ,bi,bj)*cg2d_r(I+1,J  ,bi,bj)
-     &      +pS(I  ,J  ,bi,bj)*cg2d_r(I  ,J-1,bi,bj)
-     &      +pS(I  ,J+1,bi,bj)*cg2d_r(I  ,J+1,bi,bj)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_y(i,j,bi,bj) =
+     &       pC(i  ,j  ,bi,bj)*cg2d_r(i  ,j  ,bi,bj)
+     &      +pW(i  ,j  ,bi,bj)*cg2d_r(i-1,j  ,bi,bj)
+     &      +pW(i+1,j  ,bi,bj)*cg2d_r(i+1,j  ,bi,bj)
+     &      +pS(i  ,j  ,bi,bj)*cg2d_r(i  ,j-1,bi,bj)
+     &      +pS(i  ,j+1,bi,bj)*cg2d_r(i  ,j+1,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -306,9 +316,6 @@ C==    v = A.z
 C--    eta_qr = <z,r>
 C--    delta = <z,v>
 C--    Do the error calcuation here to consolidate global reductions
-       eta_qrN = 0. _d 0
-       delta   = 0. _d 0
-       err = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          eta_qrNtile(bi,bj) = 0. _d 0
@@ -317,91 +324,122 @@ C--    Do the error calcuation here to consolidate global reductions
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
-         DO J=1,sNy
-          DO I=1,sNx
-           cg2d_v(I,J,bi,bj) =
-     &       aW2d(I  ,J  ,bi,bj)*cg2d_y(I-1,J  ,bi,bj)
-     &      +aW2d(I+1,J  ,bi,bj)*cg2d_y(I+1,J  ,bi,bj)
-     &      +aS2d(I  ,J  ,bi,bj)*cg2d_y(I  ,J-1,bi,bj)
-     &      +aS2d(I  ,J+1,bi,bj)*cg2d_y(I  ,J+1,bi,bj)
-     &      +aC2d(I  ,J  ,bi,bj)*cg2d_y(I  ,J  ,bi,bj)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_v(i,j,bi,bj) =
+     &       aW2d(i  ,j  ,bi,bj)*cg2d_y(i-1,j  ,bi,bj)
+     &      +aW2d(i+1,j  ,bi,bj)*cg2d_y(i+1,j  ,bi,bj)
+     &      +aS2d(i  ,j  ,bi,bj)*cg2d_y(i  ,j-1,bi,bj)
+     &      +aS2d(i  ,j+1,bi,bj)*cg2d_y(i  ,j+1,bi,bj)
+     &      +aC2d(i  ,j  ,bi,bj)*cg2d_y(i  ,j  ,bi,bj)
            eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
-     &      +cg2d_y(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+     &      +cg2d_y(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
            deltaTile(bi,bj) = deltaTile(bi,bj)
-     &      +cg2d_y(I,J,bi,bj)*cg2d_v(I,J,bi,bj)
+     &      +cg2d_y(i,j,bi,bj)*cg2d_v(i,j,bi,bj)
            errTile(bi,bj) = errTile(bi,bj)
-     &                    + cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+     &                    + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           ENDDO
          ENDDO
-        ENDDO
-       ENDDO
-
-C      CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
-C      CALL GLOBAL_SUM_TILE_RL( deltaTile,delta,myThid )
-C      CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
          sumPhi(1,bi,bj) = eta_qrNtile(bi,bj)
          sumPhi(2,bi,bj) = deltaTile(bi,bj)
          sumPhi(3,bi,bj) = errTile(bi,bj)
         ENDDO
        ENDDO
 
-C     global_vec_sum_r8 does not call BAR2 on input
-       CALL BAR2( myThid)
-       CALL GLOBAL_VEC_SUM_R8(3,3,sumPhi,myThid)
+C      CALL GLOBAL_SUM_TILE_RL( eta_qrNtile, eta_qrN,myThid )
+C      CALL GLOBAL_SUM_TILE_RL( deltaTile, delta, myThid )
+C      CALL GLOBAL_SUM_TILE_RL( errTile,  err_sq, myThid )
+       CALL GLOBAL_VEC_SUM_R8( 3, 3, sumPhi, myThid )
 
        eta_qrN = sumPhi(1,1,1)
        delta   = sumPhi(2,1,1)
-       err     = sumPhi(3,1,1)
+       err_sq  = sumPhi(3,1,1)
 
-       err = SQRT(err)
-       actualIts      = it2d
-       actualResidual = err
        IF ( printResidual ) THEN
         IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-     &    ' cg2d: iter=', actualIts, ' ; resid.= ', actualResidual
+     &    ' cg2d: iter=', it2d, ' ; resid.= ', SQRT(err_sq)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ENDIF
        ENDIF
-       IF ( err .LT. cg2dTolerance ) GOTO 11
+       IF ( err_sq .LT. cg2dTolerance_sq ) GOTO 11
+       IF ( err_sq .LT. minResidualSq ) THEN
+C-     Store lowest residual solution
+         minResidualSq = err_sq
+         nIterMin = it2d
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             cg2d_min(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+       ENDIF
 
        cgBeta   = eta_qrN/eta_qrNM1
        eta_qrNM1 = eta_qrN
-       alpha = delta - cgBeta**2*alpha
+       alpha = delta - (cgBeta*cgBeta)*alpha
        sigma = eta_qrN/alpha
 
+C==    Update simultaneously solution and residual vectors (and Iter number)
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1,sNy
-          DO I=1,sNx
-           cg2d_s(I,J,bi,bj) = cg2d_y(I,J,bi,bj)
-     &                       + cgBeta*cg2d_s(I,J,bi,bj)
-           cg2d_x(I,J,bi,bj) = cg2d_x(I,J,bi,bj)
-     &                       + sigma*cg2d_s(I,J,bi,bj)
-           cg2d_q(I,J,bi,bj) = cg2d_v(I,J,bi,bj)
-     &                       + cgBeta*cg2d_q(I,J,bi,bj)
-           cg2d_r(I,J,bi,bj) = cg2d_r(I,J,bi,bj)
-     &                       - sigma*cg2d_q(I,J,bi,bj)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_s(i,j,bi,bj) = cg2d_y(i,j,bi,bj)
+     &                       + cgBeta*cg2d_s(i,j,bi,bj)
+           cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+     &                       + sigma*cg2d_s(i,j,bi,bj)
+           cg2d_q(i,j,bi,bj) = cg2d_v(i,j,bi,bj)
+     &                       + cgBeta*cg2d_q(i,j,bi,bj)
+           cg2d_r(i,j,bi,bj) = cg2d_r(i,j,bi,bj)
+     &                       - sigma*cg2d_q(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+c      actualIts = it2d + 1
 
        CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
 
    10 CONTINUE
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        errTile(bi,bj) = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          errTile(bi,bj) = errTile(bi,bj)
+     &                   + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
    11 CONTINUE
+
+      IF ( nIterMin.GE.0 .AND. err_sq .GT. minResidualSq ) THEN
+C-    use the lowest residual solution (instead of current one = last residual)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+             cg2d_x(i,j,bi,bj) = cg2d_min(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
       IF (cg2dNormaliseRHS) THEN
 C--   Un-normalise the answer
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1,sNy
-           DO I=1,sNx
-            cg2d_x(I  ,J  ,bi,bj) = cg2d_x(I  ,J  ,bi,bj)/rhsNorm
+          DO j=1,sNy
+           DO i=1,sNx
+            cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)/rhsNorm
            ENDDO
           ENDDO
          ENDDO
@@ -409,16 +447,9 @@ C--   Un-normalise the answer
       ENDIF
 
 C--   Return parameters to caller
-      lastResidual=actualResidual
-      numIters=actualIts
-
-C     The following exchange was moved up to solve_for_pressure
-C     for compatibility with TAMC.
-C     _EXCH_XY_R8(cg2d_x, myThid )
-c     _BEGIN_MASTER( myThid )
-c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
-c    & actualIts, actualResidual
-c     _END_MASTER( myThid )
+      lastResidual = SQRT(err_sq)
+      numIters = it2d
+c     numIters = actualIts
 
 #endif /* ALLOW_SRCG */
       RETURN
