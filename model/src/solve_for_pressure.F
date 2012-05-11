@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.78 2011/12/15 22:45:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.79 2012/05/11 23:31:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,8 +53,8 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks
-      INTEGER numIters
-      _RL firstResidual,lastResidual
+      INTEGER numIters, nIterMin
+      _RL firstResidual, minResidualSq, lastResidual
       _RL tmpFac
       _RL sumEmP, tileEmP(nSx,nSy)
       LOGICAL putPmEinXvector
@@ -259,31 +259,29 @@ C-    end bi,bj loops
       ENDIF
 
 C--   Find the surface pressure using a two-dimensional conjugate
-C--   gradient solver.
-C     see CG2D.h for the interface to this routine.
-      firstResidual=0.
-      lastResidual=0.
-      numIters=cg2dMaxIters
+C--   gradient solver. See CG2D.h for the interface to this routine.
+      numIters      = cg2dMaxIters
+      nIterMin      = -1
+C-    to prevent occasional bad convergence with simple setup (.e.g,
+C      cartesian grid + flat bottom), use solver minimun residual solution:
+      IF ( usingCartesianGrid .AND.
+     &        topoFile.EQ.' ' .AND. bathyFile.EQ.' ' ) nIterMin =  0
 c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 #ifdef ALLOW_CG2D_NSA
 C--   Call the not-self-adjoint version of cg2d
       CALL CG2D_NSA(
-     U           cg2d_b,
-     U           cg2d_x,
-     O           firstResidual,
-     O           lastResidual,
-     U           numIters,
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numIters, nIterMin,
      I           myThid )
 #else /* not ALLOW_CG2D_NSA = default */
 #ifdef ALLOW_SRCG
       IF ( useSRCGSolver ) THEN
 C--   Call the single reduce CG solver
        CALL CG2D_SR(
-     U           cg2d_b,
-     U           cg2d_x,
-     O           firstResidual,
-     O           lastResidual,
-     U           numIters,
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numIters, nIterMin,
      I           myThid )
       ELSE
 #else
@@ -291,11 +289,9 @@ C--   Call the single reduce CG solver
 C--   Call the default CG solver
 #endif /* ALLOW_SRCG */
        CALL CG2D(
-     U           cg2d_b,
-     U           cg2d_x,
-     O           firstResidual,
-     O           lastResidual,
-     U           numIters,
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numIters, nIterMin,
      I           myThid )
       ENDIF
 #endif /* ALLOW_CG2D_NSA */
@@ -314,11 +310,17 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
      &   ) THEN
        IF ( debugLevel .GE. debLevA ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_init_res =',firstResidual
+        WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_init_res =',firstResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        WRITE(msgBuf,'(A34,I6)') 'cg2d_iters =',numIters
+        WRITE(msgBuf,'(A27,2I8)')
+     &       'cg2d_iters(min,last) =', nIterMin, numIters
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_res =',lastResidual
+        IF ( minResidualSq.GE.0. ) THEN
+         minResidualSq = SQRT(minResidualSq)
+         WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_min_res  =',minResidualSq
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        ENDIF
+        WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_last_res =',lastResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         _END_MASTER( myThid )
        ENDIF
@@ -371,10 +373,8 @@ C                             4) add vertical velocity contribution.
        numIters=cg3dMaxIters
        CALL TIMER_START('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
        CALL CG3D(
-     U            cg3d_b,
-     U            phi_nh,
-     O            firstResidual,
-     O            lastResidual,
+     U            cg3d_b, phi_nh,
+     O            firstResidual, lastResidual,
      U            numIters,
      I            myIter, myThid )
        _EXCH_XYZ_RL( phi_nh, myThid )
@@ -384,11 +384,11 @@ C                             4) add vertical velocity contribution.
      &    ) THEN
         IF ( debugLevel .GE. debLevA ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
+         WRITE(msgBuf,'(A20,1PE23.14)') 'cg3d_init_res =',firstResidual
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
+         WRITE(msgBuf,'(A27,I16)') 'cg3d_iters (last) =   ',numIters
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-         WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
+         WRITE(msgBuf,'(A20,1PE23.14)') 'cg3d_last_res =',lastResidual
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          _END_MASTER( myThid )
         ENDIF
