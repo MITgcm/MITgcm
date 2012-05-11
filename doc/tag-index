@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1658 2012/04/28 22:30:14 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1659 2012/05/11 23:38:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src (CG-solvers):
+ - modify Single-Reduction version (CG2D_SR) in case cg2dMaxIters is reached
+   (similar final residual output and max-Iter number as with standard version);
+ - allows to store and use lowest-residual solution (standard & _SR versions);
+ - cleaning up (remove old, commented out code, LETS_MAKE_JAM ...).
+ - by default, also compile CG2D_SR version (define ALLOW_SRCG in CPP_OPTIONS.h)
+o eesup/src:
+ - global_vec_sum.F cleaning: add a BARRIER ; update comments ; remove ndef
+   ALWAYS_USE_MPI (no longer needed after fixing usingMPI settings - March 2012)
 o pkg/salt_plume added to lab_sea/input_ad.noseaicedyn
 
 checkpoint63m (2012/04/27)
