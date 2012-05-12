@@ -72,8 +72,10 @@ C ###########################################################
      I                cg2d_b,
      U                cg2d_x,
      O                firstResidual,
+     O                minResidualSq,
      O                lastResidual,
      U                numIters,
+     O                nIterMin,
      I                myThid )
       IMPLICIT NONE
 #include "SIZE.h"
@@ -83,8 +85,10 @@ C ###########################################################
       Real*8  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       Real*8  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       Real*8  firstResidual
+      Real*8  minResidualSq
       Real*8  lastResidual
       INTEGER numIters
+      INTEGER nIterMin
       INTEGER myThid
 C dummy self dependence (nontrivial so mfef90 doesn't kill it)
       cg2d_x(1,1,1,1)=2*cg2d_b(1,1,1,1)
