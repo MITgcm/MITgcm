@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.79 2012/05/11 23:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.80 2012/05/14 13:21:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -267,6 +267,14 @@ C      cartesian grid + flat bottom), use solver minimun residual solution:
       IF ( usingCartesianGrid .AND.
      &        topoFile.EQ.' ' .AND. bathyFile.EQ.' ' ) nIterMin =  0
 c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
+#ifdef DISCONNECTED_TILES
+C--   Call the not-self-adjoint version of cg2d
+      CALL CG2D_EX0(
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numIters, nIterMin,
+     I           myThid )
+#else /* not DISCONNECTED_TILES = default */
 #ifdef ALLOW_CG2D_NSA
 C--   Call the not-self-adjoint version of cg2d
       CALL CG2D_NSA(
@@ -295,6 +303,7 @@ C--   Call the default CG solver
      I           myThid )
       ENDIF
 #endif /* ALLOW_CG2D_NSA */
+#endif /* DISCONNECTED_TILES */
       _EXCH_XY_RL( cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
@@ -372,11 +381,19 @@ C                             4) add vertical velocity contribution.
        lastResidual=0.
        numIters=cg3dMaxIters
        CALL TIMER_START('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
+#ifdef DISCONNECTED_TILES
+       CALL CG3D_EX0(
+     U            cg3d_b, phi_nh,
+     O            firstResidual, lastResidual,
+     U            numIters,
+     I            myIter, myThid )
+#else /* not DISCONNECTED_TILES = default */
        CALL CG3D(
      U            cg3d_b, phi_nh,
      O            firstResidual, lastResidual,
      U            numIters,
      I            myIter, myThid )
+#endif /* DISCONNECTED_TILES */
        _EXCH_XYZ_RL( phi_nh, myThid )
        CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
 
