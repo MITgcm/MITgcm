@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1659 2012/05/11 23:38:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1660 2012/05/14 13:38:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp:
+ - add new CPP option (DISCONNECTED_TILES) to disconnect tiles (no exchange
+   between tiles, just fill-in edges assuming locally periodic subdomain) and
+   add corresponding exchange subroutines (EXCH0);
+ - new CG-solver version (_EX0) for disconnected-tiles special case.
 o model/src (CG-solvers):
  - modify Single-Reduction version (CG2D_SR) in case cg2dMaxIters is reached
    (similar final residual output and max-Iter number as with standard version);
