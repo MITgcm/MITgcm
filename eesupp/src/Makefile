@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.17 2010/09/24 18:38:25 gforget Exp $
+# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.18 2012/05/14 13:15:05 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -8,7 +8,7 @@ RL_FILES = exch_xy_rl.F exch_3d_rl.F exch_xyz_rl.F exch_s3d_rl.F \
            exch_uv_xy_rl.F exch_uv_3d_rl.F exch_uv_xyz_rl.F \
            exch_z_3d_rl.F exch_sm_3d_rl.F \
            exch_uv_agrid_3d_rl.F exch_uv_bgrid_3d_rl.F exch_uv_dgrid_3d_rl.F \
-           exch1_rl.F \
+           exch0_rl.F exch1_rl.F \
            exch1_rl_cube.F exch1_z_rl_cube.F exch1_uv_rl_cube.F exch1_bg_rl_cube.F \
            exch1_rl_ad.F exch1_rl_cube_ad.F \
            exch_rl_recv_get_x.F exch_rl_recv_get_y.F \
@@ -18,7 +18,7 @@ RS_FILES = exch_xy_rs.F exch_3d_rs.F exch_xyz_rs.F exch_s3d_rs.F \
            exch_uv_xy_rs.F exch_uv_3d_rs.F exch_uv_xyz_rs.F \
            exch_z_3d_rs.F exch_sm_3d_rs.F \
            exch_uv_agrid_3d_rs.F exch_uv_bgrid_3d_rs.F exch_uv_dgrid_3d_rs.F \
-           exch1_rs.F \
+           exch0_rs.F exch1_rs.F \
            exch1_rs_cube.F exch1_z_rs_cube.F exch1_uv_rs_cube.F exch1_bg_rs_cube.F \
            exch1_rs_ad.F exch1_rs_cube_ad.F \
            exch_rs_recv_get_x.F exch_rs_recv_get_y.F \
@@ -28,7 +28,7 @@ R4_FILES = exch_xy_r4.F exch_3d_r4.F exch_xyz_r4.F exch_s3d_r4.F \
            exch_uv_xy_r4.F exch_uv_3d_r4.F exch_uv_xyz_r4.F \
            exch_z_3d_r4.F exch_sm_3d_r4.F \
            exch_uv_agrid_3d_r4.F exch_uv_bgrid_3d_r4.F exch_uv_dgrid_3d_r4.F \
-           exch1_r4.F \
+           exch0_r4.F exch1_r4.F \
            exch1_r4_cube.F exch1_z_r4_cube.F exch1_uv_r4_cube.F exch1_bg_r4_cube.F \
            exch_r4_recv_get_x.F exch_r4_recv_get_y.F \
            exch_r4_send_put_x.F exch_r4_send_put_y.F \
@@ -39,7 +39,7 @@ R8_FILES = exch_xy_r8.F exch_3d_r8.F exch_xyz_r8.F exch_s3d_r8.F \
            exch_uv_xy_r8.F exch_uv_3d_r8.F exch_uv_xyz_r8.F \
            exch_z_3d_r8.F exch_sm_3d_r8.F \
            exch_uv_agrid_3d_r8.F exch_uv_bgrid_3d_r8.F exch_uv_dgrid_3d_r8.F \
-           exch1_r8.F \
+           exch0_r8.F exch1_r8.F \
            exch1_r8_cube.F exch1_z_r8_cube.F exch1_uv_r8_cube.F exch1_bg_r8_cube.F \
            exch_r8_recv_get_x.F exch_r8_recv_get_y.F \
            exch_r8_send_put_x.F exch_r8_send_put_y.F \
@@ -183,6 +183,16 @@ exch_uv_dgrid_3d_r8.F: exch_uv_dgrid_3d_rx.template
 	sed 's/RX/R8/g' exch_uv_dgrid_3d_rx.template > $@
 exch_uv_dgrid_3d_r4.F: exch_uv_dgrid_3d_rx.template
 	sed 's/RX/R4/g' exch_uv_dgrid_3d_rx.template > $@
+
+# exch0_rx
+exch0_rl.F: exch0_rx.template
+	sed 's/RX/RL/g' exch0_rx.template > $@
+exch0_rs.F: exch0_rx.template
+	sed 's/RX/RS/g' exch0_rx.template > $@
+exch0_r8.F: exch0_rx.template
+	sed 's/RX/R8/g' exch0_rx.template > $@
+exch0_r4.F: exch0_rx.template
+	sed 's/RX/R4/g' exch0_rx.template > $@
 
 # exch1_rx
 exch1_rl.F: exch1_rx.template

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.5 2010/05/19 01:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.6 2012/05/14 13:15:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: EXCH_UV_AGRID_3D_RX
 
 C     !INTERFACE:
       SUBROUTINE EXCH_UV_AGRID_3D_RX(
-     U                                Uphi, Vphi,
+     U                                uPhi, vPhi,
      I                                withSigns, myNz, myThid )
 
 C     !DESCRIPTION:
@@ -18,13 +18,13 @@ C  Purpose: SUBROUTINE EXCH_UV_AGRID_3D_RX
 C      handle exchanges for a 3D vector field on an A-grid.
 C
 C  Input:
-C    Uphi(lon,lat,levs,bi,bj) :: first component of vector
-C    Vphi(lon,lat,levs,bi,bj) :: second component of vector
+C    uPhi(lon,lat,levs,bi,bj) :: first component of vector
+C    vPhi(lon,lat,levs,bi,bj) :: second component of vector
 C    withSigns (logical)      :: true to use signs of components
-C    myNz                     :: 3rd dimension of input arrays Uphi,Vphi
+C    myNz                     :: 3rd dimension of input arrays uPhi,vPhi
 C    myThid                   :: my Thread Id number
 C
-C  Output: Uphi and Vphi are updated (halo regions filled)
+C  Output: uPhi and vPhi are updated (halo regions filled)
 C
 C  Calls: exch (either exch_rx_cube or exch_rx) - twice, once
 C         for the first-component, once for second.
@@ -41,8 +41,8 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Argument list variables ==
       INTEGER myNz
-      _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
-      _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX uPhi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX vPhi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       LOGICAL withSigns
       INTEGER myThid
 
@@ -64,9 +64,8 @@ CEOP
 
 #ifdef ALLOW_EXCH2
       CALL EXCH2_UV_AGRID_3D_RX(
-     U                           Uphi, Vphi,
+     U                           uPhi, vPhi,
      I                           withSigns, myNz, myThid )
-      RETURN
 #else /* ALLOW_EXCH2 */
 
       OLw        = OLx
@@ -78,17 +77,16 @@ CEOP
       negOne = 1.
       IF (withSigns) negOne = -1.
 
-
       IF (useCubedSphereExchange) THEN
 C---  using CubedSphereExchange:
 
 C First call the exchanges for the two components
 
-       CALL EXCH1_RX_CUBE( Uphi, .FALSE.,
+       CALL EXCH1_RX_CUBE( uPhi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH1_RX_CUBE( Vphi, .FALSE.,
+       CALL EXCH1_RX_CUBE( vPhi, .FALSE.,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
@@ -104,8 +102,8 @@ C--    Loops on tile and level indices:
 C First we need to copy the component info into dummy arrays
           DO j = 1-OLy,sNy+OLy
            DO i = 1-OLx,sNx+OLx
-             dummy1(i,j) = Uphi(i,j,k,bi,bj)
-             dummy2(i,j) = Vphi(i,j,k,bi,bj)
+             dummy1(i,j) = uPhi(i,j,k,bi,bj)
+             dummy2(i,j) = vPhi(i,j,k,bi,bj)
            ENDDO
           ENDDO
 
@@ -117,21 +115,21 @@ C odd faces share disposition of all sections of the halo
            DO j = 1,sNy
             DO i = 1,exchWidthX
 C east (nothing to change)
-c            Uphi(sNx+i,j,k,bi,bj) = dummy1(sNx+i,j)
-c            Vphi(sNx+i,j,k,bi,bj) = dummy2(sNx+i,j)
+c            uPhi(sNx+i,j,k,bi,bj) = dummy1(sNx+i,j)
+c            vPhi(sNx+i,j,k,bi,bj) = dummy2(sNx+i,j)
 C west
-             Uphi(1-i,j,k,bi,bj) = dummy2(1-i,j)
-             Vphi(1-i,j,k,bi,bj) = dummy1(1-i,j)*negOne
+             uPhi(1-i,j,k,bi,bj) = dummy2(1-i,j)
+             vPhi(1-i,j,k,bi,bj) = dummy1(1-i,j)*negOne
             ENDDO
            ENDDO
            DO j = 1,exchWidthY
             DO i = 1,sNx
 C north
-             Uphi(i,sNy+j,k,bi,bj) = dummy2(i,sNy+j)*negOne
-             Vphi(i,sNy+j,k,bi,bj) = dummy1(i,sNy+j)
+             uPhi(i,sNy+j,k,bi,bj) = dummy2(i,sNy+j)*negOne
+             vPhi(i,sNy+j,k,bi,bj) = dummy1(i,sNy+j)
 C south (nothing to change)
-c            Uphi(i,1-j,k,bi,bj) = dummy1(i,1-j)
-c            Vphi(i,1-j,k,bi,bj) = dummy2(i,1-j)
+c            uPhi(i,1-j,k,bi,bj) = dummy1(i,1-j)
+c            vPhi(i,1-j,k,bi,bj) = dummy2(i,1-j)
             ENDDO
            ENDDO
 
@@ -141,21 +139,21 @@ C now the even faces (share disposition of all sections of the halo)
            DO j = 1,sNy
             DO i = 1,exchWidthX
 C east
-             Uphi(sNx+i,j,k,bi,bj) = dummy2(sNx+i,j)
-             Vphi(sNx+i,j,k,bi,bj) = dummy1(sNx+i,j)*negOne
+             uPhi(sNx+i,j,k,bi,bj) = dummy2(sNx+i,j)
+             vPhi(sNx+i,j,k,bi,bj) = dummy1(sNx+i,j)*negOne
 C west (nothing to change)
-c            Uphi(1-i,j,k,bi,bj) = dummy1(1-i,j)
-c            Vphi(1-i,j,k,bi,bj) = dummy2(1-i,j)
+c            uPhi(1-i,j,k,bi,bj) = dummy1(1-i,j)
+c            vPhi(1-i,j,k,bi,bj) = dummy2(1-i,j)
             ENDDO
            ENDDO
            DO j = 1,exchWidthY
             DO i = 1,sNx
 C north (nothing to change)
-c            Uphi(i,sNy+j,k,bi,bj) = dummy1(i,sNy+j)
-c            Vphi(i,sNy+j,k,bi,bj) = dummy2(i,sNy+j)
+c            uPhi(i,sNy+j,k,bi,bj) = dummy1(i,sNy+j)
+c            vPhi(i,sNy+j,k,bi,bj) = dummy2(i,sNy+j)
 C south
-             Uphi(i,1-j,k,bi,bj) = dummy2(i,1-j)*negOne
-             Vphi(i,1-j,k,bi,bj) = dummy1(i,1-j)
+             uPhi(i,1-j,k,bi,bj) = dummy2(i,1-j)*negOne
+             vPhi(i,1-j,k,bi,bj) = dummy1(i,1-j)
 
             ENDDO
            ENDDO
@@ -171,20 +169,32 @@ C--    end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
-       CALL EXCH1_RX( Uphi,
+#ifdef DISCONNECTED_TILES
+       CALL EXCH0_RX( uPhi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH1_RX( Vphi,
+       CALL EXCH0_RX( vPhi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
+#else /* DISCONNECTED_TILES */
+       CALL EXCH1_RX( uPhi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RX( vPhi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+#endif /* DISCONNECTED_TILES */
 
 C---  using or not using CubedSphereExchange: end
       ENDIF
 
-      RETURN
 #endif /* ALLOW_EXCH2 */
+
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

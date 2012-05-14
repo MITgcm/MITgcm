@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_3d_rx.template,v 1.5 2010/05/19 01:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_3d_rx.template,v 1.6 2012/05/14 13:15:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,7 +12,7 @@ C     !ROUTINE: EXCH_UV_3D_RX
 
 C     !INTERFACE:
       SUBROUTINE EXCH_UV_3D_RX(
-     U                          Uphi, Vphi,
+     U                          uPhi, vPhi,
      I                          withSigns, myNz, myThid )
 
 C     !DESCRIPTION:
@@ -34,14 +34,14 @@ C     === Global data ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     Uphi      :: 2 components of a vector field with overlap regions
-C     Vphi      :: to be exchanged
+C     uPhi      :: 2 components of a vector field with overlap regions
+C     vPhi      :: to be exchanged
 C     withSigns :: Flag controlling whether vector is signed.
 C     myNz      :: 3rd dimension of array to exchange
 C     myThid    :: my Thread Id. number
       INTEGER myNz
-      _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
-      _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX uPhi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX vPhi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       LOGICAL withSigns
       INTEGER myThid
 
@@ -57,14 +57,13 @@ CEOP
 #ifdef ALLOW_EXCH2
 #ifdef W2_USE_R1_ONLY
       CALL EXCH2_UV_CGRID_3D_RX(
-     U                     Uphi, Vphi,
+     U                     uPhi, vPhi,
      I                     withSigns, myNz, myThid )
 #else
       CALL EXCH2_UV_3D_RX(
-     U                     Uphi, Vphi,
+     U                     uPhi, vPhi,
      I                     withSigns, myNz, myThid )
 #endif
-      RETURN
 #else /* ALLOW_EXCH2 */
 
       OLw        = OLx
@@ -74,23 +73,35 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       IF (useCubedSphereExchange) THEN
-       CALL EXCH1_UV_RX_CUBE( Uphi, Vphi, withSigns,
+       CALL EXCH1_UV_RX_CUBE( uPhi, vPhi, withSigns,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
-       CALL EXCH1_RX( Uphi,
+#ifdef DISCONNECTED_TILES
+       CALL EXCH0_RX( uPhi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH1_RX( Vphi,
+       CALL EXCH0_RX( vPhi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
+#else /* DISCONNECTED_TILES */
+       CALL EXCH1_RX( uPhi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH1_RX( vPhi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+#endif /* DISCONNECTED_TILES */
       ENDIF
 
-      RETURN
 #endif /* ALLOW_EXCH2 */
+
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

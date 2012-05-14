@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.3 2010/05/19 01:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.4 2012/05/14 13:15:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,7 +62,6 @@ CEOP
       CALL EXCH2_SM_3D_RX(
      U                     phi,
      I                     withSigns, myNz, myThid )
-      RETURN
 #else /* ALLOW_EXCH2 */
 
       OLw        = OLx
@@ -145,16 +144,24 @@ C--   end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
+#ifdef DISCONNECTED_TILES
+       CALL EXCH0_RX( phi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+#else /* DISCONNECTED_TILES */
        CALL EXCH1_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
+#endif /* DISCONNECTED_TILES */
 
 C---  using or not using CubedSphereExchange: end
       ENDIF
 
-      RETURN
 #endif /* ALLOW_EXCH2 */
+
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

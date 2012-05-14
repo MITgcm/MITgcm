@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_xy_rx.template,v 1.9 2010/05/19 01:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_xy_rx.template,v 1.10 2012/05/14 13:15:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,7 +47,6 @@ CEOP
 
 #ifdef ALLOW_EXCH2
       CALL EXCH2_3D_RX( phi, 1, myThid )
-      RETURN
 #else /* ALLOW_EXCH2 */
 
       OLw        = OLx
@@ -63,14 +62,22 @@ CEOP
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
       ELSE
+#ifdef DISCONNECTED_TILES
+       CALL EXCH0_RX( phi,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            EXCH_UPDATE_CORNERS, myThid )
+#else /* DISCONNECTED_TILES */
        CALL EXCH1_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
+#endif /* DISCONNECTED_TILES */
       ENDIF
 
-      RETURN
 #endif /* ALLOW_EXCH2 */
+
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
