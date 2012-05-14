@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.33 2010/03/04 22:01:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.34 2012/05/14 13:13:40 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -124,6 +124,10 @@ C           filled in some way.
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
+
+C--   disconnect tiles (no exchange between tiles, just fill-in edges
+C     assuming locally periodic subdomain)
+#undef DISCONNECTED_TILES
 
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls.
