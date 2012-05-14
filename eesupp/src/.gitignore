@@ -10,6 +10,7 @@ exch_sm_3d_r[ls48].F
 exch_uv_agrid_3d_r[ls48].F
 exch_uv_bgrid_3d_r[ls48].F
 exch_uv_dgrid_3d_r[ls48].F
+exch0_r[ls48].F
 exch1_r[ls48].F
 exch1_r[ls48]_cube.F
 exch1_uv_r[ls48]_cube.F
