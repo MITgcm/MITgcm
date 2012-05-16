@@ -1,6 +1,6 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <!--
- $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.16 2011/04/24 00:04:40 jmc Exp $
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.17 2012/05/16 02:33:48 jmc Exp $
  $Name:  $
 -->
 
@@ -232,26 +232,31 @@
       MITgcm code (see: <ulink url="http://mitgcm.org/public/using_cvs.html">
       using CVS </ulink>). The same tool is used by developers to
       incorporate any change into the repository. However, this later
-      function requires specific settings, as detailed here after:</para>
+      function requires specific settings, as detailed here after</para>
       <orderedlist>
 	<listitem>
-	  <para> You will need an account (loggin access) to the server
-           "mitgcm.org" with the proper group setting (e.g.,
-            group "gcmctrb" to add/modify code into MITgcm_contrib).
-            This kind of account is granted only upon well motivated request.
-            The access to the server mitgcm.org is through ssh-key authorization
-            which will need to be set properly on both side (on your local machine
-            and on your server account). You need to be able to
-            to ssh to mitgcm.org (or <filename>ssh MY_USER_NAME@mitgcm.org</filename>
-            in case of different user-name on both sides) to proceed further.</para>
+	  <para> You will need an account (login access) to the server
+           "mitgcm.org" (curently: <filename>forge.csail.mit.edu</filename>) 
+           with the proper group setting (e.g., group "gcmctrb" to add/modify 
+           code into MITgcm_contrib).
+           This kind of account is granted only upon well motivated request 
+           (we recommend to ask your senior MITgcm-collaborator to send such 
+           request to marshall-admin at techsquare.com with Cc to Chris Hill 
+           for approval).</para>
+	  <para> The access to the server <filename>mitgcm.org</filename> is 
+           through ssh-key authorization which will need to be set properly on 
+           both side (on your local machine and on your server account). 
+           You need to be able to ssh to <filename>mitgcm.org</filename> 
+           (or <filename>ssh MY_USER_NAME@mitgcm.org</filename>
+           in case of different user-name on both sides) to proceed further.</para>
 	</listitem>
 
 	<listitem>
 	  <para> You need to register to the
         <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-cvs">
-      mitgcm-cvs </ulink> mailing list.
+       mitgcm-cvs </ulink> mailing list.
           This ensures that other developers will receive email notification
-           when you make changes; you will also receive as well such email
+           when you make changes; you will also receive such email
            when others make changes to the repository.
           </para>
 	</listitem>
@@ -259,30 +264,30 @@
 	<listitem>
 	  <para> It is highly recommended that you register also to the
         <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-devel">
-      mitgcm-devel </ulink> mailing list (expect a short delay for
+       mitgcm-devel </ulink> mailing list (expect a short delay for
        this request to be processed).
           This list is intended for developer discussions.
           </para>
 	</listitem>
 
 	<listitem>
-	  <para> The standard anonymous mode (using "cvsanon", as mentionned
-        <ulink url="http://mitgcm.org/public/source_code.html">
-      here </ulink>) does not allow check-in ("cvs commit") permission.
+	  <para> The standard CVS-anonymous mode (using "cvsanon",
+        as mentionned <ulink url="http://mitgcm.org/public/source_code.html">
+        here </ulink>) does not provide check-in ("cvs commit") permission.
          Instead, you will need to set our CVS environment as follow:</para>
 <screen>
   $ export CVS_RSH=ssh
   $ export CVSROOT=':ext:MY_USER_NAME@mitgcm.org:/u/gcmpack'
 </screen>
-	  <para> After downloading a directory, e.g.: <filename>myCopy</filename>,
-           from the CVS repository (e.g.,
+	  <para> The reason for such limitation is that when downloading a directory,
+            e.g.: <filename>myCopy</filename>, from the CVS repository (e.g.,
             <filename>MITgcm_contrib/thisPart</filename>) using the command:</para>
 <screen>
   $ cvs co -P -d myCopy MITgcm_contrib/thisPart
 </screen>
 	  <para> the type of CVS environment which has been used
-	   is stored in the file <filename>myCopy/CVS/Root</filename>
-           and makes it difficult to re-use, for cvs-commit purpose,
+	   is stored in the file <filename>myCopy/CVS/Root</filename>.
+           This prevent to re-use, for cvs-commit purpose,
            a cvs local copy (<filename>myCopy</filename>) which was obtained
            using the CVS anonymous mode.</para>
 	</listitem>
@@ -303,6 +308,16 @@
           changes you made to <filename>src_file</filename> as you check-in
           this file (the "cvs commit" command automatically opens your standard
           editor for this purpose).</para>
+	  <para> Note:
+           Please ignore the following warnings that the "cvs commit" command 
+           produces if you are not part of the "gcmpack" group:
+<screen>
+   cvs commit: failed to create lock directory for `/u/gcmpack/CVSROOT'
+   (/u/gcmpack/CVSROOT/#cvs.history.lock): Permission denied
+   cvs commit: failed to obtain history lock in repository `/u/gcmpack'
+</screen>
+          These warnings are not affecting the changes you made to the CVS repository.
+          </para>
 	</listitem>
 
       </orderedlist>
