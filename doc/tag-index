@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1660 2012/05/14 13:38:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1661 2012/05/18 12:44:21 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice: 
+  - add parameterisation of advective-diffusive flux into the ice shelf 
+    according to Holland and Jenkins (1999), eq.22-33, as suggested by Jan De Ryd
+  - simply eps3/3a computation
 o eesupp:
  - add new CPP option (DISCONNECTED_TILES) to disconnect tiles (no exchange
    between tiles, just fill-in edges assuming locally periodic subdomain) and
