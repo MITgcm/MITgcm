@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.10 2012/01/06 13:45:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.11 2012/05/18 12:17:01 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -31,6 +31,11 @@ C     SHELFICEconserve         - use conservative form of H&O-thermodynamics
 C                                following Jenkins et al. (2001, JPO)
 C     SHELFICEboundaryLayer    - turn on vertical merging of cells to for a 
 C                                boundary layer of drF thickness
+C     SHELFICEadvDiffHeatFlux  - use advective-diffusive heat flux into the ice shelf
+C                                instead of diffusive heat flux (default), see Holland 
+C                                and Jenkins (1999), eq.21,22,26,31
+C     SHELFICEuseGammaFrict    - use velocity dependent exchange coefficients, see Holland a
+C                                and Jenkins (1999), eq.11-18
 C     no_slip_shelfice         - set slip conditions for shelfice separately,
 C                                (by default the same as no_slip_bottom) 
 C     SHELFICEwriteState       - enable output
@@ -115,6 +120,7 @@ CEOP
       LOGICAL SHELFICE_tave_mdsio
       LOGICAL SHELFICE_dump_mnc
       LOGICAL SHELFICE_tave_mnc
+      LOGICAL SHELFICEadvDiffHeatFlux
       LOGICAL SHELFICEuseGammaFrict
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
@@ -127,6 +133,7 @@ CEOP
      &     SHELFICE_tave_mdsio,
      &     SHELFICE_dump_mnc,
      &     SHELFICE_tave_mnc,
+     &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.13 2012/01/06 13:45:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.14 2012/05/18 12:17:01 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -56,6 +56,7 @@ CEOP
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
      &     SHELFICEtopoFile, SHELFICEloadAnomalyFile,
+     &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc
@@ -90,6 +91,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEwriteState       = .FALSE.
       SHELFICE_dumpFreq        = dumpFreq
       SHELFICE_taveFreq        = taveFreq
+      SHELFICEadvDiffHeatFlux  = .FALSE.
       SHELFICEuseGammaFrict    = .FALSE.
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0

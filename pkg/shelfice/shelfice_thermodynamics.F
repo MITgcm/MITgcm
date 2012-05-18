@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.28 2012/03/12 16:48:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.29 2012/05/18 12:17:01 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -63,6 +63,11 @@ C                         to melting in kg/m^2/s
 C                         (negative density x melt rate)
 C     convertFW2SaltLoc:: local copy of convertFW2Salt
 C     cFac             :: 1 for conservative form, 0, otherwise
+C     rFac             :: realFreshWaterFlux factor 
+C     dFac             :: 0 for diffusive heat flux (Holland and Jenkins, 1999, eq21)
+C                         1 for advective and diffusive heat flux (eq22, 26, 31)
+C     fwflxFac         :: only effective for dFac=1, 1 if we expect a melting fresh 
+C                         water flux, 0 otherwise
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
 C     eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
@@ -78,8 +83,8 @@ C     drKp1, recip_drLoc
       _RL thetaFreeze, saltFreeze
       _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
-      _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7
-      _RL cFac, rFac
+      _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
+      _RL cFac, rFac, dFac, fwflxFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
       _RL tmpFac
@@ -150,6 +155,11 @@ C     with "real fresh water flux" (affecting ETAN),
 C     there is more to modify
       rFac = 1. _d 0
       IF ( SHELFICEconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
+C     heat flux into the ice shelf, default is diffusive flux 
+C     (Holland and Jenkins, 1999, eq.21)
+      dFac = 0. _d 0
+      IF ( SHELFICEadvDiffHeatFlux ) dFac = 1. _d 0
+      fwflxFac = 0. _d 0
 C     linear dependence of freezing point on salinity
       a0 = -0.0575   _d  0
       a1 =  0.0      _d -0
@@ -372,6 +382,11 @@ C     (in German).
           DO I = 1, sNx
            K    = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
+C     heat flux into the ice shelf, default is diffusive flux 
+C     (Holland and Jenkins, 1999, eq.21)
+            thetaFreeze = a0*sLoc(I,J)+c0+b*pLoc(I,J)
+            fwflxFac    = 0. _d 0
+            IF ( tLoc(I,J) .GT. thetaFreeze ) fwflxFac = dFac
 C     a few abbreviations
             eps1 = rUnit2mass*HeatCapacity_Cp
      &           *shiTransCoeffT(i,j,bi,bj)
@@ -386,15 +401,17 @@ C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
 C     only make sense in connection with my notes on this (M.Losch)
             eps3 = rhoShelfIce*SHELFICEheatCapacity_Cp
-     &           * SHELFICEkappa/pLoc(I,J)
+     &           * SHELFICEkappa/pLoc(I,J) * ( 1. _d 0 - dFac )
 cph introduce a constant variant of eps3 to avoid AD of
 cph code of typ (pLoc-const)/pLoc
             eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
-     &           * SHELFICEkappa
+     &           * SHELFICEkappa *  ( 1. _d 0 - dFac )
             eps4 = b*pLoc(I,J) + c0
             eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
-            aqe = a0  *(eps1+eps3)
+            eps8 = rUnit2mass*SHELFICEheatCapacity_Cp
+     &           *shiTransCoeffS(i,j,bi,bj) * fwflxFac
+            aqe = a0  *(eps1+eps3-eps8)
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
 c           bqe = eps1*eps6 + eps3*eps7 - eps2
@@ -402,7 +419,8 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
      &           + eps3a*( b
      &                   + ( c0 - SHELFICEthetaSurface )/pLoc(I,J) )
      &           - eps2
-            cqe = eps2*sLoc(I,J)
+     &           + eps8*( a0*sLoc(I,J) - eps7 )
+            cqe = ( eps2 + eps8*eps7 )*sLoc(I,J)
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
@@ -454,10 +472,11 @@ C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
             shelfIceHeatFlux(I,J,bi,bj) =
-     &           ( eps3*( thetaFreeze - SHELFICEthetaSurface )
+     &           ( eps3 
+     &           - freshWaterFlux*SHELFICEheatCapacity_Cp*fwflxFac )
+     &           * ( thetaFreeze - SHELFICEthetaSurface )
      &           -  cFac*freshWaterFlux*( SHELFICElatentHeat
      &             - HeatCapacity_Cp*( thetaFreeze - rFac*tLoc(I,J) ) )
-     &           )
             shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
