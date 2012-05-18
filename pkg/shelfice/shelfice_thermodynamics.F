@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.29 2012/05/18 12:17:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.30 2012/05/18 12:43:54 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -400,12 +400,12 @@ C     note: this part of the code is not very intuitive as it involves
 C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
 C     only make sense in connection with my notes on this (M.Losch)
-            eps3 = rhoShelfIce*SHELFICEheatCapacity_Cp
-     &           * SHELFICEkappa/pLoc(I,J) * ( 1. _d 0 - dFac )
-cph introduce a constant variant of eps3 to avoid AD of
-cph code of typ (pLoc-const)/pLoc
+C     
+C     eps3a was introduced as a constant variant of eps3 to avoid AD of
+C     code of typ (pLoc-const)/pLoc
             eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
      &           * SHELFICEkappa *  ( 1. _d 0 - dFac )
+            eps3 = eps3a/pLoc(I,J)
             eps4 = b*pLoc(I,J) + c0
             eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
@@ -438,6 +438,7 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
              print *, 'ml-shelfice: eps5    = ', eps5
              print *, 'ml-shelfice: eps6    = ', eps6
              print *, 'ml-shelfice: eps7    = ', eps7
+             print *, 'ml-shelfice: eps8    = ', eps8
              print *, 'ml-shelfice: rU2mass = ', rUnit2mass
              print *, 'ml-shelfice: rhoIce  = ', rhoShelfIce
              print *, 'ml-shelfice: cFac    = ', cFac
