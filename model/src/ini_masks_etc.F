@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.50 2012/03/19 14:32:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.51 2012/06/01 03:20:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,8 +50,8 @@ CEOP
 C---  Calculate reciprocals grid lengths (should be part of INI_GRID)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           IF ( dxG(i,j,bi,bj) .NE. 0. )
      &    recip_dxG(i,j,bi,bj) = 1. _d 0/dxG(i,j,bi,bj)
           IF ( dyG(i,j,bi,bj) .NE. 0. )
@@ -92,8 +92,8 @@ C     taking into account the lower_R Boundary (Bathymetrie / Top of Atmos)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO k=1, Nr
          hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid bound. and domain lower_R bound.
            hFacCtmp = (rF(k)-R_low(i,j,bi,bj))*recip_drF(k)
 C      o Select between, closed, open or partial (0,1,0-1)
@@ -113,14 +113,14 @@ C      o Impose minimum fraction and/or size (dimensional)
         ENDDO
 
 C-    Re-calculate lower-R Boundary position, taking into account hFacC
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           R_low(i,j,bi,bj) = rF(1)
          ENDDO
         ENDDO
         DO k=Nr,1,-1
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            R_low(i,j,bi,bj) = R_low(i,j,bi,bj)
      &                      - drF(k)*hFacC(i,j,k,bi,bj)
           ENDDO
@@ -136,8 +136,8 @@ C     taking into account the Reference (=at rest) Surface Position Ro_surf
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO k=1, Nr
          hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid boundary and model surface
            hFacCtmp = (rF(k)-Ro_surf(i,j,bi,bj))*recip_drF(k)
 C      o Reduce the previous fraction : substract the outside part.
@@ -176,8 +176,8 @@ C     initialize Total column fluid thickness and surface k index
 C       Note: if no fluid (continent) ==> kSurf = Nr+1
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           tmpfld(i,j,bi,bj) = 0.
           kSurfC(i,j,bi,bj) = Nr+1
 c         maskH(i,j,bi,bj)  = 0.
@@ -217,8 +217,8 @@ c    &           'Model Depths K Index' , -1, myThid )
 C--   Calculate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C         Total fluid column thickness (r_unit) :
 c         Rcolumn(i,j,bi,bj)= Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
           tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
@@ -237,44 +237,44 @@ C--   hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO k=1, Nr
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           hFacW(1-OLx,j,k,bi,bj)= 0.
-          DO i=2-Olx,sNx+Olx
+          DO i=2-OLx,sNx+OLx
            hFacW(i,j,k,bi,bj)=
      &       MIN(hFacC(i,j,k,bi,bj),hFacC(i-1,j,k,bi,bj))
           ENDDO
          ENDDO
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
            hFacS(i,1-OLy,k,bi,bj)= 0.
          ENDDO
-         DO j=2-Oly,sNy+oly
-          DO i=1-Olx,sNx+Olx
+         DO j=2-OLy,sNy+oly
+          DO i=1-OLx,sNx+OLx
            hFacS(i,j,k,bi,bj)=
      &       MIN(hFacC(i,j,k,bi,bj),hFacC(i,j-1,k,bi,bj))
           ENDDO
          ENDDO
         ENDDO
 C     rLow & reference rSurf at Western & Southern edges (U and V points)
-        i = 1-OlX
-        DO j=1-Oly,sNy+Oly
+        i = 1-OLx
+        DO j=1-OLy,sNy+OLy
            rLowW (i,j,bi,bj) = 0.
            rSurfW(i,j,bi,bj) = 0.
         ENDDO
-        j = 1-Oly
-        DO i=1-Olx,sNx+Olx
+        j = 1-OLy
+        DO i=1-OLx,sNx+OLx
            rLowS (i,j,bi,bj) = 0.
            rSurfS(i,j,bi,bj) = 0.
         ENDDO
-        DO j=1-Oly,sNy+Oly
-         DO i=2-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
            rSurfW(i,j,bi,bj) =
      &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
            rLowW(i,j,bi,bj)  =
      &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
          ENDDO
         ENDDO
-        DO j=2-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=2-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            rSurfS(i,j,bi,bj) =
      &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
            rLowS(i,j,bi,bj)  =
@@ -294,8 +294,8 @@ C     We should really supply a flag for doing this.
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO k=1, Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF (dyG(i,j,bi,bj).EQ.0.) hFacW(i,j,k,bi,bj)=0.
            IF (dxG(i,j,bi,bj).EQ.0.) hFacS(i,j,k,bi,bj)=0.
           ENDDO
@@ -307,8 +307,8 @@ C     We should really supply a flag for doing this.
 C--   Calculate surface k index for interface W & S (U & V points)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           kSurfW(i,j,bi,bj) = Nr+1
           kSurfS(i,j,bi,bj) = Nr+1
           DO k=Nr,1,-1
@@ -323,6 +323,32 @@ C--   Calculate surface k index for interface W & S (U & V points)
         ENDDO
        ENDDO
       ENDDO
+
+       IF ( useShelfIce ) THEN
+C     Adjust reference rSurf at U and V points in order to get consistent
+C     column thickness from Sum_k(hFac*drF) and rSurf-rLow
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             rSurfW(i,j,bi,bj) = rLowW(i,j,bi,bj)
+             rSurfS(i,j,bi,bj) = rLowS(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             rSurfW(i,j,bi,bj) = rSurfW(i,j,bi,bj)
+     &                         + hFacW(i,j,k,bi,bj)*drF(k)
+             rSurfS(i,j,bi,bj) = rSurfS(i,j,bi,bj)
+     &                         + hFacS(i,j,k,bi,bj)*drF(k)
+            ENDDO
+           ENDDO
+          ENDDO
+C-    end bi,bj loops.
+         ENDDO
+        ENDDO
+       ENDIF
 
       ELSE
 #ifndef DISABLE_SIGMA_CODE
@@ -350,8 +376,8 @@ C--   Masks and reciprocals of hFac[CWS]
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF (hFacC(i,j,k,bi,bj) .NE. 0. ) THEN
             recip_hFacC(i,j,k,bi,bj) = 1. _d 0 / hFacC(i,j,k,bi,bj)
             maskC(i,j,k,bi,bj) = 1.
