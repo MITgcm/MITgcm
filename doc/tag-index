@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1662 2012/06/01 12:56:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1663 2012/06/01 18:49:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,8 +7,8 @@ $Name:  $
 o model/src:
   - recompute rSurfW & S to ensure consistent column thickness (needed for rStar)
     between Sum_k(hFac*drF) and rSurf-rLow, for now only when using pkg/shelfice;
-  - use h0FacW & S to compute hFac_surfW & S in calc_surf_dr.F (more similar
-    to calc_r_star.F); update results of experiment internal_wave and 
+  - use h0FacC, W & S to compute hFac_surfC, W & S in calc_surf_dr.F (more
+    similar to calc_r_star.F); update results of experiment internal_wave and
     tutorial_global_oce_in_p (affected @ truncation level).
 o pkg/shelfice:
   - add parameterisation of advective-diffusive flux into the ice shelf
