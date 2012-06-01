@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.17 2011/05/20 01:23:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.18 2012/06/01 03:22:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,7 +33,7 @@ C     etaFld    :: current eta field used to update the hFactor
 C     myTime    :: current time in simulation
 C     myIter    :: current iteration number in simulation
 C     myThid    :: thread number for this instance of the routine.
-      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL etaFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -67,8 +67,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 
 C--   before updating hFac_surfC/S/W save current fields
-         DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
              hFac_surfNm1C(i,j,bi,bj) = hFac_surfC(i,j,bi,bj)
              hFac_surfNm1S(i,j,bi,bj) = hFac_surfS(i,j,bi,bj)
              hFac_surfNm1W(i,j,bi,bj) = hFac_surfW(i,j,bi,bj)
@@ -152,10 +152,10 @@ C-- Compute fractional thickness of surface level, for U & V point:
             IF(ks.EQ.kSurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
             hhp = rF(ks)
             IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
-            hFac_surfW(i,j,bi,bj) =
-     &         ( MIN(hhm,hhp)
-     &          - MAX(rF(ks+1),R_low(i-1,j,bi,bj),R_low(i,j,bi,bj))
-     &         )*recip_drF(ks)*maskW(i,j,ks,bi,bj)
+            hFac_surfW(i,j,bi,bj) = h0FacW(i,j,ks,bi,bj)
+     &            + ( MIN(hhm,hhp)
+     &              - MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+     &              )*recip_drF(ks)*maskW(i,j,ks,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -168,10 +168,10 @@ C-- Compute fractional thickness of surface level, for U & V point:
             IF(ks.EQ.kSurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
             hhp = rF(ks)
             IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
-            hFac_surfS(i,j,bi,bj) =
-     &         ( MIN(hhm,hhp)
-     &          - MAX(rF(ks+1),R_low(i,j-1,bi,bj),R_low(i,j,bi,bj))
-     &         )*recip_drF(ks)*maskS(i,j,ks,bi,bj)
+            hFac_surfS(i,j,bi,bj) = h0FacS(i,j,ks,bi,bj)
+     &            + ( MIN(hhm,hhp)
+     &              - MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+     &              )*recip_drF(ks)*maskS(i,j,ks,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -194,8 +194,8 @@ C-    end bi,bj loop.
 
 C-- Global diagnostic :
       _GLOBAL_SUM_RL( adjust_nb_pt , myThid )
-      _GLOBAL_SUM_RL( adjust_volum , myThid )
-      IF (adjust_nb_pt .GE.1.) THEN
+      IF ( adjust_nb_pt.GE.1. ) THEN
+        _GLOBAL_SUM_RL( adjust_volum , myThid )
         _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)')
      &    ' SURF_ADJUSTMENT: Iter=', myIter,
