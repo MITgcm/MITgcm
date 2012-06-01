@@ -286,8 +286,8 @@ c--   Read the data.
        do icvar = 1,maxcvars
         if ( ncvarindex(icvar) .ne. -1 ) then
          do icvrec = 1,ncvarrecs(icvar)
-          do bj = 1,nsy
-           do bi = 1,nsx
+cph          do bj = 1,nsy
+cph           do bi = 1,nsx
             read( funit ) ncvarindex(icvar)
             read( funit ) filej
             read( funit ) filei
@@ -361,8 +361,8 @@ c              if (iobcs .eq. 4) vv(icvoffset+icvcomp)=0.
               icvoffset = icvoffset + cbuffindex
              endif
             enddo
-           enddo
-          enddo
+cph           enddo
+cph          enddo
          enddo
         endif
        enddo

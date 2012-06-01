@@ -184,8 +184,8 @@ c--         Write the data.
       do icvar = 1,maxcvars
          if ( ncvarindex(icvar) .ne. -1 ) then
             do icvrec = 1,ncvarrecs(icvar)
-               do bj = 1,nsy
-                  do bi = 1,nsx
+cph               do bj = 1,nsy
+cph                  do bi = 1,nsx
                      write( funit ) ncvarindex(icvar)
                      write( funit ) bj
                      write( funit ) bi
@@ -245,8 +245,8 @@ c                              if (iobcs .eq. 4) cbuff(icvcomp)=0.
                            icvoffset = icvoffset + cbuffindex
                         endif
                      enddo
-                  enddo
-               enddo
+cph                  enddo
+cph               enddo
             enddo
          endif
       enddo
