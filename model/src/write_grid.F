@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.34 2012/02/28 00:35:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.35 2012/06/01 03:19:53 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -58,8 +58,8 @@ C     model.  This may differ from what the user specified due to
 C     partial cells, etc.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 C     Total fluid column thickness (r_unit) :
             tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
           ENDDO
@@ -96,11 +96,19 @@ C     Write horizontal grid arrays
         ENDIF
 C     Write 3D geometry arrays
         CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,-1,myThid)
+        IF ( debugLevel.GE.debLevC ) THEN
+         CALL WRITE_FLD_XY_RS( 'rLowC', ' ', R_low, -1,myThid)
+         CALL WRITE_FLD_XY_RS( 'rLowW', ' ', rLowW, -1,myThid)
+         CALL WRITE_FLD_XY_RS( 'rLowS', ' ', rLowS, -1,myThid)
+         CALL WRITE_FLD_XY_RS( 'rSurfC',' ',Ro_surf,-1,myThid)
+         CALL WRITE_FLD_XY_RS( 'rSurfW',' ',rSurfW, -1,myThid)
+         CALL WRITE_FLD_XY_RS( 'rSurfS',' ',rSurfS, -1,myThid)
+        ENDIF
         CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC, 0,myThid)
         CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW, 0,myThid)
         CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS, 0,myThid)
-        IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
-     &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,-1,myThid)
+        IF ( fluidIsAir )
+     &    CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,-1,myThid)
         IF ( useOBCS ) THEN
           CALL WRITE_FLD_XY_RS( 'maskInC',' ', maskInC, -1, myThid )
           CALL WRITE_FLD_XY_RS( 'maskInW',' ', maskInW, -1, myThid )
