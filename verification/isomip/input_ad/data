@@ -15,16 +15,14 @@
  diffKhS=100.0,
  diffKzS=5.E-5,
  bottomDragQuadratic=2.5E-3,
- eosType='JMD95Z', 
+ eosType='JMD95Z',
  HeatCapacity_cp = 3974.0,
  rhoConst=1030.,
- rhoNil=1030.,
  gravity=9.81,
  convertFW2Salt = 33.4,
- rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
- hFacMin=0.05,
+ hFacMin=0.10,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  useCDScheme = .TRUE.,
@@ -34,17 +32,15 @@
  staggerTimeStep=.TRUE.,
  vectorInvariantMomentum=.TRUE.,
  nonlinFreeSurf=2,
-# hFacInf=0.2,
-# hFacSup=2.0,
-#ph) 
+ hFacInf=0.05,
+ hFacSup=2.0,
+#ph)
  &
 
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-13,
-#ph cg3dMaxIters=400,
-#ph cg3dTargetResidual=1.E-13,
  &
 
 # Time stepping parameters
