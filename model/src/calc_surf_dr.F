@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.18 2012/06/01 03:22:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.19 2012/06/01 18:42:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,8 +87,8 @@ C-- Compute the new fractional thickness of surface level (kSurfC):
 C-- Needs to do something :
             IF (numbWrite.LE.numbWrMax) THEN
              numbWrite = numbWrite + 1
-             hFactmp = ( rSurftmp(i,j)-MAX(rF(ks+1),R_low(i,j,bi,bj))
-     &                 )*recip_drF(ks)
+             hFactmp = h0FacC(i,j,ks,bi,bj)
+     &         + ( rSurftmp(i,j) - Ro_surf(i,j,bi,bj) )*recip_drF(ks)
              IF (hFactmp.LT.hFacInf) THEN
               WRITE(errorMessageUnit,'(2A,6I4,I10)')
      &         'WARNING: hFacC < hFacInf at:',
@@ -120,9 +120,9 @@ C----------
            ENDIF
 
 C-- Set hFac_surfC :
-           hFac_surfC(i,j,bi,bj) =
-     &         ( rSurftmp(i,j) - MAX(rF(ks+1), R_low(i,j,bi,bj))
-     &         )*recip_drF(ks)*maskC(i,j,ks,bi,bj)
+           hFac_surfC(i,j,bi,bj) = h0FacC(i,j,ks,bi,bj)
+     &            + ( rSurftmp(i,j) - Ro_surf(i,j,bi,bj)
+     &              )*recip_drF(ks)*maskC(i,j,ks,bi,bj)
 
 C-- Usefull warning when hFac becomes very large:
            IF ( numbWrite.LE.numbWrMax .AND.
