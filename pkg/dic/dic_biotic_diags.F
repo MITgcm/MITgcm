@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.16 2010/01/02 22:59:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.17 2012/06/02 20:42:11 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -43,7 +43,7 @@ C     == Local variables ==
 #endif
 
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock) ) THEN
+      IF (DIFFERENT_MULTIPLE(PTRACERS_taveFreq,myTime,deltaTClock)) THEN
 
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)

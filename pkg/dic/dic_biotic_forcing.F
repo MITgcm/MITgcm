@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.26 2011/10/07 21:36:39 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.27 2012/06/02 20:42:11 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -293,7 +293,7 @@ c find free iron and get rid of insoluble part
 
 #ifdef ALLOW_TIMEAVE
 C save averages
-       IF ( taveFreq.GT.0. ) THEN
+       IF ( PTRACERS_taveFreq.GT.0. ) THEN
         DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
