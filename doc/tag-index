@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1663 2012/06/01 18:49:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1664 2012/06/04 21:05:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63n (2012/06/04)
 o model/src:
   - recompute rSurfW & S to ensure consistent column thickness (needed for rStar)
     between Sum_k(hFac*drF) and rSurf-rLow, for now only when using pkg/shelfice;
