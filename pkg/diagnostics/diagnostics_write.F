@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.34 2011/06/11 23:29:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.35 2012/06/06 17:55:44 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -30,6 +30,14 @@ C     !INPUT PARAMETERS:
       _RL     myTime
       INTEGER myIter, myThid
 
+C     !FUNCTIONS:
+      LOGICAL  DIFF_PHASE_MULTIPLE
+      EXTERNAL DIFF_PHASE_MULTIPLE
+#ifdef ALLOW_FIZHI
+      LOGICAL  ALARM2
+      EXTERNAL ALARM2
+#endif
+
 c Local variables
 c ===============
       INTEGER   n
@@ -37,12 +45,8 @@ c ===============
       LOGICAL   dump2fileNow, write2file
       _RL       phiSec, freqSec, wrTime
 #ifdef ALLOW_FIZHI
-      LOGICAL alarm2
       CHARACTER *9 tagname
 #endif
-
-      LOGICAL  DIFF_PHASE_MULTIPLE
-      EXTERNAL DIFF_PHASE_MULTIPLE
 
       IF ( myIter.NE.nIter0 ) THEN
         myItM1 = myIter - 1
@@ -64,17 +68,17 @@ c           wrTime = myTime
 C--     write snap-shot with suffix = myIter-1 to be consistent with
 C       state-variable time-step:
             wrIter = myItM1
-            wrTime = myTime - deltaTclock
+            wrTime = myTime - deltaTClock
           ELSE
             wrIter = myIter
             wrTime = myTime
           ENDIF
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTclock )
+     &                                        wrTime, deltaTClock )
 #ifdef ALLOW_FIZHI
           IF ( useFIZHI ) THEN
            WRITE(tagname,'(A,I2.2)')'diagtag',n
-           dump2fileNow = alarm2(tagname)
+           dump2fileNow = ALARM2(tagname)
           ENDIF
 #endif
 #ifdef ALLOW_CAL
@@ -106,19 +110,26 @@ c           wrTime = myTime
 C--     write snap-shot with suffix = myIter-1 to be consistent with
 C       state-variable time-step:
             wrIter = myItM1
-            wrTime = myTime - deltaTclock
+            wrTime = myTime - deltaTClock
           ELSE
             wrIter = myIter
             wrTime = myTime
           ENDIF
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTclock )
+     &                                        wrTime, deltaTClock )
 #ifdef ALLOW_FIZHI
           IF ( useFIZHI ) THEN
            WRITE(tagname,'(A,I2.2)')'diagStg',n
-           dump2fileNow = alarm2(tagname)
+           dump2fileNow = ALARM2(tagname)
           ENDIF
 #endif
+#ifdef ALLOW_CAL
+          IF ( useCAL ) THEN
+            CALL CAL_TIME2DUMP( freqSec, deltaTClock,
+     U                          dump2fileNow,
+     I                          myTime, myIter, myThid )
+          ENDIF
+#endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) THEN
@@ -148,13 +159,13 @@ C--     Clear storage space:
           phiSec = phase(n)
 
           wrTime = myTime
-          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
+          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTClock
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTclock )
+     &                                        wrTime, deltaTClock )
 #ifdef ALLOW_FIZHI
           IF ( useFIZHI ) THEN
            WRITE(tagname,'(A,I2.2)')'diagtag',n
-           dump2fileNow = alarm2(tagname)
+           dump2fileNow = ALARM2(tagname)
           ENDIF
 #endif
 #ifdef ALLOW_CAL
@@ -173,15 +184,22 @@ C--     Clear storage space:
           freqSec = diagSt_freq(n)
           phiSec = diagSt_phase(n)
           wrTime = myTime
-          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
+          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTClock
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTclock )
+     &                                        wrTime, deltaTClock )
 #ifdef ALLOW_FIZHI
           IF ( useFIZHI ) THEN
            WRITE(tagname,'(A,I2.2)')'diagStg',n
-           dump2fileNow = alarm2(tagname)
+           dump2fileNow = ALARM2(tagname)
           ENDIF
 #endif
+#ifdef ALLOW_CAL
+          IF ( useCAL ) THEN
+            CALL CAL_TIME2DUMP( freqSec, deltaTClock,
+     U                          dump2fileNow,
+     I                          myTime, myIter, myThid )
+          ENDIF
+#endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR( n, myThid )
