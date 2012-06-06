@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.59 2012/04/18 22:06:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.60 2012/06/06 23:41:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -183,6 +183,10 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useOBCS) CALL OBCS_CHECK( myThid )
 #else
       IF (useOBCS) CALL PACKAGES_ERROR_MSG('OBCS',' ',myThid)
+#endif
+
+#ifndef ALLOW_CAL
+      IF (useCAL) CALL PACKAGES_ERROR_MSG('CAL',' ',myThid)
 #endif
 
 #ifdef ALLOW_EXF
