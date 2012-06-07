@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.17 2011/06/06 15:42:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.18 2012/06/07 17:13:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -52,7 +52,8 @@ c     INTEGER newIter
       LOGICAL dBugFlag
       INTEGER dBugUnit
 #ifdef ALLOW_FIZHI
-      LOGICAL alarm2, alarm2next
+      LOGICAL  ALARM2NEXT
+      EXTERNAL ALARM2NEXT
       CHARACTER *9 tagname
 #endif
 
@@ -73,13 +74,20 @@ C--    Select diagnostics list that uses instantaneous output
         freqSec = freq(n)
         phiSec = phase(n)
         time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                       myTime, deltaTclock )
+     &                                       myTime, deltaTClock )
 #ifdef ALLOW_FIZHI
         IF ( useFIZHI ) THEN
          WRITE(tagname,'(A,I2.2)')'diagtag',n
-         time4SnapShot = alarm2next(tagname,deltaT)
+         time4SnapShot = ALARM2NEXT(tagname,deltaT)
         ENDIF
 #endif
+#ifdef ALLOW_CAL
+        IF ( useCAL ) THEN
+          CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
+     U                        time4SnapShot,
+     I                        myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_CAL */
 
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -108,7 +116,7 @@ C--    list with instantaneous output: end
 
        IF ( averageCycle(n).GT.1 ) THEN
 C--    Select diagnostics list that uses periodic averaging
-        xInterval = myTime + deltaTclock*0.5 _d 0 - averagePhase(n)
+        xInterval = myTime + deltaTClock*0.5 _d 0 - averagePhase(n)
         xInterval = xInterval / averageFreq(n)
         IF ( xInterval.GE.0. ) THEN
           nInterval = INT(xInterval)
@@ -155,14 +163,21 @@ C--    Select diagnostics list that uses instantaneous output
         freqSec = diagSt_freq(n)
         phiSec = diagSt_phase(n)
         time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                       myTime, deltaTclock )
+     &                                       myTime, deltaTClock )
 
 #ifdef ALLOW_FIZHI
         IF ( useFIZHI ) THEN
          WRITE(tagname,'(A,I2.2)')'diagStg',n
-         time4SnapShot = alarm2next(tagname,deltaT)
+         time4SnapShot = ALARM2NEXT(tagname,deltaT)
         ENDIF
 #endif
+#ifdef ALLOW_CAL
+        IF ( useCAL ) THEN
+          CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
+     U                        time4SnapShot,
+     I                        myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_CAL */
 
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
