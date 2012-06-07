@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.11 2012/02/16 01:22:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.12 2012/06/07 17:09:47 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -195,7 +195,7 @@ C     Dump files and restart average computation if needed
      &     DIFFERENT_MULTIPLE(SEAICE_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
         IF ( useCAL ) THEN
-          CALL CAL_TIME2DUMP( SEAICE_taveFreq, deltaTClock,
+          CALL CAL_TIME2DUMP( ZERO, SEAICE_taveFreq, deltaTClock,
      U                        dumpFiles,
      I                        myTime, myIter, myThid )
         ENDIF

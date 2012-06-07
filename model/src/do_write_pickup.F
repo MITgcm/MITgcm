@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.6 2008/02/25 20:57:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.7 2012/06/07 17:10:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -57,6 +57,8 @@ C     msgBuf     :: message buffer
       LOGICAL permPickup, tempPickup
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL zeroRL
+      PARAMETER( zeroRL = 0. _d 0 )
 
       permPickup = .FALSE.
       tempPickup = .FALSE.
@@ -67,10 +69,10 @@ C     msgBuf     :: message buffer
 
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
-         CALL CAL_TIME2DUMP( pChkPtFreq, deltaTClock,
+         CALL CAL_TIME2DUMP( zeroRL, pChkPtFreq, deltaTClock,
      U                       permPickup,
      I                       myTime, myIter, myThid )
-         CALL CAL_TIME2DUMP( chkPtFreq,  deltaTClock,
+         CALL CAL_TIME2DUMP( zeroRL, chkPtFreq,  deltaTClock,
      U                       tempPickup,
      I                       myTime, myIter, myThid )
       ENDIF

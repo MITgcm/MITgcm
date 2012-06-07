@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.41 2010/01/15 22:43:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.42 2012/06/07 17:09:47 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -52,6 +52,8 @@ C     useVariableK :: T when vertical diffusion is not constant
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL dumpFiles
+      _RL zeroRL
+      PARAMETER( zeroRL = 0. _d 0 )
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif
@@ -62,7 +64,7 @@ C     Final Time Averages and Dump Files if needed
       dumpFiles = DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
-         CALL CAL_TIME2DUMP( taveFreq, deltaTClock,
+         CALL CAL_TIME2DUMP( zeroRL, taveFreq, deltaTClock,
      U                       dumpFiles,
      I                       myTime, myIter, myThid )
       ENDIF

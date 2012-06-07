@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.2 2010/01/03 00:39:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.3 2012/06/07 17:09:47 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,6 +45,8 @@ C     == Local variables ==
 #ifdef ALLOW_TIMEAVE
       INTEGER i, j, bi, bj
       LOGICAL dumpFiles
+      _RL zeroRL
+      PARAMETER( zeroRL = 0. _d 0 )
 #endif
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
@@ -131,7 +133,7 @@ C     Dump files and restart average computation if needed
      &     DIFFERENT_MULTIPLE(SHELFICE_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
         IF ( useCAL ) THEN
-          CALL CAL_TIME2DUMP( SHELFICE_taveFreq, deltaTClock,
+          CALL CAL_TIME2DUMP( zeroRL, SHELFICE_taveFreq, deltaTClock,
      U                        dumpFiles,
      I                        myTime, myIter, myThid )
         ENDIF

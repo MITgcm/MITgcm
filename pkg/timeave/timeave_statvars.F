@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.25 2009/12/28 02:43:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.26 2012/06/07 17:09:47 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -45,6 +45,8 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
       LOGICAL dumpFiles
       _RL DDTT
+      _RL zeroRL
+      PARAMETER( zeroRL = 0. _d 0 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -100,7 +102,7 @@ C--   Cumulate state-variables with Half or Full time step :
         dumpFiles = DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
         IF ( useCAL ) THEN
-          CALL CAL_TIME2DUMP( taveFreq, deltaTClock,
+          CALL CAL_TIME2DUMP( zeroRL, taveFreq, deltaTClock,
      U                        dumpFiles,
      I                        myTime, myIter, myThid )
         ENDIF

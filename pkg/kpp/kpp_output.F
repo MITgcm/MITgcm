@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.4 2010/04/03 22:28:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.5 2012/06/07 17:09:47 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -88,6 +88,8 @@ C     local variable:
 #endif
 #ifdef ALLOW_TIMEAVE
       _RL DDTT
+      _RL zeroRL
+      PARAMETER( zeroRL = 0. _d 0 )
       LOGICAL dumpFiles
 #endif
 #ifdef ALLOW_DIAGNOSTICS
@@ -248,7 +250,7 @@ C     Dump files and restart average computation if needed
      &     DIFFERENT_MULTIPLE(KPP_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
         IF ( useCAL ) THEN
-          CALL CAL_TIME2DUMP( KPP_taveFreq, deltaTClock,
+          CALL CAL_TIME2DUMP( zeroRL, KPP_taveFreq, deltaTClock,
      U                        dumpFiles,
      I                        myTime, myIter, myThid )
         ENDIF

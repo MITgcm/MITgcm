@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.7 2009/08/27 18:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.8 2012/06/07 17:09:47 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -50,6 +50,8 @@ C                       be written.
 C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
 C                       checkpoint (that will be permanent if permCheckPoint=T)
       LOGICAL permCheckPoint, tempCheckPoint
+      _RL zeroRL
+      PARAMETER( zeroRL = 0. _d 0 )
 CEOP
 
       permCheckPoint = .FALSE.
@@ -61,10 +63,10 @@ CEOP
 
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
-         CALL CAL_TIME2DUMP( pChkPtFreq, deltaTClock,
+         CALL CAL_TIME2DUMP( zeroRL, pChkPtFreq, deltaTClock,
      U                       permCheckPoint,
      I                       myTime, myIter, myThid )
-         CALL CAL_TIME2DUMP( chkPtFreq,  deltaTClock,
+         CALL CAL_TIME2DUMP( zeroRL, chkPtFreq,  deltaTClock,
      U                       tempCheckPoint,
      I                       myTime, myIter, myThid )
       ENDIF
