@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_time2dump.F,v 1.1 2006/03/22 21:05:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_time2dump.F,v 1.2 2012/06/07 17:08:18 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
 
       SUBROUTINE CAL_TIME2DUMP(
-     I                          freq, step,
+     I                          phase, freq, step,
      U                          time2write,
      I                          myTime, myIter, myThid )
 
@@ -20,7 +20,7 @@ c     == global variables ==
 #include "cal.h"
 
 c     == routine arguments ==
-      _RL     freq, step
+      _RL     phase, freq, step
       LOGICAL time2write
       _RL     myTime
       INTEGER myIter
@@ -28,18 +28,21 @@ c     == routine arguments ==
 
 c     == local variables ==
       INTEGER thisDate(4), prevDate(4)
+      _RL posFreq
 
-      IF ( calendarDumps ) THEN
+c     IF ( calendarDumps ) THEN
+      IF ( calendarDumps .AND. phase.EQ.0. _d 0 ) THEN
+        posFreq = ABS(freq)
 C-    First determine calendar dates for this and previous time step.
         CALL CAL_GETDATE( myIter  ,myTime     ,thisDate,myThid )
         CALL CAL_GETDATE( myIter-1,myTime-step,prevDate,myThid )
 C-    Monthly Freq:
-        IF ( freq.GE.2592000. .AND. freq.LE.2678400. ) THEN
+        IF ( posFreq.GE.2592000. .AND. posFreq.LE.2678400. ) THEN
            time2write = .FALSE.
            IF ( (thisdate(1)-prevdate(1)).GT.50 )   time2write=.TRUE.
         ENDIF
 C-    Yearly  Freq:
-        IF ( freq.GE.31104000. .AND. freq.LE.31968000. ) THEN
+        IF ( posFreq.GE.31104000. .AND. posFreq.LE.31968000. ) THEN
            time2write = .FALSE.
            IF ( (thisdate(1)-prevdate(1)).GT.5000 ) time2write=.TRUE.
         ENDIF
